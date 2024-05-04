@@ -28,15 +28,19 @@ peek :: [Token] -> Token
 peek [] = error "peek: empty list"
 peek (x:_) = x
 
+parseExpr :: [Token] -> (Expr, [Token])
+parseExpr _ = error "unimplemented"
+
 parseLetStmt :: [Token] -> (LetStmt, [Token])
-parseLetStmt _ = undefined
+parseLetStmt _ = error "unimplemented"
 
 parseBlockStmt :: [Token] -> (BlockStmt, [Token])
 parseBlockStmt tokens = f tokens []
   where
     f :: [Token] -> [Stmt] -> (BlockStmt, [Token])
     f [] acc = (BlockStmt acc, [])
-    f tokens1@(_:xs) acc = error "todo"
+    f (Token _ TTyRBrace _ _ _:xs) acc = (BlockStmt acc, xs)
+    f tokens1 acc = let (stmt, rest) = parseStmt tokens1 in f rest (acc ++ [stmt])
 
 parseDefStmt :: [Token] -> (DefStmt, [Token])
 parseDefStmt [] = error "parseDefStmt: empty list"
@@ -78,7 +82,9 @@ parseStmt tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) =
 parseStmt tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) =
   let (stmt, tokens1) = parseDefStmt tokens
   in (StmtDef stmt, tokens1)
-parseStmt _ = error $ "invalid statement"
+parseStmt (x:_) =
+  let msg = "invalid statement"
+  in err ErrorSyntax msg (Just x)
 
 parse :: [Token] -> Program
 parse tokens = Program $ f tokens
@@ -86,5 +92,3 @@ parse tokens = Program $ f tokens
     f :: [Token] -> [Stmt]
     f [] = []
     f tokens1 = let (stmt, rest) = parseStmt tokens1 in [stmt] ++ f rest
-
--- parse tokens = Program (parseStmts tokens)
