@@ -9,22 +9,37 @@ expect (x:xs) t
   | tokenType x == t = (x, xs)
   | otherwise = error $ "expect: expected " ++ strOfTokenType t ++ " but got " ++ strOfTokenType (tokenType x)
 
+expectType :: [Token] -> (Token, [Token])
+expectType [] = error "expectType: empty list"
+expectType (x:xs)
+  | TTyIdType _ <- tokenType x = (x, xs)
+  | otherwise = error $ "expectType: expected an IdType but got " ++ show (tokenType x)
+
 parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt _ = undefined
 
 parseDefStmt :: [Token] -> (DefStmt, [Token])
-parseDefStmt _ = undefined
+parseDefStmt [] = error "parseDefStmt: empty list"
+parseDefStmt tokens =
+  let (_, tokens1) = expect tokens (TTyKeyword KWdDef)
+      (id, tokens2) = expect tokens1 TTyIdentifier
+      (args, tokens3) = parseArgs tokens2
+      (rettype, tokens4) = expectType tokens3
+  in undefined
+  where
+    parseArgs :: [Tokens] -> ([(Token, IdType)], [Tokens])
+    parseArgs = undefined
 
-parseToplvlStmts' :: [Token] -> ([Token] -> (b, [Token])) -> (b -> ToplvlStmt) -> [ToplvlStmt]
-parseToplvlStmts' tokens parseFunc stmtType =
+parseStmts' :: [Token] -> ([Token] -> (b, [Token])) -> (b -> Stmt) -> [Stmt]
+parseStmts' tokens parseFunc stmtType =
   let (stmt, tokens') = parseFunc tokens
-  in [stmtType stmt] ++ parseToplvlStmts tokens'
+  in [stmtType stmt] ++ parseStmts tokens'
 
-parseToplvlStmts :: [Token] -> [ToplvlStmt]
-parseToplvlStmts [] = []
-parseToplvlStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:xs) = parseToplvlStmts' tokens parseDefStmt ToplvlDef
-parseToplvlStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:xs) = parseToplvlStmts' tokens parseLetStmt ToplvlLet
-parseToplvlStmts _ = error "invalid toplvl statement"
+parseStmts :: [Token] -> [Stmt]
+parseStmts [] = []
+parseStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:xs) = parseStmts' tokens parseDefStmt StmtDef
+parseStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:xs) = parseStmts' tokens parseLetStmt StmtLet
+parseStmts _ = error "invalid toplvl statement"
 
 parse :: [Token] -> Program
-parse tokens = Program (parseToplvlStmts tokens)
+parse tokens = Program (parseStmts tokens)

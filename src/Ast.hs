@@ -2,18 +2,13 @@ module Ast where
 
 import Token
 
-newtype Program = Program [ToplvlStmt] deriving Show
-
-data ToplvlStmt
-  = ToplvlStmt
-  | ToplvlDef DefStmt
-  | ToplvlLet LetStmt
-  deriving Show
+newtype Program = Program [Stmt] deriving Show
 
 data Stmt
   = Stmt
-  | StmtDefStmt DefStmt
+  | StmtDef DefStmt
   | StmtLet LetStmt
+  deriving Show
 
 data DefStmt
   = DefStmt
