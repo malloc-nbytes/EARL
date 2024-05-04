@@ -32,7 +32,15 @@ parseExpr :: [Token] -> (Expr, [Token])
 parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
   where
     parseLogicalExpr :: [Token] -> (Expr, [Token])
-    parseLogicalExpr tokens0 = undefined
+    parseLogicalExpr tokens0 =
+      let (lhs, tokens1) = parseEqualityExpr tokens0 in aux tokens1 lhs
+      where
+        aux :: [Token] -> Expr -> (Expr, [Token])
+        aux auxTokens@(x:xs) auxLeft
+          | tokenType x == TTyDoubleAmpersand || tokenType x == TTyDoublePipe =
+            let (right, auxTokens) = parseEqualityExpr xs
+            in aux auxTokens (ExprBinary (auxLeft, x, right))
+          | otherwise = (auxLeft, auxTokens)
 
     parseEqualityExpr :: [Token] -> (Expr, [Token])
     parseEqualityExpr tokens0 = undefined

@@ -12,6 +12,6 @@ data Err
 err :: Err -> String -> Maybe Token -> a
 err e msg mtoken =
   case mtoken of
-    Just t@(Token tl _ tr tc tfp) ->
+    Just t@(Token _ _ tr tc tfp) ->
       error $ "\n" ++ tfp ++ ":" ++ show tr ++ ":" ++ show tc ++ ":\n" ++ show e ++ ": " ++ msg ++ "\n" ++ show t
     Nothing -> error $ show e ++ ": " ++ msg

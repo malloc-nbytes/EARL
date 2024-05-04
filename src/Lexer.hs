@@ -43,6 +43,8 @@ lexFile :: [Char] -> String -> Int -> Int -> [Token]
 lexFile [] fp r c = [Token "EOF" TTyEof r c fp]
 lexFile ('\n':xs) fp r _ = lexFile xs fp (r+1) 1
 
+lexFile (x@'&':x'@'&':xs) fp r c = [Token ([x]++[x']) TTyDoubleAmpersand r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'|':x'@'|':xs) fp r c = [Token ([x]++[x']) TTyDoublePipe r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'-':x'@'>':xs) fp r c = [Token ([x]++[x']) TTyRightArrow r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'=':xs) fp r c = [Token [x] TTyEquals r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'+':xs) fp r c = [Token [x] TTyPlus r c fp] ++ lexFile xs fp r (c+1)
