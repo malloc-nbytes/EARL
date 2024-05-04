@@ -49,6 +49,7 @@ lexFile (x@'-':x'@'>':xs) fp r c = [Token ([x]++[x']) TTyRightArrow r c fp] ++ l
 lexFile (x@'>':x'@'=':xs) fp r c = [Token ([x]++[x']) GreaterThanEqual r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'<':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyLessThanEqual r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'!':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyNotEqual r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'%':xs) fp r c = [Token [x] TTyPercent r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'<':xs) fp r c = [Token [x] TTyLessThan r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'=':xs) fp r c = [Token [x] TTyEquals r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'+':xs) fp r c = [Token [x] TTyPlus r c fp] ++ lexFile xs fp r (c+1)

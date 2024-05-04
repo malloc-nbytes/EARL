@@ -48,16 +48,39 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
       where
         aux :: [Token] -> Expr -> (Expr, [Token])
         aux auxTokens@(x:xs) auxLeft
-          | tokenType x == TTyDoubleEquals =
+          | tokenType x == TTyDoubleEquals
+            || tokenType x == TTyGreaterThan
+            || tokenType x == TTyLessThan
+            || tokenType x == TTyGreaterThanEqual
+            || tokenType x == TTyLessThanEqual
+            || tokenType x == TTyNotEqual =
             let (right, auxTokens) = parseAdditiveExpr xs
             in aux auxTokens (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
     parseAdditiveExpr :: [Token] -> (Expr, [Token])
-    parseAdditiveExpr tokens0 = undefined
+    parseAdditiveExpr tokens0 =
+      let (lhs, tokens1) = parseMultiplicativeExpr tokens0 in aux tokens1 lhs
+      where
+        aux :: [Token] -> Expr -> (Expr, [Token])
+        aux auxTokens@(x:xs) auxLeft
+          | tokenType x == TTyPlus || tokenType x == TTyMinus =
+            let (right, auxTokens) = parseMultiplicativeExpr xs
+            in aux auxTokens (ExprBinary (auxLeft, x, right))
+          | otherwise = (auxLeft, auxTokens)
 
     parseMultiplicativeExpr :: [Token] -> (Expr, [Token])
-    parseMultiplicativeExpr tokens0 = undefined
+    parseMultiplicativeExpr tokens0 =
+      let (lhs, tokens1) = parsePrimaryExpr tokens0 in aux tokens1 lhs
+      where
+        aux :: [Token] -> Expr -> (Expr, [Token])
+        aux auxTokens@(x:xs) auxLeft
+          | tokenType x == TTyAsterisk
+            || tokenType x == TTyForwardSlash
+            || tokenType x == TTyPercent =
+            let (right, auxTokens) = parsePrimaryExpr xs
+            in aux auxTokens (ExprBinary (auxLeft, x, right))
+          | otherwise = (auxLeft, auxTokens)
 
     parsePrimaryExpr :: [Token] -> (Expr, [Token])
     parsePrimaryExpr tokens0 = undefined

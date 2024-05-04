@@ -49,6 +49,8 @@ data TokenType
   | TTyLessThan
   | TTyLessThanEqual
   | TTyNotEqual
+  | TTyGreaterThanEqual
+  | TTyPercent
   deriving (Show, Eq)
 
 data Token
@@ -106,5 +108,6 @@ strOfTokenType GreaterThanEqual = "GreaterThanEqual"
 strOfTokenType TTyLessThanEqual = "TTyLessThanEqual"
 strOfTokenType TTyNotEqual = "TTyLessNotEqual"
 strOfTokenType TTyLessThan = "TTyLessThan"
-
+strOfTokenType TTyGreaterThanEqual = "TTyGreaterThanEqual"
+strOfTokenType TTyPercent = "TTyPercent"
 strOfTokenType _ = error "strOfTokenType: unknown TokenType"
