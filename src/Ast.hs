@@ -8,6 +8,7 @@ data Stmt
   = Stmt
   | StmtDef DefStmt
   | StmtLet LetStmt
+  | StmtBlock BlockStmt
   deriving Show
 
 data DefStmt
@@ -15,7 +16,10 @@ data DefStmt
   { defId :: Token
   , defArgs :: [(Token, IdType)]
   , defRettype :: IdType
+  , defBlock :: BlockStmt
   } deriving Show
+
+newtype BlockStmt = BlockStmt [Stmt] deriving Show
 
 data LetStmt
   = LetStmt

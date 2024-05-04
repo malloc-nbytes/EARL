@@ -41,6 +41,7 @@ data TokenType
   | TTySemiColon
   | TTyComma
   | TTyGreaterThan
+  | TTyRightArrow
   deriving (Show, Eq)
 
 data Token
@@ -90,4 +91,5 @@ strOfTokenType TTyColon = "TTyColon"
 strOfTokenType TTySemiColon = "TTySemiColon"
 strOfTokenType TTyComma = "TTyComma"
 strOfTokenType TTyGreaterThan = "TTyGreaterThan"
+strOfTokenType TTyRightArrow = "TTyRightArrow"
 strOfTokenType _ = error "strOfTokenType: unknown TokenType"

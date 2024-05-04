@@ -15,20 +15,52 @@ expectType (x:xs)
   | TTyIdType _ <- tokenType x = (x, xs)
   | otherwise = error $ "expectType: expected an IdType but got " ++ show (tokenType x)
 
+tokenToIdType :: Token -> IdType
+tokenToIdType token =
+  case tokenType token of
+    TTyIdType idType -> idType
+    _ -> error "tokenToIdType: Token is not of type TTyIdType"
+
+peek :: [Token] -> Token
+peek [] = error "peek: empty list"
+peek (x:_) = x
+
 parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt _ = undefined
+
+parseBlockStmt :: [Token] -> (BlockStmt, [Token])
+parseBlockStmt _ = undefined
 
 parseDefStmt :: [Token] -> (DefStmt, [Token])
 parseDefStmt [] = error "parseDefStmt: empty list"
 parseDefStmt tokens =
   let (_, tokens1) = expect tokens (TTyKeyword KWdDef)
-      (id, tokens2) = expect tokens1 TTyIdentifier
-      (args, tokens3) = parseArgs tokens2
-      (rettype, tokens4) = expectType tokens3
-  in undefined
+      (pdsId, tokens2) = expect tokens1 TTyIdentifier
+      (_, tokens3) = expect tokens2 TTyLParen
+      (args, tokens4) = parseArgs tokens3 []
+      (_, tokens5) = expect tokens4 TTyRightArrow
+      (rettype, tokens6) = expectType tokens5
+      (_, tokens7) = expect tokens6 TTyRParen
+      (block, tokens8) = parseBlockStmt tokens7
+      rettypeActual = tokenToIdType rettype
+  in (DefStmt pdsId args rettypeActual block, tokens8)
   where
-    parseArgs :: [Tokens] -> ([(Token, IdType)], [Tokens])
-    parseArgs = undefined
+    parseArgs :: [Token] -> [(Token, IdType)] -> ([(Token, IdType)], [Token])
+    parseArgs [] acc = (acc, [])
+    parseArgs paTokens@(x:xs) acc
+      | tokenType x == TTyRParen = (acc, xs)
+      | tokenType x == TTyIdentifier =
+        let (paId, paTokens1) = expect paTokens TTyIdentifier
+            (_, paTokens2) = expect paTokens1 TTyColon
+            (paTy, paTokens3) = expectType paTokens2
+            acc' = acc ++ [(paId, tokenToIdType paTy)]
+        in
+          if tokenType (peek paTokens3) == TTyComma then
+            parseArgs (snd (expect paTokens3 TTyComma)) acc'
+          else parseArgs paTokens3 acc'
+      | otherwise = error $ "parseArgs: invalid token: " ++ (strOfTokenType $ tokenType x)
+
+-- def greater(a: int, b: int) -> int {
 
 parseStmts' :: [Token] -> ([Token] -> (b, [Token])) -> (b -> Stmt) -> [Stmt]
 parseStmts' tokens parseFunc stmtType =
@@ -37,8 +69,8 @@ parseStmts' tokens parseFunc stmtType =
 
 parseStmts :: [Token] -> [Stmt]
 parseStmts [] = []
-parseStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:xs) = parseStmts' tokens parseDefStmt StmtDef
-parseStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:xs) = parseStmts' tokens parseLetStmt StmtLet
+parseStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) = parseStmts' tokens parseDefStmt StmtDef
+parseStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) = parseStmts' tokens parseLetStmt StmtLet
 parseStmts _ = error "invalid toplvl statement"
 
 parse :: [Token] -> Program
