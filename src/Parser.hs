@@ -38,8 +38,8 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
         aux :: [Token] -> Expr -> (Expr, [Token])
         aux auxTokens@(x:xs) auxLeft
           | tokenType x == TTyDoubleAmpersand || tokenType x == TTyDoublePipe =
-            let (right, auxTokens) = parseEqualityExpr xs
-            in aux auxTokens (ExprBinary (auxLeft, x, right))
+            let (right, auxTokens1) = parseEqualityExpr xs
+            in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
     parseEqualityExpr :: [Token] -> (Expr, [Token])
@@ -54,8 +54,8 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
             || tokenType x == TTyGreaterThanEqual
             || tokenType x == TTyLessThanEqual
             || tokenType x == TTyNotEqual =
-            let (right, auxTokens) = parseAdditiveExpr xs
-            in aux auxTokens (ExprBinary (auxLeft, x, right))
+            let (right, auxTokens1) = parseAdditiveExpr xs
+            in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
     parseAdditiveExpr :: [Token] -> (Expr, [Token])
@@ -65,8 +65,8 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
         aux :: [Token] -> Expr -> (Expr, [Token])
         aux auxTokens@(x:xs) auxLeft
           | tokenType x == TTyPlus || tokenType x == TTyMinus =
-            let (right, auxTokens) = parseMultiplicativeExpr xs
-            in aux auxTokens (ExprBinary (auxLeft, x, right))
+            let (right, auxTokens1) = parseMultiplicativeExpr xs
+            in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
     parseMultiplicativeExpr :: [Token] -> (Expr, [Token])
@@ -78,12 +78,21 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
           | tokenType x == TTyAsterisk
             || tokenType x == TTyForwardSlash
             || tokenType x == TTyPercent =
-            let (right, auxTokens) = parsePrimaryExpr xs
-            in aux auxTokens (ExprBinary (auxLeft, x, right))
+            let (right, auxTokens1) = parsePrimaryExpr xs
+            in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
     parsePrimaryExpr :: [Token] -> (Expr, [Token])
-    parsePrimaryExpr tokens0 = undefined
+    parsePrimaryExpr (x:xs) =
+      case tokenType x of
+        TTyIdentifier -> undefined
+        TTyIntegerLiteral -> (ExprTerm (TermIntlit x), xs)
+        TTyStringLiteral -> (ExprTerm (TermStrlit x), xs)
+        TTyLParen ->
+          let (expr, tokens1) = parseExpr xs
+              (_, tokens2) = expect tokens1 TTyRBrace
+          in (expr, tokens2)
+        _ -> err ErrorFatal "parsePrimaryExpr: invalid primary expression" $ Just x
 
 parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt tokens =
@@ -91,10 +100,11 @@ parseLetStmt tokens =
       (plsId, tokens2) = expect tokens1 TTyIdentifier
       (_, tokens3) = expect tokens2 TTyColon
       (plsTy, tokens4) = expectType tokens3
-      (expr, tokens5) = parseExpr tokens4
-      (_, tokens6) = expect tokens5 TTySemiColon
+      (_, tokens5) = expect tokens4 TTyEquals
+      (expr, tokens6) = parseExpr tokens5
+      (_, tokens7) = expect tokens6 TTySemiColon
       plsTyActual = tokenToIdType plsTy
-  in (LetStmt plsId plsTyActual expr, tokens6)
+  in (LetStmt plsId plsTyActual expr, tokens7)
 
 parseBlockStmt :: [Token] -> (BlockStmt, [Token])
 parseBlockStmt tokens = f tokens []

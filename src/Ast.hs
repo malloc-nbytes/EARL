@@ -37,6 +37,6 @@ data Expr
 data Term
   = Term
   | TermIdent Token
-  | TermIntlit Int
-  | TermStrlit String
+  | TermIntlit Token
+  | TermStrlit Token
   deriving Show
