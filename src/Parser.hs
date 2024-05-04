@@ -32,7 +32,15 @@ parseExpr :: [Token] -> (Expr, [Token])
 parseExpr _ = error "unimplemented"
 
 parseLetStmt :: [Token] -> (LetStmt, [Token])
-parseLetStmt _ = error "unimplemented"
+parseLetStmt tokens =
+  let (_, tokens1) = expect tokens (TTyKeyword KWdLet)
+      (plsId, tokens2) = expect tokens1 TTyIdentifier
+      (_, tokens3) = expect tokens2 TTyColon
+      (plsTy, tokens4) = expectType tokens3
+      (expr, tokens5) = parseExpr tokens4
+      (_, tokens6) = expect tokens5 TTySemiColon
+      plsTyActual = tokenToIdType plsTy
+  in (LetStmt plsId plsTyActual expr, tokens6)
 
 parseBlockStmt :: [Token] -> (BlockStmt, [Token])
 parseBlockStmt tokens = f tokens []
