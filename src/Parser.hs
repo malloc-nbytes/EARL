@@ -29,7 +29,12 @@ parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt _ = undefined
 
 parseBlockStmt :: [Token] -> (BlockStmt, [Token])
-parseBlockStmt _ = undefined
+parseBlockStmt tokens = f tokens []
+  where
+    f :: [Token] -> [Stmt] -> (BlockStmt, [Token])
+    f [] acc = acc
+    f tokens1@(_:xs) acc =
+      let (stmts, tokens1) = parseStmts tokens1 in
 
 parseDefStmt :: [Token] -> (DefStmt, [Token])
 parseDefStmt [] = error "parseDefStmt: empty list"
@@ -60,7 +65,9 @@ parseDefStmt tokens =
           else parseArgs paTokens3 acc'
       | otherwise = error $ "parseArgs: invalid token: " ++ (strOfTokenType $ tokenType x)
 
--- def greater(a: int, b: int) -> int {
+parseStmt :: [Token] -> (Stmt, [Token])
+parseStmt [] = error "parseStmt: no statement"
+parseStmt tokens = undefined
 
 parseStmts' :: [Token] -> ([Token] -> (b, [Token])) -> (b -> Stmt) -> [Stmt]
 parseStmts' tokens parseFunc stmtType =
@@ -71,7 +78,7 @@ parseStmts :: [Token] -> [Stmt]
 parseStmts [] = []
 parseStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) = parseStmts' tokens parseDefStmt StmtDef
 parseStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) = parseStmts' tokens parseLetStmt StmtLet
-parseStmts _ = error "invalid toplvl statement"
+parseStmts _ = error "invalid statement"
 
 parse :: [Token] -> Program
 parse tokens = Program (parseStmts tokens)
