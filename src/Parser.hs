@@ -2,12 +2,15 @@ module Parser where
 
 import Ast
 import Token
+import Err
 
 expect :: [Token] -> TokenType -> (Token, [Token])
 expect [] _ = error $ "expect: empty list"
 expect (x:xs) t
   | tokenType x == t = (x, xs)
-  | otherwise = error $ "expect: expected " ++ strOfTokenType t ++ " but got " ++ strOfTokenType (tokenType x)
+  | otherwise =
+    let msg = ("expected " ++ strOfTokenType t ++ " but got " ++ strOfTokenType (tokenType x))
+    in err ErrorSyntax msg (Just x)
 
 expectType :: [Token] -> (Token, [Token])
 expectType [] = error "expectType: empty list"
@@ -32,9 +35,8 @@ parseBlockStmt :: [Token] -> (BlockStmt, [Token])
 parseBlockStmt tokens = f tokens []
   where
     f :: [Token] -> [Stmt] -> (BlockStmt, [Token])
-    f [] acc = acc
-    f tokens1@(_:xs) acc =
-      let (stmts, tokens1) = parseStmts tokens1 in
+    f [] acc = (BlockStmt acc, [])
+    f tokens1@(_:xs) acc = error "todo"
 
 parseDefStmt :: [Token] -> (DefStmt, [Token])
 parseDefStmt [] = error "parseDefStmt: empty list"
@@ -43,17 +45,18 @@ parseDefStmt tokens =
       (pdsId, tokens2) = expect tokens1 TTyIdentifier
       (_, tokens3) = expect tokens2 TTyLParen
       (args, tokens4) = parseArgs tokens3 []
-      (_, tokens5) = expect tokens4 TTyRightArrow
-      (rettype, tokens6) = expectType tokens5
-      (_, tokens7) = expect tokens6 TTyRParen
-      (block, tokens8) = parseBlockStmt tokens7
+      (_, tokens5) = expect tokens4 TTyRParen
+      (_, tokens6) = expect tokens5 TTyRightArrow
+      (rettype, tokens7) = expectType tokens6
+      (_, tokens8) = expect tokens7 TTyLBrace
+      (block, tokens9) = parseBlockStmt tokens8
       rettypeActual = tokenToIdType rettype
-  in (DefStmt pdsId args rettypeActual block, tokens8)
+  in (DefStmt pdsId args rettypeActual block, tokens9)
   where
     parseArgs :: [Token] -> [(Token, IdType)] -> ([(Token, IdType)], [Token])
     parseArgs [] acc = (acc, [])
-    parseArgs paTokens@(x:xs) acc
-      | tokenType x == TTyRParen = (acc, xs)
+    parseArgs paTokens@(x:_) acc
+      | tokenType x == TTyRParen = (acc, paTokens)
       | tokenType x == TTyIdentifier =
         let (paId, paTokens1) = expect paTokens TTyIdentifier
             (_, paTokens2) = expect paTokens1 TTyColon
@@ -63,22 +66,25 @@ parseDefStmt tokens =
           if tokenType (peek paTokens3) == TTyComma then
             parseArgs (snd (expect paTokens3 TTyComma)) acc'
           else parseArgs paTokens3 acc'
-      | otherwise = error $ "parseArgs: invalid token: " ++ (strOfTokenType $ tokenType x)
+      | otherwise =
+        let msg = "invalid token in definition"
+        in err ErrorSyntax msg (Just x)
 
 parseStmt :: [Token] -> (Stmt, [Token])
 parseStmt [] = error "parseStmt: no statement"
-parseStmt tokens = undefined
-
-parseStmts' :: [Token] -> ([Token] -> (b, [Token])) -> (b -> Stmt) -> [Stmt]
-parseStmts' tokens parseFunc stmtType =
-  let (stmt, tokens') = parseFunc tokens
-  in [stmtType stmt] ++ parseStmts tokens'
-
-parseStmts :: [Token] -> [Stmt]
-parseStmts [] = []
-parseStmts tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) = parseStmts' tokens parseDefStmt StmtDef
-parseStmts tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) = parseStmts' tokens parseLetStmt StmtLet
-parseStmts _ = error "invalid statement"
+parseStmt tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) =
+  let (stmt, tokens1) = parseLetStmt tokens
+  in (StmtLet stmt, tokens1)
+parseStmt tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) =
+  let (stmt, tokens1) = parseDefStmt tokens
+  in (StmtDef stmt, tokens1)
+parseStmt _ = error $ "invalid statement"
 
 parse :: [Token] -> Program
-parse tokens = Program (parseStmts tokens)
+parse tokens = Program $ f tokens
+  where
+    f :: [Token] -> [Stmt]
+    f [] = []
+    f tokens1 = let (stmt, rest) = parseStmt tokens1 in [stmt] ++ f rest
+
+-- parse tokens = Program (parseStmts tokens)
