@@ -1,0 +1,11 @@
+def greater(a: int, b: int) -> int {
+    if a > b {
+       return a;
+    }
+    return b;
+}
+
+def main() -> int {
+    let s: int = greater 1 2;
+    return s;
+}
