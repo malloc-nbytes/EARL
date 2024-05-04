@@ -44,6 +44,11 @@ data TokenType
   | TTyRightArrow
   | TTyDoubleAmpersand
   | TTyDoublePipe
+  | TTyDoubleEquals
+  | GreaterThanEqual
+  | TTyLessThan
+  | TTyLessThanEqual
+  | TTyNotEqual
   deriving (Show, Eq)
 
 data Token
@@ -96,4 +101,10 @@ strOfTokenType TTyGreaterThan = "TTyGreaterThan"
 strOfTokenType TTyRightArrow = "TTyRightArrow"
 strOfTokenType TTyDoubleAmpersand = "TTyDoubleAmpersand"
 strOfTokenType TTyDoublePipe = "TTyDoublePipe"
+strOfTokenType TTyDoubleEquals = "TTyDoubleEquals"
+strOfTokenType GreaterThanEqual = "GreaterThanEqual"
+strOfTokenType TTyLessThanEqual = "TTyLessThanEqual"
+strOfTokenType TTyNotEqual = "TTyLessNotEqual"
+strOfTokenType TTyLessThan = "TTyLessThan"
+
 strOfTokenType _ = error "strOfTokenType: unknown TokenType"

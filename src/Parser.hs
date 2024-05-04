@@ -43,7 +43,15 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
           | otherwise = (auxLeft, auxTokens)
 
     parseEqualityExpr :: [Token] -> (Expr, [Token])
-    parseEqualityExpr tokens0 = undefined
+    parseEqualityExpr tokens0 =
+      let (lhs, tokens1) = parseAdditiveExpr tokens0 in aux tokens1 lhs
+      where
+        aux :: [Token] -> Expr -> (Expr, [Token])
+        aux auxTokens@(x:xs) auxLeft
+          | tokenType x == TTyDoubleEquals =
+            let (right, auxTokens) = parseAdditiveExpr xs
+            in aux auxTokens (ExprBinary (auxLeft, x, right))
+          | otherwise = (auxLeft, auxTokens)
 
     parseAdditiveExpr :: [Token] -> (Expr, [Token])
     parseAdditiveExpr tokens0 = undefined
