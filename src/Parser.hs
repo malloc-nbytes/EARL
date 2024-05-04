@@ -29,7 +29,22 @@ peek [] = error "peek: empty list"
 peek (x:_) = x
 
 parseExpr :: [Token] -> (Expr, [Token])
-parseExpr _ = error "unimplemented"
+parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
+  where
+    parseLogicalExpr :: [Token] -> (Expr, [Token])
+    parseLogicalExpr tokens0 = undefined
+
+    parseEqualityExpr :: [Token] -> (Expr, [Token])
+    parseEqualityExpr tokens0 = undefined
+
+    parseAdditiveExpr :: [Token] -> (Expr, [Token])
+    parseAdditiveExpr tokens0 = undefined
+
+    parseMultiplicativeExpr :: [Token] -> (Expr, [Token])
+    parseMultiplicativeExpr tokens0 = undefined
+
+    parsePrimaryExpr :: [Token] -> (Expr, [Token])
+    parsePrimaryExpr tokens0 = undefined
 
 parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt tokens =
