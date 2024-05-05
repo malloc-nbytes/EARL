@@ -1,4 +1,4 @@
 def main() -> int {
-    let s: int = greater 1 2;
+    let s: int = greater(1, 2);
     return s;
 }

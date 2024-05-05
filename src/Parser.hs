@@ -28,6 +28,19 @@ peek :: [Token] -> Token
 peek [] = error "peek: empty list"
 peek (x:_) = x
 
+-- Parses a tuple of csv expressions.
+-- Expects opening '(' and consumes
+-- the closing ')'.
+-- Example: (1+1, x, y+z, f()).
+parseCSVTuple :: [Token] -> ([Expr], [Token])
+parseCSVTuple _ = error "unimplemented"
+
+parseFuncCall :: [Token] -> (FuncCall, [Token])
+parseFuncCall tokens =
+  let (pfcId, tokens0) = expect tokens TTyIdentifier
+      (exprs, tokens1) = parseCSVTuple tokens0
+  in (FuncCall pfcId exprs, tokens1)
+
 parseExpr :: [Token] -> (Expr, [Token])
 parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
   where
@@ -83,9 +96,14 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
           | otherwise = (auxLeft, auxTokens)
 
     parsePrimaryExpr :: [Token] -> (Expr, [Token])
-    parsePrimaryExpr (x:xs) =
+    parsePrimaryExpr tokens0@(x:xs) =
       case tokenType x of
-        TTyIdentifier -> undefined
+        TTyIdentifier ->
+          case tokenType (peek xs) of
+            TTyLParen ->
+              let (funcCall, tokens1) = parseFuncCall tokens0
+              in (ExprFuncCall funcCall, tokens1)
+            _ -> (ExprTerm (TermIdent x), xs)
         TTyIntegerLiteral -> (ExprTerm (TermIntlit x), xs)
         TTyStringLiteral -> (ExprTerm (TermStrlit x), xs)
         TTyLParen ->

@@ -9,6 +9,7 @@ data Stmt
   | StmtDef DefStmt
   | StmtLet LetStmt
   | StmtBlock BlockStmt
+  | StmtExpr Expr
   deriving Show
 
 data DefStmt
@@ -32,6 +33,14 @@ data Expr
   = Expr
   | ExprTerm Term
   | ExprBinary (Expr, Token, Expr)
+  | ExprFuncCall FuncCall
+  deriving Show
+
+data FuncCall
+  = FuncCall
+  { funcCallId :: Token
+  , funcCallArgs :: [Expr]
+  }
   deriving Show
 
 data Term
