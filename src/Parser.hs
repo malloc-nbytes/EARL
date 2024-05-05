@@ -36,8 +36,21 @@ peek (x:_) = x
 -- the closing ')'.
 -- Example:
 --   (1+1, x, y+z, f())
-parseCSVTuple :: [Token] -> ([Expr], [Token])
-parseCSVTuple _ = error "unimplemented"
+parseCSVTupleExprs :: [Token] -> ([Expr], [Token])
+parseCSVTupleExprs tokens = f tokens []
+  where
+    f :: [Token] -> [Expr] -> ([Expr], [Token])
+    f [] acc = (acc, [])
+    f tokens0 acc =
+      let (expr, tokens1) = parseExpr tokens0
+      in case tokenType (peek tokens1) of
+           TTyComma ->
+             let (_, tokens2) = expect tokens1 TTyComma
+             in f tokens2 (acc ++ [expr])
+           TTyRParen ->
+             let (_, tokens2) = expect tokens1 TTyRParen
+             in (acc ++ [expr], tokens2)
+           _ -> (acc, tokens1)
 
 -- Parses a function call.
 -- Example:
@@ -45,7 +58,7 @@ parseCSVTuple _ = error "unimplemented"
 parseFuncCall :: [Token] -> (FuncCall, [Token])
 parseFuncCall tokens =
   let (pfcId, tokens0) = expect tokens TTyIdentifier
-      (exprs, tokens1) = parseCSVTuple tokens0
+      (exprs, tokens1) = parseCSVTupleExprs tokens0
   in (FuncCall pfcId exprs, tokens1)
 
 -- The outermost first level of expression parsing.
@@ -131,7 +144,7 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
         TTyStringLiteral -> (ExprTerm (TermStrlit x), xs)
         TTyLParen ->
           let (expr, tokens1) = parseExpr xs
-              (_, tokens2) = expect tokens1 TTyRBrace
+              (_, tokens2) = expect tokens1 TTyRParen
           in (expr, tokens2)
         _ -> err ErrorFatal "parsePrimaryExpr: invalid primary expression" $ Just x
 
@@ -198,13 +211,21 @@ parseStmt tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) =
 parseStmt tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) =
   let (stmt, tokens1) = parseDefStmt tokens
   in (StmtDef stmt, tokens1)
+parseStmt tokens@(Token _ TTyIdentifier _ _ _:xs) =
+  case tokenType (peek xs) of
+    TTyLParen ->
+      let (stmt, tokens1) = parseFuncCall tokens
+          (_, tokens2) = expect tokens1 TTySemiColon
+      in (StmtExpr (ExprFuncCall stmt), tokens2)
+    _ -> error "unimplemented"
 parseStmt (x:_) =
   let msg = "invalid statement"
-  in err ErrorSyntax msg (Just x)
+  in err ErrorFatal msg (Just x)
 
 parse :: [Token] -> Program
 parse tokens = Program $ f tokens
   where
     f :: [Token] -> [Stmt]
     f [] = []
+    f (Token _ TTyEof _ _ _:_) = []
     f tokens1 = let (stmt, rest) = parseStmt tokens1 in [stmt] ++ f rest

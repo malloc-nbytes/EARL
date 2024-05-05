@@ -69,18 +69,18 @@ lexFile (x@'>':xs) fp r c = [Token [x] TTyGreaterThan r c fp] ++ lexFile xs fp r
 
 lexFile ('"':xs) fp r c =
   let (str, rest) = consumeUntil xs (== '"')
-      len = c + length str + 1
+      len = c + length str
   in [Token str TTyStringLiteral r c fp] ++ lexFile rest fp r len
 
 lexFile lst@(x:xs) fp r c
   | isIgnorable x = lexFile xs fp r (c+1)
   | isDigit x =
     let (num, rest) = consumeUntil lst (not . isDigit)
-        len = c + length num  + 1
+        len = c + length num
     in [Token num TTyIntegerLiteral r c fp] ++ lexFile rest fp r len
   | isAlpha x || x == '_' =
     let (ident, rest) = consumeUntil lst (\k -> (not (isAlphaNum k)) && k /= '_')
-        len = c + (length ident) + 1
+        len = c + (length ident)
     in case isKeyword ident of
          Nothing -> case isIdType ident of
                       Nothing -> [Token ident TTyIdentifier r c fp] ++ lexFile rest fp r len

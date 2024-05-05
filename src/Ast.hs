@@ -49,3 +49,10 @@ data Term
   | TermIntlit Token
   | TermStrlit Token
   deriving Show
+
+dumpAst :: Program -> IO ()
+dumpAst (Program stmts) = f stmts
+  where
+    f :: [Stmt] -> IO ()
+    f [] = return ()
+    f _ = error "unimplemented"
