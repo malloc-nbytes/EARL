@@ -4,6 +4,9 @@ import Ast
 import Token
 import Err
 
+-- This function 'consumes' the head of
+-- a list of tokens, returning (head, tail)
+-- only if TokenType matches `tokenType head`.
 expect :: [Token] -> TokenType -> (Token, [Token])
 expect [] _ = error $ "expect: empty list"
 expect (x:xs) t
@@ -31,19 +34,27 @@ peek (x:_) = x
 -- Parses a tuple of csv expressions.
 -- Expects opening '(' and consumes
 -- the closing ')'.
--- Example: (1+1, x, y+z, f()).
+-- Example:
+--   (1+1, x, y+z, f())
 parseCSVTuple :: [Token] -> ([Expr], [Token])
 parseCSVTuple _ = error "unimplemented"
 
+-- Parses a function call.
+-- Example:
+--   f(1, x+1, g())
 parseFuncCall :: [Token] -> (FuncCall, [Token])
 parseFuncCall tokens =
   let (pfcId, tokens0) = expect tokens TTyIdentifier
       (exprs, tokens1) = parseCSVTuple tokens0
   in (FuncCall pfcId exprs, tokens1)
 
+-- The outermost first level of expression parsing.
 parseExpr :: [Token] -> (Expr, [Token])
 parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
   where
+    -- The second level of expression parsing.
+    -- Handles logical expressions such as
+    -- \||, &&, etc.
     parseLogicalExpr :: [Token] -> (Expr, [Token])
     parseLogicalExpr tokens0 =
       let (lhs, tokens1) = parseEqualityExpr tokens0 in aux tokens1 lhs
@@ -55,6 +66,9 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
             in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
+    -- The third level of expression parsing.
+    -- Handles equality expressions such as
+    -- ==, >=, !=, <, etc.
     parseEqualityExpr :: [Token] -> (Expr, [Token])
     parseEqualityExpr tokens0 =
       let (lhs, tokens1) = parseAdditiveExpr tokens0 in aux tokens1 lhs
@@ -71,6 +85,9 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
             in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
+    -- The fourth level of expression parsing.
+    -- Handles additive expressions such as
+    -- +, -.
     parseAdditiveExpr :: [Token] -> (Expr, [Token])
     parseAdditiveExpr tokens0 =
       let (lhs, tokens1) = parseMultiplicativeExpr tokens0 in aux tokens1 lhs
@@ -82,6 +99,9 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
             in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
+    -- The fifth level of expression parsing.
+    -- Handles multiplicative expressions such as
+    -- \*, /, % etc.
     parseMultiplicativeExpr :: [Token] -> (Expr, [Token])
     parseMultiplicativeExpr tokens0 =
       let (lhs, tokens1) = parsePrimaryExpr tokens0 in aux tokens1 lhs
@@ -95,6 +115,9 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
             in aux auxTokens1 (ExprBinary (auxLeft, x, right))
           | otherwise = (auxLeft, auxTokens)
 
+    -- The last level of expression parsing.
+    -- Handles terms such as identifiers,
+    -- integer literals, string literals etc.
     parsePrimaryExpr :: [Token] -> (Expr, [Token])
     parsePrimaryExpr tokens0@(x:xs) =
       case tokenType x of
@@ -112,6 +135,9 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
           in (expr, tokens2)
         _ -> err ErrorFatal "parsePrimaryExpr: invalid primary expression" $ Just x
 
+-- Parses the `let` statement.
+-- Example:
+--   let x = 3+1/2;
 parseLetStmt :: [Token] -> (LetStmt, [Token])
 parseLetStmt tokens =
   let (_, tokens1) = expect tokens (TTyKeyword KWdLet)
