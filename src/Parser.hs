@@ -37,13 +37,14 @@ peek (x:_) = x
 parseFuncCall :: [Token] -> (FuncCall, [Token])
 parseFuncCall tokens =
   let (pfcId, tokens0) = expect tokens TTyIdentifier
-      (_, tokens1) = expect tokens0 TTyLParen
-      (args, tokens2) = parseArgs tokens1 []
+      (_, tokens1@(x:_)) = expect tokens0 TTyLParen
+      (args, tokens2) = case tokenType x of
+                          TTyRParen -> ([], tokens1) -- Case of no arguments
+                          _ -> parseArgs tokens1 [] -- There are arguments
       (_, tokens3) = expect tokens2 TTyRParen
   in (FuncCall pfcId args, tokens3)
   where
     parseArgs :: [Token] -> [Expr] -> ([Expr], [Token])
-    parseArgs gaTokens@(Token _ TTyRParen _ _ _:_) acc = (acc, gaTokens) -- No arguments
     parseArgs gaTokens acc =
       let (expr, gaTokens1@(x:xs)) = parseExpr gaTokens
           acc2 = acc ++ [expr]
@@ -203,11 +204,16 @@ parseStmt tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) =
   in (StmtDef stmt, tokens1)
 parseStmt tokens@(Token _ TTyIdentifier _ _ _:xs) =
   case tokenType (peek xs) of
+
+    -- Function call for side effects
     TTyLParen ->
       let (stmt, tokens1) = parseFuncCall tokens
           (_, tokens2) = expect tokens1 TTySemiColon
       in (StmtExpr (ExprFuncCall stmt), tokens2)
-    _ -> error "unimplemented"
+
+    -- Mutating variable
+    _ ->
+      error "unimplemented"
 parseStmt (x:_) =
   let msg = "invalid statement"
   in err ErrorFatal msg (Just x)
