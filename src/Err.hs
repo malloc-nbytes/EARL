@@ -7,6 +7,8 @@ data Err
   | ErrorSyntax
   | ErrorUnreachable
   | ErrorFatal
+  | ErrorRedeclared
+  | ErrorUndeclared
   deriving Show
 
 err :: Err -> String -> Maybe Token -> a

@@ -80,7 +80,10 @@ data Token
   , tokenRow :: Int
   , tokenCol :: Int
   , tokenFp :: String
-  } deriving Show
+  } deriving (Show, Eq)
+
+instance Ord Token where
+  compare token1 token2 = compare (tokenLexeme token1) (tokenLexeme token2)
 
 strOfIdType :: IdType -> String
 strOfIdType idt = show idt

@@ -12,5 +12,6 @@ main = do
   src <- readFile filepath
   let tokens = lexFile src filepath 1 1
   let program = parse tokens
-  print program
-  interpret program
+  -- print program
+  ctx <- interpret program
+  print "EARL: Finished interpreting"
