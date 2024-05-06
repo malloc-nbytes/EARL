@@ -31,35 +31,25 @@ peek :: [Token] -> Token
 peek [] = error "peek: empty list"
 peek (x:_) = x
 
--- Parses a tuple of csv expressions.
--- Expects opening '(' and consumes
--- the closing ')'.
--- Example:
---   (1+1, x, y+z, f())
-parseCSVTupleExprs :: [Token] -> ([Expr], [Token])
-parseCSVTupleExprs tokens = f tokens []
-  where
-    f :: [Token] -> [Expr] -> ([Expr], [Token])
-    f [] acc = (acc, [])
-    f tokens0 acc =
-      let (expr, tokens1) = parseExpr tokens0
-      in case tokenType (peek tokens1) of
-           TTyComma ->
-             let (_, tokens2) = expect tokens1 TTyComma
-             in f tokens2 (acc ++ [expr])
-           TTyRParen ->
-             let (_, tokens2) = expect tokens1 TTyRParen
-             in (acc ++ [expr], tokens2)
-           _ -> (acc, tokens1)
-
 -- Parses a function call.
 -- Example:
 --   f(1, x+1, g())
 parseFuncCall :: [Token] -> (FuncCall, [Token])
 parseFuncCall tokens =
   let (pfcId, tokens0) = expect tokens TTyIdentifier
-      (exprs, tokens1) = parseCSVTupleExprs tokens0
-  in (FuncCall pfcId exprs, tokens1)
+      (_, tokens1) = expect tokens0 TTyLParen
+      (args, tokens2) = parseArgs tokens1 []
+      (_, tokens3) = expect tokens2 TTyRParen
+  in (FuncCall pfcId args, tokens3)
+  where
+    parseArgs :: [Token] -> [Expr] -> ([Expr], [Token])
+    parseArgs gaTokens@(Token _ TTyRParen _ _ _:_) acc = (acc, gaTokens) -- No arguments
+    parseArgs gaTokens acc =
+      let (expr, gaTokens1@(x:xs)) = parseExpr gaTokens
+          acc2 = acc ++ [expr]
+      in case tokenType (peek gaTokens1) of
+           TTyComma -> parseArgs xs acc2
+           _ -> (acc2, gaTokens1)
 
 -- The outermost first level of expression parsing.
 parseExpr :: [Token] -> (Expr, [Token])
