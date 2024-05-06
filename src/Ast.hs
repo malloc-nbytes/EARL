@@ -9,8 +9,16 @@ data Stmt
   | StmtDef DefStmt
   | StmtLet LetStmt
   | StmtBlock BlockStmt
+  | StmtMut MutStmt
   | StmtExpr Expr
   deriving Show
+
+data MutStmt
+  = MutStmt
+  { mutLeft :: Expr
+  , mutOp :: Token
+  , mutRight :: Expr
+  } deriving Show
 
 data DefStmt
   = DefStmt

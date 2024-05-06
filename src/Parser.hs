@@ -139,6 +139,14 @@ parseExpr tokens = let (expr, rest) = parseLogicalExpr tokens in (expr, rest)
           in (expr, tokens2)
         _ -> err ErrorFatal "parsePrimaryExpr: invalid primary expression" $ Just x
 
+parseMutStmt :: [Token] -> (MutStmt, [Token])
+parseMutStmt tokens =
+  let (left, tokens1@(x:xs)) = parseExpr tokens
+      (op, tokens2) = (x, xs)
+      (right, tokens3) = parseExpr tokens2
+      (_, tokens4) = expect tokens3 TTySemiColon
+  in (MutStmt left op right, tokens4)
+
 -- Parses the `let` statement.
 -- Example:
 --   let x = 3+1/2;
@@ -194,6 +202,13 @@ parseDefStmt tokens =
         let msg = "invalid token in definition"
         in err ErrorSyntax msg (Just x)
 
+parseSideEffectFuncCall :: [Token] -> (FuncCall, [Token])
+parseSideEffectFuncCall [] = undefined
+parseSideEffectFuncCall tokens =
+  let (stmt, tokens1) = parseFuncCall tokens
+      (_, tokens2) = expect tokens1 TTySemiColon
+  in (stmt, tokens2)
+
 parseStmt :: [Token] -> (Stmt, [Token])
 parseStmt [] = error "parseStmt: no statement"
 parseStmt tokens@(Token _ (TTyKeyword KWdLet) _ _ _:_) =
@@ -204,16 +219,12 @@ parseStmt tokens@(Token _ (TTyKeyword KWdDef) _ _ _:_) =
   in (StmtDef stmt, tokens1)
 parseStmt tokens@(Token _ TTyIdentifier _ _ _:xs) =
   case tokenType (peek xs) of
-
-    -- Function call for side effects
-    TTyLParen ->
-      let (stmt, tokens1) = parseFuncCall tokens
-          (_, tokens2) = expect tokens1 TTySemiColon
-      in (StmtExpr (ExprFuncCall stmt), tokens2)
-
-    -- Mutating variable
-    _ ->
-      error "unimplemented"
+    TTyLParen -> -- Function call for side effects
+      let (funcCall, tokens1) = parseSideEffectFuncCall tokens
+      in (StmtExpr (ExprFuncCall funcCall), tokens1)
+    _ -> -- Mutating variable
+      let (stmt, tokens1) = parseMutStmt tokens
+      in (StmtMut stmt, tokens1)
 parseStmt (x:_) =
   let msg = "invalid statement"
   in err ErrorFatal msg (Just x)

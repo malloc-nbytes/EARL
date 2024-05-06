@@ -43,10 +43,15 @@ lexFile :: [Char] -> String -> Int -> Int -> [Token]
 lexFile [] fp r c = [Token "EOF" TTyEof r c fp]
 lexFile ('\n':xs) fp r _ = lexFile xs fp (r+1) 1
 
+lexFile (x@'+':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyPlusEquals r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'-':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyMinusEquals r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'*':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyAsteriskEquals r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'/':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyForwardSlashEquals r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'%':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyPercentEquals r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'&':x'@'&':xs) fp r c = [Token ([x]++[x']) TTyDoubleAmpersand r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'|':x'@'|':xs) fp r c = [Token ([x]++[x']) TTyDoublePipe r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'-':x'@'>':xs) fp r c = [Token ([x]++[x']) TTyRightArrow r c fp] ++ lexFile xs fp r (c+1)
-lexFile (x@'>':x'@'=':xs) fp r c = [Token ([x]++[x']) GreaterThanEqual r c fp] ++ lexFile xs fp r (c+1)
+lexFile (x@'>':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyGreaterThanEqual r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'<':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyLessThanEqual r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'!':x'@'=':xs) fp r c = [Token ([x]++[x']) TTyNotEqual r c fp] ++ lexFile xs fp r (c+1)
 lexFile (x@'%':xs) fp r c = [Token [x] TTyPercent r c fp] ++ lexFile xs fp r (c+1)

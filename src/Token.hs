@@ -20,17 +20,33 @@ data IdType
 
 data TokenType
   = TokenType
+
+  -- Interpretter
   | TTyEof
+  | TTyIdType IdType
+  | TTyKeyword Keyword
+
+  -- Terms
   | TTyIdentifier
   | TTyStringLiteral
   | TTyIntegerLiteral
-  | TTyKeyword Keyword
-  | TTyIdType IdType
-  | TTyEquals
+
+  -- Binops
   | TTyPlus
   | TTyMinus
   | TTyAsterisk
   | TTyForwardSlash
+  | TTyPercent
+
+  -- Assignment
+  | TTyEquals
+  | TTyPlusEquals
+  | TTyMinusEquals
+  | TTyAsteriskEquals
+  | TTyForwardSlashEquals
+  | TTyPercentEquals
+
+  -- Parens
   | TTyLParen
   | TTyRParen
   | TTyRBracket
@@ -38,19 +54,23 @@ data TokenType
   | TTyRBrace
   | TTyLBrace
   | TTyColon
-  | TTySemiColon
-  | TTyComma
+
+  -- Comparison
   | TTyGreaterThan
-  | TTyRightArrow
+  | TTyLessThan
+  | TTyGreaterThanEqual
+  | TTyLessThanEqual
+  | TTyDoubleEquals
+  | TTyNotEqual
+
+  -- Logical
   | TTyDoubleAmpersand
   | TTyDoublePipe
-  | TTyDoubleEquals
-  | GreaterThanEqual
-  | TTyLessThan
-  | TTyLessThanEqual
-  | TTyNotEqual
-  | TTyGreaterThanEqual
-  | TTyPercent
+
+  -- Other
+  | TTyRightArrow
+  | TTySemiColon
+  | TTyComma
   deriving (Show, Eq)
 
 data Token
@@ -63,51 +83,10 @@ data Token
   } deriving Show
 
 strOfIdType :: IdType -> String
-strOfIdType IdTyInt = "IdTyInt"
-strOfIdType IdTyStr = "IdTyStr"
-strOfIdType IdTyVoid = "IdTyVoid"
-strOfIdType _ = error "strOfIdType: unknown IdType"
+strOfIdType idt = show idt
 
 strOfKeyword :: Keyword -> String
-strOfKeyword KWdIf = "KWdIf"
-strOfKeyword KWdElse = "KWdElse"
-strOfKeyword KWdThen = "KWdThen"
-strOfKeyword KWdWhile = "KWdWhile"
-strOfKeyword KWdDef = "KWdDef"
-strOfKeyword KWdReturn = "KWdReturn"
-strOfKeyword KWdLet = "KWdLet"
-strOfKeyword _ = error "strOfKeyword: unknown keyword"
+strOfKeyword kw = show kw
 
 strOfTokenType :: TokenType -> String
-strOfTokenType TTyEof = "TTyEof"
-strOfTokenType TTyIdentifier = "TTyIdentifier"
-strOfTokenType TTyStringLiteral = "TTyStringLiteral"
-strOfTokenType TTyIntegerLiteral = "TTyIntegerLiteral"
-strOfTokenType (TTyKeyword Keyword) = "TTyKeyword"
-strOfTokenType (TTyIdType IdType) = "TTyIdType"
-strOfTokenType TTyEquals = "TTyEquals"
-strOfTokenType TTyPlus = "TTyPlus"
-strOfTokenType TTyMinus = "TTyMinus"
-strOfTokenType TTyAsterisk = "TTyAsterisk"
-strOfTokenType TTyForwardSlash = "TTyForwardSlash"
-strOfTokenType TTyLParen = "TTyLParen"
-strOfTokenType TTyRParen = "TTyRParen"
-strOfTokenType TTyRBracket = "TTyRBracket"
-strOfTokenType TTyLBracket = "TTyLBracket"
-strOfTokenType TTyRBrace = "TTyRBrace"
-strOfTokenType TTyLBrace = "TTyLBrace"
-strOfTokenType TTyColon = "TTyColon"
-strOfTokenType TTySemiColon = "TTySemiColon"
-strOfTokenType TTyComma = "TTyComma"
-strOfTokenType TTyGreaterThan = "TTyGreaterThan"
-strOfTokenType TTyRightArrow = "TTyRightArrow"
-strOfTokenType TTyDoubleAmpersand = "TTyDoubleAmpersand"
-strOfTokenType TTyDoublePipe = "TTyDoublePipe"
-strOfTokenType TTyDoubleEquals = "TTyDoubleEquals"
-strOfTokenType GreaterThanEqual = "GreaterThanEqual"
-strOfTokenType TTyLessThanEqual = "TTyLessThanEqual"
-strOfTokenType TTyNotEqual = "TTyLessNotEqual"
-strOfTokenType TTyLessThan = "TTyLessThan"
-strOfTokenType TTyGreaterThanEqual = "TTyGreaterThanEqual"
-strOfTokenType TTyPercent = "TTyPercent"
-strOfTokenType _ = error "strOfTokenType: unknown TokenType"
+strOfTokenType t = show t
