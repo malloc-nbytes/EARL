@@ -10,7 +10,7 @@ data Variable a
   = Variable
   { variableId :: Token
   , variableTy :: IdType
-  , variableEval :: a
+  , variableEval :: Either a String
   } deriving Show
 
 newtype Ctx a
@@ -51,36 +51,36 @@ isVarInScope t ctx = case getVarFromScope t ctx of
                          Just _ -> True
                          Nothing -> False
 
-addVarToScope :: Token -> IdType -> a -> Ctx a -> Ctx a
+addVarToScope :: Token -> IdType -> Either a String -> Ctx a -> Ctx a
 addVarToScope token varType eval (Ctx tbl) = Ctx $ case tbl of
     [] -> [Map.singleton token var]
     (x:xs) -> Map.insert token var x : xs
   where
     var = Variable token varType eval
 
-evaluateExpr :: Num a => Expr -> Ctx a -> a
+evaluateExpr :: Num a => Expr -> Ctx a -> Either a String
 evaluateExpr expr ctx =
   case expr of
     ExprTerm (TermIdent tok) ->
       case getVarFromScope tok ctx of
-        Just var -> variableEval var
+        Just var ->
+          case variableEval var of
+            Left numVal -> Left numVal
+            Right strVal -> Right strVal
         Nothing -> err ErrorUndeclared ("variable " ++ tokenLexeme tok ++ " is not defined") $ Just tok
     ExprTerm (TermIntlit tok) ->
-      let intVal = read (tokenLexeme tok) :: Int -- Extract integer value from token
-      in fromIntegral intVal -- Convert to the appropriate type if needed and return
-    ExprTerm (TermStrlit tok) -> undefined
+      let intVal = read (tokenLexeme tok) :: Int
+      in Left $ fromIntegral intVal
+    ExprTerm (TermStrlit tok) -> Right $ tokenLexeme tok
     ExprBinary (left, op, right) -> undefined
     ExprFuncCall funcId -> undefined
     _ -> error "evaluateExpr: invalid expression"
 
 evaluateLetStmt :: Num a => LetStmt -> Ctx a -> Ctx a
 evaluateLetStmt (LetStmt elsId elsTy elsExpr) ctx =
-  if isVarInScope elsId ctx then
-    let msg = "variable " ++ tokenLexeme elsId ++ " is already defined"
-    in err ErrorRedeclared msg $ Just elsId
-  else
-    let expr = evaluateExpr elsExpr ctx
-    in addVarToScope elsId elsTy expr ctx
+  case evaluateExpr elsExpr ctx of
+    Left numVal -> addVarToScope elsId elsTy (Left numVal) ctx
+    Right strVal -> addVarToScope elsId elsTy (Right strVal) ctx
 
 evaluateStmt :: Num a => Stmt -> Ctx a -> IO (Ctx a)
 evaluateStmt stmt ctx = do

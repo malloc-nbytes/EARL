@@ -11,7 +11,8 @@ main :: IO ()
 main = do
   src <- readFile filepath
   let tokens = lexFile src filepath 1 1
+  dumpTokens tokens
   let program = parse tokens
   -- print program
-  ctx <- interpret program
+  -- ctx <- interpret program
   print "EARL: Finished interpreting"

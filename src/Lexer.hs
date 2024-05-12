@@ -74,7 +74,7 @@ lexFile (x@'>':xs) fp r c = [Token [x] TTyGreaterThan r c fp] ++ lexFile xs fp r
 lexFile ('"':xs) fp r c =
   let (str, rest) = consumeUntil xs (== '"')
       len = c + length str
-  in [Token str TTyStringLiteral r c fp] ++ lexFile rest fp r len
+  in [Token str TTyStringLiteral r c fp] ++ lexFile (tail rest) fp r len
 
 lexFile lst@(x:xs) fp r c
   | isIgnorable x = lexFile xs fp r (c+1)
