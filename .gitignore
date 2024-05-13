@@ -1,4 +1,5 @@
 main
+*.swp
 
 # Prerequisites
 *.d
