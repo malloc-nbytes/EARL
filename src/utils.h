@@ -25,6 +25,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 
 // File: utils.h
 // Description:
@@ -35,6 +36,11 @@
 #else
 #define DEBUG_ASSERT(expr) ((void)0)
 #endif
+
+#define NOOP(x) ((void)(x))
+#define UNIMPLEMENTED(msg, rettype)            \
+  fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
+  return rettype
 
 void *utils_safe_malloc(size_t bytes);
 int utils_streq(const char *s1, const char *s2);

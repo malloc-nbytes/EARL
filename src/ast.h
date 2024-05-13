@@ -116,9 +116,7 @@ struct stmt_let {
 
 struct stmt_def {
   struct token *id;
-  /* struct token *args; */
-  /* struct token *arg_types; */
-  struct pair(struct token *, struct token *) args;
+  struct pair(struct token *id, struct token *type) args;
   struct token *rettype;
   struct stmt_block *block;
 };
@@ -127,7 +125,11 @@ struct program {
   struct vector(struct stmt *) stmts;
 };
 
-struct stmt_def *stmt_def_alloc(struct token *id);
+struct stmt_def *stmt_def_alloc(struct token *id, 
+                                struct pair(struct token *id, struct token *type) args,
+                                struct token *rettype, 
+                                struct stmt_block *block);
+
 struct stmt_let *stmt_let_alloc();
 struct stmt_block *stmt_block_alloc();
 struct stmt_mut *stmt_mut_alloc();
