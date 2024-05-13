@@ -23,8 +23,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "utils.h"
 #include "parser.h"
 #include "lexer.h"
+
+char *RESERVED[] = {
+  "let",
+  "def",
+  "return",
+};
+
+char *VARTYPES[] = {
+  "int",
+  "str",
+};
+
+const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 
 void
 usage(char *progname)
@@ -32,6 +46,34 @@ usage(char *progname)
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "  %s <filepath>\n", progname);
   exit(EXIT_FAILURE);
+}
+
+// TODO: change from char ** to vector(char ***).
+char **
+create_keywords(size_t *keywords_len)
+{
+  size_t cap = 1;
+  char **keywords = utils_safe_malloc(sizeof(char *)*cap);
+
+  // Populate keywords with reserved words.
+  for (size_t i = 0; i < sizeof(RESERVED)/sizeof(*RESERVED); ++i) {
+    if (*keywords_len >= cap) {
+      cap *= 2;
+      keywords = realloc(keywords, sizeof(char *)*cap);
+    }
+    keywords[(*keywords_len)++] = RESERVED[i];
+  }
+
+  // Populate keywords with variable types.
+  for (size_t i = 0; i < VARTYPES_LEN; ++i) {
+    if (*keywords_len >= cap) {
+      cap *= 2;
+      keywords = realloc(keywords, sizeof(char *)*cap);
+    }
+    keywords[(*keywords_len)++] = VARTYPES[i];
+  }
+
+  return keywords;
 }
 
 int
@@ -43,20 +85,16 @@ main(int argc, char **argv)
 
   char *filepath = *(++argv);
 
-  char *keywords[] = {
-    "let",
-    "def",
-    "return",
-    "int"
-  };
-  size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
+  size_t keywords_len = 0;
+  char **keywords = create_keywords(&keywords_len);
   char *comment = "#";
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
-  // lexer_dump(&lexer);
-  (void)parse(&lexer);
+  lexer_dump(&lexer);
+  // (void)parse(&lexer);
 
   lexer_free(&lexer);
+  free(keywords);
 
   return 0;
 }

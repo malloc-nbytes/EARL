@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "utils.h"
 #include "arena.h"
 #include "token.h"
 #include "lexer.h"
@@ -136,4 +137,16 @@ token_alloc(struct lexer *lexer,
   tok->next = NULL;
 
   return tok;
+}
+
+int
+is_vartype(char *s)
+{
+  for (size_t i = 0; i < VARTYPES_LEN; ++i) {
+    if (utils_streq(s, VARTYPES[i])) {
+      return 1;
+    }
+  }
+
+  return 0;
 }

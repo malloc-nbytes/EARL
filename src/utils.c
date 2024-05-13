@@ -38,7 +38,7 @@ utils_safe_malloc(size_t bytes)
 }
 
 int
-utils_streq(char *s1, char *s2)
+utils_streq(const char *s1, const char *s2)
 {
   return strcmp(s1, s2) == 0;
 }

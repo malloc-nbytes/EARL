@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "token.h"
 #include "ast.h"
 #include "parser.h"
 

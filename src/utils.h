@@ -30,6 +30,6 @@
 //   A bunch of helpful utility functions.
 
 void *utils_safe_malloc(size_t bytes);
-int utils_streq(char *s1, char *s2);
+int utils_streq(const char *s1, const char *s2);
 
 #endif // UTILS_H
