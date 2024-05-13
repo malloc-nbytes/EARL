@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "err.h"
+#include "notify.h"
 #include "utils.h"
 
 void *

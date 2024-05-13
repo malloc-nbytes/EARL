@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "err.h"
+#include "notify.h"
 #include "utils.h"
 #include "parser.h"
 #include "lexer.h"
