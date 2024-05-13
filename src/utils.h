@@ -23,11 +23,18 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <assert.h>
 #include <stddef.h>
 
 // File: utils.h
 // Description:
 //   A bunch of helpful utility functions.
+
+#ifdef DEBUG
+#define DEBUG_ASSERT(expr) assert(expr)
+#else
+#define DEBUG_ASSERT(expr) ((void)0)
+#endif
 
 void *utils_safe_malloc(size_t bytes);
 int utils_streq(const char *s1, const char *s2);

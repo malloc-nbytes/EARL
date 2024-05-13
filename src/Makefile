@@ -14,7 +14,7 @@ $(error invalid PROFILE. Must be set to either "debug" or "release")
 endif
 endif
 
-SRCS = main.c lexer.c token.c parser.c arena.c vector.c utils.c
+SRCS = main.c lexer.c token.c parser.c arena.c ast.c vector.c utils.c
 OBJS = $(SRCS:.c=.o)
 DEPS = lexer.h token.h parser.h arena.h ast.h vector.h utils.h notify.h
 

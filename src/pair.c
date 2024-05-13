@@ -23,14 +23,13 @@
 #include <assert.h>
 #include <string.h>
 
+#include "utils.h"
 #include "pair.h"
 
 void
 pair_make_unique(struct pair *pair, void *fst, void *snd)
 {
-#ifdef DEBUG
-  assert(pair->fst && pair->snd);
-#endif
+  DEBUG_ASSERT(pair->fst && pair->snd);
   (void)memcpy(pair->fst, fst, pair->fst_stride);
   (void)memcpy(pair->snd, snd, pair->snd_stride);
 }
@@ -38,18 +37,14 @@ pair_make_unique(struct pair *pair, void *fst, void *snd)
 void *
 pair_fst(struct pair *p)
 {
-#ifdef DEBUG
-  assert(p->fst);
-#endif
+  DEBUG_ASSERT(pair->fst);
   return p->fst;
 }
 
 void *
 pair_snd(struct pair *p)
 {
-#ifdef DEBUG
-  assert(p->snd);
-#endif
+  DEBUG_ASSERT(pair->snd);
   return p->snd;
 }
 

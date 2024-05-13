@@ -127,11 +127,10 @@ struct program {
   struct vector(struct stmt *) stmts;
 };
 
-/* struct stmt_def *stmt_def_alloc(struct token *id); */
-/* struct stmt_let *stmt_let_alloc(); */
-/* struct stmt_block *stmt_block_alloc(); */
-/* struct stmt_mut *stmt_mut_alloc(); */
-/* struct expr *expr_alloc(); */
-
+struct stmt_def *stmt_def_alloc(struct token *id);
+struct stmt_let *stmt_let_alloc();
+struct stmt_block *stmt_block_alloc();
+struct stmt_mut *stmt_mut_alloc();
+struct expr *expr_alloc();
 
 #endif // AST_H
