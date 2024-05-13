@@ -26,6 +26,6 @@
 #include "lexer.h"
 #include "ast.h"
 
-struct program parse(struct lexer lexer);
+struct program parse(struct lexer *lexer);
 
 #endif // PARSER_H

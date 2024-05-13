@@ -20,15 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
 #include "ast.h"
 #include "parser.h"
 
-struct program
-parse(struct lexer lexer)
+struct vector(struct stmt *)
+parse_stmts(struct lexer *lexer)
 {
-  (void)lexer;
-  assert(0 && "parse: unimplemented");
+  struct vector(struct stmt *) stmts = vector_create(struct stmt *);
+
+  struct token *curtok = NULL;
+  while ((curtok = lexer_next(lexer)) != NULL) {
+    switch (curtok->type) {
+      case TOKENTYPE_KEYWORD: {
+        if (utils_streq(curtok->lexeme, "let")) {
+          ;
+        }
+        else if (utils_streq(curtok->lexeme, "def")) {
+          ;
+        }
+        break;
+      }
+      case TOKENTYPE_IDENT: {
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  return stmts;
+}
+
+struct program
+parse(struct lexer *lexer)
+{
+  return (struct program) {
+    .stmts = parse_stmts(lexer),
+  };
 }

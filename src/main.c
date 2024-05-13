@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "parser.h"
 #include "lexer.h"
 
 void
@@ -43,6 +44,7 @@ main(int argc, char **argv)
   char *filepath = *(++argv);
 
   char *keywords[] = {
+    "let",
     "def",
     "return",
     "int"
@@ -51,7 +53,10 @@ main(int argc, char **argv)
   char *comment = "#";
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
-  lexer_dump(&lexer);
+  // lexer_dump(&lexer);
+  (void)parse(&lexer);
+
+  lexer_free(&lexer);
 
   return 0;
 }
