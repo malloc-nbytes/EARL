@@ -44,7 +44,7 @@ const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 void
 usage(char *progname)
 {
-  ERRARGS(ERR_USAGE, "%s <filepath>", progname);
+  NOTIFY_ERRARGS(ERR_USAGE, "%s <filepath>", progname);
 }
 
 // TODO: change from char ** to vector(char ***).
@@ -89,8 +89,8 @@ main(int argc, char **argv)
   char *comment = "#";
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
-  lexer_dump(&lexer);
-  // (void)parse(&lexer);
+  // lexer_dump(&lexer);
+  (void)parse(&lexer);
 
   lexer_free(&lexer);
   free(keywords);

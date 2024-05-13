@@ -32,7 +32,7 @@ utils_safe_malloc(size_t bytes)
 {
   void *p = malloc(bytes);
   if (!p) {
-    ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
+    NOTIFY_ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
   }
   return p;
 }

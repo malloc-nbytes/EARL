@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "notify.h"
 #include "token.h"
 #include "ast.h"
 #include "parser.h"
@@ -51,7 +52,7 @@ parse_stmts(struct lexer *lexer)
       case TOKENTYPE_EOF:
         break;
       default: {
-        break;
+        NOTIFY_ERRARGS(ERR_FATAL, "parse_stmts found an unkown statement of type ID (%d).", curtok->type);
       }
     }
   }

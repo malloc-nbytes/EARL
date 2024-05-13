@@ -1,27 +1,26 @@
-#ifndef ERR_H
-#define ERR_H
+#ifndef NOTIFY_H
+#define NOTIFY_H
 
 #include <stdio.h>
 #include <stdlib.h>
 
-enum ERR_TYPE {
-  ERR_FATAL = 0,
-  ERR_SYNTAX,
-  ERR_UNKNOWN,
-  ERR_USAGE,
+enum NOTIFY_ERR_TYPE {
+  NOTIFY_ERR_FATAL = 0,
+  NOTIFY_ERR_SYNTAX,
+  NOTIFY_ERR_UNKNOWN,
+  NOTIFY_ERR_USAGE,
 };
 
-#define ERR(etype, msg)                              \
-  do {                                               \
+#define NOTIFY_ERR(etype, msg)                         \
+  do {                                                 \
     fprintf(stderr, "EARL: [" #etype "] " msg "\n");   \
-    exit(EXIT_FAILURE);                              \
+    exit(EXIT_FAILURE);                                \
   } while (0)
 
-#define ERRARGS(etype, msg, ...)                                         \
-  do {                                                                   \
+#define NOTIFY_ERRARGS(etype, msg, ...)                               \
+  do {                                                                \
     fprintf(stderr, "EARL: [" #etype "] " msg "\n", ##__VA_ARGS__);   \
-    exit(EXIT_FAILURE);                                                  \
+    exit(EXIT_FAILURE);                                               \
   } while (0)
 
-
-#endif // ERR_H
+#endif // NOTIFY_H
