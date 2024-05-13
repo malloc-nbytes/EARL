@@ -130,9 +130,14 @@ struct stmt_def *stmt_def_alloc(struct token *id,
                                 struct token *rettype, 
                                 struct stmt_block *block);
 
-struct stmt_let *stmt_let_alloc();
-struct stmt_block *stmt_block_alloc();
+struct stmt_let *stmt_let_alloc(struct token *id, 
+                                struct token *type, 
+                                struct token *expr);
+
+struct stmt_block *stmt_block_alloc(struct vector(struct stmt *) stmts);
+
 struct stmt_mut *stmt_mut_alloc();
+
 struct expr *expr_alloc();
 
 #endif // AST_H
