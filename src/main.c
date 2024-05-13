@@ -25,23 +25,32 @@
 
 #include "lexer.h"
 
-#define FILEPATH "../input.txt"
+void
+usage(char *progname)
+{
+  fprintf(stderr, "Usage:\n");
+  fprintf(stderr, "  %s <filepath>\n", progname);
+  exit(EXIT_FAILURE);
+}
 
 int
-main(void)
+main(int argc, char **argv)
 {
+  if (argc != 2) {
+    usage(*argv);
+  }
+
+  char *filepath = *(++argv);
+
   char *keywords[] = {
     "def",
     "return",
     "int"
   };
-
   size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
-
   char *comment = "#";
 
-  struct lexer lexer = lex_file(FILEPATH, keywords, keywords_len, comment);
-
+  struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
   lexer_dump(&lexer);
 
   return 0;

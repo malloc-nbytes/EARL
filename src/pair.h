@@ -25,6 +25,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "utils.h"
 
 struct pair {
   uint8_t *fst;
@@ -35,9 +36,9 @@ struct pair {
 
 #define pair_create(t1, t2)                     \
   (struct pair) {                               \
-    .fst = malloc(sizeof(t1)),                  \
+    .fst = utils_safe_malloc(sizeof(t1)),       \
     .fst_stride = sizeof(t1),                   \
-    .snd = malloc(sizeof(t2)),                  \
+    .snd = utils_safe_malloc(sizeof(t2)),       \
     .snd_stride = sizeof(t2),                   \
   }
 

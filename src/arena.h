@@ -20,6 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: arena.c
+// Description:
+//   Provides an API for an arena allocator. This is
+//   helpful because we have a "pool" of memory that
+//   we can use and then free it all at once.
+
 #ifndef ARENA_H
 #define ARENA_H
 
@@ -28,8 +34,14 @@
 
 struct arena;
 
-uint8_t *arena_alloc(struct arena *arena, size_t bytes);
-void arena_free(struct arena *arena);
+// Create a new arena allocator with capacity as `cap`.
 struct arena *arena_create(size_t cap);
+
+// Allocate `bytes` number of bytes in an arena.
+uint8_t *arena_alloc(struct arena *arena, size_t bytes);
+
+// Free the memory inside of `arena` AS WELL AS
+// THE ARENA ITSELF.
+void arena_free(struct arena *arena);
 
 #endif // ARENA_H

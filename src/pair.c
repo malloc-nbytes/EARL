@@ -28,7 +28,9 @@
 void
 pair_make_unique(struct pair *pair, void *fst, void *snd)
 {
+#ifdef DEBUG
   assert(pair->fst && pair->snd);
+#endif
   (void)memcpy(pair->fst, fst, pair->fst_stride);
   (void)memcpy(pair->snd, snd, pair->snd_stride);
 }
@@ -36,14 +38,18 @@ pair_make_unique(struct pair *pair, void *fst, void *snd)
 void *
 pair_fst(struct pair *p)
 {
+#ifdef DEBUG
   assert(p->fst);
+#endif
   return p->fst;
 }
 
 void *
 pair_snd(struct pair *p)
 {
+#ifdef DEBUG
   assert(p->snd);
+#endif
   return p->snd;
 }
 

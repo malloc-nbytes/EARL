@@ -23,6 +23,7 @@
 #include <stdlib.h>
 
 #include "arena.h"
+#include "utils.h"
 
 struct arena {
   uint8_t *mem;
@@ -52,8 +53,8 @@ arena_free(struct arena *arena)
 struct arena *
 arena_create(size_t cap)
 {
-  struct arena *arena = malloc(sizeof(struct arena));
-  arena->mem = malloc(cap);
+  struct arena *arena = utils_safe_malloc(sizeof(struct arena));
+  arena->mem = utils_safe_malloc(cap);
   arena->cap = cap;
   arena->len = 0;
   return arena;

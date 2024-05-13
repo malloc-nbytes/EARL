@@ -29,6 +29,7 @@
 
 #include "token.h"
 #include "lexer.h"
+#include "utils.h"
 #include "arena.h"
 
 size_t
@@ -122,7 +123,7 @@ file_to_str(char *filepath) {
   }
 
   size_t ulength = (size_t)length;
-  char *buffer = malloc(ulength + 1);
+  char *buffer = utils_safe_malloc(ulength+1);
 
   if (buffer == NULL || fread(buffer, 1, ulength, f) != ulength) {
     free(buffer);
@@ -187,18 +188,6 @@ try_comment(char *src, char *comment)
 
   return 0;
 }
-
-/* char * */
-/* try_multiline_comment(char *src, char *comment_start, char *comment_end, size_t *row, size_t *col) */
-/* { */
-/*   assert(0 && "try_multiline_comment: unimplemented"); */
-
-/*   if (strncmp(src, comment_start, strlen(comment_start)) == 0) { */
-/*     return find_multiline_comment_end(src, comment_end, row, col); */
-/*   } */
-
-/*   return 0; */
-/* } */
 
 #define SYMTIDX(c)                              \
   ((c == '(') ? 0 :                             \
@@ -297,8 +286,10 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     TOKENTYPE_COLON,
   };
 
+#ifdef DEBUG
   assert_symtbl_inorder(symtbl);
   assert_symtidx_inorder();
+#endif
 
   char *src = file_to_str(filepath);
   struct lexer lexer = (struct lexer) {

@@ -20,38 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
 
-#include "vector.h"
+#include "utils.h"
 
 void *
-vector_at(struct vector *v, size_t i)
+utils_safe_malloc(size_t bytes)
 {
-#ifdef DEBUG
-  assert(i < v->len);
-#endif
-  return v->data + i * v->stride;
-}
-
-void
-vector_append(struct vector *v, void *data)
-{
-  size_t s = v->stride;
-  if (v->len >= v->cap) {
-    v->cap *= 2;
-    v->data = realloc(v->data, v->cap*s);
+  void *p = malloc(bytes);
+  if (!p) {
+    fprintf(stderr, "malloc failed\n");
+    exit(EXIT_FAILURE);
   }
-  (void)memcpy(v->data + v->len*s, (uint8_t *)data, s);
-  v->len++;
-}
-
-void
-vector_free(struct vector *v)
-{
-  free(v->data);
-  v->data = NULL;
-  v->len = v->cap = v->stride = 0;
+  return p;
 }

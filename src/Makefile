@@ -1,9 +1,14 @@
 CC = cc
-CFLAGS = -ggdb -Wextra -Wall -pedantic
+CFLAGS = -std=c99 -Wextra -Wall -pedantic
+DEBUG ?= 1
 
-SRCS = main.c vector.c lexer.c token.c parser.c arena.c
+ifeq ($(DEBUG), 1)
+CFLAGS += -ggdb -DDEBUG -Wswitch-default
+endif
+
+SRCS = main.c lexer.c token.c parser.c arena.c vector.c utils.c
 OBJS = $(SRCS:.c=.o)
-DEPS = lexer.h token.h parser.h arena.h ast.h vector.h
+DEPS = lexer.h token.h parser.h arena.h ast.h vector.h utils.h
 
 TARGET = main
 

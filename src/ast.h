@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: ast.h
+// Description:
+//   Provides a set of nodes for the abstract
+//   syntax tree. This also defines the grammar.
+
 #ifndef AST_H
 #define AST_H
 

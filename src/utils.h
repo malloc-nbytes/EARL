@@ -20,38 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
+#ifndef UTILS_H
+#define UTILS_H
 
-#include "vector.h"
+#include <stddef.h>
 
-void *
-vector_at(struct vector *v, size_t i)
-{
-#ifdef DEBUG
-  assert(i < v->len);
-#endif
-  return v->data + i * v->stride;
-}
+// File: utils.h
+// Description:
+//   A bunch of helpful utility functions.
 
-void
-vector_append(struct vector *v, void *data)
-{
-  size_t s = v->stride;
-  if (v->len >= v->cap) {
-    v->cap *= 2;
-    v->data = realloc(v->data, v->cap*s);
-  }
-  (void)memcpy(v->data + v->len*s, (uint8_t *)data, s);
-  v->len++;
-}
+void *utils_safe_malloc(size_t bytes);
 
-void
-vector_free(struct vector *v)
-{
-  free(v->data);
-  v->data = NULL;
-  v->len = v->cap = v->stride = 0;
-}
+#endif // UTILS_H

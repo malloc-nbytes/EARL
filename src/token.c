@@ -90,9 +90,11 @@ tokentype_to_str(enum token_type type)
     return "TILDE";
   case TOKENTYPE_COLON:
     return "COLON";
+#ifdef DEBUG
   case TOKENTYPE_SYM_LEN:
     assert(0 && "should not use TOKENTYPE_SYM_LEN");
     return NULL;
+#endif
   case TOKENTYPE_EOF:
     return "EOF";
   case TOKENTYPE_INTLIT:
@@ -106,7 +108,9 @@ tokentype_to_str(enum token_type type)
   case TOKENTYPE_KEYWORD:
     return "KEYWORD";
   default:
+#ifdef DEBUG
     assert(0 && "unknown type");
+#endif
     return NULL;
   }
   return NULL;
