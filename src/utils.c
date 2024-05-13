@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "err.h"
 #include "utils.h"
 
 void *
@@ -31,8 +32,7 @@ utils_safe_malloc(size_t bytes)
 {
   void *p = malloc(bytes);
   if (!p) {
-    fprintf(stderr, "malloc failed\n");
-    exit(EXIT_FAILURE);
+    ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
   }
   return p;
 }

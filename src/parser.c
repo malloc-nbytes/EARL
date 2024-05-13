@@ -48,6 +48,8 @@ parse_stmts(struct lexer *lexer)
       case TOKENTYPE_IDENT: {
         break;
       }
+      case TOKENTYPE_EOF:
+        break;
       default: {
         break;
       }

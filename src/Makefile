@@ -16,7 +16,7 @@ endif
 
 SRCS = main.c lexer.c token.c parser.c arena.c vector.c utils.c
 OBJS = $(SRCS:.c=.o)
-DEPS = lexer.h token.h parser.h arena.h ast.h vector.h utils.h
+DEPS = lexer.h token.h parser.h arena.h ast.h vector.h utils.h notify.h
 
 TARGET = main
 

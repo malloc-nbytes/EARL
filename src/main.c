@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "err.h"
 #include "utils.h"
 #include "parser.h"
 #include "lexer.h"
@@ -43,9 +44,7 @@ const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 void
 usage(char *progname)
 {
-  fprintf(stderr, "Usage:\n");
-  fprintf(stderr, "  %s <filepath>\n", progname);
-  exit(EXIT_FAILURE);
+  ERRARGS(ERR_USAGE, "%s <filepath>", progname);
 }
 
 // TODO: change from char ** to vector(char ***).
