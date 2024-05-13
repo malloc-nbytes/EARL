@@ -1,9 +1,17 @@
 CC = cc
-CFLAGS = -std=c99 -Wextra -Wall -pedantic
-DEBUG ?= 1
+CFLAGS = -std=c99 -pedantic
+PROFILE ?= debug
 
-ifeq ($(DEBUG), 1)
-CFLAGS += -ggdb -DDEBUG -Wswitch-default
+ifeq ($(filter clean, $(MAKECMDGOALS)),)
+ifeq ($(PROFILE), debug)
+CFLAGS += -ggdb -DDEBUG -Wextra -Wall -Werror -Wswitch-default
+$(info Building in debugging mode. Switch off with `make PROFILE=release`)
+else ifeq ($(PROFILE), release)
+CFLAGS += -O3
+$(info Building in release mode.)
+else
+$(error invalid PROFILE. Must be set to either "debug" or "release")
+endif
 endif
 
 SRCS = main.c lexer.c token.c parser.c arena.c vector.c utils.c
