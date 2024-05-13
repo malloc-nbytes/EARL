@@ -126,23 +126,23 @@ struct program {
 };
 
 /*** STATEMENT CONSTRUCTORS ***/
-struct stmt *stmt_alloc(enum stmt_type type, void *stmt);
-struct stmt_def *stmt_def_alloc(struct token *id,
+struct stmt*     stmt_alloc(enum stmt_type type, void *stmt);
+struct stmt_def* stmt_def_alloc(struct token *id,
                                 struct pair(struct token *id, struct token *type) args,
                                 struct token *rettype,
                                 struct stmt_block *block);
 
-struct stmt_let *stmt_let_alloc(struct token *id,
+struct stmt_let* stmt_let_alloc(struct token *id,
                                 struct token *type,
                                 struct token *expr);
 
-struct stmt_block *stmt_block_alloc(struct vector(struct stmt *) stmts);
-struct stmt_mut *stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
+struct stmt_block* stmt_block_alloc(struct vector(struct stmt *) stmts);
+struct stmt_mut*   stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
 
 /*** EXPRESSION CONSTRUCTORS ***/
-struct expr *expr_alloc(enum expr_type type, void *expr);
-struct expr_funccall *expr_funccall_alloc(struct token *id, struct vector(struct expr *) args);
-struct expr_term *expr_term_alloc(enum expr_term_type type, struct token *term);
-struct expr_binary *expr_binary_alloc(struct expr lhs, struct token *op, struct expr rhs);
+struct expr*          expr_alloc(enum expr_type type, void *expr);
+struct expr_funccall* expr_funccall_alloc(struct token *id, struct vector(struct expr *) args);
+struct expr_term*     expr_term_alloc(enum expr_term_type type, struct token *term);
+struct expr_binary*   expr_binary_alloc(struct expr lhs, struct token *op, struct expr rhs);
 
 #endif // AST_H
