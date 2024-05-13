@@ -28,6 +28,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include "pair.h"
 #include "token.h"
 #include "vector.h"
 
@@ -115,8 +116,9 @@ struct stmt_let {
 
 struct stmt_def {
   struct token *id;
-  struct token *args;
-  struct token *arg_types;
+  /* struct token *args; */
+  /* struct token *arg_types; */
+  struct pair(struct token *, struct token *) args;
   struct token *rettype;
   struct stmt_block *block;
 };

@@ -51,6 +51,8 @@ struct vector {
     .stride = sizeof(type),                  \
   };
 
+#define vector_unsafe_at(v, idx, cast) (*((cast *)((v)->data + (idx) * (v)->stride)))
+
 // ONLY FOR EXPLICITNESS.
 // Only used when instantiating
 // a new vector. This allows to
