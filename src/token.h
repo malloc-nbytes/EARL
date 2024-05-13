@@ -27,11 +27,6 @@
 
 struct lexer;
 
-#define KWD_LET "let"
-#define KWD_DEF "def"
-#define KWD_INT "int"
-#define KWD_STR "str"
-
 extern char *VARTYPES[];
 extern const size_t VARTYPES_LEN;
 
@@ -90,6 +85,6 @@ struct token *token_alloc(struct lexer *lexer,
                           enum token_type type,
                           size_t row, size_t col, char *fp);
 
-int is_vartype(char *s);
+int token_is_vartype(char *s);
 
 #endif // TOKEN_H

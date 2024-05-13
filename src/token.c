@@ -140,7 +140,7 @@ token_alloc(struct lexer *lexer,
 }
 
 int
-is_vartype(char *s)
+token_is_vartype(char *s)
 {
   for (size_t i = 0; i < VARTYPES_LEN; ++i) {
     if (utils_streq(s, VARTYPES[i])) {
