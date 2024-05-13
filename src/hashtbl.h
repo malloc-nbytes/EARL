@@ -31,24 +31,26 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct __hashtbl_node {
-  uint8_t *key;
-  uint8_t *value;
-  struct __hashtbl_node *left;
-  struct __hashtbl_node *right;
-};
+struct hashtbl;
 
-struct hashtbl {
-  struct __hashtbl_node **tbl;                   // The table of nodes
-  unsigned (*hashfunc)(void *key, size_t bytes); // Hash function needed
-  int (*keycompar)(void *x, void *y);            // Function for comparing keys
-  size_t len;
-  size_t cap;
-};
+#define hashtbl_unsafe_create(key_ty, value_ty, hashf, keyc)    \
+  (struct hashtbl) {                                            \
+    .tbl = NULL,                                                \
+    .hashfunc = hashf,                                          \
+    .keycompar = keyc,                                          \
+    .key_stride = sizeof(key_ty),                               \
+    .value_stride = sizeof(value_ty),                           \
+    .len = 0,                                                   \
+    .cap = 0,                                                   \
+  }
 
-struct hashtbl hashtbl_create(unsigned (*hashfunc)(void *key, size_t bytes),
-                              int (*keycompar)(void *x, void *y));
+#define hashtbl(ty1, ty2) hashtbl
 
-void hashtbl_insert(struct hashtbl *ht, void *data, size_t bytes);
+struct hashtbl
+hashtbl_create(size_t key_stride, size_t value_stride,
+               unsigned (*hashfunc)(void *key, size_t bytes),
+               int (*keycompar)(void *x, void *y));
+
+void hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes);
 
 #endif // HASHTABLE_H
