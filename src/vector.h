@@ -63,7 +63,7 @@ struct vector {
 // Example:
 //   struct vector(int) v = vector_create(int);
 //   struct F { struct vector(int) v, };
-#define vector(...) vector
+#define vector(type) vector
 
 // Appends `data` to the END of the vector.
 void vector_append(struct vector *v, void *data);
