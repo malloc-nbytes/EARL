@@ -7,29 +7,22 @@ Evaluate And Run Language
 
 ** Debug Mode
 
-By default, the project is compiled in /"debug"/ mode. This enables the following flags:
+By default, the project is compiled in "debug" mode. This enables the following flags:
 
 #+begin_quote
-*default* =-std=c99 -pedantic=
+*default* =-std=c99=, =-pedantic=
 
-*+* =-ggdb -DDEBUG -Wextra -Wall -Werror -Wswitch-default=
+*+* =-ggdb=, =-DDEBUG=, =-Wextra=, =-Wall=, =-Werror=, =-Wswitch-default=
 #+end_quote
 
-All assertions and code sections that are inside of
-#+begin_src c
-  #ifdef DEBUG
-  ...
-  #endif
-#+end_src
-
-will trigger. Issue the following to continue:
+All assertions and code sections that are inside of =#ifdef DEBUG= will trigger. Issue the following to continue:
 #+begin_src bash
   make
 #+end_src
 
 ** Release Mode
 
-The /"release"/ mode enables the following flags:
+The "release" mode enables the following flags:
 
 #+begin_quote
 *default* =-std=c99=, =-pedantic=
