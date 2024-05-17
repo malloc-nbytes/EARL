@@ -56,7 +56,7 @@ vector_free(struct vector *v)
 }
 
 void
-vector_remove_at(struct vector *v, size_t idx)
+vector_rm_at(struct vector *v, size_t idx)
 {
   DEBUG_ASSERT(idx < v->len);
   size_t s = v->stride;

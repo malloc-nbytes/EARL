@@ -55,6 +55,13 @@ struct vector {
 
 #define vector_unsafe_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
 
+#define vector_debug_dump(v, formatstr, type)   \
+  do { \
+    for (size_t i = 0; i < v.len; ++i) { \
+      printf(formatstr, vector_unsafe_at(v, i, type));  \
+    } \
+  } while (0)
+
 // ONLY FOR EXPLICITNESS.
 // Only used when instantiating
 // a new vector. This allows to
@@ -79,6 +86,6 @@ void *vector_at(struct vector *v, size_t i);
 void vector_free(struct vector *v);
 
 // Remove an element at a specific index.
-void vector_remove_at(struct vector *v, size_t idx);
+void vector_rm_at(struct vector *v, size_t idx);
 
 #endif // VECTOR_H

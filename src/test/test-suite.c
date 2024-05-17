@@ -10,6 +10,7 @@ int main(void) {
   RUN_TEST(test_vector_instantiation());
   RUN_TEST(test_vector_insert_elems());
   RUN_TEST(test_vector_large_elements());
+  RUN_TEST(test_vector_rm_at());
 
   RUN_TEST(test_pair_instantiation());
   RUN_TEST(test_pair_same_types_ints());
