@@ -33,7 +33,7 @@
 
 struct hashtbl;
 
-#define hashtbl_unsafe_create(key_ty, value_ty, hashf, keyc)    \
+#define hashtbl_create2(key_ty, value_ty, hashf, keyc)          \
   (struct hashtbl) {                                            \
     .tbl = NULL,                                                \
     .hashfunc = hashf,                                          \
@@ -46,10 +46,9 @@ struct hashtbl;
 
 #define hashtbl(ty1, ty2) hashtbl
 
-struct hashtbl
-hashtbl_create(size_t key_stride, size_t value_stride,
-               unsigned (*hashfunc)(void *key, size_t bytes),
-               int (*keycompar)(void *x, void *y));
+struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
+                              unsigned (*hashfunc)(void *key, size_t bytes),
+                              int (*keycompar)(void *x, void *y));
 
 void hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes);
 

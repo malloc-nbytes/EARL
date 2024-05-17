@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "hashtbl.h"
@@ -41,11 +42,17 @@ struct hashtbl {
   // Function for comparing keys
   int (*keycompar)(void *x, void *y);
 
-  size_t key_stride;   // The size of each key in bytes.
-  size_t value_stride; // The size of each value in bytes.
+  // The size of each key in bytes.
+  size_t key_stride;
 
-  size_t len; // The number of nodes in the tbl.
-  size_t cap; // The current capacity of the tbl.
+  // The size of each value in bytes.
+  size_t value_stride;
+
+  // The number of nodes in the tbl;
+  size_t len;
+
+  // The capacity of the tbl;
+  size_t cap;
 };
 
 struct hashtbl_node *
@@ -88,6 +95,29 @@ find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
   return it;
 }
 
+static void
+try_resize(struct hashtbl(any, any) *ht)
+{
+  if ((float)ht->len / (float)ht->cap > 0.5f) {
+    size_t new_cap = ht->cap*2;
+    struct hashtbl_node **new_tbl = utils_safe_malloc(sizeof(struct hashtbl_node *)*new_cap);
+
+    for (size_t i = 0; i < ht->cap; ++i) {
+      struct hashtbl_node *tmp = ht->tbl[i];
+      while (tmp) {
+        struct hashtbl_node *next = tmp->next;
+        unsigned newidx = ht->hashfunc(tmp->key, ht->key_stride)%new_cap;
+        new_tbl[newidx] = tmp;
+        tmp = next;
+      }
+    }
+
+    free(ht->tbl);
+    ht->tbl = new_tbl;
+    ht->cap = new_cap;
+  }
+}
+
 void
 hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes)
 {
@@ -99,5 +129,9 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes)
     ht->tbl[idx] = hashtbl_node_alloc(ht, ht->tbl[idx], key, value);
     ht->len++;
   }
-}
+  else {
+    (void)memcpy(p->value, value, ht->key_stride);
+  }
 
+  try_resize(ht);
+}
