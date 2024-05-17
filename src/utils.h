@@ -20,6 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: utils.h
+// Description:
+//   A bunch of helpful utility functions.
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -27,10 +31,9 @@
 #include <stddef.h>
 #include <stdio.h>
 
-// File: utils.h
-// Description:
-//   A bunch of helpful utility functions.
-
+// Debug assertions that are taken out
+// when compiling in "release" mode.
+// In "debug" mode, they will function.
 #ifdef DEBUG
 #define DEBUG_ASSERT(expr) assert(expr)
 #else
@@ -38,11 +41,18 @@
 #endif
 
 #define NOOP(x) ((void)(x))
+
 #define UNIMPLEMENTED(msg, rettype)            \
   fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
   return rettype
 
+// A malloc wrapper that checks if
+// malloc failed.
 void *utils_safe_malloc(size_t bytes);
+
+// A wrapper for strcmp that checks if the
+// strings are equal. Returns 1 on success,
+// and 0 on failure.
 int utils_streq(const char *s1, const char *s2);
 
 #endif // UTILS_H
