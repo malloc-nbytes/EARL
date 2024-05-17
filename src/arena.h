@@ -20,11 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: arena.c
+// File: arena.h
 // Description:
 //   Provides an API for an arena allocator. This is
 //   helpful because we have a "pool" of memory that
-//   we can use and then free it all at once.
+//   we can use and then free it all at once. If
+//   unfamiliar with arena allocators,
+//   https://en.wikipedia.org/wiki/Region-based_memory_management
 
 #ifndef ARENA_H
 #define ARENA_H

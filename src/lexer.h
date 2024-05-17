@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: lexer.h
+// Description:
+//   The API for lexical analysis of
+//   a document.
+
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -33,10 +38,12 @@ struct lexer {
   struct arena *arena;
 };
 
-void lexer_append(struct lexer *lexer, struct token *tok);
-struct token *lexer_next(struct lexer *lexer);
-void lexer_dump(struct lexer *lexer);
 struct lexer lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment);
+struct token *lexer_next(struct lexer *lexer);
+void lexer_append(struct lexer *lexer, struct token *tok);
 void lexer_free(struct lexer *lexer);
+
+// For debugging.
+void lexer_dump(struct lexer *lexer);
 
 #endif // LEXER_H

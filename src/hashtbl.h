@@ -23,7 +23,7 @@
 // File: hashtable.h
 // Description:
 //   Provides an API for a generic hashtable
-//   utilizing tree-like adjacency lists.
+//   utilizing adjacency lists.
 
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
