@@ -54,3 +54,12 @@ vector_free(struct vector *v)
   v->data = NULL;
   v->len = v->cap = v->stride = 0;
 }
+
+void
+vector_remove_at(struct vector *v, size_t idx)
+{
+  DEBUG_ASSERT(idx < v->len);
+  size_t s = v->stride;
+  (void)memmove(v->data + idx*s, v->data + (idx+1)*s, (v->len - idx - 1)*s);
+  v->len--;
+}

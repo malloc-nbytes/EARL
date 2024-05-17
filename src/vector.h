@@ -78,4 +78,7 @@ void *vector_at(struct vector *v, size_t i);
 // all member variables.
 void vector_free(struct vector *v);
 
+// Remove an element at a specific index.
+void vector_remove_at(struct vector *v, size_t idx);
+
 #endif // VECTOR_H
