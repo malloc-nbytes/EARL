@@ -32,11 +32,11 @@ will trigger. Issue the following to continue:
 The /"release"/ mode enables the following flags:
 
 #+begin_quote
-*default* =-std=c99 -pedantic=
+*default* =-std=c99=, =-pedantic=
 
-*+* =-march=native -O2 pipe=
+*+* =-march=native=, =-O2=, =pipe=
 
-*-* =-ggdb -DDEBUG -Wextra -Wall -Werror -Wswitch-default=
+*-* =-ggdb=, =-DDEBUG=, =-Wextra=, =-Wall=, =-Werror=, =-Wswitch-default=
 #+end_quote
 
 It also disables any code sections inside of =#ifdef DEBUG=.
