@@ -1,4 +1,7 @@
 # EARL
 Evaluate And Run Language
 
-[[./imgs/EARL.jpeg]]
+[[./imgs/EARL-resized.jpeg]]
+
+
+
