@@ -25,7 +25,7 @@ All assertions and code sections that are inside of =#ifdef DEBUG= will trigger.
 The "release" mode enables the following flags:
 
 #+begin_quote
-*default* *=-std=c99=, =-pedantic=*
+*default* =-std=c99=, =-pedantic=
 
 *+++* =-march=native=, =-O2=, =pipe=
 
@@ -33,7 +33,7 @@ The "release" mode enables the following flags:
 #+end_quote
 
 It also disables any code sections inside of =#ifdef DEBUG=.
-Issue the following to enable /"release"/ mode:
+Issue the following to enable "release" mode:
 
 #+begin_src bash
   make PROFILE=release
