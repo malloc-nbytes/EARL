@@ -27,9 +27,6 @@
 
 struct lexer;
 
-extern char *VARTYPES[];
-extern const size_t VARTYPES_LEN;
-
 enum token_type {
   TOKENTYPE_LPAREN = 0,
   TOKENTYPE_RPAREN,

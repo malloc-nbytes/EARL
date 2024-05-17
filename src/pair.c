@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "utils.h"
@@ -37,14 +38,14 @@ pair_make_unique(struct pair *pair, void *fst, void *snd)
 void *
 pair_fst(struct pair *p)
 {
-  DEBUG_ASSERT(pair->fst);
+  DEBUG_ASSERT(p->fst);
   return p->fst;
 }
 
 void *
 pair_snd(struct pair *p)
 {
-  DEBUG_ASSERT(pair->snd);
+  DEBUG_ASSERT(p->snd);
   return p->snd;
 }
 
