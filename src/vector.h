@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "utils.h"
+
 struct vector {
   uint8_t *data; // The underlying "generic" data.
   size_t len;

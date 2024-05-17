@@ -25,14 +25,13 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "utils.h"
 #include "vector.h"
 
 void *
 vector_at(struct vector *v, size_t i)
 {
-#ifdef DEBUG
-  assert(i < v->len);
-#endif
+  DEBUG_ASSERT(i < v->len);
   return v->data + i * v->stride;
 }
 
