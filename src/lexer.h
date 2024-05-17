@@ -32,18 +32,38 @@
 #include "token.h"
 
 struct lexer {
+  // The head of the linked list.
   struct token *hd;
+
+  // The tail of the linked list.
   struct token *tl;
-  size_t len;
+
+  // All memory that is allocated during
+  // the lexing process is alloc'd through
+  // an arena allocater. See `arena.h`.
   struct arena *arena;
+
+  // Number of tokens lex'd.
+  size_t len;
 };
 
+// Produces a lexer with a list of tokens from the source
+// code of `filepath`. Any prevalent keywords should be provided
+// in `keywords`. The identifier(s) for a SINGLE LINE comment is
+// provided as `comment`.
 struct lexer lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment);
+
+// Get the next token in the lexer.
 struct token *lexer_next(struct lexer *lexer);
+
+// Append a token in the lexer.
 void lexer_append(struct lexer *lexer, struct token *tok);
+
+// Free the underlying memory in the lexer.
 void lexer_free(struct lexer *lexer);
 
-// For debugging.
+// For debugging. Print the tokens
+// in a human-readable format.
 void lexer_dump(struct lexer *lexer);
 
 #endif // LEXER_H

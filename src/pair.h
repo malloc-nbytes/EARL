@@ -20,6 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: pair.h
+// Description:
+//   Provides an API for a `pair` container.
+//   A pair contains two generic values.
+
 #ifndef PAIR_H
 #define PAIR_H
 
@@ -30,10 +35,12 @@
 struct pair {
   uint8_t *fst;
   size_t fst_stride;
+
   uint8_t *snd;
   size_t snd_stride;
 };
 
+// Create a pair from two types given.
 #define pair_create(t1, t2)                     \
   (struct pair) {                               \
     .fst = utils_safe_malloc(sizeof(t1)),       \
@@ -42,14 +49,37 @@ struct pair {
     .snd_stride = sizeof(t2),                   \
   }
 
+// Syntax sugar when creating a new pair.
+// Allows to display the types that it holds.
+// Nothing happens if this is not used, or if
+// the values are not correct.
 #define pair(t1, t2) pair
 
+// Get the first value in the pair. It will attempt
+// to cast to the type that is given.
 #define pair_unsafe_fst(p, cast) (*((cast*)(p).fst))
+
+// Get the second value in the pair. It will attempt
+// to cast to the type that is given.
 #define pair_unsafe_snd(p, cast) (*((cast*)(p).snd))
 
+// Insert two values into the pair.
+// NOTE: Only up to pair->fst_stride will be
+// copied into pair->fst, and likewise, pair->snd
+// will only copy pair->snd_stride bytes.
 void pair_make_unique(struct pair *pair, void *fst, void *snd);
+
+// Get the first value in the pair.
+// NOTE: It is up to the caller to dereference
+// it as needed.
 void *pair_fst(struct pair *p);
+
+// Get the second value in the pair.
+// NOTE: It is up to the caller to dereference
+// it as needed.
 void *pair_snd(struct pair *p);
+
+// Free the underlying memory in the pair.
 void pair_free(struct pair *p);
 
 #endif // PAIR_H
