@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -std=c99 -pedantic
+CFLAGS = -std=c99 -pedantic -Wno-gnu-zero-variadic-macro-arguments
 PROFILE ?= debug
 INC_DIRS = -I. -Itest
 
