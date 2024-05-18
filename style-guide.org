@@ -1,0 +1,55 @@
+#+TITLE: Style Guide
+
+* Functions
+
+- Functions should be formatted as such:
+
+#+begin_example
+<return type>
+<name>(<params>)
+{
+  body...
+}
+#+end_example
+
+- All indents should be 2 spaces.
+- Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.
+- Always put a comment after =#endif= with what it is ending.
+- *Do not have 1 line =if= statements.*
+- All functions should have the corrosponding data structure it is working with before the name.
+  For example, if I am making a =append= function for a =vector=, the name should be along the lines
+  of =vector_append=.
+
+* Structs
+
+#+begin_example
+struct <name> {
+  ...
+}
+#+end_example
+
+- All structs must start with =struct= and then (lowercase) =<name>=.
+- Typedefs for struct names are not allowed as of now.
+
+#+begin_example
+struct my_vector {
+  ...
+}
+#+end_example
+
+* Misc
+
+- All =if=, =for=, =while= etc. should have brackets (the left bracket should be on the same line as the statement).
+- =+=, =-=, =*=, =/=, etc. does not need whitespace, but == should.
+- Lines have a soft limit of 85 characters.
+- =typedef='d types should have =_t= appended to it.
+  Example:
+
+#+begin_example
+typedef int my_type_t;
+#+end_example
+
+- All variable, function, struct, and macro names should be snake_case.
+- All file names have a hyphen ('-') to separate words.
+- *Remove unnecessary trailing whitespace*.
+- *Disable auto-formatters*.
