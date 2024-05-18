@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "notify.h"
 #include "token.h"
 #include "lexer.h"
 #include "utils.h"
@@ -151,11 +152,22 @@ struct token *
 lexer_next(struct lexer *lexer)
 {
   struct token *tok = lexer->hd;
-  if (tok) {
-    lexer->hd = tok->next;
-    lexer->len--;
+  if (!tok) {
+    NOTIFY_ERR(NOTIFY_ERR_NOTOKENS, "lexer_next: no more tokens");
   }
+  lexer->hd = tok->next;
+  lexer->len--;
   return tok;
+}
+
+void
+lexer_discard(struct lexer *lexer)
+{
+  if (!lexer->hd) {
+    NOTIFY_ERR(NOTIFY_ERR_NOTOKENS, "lexer_discard: no more tokens");
+  }
+  lexer->hd = lexer->hd->next;
+  lexer->len--;
 }
 
 void
@@ -230,6 +242,18 @@ assert_symtbl_inorder(int *symtbl)
       exit(EXIT_FAILURE);
     }
   }
+}
+
+struct token *
+lexer_peek(struct lexer *lexer, size_t n)
+{
+  struct token *it = lexer->hd;
+
+  while (it && n != 0) {
+    it = it->next;
+  }
+
+  return it;
 }
 
 void

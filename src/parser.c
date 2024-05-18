@@ -20,19 +20,113 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "notify.h"
 #include "token.h"
 #include "ast.h"
 #include "parser.h"
 
+/********** HELPERS **********/
+
+struct token *
+expect(struct lexer *lexer, enum token_type exp)
+{
+  struct token *hd = lexer_next(lexer);
+  if (hd->type != exp) {
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect: expected %d but got %d", exp, hd->type);
+  }
+  return hd;
+}
+
+struct token *
+expect_keyword(struct lexer *lexer, const char *keyword)
+{
+  struct token *hd = lexer_next(lexer);
+  if (hd->type != TOKENTYPE_KEYWORD || utils_streq(hd->lexeme, keyword)) {
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_keyword: expected keyword %s but got %s", keyword, hd->lexeme);
+  }
+  return hd;
+}
+
+struct token *
+expect_type(struct lexer *lexer)
+{
+  NOOP(lexer);
+  UNIMPLEMENTED("expect_type", NULL);
+}
+
+/********** PARSERS **********/
+
+struct vector(struct pair(struct token *id, struct token *type))
+parse_def_stmt_args(struct lexer *lexer)
+{
+  assert(0 && "parse_def_stmt_args: unimplemented");
+}
+
+struct stmt_block *
+parse_stmt_block(struct lexer *lexer)
+{
+  NOOP(lexer);
+  UNIMPLEMENTED("parse_stmt_block", NULL);
+}
+
+struct stmt_def *
+parse_stmt_def(struct lexer *lexer)
+{
+  // def
+  lexer_discard(lexer);
+
+  // identifier
+  struct token *id = expect(lexer, TOKENTYPE_IDENT);
+
+  // (...)
+  (void)expect(lexer, TOKENTYPE_LPAREN);
+  struct vector(struct pair(struct token *id, struct token *type)) args = parse_def_stmt_args(lexer);
+  (void)expect(lexer, TOKENTYPE_RPAREN);
+
+  // ->
+  (void)expect(lexer, TOKENTYPE_MINUS);
+  (void)expect(lexer, TOKENTYPE_GREATERTHAN);
+
+  // type
+  struct token *rettype = expect_type(lexer);
+
+  // { ... }
+  struct stmt_block *block = parse_stmt_block(lexer);
+
+  return stmt_def_alloc(id, args, rettype, block);
+}
+
+struct stmt *
+parse_stmt(struct lexer *lexer)
+{
+  // NOTE: cannot switch on lexer_next as this
+  // will make parsing expression very difficult.
+  switch (lexer->hd->type) {
+  case TOKENTYPE_KEYWORD: {
+    if (utils_streq(lexer->hd->lexeme, "def")) {
+      ;
+    }
+    else if (utils_streq(lexer->hd->lexeme, "let")) {
+      ;
+    }
+  } break;
+
+  case TOKENTYPE_IDENT: {
+  } break;
+
+  default:
+    NOTIFY_ERRARGS(ERR_FATAL, "parse_stmt found an unkown statement of type ID (%d).", lexer->hd->type);
+  }
+}
+
 struct vector(struct stmt *)
 parse_stmts(struct lexer *lexer)
 {
-  struct vector(struct stmt *) stmts = vector_create(struct stmt *);
+  struct vector stmts = vector_create(struct stmt *);
 
   struct token *curtok = NULL;
   while ((curtok = lexer_next(lexer)) != NULL) {

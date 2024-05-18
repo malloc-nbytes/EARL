@@ -2,6 +2,19 @@ main
 *.swp
 test-suite
 
+# Configure
+*.m4
+*.cache
+build-aux
+config.log
+config.status
+configure
+configure~
+.deps
+.dirstamp
+Makefile
+Makefile.in
+
 # Prerequisites
 *.d
 

@@ -77,6 +77,7 @@ struct token {
 };
 
 char *tokentype_to_str(enum token_type type);
+
 struct token *token_alloc(struct lexer *lexer,
                           char *start, size_t len,
                           enum token_type type,

@@ -36,6 +36,7 @@ enum NOTIFY_ERR_TYPE {
   NOTIFY_ERR_SYNTAX,
   NOTIFY_ERR_UNKNOWN,
   NOTIFY_ERR_USAGE,
+  NOTIFY_ERR_NOTOKENS,
 };
 
 #define NOTIFY_ERR(etype, msg)                         \

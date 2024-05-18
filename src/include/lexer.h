@@ -56,11 +56,21 @@ struct lexer lex_file(char *filepath, char **keywords, size_t keywords_len, char
 // Get the next token in the lexer.
 struct token *lexer_next(struct lexer *lexer);
 
+// Discard the current `hd` of the lexer
+// and advance to the next token.
+void lexer_discard(struct lexer *lexer);
+
 // Append a token in the lexer.
 void lexer_append(struct lexer *lexer, struct token *tok);
 
 // Free the underlying memory in the lexer.
 void lexer_free(struct lexer *lexer);
+
+// Peek the `n`th token in the lexer. While this returns
+// a pointer to the token, the ownership to the caller
+// should only happen with lexer_next. Otherwise, there
+// will be NULL in the middle of the linked list of tokens.
+struct token *lexer_peek(struct lexer *lexer, size_t n);
 
 // For debugging. Print the tokens
 // in a human-readable format.
