@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "test-suite.h"
 #include "vector.h"
 
@@ -61,6 +63,34 @@ test_vector_rm_at(void)
 
   vector_rm_at(&v, 8);
   TEST_ASSERT_EQ(*(int *)vector_at(&v, v.len-1), 8);
+
+  vector_free(&v);
+
+  return TEST_OK;
+}
+
+test_errno_t
+test_vector_can_hold_strings(void)
+{
+  struct vector(char **) v = vector_create(char **);
+
+  char *strs[] = {
+    "hello world!",
+    "foo bar baz",
+    "a longer string of a lot of words."
+  };
+
+  size_t n = sizeof(strs)/sizeof(*strs);
+
+  for (size_t i = 0; i < n; ++i) {
+    vector_append(&v, &strs[i]);
+  }
+
+  for (size_t i = 0; i < n; ++i) {
+    if (strcmp(vector_unsafe_at(v, i, char *), strs[i]) != 0) {
+      return TEST_GENERIC_FAILURE;
+    }
+  }
 
   vector_free(&v);
 

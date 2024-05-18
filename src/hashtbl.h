@@ -33,7 +33,7 @@
 
 struct hashtbl;
 
-#define hashtbl_create2(key_ty, value_ty, hashf, keyc)          \
+#define hashtbl_unsafe_create(key_ty, value_ty, hashf, keyc)    \
   (struct hashtbl) {                                            \
     .tbl = NULL,                                                \
     .hashfunc = hashf,                                          \

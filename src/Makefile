@@ -8,7 +8,7 @@ ifeq ($(PROFILE), debug)
 CFLAGS += -ggdb -DDEBUG -Wextra -Wall -Werror -Wswitch-default
 $(info Building in debugging mode. Switch off with `make PROFILE=release`)
 else ifeq ($(PROFILE), release)
-CFLAGS += -march=native -O2 pipe
+CFLAGS += -march=native -O2
 $(info Building in release mode.)
 else
 $(error invalid PROFILE. Must be set to either "debug" or "release")

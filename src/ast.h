@@ -116,7 +116,7 @@ struct stmt_let {
 
 struct stmt_def {
   struct token *id;
-  struct pair(struct token *id, struct token *type) args;
+  struct vector(struct pair(struct token *id, struct token *type)) args;
   struct token *rettype;
   struct stmt_block *block;
 };

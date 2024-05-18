@@ -39,7 +39,9 @@ struct hashtbl {
   // Hash function needed
   unsigned (*hashfunc)(void *key, size_t bytes);
 
-  // Function for comparing keys
+  // Function for comparing keys.
+  // TODO: is this really needed? or
+  // would memcmp be enough?
   int (*keycompar)(void *x, void *y);
 
   // The size of each key in bytes.
