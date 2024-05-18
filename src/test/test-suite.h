@@ -14,6 +14,8 @@ typedef int test_errno_t;
 #define TEST_ASSERT_NOT_FAILURE      5
 #define TEST_ASSERT_EQ_FAILURE       6
 #define TEST_ASSERT_NEQ_FAILURE      7
+#define TEST_ASSERT_STREQ_FAILURE    8
+#define TEST_ASSERT_STRNEQ_FAILURE   9
 
 #define TEST_ASSERT_TRUE(expr)                  \
   do {                                          \
@@ -57,21 +59,35 @@ typedef int test_errno_t;
     }                                           \
   } while (0)
 
+#define TEST_ASSERT_STREQ(lhs, rhs)             \
+  do {                                          \
+    if (strcmp(lhs, rhs) != 0) {                \
+      return TEST_ASSERT_STREQ_FAILURE;         \
+    }                                           \
+  } while (0)
+
+#define TEST_ASSERT_STRNEQ(lhs, rhs)            \
+  do {                                          \
+    if (strcmp(lhs, rhs) != 0) {                \
+      return TEST_ASSERT_STRNEQ_FAILURE;        \
+    }                                           \
+  } while (0)
+
 // NOTE: RUN_TEST requires that two
 // integers namely `pass` & `fail` be
 // defined before calling this macro, as it
 // will attempt to modify them.
-#define RUN_TEST(func)                          \
-  do {                                          \
-    printf("[test] %s ... ", #func);            \
-    test_errno_t k;                             \
-    if ((k = func) != TEST_OK) {                \
-      ++fail;                                   \
-      printf("FAILED (%d)\n", k);               \
-    } else {                                    \
-      ++pass;                                   \
-      printf("ok\n");                           \
-    }                                           \
+#define RUN_TEST(func)                                                  \
+  do {                                                                  \
+    printf("[test] %s ... ", #func);                                    \
+    test_errno_t k;                                                     \
+    if ((k = func) != TEST_OK) {                                        \
+      ++fail;                                                           \
+      printf("\033[0;31mFAILED\033[0m (\033[031m%d\033[0m)\n", k);      \
+    } else {                                                            \
+      ++pass;                                                           \
+      printf("\033[0;32mOK\033[0m\n");                                  \
+    }                                                                   \
   } while (0)
 
 #endif // TEST_SUITE_H

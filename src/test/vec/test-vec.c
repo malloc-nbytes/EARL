@@ -46,7 +46,7 @@ test_vector_large_elements(void)
 
   vector_free(&v);
 
-  return TEST_OK;
+  return TEST_GENERIC_FAILURE;
 }
 
 test_errno_t
@@ -87,9 +87,7 @@ test_vector_can_hold_strings(void)
   }
 
   for (size_t i = 0; i < n; ++i) {
-    if (strcmp(vector_unsafe_at(v, i, char *), strs[i]) != 0) {
-      return TEST_GENERIC_FAILURE;
-    }
+    TEST_ASSERT_STREQ(vector_unsafe_at(v, i, char *), strs[i]);
   }
 
   vector_free(&v);
