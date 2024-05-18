@@ -57,15 +57,17 @@ struct pair {
 
 // Get the first value in the pair. It will attempt
 // to cast to the type that is given.
-
 #define pair_deref_fst(p, cast) (*((cast*)(p).fst))
 
 // Get the second value in the pair. It will attempt
 // to cast to the type that is given.
 #define pair_deref_snd(p, cast) (*((cast*)(p).snd))
 
+// Create a new pair by explicitly provide the
+// sizes of the two values it will hold.
 struct pair pair_create(size_t fst_stride, size_t snd_stride);
 
+// Create a new pair with values and their sizes already determined.
 struct pair pair_from(void *fst, size_t fst_stride, void *snd, size_t snd_stride);
 
 // Insert two values into the pair.
