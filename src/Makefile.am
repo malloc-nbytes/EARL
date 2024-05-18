@@ -8,7 +8,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 # Add the 'test' directory
 SUBDIRS = test
 
-EXTRA_CFLAGS = -Wall -Wextra -Wextra
+# EXTRA_CFLAGS = -std=c99 -pedantic -ggdb -Wall -Wextra -Wextra -DDEBUG
+
+AM_CFLAGS = -O2 -Wall -Werror -Wextra -pedantic -std=c99 -g -DDEBUG
 
 # Define a phony target 'test' to build and run test_suite
 .PHONY: test
