@@ -30,3 +30,5 @@ test_pair_same_types_ints(void)
 
   return TEST_OK;
 }
+
+// TODO: Test that a pair is not empty

@@ -1,4 +1,4 @@
-#ifndef TEST_SUITE_H
+#indef TEST_SUITE_H
 #define TEST_SUITE_H
 
 #include <assert.h>
