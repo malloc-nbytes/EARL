@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef int test_errno_t;
 
@@ -16,6 +17,7 @@ typedef int test_errno_t;
 #define TEST_ASSERT_NEQ_FAILURE      7
 #define TEST_ASSERT_STREQ_FAILURE    8
 #define TEST_ASSERT_STRNEQ_FAILURE   9
+#define TEST_ASSERT_MEMEQ_FAILURE    10
 
 #define TEST_ASSERT_TRUE(expr)                  \
   do {                                          \
@@ -69,6 +71,13 @@ typedef int test_errno_t;
 #define TEST_ASSERT_STRNEQ(lhs, rhs)            \
   do {                                          \
     if (strcmp(lhs, rhs) != 0) {                \
+      return TEST_ASSERT_STRNEQ_FAILURE;        \
+    }                                           \
+  } while (0)
+
+#define TEST_ASSERT_MEMEQ(lhs, rhs, bytes)      \
+  do {                                          \
+    if (memcmp(lhs, rhs, bytes) != 0) {         \
       return TEST_ASSERT_STRNEQ_FAILURE;        \
     }                                           \
   } while (0)

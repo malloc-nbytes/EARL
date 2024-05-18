@@ -53,7 +53,7 @@ struct vector {
     .stride = sizeof(type),                  \
   };
 
-#define vector_unsafe_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
+#define vector_deref_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
 
 #define vector_debug_dump(v, formatstr, type)   \
   do { \

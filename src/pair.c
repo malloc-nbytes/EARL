@@ -27,6 +27,24 @@
 #include "utils.h"
 #include "pair.h"
 
+struct pair
+pair_create(size_t fst_stride, size_t snd_stride)
+{
+  struct pair p;
+  p.fst_stride = fst_stride;
+  p.snd_stride = snd_stride;
+  p.fst = p.snd = NULL;
+  return p;
+}
+
+struct pair
+pair_from(void *fst, size_t fst_stride, void *snd, size_t snd_stride)
+{
+  struct pair p = pair_create(fst_stride, snd_stride);
+  pair_make_unique(&p, fst, snd);
+  return p;
+}
+
 void
 pair_make_unique(struct pair *pair, void *fst, void *snd)
 {
