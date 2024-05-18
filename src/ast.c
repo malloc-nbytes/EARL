@@ -23,83 +23,127 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "notify.h"
 #include "ast.h"
 
 struct stmt *
 stmt_alloc(enum stmt_type type, void *stmt)
 {
-  NOOP(type);
-  NOOP(stmt);
-  UNIMPLEMENTED("stmt_alloc", NULL);
+  struct stmt *s = utils_safe_malloc(sizeof(struct stmt));
+  s->type = type;
+
+  switch (type) {
+  case STMT_TYPE_DEF:
+    s->stmt.def = (struct stmt_def *)stmt;
+    break;
+  case STMT_TYPE_LET:
+    s->stmt.let = (struct stmt_let *)stmt;
+    break;
+  case STMT_TYPE_BLOCK:
+    s->stmt.block = (struct stmt_block *)stmt;
+    break;
+  case STMT_TYPE_MUT:
+    s->stmt.mut = (struct stmt_mut *)stmt;
+    break;
+  case STMT_TYPE_STMT_EXPR:
+    s->stmt.expr = (struct expr *)stmt;
+    break;
+  default:
+     NOTIFY_ERRARGS(NOTIFY_ERR_UNKNOWN, "stmt_alloc: unkown type: %d", type);
+  }
+
+  return s;
 }
 
 struct stmt_def *
 stmt_def_alloc(struct token *id,
-               struct pair(struct token *id, struct token *type) args,
+               struct vector(struct pair(struct token *id, struct token *type)) args,
                struct token *rettype,
                struct stmt_block *block)
 {
-  NOOP(id);
-  NOOP(args);
-  NOOP(rettype);
-  NOOP(block);
-  UNIMPLEMENTED("stmt_def_alloc", NULL);
+  struct stmt_def *s = utils_safe_malloc(sizeof(struct stmt_def));
+  s->id = id;
+  s->args = args;
+  s->rettype = rettype;
+  s->block = block;
+  return s;
 }
 
 struct stmt_let *
-stmt_let_alloc(struct token *id, struct token *type, struct token *expr)
+stmt_let_alloc(struct token *id, struct token *type, struct expr *expr)
 {
-  NOOP(id);
-  NOOP(type);
-  NOOP(expr);
-  UNIMPLEMENTED("stmt_let_alloc", NULL);
+  struct stmt_let *s = utils_safe_malloc(sizeof(struct stmt_let));
+  s->id = id;
+  s->type = type;
+  s->expr = expr;
+  return s;
 }
 
 struct stmt_block *
 stmt_block_alloc(struct vector(struct stmt *) stmts)
 {
-  NOOP(stmts);
-  UNIMPLEMENTED("stmt_block_alloc", NULL);
+  struct stmt_block *s = utils_safe_malloc(sizeof(struct stmt_block));
+  s->stmts = stmts;
+  return s;
 }
 
 struct stmt_mut *
 stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs)
 {
-  NOOP(lhs);
-  NOOP(op);
-  NOOP(rhs);
-  UNIMPLEMENTED("stmt_mut_alloc", NULL);
+  struct stmt_mut *s = utils_safe_malloc(sizeof(struct stmt_mut));
+  s->left = lhs;
+  s->op = op;
+  s->right = rhs;
+  return s;
 }
 
 struct expr_term *
 expr_term_alloc(enum expr_term_type type, struct token *term)
 {
-  NOOP(type);
-  NOOP(term);
-  UNIMPLEMENTED("expr_term_alloc", NULL);
+  struct expr_term *e = utils_safe_malloc(sizeof(struct expr_term));
+  e->type = type;
+  e->term = term;
+  return e;
 }
 
 struct expr_binary *
-expr_binary_alloc(struct expr lhs, struct token *op, struct expr rhs)
+expr_binary_alloc(struct expr *lhs, struct token *op, struct expr *rhs)
 {
-  NOOP(lhs);
-  NOOP(op);
-  NOOP(rhs);
-  UNIMPLEMENTED("expr_binary_alloc", NULL);
+  struct expr_binary *e = utils_safe_malloc(sizeof(struct expr_binary));
+  e->lhs = lhs;
+  e->op = op;
+  e->rhs = rhs;
+  return e;
 }
 
 struct expr *
 expr_alloc(enum expr_type type, void *expr)
 {
-  NOOP(type);
-  NOOP(expr);
-  UNIMPLEMENTED("expr_alloc", NULL);
+  struct expr *e = utils_safe_malloc(sizeof(struct expr));
+  e->type = type;
+
+  switch (type) {
+  case EXPR_TYPE_TERM:
+    e->expr.term = (struct expr_term *)expr;
+    break;
+  case EXPR_TYPE_BINARY:
+    e->expr.binary = (struct expr_binary *)expr;
+    break;
+  case EXPR_TYPE_FUNCCALL:
+    e->expr.funccall = (struct expr_funccall *)expr;
+    break;
+  default:
+    NOTIFY_ERRARGS(NOTIFY_ERR_UNKNOWN, "expr_alloc: unkown type: %d", type);
+  }
+
+  return e;
 }
 
 struct expr_funccall *
 expr_funccall_alloc(struct token *id, struct vector(struct expr *) args)
 {
-  NOOP(id);
-  NOOP(args);
-  UNIMPLEMENTED("expr_funccall_alloc", NULL);
+  struct expr_funccall *e = utils_safe_malloc(sizeof(struct expr_funccall));
+  e->id = id;
+  e->args = args;
+  return e;
 }

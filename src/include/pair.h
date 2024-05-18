@@ -57,6 +57,7 @@ struct pair {
 
 // Get the first value in the pair. It will attempt
 // to cast to the type that is given.
+
 #define pair_unsafe_fst(p, cast) (*((cast*)(p).fst))
 
 // Get the second value in the pair. It will attempt
