@@ -1,4 +1,4 @@
-#indef TEST_SUITE_H
+#ifndef TEST_SUITE_H
 #define TEST_SUITE_H
 
 #include <assert.h>
@@ -56,6 +56,20 @@ typedef int test_errno_t;
   do {                                          \
     if ((lhs) == (rhs)) {                       \
       return TEST_ASSERT_EQ_FAILURE;            \
+    }                                           \
+  } while (0)
+
+#define TEST_ASSERT_STREQ(lhs, rhs)             \
+  do {                                          \
+    if (strcmp(lhs, rhs) != 0) {                \
+      return TEST_ASSERT_STREQ_FAILURE;         \
+    }                                           \
+  } while (0)
+
+#define TEST_ASSERT_STRNEQ(lhs, rhs)            \
+  do {                                          \
+    if (strcmp(lhs, rhs) != 0) {                \
+      return TEST_ASSERT_STRNEQ_FAILURE;        \
     }                                           \
   } while (0)
 
