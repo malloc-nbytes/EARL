@@ -2,6 +2,7 @@
 
 #include "test-suite.h"
 #include "vector.h"
+#include "pair.h"
 
 test_errno_t
 test_vector_instantiation(void)
@@ -46,7 +47,7 @@ test_vector_large_elements(void)
 
   vector_free(&v);
 
-  return TEST_GENERIC_FAILURE;
+  return TEST_OK;
 }
 
 test_errno_t
@@ -88,6 +89,49 @@ test_vector_can_hold_strings(void)
 
   for (size_t i = 0; i < n; ++i) {
     TEST_ASSERT_STREQ(vector_unsafe_at(v, i, char *), strs[i]);
+  }
+
+  vector_free(&v);
+
+  return TEST_OK;
+}
+
+test_errno_t
+test_vector_can_hold_pairs(void)
+{
+  int a = 1, b = 2;
+  float c = 3.0, d = 4.0;
+  char *g = "hello", *h = "world";
+
+  struct vector v = vector_create(struct pair(any, any));
+
+  struct pair p1 = pair_create(int, int);
+  struct pair p2 = pair_create(float, float);
+  struct pair p3 = pair_create(char**, char**);
+
+  pair_make_unique(&p1, &a, &b);
+  pair_make_unique(&p2, &c, &d);
+  pair_make_unique(&p3, &g, &h);
+
+  vector_append(&v, &p1);
+  vector_append(&v, &p2);
+  vector_append(&v, &p3);
+
+  struct pair *p1_ptr = (struct pair *)vector_at(&v, 0);
+  struct pair *p2_ptr = (struct pair *)vector_at(&v, 1);
+  struct pair *p3_ptr = (struct pair *)vector_at(&v, 2);
+
+  TEST_ASSERT_EQ(*(int *)pair_fst(p1_ptr), a);
+  TEST_ASSERT_EQ(*(int *)pair_snd(p1_ptr), b);
+
+  TEST_ASSERT_EQ(*(float *)pair_fst(p2_ptr), c);
+  TEST_ASSERT_EQ(*(float *)pair_snd(p2_ptr), d);
+
+  TEST_ASSERT_STREQ(*(char **)pair_fst(p3_ptr), g);
+  TEST_ASSERT_STREQ(*(char **)pair_snd(p3_ptr), h);
+
+  for (size_t i = 0; i < v.len; ++i) {
+    pair_free((struct pair *)vector_at(&v, i));
   }
 
   vector_free(&v);
