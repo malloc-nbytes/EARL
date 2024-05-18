@@ -24,7 +24,7 @@ test_vector_insert_elems(void)
   }
 
   for (int i = 0; i < 10; ++i) {
-    TEST_ASSERT_TRUE(vector_unsafe_at(v, i, int) == i);
+    TEST_ASSERT_TRUE(vector_deref_at(v, i, int) == i);
   }
 
   vector_free(&v);
@@ -42,7 +42,7 @@ test_vector_large_elements(void)
   }
 
   for (int i = 0; i < 10000000; ++i) {
-    TEST_ASSERT_TRUE(vector_unsafe_at(v, i, int) == i);
+    TEST_ASSERT_TRUE(vector_deref_at(v, i, int) == i);
   }
 
   vector_free(&v);
@@ -88,7 +88,7 @@ test_vector_can_hold_strings(void)
   }
 
   for (size_t i = 0; i < n; ++i) {
-    TEST_ASSERT_STREQ(vector_unsafe_at(v, i, char *), strs[i]);
+    TEST_ASSERT_STREQ(vector_deref_at(v, i, char *), strs[i]);
   }
 
   vector_free(&v);
@@ -105,9 +105,9 @@ test_vector_can_hold_pairs(void)
 
   struct vector v = vector_create(struct pair(any, any));
 
-  struct pair p1 = pair_create(int, int);
-  struct pair p2 = pair_create(float, float);
-  struct pair p3 = pair_create(char**, char**);
+  struct pair p1 = pair_create2(int, int);
+  struct pair p2 = pair_create2(float, float);
+  struct pair p3 = pair_create2(char**, char**);
 
   pair_make_unique(&p1, &a, &b);
   pair_make_unique(&p2, &c, &d);

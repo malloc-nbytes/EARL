@@ -41,7 +41,7 @@ struct pair {
 };
 
 // Create a pair from two types given.
-#define pair_create(t1, t2)                     \
+#define pair_create2(t1, t2)                    \
   (struct pair) {                               \
     .fst = utils_safe_malloc(sizeof(t1)),       \
     .fst_stride = sizeof(t1),                   \
@@ -58,11 +58,15 @@ struct pair {
 // Get the first value in the pair. It will attempt
 // to cast to the type that is given.
 
-#define pair_unsafe_fst(p, cast) (*((cast*)(p).fst))
+#define pair_deref_fst(p, cast) (*((cast*)(p).fst))
 
 // Get the second value in the pair. It will attempt
 // to cast to the type that is given.
-#define pair_unsafe_snd(p, cast) (*((cast*)(p).snd))
+#define pair_deref_snd(p, cast) (*((cast*)(p).snd))
+
+struct pair pair_create(size_t fst_stride, size_t snd_stride);
+
+struct pair pair_from(void *fst, size_t fst_stride, void *snd, size_t snd_stride);
 
 // Insert two values into the pair.
 // NOTE: Only up to pair->fst_stride will be
