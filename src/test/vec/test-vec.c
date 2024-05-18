@@ -2,6 +2,7 @@
 
 #include "test-suite.h"
 #include "vector.h"
+#include "pair.h"
 
 test_errno_t
 test_vector_instantiation(void)
@@ -95,4 +96,10 @@ test_vector_can_hold_strings(void)
   vector_free(&v);
 
   return TEST_OK;
+}
+
+test_errno_t
+test_vector_can_hold_pairs(void)
+{
+  struct vector(pair(int, int)) v = vector_create(pair(int, int));
 }

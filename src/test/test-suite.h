@@ -57,21 +57,4 @@ typedef int test_errno_t;
     }                                           \
   } while (0)
 
-// NOTE: RUN_TEST requires that two
-// integers namely `pass` & `fail` be
-// defined before calling this macro, as it
-// will attempt to modify them.
-#define RUN_TEST(func)                          \
-  do {                                          \
-    printf("[test] %s ... ", #func);            \
-    test_errno_t k;                             \
-    if ((k = func) != TEST_OK) {                \
-      ++fail;                                   \
-      printf("FAILED (%d)\n", k);               \
-    } else {                                    \
-      ++pass;                                   \
-      printf("ok\n");                           \
-    }                                           \
-  } while (0)
-
 #endif // TEST_SUITE_H
