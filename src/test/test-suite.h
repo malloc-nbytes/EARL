@@ -14,6 +14,8 @@ typedef int test_errno_t;
 #define TEST_ASSERT_NOT_FAILURE      5
 #define TEST_ASSERT_EQ_FAILURE       6
 #define TEST_ASSERT_NEQ_FAILURE      7
+#define TEST_ASSERT_STREQ_FAILURE    8
+#define TEST_ASSERT_STRNEQ_FAILURE   9
 
 #define TEST_ASSERT_TRUE(expr)                  \
   do {                                          \
