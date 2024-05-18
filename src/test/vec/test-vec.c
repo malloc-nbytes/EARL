@@ -127,8 +127,8 @@ test_vector_can_hold_pairs(void)
   TEST_ASSERT_EQ(*(float *)pair_fst(p2_ptr), c);
   TEST_ASSERT_EQ(*(float *)pair_snd(p2_ptr), d);
 
-  TEST_ASSERT_STREQ(*(char **)pair_fst(p3_ptr), g);
-  TEST_ASSERT_STREQ(*(char **)pair_snd(p3_ptr), h);
+  TEST_ASSERT_MEMEQ(*(char **)pair_fst(p3_ptr), g, strlen(g));
+  TEST_ASSERT_MEMEQ(*(char **)pair_snd(p3_ptr), h, strlen(h));
 
   for (size_t i = 0; i < v.len; ++i) {
     pair_free((struct pair *)vector_at(&v, i));

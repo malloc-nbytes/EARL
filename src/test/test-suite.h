@@ -82,5 +82,4 @@ typedef int test_errno_t;
     }                                           \
   } while (0)
 
-
 #endif // TEST_SUITE_H
