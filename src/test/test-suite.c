@@ -4,6 +4,7 @@
 #include "test-suite.h"
 #include "vec/test-vec.h"
 #include "pair/test-pair.h"
+#include "parsers/test-parsers.h"
 
 // NOTE: RUN_TEST requires that two
 // integers namely `pass` & `fail` be
@@ -42,6 +43,8 @@ main(void) {
 
   RUN_TEST(test_pair_instantiation());
   RUN_TEST(test_pair_same_types_ints());
+
+  RUN_TEST(test_parsers_expect1());
   end = time(NULL);
 
   elapsed = difftime(end, start);

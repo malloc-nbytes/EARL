@@ -75,7 +75,7 @@ vector_rm_at(struct vector *v, size_t idx)
   v->len--;
 }
 
-uint8_t
+uint8_t *
 vector_asbytes(struct vector *v)
 {
   return v->data;

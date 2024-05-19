@@ -5,6 +5,11 @@
 #include "vector.h"
 #include "pair.h"
 
+int
+int_compar(const void *x, const void *y) {
+  return *(int *)x > *(int *)y;
+}
+
 test_errno_t
 test_vector_instantiation(void)
 {
@@ -169,10 +174,6 @@ test_vec_can_hold_large_amount_of_pairs(void)
   return TEST_OK;
 }
 
-int compar(const void *x, const void *y) {
-  return *(int *)x > *(int *)y;
-}
-
 test_errno_t
 test_vec_can_qsort_with_integers(void)
 {
@@ -183,7 +184,7 @@ test_vec_can_qsort_with_integers(void)
     vector_append(&v, &i);
   }
 
-  qsort(v.data, n, sizeof(int), compar);
+  qsort((void *)vector_asbytes(&v), n, sizeof(int), int_compar);
 
   for (size_t i = 0; i < n; ++i) {
     TEST_ASSERT_EQ(vector_deref_at(v, i, int), (int)i);

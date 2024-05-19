@@ -92,6 +92,6 @@ void vector_free(struct vector *v);
 // Remove an element at a specific index.
 void vector_rm_at(struct vector *v, size_t idx);
 
-uint8_t vector_asbytes(struct vector *v);
+uint8_t *vector_asbytes(struct vector *v);
 
 #endif // VECTOR_H

@@ -26,6 +26,18 @@
 #include "lexer.h"
 #include "ast.h"
 
-struct program parse(struct lexer *lexer);
+struct program parser_parse(struct lexer *lexer);
+
+// Parsers
+struct vector(struct pair(struct token *id, struct token *type))
+       parser_parse_def_stmt_args(struct lexer *lexer);
+
+struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
+struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);
+
+// Helpers
+struct token *parser_expect(struct lexer *lexer, enum token_type exp);
+struct token *parser_expect_keyword(struct lexer *lexer, const char *keyword);
+struct token *parser_expect_type(struct lexer *lexer);
 
 #endif // PARSER_H

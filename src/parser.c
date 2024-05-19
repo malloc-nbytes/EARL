@@ -38,7 +38,7 @@
 
 /********** HELPERS **********/
 
-// Name: expect
+// Name: parser_expect
 //
 // Description:
 //   Given `lexer` and some expected token type `exp`,
@@ -46,7 +46,7 @@
 //   lexer matches the type `exp`. If they do not
 //   match, panic.
 struct token *
-expect(struct lexer *lexer, enum token_type exp)
+parser_expect(struct lexer *lexer, enum token_type exp)
 {
   struct token *hd = lexer_next(lexer);
   if (hd->type != exp) {
@@ -55,7 +55,7 @@ expect(struct lexer *lexer, enum token_type exp)
   return hd;
 }
 
-// Name: expect_keyword
+// Name: parser_expect_keyword
 //
 // Description:
 //   Given `lexer` and some expected keyword `keyword`,
@@ -74,15 +74,26 @@ expect_keyword(struct lexer *lexer, const char *keyword)
 }
 
 struct token *
-expect_type(struct lexer *lexer)
+parser_expect_type(struct lexer *lexer)
 {
-  NOOP(lexer);
-  UNIMPLEMENTED("expect_type", NULL);
+  char *keywords[] = TY_AS_CPL;
+  size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
+
+  struct token *tok = lexer_next(lexer);
+
+  for (size_t i = 0; i < keywords_len; ++i) {
+    if (utils_streq(tok->lexeme, keywords[i])) {
+      return tok;
+    }
+  }
+
+  NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_type: expected a type got %s", tok->lexeme);
+  return NULL; // unreachable
 }
 
 /********** PARSERS **********/
 
-// Name: parse_def_stmt_args
+// Name: parser_parse_def_stmt_args
 //
 // Description:
 //   Given the syntax of (k1: ty1, k2: ty2,...,kn: tyn)
@@ -93,50 +104,50 @@ expect_type(struct lexer *lexer)
 // NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
 //   and will consume those.
 struct vector(struct pair(struct token *id, struct token *type))
-parse_def_stmt_args(struct lexer *lexer)
+parser_parse_def_stmt_args(struct lexer *lexer)
 {
-  (void)expect(lexer, TOKENTYPE_LPAREN);
+  (void)parser_expect(lexer, TOKENTYPE_LPAREN);
 
   struct vector args = vector_create2(struct pair);
 
-  (void)expect(lexer, TOKENTYPE_RPAREN);
+  (void)parser_expect(lexer, TOKENTYPE_RPAREN);
 }
 
 struct stmt_block *
-parse_stmt_block(struct lexer *lexer)
+parser_parse_stmt_block(struct lexer *lexer)
 {
   NOOP(lexer);
   UNIMPLEMENTED("parse_stmt_block", NULL);
 }
 
 struct stmt_def *
-parse_stmt_def(struct lexer *lexer)
+parser_parse_stmt_def(struct lexer *lexer)
 {
   // def
   lexer_discard(lexer);
 
   // identifier
-  struct token *id = expect(lexer, TOKENTYPE_IDENT);
+  struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
 
   // (...)
   struct vector(struct pair(struct token *id, struct token *type)) args
-    = parse_def_stmt_args(lexer);
+    = parser_parse_def_stmt_args(lexer);
 
   // ->
-  (void)expect(lexer, TOKENTYPE_MINUS);
-  (void)expect(lexer, TOKENTYPE_GREATERTHAN);
+  (void)parser_expect(lexer, TOKENTYPE_MINUS);
+  (void)parser_expect(lexer, TOKENTYPE_GREATERTHAN);
 
   // type
-  struct token *rettype = expect_type(lexer);
+  struct token *rettype = parser_expect_type(lexer);
 
   // { ... }
-  struct stmt_block *block = parse_stmt_block(lexer);
+  struct stmt_block *block = parser_parse_stmt_block(lexer);
 
   return stmt_def_alloc(id, args, rettype, block);
 }
 
 struct stmt *
-parse_stmt(struct lexer *lexer)
+parser_parse_stmt(struct lexer *lexer)
 {
   // NOTE: cannot switch on lexer_next as this
   // will make parsing expression very difficult.
@@ -159,7 +170,7 @@ parse_stmt(struct lexer *lexer)
 }
 
 struct vector(struct stmt *)
-parse_stmts(struct lexer *lexer)
+parser_parse_stmts(struct lexer *lexer)
 {
   struct vector stmts = vector_create2(struct stmt *);
 
@@ -192,9 +203,9 @@ parse_stmts(struct lexer *lexer)
 /********** Entrypoint **********/
 
 struct program
-parse(struct lexer *lexer)
+parser_parse(struct lexer *lexer)
 {
   return (struct program) {
-    .stmts = parse_stmts(lexer),
+    .stmts = parser_parse_stmts(lexer),
   };
 }

@@ -29,20 +29,8 @@
 #include "parser.h"
 #include "lexer.h"
 
-// NOTE: this should be all KW_*
-// from common.h.
-char *RESERVED[] = {
-  KW_LET,
-  KW_DEF,
-  KW_RETURN,
-};
-
-// NOTE: this should be all TY_*
-// from common.h.
-char *VARTYPES[] = {
-  TY_INT32,
-  TY_STR,
-};
+char *RESERVED[] = KW_AS_CPL;
+char *VARTYPES[] = TY_AS_CPL;
 
 const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 
@@ -95,7 +83,7 @@ main(int argc, char **argv)
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
   // lexer_dump(&lexer);
-  (void)parse(&lexer);
+  (void)parser_parse(&lexer);
 
   lexer_free(&lexer);
   free(keywords);
