@@ -55,11 +55,11 @@ struct vector {
 
 #define vector_deref_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
 
-#define vector_debug_dump(v, formatstr, type)   \
-  do { \
-    for (size_t i = 0; i < v.len; ++i) { \
+#define vector_debug_dump(v, formatstr, type)           \
+  do {                                                  \
+    for (size_t i = 0; i < v.len; ++i) {                \
       printf(formatstr, vector_unsafe_at(v, i, type));  \
-    } \
+    }                                                   \
   } while (0)
 
 // ONLY FOR EXPLICITNESS.

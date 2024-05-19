@@ -23,20 +23,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "common.h"
 #include "notify.h"
 #include "utils.h"
 #include "parser.h"
 #include "lexer.h"
 
 char *RESERVED[] = {
-  "let",
-  "def",
-  "return",
+  KW_LET,
+  KW_DEF,
+  KW_RETURN,
 };
 
 char *VARTYPES[] = {
-  "int",
-  "str",
+  TY_INT32,
+  TY_STR,
 };
 
 const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);

@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "common.h"
 #include "notify.h"
 #include "token.h"
 #include "ast.h"
@@ -139,10 +140,10 @@ parse_stmt(struct lexer *lexer)
   // will make parsing expression very difficult.
   switch (lexer->hd->type) {
   case TOKENTYPE_KEYWORD: {
-    if (utils_streq(lexer->hd->lexeme, "def")) {
+    if (utils_streq(lexer->hd->lexeme, KW_DEF)) {
       ;
     }
-    else if (utils_streq(lexer->hd->lexeme, "let")) {
+    else if (utils_streq(lexer->hd->lexeme, KW_LET)) {
       ;
     }
   } break;
@@ -164,10 +165,10 @@ parse_stmts(struct lexer *lexer)
   while ((curtok = lexer_next(lexer)) != NULL) {
     switch (curtok->type) {
       case TOKENTYPE_KEYWORD: {
-        if (utils_streq(curtok->lexeme, "let")) {
+        if (utils_streq(curtok->lexeme, KW_LET)) {
           ;
         }
-        else if (utils_streq(curtok->lexeme, "def")) {
+        else if (utils_streq(curtok->lexeme, KW_DEF)) {
           ;
         }
         break;
@@ -185,6 +186,8 @@ parse_stmts(struct lexer *lexer)
 
   return stmts;
 }
+
+/********** Entrypoint **********/
 
 struct program
 parse(struct lexer *lexer)
