@@ -45,7 +45,7 @@ struct vector {
 // element the vector is going to hold.
 // Example:
 //   struct vector v = vector_create(int);
-#define vector_create(type)                  \
+#define vector_create2(type)                 \
   (struct vector) {                          \
     .data = utils_safe_malloc(sizeof(type)), \
     .cap = 1,                                \
@@ -74,6 +74,10 @@ struct vector {
 //   struct F { struct vector(int) v, };
 #define vector(type) vector
 
+// Create a vector where the size of each
+// element to be stored is `stride`.
+struct vector vector_create(size_t stride);
+
 // Appends `data` to the END of the vector.
 void vector_append(struct vector *v, void *data);
 
@@ -87,5 +91,7 @@ void vector_free(struct vector *v);
 
 // Remove an element at a specific index.
 void vector_rm_at(struct vector *v, size_t idx);
+
+uint8_t vector_asbytes(struct vector *v);
 
 #endif // VECTOR_H

@@ -37,6 +37,8 @@ main(void) {
   RUN_TEST(test_vector_rm_at());
   RUN_TEST(test_vector_can_hold_strings());
   RUN_TEST(test_vector_can_hold_pairs());
+  RUN_TEST(test_vec_can_hold_large_amount_of_pairs());
+  RUN_TEST(test_vec_can_qsort_with_integers());
 
   RUN_TEST(test_pair_instantiation());
   RUN_TEST(test_pair_same_types_ints());

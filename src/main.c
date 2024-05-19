@@ -29,12 +29,16 @@
 #include "parser.h"
 #include "lexer.h"
 
+// NOTE: this should be all KW_*
+// from common.h.
 char *RESERVED[] = {
   KW_LET,
   KW_DEF,
   KW_RETURN,
 };
 
+// NOTE: this should be all TY_*
+// from common.h.
 char *VARTYPES[] = {
   TY_INT32,
   TY_STR,

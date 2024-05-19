@@ -96,7 +96,9 @@ struct vector(struct pair(struct token *id, struct token *type))
 parse_def_stmt_args(struct lexer *lexer)
 {
   (void)expect(lexer, TOKENTYPE_LPAREN);
-  assert(0 && "parse_def_stmt_args: unimplemented");
+
+  struct vector args = vector_create2(struct pair);
+
   (void)expect(lexer, TOKENTYPE_RPAREN);
 }
 
@@ -159,7 +161,7 @@ parse_stmt(struct lexer *lexer)
 struct vector(struct stmt *)
 parse_stmts(struct lexer *lexer)
 {
-  struct vector stmts = vector_create(struct stmt *);
+  struct vector stmts = vector_create2(struct stmt *);
 
   struct token *curtok = NULL;
   while ((curtok = lexer_next(lexer)) != NULL) {

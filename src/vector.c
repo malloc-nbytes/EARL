@@ -28,6 +28,17 @@
 #include "utils.h"
 #include "vector.h"
 
+struct vector
+vector_create(size_t stride)
+{
+  return (struct vector) {
+    .data = utils_safe_malloc(stride),
+    .cap = 1,
+    .len = 0,
+    .stride = stride,
+  };
+}
+
 void *
 vector_at(struct vector *v, size_t i)
 {
@@ -62,4 +73,10 @@ vector_rm_at(struct vector *v, size_t idx)
   size_t s = v->stride;
   (void)memmove(v->data + idx*s, v->data + (idx+1)*s, (v->len - idx - 1)*s);
   v->len--;
+}
+
+uint8_t
+vector_asbytes(struct vector *v)
+{
+  return v->data;
 }

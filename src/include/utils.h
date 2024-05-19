@@ -55,4 +55,7 @@ void *utils_safe_malloc(size_t bytes);
 // and 0 on failure.
 int utils_streq(const char *s1, const char *s2);
 
+// Fill an array from 0..len with values 0..len.
+void utils_iota_array(int *arr, size_t len);
+
 #endif // UTILS_H
