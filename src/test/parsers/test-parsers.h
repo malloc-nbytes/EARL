@@ -5,5 +5,6 @@
 
 test_errno_t test_parsers_expect1(void);
 test_errno_t test_parsers_expect2(void);
+test_errno_t test_parsers_expectkeyword1(void);
 
 #endif // TEST_PARSERS_H

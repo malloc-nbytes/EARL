@@ -1,4 +1,5 @@
 #include "test-suite.h"
+#include "common.h"
 #include "lexer.h"
 #include "parser.h"
 #include "token.h"
@@ -54,4 +55,26 @@ test_parsers_expect2(void)
   return TEST_OK;
 
 }
+
+test_errno_t
+test_parsers_expectkeyword1(void)
+{
+  char *filepath = "test/sample-input/expect-keyword.1.in";
+  char *keywords[] = {
+    "let",
+    "def",
+  };
+  struct lexer lexer = lex_file(filepath, keywords, 2, "#");
+
+  struct token *let = parser_expect_keyword(&lexer, KW_LET);
+  struct token *def = parser_expect_keyword(&lexer, KW_DEF);
+
+  TEST_ASSERT_STREQ(let->lexeme, KW_LET);
+  TEST_ASSERT_STREQ(def->lexeme, KW_DEF);
+
+  lexer_free(&lexer);
+
+  return TEST_OK;
+}
+
 
