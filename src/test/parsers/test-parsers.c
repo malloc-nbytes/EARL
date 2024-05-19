@@ -27,3 +27,31 @@ test_parsers_expect1(void)
   return TEST_OK;
 }
 
+test_errno_t
+test_parsers_expect2(void)
+{
+  char *filepath = "test/sample-input/expect.2.in";
+  struct lexer lexer = lex_file(filepath, NULL, 0, "#");
+
+  struct token *intlit1 = parser_expect(&lexer, TOKENTYPE_INTLIT);
+  struct token *strlit1 = parser_expect(&lexer, TOKENTYPE_STRLIT);
+  struct token *id1 = parser_expect(&lexer, TOKENTYPE_IDENT);
+  struct token *intlit2 = parser_expect(&lexer, TOKENTYPE_INTLIT);
+  struct token *id2 = parser_expect(&lexer, TOKENTYPE_IDENT);
+  struct token *id3 = parser_expect(&lexer, TOKENTYPE_IDENT);
+  struct token *id4 = parser_expect(&lexer, TOKENTYPE_IDENT);
+
+  TEST_ASSERT_EQ(intlit1->type, TOKENTYPE_INTLIT);
+  TEST_ASSERT_EQ(strlit1->type, TOKENTYPE_STRLIT);
+  TEST_ASSERT_EQ(id1->type, TOKENTYPE_IDENT);
+  TEST_ASSERT_EQ(intlit2->type, TOKENTYPE_INTLIT);
+  TEST_ASSERT_EQ(id2->type, TOKENTYPE_IDENT);
+  TEST_ASSERT_EQ(id3->type, TOKENTYPE_IDENT);
+  TEST_ASSERT_EQ(id4->type, TOKENTYPE_IDENT);
+
+  lexer_free(&lexer);
+
+  return TEST_OK;
+
+}
+

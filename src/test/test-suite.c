@@ -45,6 +45,7 @@ main(void) {
   RUN_TEST(test_pair_same_types_ints());
 
   RUN_TEST(test_parsers_expect1());
+  RUN_TEST(test_parsers_expect2());
   end = time(NULL);
 
   elapsed = difftime(end, start);
