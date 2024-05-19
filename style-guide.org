@@ -15,7 +15,6 @@
 - All indents should be 2 spaces.
 - Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.
 - Always put a comment after =#endif= with what it is ending.
-- *Do not have 1 line =if= statements.*
 - All functions should have the corrosponding data structure it is working with before the name.
   For example, if I am making a =append= function for a =vector=, the name should be along the lines
   of =vector_append=.
@@ -49,7 +48,7 @@ struct my_vector {
 typedef int my_type_t;
 #+end_example
 
-- All variable, function, struct, and macro names should be snake_case.
+- All variable, function, struct, and macro names should be =snake_case=.
 - All file names have a hyphen ('-') to separate words.
 - *Remove unnecessary trailing whitespace*.
 - *Disable auto-formatters*.

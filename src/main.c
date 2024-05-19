@@ -29,8 +29,8 @@
 #include "parser.h"
 #include "lexer.h"
 
-char *RESERVED[] = KW_AS_CPL;
-char *VARTYPES[] = TY_AS_CPL;
+char *RESERVED[] = COMMON_KW_AS_CPL;
+char *VARTYPES[] = COMMON_TY_AS_CPL;
 
 const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 

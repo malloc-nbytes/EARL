@@ -76,7 +76,7 @@ parser_expect_keyword(struct lexer *lexer, const char *keyword)
 struct token *
 parser_expect_type(struct lexer *lexer)
 {
-  char *keywords[] = TY_AS_CPL;
+  char *keywords[] = COMMON_TY_AS_CPL;
   size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
 
   struct token *tok = lexer_next(lexer);
@@ -116,8 +116,8 @@ parser_parse_def_stmt_args(struct lexer *lexer)
 struct stmt_block *
 parser_parse_stmt_block(struct lexer *lexer)
 {
-  NOOP(lexer);
-  UNIMPLEMENTED("parse_stmt_block", NULL);
+  /* NOOP(lexer); */
+  /* UNIMPLEMENTED("parse_stmt_block", NULL); */
 }
 
 struct stmt_def *
@@ -153,10 +153,10 @@ parser_parse_stmt(struct lexer *lexer)
   // will make parsing expression very difficult.
   switch (lexer->hd->type) {
   case TOKENTYPE_KEYWORD: {
-    if (utils_streq(lexer->hd->lexeme, KW_DEF)) {
+    if (utils_streq(lexer->hd->lexeme, COMMON_KW_DEF)) {
       ;
     }
-    else if (utils_streq(lexer->hd->lexeme, KW_LET)) {
+    else if (utils_streq(lexer->hd->lexeme, COMMON_KW_LET)) {
       ;
     }
   } break;
@@ -176,12 +176,14 @@ parser_parse_stmts(struct lexer *lexer)
 
   struct token *curtok = NULL;
   while ((curtok = lexer_next(lexer)) != NULL) {
+    if (curtok->type == TOKENTYPE_EOF) break;
+
     switch (curtok->type) {
       case TOKENTYPE_KEYWORD: {
-        if (utils_streq(curtok->lexeme, KW_LET)) {
+        if (utils_streq(curtok->lexeme, COMMON_KW_LET)) {
           ;
         }
-        else if (utils_streq(curtok->lexeme, KW_DEF)) {
+        else if (utils_streq(curtok->lexeme, COMMON_KW_DEF)) {
           ;
         }
         break;
@@ -189,8 +191,6 @@ parser_parse_stmts(struct lexer *lexer)
       case TOKENTYPE_IDENT: {
         break;
       }
-      case TOKENTYPE_EOF:
-        break;
       default: {
         NOTIFY_ERRARGS(ERR_FATAL, "parse_stmts found an unkown statement of type ID (%d).", curtok->type);
       }

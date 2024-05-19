@@ -66,11 +66,11 @@ test_parsers_expectkeyword1(void)
   };
   struct lexer lexer = lex_file(filepath, keywords, 2, "#");
 
-  struct token *let = parser_expect_keyword(&lexer, KW_LET);
-  struct token *def = parser_expect_keyword(&lexer, KW_DEF);
+  struct token *let = parser_expect_keyword(&lexer, COMMON_KW_LET);
+  struct token *def = parser_expect_keyword(&lexer, COMMON_KW_DEF);
 
-  TEST_ASSERT_STREQ(let->lexeme, KW_LET);
-  TEST_ASSERT_STREQ(def->lexeme, KW_DEF);
+  TEST_ASSERT_STREQ(let->lexeme, COMMON_KW_LET);
+  TEST_ASSERT_STREQ(def->lexeme, COMMON_KW_DEF);
 
   lexer_free(&lexer);
 

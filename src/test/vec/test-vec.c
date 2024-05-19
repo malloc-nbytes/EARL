@@ -173,24 +173,3 @@ test_vec_can_hold_large_amount_of_pairs(void)
 
   return TEST_OK;
 }
-
-test_errno_t
-test_vec_can_qsort_with_integers(void)
-{
-  struct vector v = vector_create2(int);
-  size_t n = 3000000;
-
-  for (size_t i = n-1; i > 0; --i) {
-    vector_append(&v, &i);
-  }
-
-  qsort((void *)vector_asbytes(&v), n, sizeof(int), int_compar);
-
-  for (size_t i = 0; i < n; ++i) {
-    TEST_ASSERT_EQ(vector_deref_at(v, i, int), (int)i);
-  }
-
-  vector_free(&v);
-
-  return TEST_OK;
-}

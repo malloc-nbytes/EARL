@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-05-19 Sun 13:34 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EARL</title>
+<meta name="author" content="Zachary Haskins (malloc-nbytes)" />
+<meta name="description" content="Introduction to EARL." />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/bigblow.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/bigblow_theme/css/hideshow.css"/>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery-ui-1.10.2.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.localscroll-min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.scrollTo-1.4.3.1-min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/jquery.zclip.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/bigblow.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/hideshow.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">EARL</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgb224093">1. Introduction</a></li>
+<li><a href="#org23d31ac">2. Compiling</a></li>
+<li><a href="#org675ed0c">3. Contributing</a>
+<ul>
+<li><a href="#orgcb6ee81">3.1. Style Guide</a>
+<ul>
+<li><a href="#org38c8a6b">3.1.1. Functions</a></li>
+<li><a href="#orgce104a3">3.1.2. Structs</a></li>
+<li><a href="#org2c6d2c6">3.1.3. Misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+<b>NOTE</b>: Open <code>README.html</code> in a browser to view this document
+in a much better format.
+</p>
+
+
+<div id="orgb4308dc" class="figure">
+<p><img src="./imgs/EARL-resized.jpeg" alt="EARL-resized.jpeg" />
+</p>
+</div>
+
+<div id="outline-container-orgb224093" class="outline-2">
+<h2 id="orgb224093"><span class="section-number-2">1.</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+EARL (Evaluate And Run Language) is being designed to be functionally similar to Python, except with types
+and brackets.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org23d31ac" class="outline-2">
+<h2 id="org23d31ac"><span class="section-number-2">2.</span> Compiling</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+EARL uses <a href="https://www.gnu.org/software/autoconf/"><code>autoconf</code></a> to generate Makefiles. The following are required to build the project:
+</p>
+<ol class="org-ol">
+<li><code>autoconf</code></li>
+<li><code>automake</code></li>
+<li><code>libtool</code></li>
+</ol>
+
+<p>
+Users compiling for the first time should issue:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">cd EARL/src/
+autoreconf --install
+./configure
+</pre>
+</div>
+
+<p>
+This will create the Makefiles. Use <code>make &lt;opt&gt;</code> where <code>&lt;opt&gt;</code> is one of,
+</p>
+
+<blockquote>
+<ul class="org-ul">
+<li><code>make</code> &rarr; builds the project</li>
+<li><code>make test</code> &rarr; build the project and runs tests</li>
+<li><code>make clean</code> &rarr; cleans the project</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+<div id="outline-container-org675ed0c" class="outline-2">
+<h2 id="org675ed0c"><span class="section-number-2">3.</span> Contributing</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-orgcb6ee81" class="outline-3">
+<h3 id="orgcb6ee81"><span class="section-number-3">3.1.</span> Style Guide</h3>
+<div class="outline-text-3" id="text-3-1">
+</div>
+<div id="outline-container-org38c8a6b" class="outline-4">
+<h4 id="org38c8a6b"><span class="section-number-4">3.1.1.</span> Functions</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<ul class="org-ul">
+<li>Functions should be formatted as such:</li>
+</ul>
+
+<pre class="example" id="orgd507dbe">
+&lt;return type&gt;
+&lt;name&gt;(&lt;params&gt;)
+{
+  body...
+}
+</pre>
+
+<ul class="org-ul">
+<li>All indents should be 2 spaces.</li>
+<li>Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.</li>
+<li>Always put a comment after <code>#endif</code> with what it is ending.</li>
+<li>All functions should have the corrosponding data structure it is working with before the name.
+For example, if I am making a <code>append</code> function for a <code>vector</code>, the name should be along the lines
+of <code>vector_append</code>.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgce104a3" class="outline-4">
+<h4 id="orgce104a3"><span class="section-number-4">3.1.2.</span> Structs</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<pre class="example" id="org6e4f304">
+struct &lt;name&gt; {
+  ...
+}
+</pre>
+
+<ul class="org-ul">
+<li>All structs must start with <code>struct</code> and then (lowercase) <code>&lt;name&gt;</code>.</li>
+<li>Typedefs for struct names are not allowed as of now.</li>
+</ul>
+
+<pre class="example" id="org57fdb41">
+struct my_vector {
+  ...
+}
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org2c6d2c6" class="outline-4">
+<h4 id="org2c6d2c6"><span class="section-number-4">3.1.3.</span> Misc</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<ul class="org-ul">
+<li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).</li>
+<li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, etc. does not need whitespace, but == should.</li>
+<li>Lines have a soft limit of 85 characters.</li>
+<li><code>typedef</code>'d types should have <code>_t</code> appended to it.
+Example:</li>
+</ul>
+
+<pre class="example" id="org527fa07">
+typedef int my_type_t;
+</pre>
+
+<ul class="org-ul">
+<li>All variable, function, struct, and macro names should be <code>snake_case</code>.</li>
+<li>All file names have a hyphen ('-') to separate words.</li>
+<li><b>Remove unnecessary trailing whitespace</b>.</li>
+<li><b>Disable auto-formatters</b>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
+<p class="date">Created: 2024-05-19 Sun 13:34</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

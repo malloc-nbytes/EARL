@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-17 Fri 22:18 -->
+<!-- 2024-05-19 Sun 13:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Style Guide</title>
@@ -200,21 +200,21 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgc15463a">1. Functions</a></li>
-<li><a href="#org43fd0ce">2. Structs</a></li>
-<li><a href="#org80cb5a1">3. Misc</a></li>
+<li><a href="#org236fd4d">1. Functions</a></li>
+<li><a href="#orgb00b809">2. Structs</a></li>
+<li><a href="#orga7b7934">3. Misc</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgc15463a" class="outline-2">
-<h2 id="orgc15463a"><span class="section-number-2">1.</span> Functions</h2>
+<div id="outline-container-org236fd4d" class="outline-2">
+<h2 id="org236fd4d"><span class="section-number-2">1.</span> Functions</h2>
 <div class="outline-text-2" id="text-1">
 <ul class="org-ul">
 <li>Functions should be formatted as such:</li>
 </ul>
 
-<pre class="example" id="org25cd943">
+<pre class="example" id="orga54894c">
 &lt;return type&gt;
 &lt;name&gt;(&lt;params&gt;)
 {
@@ -226,7 +226,6 @@
 <li>All indents should be 2 spaces.</li>
 <li>Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.</li>
 <li>Always put a comment after <code>#endif</code> with what it is ending.</li>
-<li><b>Do not have 1 line <code>if</code> statements.</b></li>
 <li>All functions should have the corrosponding data structure it is working with before the name.
 For example, if I am making a <code>append</code> function for a <code>vector</code>, the name should be along the lines
 of <code>vector_append</code>.</li>
@@ -234,10 +233,10 @@ of <code>vector_append</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-org43fd0ce" class="outline-2">
-<h2 id="org43fd0ce"><span class="section-number-2">2.</span> Structs</h2>
+<div id="outline-container-orgb00b809" class="outline-2">
+<h2 id="orgb00b809"><span class="section-number-2">2.</span> Structs</h2>
 <div class="outline-text-2" id="text-2">
-<pre class="example" id="org914a48e">
+<pre class="example" id="org6fb2e4c">
 struct &lt;name&gt; {
   ...
 }
@@ -248,7 +247,7 @@ struct &lt;name&gt; {
 <li>Typedefs for struct names are not allowed as of now.</li>
 </ul>
 
-<pre class="example" id="org1c67c27">
+<pre class="example" id="org69ab590">
 struct my_vector {
   ...
 }
@@ -256,8 +255,8 @@ struct my_vector {
 </div>
 </div>
 
-<div id="outline-container-org80cb5a1" class="outline-2">
-<h2 id="org80cb5a1"><span class="section-number-2">3.</span> Misc</h2>
+<div id="outline-container-orga7b7934" class="outline-2">
+<h2 id="orga7b7934"><span class="section-number-2">3.</span> Misc</h2>
 <div class="outline-text-2" id="text-3">
 <ul class="org-ul">
 <li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).</li>
@@ -267,12 +266,12 @@ struct my_vector {
 Example:</li>
 </ul>
 
-<pre class="example" id="orgc7be3d6">
+<pre class="example" id="org4f767d2">
 typedef int my_type_t;
 </pre>
 
 <ul class="org-ul">
-<li>All variable, function, struct, and macro names should be snake<sub>case</sub>.</li>
+<li>All variable, function, struct, and macro names should be <code>snake_case</code>.</li>
 <li>All file names have a hyphen ('-') to separate words.</li>
 <li><b>Remove unnecessary trailing whitespace</b>.</li>
 <li><b>Disable auto-formatters</b>.</li>
@@ -281,7 +280,7 @@ typedef int my_type_t;
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2024-05-17 Fri 22:18</p>
+<p class="date">Created: 2024-05-19 Sun 13:15</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
