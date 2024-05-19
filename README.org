@@ -14,12 +14,14 @@ in a much better format.
 
 * Introduction
 
+#+begin_quote
 EARL (Evaluate And Run Language) is being designed to be functionally similar to Python, except with types
 and brackets.
+#+end_quote
 
 * Compiling
 
-EARL uses [[https://www.gnu.org/software/autoconf/][=autoconf=]] to generate Makefiles. The following are required to build the project:
+EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makefiles. The following are required to build the project:
 1. =autoconf=
 2. =automake=
 3. =libtool=
@@ -60,7 +62,7 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.
 - Always put a comment after =#endif= with what it is ending.
 - All functions should have the corrosponding data structure it is working with before the name.
-  For example, if I am making a =append= function for a =vector=, the name should be along the lines
+  For example, if I am making an =append= function for a =vector=, the name should be along the lines
   of =vector_append=.
 
 *** Structs
@@ -97,5 +99,418 @@ typedef int my_type_t;
 - *Remove unnecessary trailing whitespace*.
 - *Disable auto-formatters*.
 
+* Test Suite
 
+At the time of writing this, the tests directory is structured as such:
+
+#+begin_example
+.
+├── Makefile
+├── Makefile.am
+├── Makefile.in
+├── pair
+│   ├── test-pair.c
+│   └── test-pair.h
+├── parsers
+│   ├── test-parsers.c
+│   └── test-parsers.h
+├── sample-input
+│   ├── expect.1.in
+│   ├── expect.2.in
+│   ├── expect-keyword.1.in
+│   └── expect-type.1.in
+├── test-suite.c
+├── test-suite.h
+└── vec
+    ├── test-vec.c
+    └── test-vec.h
+#+end_example
+
+** Test Suite Source
+
+The test suite is composed of two files, =test-suite.c= and =test-suite.h=
+
+The file =test-suite.h= contains a bunch of custom assert macros that return
+the correct values on failure. Use these when comparing values, checking for
+null, etc.
+
+The file =test-suite.c= is the file where you actually issue running the tests.
+This is done with the =#define RUN_TEST(func)= macro where =func= is the test
+that you want to run.
+
+All tests return a type of =test_errno_t=, and are all expected to return that.
+Additionally, the tests should not take any parameters. At the end of every test,
+the function should return =TEST_OK=.
+
+If a test were to fail after running =make test=, it will output "FAILED ($n$)"
+where $n$ is some test assert failure number. To figure out what the number means,
+go into =test/test-suite.h= and match it to the appropriate =TEST_ASSERT_*_FAILURE= macro.
+
+** Adding more Tests to Ones that Exist
+
+Simply go into the test directory that you want to add tests for and create a new
+function. Then add it's prototype to its corrosponding header file.
+
+Lets say I want to add a new test to =vec=. I would go into
+=test/vec/test-vec.h= and add a new prototype
+
+#+begin_src c
+  #ifndef VEC_TEST_H
+  #define VEC_TEST_H
+
+  #include "test-suite.h"
+
+  test_errno_t test_vector_instantiation(void);
+  test_errno_t test_vector_insert_elems(void);
+  .
+  .
+  .
+  test_errno_t test_vector_my_new_test(void); // here
+#+end_src
+
+I would then go into =test/vec/test-vec.c= and add it's implementation
+
+#+begin_src c
+  test_errno_t
+  test_vector_my_new_test(void)
+  {
+    struct vec v = vec_create2(int);
+    ...
+    TEST_ASSERT_EQ(vec_deref_at(v, 1, int), 99); // example of a test assert.
+    ...
+    vector_free(&v); // don't forget to free the memory!
+    return TEST_OK;
+  }
+#+end_src
+
+Finally, go into =test/test-suite.c= and issue the macro to actually
+run the newly created test.
+
+#+begin_src c
+  int
+  main(void)
+  {
+    int pass = 0;
+    int fail = 0;
+
+    time_t start, end;
+    double elapsed;
+
+    start = time(NULL);
+    RUN_TEST(test_vector_instantiation());
+    RUN_TEST(test_vector_insert_elems());
+    RUN_TEST(test_vector_large_elements());
+    ...
+    ...
+    ...
+    RUN_TEST(test_vector_my_new_test()); // here
+    ...
+    ...
+    ...
+    elapsed = difftime(end, start);
+    printf("[test] total time: %.5f\n", elapsed);
+    printf("TEST SUMMARY\n");
+    printf("  PASS: %-5d FAIL: %d\n", pass, fail);
+  }
+
+#+end_src
+
+That's it! Now run =make test= to see the output.
+
+** Creating New Tests not Associated with Ones that Exist
+
+This is more involved and will likely change in the future. But for now, here
+is how to do it:
+
+1. In =test/=, create a new directory for the type of tests you want
+   to create. Let /testname/ be the directory name.
+2. Go into =test/Makefile.am= *note the =.am=.
+3. In =test_suite_SOURCES=, add =testname/test-testname.c=
+4. Create the /testname/ directory and add the =.c= and =.h= files.
+   #+begin_src shell
+     mkdir test/testname
+     touch test/testname/test-testname{.c,.h}
+   #+end_src
+
+5. Add include guards to the header
+   #+begin_src shell
+     cat > test/testname/test-testname.h << "EOF"
+     #ifndef TESTNAME_H
+     #define TESTNAME_H
+
+     #endif // TESTNAME_H
+     EOF
+   #+end_src
+6. In =test/test-suite.c= add the appropriate include header.
+7. Start adding your tests (see [[Adding more Tests to Ones that Exist][Adding more Tests to Ones that Exist]])
+
+* Interfaces
+
+** Arena
+
+#+begin_quote
+File: arena.h
+
+Description:
+   Provides an API for an arena allocator. This is
+   helpful because we have a "pool" of memory that
+   we can use and then free it all at once. If
+   unfamiliar with arena allocators,
+   https://en.wikipedia.org/wiki/Region-based_memory_management
+#+end_quote
+
+*** Functions
+
+#+begin_src c
+struct arena;
+#+end_src
+
+/The =arena= struct./
+
+#+begin_src c
+struct arena *arena_create(size_t cap);
+#+end_src
+
+/Create a new arena allocator with capacity as =cap=./
+
+#+begin_src c
+uint8_t *arena_alloc(struct arena *arena, size_t bytes);
+#+end_src
+
+/Allocate =bytes= number of bytes in an =arena=./
+
+#+begin_src c
+void arena_free(struct arena *arena);
+#+end_src
+
+/Free the memory inside of =arena= *AS WELL AS THE ARENA ITSELF*./
+
+** Common
+
+#+begin_quote
+File: common.h
+
+Description:
+A few things that are useful throughout the entire project.
+#+end_quote
+
+*** Macros
+
+#+begin_src c
+#define COMMON_KW_LET
+#define COMMON_KW_DEF
+#define COMMON_KW_RETURN
+#+end_src
+
+/The keywords of EARL./
+
+#+begin_src c
+#define COMMON_TY_INT32
+#define COMMON_TY_STR
+#+end_src
+
+/The types of EARL./
+
+#+begin_src c
+#define COMMON_KW_AS_CPL
+#define COMMON_TY_AS_CPL
+#+end_src
+
+/The keywords and types of EARL as compound literals./
+
+** Notify
+
+#+begin_quote
+File: notify.h
+
+Description:
+Provides ways to display an error message and quite the program.
+#+end_quote
+
+*** Enums
+
+#+begin_src c
+  enum NOTIFY_ERR_TYPE
+#+end_src
+
+/Provides different types of errors./
+
+*** Macros
+
+#+begin_src c
+  #define NOTIFY_ERR(etype, msg)
+#+end_src
+
+/Macro that prints the error type =etype= as well as prints =msg=. It will exit with a status of 1./
+
+#+begin_src c
+  #define NOTIFY_ERRARGS(etype, msg, ...)
+#+end_src
+
+/It is the exact same as =NOTIFY_ERR= except it takes a variadic number of arguments.
+This is useful if your message has format specifiers in it such as ="%d"=, ="%zu"= etc./
+
+** Utils
+
+#+begin_quote
+File: utils.h
+
+Description:
+A bunch of helpful utility tools.
+#+end_quote
+
+*** Macros
+
+#+begin_src c
+  #define DEBUG_ASSERT(expr)
+#+end_src
+
+/Debug assertions that are taken out
+when compiling in "release" mode.
+In "debug" mode, they will function./
+
+#+begin_src c
+  #define NOOP(x)
+#+end_src
+
+/A macro that =void='s =x=. This is useful to silence compiler warnings./
+
+#+begin_src c
+  #define UNIMPLEMENTED(msg, rettype)
+#+end_src
+
+/Used to silence compiler warning on a function with
+some return value that is not yet returning anything.
+It prints =msg= and returns =retttype=/
+
+*** Functions
+
+#+begin_src c
+  void *utils_safe_malloc(size_t bytes);
+#+end_src
+
+/A malloc wrapper that checks if
+malloc failed. Allocates =bytes= number of bytes./
+
+#+begin_src c
+  int utils_streq(const char *s1, const char *s2);
+#+end_src
+
+/A wrapper for strcmp that checks if the
+strings are equal. Returns 1 on success,
+and 0 on failure./
+
+#+begin_src c
+  void utils_iota_array(int *arr, size_t len);
+#+end_src
+
+/Fill an array from 0..len with values 0..len./
+
+** Vector
+
+#+begin_quote
+File: vector.h
+
+Description:
+   A vector interface. It is a generic array
+   that grows by $($ =vector.cap= $\times 2)$ when the length
+   matches the capacity.
+#+end_quote
+
+*** Structs
+
+#+begin_src c
+  struct vector
+#+end_src
+
+/The vector struct./
+
+*** Macros
+
+#+begin_src c
+#define vector_create2(type)
+#+end_src
+
+/Macro to make it clear what kind of
+element the vector is going to hold. It creates
+a vector that will hold the =type=/
+
+/Example:/ =struct vector v = vector_create2(int);=
+
+#+begin_src c
+  #define vector_deref_at(v, idx, cast)
+#+end_src
+
+/Gives you the element in the vector =v= at =idx= and casts it as =cast=./
+
+#+begin_src c
+#define vector_debug_dump(v, formatstr, type)
+#+end_src
+
+/Debug prints the vector =v= with the format string
+=formatstr= and casted as =type=./
+
+#+begin_src c
+  #define vector(type)
+#+end_src
+
+/Only used when instantiating a new vector or dispalying its typey.
+This allows to explicitly state what it holds, however nothing happens
+if the type does not match what it is actually holding./
+
+/Example:/
+
+=struct vector(int) v = vector_create(int);=
+
+=struct F { struct vector(int) v, ... };=
+
+*** Functions
+
+#+begin_src c
+  struct vector vector_create(size_t stride);
+#+end_src
+
+/Create a vector where the size of each element to be stored is =stride=./
+
+#+begin_src c
+  void vector_append(struct vector *v, void *data);
+#+end_src
+
+/Appends =data= to the END of the vector =v=./
+
+#+begin_src c
+  void *vector_at(struct vector *v, size_t i);
+#+end_src
+
+/Retrieve an element at =i=. It is up to the caller to cast as necessary./
+
+#+begin_src c
+  void vector_free(struct vector *v);
+#+end_src
+
+/Free the underlying data in =v=. Resets all member variables./
+
+#+begin_src c
+  void vector_rm_at(struct vector *v, size_t idx);
+#+end_src
+
+/Remove an element at a specific index =idx=./
+
+#+begin_src c
+  uint8_t *vector_asbytes(struct vector *v);
+#+end_src
+
+/Gives the underlying data as =uint8_t=./
+
+** TODO Pair
+
+** TODO Hashtbl
+
+** TODO Token
+
+** TODO Lexer
+
+** TODO Ast
+
+** TODO Parser
 

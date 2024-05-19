@@ -22,7 +22,7 @@
 
 // File: common.h
 // Description:
-//   A few things that is useful
+//   A few things that are useful
 //   throughout the entire project.
 
 #ifndef COMMON_H

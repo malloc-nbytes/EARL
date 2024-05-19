@@ -24,7 +24,8 @@
   } while (0)
 
 int
-main(void) {
+main(void)
+{
   int pass = 0;
   int fail = 0;
 

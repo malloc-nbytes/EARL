@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-19 Sun 13:34 -->
+<!-- 2024-05-19 Sun 15:42 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL</title>
@@ -21,6 +21,38 @@
 <script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/bigblow.js"></script>
 <script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/bigblow_theme/js/hideshow.js"></script>
 <script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
 </head>
 <body>
 <div id="content" class="content">
@@ -29,17 +61,63 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb224093">1. Introduction</a></li>
-<li><a href="#org23d31ac">2. Compiling</a></li>
-<li><a href="#org675ed0c">3. Contributing</a>
+<li><a href="#org14185f3">1. Introduction</a></li>
+<li><a href="#org6ade1c5">2. Compiling</a></li>
+<li><a href="#org80ab2f6">3. Contributing</a>
 <ul>
-<li><a href="#orgcb6ee81">3.1. Style Guide</a>
+<li><a href="#org190230d">3.1. Style Guide</a>
 <ul>
-<li><a href="#org38c8a6b">3.1.1. Functions</a></li>
-<li><a href="#orgce104a3">3.1.2. Structs</a></li>
-<li><a href="#org2c6d2c6">3.1.3. Misc</a></li>
+<li><a href="#org233be82">3.1.1. Functions</a></li>
+<li><a href="#org615bf02">3.1.2. Structs</a></li>
+<li><a href="#org166ec7c">3.1.3. Misc</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><a href="#org7c666b6">4. Test Suite</a>
+<ul>
+<li><a href="#org00bf7ce">4.1. Test Suite Source</a></li>
+<li><a href="#org4be435c">4.2. Adding more Tests to Ones that Exist</a></li>
+<li><a href="#org0d99f46">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
+</ul>
+</li>
+<li><a href="#org6a8790f">5. Interfaces</a>
+<ul>
+<li><a href="#org2185144">5.1. Arena</a>
+<ul>
+<li><a href="#orgae151e7">5.1.1. Functions</a></li>
+</ul>
+</li>
+<li><a href="#org7218997">5.2. Common</a>
+<ul>
+<li><a href="#orge4bff49">5.2.1. Macros</a></li>
+</ul>
+</li>
+<li><a href="#orgdff6a94">5.3. Notify</a>
+<ul>
+<li><a href="#org2bfdb98">5.3.1. Enums</a></li>
+<li><a href="#org6fd4f8a">5.3.2. Macros</a></li>
+</ul>
+</li>
+<li><a href="#orge7be010">5.4. Utils</a>
+<ul>
+<li><a href="#org27094dc">5.4.1. Macros</a></li>
+<li><a href="#orgaed421e">5.4.2. Functions</a></li>
+</ul>
+</li>
+<li><a href="#org5d96f86">5.5. Vector</a>
+<ul>
+<li><a href="#org2047756">5.5.1. Structs</a></li>
+<li><a href="#org000e205">5.5.2. Macros</a></li>
+<li><a href="#org181358e">5.5.3. Functions</a></li>
+</ul>
+</li>
+<li><a href="#org3f4a4ff">5.6. <span class="todo TODO">TODO</span> Pair</a></li>
+<li><a href="#org152eef2">5.7. <span class="todo TODO">TODO</span> Hashtbl</a></li>
+<li><a href="#orgc468062">5.8. <span class="todo TODO">TODO</span> Token</a></li>
+<li><a href="#orgc63e192">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
+<li><a href="#org9d59af8">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
+<li><a href="#orgc10ac3d">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
 </ul>
 </li>
 </ul>
@@ -51,26 +129,28 @@ in a much better format.
 </p>
 
 
-<div id="orgb4308dc" class="figure">
+<div id="orgd67893c" class="figure">
 <p><img src="./imgs/EARL-resized.jpeg" alt="EARL-resized.jpeg" />
 </p>
 </div>
 
-<div id="outline-container-orgb224093" class="outline-2">
-<h2 id="orgb224093"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-org14185f3" class="outline-2">
+<h2 id="org14185f3"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
+<blockquote>
 <p>
 EARL (Evaluate And Run Language) is being designed to be functionally similar to Python, except with types
 and brackets.
 </p>
+</blockquote>
 </div>
 </div>
 
-<div id="outline-container-org23d31ac" class="outline-2">
-<h2 id="org23d31ac"><span class="section-number-2">2.</span> Compiling</h2>
+<div id="outline-container-org6ade1c5" class="outline-2">
+<h2 id="org6ade1c5"><span class="section-number-2">2.</span> Compiling</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-EARL uses <a href="https://www.gnu.org/software/autoconf/"><code>autoconf</code></a> to generate Makefiles. The following are required to build the project:
+EARL uses <a href="https://www.gnu.org/software/autoconf/">autoconf</a> to generate Makefiles. The following are required to build the project:
 </p>
 <ol class="org-ol">
 <li><code>autoconf</code></li>
@@ -103,22 +183,22 @@ This will create the Makefiles. Use <code>make &lt;opt&gt;</code> where <code>&l
 </div>
 </div>
 
-<div id="outline-container-org675ed0c" class="outline-2">
-<h2 id="org675ed0c"><span class="section-number-2">3.</span> Contributing</h2>
+<div id="outline-container-org80ab2f6" class="outline-2">
+<h2 id="org80ab2f6"><span class="section-number-2">3.</span> Contributing</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgcb6ee81" class="outline-3">
-<h3 id="orgcb6ee81"><span class="section-number-3">3.1.</span> Style Guide</h3>
+<div id="outline-container-org190230d" class="outline-3">
+<h3 id="org190230d"><span class="section-number-3">3.1.</span> Style Guide</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org38c8a6b" class="outline-4">
-<h4 id="org38c8a6b"><span class="section-number-4">3.1.1.</span> Functions</h4>
+<div id="outline-container-org233be82" class="outline-4">
+<h4 id="org233be82"><span class="section-number-4">3.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>Functions should be formatted as such:</li>
 </ul>
 
-<pre class="example" id="orgd507dbe">
+<pre class="example" id="org51766fe">
 &lt;return type&gt;
 &lt;name&gt;(&lt;params&gt;)
 {
@@ -131,16 +211,16 @@ This will create the Makefiles. Use <code>make &lt;opt&gt;</code> where <code>&l
 <li>Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.</li>
 <li>Always put a comment after <code>#endif</code> with what it is ending.</li>
 <li>All functions should have the corrosponding data structure it is working with before the name.
-For example, if I am making a <code>append</code> function for a <code>vector</code>, the name should be along the lines
+For example, if I am making an <code>append</code> function for a <code>vector</code>, the name should be along the lines
 of <code>vector_append</code>.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgce104a3" class="outline-4">
-<h4 id="orgce104a3"><span class="section-number-4">3.1.2.</span> Structs</h4>
+<div id="outline-container-org615bf02" class="outline-4">
+<h4 id="org615bf02"><span class="section-number-4">3.1.2.</span> Structs</h4>
 <div class="outline-text-4" id="text-3-1-2">
-<pre class="example" id="org6e4f304">
+<pre class="example" id="org44cb2fa">
 struct &lt;name&gt; {
   ...
 }
@@ -151,7 +231,7 @@ struct &lt;name&gt; {
 <li>Typedefs for struct names are not allowed as of now.</li>
 </ul>
 
-<pre class="example" id="org57fdb41">
+<pre class="example" id="org109cbef">
 struct my_vector {
   ...
 }
@@ -159,8 +239,8 @@ struct my_vector {
 </div>
 </div>
 
-<div id="outline-container-org2c6d2c6" class="outline-4">
-<h4 id="org2c6d2c6"><span class="section-number-4">3.1.3.</span> Misc</h4>
+<div id="outline-container-org166ec7c" class="outline-4">
+<h4 id="org166ec7c"><span class="section-number-4">3.1.3.</span> Misc</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <ul class="org-ul">
 <li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).</li>
@@ -170,7 +250,7 @@ struct my_vector {
 Example:</li>
 </ul>
 
-<pre class="example" id="org527fa07">
+<pre class="example" id="org0a09f66">
 typedef int my_type_t;
 </pre>
 
@@ -184,10 +264,638 @@ typedef int my_type_t;
 </div>
 </div>
 </div>
+
+<div id="outline-container-org7c666b6" class="outline-2">
+<h2 id="org7c666b6"><span class="section-number-2">4.</span> Test Suite</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+At the time of writing this, the tests directory is structured as such:
+</p>
+
+<pre class="example" id="orgbff34ee">
+.
+├── Makefile
+├── Makefile.am
+├── Makefile.in
+├── pair
+│   ├── test-pair.c
+│   └── test-pair.h
+├── parsers
+│   ├── test-parsers.c
+│   └── test-parsers.h
+├── sample-input
+│   ├── expect.1.in
+│   ├── expect.2.in
+│   ├── expect-keyword.1.in
+│   └── expect-type.1.in
+├── test-suite.c
+├── test-suite.h
+└── vec
+    ├── test-vec.c
+    └── test-vec.h
+</pre>
+</div>
+
+<div id="outline-container-org00bf7ce" class="outline-3">
+<h3 id="org00bf7ce"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+The test suite is composed of two files, <code>test-suite.c</code> and <code>test-suite.h</code>
+</p>
+
+<p>
+The file <code>test-suite.h</code> contains a bunch of custom assert macros that return
+the correct values on failure. Use these when comparing values, checking for
+null, etc.
+</p>
+
+<p>
+The file <code>test-suite.c</code> is the file where you actually issue running the tests.
+This is done with the <code>#define RUN_TEST(func)</code> macro where <code>func</code> is the test
+that you want to run.
+</p>
+
+<p>
+All tests return a type of <code>test_errno_t</code>, and are all expected to return that.
+Additionally, the tests should not take any parameters. At the end of every test,
+the function should return <code>TEST_OK</code>.
+</p>
+
+<p>
+If a test were to fail after running <code>make test</code>, it will output "FAILED (\(n\))"
+where \(n\) is some test assert failure number. To figure out what the number means,
+go into <code>test/test-suite.h</code> and match it to the appropriate <code>TEST_ASSERT_*_FAILURE</code> macro.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4be435c" class="outline-3">
+<h3 id="org4be435c"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+Simply go into the test directory that you want to add tests for and create a new
+function. Then add it's prototype to its corrosponding header file.
+</p>
+
+<p>
+Lets say I want to add a new test to <code>vec</code>. I would go into
+<code>test/vec/test-vec.h</code> and add a new prototype
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#ifndef VEC_TEST_H
+#define VEC_TEST_H
+
+#include "test-suite.h"
+
+test_errno_t test_vector_instantiation(void);
+test_errno_t test_vector_insert_elems(void);
+.
+.
+.
+test_errno_t test_vector_my_new_test(void); // here
+</pre>
+</div>
+
+<p>
+I would then go into <code>test/vec/test-vec.c</code> and add it's implementation
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">test_errno_t
+test_vector_my_new_test(void)
+{
+  struct vec v = vec_create2(int);
+  ...
+  TEST_ASSERT_EQ(vec_deref_at(v, 1, int), 99); // example of a test assert.
+  ...
+  vector_free(&amp;v); // don't forget to free the memory!
+  return TEST_OK;
+}
+</pre>
+</div>
+
+<p>
+Finally, go into <code>test/test-suite.c</code> and issue the macro to actually
+run the newly created test.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">int
+main(void)
+{
+  int pass = 0;
+  int fail = 0;
+
+  time_t start, end;
+  double elapsed;
+
+  start = time(NULL);
+  RUN_TEST(test_vector_instantiation());
+  RUN_TEST(test_vector_insert_elems());
+  RUN_TEST(test_vector_large_elements());
+  ...
+  ...
+  ...
+  RUN_TEST(test_vector_my_new_test()); // here
+  ...
+  ...
+  ...
+  elapsed = difftime(end, start);
+  printf("[test] total time: %.5f\n", elapsed);
+  printf("TEST SUMMARY\n");
+  printf("  PASS: %-5d FAIL: %d\n", pass, fail);
+}
+
+</pre>
+</div>
+
+<p>
+That's it! Now run <code>make test</code> to see the output.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0d99f46" class="outline-3">
+<h3 id="org0d99f46"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
+<div class="outline-text-3" id="text-4-3">
+<p>
+This is more involved and will likely change in the future. But for now, here
+is how to do it:
+</p>
+
+<ol class="org-ol">
+<li>In <code>test/</code>, create a new directory for the type of tests you want
+to create. Let <i>testname</i> be the directory name.</li>
+<li>Go into <code>test/Makefile.am</code> *note the <code>.am</code>.</li>
+<li>In <code>test_suite_SOURCES</code>, add <code>testname/test-testname.c</code></li>
+<li><p>
+Create the <i>testname</i> directory and add the <code>.c</code> and <code>.h</code> files.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">mkdir test/testname
+touch test/testname/test-testname{.c,.h}
+</pre>
+</div></li>
+
+<li><p>
+Add include guards to the header
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">cat &gt; test/testname/test-testname.h &lt;&lt; "EOF"
+#ifndef TESTNAME_H
+#define TESTNAME_H
+
+#endif // TESTNAME_H
+EOF
+</pre>
+</div></li>
+<li>In <code>test/test-suite.c</code> add the appropriate include header.</li>
+<li>Start adding your tests (see <a href="#org4be435c">Adding more Tests to Ones that Exist</a>)</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6a8790f" class="outline-2">
+<h2 id="org6a8790f"><span class="section-number-2">5.</span> Interfaces</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org2185144" class="outline-3">
+<h3 id="org2185144"><span class="section-number-3">5.1.</span> Arena</h3>
+<div class="outline-text-3" id="text-5-1">
+<blockquote>
+<p>
+File: arena.h
+</p>
+
+<p>
+Description:
+   Provides an API for an arena allocator. This is
+   helpful because we have a "pool" of memory that
+   we can use and then free it all at once. If
+   unfamiliar with arena allocators,
+   <a href="https://en.wikipedia.org/wiki/Region-based_memory_management">https://en.wikipedia.org/wiki/Region-based_memory_management</a>
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-orgae151e7" class="outline-4">
+<h4 id="orgae151e7"><span class="section-number-4">5.1.1.</span> Functions</h4>
+<div class="outline-text-4" id="text-5-1-1">
+<div class="org-src-container">
+<pre class="src src-c">struct arena;
+</pre>
+</div>
+
+<p>
+<i>The <code>arena</code> struct.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">struct arena *arena_create(size_t cap);
+</pre>
+</div>
+
+<p>
+<i>Create a new arena allocator with capacity as <code>cap</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">uint8_t *arena_alloc(struct arena *arena, size_t bytes);
+</pre>
+</div>
+
+<p>
+<i>Allocate <code>bytes</code> number of bytes in an <code>arena</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void arena_free(struct arena *arena);
+</pre>
+</div>
+
+<p>
+<i>Free the memory inside of <code>arena</code> <b>AS WELL AS THE ARENA ITSELF</b>.</i>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7218997" class="outline-3">
+<h3 id="org7218997"><span class="section-number-3">5.2.</span> Common</h3>
+<div class="outline-text-3" id="text-5-2">
+<blockquote>
+<p>
+File: common.h
+</p>
+
+<p>
+Description:
+A few things that are useful throughout the entire project.
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-orge4bff49" class="outline-4">
+<h4 id="orge4bff49"><span class="section-number-4">5.2.1.</span> Macros</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<div class="org-src-container">
+<pre class="src src-c">#define COMMON_KW_LET
+#define COMMON_KW_DEF
+#define COMMON_KW_RETURN
+</pre>
+</div>
+
+<p>
+<i>The keywords of EARL.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define COMMON_TY_INT32
+#define COMMON_TY_STR
+</pre>
+</div>
+
+<p>
+<i>The types of EARL.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define COMMON_KW_AS_CPL
+#define COMMON_TY_AS_CPL
+</pre>
+</div>
+
+<p>
+<i>The keywords and types of EARL as compound literals.</i>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgdff6a94" class="outline-3">
+<h3 id="orgdff6a94"><span class="section-number-3">5.3.</span> Notify</h3>
+<div class="outline-text-3" id="text-5-3">
+<blockquote>
+<p>
+File: notify.h
+</p>
+
+<p>
+Description:
+Provides ways to display an error message and quite the program.
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-org2bfdb98" class="outline-4">
+<h4 id="org2bfdb98"><span class="section-number-4">5.3.1.</span> Enums</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<div class="org-src-container">
+<pre class="src src-c">enum NOTIFY_ERR_TYPE
+</pre>
+</div>
+
+<p>
+<i>Provides different types of errors.</i>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6fd4f8a" class="outline-4">
+<h4 id="org6fd4f8a"><span class="section-number-4">5.3.2.</span> Macros</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<div class="org-src-container">
+<pre class="src src-c">#define NOTIFY_ERR(etype, msg)
+</pre>
+</div>
+
+<p>
+<i>Macro that prints the error type <code>etype</code> as well as prints <code>msg</code>. It will exit with a status of 1.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define NOTIFY_ERRARGS(etype, msg, ...)
+</pre>
+</div>
+
+<p>
+<i>It is the exact same as <code>NOTIFY_ERR</code> except it takes a variadic number of arguments.
+This is useful if your message has format specifiers in it such as <code>"%d"</code>, <code>"%zu"</code> etc.</i>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge7be010" class="outline-3">
+<h3 id="orge7be010"><span class="section-number-3">5.4.</span> Utils</h3>
+<div class="outline-text-3" id="text-5-4">
+<blockquote>
+<p>
+File: utils.h
+</p>
+
+<p>
+Description:
+A bunch of helpful utility tools.
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-org27094dc" class="outline-4">
+<h4 id="org27094dc"><span class="section-number-4">5.4.1.</span> Macros</h4>
+<div class="outline-text-4" id="text-5-4-1">
+<div class="org-src-container">
+<pre class="src src-c">#define DEBUG_ASSERT(expr)
+</pre>
+</div>
+
+<p>
+<i>Debug assertions that are taken out
+when compiling in "release" mode.
+In "debug" mode, they will function.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define NOOP(x)
+</pre>
+</div>
+
+<p>
+<i>A macro that <code>void</code>'s <code>x</code>. This is useful to silence compiler warnings.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define UNIMPLEMENTED(msg, rettype)
+</pre>
+</div>
+
+<p>
+<i>Used to silence compiler warning on a function with
+some return value that is not yet returning anything.
+It prints <code>msg</code> and returns <code>retttype</code></i>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgaed421e" class="outline-4">
+<h4 id="orgaed421e"><span class="section-number-4">5.4.2.</span> Functions</h4>
+<div class="outline-text-4" id="text-5-4-2">
+<div class="org-src-container">
+<pre class="src src-c">void *utils_safe_malloc(size_t bytes);
+</pre>
+</div>
+
+<p>
+<i>A malloc wrapper that checks if
+malloc failed. Allocates <code>bytes</code> number of bytes.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">int utils_streq(const char *s1, const char *s2);
+</pre>
+</div>
+
+<p>
+<i>A wrapper for strcmp that checks if the
+strings are equal. Returns 1 on success,
+and 0 on failure.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void utils_iota_array(int *arr, size_t len);
+</pre>
+</div>
+
+<p>
+<i>Fill an array from 0..len with values 0..len.</i>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5d96f86" class="outline-3">
+<h3 id="org5d96f86"><span class="section-number-3">5.5.</span> Vector</h3>
+<div class="outline-text-3" id="text-5-5">
+<blockquote>
+<p>
+File: vector.h
+</p>
+
+<p>
+Description:
+   A vector interface. It is a generic array
+   that grows by \((\) <code>vector.cap</code> \(\times 2)\) when the length
+   matches the capacity.
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-org2047756" class="outline-4">
+<h4 id="org2047756"><span class="section-number-4">5.5.1.</span> Structs</h4>
+<div class="outline-text-4" id="text-5-5-1">
+<div class="org-src-container">
+<pre class="src src-c">struct vector
+</pre>
+</div>
+
+<p>
+<i>The vector struct.</i>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org000e205" class="outline-4">
+<h4 id="org000e205"><span class="section-number-4">5.5.2.</span> Macros</h4>
+<div class="outline-text-4" id="text-5-5-2">
+<div class="org-src-container">
+<pre class="src src-c">#define vector_create2(type)
+</pre>
+</div>
+
+<p>
+<i>Macro to make it clear what kind of
+element the vector is going to hold. It creates
+a vector that will hold the <code>type</code></i>
+</p>
+
+<p>
+<i>Example:</i> <code>struct vector v = vector_create2(int);</code>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define vector_deref_at(v, idx, cast)
+</pre>
+</div>
+
+<p>
+<i>Gives you the element in the vector <code>v</code> at <code>idx</code> and casts it as <code>cast</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define vector_debug_dump(v, formatstr, type)
+</pre>
+</div>
+
+<p>
+<i>Debug prints the vector <code>v</code> with the format string
+<code>formatstr</code> and casted as <code>type</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">#define vector(type)
+</pre>
+</div>
+
+<p>
+<i>Only used when instantiating a new vector or dispalying its typey.
+This allows to explicitly state what it holds, however nothing happens
+if the type does not match what it is actually holding.</i>
+</p>
+
+<p>
+<i>Example:</i>
+</p>
+
+<p>
+<code>struct vector(int) v = vector_create(int);</code>
+</p>
+
+<p>
+<code>struct F { struct vector(int) v, ... };</code>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org181358e" class="outline-4">
+<h4 id="org181358e"><span class="section-number-4">5.5.3.</span> Functions</h4>
+<div class="outline-text-4" id="text-5-5-3">
+<div class="org-src-container">
+<pre class="src src-c">struct vector vector_create(size_t stride);
+</pre>
+</div>
+
+<p>
+<i>Create a vector where the size of each element to be stored is <code>stride</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void vector_append(struct vector *v, void *data);
+</pre>
+</div>
+
+<p>
+<i>Appends <code>data</code> to the END of the vector <code>v</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void *vector_at(struct vector *v, size_t i);
+</pre>
+</div>
+
+<p>
+<i>Retrieve an element at <code>i</code>. It is up to the caller to cast as necessary.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void vector_free(struct vector *v);
+</pre>
+</div>
+
+<p>
+<i>Free the underlying data in <code>v</code>. Resets all member variables.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">void vector_rm_at(struct vector *v, size_t idx);
+</pre>
+</div>
+
+<p>
+<i>Remove an element at a specific index <code>idx</code>.</i>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-c">uint8_t *vector_asbytes(struct vector *v);
+</pre>
+</div>
+
+<p>
+<i>Gives the underlying data as <code>uint8_t</code>.</i>
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3f4a4ff" class="outline-3">
+<h3 id="org3f4a4ff"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair</h3>
+</div>
+
+<div id="outline-container-org152eef2" class="outline-3">
+<h3 id="org152eef2"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl</h3>
+</div>
+
+<div id="outline-container-orgc468062" class="outline-3">
+<h3 id="orgc468062"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
+</div>
+
+<div id="outline-container-orgc63e192" class="outline-3">
+<h3 id="orgc63e192"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
+</div>
+
+<div id="outline-container-org9d59af8" class="outline-3">
+<h3 id="org9d59af8"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
+</div>
+
+<div id="outline-container-orgc10ac3d" class="outline-3">
+<h3 id="orgc10ac3d"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-05-19 Sun 13:34</p>
+<p class="date">Created: 2024-05-19 Sun 15:42</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

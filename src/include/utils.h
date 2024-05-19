@@ -22,7 +22,7 @@
 
 // File: utils.h
 // Description:
-//   A bunch of helpful utility functions.
+//   A bunch of helpful utility tools.
 
 #ifndef UTILS_H
 #define UTILS_H
@@ -40,14 +40,18 @@
 #define DEBUG_ASSERT(expr) ((void)0)
 #endif
 
+// A macro that void's `x`. This is useful to silence compiler warnings.
 #define NOOP(x) ((void)(x))
 
+// Used to silence compiler warning on a function with
+// some return value that is not yet returning anything.
+// It prints `msg` and returns `retttype`
 #define UNIMPLEMENTED(msg, rettype)            \
   fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
   return rettype
 
 // A malloc wrapper that checks if
-// malloc failed.
+// malloc failed. Allocates `bytes` number of bytes.
 void *utils_safe_malloc(size_t bytes);
 
 // A wrapper for strcmp that checks if the

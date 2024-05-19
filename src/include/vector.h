@@ -44,7 +44,7 @@ struct vector {
 // Macro to make it clear what kind of
 // element the vector is going to hold.
 // Example:
-//   struct vector v = vector_create(int);
+//   struct vector v = vector_create2(int);
 #define vector_create2(type)                 \
   (struct vector) {                          \
     .data = utils_safe_malloc(sizeof(type)), \
@@ -53,8 +53,12 @@ struct vector {
     .stride = sizeof(type),                  \
   };
 
+// Gives you the element in the vector `v` at `idx` and casts
+// it as `cast`.
 #define vector_deref_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
 
+// Debug prints the vector `v` with the format string
+// `formatstr` and casted as `type`.
 #define vector_debug_dump(v, formatstr, type)           \
   do {                                                  \
     for (size_t i = 0; i < v.len; ++i) {                \
@@ -92,6 +96,7 @@ void vector_free(struct vector *v);
 // Remove an element at a specific index.
 void vector_rm_at(struct vector *v, size_t idx);
 
+// Gives the underlying data as uint8_t.
 uint8_t *vector_asbytes(struct vector *v);
 
 #endif // VECTOR_H

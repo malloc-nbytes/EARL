@@ -116,8 +116,8 @@ parser_parse_def_stmt_args(struct lexer *lexer)
 struct stmt_block *
 parser_parse_stmt_block(struct lexer *lexer)
 {
-  /* NOOP(lexer); */
-  /* UNIMPLEMENTED("parse_stmt_block", NULL); */
+  NOOP(lexer);
+  UNIMPLEMENTED("parse_stmt_block", NULL);
 }
 
 struct stmt_def *
