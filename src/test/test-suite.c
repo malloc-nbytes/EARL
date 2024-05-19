@@ -1,10 +1,10 @@
-#include <stdio.h>
-#include <time.h>
-
-#include "test-suite.h"
 #include "vec/test-vec.h"
 #include "pair/test-pair.h"
 #include "parsers/test-parsers.h"
+#include "test-suite.h"
+
+#include <stdio.h>
+#include <time.h>
 
 // NOTE: RUN_TEST requires that two
 // integers namely `pass` & `fail` be
@@ -33,6 +33,7 @@ main(void)
   double elapsed;
 
   start = time(NULL);
+
   RUN_TEST(test_vector_instantiation());
   RUN_TEST(test_vector_insert_elems());
   RUN_TEST(test_vector_large_elements());
