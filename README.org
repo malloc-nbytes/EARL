@@ -142,6 +142,9 @@ All tests return a type of =test_errno_t=, and are all expected to return that.
 Additionally, the tests should not take any parameters. At the end of every test,
 the function should return =TEST_OK=.
 
+The project is compiled with =-I$(top_srcdir)/include= so there's no need to
+have =#include "../../include/"= when needing headers.
+
 If a test were to fail after running =make test=, it will output "FAILED ($n$)"
 where $n$ is some test assert failure number. To figure out what the number means,
 go into =test/test-suite.h= and match it to the appropriate =TEST_ASSERT_*_FAILURE= macro.
@@ -238,11 +241,19 @@ is how to do it:
      #ifndef TESTNAME_H
      #define TESTNAME_H
 
+     #include "test-suite.h"
+
      #endif // TESTNAME_H
      EOF
    #+end_src
-6. In =test/test-suite.c= add the appropriate include header.
-7. Start adding your tests (see [[Adding more Tests to Ones that Exist][Adding more Tests to Ones that Exist]])
+
+6. Add the appropriate headers to =test/testname/test-testname.c=
+   #+begin_src shell
+     echo "#include \"test-suite.h\"" > test/testname/test-testname.c
+   #+end_src
+
+7. In =test/test-suite.c= add the appropriate include header.
+8. Start adding your tests (see [[Adding more Tests to Ones that Exist][Adding more Tests to Ones that Exist]])
 
 * Interfaces
 
