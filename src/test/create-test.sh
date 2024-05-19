@@ -11,6 +11,11 @@ if [ "$#" != 1 ]; then
     usage $0
 fi
 
+if [ "$1" = "--help" -o "$1" = "-h" ];
+then
+    usage $0
+fi
+
 TESTNAME=$1
 INCLUDE_DIRECTIVE="#include \"$TESTNAME/test-$TESTNAME.h\""
 

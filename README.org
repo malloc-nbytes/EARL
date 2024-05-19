@@ -105,25 +105,25 @@ At the time of writing this, the tests directory is structured as such:
 
 #+begin_example
 .
-├── Makefile
-├── Makefile.am
-├── Makefile.in
-├── pair
-│   ├── test-pair.c
-│   └── test-pair.h
-├── parsers
-│   ├── test-parsers.c
-│   └── test-parsers.h
-├── sample-input
+├── Makefile (generated)
+├── Makefile.am (how to make the tests)
+├── Makefile.in (generated)
+├── pair (pair tests)
+│   ├── test-pair.c (pair tests implementation)
+│   └── test-pair.h (pair tests prototypes)
+├── parsers (parsers tests)
+│   ├── test-parsers.c (parsers tests implementation)
+│   └── test-parsers.h (parsers tests prototypes)
+├── sample-input (sample input for tests that require input)
 │   ├── expect.1.in
 │   ├── expect.2.in
 │   ├── expect-keyword.1.in
 │   └── expect-type.1.in
-├── test-suite.c
-├── test-suite.h
-└── vec
-    ├── test-vec.c
-    └── test-vec.h
+├── test-suite.c (the test driver)
+├── test-suite.h (contains testing tools)
+└── vec (vector tests)
+    ├── test-vec.c (vector tests implementation)
+    └── test-vec.h (vector tests prototypes)
 #+end_example
 
 ** Test Suite Source
@@ -222,8 +222,14 @@ That's it! Now run =make test= to see the output.
 
 ** Creating New Tests not Associated with Ones that Exist
 
+*UPDATE*: There is now a script =test/create-test.sh= that automates
+the following steps for you. However I suggest reading the following
+to see what it is doing.
+
 This is more involved and will likely change in the future. But for now, here
 is how to do it:
+
+*NOTE*: The following steps are being performed in =EARL/src=.
 
 1. In =test/=, create a new directory for the type of tests you want
    to create. Let /testname/ be the directory name.

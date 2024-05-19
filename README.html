@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-19 Sun 15:56 -->
+<!-- 2024-05-19 Sun 16:35 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL</title>
@@ -61,63 +61,63 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orga1fd813">1. Introduction</a></li>
-<li><a href="#orgcb72739">2. Compiling</a></li>
-<li><a href="#orgd5a50b7">3. Contributing</a>
+<li><a href="#org6fbd639">1. Introduction</a></li>
+<li><a href="#orgc890a43">2. Compiling</a></li>
+<li><a href="#org9f7a9a6">3. Contributing</a>
 <ul>
-<li><a href="#org3ea0a54">3.1. Style Guide</a>
+<li><a href="#org4c88fc3">3.1. Style Guide</a>
 <ul>
-<li><a href="#org4db2a80">3.1.1. Functions</a></li>
-<li><a href="#org3b41f10">3.1.2. Structs</a></li>
-<li><a href="#org974ec4a">3.1.3. Misc</a></li>
+<li><a href="#orgee4de97">3.1.1. Functions</a></li>
+<li><a href="#orgab682c9">3.1.2. Structs</a></li>
+<li><a href="#orgea8484c">3.1.3. Misc</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org084c562">4. Test Suite</a>
+<li><a href="#org1d7aeb6">4. Test Suite</a>
 <ul>
-<li><a href="#org363f964">4.1. Test Suite Source</a></li>
-<li><a href="#org5867e15">4.2. Adding more Tests to Ones that Exist</a></li>
-<li><a href="#org1818513">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
+<li><a href="#orga61ffe0">4.1. Test Suite Source</a></li>
+<li><a href="#orgbc9950c">4.2. Adding more Tests to Ones that Exist</a></li>
+<li><a href="#orgc39dc88">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
 </ul>
 </li>
-<li><a href="#org430a1fd">5. Interfaces</a>
+<li><a href="#orgd483d66">5. Interfaces</a>
 <ul>
-<li><a href="#org9fbd1f5">5.1. Arena</a>
+<li><a href="#orgd2db5d4">5.1. Arena</a>
 <ul>
-<li><a href="#org465cf76">5.1.1. Functions</a></li>
+<li><a href="#org0705aef">5.1.1. Functions</a></li>
 </ul>
 </li>
-<li><a href="#orgd6e5ced">5.2. Common</a>
+<li><a href="#orgd09b7f9">5.2. Common</a>
 <ul>
-<li><a href="#org1fe9242">5.2.1. Macros</a></li>
+<li><a href="#orgb3fe463">5.2.1. Macros</a></li>
 </ul>
 </li>
-<li><a href="#org2267b6d">5.3. Notify</a>
+<li><a href="#org75af5d9">5.3. Notify</a>
 <ul>
-<li><a href="#orgc9ea605">5.3.1. Enums</a></li>
-<li><a href="#orgfac3999">5.3.2. Macros</a></li>
+<li><a href="#orga6ff560">5.3.1. Enums</a></li>
+<li><a href="#orgfc01bb2">5.3.2. Macros</a></li>
 </ul>
 </li>
-<li><a href="#org06f66fe">5.4. Utils</a>
+<li><a href="#org8d7d5ca">5.4. Utils</a>
 <ul>
-<li><a href="#org3939bc8">5.4.1. Macros</a></li>
-<li><a href="#org34be96f">5.4.2. Functions</a></li>
+<li><a href="#orgb847a18">5.4.1. Macros</a></li>
+<li><a href="#orgf08a50e">5.4.2. Functions</a></li>
 </ul>
 </li>
-<li><a href="#orgdbc63cc">5.5. Vector</a>
+<li><a href="#org9607e25">5.5. Vector</a>
 <ul>
-<li><a href="#org2e50cbc">5.5.1. Structs</a></li>
-<li><a href="#orga41b2e5">5.5.2. Macros</a></li>
-<li><a href="#org54c98e5">5.5.3. Functions</a></li>
+<li><a href="#org72db065">5.5.1. Structs</a></li>
+<li><a href="#org8506312">5.5.2. Macros</a></li>
+<li><a href="#orgce2eee3">5.5.3. Functions</a></li>
 </ul>
 </li>
-<li><a href="#org6e7debe">5.6. <span class="todo TODO">TODO</span> Pair</a></li>
-<li><a href="#orgece3e10">5.7. <span class="todo TODO">TODO</span> Hashtbl</a></li>
-<li><a href="#orge02c7f7">5.8. <span class="todo TODO">TODO</span> Token</a></li>
-<li><a href="#org3ef682d">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
-<li><a href="#org9e1ddc9">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
-<li><a href="#org2d1d7a4">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
+<li><a href="#orgb262508">5.6. <span class="todo TODO">TODO</span> Pair</a></li>
+<li><a href="#org75c9f9b">5.7. <span class="todo TODO">TODO</span> Hashtbl</a></li>
+<li><a href="#org6859744">5.8. <span class="todo TODO">TODO</span> Token</a></li>
+<li><a href="#orgad30a20">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
+<li><a href="#orgcbc6d76">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
+<li><a href="#orge2176a6">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
 </ul>
 </li>
 </ul>
@@ -129,13 +129,13 @@ in a much better format.
 </p>
 
 
-<div id="org8229070" class="figure">
+<div id="org19b243e" class="figure">
 <p><img src="./imgs/EARL-resized.jpeg" alt="EARL-resized.jpeg" />
 </p>
 </div>
 
-<div id="outline-container-orga1fd813" class="outline-2">
-<h2 id="orga1fd813"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-org6fbd639" class="outline-2">
+<h2 id="org6fbd639"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <blockquote>
 <p>
@@ -146,8 +146,8 @@ and brackets.
 </div>
 </div>
 
-<div id="outline-container-orgcb72739" class="outline-2">
-<h2 id="orgcb72739"><span class="section-number-2">2.</span> Compiling</h2>
+<div id="outline-container-orgc890a43" class="outline-2">
+<h2 id="orgc890a43"><span class="section-number-2">2.</span> Compiling</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 EARL uses <a href="https://www.gnu.org/software/autoconf/">autoconf</a> to generate Makefiles. The following are required to build the project:
@@ -183,22 +183,22 @@ This will create the Makefiles. Use <code>make &lt;opt&gt;</code> where <code>&l
 </div>
 </div>
 
-<div id="outline-container-orgd5a50b7" class="outline-2">
-<h2 id="orgd5a50b7"><span class="section-number-2">3.</span> Contributing</h2>
+<div id="outline-container-org9f7a9a6" class="outline-2">
+<h2 id="org9f7a9a6"><span class="section-number-2">3.</span> Contributing</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org3ea0a54" class="outline-3">
-<h3 id="org3ea0a54"><span class="section-number-3">3.1.</span> Style Guide</h3>
+<div id="outline-container-org4c88fc3" class="outline-3">
+<h3 id="org4c88fc3"><span class="section-number-3">3.1.</span> Style Guide</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org4db2a80" class="outline-4">
-<h4 id="org4db2a80"><span class="section-number-4">3.1.1.</span> Functions</h4>
+<div id="outline-container-orgee4de97" class="outline-4">
+<h4 id="orgee4de97"><span class="section-number-4">3.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>Functions should be formatted as such:</li>
 </ul>
 
-<pre class="example" id="org5c4a8df">
+<pre class="example" id="org7b5918b">
 &lt;return type&gt;
 &lt;name&gt;(&lt;params&gt;)
 {
@@ -217,10 +217,10 @@ of <code>vector_append</code>.</li>
 </div>
 </div>
 
-<div id="outline-container-org3b41f10" class="outline-4">
-<h4 id="org3b41f10"><span class="section-number-4">3.1.2.</span> Structs</h4>
+<div id="outline-container-orgab682c9" class="outline-4">
+<h4 id="orgab682c9"><span class="section-number-4">3.1.2.</span> Structs</h4>
 <div class="outline-text-4" id="text-3-1-2">
-<pre class="example" id="orgdd77709">
+<pre class="example" id="orgf881c25">
 struct &lt;name&gt; {
   ...
 }
@@ -231,7 +231,7 @@ struct &lt;name&gt; {
 <li>Typedefs for struct names are not allowed as of now.</li>
 </ul>
 
-<pre class="example" id="orgb1d80ef">
+<pre class="example" id="orgdee58b7">
 struct my_vector {
   ...
 }
@@ -239,8 +239,8 @@ struct my_vector {
 </div>
 </div>
 
-<div id="outline-container-org974ec4a" class="outline-4">
-<h4 id="org974ec4a"><span class="section-number-4">3.1.3.</span> Misc</h4>
+<div id="outline-container-orgea8484c" class="outline-4">
+<h4 id="orgea8484c"><span class="section-number-4">3.1.3.</span> Misc</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <ul class="org-ul">
 <li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).</li>
@@ -250,7 +250,7 @@ struct my_vector {
 Example:</li>
 </ul>
 
-<pre class="example" id="org0289bf3">
+<pre class="example" id="org35415b5">
 typedef int my_type_t;
 </pre>
 
@@ -265,39 +265,39 @@ typedef int my_type_t;
 </div>
 </div>
 
-<div id="outline-container-org084c562" class="outline-2">
-<h2 id="org084c562"><span class="section-number-2">4.</span> Test Suite</h2>
+<div id="outline-container-org1d7aeb6" class="outline-2">
+<h2 id="org1d7aeb6"><span class="section-number-2">4.</span> Test Suite</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 At the time of writing this, the tests directory is structured as such:
 </p>
 
-<pre class="example" id="org65d20d0">
+<pre class="example" id="org8237f0d">
 .
-├── Makefile
-├── Makefile.am
-├── Makefile.in
-├── pair
-│   ├── test-pair.c
-│   └── test-pair.h
-├── parsers
-│   ├── test-parsers.c
-│   └── test-parsers.h
-├── sample-input
+├── Makefile (generated)
+├── Makefile.am (how to make the tests)
+├── Makefile.in (generated)
+├── pair (pair tests)
+│   ├── test-pair.c (pair tests implementation)
+│   └── test-pair.h (pair tests prototypes)
+├── parsers (parsers test)
+│   ├── test-parsers.c (parsers tests implementation)
+│   └── test-parsers.h (parsers tests prototypes)
+├── sample-input (sample input for tests that require input)
 │   ├── expect.1.in
 │   ├── expect.2.in
 │   ├── expect-keyword.1.in
 │   └── expect-type.1.in
-├── test-suite.c
-├── test-suite.h
-└── vec
-    ├── test-vec.c
-    └── test-vec.h
+├── test-suite.c (the test driver)
+├── test-suite.h (contains testing tools)
+└── vec (vector tests)
+    ├── test-vec.c (vector tests implementation)
+    └── test-vec.h (vector tests prototypes)
 </pre>
 </div>
 
-<div id="outline-container-org363f964" class="outline-3">
-<h3 id="org363f964"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
+<div id="outline-container-orga61ffe0" class="outline-3">
+<h3 id="orga61ffe0"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The test suite is composed of two files, <code>test-suite.c</code> and <code>test-suite.h</code>
@@ -334,8 +334,8 @@ go into <code>test/test-suite.h</code> and match it to the appropriate <code>TES
 </div>
 </div>
 
-<div id="outline-container-org5867e15" class="outline-3">
-<h3 id="org5867e15"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
+<div id="outline-container-orgbc9950c" class="outline-3">
+<h3 id="orgbc9950c"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 Simply go into the test directory that you want to add tests for and create a new
@@ -421,12 +421,22 @@ That's it! Now run <code>make test</code> to see the output.
 </div>
 </div>
 
-<div id="outline-container-org1818513" class="outline-3">
-<h3 id="org1818513"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
+<div id="outline-container-orgc39dc88" class="outline-3">
+<h3 id="orgc39dc88"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-3">
+<p>
+<b>UPDATE</b>: There is now a script <code>test/create-test.sh</code> that automates
+the following steps for you. However I suggest reading the following
+to see what it is doing.
+</p>
+
 <p>
 This is more involved and will likely change in the future. But for now, here
 is how to do it:
+</p>
+
+<p>
+<b>NOTE</b>: The following steps are being performed in <code>EARL/src</code>.
 </p>
 
 <ol class="org-ol">
@@ -467,18 +477,18 @@ Add the appropriate headers to <code>test/testname/test-testname.c</code>
 </div></li>
 
 <li>In <code>test/test-suite.c</code> add the appropriate include header.</li>
-<li>Start adding your tests (see <a href="#org5867e15">Adding more Tests to Ones that Exist</a>)</li>
+<li>Start adding your tests (see <a href="#orgbc9950c">Adding more Tests to Ones that Exist</a>)</li>
 </ol>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org430a1fd" class="outline-2">
-<h2 id="org430a1fd"><span class="section-number-2">5.</span> Interfaces</h2>
+<div id="outline-container-orgd483d66" class="outline-2">
+<h2 id="orgd483d66"><span class="section-number-2">5.</span> Interfaces</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-org9fbd1f5" class="outline-3">
-<h3 id="org9fbd1f5"><span class="section-number-3">5.1.</span> Arena</h3>
+<div id="outline-container-orgd2db5d4" class="outline-3">
+<h3 id="orgd2db5d4"><span class="section-number-3">5.1.</span> Arena</h3>
 <div class="outline-text-3" id="text-5-1">
 <blockquote>
 <p>
@@ -496,8 +506,8 @@ Description:
 </blockquote>
 </div>
 
-<div id="outline-container-org465cf76" class="outline-4">
-<h4 id="org465cf76"><span class="section-number-4">5.1.1.</span> Functions</h4>
+<div id="outline-container-org0705aef" class="outline-4">
+<h4 id="org0705aef"><span class="section-number-4">5.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <div class="org-src-container">
 <pre class="src src-c">struct arena;
@@ -538,8 +548,8 @@ Description:
 </div>
 </div>
 
-<div id="outline-container-orgd6e5ced" class="outline-3">
-<h3 id="orgd6e5ced"><span class="section-number-3">5.2.</span> Common</h3>
+<div id="outline-container-orgd09b7f9" class="outline-3">
+<h3 id="orgd09b7f9"><span class="section-number-3">5.2.</span> Common</h3>
 <div class="outline-text-3" id="text-5-2">
 <blockquote>
 <p>
@@ -553,8 +563,8 @@ A few things that are useful throughout the entire project.
 </blockquote>
 </div>
 
-<div id="outline-container-org1fe9242" class="outline-4">
-<h4 id="org1fe9242"><span class="section-number-4">5.2.1.</span> Macros</h4>
+<div id="outline-container-orgb3fe463" class="outline-4">
+<h4 id="orgb3fe463"><span class="section-number-4">5.2.1.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-2-1">
 <div class="org-src-container">
 <pre class="src src-c">#define COMMON_KW_LET
@@ -590,8 +600,8 @@ A few things that are useful throughout the entire project.
 </div>
 </div>
 
-<div id="outline-container-org2267b6d" class="outline-3">
-<h3 id="org2267b6d"><span class="section-number-3">5.3.</span> Notify</h3>
+<div id="outline-container-org75af5d9" class="outline-3">
+<h3 id="org75af5d9"><span class="section-number-3">5.3.</span> Notify</h3>
 <div class="outline-text-3" id="text-5-3">
 <blockquote>
 <p>
@@ -605,8 +615,8 @@ Provides ways to display an error message and quite the program.
 </blockquote>
 </div>
 
-<div id="outline-container-orgc9ea605" class="outline-4">
-<h4 id="orgc9ea605"><span class="section-number-4">5.3.1.</span> Enums</h4>
+<div id="outline-container-orga6ff560" class="outline-4">
+<h4 id="orga6ff560"><span class="section-number-4">5.3.1.</span> Enums</h4>
 <div class="outline-text-4" id="text-5-3-1">
 <div class="org-src-container">
 <pre class="src src-c">enum NOTIFY_ERR_TYPE
@@ -619,8 +629,8 @@ Provides ways to display an error message and quite the program.
 </div>
 </div>
 
-<div id="outline-container-orgfac3999" class="outline-4">
-<h4 id="orgfac3999"><span class="section-number-4">5.3.2.</span> Macros</h4>
+<div id="outline-container-orgfc01bb2" class="outline-4">
+<h4 id="orgfc01bb2"><span class="section-number-4">5.3.2.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-3-2">
 <div class="org-src-container">
 <pre class="src src-c">#define NOTIFY_ERR(etype, msg)
@@ -644,8 +654,8 @@ This is useful if your message has format specifiers in it such as <code>"%d"</c
 </div>
 </div>
 
-<div id="outline-container-org06f66fe" class="outline-3">
-<h3 id="org06f66fe"><span class="section-number-3">5.4.</span> Utils</h3>
+<div id="outline-container-org8d7d5ca" class="outline-3">
+<h3 id="org8d7d5ca"><span class="section-number-3">5.4.</span> Utils</h3>
 <div class="outline-text-3" id="text-5-4">
 <blockquote>
 <p>
@@ -659,8 +669,8 @@ A bunch of helpful utility tools.
 </blockquote>
 </div>
 
-<div id="outline-container-org3939bc8" class="outline-4">
-<h4 id="org3939bc8"><span class="section-number-4">5.4.1.</span> Macros</h4>
+<div id="outline-container-orgb847a18" class="outline-4">
+<h4 id="orgb847a18"><span class="section-number-4">5.4.1.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
 <pre class="src src-c">#define DEBUG_ASSERT(expr)
@@ -695,8 +705,8 @@ It prints <code>msg</code> and returns <code>retttype</code></i>
 </div>
 </div>
 
-<div id="outline-container-org34be96f" class="outline-4">
-<h4 id="org34be96f"><span class="section-number-4">5.4.2.</span> Functions</h4>
+<div id="outline-container-orgf08a50e" class="outline-4">
+<h4 id="orgf08a50e"><span class="section-number-4">5.4.2.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-4-2">
 <div class="org-src-container">
 <pre class="src src-c">void *utils_safe_malloc(size_t bytes);
@@ -731,8 +741,8 @@ and 0 on failure.</i>
 </div>
 </div>
 
-<div id="outline-container-orgdbc63cc" class="outline-3">
-<h3 id="orgdbc63cc"><span class="section-number-3">5.5.</span> Vector</h3>
+<div id="outline-container-org9607e25" class="outline-3">
+<h3 id="org9607e25"><span class="section-number-3">5.5.</span> Vector</h3>
 <div class="outline-text-3" id="text-5-5">
 <blockquote>
 <p>
@@ -748,8 +758,8 @@ Description:
 </blockquote>
 </div>
 
-<div id="outline-container-org2e50cbc" class="outline-4">
-<h4 id="org2e50cbc"><span class="section-number-4">5.5.1.</span> Structs</h4>
+<div id="outline-container-org72db065" class="outline-4">
+<h4 id="org72db065"><span class="section-number-4">5.5.1.</span> Structs</h4>
 <div class="outline-text-4" id="text-5-5-1">
 <div class="org-src-container">
 <pre class="src src-c">struct vector
@@ -762,8 +772,8 @@ Description:
 </div>
 </div>
 
-<div id="outline-container-orga41b2e5" class="outline-4">
-<h4 id="orga41b2e5"><span class="section-number-4">5.5.2.</span> Macros</h4>
+<div id="outline-container-org8506312" class="outline-4">
+<h4 id="org8506312"><span class="section-number-4">5.5.2.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-5-2">
 <div class="org-src-container">
 <pre class="src src-c">#define vector_create2(type)
@@ -824,8 +834,8 @@ if the type does not match what it is actually holding.</i>
 </div>
 </div>
 
-<div id="outline-container-org54c98e5" class="outline-4">
-<h4 id="org54c98e5"><span class="section-number-4">5.5.3.</span> Functions</h4>
+<div id="outline-container-orgce2eee3" class="outline-4">
+<h4 id="orgce2eee3"><span class="section-number-4">5.5.3.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-5-3">
 <div class="org-src-container">
 <pre class="src src-c">struct vector vector_create(size_t stride);
@@ -884,34 +894,34 @@ if the type does not match what it is actually holding.</i>
 </div>
 </div>
 
-<div id="outline-container-org6e7debe" class="outline-3">
-<h3 id="org6e7debe"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair</h3>
+<div id="outline-container-orgb262508" class="outline-3">
+<h3 id="orgb262508"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair</h3>
 </div>
 
-<div id="outline-container-orgece3e10" class="outline-3">
-<h3 id="orgece3e10"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl</h3>
+<div id="outline-container-org75c9f9b" class="outline-3">
+<h3 id="org75c9f9b"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl</h3>
 </div>
 
-<div id="outline-container-orge02c7f7" class="outline-3">
-<h3 id="orge02c7f7"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
+<div id="outline-container-org6859744" class="outline-3">
+<h3 id="org6859744"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
 </div>
 
-<div id="outline-container-org3ef682d" class="outline-3">
-<h3 id="org3ef682d"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
+<div id="outline-container-orgad30a20" class="outline-3">
+<h3 id="orgad30a20"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
 </div>
 
-<div id="outline-container-org9e1ddc9" class="outline-3">
-<h3 id="org9e1ddc9"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
+<div id="outline-container-orgcbc6d76" class="outline-3">
+<h3 id="orgcbc6d76"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
 </div>
 
-<div id="outline-container-org2d1d7a4" class="outline-3">
-<h3 id="org2d1d7a4"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
+<div id="outline-container-orge2176a6" class="outline-3">
+<h3 id="orge2176a6"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-05-19 Sun 15:56</p>
+<p class="date">Created: 2024-05-19 Sun 16:35</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
