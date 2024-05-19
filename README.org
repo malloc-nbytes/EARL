@@ -26,7 +26,14 @@ EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makef
 2. =automake=
 3. =libtool=
 
-Users compiling for the first time should issue:
+Users compiling for the first time should issue either
+
+#+begin_src bash
+  cd EARL/src
+  ./setup.sh
+#+end_src
+
+or
 
 #+begin_src bash
   cd EARL/src/
