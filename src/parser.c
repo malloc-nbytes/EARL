@@ -20,6 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: parser.c
+// Description:
+//   The implementation of a set number
+//   of parsers that will parse different
+//   types of statements and expressions.
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +37,13 @@
 
 /********** HELPERS **********/
 
+// Name: expect
+//
+// Description:
+//   Given `lexer` and some expected token type `exp`,
+//   will check if the type of the head token in the
+//   lexer matches the type `exp`. If they do not
+//   match, panic.
 struct token *
 expect(struct lexer *lexer, enum token_type exp)
 {
@@ -41,6 +54,14 @@ expect(struct lexer *lexer, enum token_type exp)
   return hd;
 }
 
+// Name: expect_keyword
+//
+// Description:
+//   Given `lexer` and some expected keyword `keyword`,
+//   will check if the type of the head token in the
+//   lexer matches the type of keyword AND checks if
+//   `keyword` matches lexer->hd->lexeme. If they do not
+//   match, panic.
 struct token *
 expect_keyword(struct lexer *lexer, const char *keyword)
 {
@@ -60,10 +81,22 @@ expect_type(struct lexer *lexer)
 
 /********** PARSERS **********/
 
+// Name: parse_def_stmt_args
+//
+// Description:
+//   Given the syntax of (k1: ty1, k2: ty2,...,kn: tyn)
+//   will parse and return a vector of pairs of the id
+//   and the associated type i.e.
+//     vec[(k1, ty1), (k2, ty2),...,(kn, tyn)].
+//
+// NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
+//   and will consume those.
 struct vector(struct pair(struct token *id, struct token *type))
 parse_def_stmt_args(struct lexer *lexer)
 {
+  (void)expect(lexer, TOKENTYPE_LPAREN);
   assert(0 && "parse_def_stmt_args: unimplemented");
+  (void)expect(lexer, TOKENTYPE_RPAREN);
 }
 
 struct stmt_block *
@@ -83,9 +116,8 @@ parse_stmt_def(struct lexer *lexer)
   struct token *id = expect(lexer, TOKENTYPE_IDENT);
 
   // (...)
-  (void)expect(lexer, TOKENTYPE_LPAREN);
-  struct vector(struct pair(struct token *id, struct token *type)) args = parse_def_stmt_args(lexer);
-  (void)expect(lexer, TOKENTYPE_RPAREN);
+  struct vector(struct pair(struct token *id, struct token *type)) args
+    = parse_def_stmt_args(lexer);
 
   // ->
   (void)expect(lexer, TOKENTYPE_MINUS);

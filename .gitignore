@@ -14,6 +14,7 @@ configure~
 .dirstamp
 Makefile
 Makefile.in
+test_suite
 
 # Prerequisites
 *.d
