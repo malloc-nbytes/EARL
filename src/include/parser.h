@@ -37,6 +37,9 @@ struct vector(struct pair(struct token *id, struct token *type))
 struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
 struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);
 
+// Expression Parsers
+struct expr *parser_parse_expr(struct lexer *lexer);
+
 // Helpers
 struct token *parser_expect(struct lexer *lexer, enum token_type exp);
 struct token *parser_expect_keyword(struct lexer *lexer, const char *keyword);

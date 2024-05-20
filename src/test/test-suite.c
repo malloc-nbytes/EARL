@@ -29,11 +29,6 @@ main(void)
   int pass = 0;
   int fail = 0;
 
-  time_t start, end;
-  double elapsed;
-
-  start = time(NULL);
-
   RUN_TEST(test_vector_instantiation());
   RUN_TEST(test_vector_insert_elems());
   RUN_TEST(test_vector_large_elements());
@@ -49,12 +44,8 @@ main(void)
   RUN_TEST(test_parsers_expect2());
   RUN_TEST(test_parsers_expectkeyword1());
   RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_correctly());
+  RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly());
 
-  end = time(NULL);
-
-  elapsed = difftime(end, start);
-
-  printf("[test] total time: %.5f\n", elapsed);
   printf("TEST SUMMARY\n");
   printf("  PASS: %-5d FAIL: %d\n", pass, fail);
 

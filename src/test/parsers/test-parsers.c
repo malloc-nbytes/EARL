@@ -55,7 +55,6 @@ test_parsers_expect2(void)
   lexer_free(&lexer);
 
   return TEST_OK;
-
 }
 
 test_errno_t
@@ -82,13 +81,29 @@ test_parsers_expectkeyword1(void)
 test_errno_t
 test_parsers_parser_parse_def_stmt_args_can_parse_correctly(void)
 {
-  char *filepath = "test/sample-input/def-stmt-args-tuple.1.in";
+  char *filepath = "test/sample-input/stmt-def-args-tuple.1.in";
   struct lexer lexer = lex_file(filepath, NULL, 0, "#");
 
   struct vector v = parser_parse_stmt_def_args(&lexer);
 
   lexer_free(&lexer);
 
+  vector_free(&v);
+
+  return TEST_OK;
+}
+
+test_errno_t
+test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly(void)
+{
+  char *filepath = "test/sample-input/stmt-def-args-tuple.2.in";
+  struct lexer lexer = lex_file(filepath, NULL, 0, "#");
+
+  struct vector v = parser_parse_stmt_def_args(&lexer);
+
+  TEST_ASSERT_EQ(v.len, 0);
+
+  lexer_free(&lexer);
   vector_free(&v);
 
   return TEST_OK;
