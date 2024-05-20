@@ -127,10 +127,17 @@ parser_parse_logical_expr(struct lexer *lexer)
     int nonnull = peeked1 && peeked2;
     int doubleamp = nonnull && (peeked1->type == TOKENTYPE_AMPERSAND && peeked2->type == TOKENTYPE_AMPERSAND);
     int doublepipe = nonnull && (peeked1->type == TOKENTYPE_PIPE && peeked2->type == TOKENTYPE_PIPE);
-    if (doubleamp || doublepipe) {
+    if (doubleamp) {
       lexer_discard(lexer);
       lexer_discard(lexer);
       struct expr *rhs = parser_parse_equalitative_expr(lexer);
+    }
+    else if (doublepipe) {
+      lexer_discard(lexer);
+      lexer_discard(lexer);
+      struct expr *rhs = parser_parse_equalitative_expr(lexer);
+    }
+    else {
     }
   }
 }
