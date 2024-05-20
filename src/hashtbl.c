@@ -26,45 +26,13 @@
 #include "hashtbl.h"
 #include "utils.h"
 
-struct hashtbl_node {
-  uint8_t *key;
-  uint8_t *value;
-  struct hashtbl_node *next;
-};
-
-struct hashtbl {
-  // The table of nodes
-  struct hashtbl_node **tbl;
-
-  // Hash function needed
-  unsigned (*hashfunc)(void *key, size_t bytes);
-
-  // Function for comparing keys.
-  // TODO: is this really needed? or
-  // would memcmp be enough?
-  int (*keycompar)(void *x, void *y);
-
-  // The size of each key in bytes.
-  size_t key_stride;
-
-  // The size of each value in bytes.
-  size_t value_stride;
-
-  // The number of nodes in the tbl;
-  size_t len;
-
-  // The capacity of the tbl;
-  size_t cap;
-};
-
 static void
 try_resize(struct hashtbl *ht)
 {
   if (ht->cap == 0 || (float)ht->len / (float)ht->cap >= 0.5f) {
-    printf("resizing for cap %zu\n", ht->cap);
     size_t new_cap = (ht->cap + 1) * 2;
     struct hashtbl_node **new_tbl = utils_safe_malloc(sizeof(struct hashtbl_node *) * new_cap);
-    memset(new_tbl, NULL, sizeof(struct hashtbl_node *) * new_cap);
+    memset(new_tbl, 0, sizeof(struct hashtbl_node *) * new_cap);
 
     for (size_t i = 0; i < ht->cap; ++i) {
       struct hashtbl_node *tmp = ht->tbl[i];
@@ -76,12 +44,10 @@ try_resize(struct hashtbl *ht)
         tmp = next_node;
       }
     }
-    printf("out of foris done\n");
 
     free(ht->tbl);
     ht->tbl = new_tbl;
     ht->cap = new_cap;
-    printf("New cap: %zu\n", ht->cap);
   }
 }
 
