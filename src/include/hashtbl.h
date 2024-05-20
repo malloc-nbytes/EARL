@@ -62,7 +62,7 @@ struct hashtbl {
   size_t cap;
 };
 
-#define hashtbl_unsafe_create(key_ty, value_ty, hashf, keyc)    \
+#define hashtbl_create2(key_ty, value_ty, hashf, keyc)          \
   (struct hashtbl) {                                            \
     .tbl = NULL,                                                \
     .hashfunc = hashf,                                          \
@@ -73,6 +73,9 @@ struct hashtbl {
     .cap = 0,                                                   \
   }
 
+
+#define hashtbl_deref_get(ht, key, type) *(type *)hashtbl_get(&ht, key)
+    
 #define hashtbl(ty1, ty2) hashtbl
 
 struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
@@ -80,5 +83,7 @@ struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
                               int (*keycompar)(void *x, void *y));
 
 void hashtbl_insert(struct hashtbl *ht, void *key, void *value);
+
+uint8_t * hashtbl_get(struct hashtbl *ht, void *key) 
 
 #endif // HASHTABLE_H

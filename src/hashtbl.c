@@ -110,3 +110,13 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value)
   }
 
 }
+
+uint8_t *
+hashtbl_get(struct hashtbl *ht, void *key) 
+{
+  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap; 
+
+  struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
+
+  return p->value; 
+}
