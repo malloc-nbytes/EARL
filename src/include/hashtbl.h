@@ -73,9 +73,10 @@ struct hashtbl {
     .cap = 0,                                                   \
   }
 
+#define hashtbl(ty1, ty2) hashtbl
 
-#define hashtbl_deref_get(ht, key, type) *(type *)hashtbl_get(&ht, key)
-    
+#define hashtbl_deref_get(ht, key, type) *(type *)hashtbl_get(&ht, &key)
+
 #define hashtbl(ty1, ty2) hashtbl
 
 struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
@@ -83,7 +84,8 @@ struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
                               int (*keycompar)(void *x, void *y));
 
 void hashtbl_insert(struct hashtbl *ht, void *key, void *value);
-
-uint8_t * hashtbl_get(struct hashtbl *ht, void *key) 
+uint8_t *hashtbl_get(struct hashtbl *ht, void *key);
+struct hashtbl_node **hashtbl_asbytes(struct hashtbl *ht);
+void hashtbl_free(struct hashtbl *ht);
 
 #endif // HASHTABLE_H

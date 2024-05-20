@@ -1,5 +1,5 @@
 #include "hashtbl/test-hashtbl.h"
-#include "vec/test-vec.h"
+#include "vector/test-vector.h"
 #include "pair/test-pair.h"
 #include "parsers/test-parsers.h"
 #include "test-suite.h"
@@ -48,6 +48,7 @@ main(void)
   RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly());
 
   RUN_TEST(test_hashtbl_insert());
+  RUN_TEST(test_hashtbl_insert_with_strs());
 
   printf("TEST SUMMARY\n");
   printf("  PASS: %-5d FAIL: %d\n", pass, fail);

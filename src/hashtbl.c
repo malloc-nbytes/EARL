@@ -97,7 +97,6 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value)
   try_resize(ht);
 
   unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
-
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
 
   if (!p) {
@@ -108,15 +107,31 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value)
   else {
     (void)memcpy(p->value, value, ht->key_stride);
   }
-
 }
 
 uint8_t *
-hashtbl_get(struct hashtbl *ht, void *key) 
+hashtbl_get(struct hashtbl *ht, void *key)
 {
-  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap; 
-
+  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
+  return p->value;
+}
 
-  return p->value; 
+struct hashtbl_node **
+hashtbl_asbytes(struct hashtbl *ht)
+{
+  return ht->tbl;
+}
+
+void
+hashtbl_free(struct hashtbl *ht)
+{
+  for (size_t i = 0; i < ht->cap; ++i) {
+    if (ht->tbl[i]) {
+      free(ht->tbl[i]->value);
+      free(ht->tbl[i]->key);
+      free(ht->tbl[i]);
+    }
+  }
+  free(ht->tbl);
 }
