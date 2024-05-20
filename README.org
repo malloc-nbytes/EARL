@@ -10,7 +10,7 @@
 *NOTE*: Open =README.html= in a browser to view this document
 in a much better format.
 
-[[./imgs/EARL-resized.jpeg]]
+[[./imgs/earl-logo-resized.jpg]]
 
 * Introduction
 
