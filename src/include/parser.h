@@ -26,14 +26,19 @@
 #include "lexer.h"
 #include "ast.h"
 
-struct program parser_parse(struct lexer *lexer);
-
 // Parsers
+struct program parser_parse(struct lexer *lexer);
+struct stmt *parser_parse_stmt(struct lexer *lexer);
+struct stmt_let *parser_parse_stmt_let(struct lexer *lexer);
+
 struct vector(struct pair(struct token *id, struct token *type))
-       parser_parse_def_stmt_args(struct lexer *lexer);
+       parser_parse_stmt_def_args(struct lexer *lexer);
 
 struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
 struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);
+
+// Expression Parsers
+struct expr *parser_parse_expr(struct lexer *lexer);
 
 // Helpers
 struct token *parser_expect(struct lexer *lexer, enum token_type exp);
