@@ -132,14 +132,6 @@ parser_parse_logical_expr(struct lexer *lexer)
       lexer_discard(lexer);
       struct expr *rhs = parser_parse_equalitative_expr(lexer);
     }
-    // switch (lexer_peek(lexer, 0)->type) {
-    //   case TOKENTYPE_AMPERSAND: {
-    //   } break;
-    //   case TOKENTYPE_PIPE: {
-    //   } break;
-    //   default:
-    //     return lhs;
-    // }
   }
 }
 
