@@ -85,7 +85,7 @@ test_parsers_parser_parse_def_stmt_args_can_parse_correctly(void)
   char *filepath = "test/sample-input/def-stmt-args-tuple.1.in";
   struct lexer lexer = lex_file(filepath, NULL, 0, "#");
 
-  struct vector v = parser_parse_def_stmt_args(&lexer);
+  struct vector v = parser_parse_stmt_def_args(&lexer);
 
   lexer_free(&lexer);
 

@@ -104,7 +104,7 @@ parser_expect_type(struct lexer *lexer)
 // NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
 //   and will consume those.
 struct vector(struct pair(struct token *id, struct token *type))
-parser_parse_def_stmt_args(struct lexer *lexer)
+parser_parse_stmt_def_args(struct lexer *lexer)
 {
   (void)parser_expect(lexer, TOKENTYPE_LPAREN);
 
@@ -143,9 +143,20 @@ struct stmt_block *
 parser_parse_stmt_block(struct lexer *lexer)
 {
   (void)parser_expect(lexer, TOKENTYPE_LBRACE);
+
+  struct vector stmts = vector_create2(struct stmt *);
+
   while (1) {
-    assert(0 && "unimplemented");
+    if (lexer_peek(lexer, 0)->type == TOKENTYPE_RBRACE) {
+      break;
+    }
+    struct stmt *stmt = parser_parse_stmt(lexer);
+    vector_append(&stmts, stmt);
   }
+
+  (void)parser_expect(lexer, TOKENTYPE_LBRACE);
+
+  return stmt_block_alloc(stmts);
 }
 
 struct stmt_def *
@@ -159,7 +170,7 @@ parser_parse_stmt_def(struct lexer *lexer)
 
   // (...)
   struct vector(struct pair(struct token *id, struct token *type)) args
-    = parser_parse_def_stmt_args(lexer);
+    = parser_parse_stmt_def_args(lexer);
 
   // ->
   (void)parser_expect(lexer, TOKENTYPE_MINUS);
@@ -174,18 +185,22 @@ parser_parse_stmt_def(struct lexer *lexer)
   return stmt_def_alloc(id, args, rettype, block);
 }
 
+struct stmt_let *
+parser_parse_stmt_let(struct lexer *lexer)
+{
+}
+
 struct stmt *
 parser_parse_stmt(struct lexer *lexer)
 {
-  // NOTE: cannot switch on lexer_next as this
-  // will make parsing expression very difficult.
-  switch (lexer->hd->type) {
+  switch (lexer_peek(lexer, 0)->type) {
   case TOKENTYPE_KEYWORD: {
-    if (utils_streq(lexer->hd->lexeme, COMMON_KW_DEF)) {
-      ;
+    struct token *tok = lexer_next(lexer);
+    if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
+      return stmt_alloc(STMT_TYPE_DEF, parser_parse_stmt_def(lexer));
     }
-    else if (utils_streq(lexer->hd->lexeme, COMMON_KW_LET)) {
-      ;
+    else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
+      return stmt_alloc(STMT_TYPE_LET, parser_parse_stmt_let(lexer));
     }
   } break;
 
