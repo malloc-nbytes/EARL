@@ -2,10 +2,7 @@
 #define HASHTBL_H
 
 #include "test-suite.h"
-#include "hashtbl.h"
 
-// Add test prototypes here
-
-test_errno_t test_hashtbl_instantiation(void);
+test_errno_t test_hashtbl_insert(void);
 
 #endif // HASHTBL_H

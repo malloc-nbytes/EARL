@@ -31,9 +31,38 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct hashtbl;
+struct hashtbl_node {
+  uint8_t *key;
+  uint8_t *value;
+  struct hashtbl_node *next;
+};
 
-#define hashtbl_unsafe_create(key_ty, value_ty, hashf, keyc)    \
+struct hashtbl {
+  // The table of nodes
+  struct hashtbl_node **tbl;
+
+  // Hash function needed
+  unsigned (*hashfunc)(void *key, size_t bytes);
+
+  // Function for comparing keys.
+  // TODO: is this really needed? or
+  // would memcmp be enough?
+  int (*keycompar)(void *x, void *y);
+
+  // The size of each key in bytes.
+  size_t key_stride;
+
+  // The size of each value in bytes.
+  size_t value_stride;
+
+  // The number of nodes in the tbl;
+  size_t len;
+
+  // The capacity of the tbl;
+  size_t cap;
+};
+
+#define hashtbl_create2(key_ty, value_ty, hashf, keyc)          \
   (struct hashtbl) {                                            \
     .tbl = NULL,                                                \
     .hashfunc = hashf,                                          \
@@ -44,12 +73,17 @@ struct hashtbl;
     .cap = 0,                                                   \
   }
 
+
+#define hashtbl_deref_get(ht, key, type) *(type *)hashtbl_get(&ht, key)
+    
 #define hashtbl(ty1, ty2) hashtbl
 
 struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
                               unsigned (*hashfunc)(void *key, size_t bytes),
                               int (*keycompar)(void *x, void *y));
 
-void hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes);
+void hashtbl_insert(struct hashtbl *ht, void *key, void *value);
+
+uint8_t * hashtbl_get(struct hashtbl *ht, void *key) 
 
 #endif // HASHTABLE_H

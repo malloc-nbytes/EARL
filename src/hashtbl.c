@@ -26,49 +26,53 @@
 #include "hashtbl.h"
 #include "utils.h"
 
-struct hashtbl_node {
-  uint8_t *key;
-  uint8_t *value;
-  struct hashtbl_node *next;
-};
+static void
+try_resize(struct hashtbl *ht)
+{
+  if (ht->cap == 0 || (float)ht->len / (float)ht->cap >= 0.5f) {
+    size_t new_cap = (ht->cap + 1) * 2;
+    struct hashtbl_node **new_tbl = utils_safe_malloc(sizeof(struct hashtbl_node *) * new_cap);
+    memset(new_tbl, 0, sizeof(struct hashtbl_node *) * new_cap);
 
-struct hashtbl {
-  // The table of nodes
-  struct hashtbl_node **tbl;
+    for (size_t i = 0; i < ht->cap; ++i) {
+      struct hashtbl_node *tmp = ht->tbl[i];
+      while (tmp) {
+        unsigned newidx = ht->hashfunc(tmp->key, ht->key_stride) % new_cap;
+        struct hashtbl_node *next_node = tmp->next;
+        tmp->next = new_tbl[newidx];
+        new_tbl[newidx] = tmp;
+        tmp = next_node;
+      }
+    }
 
-  // Hash function needed
-  unsigned (*hashfunc)(void *key, size_t bytes);
+    free(ht->tbl);
+    ht->tbl = new_tbl;
+    ht->cap = new_cap;
+  }
+}
 
-  // Function for comparing keys.
-  // TODO: is this really needed? or
-  // would memcmp be enough?
-  int (*keycompar)(void *x, void *y);
-
-  // The size of each key in bytes.
-  size_t key_stride;
-
-  // The size of each value in bytes.
-  size_t value_stride;
-
-  // The number of nodes in the tbl;
-  size_t len;
-
-  // The capacity of the tbl;
-  size_t cap;
-};
-
-struct hashtbl_node *
+static struct hashtbl_node *
 hashtbl_node_alloc(struct hashtbl *ht, void *key, void *value, struct hashtbl_node *next)
 {
   struct hashtbl_node *n = utils_safe_malloc(sizeof(struct hashtbl_node));
-  n->key = key;
-  n->value = value;
   n->next = next;
+  n->value = malloc(ht->value_stride);
+  n->key = malloc(ht->key_stride);
 
-  (void)memcpy(n->key, (uint8_t *)key, ht->key_stride);
-  (void)memcpy(n->value, (uint8_t *)value, ht->value_stride);
+  (void)memcpy(n->key, key, ht->key_stride);
+  (void)memcpy(n->value, value, ht->value_stride);
 
   return n;
+}
+
+static struct hashtbl_node *
+find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
+{
+  struct hashtbl_node *it = lst;
+  while (it && !ht->keycompar(key, it->key)) {
+    it = it->next;
+  }
+  return it;
 }
 
 struct hashtbl
@@ -87,53 +91,32 @@ hashtbl_create(size_t key_stride, size_t value_stride,
   };
 }
 
-struct hashtbl_node *
-find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
-{
-  struct hashtbl_node *it = lst;
-  while (it && !ht->keycompar(key, it->value)) {
-    it = it->next;
-  }
-  return it;
-}
-
-static void
-try_resize(struct hashtbl(any, any) *ht)
-{
-  if ((float)ht->len / (float)ht->cap > 0.5f) {
-    size_t new_cap = ht->cap*2;
-    struct hashtbl_node **new_tbl = utils_safe_malloc(sizeof(struct hashtbl_node *)*new_cap);
-
-    for (size_t i = 0; i < ht->cap; ++i) {
-      struct hashtbl_node *tmp = ht->tbl[i];
-      while (tmp) {
-        struct hashtbl_node *next = tmp->next;
-        unsigned newidx = ht->hashfunc(tmp->key, ht->key_stride)%new_cap;
-        new_tbl[newidx] = tmp;
-        tmp = next;
-      }
-    }
-
-    free(ht->tbl);
-    ht->tbl = new_tbl;
-    ht->cap = new_cap;
-  }
-}
-
 void
-hashtbl_insert(struct hashtbl *ht, void *key, void *value, size_t bytes)
+hashtbl_insert(struct hashtbl *ht, void *key, void *value)
 {
-  unsigned idx = ht->hashfunc(key, bytes)%ht->cap;
+  try_resize(ht);
+
+  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
 
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
 
   if (!p) {
-    ht->tbl[idx] = hashtbl_node_alloc(ht, ht->tbl[idx], key, value);
+    struct hashtbl_node * tmp = hashtbl_node_alloc(ht, key, value, ht->tbl[idx]);
+    ht->tbl[idx] = tmp;
     ht->len++;
   }
   else {
     (void)memcpy(p->value, value, ht->key_stride);
   }
 
-  try_resize(ht);
+}
+
+uint8_t *
+hashtbl_get(struct hashtbl *ht, void *key) 
+{
+  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap; 
+
+  struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
+
+  return p->value; 
 }
