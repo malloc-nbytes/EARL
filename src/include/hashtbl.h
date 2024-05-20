@@ -79,6 +79,14 @@ struct hashtbl {
 
 #define hashtbl(ty1, ty2) hashtbl
 
+#define hashtbl_insert_as(ht, ty1, k, ty2, v)   \
+  do {                                          \
+    ty1 __k = k;                                \
+    ty2 __v = v;                                \
+    hashtbl_insert(&ht, &__k, &__v);            \
+  } while (0)
+
+
 struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
                               unsigned (*hashfunc)(void *key, size_t bytes),
                               int (*keycompar)(void *x, void *y));

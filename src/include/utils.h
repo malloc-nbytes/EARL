@@ -50,6 +50,8 @@
   fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
   return rettype
 
+#define CPL(x, ty) ((void *)&(ty){(x)})
+
 // A malloc wrapper that checks if
 // malloc failed. Allocates `bytes` number of bytes.
 void *utils_safe_malloc(size_t bytes);

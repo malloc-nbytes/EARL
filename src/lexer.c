@@ -32,6 +32,7 @@
 #include "lexer.h"
 #include "utils.h"
 #include "arena.h"
+#include "hashtbl.h"
 
 size_t
 consume_until(char *s, int (*predicate)(char))
@@ -275,8 +276,45 @@ assert_symtidx_inorder(void)
   }
 }
 
+static unsigned
+__hashfunc(void *x, size_t bytes)
+{
+  (void)bytes;
+  return strlen((char *)x);
+}
+
+static int
+__comparfunc(void *k1, void *k2)
+{
+  return utils_streq((char *)k1, (char *)k2);
+}
+
+static struct hashtbl(char **, enum token_type)
+fill_symtbl(void)
+{
+  struct hashtbl ht = hashtbl_create2(char **, enum token_type, __hashfunc, __comparfunc);
+
+  hashtbl_insert(&ht, (void *)"&&", (void *)1);
+
+  return ht;
+}
+
 struct lexer
 lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
+{
+  char *src = file_to_str(filepath);
+  struct lexer lexer = (struct lexer) {
+    .hd = NULL,
+    .tl = NULL,
+    .len = 0,
+    .arena = arena_create(32768),
+  };
+
+  struct hashtbl(char **, enum token_type) symtbl = fill_symtbl();
+}
+
+struct lexer
+lex_file1(char *filepath, char **keywords, size_t keywords_len, char *comment)
 {
   int symtbl[TOKENTYPE_SYM_LEN] = {
     TOKENTYPE_LPAREN,

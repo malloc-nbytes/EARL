@@ -89,3 +89,20 @@ test_hashtbl_insert_with_strs(void)
   return TEST_OK;
 }
 
+test_errno_t
+test_hashtbl_insert_compound_literals(void)
+{
+  struct hashtbl ht = hashtbl_create2(char **, int, hashfunc_str, keycompar_str);
+
+  hashtbl_insert(&ht, CPL("&&", char *), CPL(1, int));
+  hashtbl_insert(&ht, CPL("hello world", char *), CPL(2, int));
+  hashtbl_insert_as(ht, char *, "||", int, 3);
+
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("&&", char *)), 1);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("hello world", char *)), 2);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("||", char *)), 3);
+
+  hashtbl_free(&ht);
+  return TEST_OK;
+}
+
