@@ -93,45 +93,137 @@ parser_expect_type(struct lexer *lexer)
 
 /********** PARSERS **********/
 
+struct expr *
+parser_parse_primary_expr(struct lexer *lexer)
+{
+  assert(0 && "parser_parse_primary_expr: unimplemented");
+}
+
+struct expr *
+parser_parse_multiplicative_expr(struct lexer *lexer)
+{
+  assert(0 && "parser_parse_multiplicative_expr: unimplemented");
+}
+
+struct expr *
+parser_parse_additive_expr(struct lexer *lexer)
+{
+  assert(0 && "parser_parse_additive_expr: unimplemented");
+}
+
+struct expr *
+parser_parse_equalitative_expr(struct lexer *lexer)
+{
+  assert(0 && "parser_parse_equalitative_expr: unimplemented");
+}
+
+struct expr *
+parser_parse_logical_expr(struct lexer *lexer)
+{
+  struct expr *lhs = parser_parse_equalitative_expr(lexer);
+  while (1) {
+    struct token *peeked1 = lexer_peek(lexer, 0);
+    struct token *peeked2 = lexer_peek(lexer, 1);
+    int nonnull = peeked1 && peeked2;
+    int doubleamp = nonnull && (peeked1->type == TOKENTYPE_AMPERSAND && peeked2->type == TOKENTYPE_AMPERSAND);
+    int doublepipe = nonnull && (peeked1->type == TOKENTYPE_PIPE && peeked2->type == TOKENTYPE_PIPE);
+    if (doubleamp || doublepipe) {
+      lexer_discard(lexer);
+      lexer_discard(lexer);
+      struct expr *rhs = parser_parse_equalitative_expr(lexer);
+    }
+  }
+}
+
+struct expr *
+parser_parse_expr(struct lexer *lexer)
+{
+  return parser_parse_logical_expr(lexer);
+}
+
 // Name: parser_parse_def_stmt_args
 //
 // Description:
 //   Given the syntax of (k1: ty1, k2: ty2,...,kn: tyn)
 //   will parse and return a vector of pairs of the id
 //   and the associated type i.e.
-//     vec[(k1, ty1), (k2, ty2),...,(kn, tyn)].
+//     vector[(k1, ty1), (k2, ty2),...,(kn, tyn)].
 //
 // NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
 //   and will consume those.
 struct vector(struct pair(struct token *id, struct token *type))
-parser_parse_def_stmt_args(struct lexer *lexer)
+parser_parse_stmt_def_args(struct lexer *lexer)
 {
   (void)parser_expect(lexer, TOKENTYPE_LPAREN);
 
-  struct vector args = vector_create2(struct pair);
+  struct vector(pair(token *id, token *type)) args =
+    vector_create2(struct pair);
+
+  // Case of no arguments.
+  if (lexer_peek(lexer, 0)->type == TOKENTYPE_RPAREN) {
+    return args;
+  }
+
+  while (1) {
+    struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
+    (void)parser_expect(lexer, TOKENTYPE_COLON);
+    struct token *type = parser_expect_type(lexer);
+
+    struct pair p = pair_create2(struct token *, struct token *);
+    pair_make_unique(&p, id, type);
+    vector_append(&args, &p);
+
+    if (lexer_peek(lexer, 0)->type != TOKENTYPE_COMMA) {
+      break;
+    }
+    (void)parser_expect(lexer, TOKENTYPE_COMMA);
+  }
 
   (void)parser_expect(lexer, TOKENTYPE_RPAREN);
+  return args;
 }
 
+// Name: parser_parse_stmt_block
+//
+// Description:
+//   Parses a block statement, namely
+//   {stmt; stmt; stmt; ..., stmt;}
+//
+// Note:
+//   Expects to have opening and closing
+//   curly braces `{}` and will consume those.
 struct stmt_block *
 parser_parse_stmt_block(struct lexer *lexer)
 {
-  NOOP(lexer);
-  UNIMPLEMENTED("parse_stmt_block", NULL);
+  (void)parser_expect(lexer, TOKENTYPE_LBRACE);
+
+  struct vector stmts = vector_create2(struct stmt *);
+
+  while (1) {
+    if (lexer_peek(lexer, 0)->type == TOKENTYPE_RBRACE) {
+      break;
+    }
+    struct stmt *stmt = parser_parse_stmt(lexer);
+    vector_append(&stmts, stmt);
+  }
+
+  (void)parser_expect(lexer, TOKENTYPE_LBRACE);
+
+  return stmt_block_alloc(stmts);
 }
 
 struct stmt_def *
 parser_parse_stmt_def(struct lexer *lexer)
 {
   // def
-  lexer_discard(lexer);
+  (void)parser_expect_keyword(lexer, COMMON_KW_DEF);
 
   // identifier
   struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
 
   // (...)
   struct vector(struct pair(struct token *id, struct token *type)) args
-    = parser_parse_def_stmt_args(lexer);
+    = parser_parse_stmt_def_args(lexer);
 
   // ->
   (void)parser_expect(lexer, TOKENTYPE_MINUS);
@@ -146,27 +238,53 @@ parser_parse_stmt_def(struct lexer *lexer)
   return stmt_def_alloc(id, args, rettype, block);
 }
 
+// Name: parser_parse_stmt_let
+//
+// Description:
+//   Parses a let statement in the form of
+//     let id: type = expr;
+//
+// Note:
+//   Expects the first token to be `let` and
+//   expects the end to have a semicolon and
+//   will consume these.
+struct stmt_let *
+parser_parse_stmt_let(struct lexer *lexer)
+{
+  (void)parser_expect_keyword(lexer, COMMON_KW_LET);
+  struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
+  (void)parser_expect(lexer, TOKENTYPE_COLON);
+  struct token *type = parser_expect_type(lexer);
+  (void)parser_expect(lexer, TOKENTYPE_EQUALS);
+  struct expr *expr = parser_parse_expr(lexer);
+  (void)parser_expect(lexer, TOKENTYPE_SEMICOLON);
+  return stmt_let_alloc(id, type, expr);
+}
+
 struct stmt *
 parser_parse_stmt(struct lexer *lexer)
 {
-  // NOTE: cannot switch on lexer_next as this
-  // will make parsing expression very difficult.
-  switch (lexer->hd->type) {
+  switch (lexer_peek(lexer, 0)->type) {
   case TOKENTYPE_KEYWORD: {
-    if (utils_streq(lexer->hd->lexeme, COMMON_KW_DEF)) {
-      ;
+    struct token *tok = lexer_next(lexer);
+    if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
+      return stmt_alloc(STMT_TYPE_DEF, parser_parse_stmt_def(lexer));
     }
-    else if (utils_streq(lexer->hd->lexeme, COMMON_KW_LET)) {
-      ;
+    else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
+      return stmt_alloc(STMT_TYPE_LET, parser_parse_stmt_let(lexer));
     }
   } break;
 
   case TOKENTYPE_IDENT: {
+    assert(0 && "parser_parse_stmt: TOKENTYPE_IDENT unimplemented");
   } break;
 
   default:
     NOTIFY_ERRARGS(ERR_FATAL, "parse_stmt found an unkown statement of type ID (%d).", lexer->hd->type);
   }
+
+  assert(0 && "parser_parse_stmt: ending is unimplemented");
+  return NULL;
 }
 
 struct vector(struct stmt *)
