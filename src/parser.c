@@ -99,7 +99,7 @@ parser_expect_type(struct lexer *lexer)
 //   Given the syntax of (k1: ty1, k2: ty2,...,kn: tyn)
 //   will parse and return a vector of pairs of the id
 //   and the associated type i.e.
-//     vec[(k1, ty1), (k2, ty2),...,(kn, tyn)].
+//     vector[(k1, ty1), (k2, ty2),...,(kn, tyn)].
 //
 // NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
 //   and will consume those.
@@ -108,23 +108,51 @@ parser_parse_def_stmt_args(struct lexer *lexer)
 {
   (void)parser_expect(lexer, TOKENTYPE_LPAREN);
 
-  struct vector args = vector_create2(struct pair);
+  struct vector(pair(token *id, token *type)) args =
+    vector_create2(struct pair);
+
+  while (1) {
+    struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
+    (void)parser_expect(lexer, TOKENTYPE_COLON);
+    struct token *type = parser_expect_type(lexer);
+
+    struct pair p = pair_create2(struct token *, struct token *);
+    pair_make_unique(&p, id, type);
+    vector_append(&args, &p);
+
+    if (lexer_peek(lexer, 0)->type != TOKENTYPE_COMMA) {
+      break;
+    }
+    (void)parser_expect(lexer, TOKENTYPE_COMMA);
+  }
 
   (void)parser_expect(lexer, TOKENTYPE_RPAREN);
+  return args;
 }
 
+// Name: parser_parse_stmt_block
+//
+// Description:
+//   Parses a block statement, namely
+//   {stmt; stmt; stmt; ..., stmt;}
+//
+// Note:
+//   Expects to have opening and closing
+//   curly braces `{}` and will consume those.
 struct stmt_block *
 parser_parse_stmt_block(struct lexer *lexer)
 {
-  NOOP(lexer);
-  UNIMPLEMENTED("parse_stmt_block", NULL);
+  (void)parser_expect(lexer, TOKENTYPE_LBRACE);
+  while (1) {
+    assert(0 && "unimplemented");
+  }
 }
 
 struct stmt_def *
 parser_parse_stmt_def(struct lexer *lexer)
 {
   // def
-  lexer_discard(lexer);
+  (void)parser_expect_keyword(lexer, COMMON_KW_DEF);
 
   // identifier
   struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);

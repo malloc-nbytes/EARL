@@ -29,13 +29,13 @@
 #define COMMON_H
 
 // Keywords
-#define COMMON_KW_LET "let"
-#define COMMON_KW_DEF "def"
+#define COMMON_KW_LET    "let"
+#define COMMON_KW_DEF    "def"
 #define COMMON_KW_RETURN "return"
 
 // Types
 #define COMMON_TY_INT32 "int"
-#define COMMON_TY_STR "str"
+#define COMMON_TY_STR   "str"
 
 // Make sure to add to these when adding
 // new keywords and types.

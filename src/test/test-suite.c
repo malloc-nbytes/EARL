@@ -48,6 +48,7 @@ main(void)
   RUN_TEST(test_parsers_expect1());
   RUN_TEST(test_parsers_expect2());
   RUN_TEST(test_parsers_expectkeyword1());
+  RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_correctly());
 
   end = time(NULL);
 

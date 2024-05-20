@@ -3,6 +3,8 @@
 #include "lexer.h"
 #include "parser.h"
 #include "token.h"
+#include "vector.h"
+#include "pair.h"
 
 test_errno_t
 test_parsers_expect1(void)
@@ -77,4 +79,17 @@ test_parsers_expectkeyword1(void)
   return TEST_OK;
 }
 
+test_errno_t
+test_parsers_parser_parse_def_stmt_args_can_parse_correctly(void)
+{
+  char *filepath = "test/sample-input/def-stmt-args-tuple.1.in";
+  struct lexer lexer = lex_file(filepath, NULL, 0, "#");
 
+  struct vector v = parser_parse_def_stmt_args(&lexer);
+
+  lexer_free(&lexer);
+
+  vector_free(&v);
+
+  return TEST_OK;
+}
