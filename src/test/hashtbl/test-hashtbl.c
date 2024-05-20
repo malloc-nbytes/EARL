@@ -24,7 +24,7 @@ test_hashtbl_insert(void)
 {
   struct hashtbl ht = hashtbl_create(sizeof(int), sizeof(int), hashfunc, keycompar);
 
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 1000; ++i) {
     int j = i*2;
     hashtbl_insert(&ht, &i, &j);
   }

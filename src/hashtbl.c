@@ -56,8 +56,8 @@ hashtbl_node_alloc(struct hashtbl *ht, void *key, void *value, struct hashtbl_no
 {
   struct hashtbl_node *n = utils_safe_malloc(sizeof(struct hashtbl_node));
   n->next = next;
-  n->value = utils_safe_malloc(ht->value_stride);
-  n->key = utils_safe_malloc(ht->key_stride);
+  n->value = malloc(ht->value_stride);
+  n->key = malloc(ht->key_stride);
 
   (void)memcpy(n->key, key, ht->key_stride);
   (void)memcpy(n->value, value, ht->value_stride);
@@ -69,7 +69,7 @@ static struct hashtbl_node *
 find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
 {
   struct hashtbl_node *it = lst;
-  while (it && ht->keycompar(key, it->key) != 0) {
+  while (it && !ht->keycompar(key, it->key)) {
     it = it->next;
   }
   return it;
@@ -77,18 +77,18 @@ find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
 
 struct hashtbl
 hashtbl_create(size_t key_stride, size_t value_stride,
-                              unsigned (*hashfunc)(void *key, size_t bytes),
-                              int (*keycompar)(void *x, void *y))
+               unsigned (*hashfunc)(void *key, size_t bytes),
+               int (*keycompar)(void *x, void *y))
 {
-  struct hashtbl ht;
-  ht.tbl = NULL;
-  ht.hashfunc = hashfunc;
-  ht.keycompar = keycompar;
-  ht.key_stride = key_stride;
-  ht.value_stride = value_stride;
-  ht.len = 0;
-  ht.cap = 0;
-  return ht;
+  return (struct hashtbl) {
+    .tbl = NULL,
+    .hashfunc = hashfunc,
+    .keycompar = keycompar,
+    .key_stride = key_stride,
+    .value_stride = value_stride,
+    .len = 0,
+    .cap = 0,
+  };
 }
 
 void
@@ -96,15 +96,17 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value)
 {
   try_resize(ht);
 
-  unsigned idx = ht->hashfunc(key, ht->key_stride) % ht->cap;
+  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
+
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
 
   if (!p) {
-    struct hashtbl_node *temp = hashtbl_node_alloc(ht, key, value, ht->tbl[idx]);
-    ht->tbl[idx] = temp;
+    struct hashtbl_node * tmp = hashtbl_node_alloc(ht, key, value, ht->tbl[idx]);
+    ht->tbl[idx] = tmp;
     ht->len++;
   }
   else {
-    memcpy(p->value, value, ht->value_stride);
+    (void)memcpy(p->value, value, ht->key_stride);
   }
+
 }
