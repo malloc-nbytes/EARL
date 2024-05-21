@@ -41,7 +41,7 @@ static int global_fail = 0;
 
 #define TEST_SUITE(...)                                                                   \
   do {                                                                                    \
-    printf("--- Running Test Suite ---\n\n");                                             \
+    printf("--- Running Test Suite ---\n");                                               \
     __VA_ARGS__                                                                           \
     printf("--- Test Suite Summary ---\n");                                               \
     printf("\033[0;32mPASS: %-5d \033[0;31mFAIL: %d\033[0m\n", global_pass, global_fail); \
@@ -70,6 +70,7 @@ main(void)
       RUN_TEST(test_hashtbl_insert());
       RUN_TEST(test_hashtbl_insert_with_strs());
       RUN_TEST(test_hashtbl_insert_compound_literals());
+      RUN_TEST(test_hashtbl_insert_inplace());
     });
 
     /* RUN_TEST_GROUP("parsers", { */

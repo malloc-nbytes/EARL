@@ -94,15 +94,41 @@ test_hashtbl_insert_compound_literals(void)
 {
   struct hashtbl ht = hashtbl_create2(char **, int, hashfunc_str, keycompar_str);
 
-  hashtbl_insert(&ht, CPL("&&", char *), CPL(1, int));
-  hashtbl_insert(&ht, CPL("hello world", char *), CPL(2, int));
-  hashtbl_insert_as(ht, char *, "||", int, 3);
+  hashtbl_insert(&ht, CPL(char *, "&&"),          CPL(int, 1));
+  hashtbl_insert(&ht, CPL(char *, "hello world"), CPL(int, 2));
+  hashtbl_insert(&ht, CPL(char *, "||"),          CPL(int, 3));
 
-  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("&&", char *)), 1);
-  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("hello world", char *)), 2);
-  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL("||", char *)), 3);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "&&")), 1);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "hello world")), 2);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "||")), 3);
 
   hashtbl_free(&ht);
   return TEST_OK;
 }
 
+test_errno_t
+test_hashtbl_insert_inplace(void)
+{
+  struct hashtbl ht = hashtbl_create2(char **, int, hashfunc_str, keycompar_str);
+
+  hashtbl_insert_inplace(ht, char *, "hello world",     int, 1);
+  hashtbl_insert_inplace(ht, char *, "foo bar baz",     int, 2);
+  hashtbl_insert_inplace(ht, char *, "test string",     int, 3);
+  hashtbl_insert_inplace(ht, char *, "string number 4", int, 4);
+  hashtbl_insert_inplace(ht, char *, "the value is 5",  int, 5);
+  hashtbl_insert_inplace(ht, char *, "a",               int, 6);
+  hashtbl_insert_inplace(ht, char *, "ab",              int, 7);
+  hashtbl_insert_inplace(ht, char *, "abc",             int, 8);
+
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "hello world")),     1);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "foo bar baz")),     2);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "test string")),     3);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "string number 4")), 4);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "the value is 5")),  5);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "a")),               6);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "ab")),              7);
+  TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "abc")),             8);
+
+  hashtbl_free(&ht);
+  return TEST_OK;
+}
