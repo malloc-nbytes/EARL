@@ -104,3 +104,8 @@ vector_pop(struct vector *v)
   vector_rm_at(v, v->len-1);
 }
 
+void
+vector_clear(struct vector *v)
+{
+  v->len = 0;
+}

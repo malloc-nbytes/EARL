@@ -105,4 +105,6 @@ int vector_contains(struct vector *v, void *value);
 
 void vector_pop(struct vector *v);
 
+void vector_clear(struct vector *v);
+
 #endif // VECTOR_H

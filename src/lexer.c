@@ -66,25 +66,6 @@ find_comment_end(char *s)
   return i;
 }
 
-char *
-find_multiline_comment_end(char *s, char *comment_end, size_t *row, size_t *col)
-{
-  size_t comment_end_len = strlen(comment_end);
-  for (size_t i = 0; s[i]; ++i) {
-    if (strncmp(s, comment_end, comment_end_len) == 0) {
-      return s+i;
-    }
-    if (s[i] == '\n') {
-      (*row)++;
-      *col = 1;
-    }
-    else {
-      (*col)++;
-    }
-  }
-  return s;
-}
-
 int
 is_newline(char c)
 {
@@ -203,49 +184,6 @@ try_comment(char *src, char *comment)
   return 0;
 }
 
-#define SYMTIDX(c)                              \
-  ((c == '(') ? 0 :                             \
-   (c == ')') ? 1 :                             \
-   (c == '[') ? 2 :                             \
-   (c == ']') ? 3 :                             \
-   (c == '{') ? 4 :                             \
-   (c == '}') ? 5 :                             \
-   (c == '#') ? 6 :                             \
-   (c == '.') ? 7 :                             \
-   (c == ';') ? 8 :                             \
-   (c == ',') ? 9 :                             \
-   (c == '>') ? 10 :                            \
-   (c == '<') ? 11 :                            \
-   (c == '=') ? 12 :                            \
-   (c == '&') ? 13 :                            \
-   (c == '*') ? 14 :                            \
-   (c == '+') ? 15 :                            \
-   (c == '-') ? 16 :                            \
-   (c == '/') ? 17 :                            \
-   (c == '|') ? 18 :                            \
-   (c == '^') ? 19 :                            \
-   (c == '?') ? 20 :                            \
-   (c == '\\') ? 21 :                           \
-   (c == '!') ? 22 :                            \
-   (c == '@') ? 23 :                            \
-   (c == '$') ? 24 :                            \
-   (c == '%') ? 25 :                            \
-   (c == '`') ? 26 :                            \
-   (c == '~') ? 27 :                            \
-   (c == ':') ? 28 : -1)
-
-void
-assert_symtbl_inorder(int *symtbl)
-{
-  for (size_t i = 0; i < TOKENTYPE_SYM_LEN-1; ++i) {
-    if (symtbl[i] != symtbl[i+1]-1) {
-      fprintf(stderr, "ERR: symtbl out of order. left = %s, right = %s\n",
-              tokentype_to_str(symtbl[i]), tokentype_to_str(symtbl[i+1]));
-      exit(EXIT_FAILURE);
-    }
-  }
-}
-
 struct token *
 lexer_peek(struct lexer *lexer, size_t n)
 {
@@ -258,31 +196,11 @@ lexer_peek(struct lexer *lexer, size_t n)
   return it;
 }
 
-void
-assert_symtidx_inorder(void)
-{
-  char order[] = {
-    '(', ')', '[', ']', '{',
-    '}', '#', '.', ';', ',',
-    '>', '<', '=', '&', '*',
-    '+', '-', '/', '|', '^',
-    '?', '\\', '!', '@', '$',
-    '%', '`', '~', ':',
-  };
-
-  assert(TOKENTYPE_SYM_LEN == sizeof(order)/sizeof(*order));
-
-  for (size_t i = 0; i < TOKENTYPE_SYM_LEN; ++i) {
-    assert(SYMTIDX(order[i]) == (int)i);
-  }
-}
-
 static unsigned
 __hashfunc(void *x, size_t bytes)
 {
   (void)bytes;
   return *(char *)x;
-  /* return strlen((char *)x); */
 }
 
 static int
@@ -328,21 +246,24 @@ fill_syms(size_t *max_symlen)
 }
 
 static enum token_type *
-fill_vector_wmax_syms(struct vector(char) *buf,
-                      struct hashtbl(char **, enum token_type) *ht,
-                      char *src, size_t max_symlen)
+find_possible_sym(struct vector(char) *buf,
+                  struct hashtbl(char **, enum token_type) *ht,
+                  char *src, size_t max_symlen)
 {
   for (size_t i = 0; src[i] && i < max_symlen; ++i) {
     vector_append(buf, &src[i]);
   }
 
+  char chars[256];
   while (!vector_empty(buf)) {
-    char *chars = (char *)vector_asbytes(buf);
-    enum token_type *value = (enum token_type *)hashtbl_get(ht, chars);
+    memcpy(chars, vector_asbytes(buf), buf->len);
+    enum token_type *value = (enum token_type *)hashtbl_get(ht, &chars);
+    printf("checking: %s ;;; value = %d\n", chars, value ? *value : -1);
     if (value) {
       return value;
     }
     vector_pop(buf);
+    memset(chars, '\0', 256);
   }
 
   return NULL;
@@ -364,8 +285,8 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
   struct hashtbl(char **, enum token_type) ht = fill_syms(&max_symlen);
 
   struct vector(char) buffer = vector_create2(char);
-  size_t i, row, col;
-  for (i = 0, row = 1, col = 1; src[i]; ++i) {
+  size_t i = 0, row = 0, col = 0;
+  while (src[i]) {
     char c = src[i];
     struct token *tok = NULL;
     char *lexeme = src+i;
@@ -390,15 +311,67 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     case '\n':
       ++row;
       col = 1;
+      i += 1;
       break;
     case '\t':
     case ' ':
       ++col;
+      i += 1;
       break;
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9': {
+      size_t intlit_len = consume_until(lexeme, nisdigit);
+      tok = token_alloc(&lexer, lexeme, intlit_len, TOKENTYPE_INTLIT, row, col, filepath);
+      lexer_append(&lexer, tok);
+      i += intlit_len;
+      col += intlit_len;
+    } break;
+    case '"': {
+      size_t strlit_len = consume_until(lexeme+1, is_quote);
+      tok = token_alloc(&lexer, lexeme+1, strlit_len, TOKENTYPE_STRLIT, row, col, filepath);
+      lexer_append(&lexer, tok);
+      i += 1+strlit_len;
+      col += 1+strlit_len+1;
+    } break;
+    case '\'': {
+      ++lexeme;
+      tok = token_alloc(&lexer, lexeme, 1, TOKENTYPE_CHARLIT, row, col, filepath);
+      lexer_append(&lexer, tok);
+      i += 3;
+      ++col;
+    } break;
     default:
       enum token_type *value =
-        fill_vector_wmax_syms(&buf, &ht, src+i, max_symlen);
-      assert(0 && "unimplemented");
+        find_possible_sym(&buf, &ht, lexeme, max_symlen);
+
+      // This is a possible multi-char symbol.
+      if (value) {
+        size_t symlen = buf.len;
+        tok = token_alloc(&lexer, lexeme, symlen, *value, row, col, filepath);
+        lexer_append(&lexer, tok);
+        i += symlen;
+        col += symlen;
+      }
+
+      // It is an keyword/identifier
+      else {
+        size_t ident_len = consume_until(lexeme, nisvalid_ident);
+        enum token_type type = is_keyword(lexeme, ident_len, keywords, keywords_len) ? TOKENTYPE_KEYWORD : TOKENTYPE_IDENT;
+        tok = token_alloc(&lexer, lexeme, ident_len, type, row, col, filepath);
+        lexer_append(&lexer, tok);
+        i += ident_len;
+        col += ident_len;
+      }
+
+      vector_clear(&buf);
     }
   }
 
