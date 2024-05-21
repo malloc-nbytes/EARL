@@ -83,7 +83,7 @@ main(int argc, char **argv)
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
   // lexer_dump(&lexer);
-  (void)parser_parse(&lexer);
+  /* (void)parser_parse(&lexer); */
 
   lexer_free(&lexer);
   free(keywords);

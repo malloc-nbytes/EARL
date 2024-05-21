@@ -62,7 +62,7 @@ struct vector {
 #define vector_debug_dump(v, formatstr, type)           \
   do {                                                  \
     for (size_t i = 0; i < v.len; ++i) {                \
-      printf(formatstr, vector_unsafe_at(v, i, type));  \
+      printf(formatstr, vector_deref_at(v, i, type));  \
     }                                                   \
   } while (0)
 
@@ -98,5 +98,11 @@ void vector_rm_at(struct vector *v, size_t idx);
 
 // Gives the underlying data as uint8_t.
 uint8_t *vector_asbytes(struct vector *v);
+
+int vector_empty(struct vector *v);
+
+int vector_contains(struct vector *v, void *value);
+
+void vector_pop(struct vector *v);
 
 #endif // VECTOR_H

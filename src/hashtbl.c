@@ -114,7 +114,7 @@ hashtbl_get(struct hashtbl *ht, void *key)
 {
   unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
-  return p->value;
+  return !p ? NULL : p->value;
 }
 
 struct hashtbl_node **
