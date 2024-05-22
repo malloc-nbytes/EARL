@@ -48,7 +48,12 @@ pair_from(void *fst, size_t fst_stride, void *snd, size_t snd_stride)
 void
 pair_make_unique(struct pair *pair, void *fst, void *snd)
 {
-  DEBUG_ASSERT(pair->fst && pair->snd);
+  if (!pair->fst) {
+    pair->fst = utils_safe_malloc(pair->fst_stride);
+  }
+  if (!pair->snd) {
+    pair->snd = utils_safe_malloc(pair->snd_stride);
+  }
   (void)memcpy(pair->fst, fst, pair->fst_stride);
   (void)memcpy(pair->snd, snd, pair->snd_stride);
 }
