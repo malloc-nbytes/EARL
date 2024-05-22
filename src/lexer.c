@@ -32,7 +32,7 @@
 #include "lexer.h"
 #include "utils.h"
 #include "arena.h"
-#include "pair.h"
+#include "hashtbl.h"
 
 size_t
 consume_until(char *s, int (*predicate)(char))
@@ -202,6 +202,19 @@ lexer_free(struct lexer *lexer)
   lexer->len = 0;
 }
 
+static int
+__keycompar(void *k1, void *k2)
+{
+  return utils_streq((char *)k1, (char *)k2);
+}
+
+static unsigned
+__hashfunc(void *k, size_t n)
+{
+  (void)n;
+  return (unsigned)(*(char *)k);
+}
+
 struct lexer
 lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 {
@@ -213,52 +226,52 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     .arena = arena_create(32768),
   };
 
-  size_t tts = sizeof(enum token_type);
-  struct pair(char **, enum token_type) operators[] = {
-    pair_from(CPL(char *, "("),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LPAREN),              tts),
-    pair_from(CPL(char *, ")"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RPAREN),              tts),
-    pair_from(CPL(char *, "["),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LBRACKET),            tts),
-    pair_from(CPL(char *, "]"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RBRACKET),            tts),
-    pair_from(CPL(char *, "{"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LBRACE),              tts),
-    pair_from(CPL(char *, "}"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RBRACE),              tts),
-    pair_from(CPL(char *, "#"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_HASH),                tts),
-    pair_from(CPL(char *, "."),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PERIOD),              tts),
-    pair_from(CPL(char *, ";"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_SEMICOLON),           tts),
-    pair_from(CPL(char *, ","),  sizeof(char *), CPL(enum token_type, TOKENTYPE_COMMA),               tts),
-    pair_from(CPL(char *, ">"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_GREATERTHAN),         tts),
-    pair_from(CPL(char *, "<"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LESSTHAN),            tts),
-    pair_from(CPL(char *, "="),  sizeof(char *), CPL(enum token_type, TOKENTYPE_EQUALS),              tts),
-    pair_from(CPL(char *, "&"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_AMPERSAND),           tts),
-    pair_from(CPL(char *, "*"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_ASTERISK),            tts),
-    pair_from(CPL(char *, "+"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PLUS),                tts),
-    pair_from(CPL(char *, "-"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_MINUS),               tts),
-    pair_from(CPL(char *, "/"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_FORWARDSLASH),        tts),
-    pair_from(CPL(char *, "|"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PIPE),                tts),
-    pair_from(CPL(char *, "^"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_CARET),               tts),
-    pair_from(CPL(char *, "?"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_QUESTIONMARK),        tts),
-    pair_from(CPL(char *, "\\"), sizeof(char *), CPL(enum token_type, TOKENTYPE_BACKWARDSLASH),       tts),
-    pair_from(CPL(char *, "!"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_BANG),                tts),
-    pair_from(CPL(char *, "@"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_AT),                  tts),
-    pair_from(CPL(char *, "$"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_DOLLARSIGN),          tts),
-    pair_from(CPL(char *, "%"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PERCENT),             tts),
-    pair_from(CPL(char *, "`"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_BACKTICK),            tts),
-    pair_from(CPL(char *, "~"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_TILDE),               tts),
-    pair_from(CPL(char *, ":"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_COLON),               tts),
-    pair_from(CPL(char *, "&&"), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_AMPERSAND),    tts),
-    pair_from(CPL(char *, "||"), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_PIPE),         tts),
-    pair_from(CPL(char *, ">="), sizeof(char *), CPL(enum token_type, TOKENTYPE_GREATERTHAN_EQUALS),  tts),
-    pair_from(CPL(char *, "<="), sizeof(char *), CPL(enum token_type, TOKENTYPE_LESSTHAN_EQUALS),     tts),
-    pair_from(CPL(char *, "=="), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_EQUALS),       tts),
-    pair_from(CPL(char *, "!="), sizeof(char *), CPL(enum token_type, TOKENTYPE_BANG_EQUALS),         tts),
-    pair_from(CPL(char *, "+="), sizeof(char *), CPL(enum token_type, TOKENTYPE_PLUS_EQUALS),         tts),
-    pair_from(CPL(char *, "-="), sizeof(char *), CPL(enum token_type, TOKENTYPE_MINUS_EQUALS),        tts),
-    pair_from(CPL(char *, "*="), sizeof(char *), CPL(enum token_type, TOKENTYPE_ASTERISK_EQUALS),     tts),
-    pair_from(CPL(char *, "/="), sizeof(char *), CPL(enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS), tts),
-    pair_from(CPL(char *, "%="), sizeof(char *), CPL(enum token_type, TOKENTYPE_PERCENT_EQUALS),      tts),
-  };
+  struct hashtbl ht = hashtbl_create2(char **, enum token_type, __hashfunc, __keycompar);
+  hashtbl_insert_inplace(ht, char *, "(", enum token_type, TOKENTYPE_LPAREN);
+  hashtbl_insert_inplace(ht, char *, ")", enum token_type, TOKENTYPE_RPAREN);
+  hashtbl_insert_inplace(ht, char *, "[", enum token_type, TOKENTYPE_LBRACKET);
+  hashtbl_insert_inplace(ht, char *, "]", enum token_type, TOKENTYPE_RBRACKET);
+  hashtbl_insert_inplace(ht, char *, "{", enum token_type, TOKENTYPE_LBRACE);
+  hashtbl_insert_inplace(ht, char *, "}", enum token_type, TOKENTYPE_RBRACE);
+  hashtbl_insert_inplace(ht, char *, "#", enum token_type, TOKENTYPE_HASH);
+  hashtbl_insert_inplace(ht, char *, ".", enum token_type, TOKENTYPE_PERIOD);
+  hashtbl_insert_inplace(ht, char *, ";", enum token_type, TOKENTYPE_SEMICOLON);
+  hashtbl_insert_inplace(ht, char *, ",", enum token_type, TOKENTYPE_COMMA);
+  hashtbl_insert_inplace(ht, char *, ">", enum token_type, TOKENTYPE_GREATERTHAN);
+  hashtbl_insert_inplace(ht, char *, "<", enum token_type, TOKENTYPE_LESSTHAN);
+  hashtbl_insert_inplace(ht, char *, "=", enum token_type, TOKENTYPE_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "&", enum token_type, TOKENTYPE_AMPERSAND);
+  hashtbl_insert_inplace(ht, char *, "*", enum token_type, TOKENTYPE_ASTERISK);
+  hashtbl_insert_inplace(ht, char *, "+", enum token_type, TOKENTYPE_PLUS);
+  hashtbl_insert_inplace(ht, char *, "-", enum token_type, TOKENTYPE_MINUS);
+  hashtbl_insert_inplace(ht, char *, "/", enum token_type, TOKENTYPE_FORWARDSLASH);
+  hashtbl_insert_inplace(ht, char *, "|", enum token_type, TOKENTYPE_PIPE);
+  hashtbl_insert_inplace(ht, char *, "^", enum token_type, TOKENTYPE_CARET);
+  hashtbl_insert_inplace(ht, char *, "?", enum token_type, TOKENTYPE_QUESTIONMARK);
+  hashtbl_insert_inplace(ht, char *, "\\", enum token_type, TOKENTYPE_BACKWARDSLASH);
+  hashtbl_insert_inplace(ht, char *, "!", enum token_type, TOKENTYPE_BANG);
+  hashtbl_insert_inplace(ht, char *, "@", enum token_type, TOKENTYPE_AT);
+  hashtbl_insert_inplace(ht, char *, "$", enum token_type, TOKENTYPE_DOLLARSIGN);
+  hashtbl_insert_inplace(ht, char *, "%", enum token_type, TOKENTYPE_PERCENT);
+  hashtbl_insert_inplace(ht, char *, "`", enum token_type, TOKENTYPE_BACKTICK);
+  hashtbl_insert_inplace(ht, char *, "~", enum token_type, TOKENTYPE_TILDE);
+  hashtbl_insert_inplace(ht, char *, ":", enum token_type, TOKENTYPE_COLON);
+  hashtbl_insert_inplace(ht, char *, "&&", enum token_type, TOKENTYPE_DOUBLE_AMPERSAND);
+  hashtbl_insert_inplace(ht, char *, "||", enum token_type, TOKENTYPE_DOUBLE_PIPE);
+  hashtbl_insert_inplace(ht, char *, ">=", enum token_type, TOKENTYPE_GREATERTHAN_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "<=", enum token_type, TOKENTYPE_LESSTHAN_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "==", enum token_type, TOKENTYPE_DOUBLE_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "!=", enum token_type, TOKENTYPE_BANG_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "+=", enum token_type, TOKENTYPE_PLUS_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "-=", enum token_type, TOKENTYPE_MINUS_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "*=", enum token_type, TOKENTYPE_ASTERISK_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
+  hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
 
-  size_t i, row, col;
-  for (i = 0, row = 1, col = 1; src[i]; ++i) {
+  size_t max_symlen = 2;
+
+  size_t i = 0, row = 1, col = 1;
+  while (src[i]) {
     char c = src[i];
     struct token *tok = NULL;
     char *lexeme = src+i;
@@ -278,88 +291,76 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
       }
     }
 
-    switch (c) {
-    case '\r':
-    case '\n':
+    // Newlines
+    if (c == '\r' || c == '\n') {
       ++row;
       col = 1;
-      break;
-    case '\t':
-    case ' ':
+      ++i;
+    }
+
+    // Tabs/empty spaces
+    else if (c == '\t' || c == ' ') {
       ++col;
-      break;
-    case '(':
-    case ')':
-    case '[':
-    case ']':
-    case '{':
-    case '}':
-    case '#':
-    case '.':
-    case ',':
-    case ';':
-    case '>':
-    case '<':
-    case '=':
-    case '&':
-    case '*':
-    case '+':
-    case '-':
-    case '/':
-    case '|':
-    case '^':
-    case '?':
-    case '\\':
-    case '!':
-    case '@':
-    case '$':
-    case '%':
-    case '`':
-    case '~':
-    case ':': {
-      assert(0 && "unimplemented");
-      /* tok = token_alloc(&lexer, lexeme, 1, symtbl[SYMTIDX(c)], row, col, filepath); */
-      /* lexer_append(&lexer, tok); */
-      /* ++col; */
-    } break;
-    case '"': {
+      ++i;
+    }
+
+    // String literal
+    else if (c == '"') {
       size_t strlit_len = consume_until(lexeme+1, is_quote);
       tok = token_alloc(&lexer, lexeme+1, strlit_len, TOKENTYPE_STRLIT, row, col, filepath);
       lexer_append(&lexer, tok);
-      i += 1+strlit_len;
+      i += 1+strlit_len+1;
       col += 1+strlit_len+1;
-    } break;
-    case '\'':
+    }
+
+    // Char literal
+    else if (c == '\'') {
       ++lexeme;
       tok = token_alloc(&lexer, lexeme, 1, TOKENTYPE_CHARLIT, row, col, filepath);
       lexer_append(&lexer, tok);
-      i += 2;
+      i += 3;
       ++col;
-      break;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-    case '8':
-    case '9': {
-      size_t intlit_len = consume_until(lexeme, nisdigit);
-      tok = token_alloc(&lexer, lexeme, intlit_len, TOKENTYPE_INTLIT, row, col, filepath);
-      lexer_append(&lexer, tok);
-      i += intlit_len-1;
-      col += intlit_len;
-    } break;
-    default: { // Idents, keywords
+    }
+
+    // Keywords/Identifiers
+    else if (isalpha(c) || c == '_') {
       size_t ident_len = consume_until(lexeme, nisvalid_ident);
       enum token_type type = is_keyword(lexeme, ident_len, keywords, keywords_len) ? TOKENTYPE_KEYWORD : TOKENTYPE_IDENT;
       tok = token_alloc(&lexer, lexeme, ident_len, type, row, col, filepath);
       lexer_append(&lexer, tok);
-      i += ident_len-1;
+      i += ident_len;
       col += ident_len;
-    } break;
+    }
+
+    // Numbers
+    else if (isdigit(c)) {
+      size_t intlit_len = consume_until(lexeme, nisdigit);
+      tok = token_alloc(&lexer, lexeme, intlit_len, TOKENTYPE_INTLIT, row, col, filepath);
+      lexer_append(&lexer, tok);
+      i += intlit_len;
+      col += intlit_len;
+    }
+
+    // Symbols
+    else {
+      const size_t bufcap = 256
+      char buf[bufcap];
+      size_t buflen = 0;
+      memset(buf, '\0', bufcap);
+
+      for (size_t j = 0; src[j] && j < max_symlen && issym(src[j]); ++j) {
+        buf[buflen++] = src[j];
+      }
+
+      while (buflen > 0) {
+        enum token_type value = hashtbl_deref_get(ht, buf, enum token_type);
+        assert(0 && "unimplemented");
+        --buflen;
+      }
+
+      /* tok = token_alloc(&lexer, lexeme, 1, symtbl[SYMTIDX(c)], row, col, filepath); */
+      /* lexer_append(&lexer, tok); */
+      /* ++col; */
     }
   }
 
