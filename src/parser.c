@@ -306,9 +306,9 @@ parser_parse_stmt_let(struct lexer *lexer)
 struct stmt *
 parser_parse_stmt(struct lexer *lexer)
 {
-  switch (lexer_peek(lexer, 0)->type) {
+  struct token *tok = lexer_peek(lexer, 0);
+  switch (tok->type) {
   case TOKENTYPE_KEYWORD: {
-    struct token *tok = lexer_next(lexer);
     if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
       struct stmt_def *stmt_def = parser_parse_stmt_def(lexer);
       return stmt_alloc(STMT_TYPE_DEF, stmt_def);
