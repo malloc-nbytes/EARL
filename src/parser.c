@@ -96,7 +96,24 @@ parser_expect_type(struct lexer *lexer)
 struct expr *
 parser_parse_primary_expr(struct lexer *lexer)
 {
-  assert(0 && "parser_parse_primary_expr: unimplemented");
+  struct token *cur = lexer_next(lexer);
+  struct expr *expr = NULL;
+  struct expr_term *term = NULL;
+
+  switch (cur->type) {
+  case TOKENTYPE_IDENT: {
+    term = expr_term_alloc(EXPR_TERM_TYPE_IDENT, cur);
+    expr = expr_alloc(EXPR_TYPE_TERM, term);
+  } break;
+  case TOKENTYPE_INTLIT: {
+    term = expr_term_alloc(EXPR_TERM_TYPE_INTLIT, cur);
+    expr = expr_alloc(EXPR_TYPE_TERM, term);
+  } break;
+  default:
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %d", cur->type);
+  }
+
+  return expr;
 }
 
 struct expr *
@@ -293,10 +310,12 @@ parser_parse_stmt(struct lexer *lexer)
   case TOKENTYPE_KEYWORD: {
     struct token *tok = lexer_next(lexer);
     if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
-      return stmt_alloc(STMT_TYPE_DEF, parser_parse_stmt_def(lexer));
+      struct stmt_def *stmt_def = parser_parse_stmt_def(lexer);
+      return stmt_alloc(STMT_TYPE_DEF, stmt_def);
     }
     else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
-      return stmt_alloc(STMT_TYPE_LET, parser_parse_stmt_let(lexer));
+      struct stmt_let *stmt_let = parser_parse_stmt_let(lexer);
+      return stmt_alloc(STMT_TYPE_LET, stmt_let);
     }
   } break;
 
@@ -312,43 +331,17 @@ parser_parse_stmt(struct lexer *lexer)
   return NULL;
 }
 
-struct vector(struct stmt *)
-parser_parse_stmts(struct lexer *lexer)
-{
-  struct vector stmts = vector_create2(struct stmt *);
-
-  struct token *curtok = NULL;
-  while ((curtok = lexer_next(lexer)) != NULL) {
-    if (curtok->type == TOKENTYPE_EOF) break;
-
-    switch (curtok->type) {
-      case TOKENTYPE_KEYWORD: {
-        if (utils_streq(curtok->lexeme, COMMON_KW_LET)) {
-          ;
-        }
-        else if (utils_streq(curtok->lexeme, COMMON_KW_DEF)) {
-          ;
-        }
-        break;
-      }
-      case TOKENTYPE_IDENT: {
-        break;
-      }
-      default: {
-        NOTIFY_ERRARGS(ERR_FATAL, "parse_stmts found an unkown statement of type ID (%d).", curtok->type);
-      }
-    }
-  }
-
-  return stmts;
-}
-
 /********** Entrypoint **********/
 
 struct program
 parser_parse(struct lexer *lexer)
 {
+  struct vector stmts = vector_create2(struct stmt *);
+
+  while (lexer_peek(lexer, 0)->type != TOKENTYPE_EOF)
+    vector_append(&stmts, parser_parse_stmt(lexer));
+
   return (struct program) {
-    .stmts = parser_parse_stmts(lexer),
+    .stmts = stmts,
   };
 }
