@@ -91,11 +91,28 @@ tokentype_to_str(enum token_type type)
     return "TILDE";
   case TOKENTYPE_COLON:
     return "COLON";
-#ifdef DEBUG
-  case TOKENTYPE_SYM_LEN:
-    assert(0 && "should not use TOKENTYPE_SYM_LEN");
-    return NULL;
-#endif
+  case TOKENTYPE_DOUBLE_AMPERSAND:
+    return "DOUBLE_AMPERSAND";
+  case TOKENTYPE_DOUBLE_PIPE:
+    return "DOUBLE_PIPE";
+  case TOKENTYPE_GREATERTHAN_EQUALS:
+    return "GREATERTHAN_EQUALS";
+  case TOKENTYPE_LESSTHAN_EQUALS:
+    return "LESSTHAN_EQUALS";
+  case TOKENTYPE_DOUBLE_EQUALS:
+    return "DOUBLE_EQUALS";
+  case TOKENTYPE_BANG_EQUALS:
+    return "BANG_EQUALS";
+  case TOKENTYPE_PLUS_EQUALS:
+    return "PLUS_EQUALS";
+  case TOKENTYPE_MINUS_EQUALS:
+    return "MINUS_EQUALS";
+  case TOKENTYPE_ASTERISK_EQUALS:
+    return "ASTERISK_EQUALS";
+  case TOKENTYPE_FORWARDSLASH_EQUALS:
+    return "FORWARDSLASH_EQUALS";
+  case TOKENTYPE_PERCENT_EQUALS:
+    return "PERCENT_EQUALS";
   case TOKENTYPE_EOF:
     return "EOF";
   case TOKENTYPE_INTLIT:
@@ -109,9 +126,7 @@ tokentype_to_str(enum token_type type)
   case TOKENTYPE_KEYWORD:
     return "KEYWORD";
   default:
-#ifdef DEBUG
     assert(0 && "unknown type");
-#endif
     return NULL;
   }
   return NULL;

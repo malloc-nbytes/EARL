@@ -80,3 +80,32 @@ vector_asbytes(struct vector *v)
 {
   return v->data;
 }
+
+int
+vector_contains(struct vector *v, void *value)
+{
+  for (size_t i = 0; i < v->len; ++i) {
+    if (memcmp(vector_at(v, i), value, v->stride) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int
+vector_empty(struct vector *v)
+{
+  return v->len == 0;
+}
+
+void
+vector_pop(struct vector *v)
+{
+  vector_rm_at(v, v->len-1);
+}
+
+void
+vector_clear(struct vector *v)
+{
+  v->len = 0;
+}
