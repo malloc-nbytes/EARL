@@ -34,10 +34,6 @@
 #include "arena.h"
 #include "pair.h"
 
-static struct pair(char **, enum token_type) operators[] = {
-  
-};
-
 size_t
 consume_until(char *s, int (*predicate)(char))
 {
@@ -67,25 +63,6 @@ find_comment_end(char *s)
     }
   }
   return i;
-}
-
-char *
-find_multiline_comment_end(char *s, char *comment_end, size_t *row, size_t *col)
-{
-  size_t comment_end_len = strlen(comment_end);
-  for (size_t i = 0; s[i]; ++i) {
-    if (strncmp(s, comment_end, comment_end_len) == 0) {
-      return s+i;
-    }
-    if (s[i] == '\n') {
-      (*row)++;
-      *col = 1;
-    }
-    else {
-      (*col)++;
-    }
-  }
-  return s;
 }
 
 int
@@ -206,49 +183,6 @@ try_comment(char *src, char *comment)
   return 0;
 }
 
-#define SYMTIDX(c)                              \
-  ((c == '(') ? 0 :                             \
-   (c == ')') ? 1 :                             \
-   (c == '[') ? 2 :                             \
-   (c == ']') ? 3 :                             \
-   (c == '{') ? 4 :                             \
-   (c == '}') ? 5 :                             \
-   (c == '#') ? 6 :                             \
-   (c == '.') ? 7 :                             \
-   (c == ';') ? 8 :                             \
-   (c == ',') ? 9 :                             \
-   (c == '>') ? 10 :                            \
-   (c == '<') ? 11 :                            \
-   (c == '=') ? 12 :                            \
-   (c == '&') ? 13 :                            \
-   (c == '*') ? 14 :                            \
-   (c == '+') ? 15 :                            \
-   (c == '-') ? 16 :                            \
-   (c == '/') ? 17 :                            \
-   (c == '|') ? 18 :                            \
-   (c == '^') ? 19 :                            \
-   (c == '?') ? 20 :                            \
-   (c == '\\') ? 21 :                           \
-   (c == '!') ? 22 :                            \
-   (c == '@') ? 23 :                            \
-   (c == '$') ? 24 :                            \
-   (c == '%') ? 25 :                            \
-   (c == '`') ? 26 :                            \
-   (c == '~') ? 27 :                            \
-   (c == ':') ? 28 : -1)
-
-void
-assert_symtbl_inorder(int *symtbl)
-{
-  for (size_t i = 0; i < TOKENTYPE_SYM_LEN-1; ++i) {
-    if (symtbl[i] != symtbl[i+1]-1) {
-      fprintf(stderr, "ERR: symtbl out of order. left = %s, right = %s\n",
-              tokentype_to_str(symtbl[i]), tokentype_to_str(symtbl[i+1]));
-      exit(EXIT_FAILURE);
-    }
-  }
-}
-
 struct token *
 lexer_peek(struct lexer *lexer, size_t n)
 {
@@ -262,70 +196,65 @@ lexer_peek(struct lexer *lexer, size_t n)
 }
 
 void
-assert_symtidx_inorder(void)
+lexer_free(struct lexer *lexer)
 {
-  char order[] = {
-    '(', ')', '[', ']', '{',
-    '}', '#', '.', ';', ',',
-    '>', '<', '=', '&', '*',
-    '+', '-', '/', '|', '^',
-    '?', '\\', '!', '@', '$',
-    '%', '`', '~', ':',
-  };
-
-  assert(TOKENTYPE_SYM_LEN == sizeof(order)/sizeof(*order));
-
-  for (size_t i = 0; i < TOKENTYPE_SYM_LEN; ++i) {
-    assert(SYMTIDX(order[i]) == (int)i);
-  }
+  arena_free(lexer->arena);
+  lexer->len = 0;
 }
 
 struct lexer
 lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 {
-  int symtbl[TOKENTYPE_SYM_LEN] = {
-    TOKENTYPE_LPAREN,
-    TOKENTYPE_RPAREN,
-    TOKENTYPE_LBRACKET,
-    TOKENTYPE_RBRACKET,
-    TOKENTYPE_LBRACE,
-    TOKENTYPE_RBRACE,
-    TOKENTYPE_HASH,
-    TOKENTYPE_PERIOD,
-    TOKENTYPE_SEMICOLON,
-    TOKENTYPE_COMMA,
-    TOKENTYPE_GREATERTHAN,
-    TOKENTYPE_LESSTHAN,
-    TOKENTYPE_EQUALS,
-    TOKENTYPE_AMPERSAND,
-    TOKENTYPE_ASTERISK,
-    TOKENTYPE_PLUS,
-    TOKENTYPE_MINUS,
-    TOKENTYPE_FORWARDSLASH,
-    TOKENTYPE_PIPE,
-    TOKENTYPE_CARET,
-    TOKENTYPE_QUESTIONMARK,
-    TOKENTYPE_BACKWARDSLASH,
-    TOKENTYPE_BANG,
-    TOKENTYPE_AT,
-    TOKENTYPE_DOLLARSIGN,
-    TOKENTYPE_PERCENT,
-    TOKENTYPE_BACKTICK,
-    TOKENTYPE_TILDE,
-    TOKENTYPE_COLON,
-  };
-
-#ifdef DEBUG
-  assert_symtbl_inorder(symtbl);
-  assert_symtidx_inorder();
-#endif
-
   char *src = file_to_str(filepath);
   struct lexer lexer = (struct lexer) {
     .hd = NULL,
     .tl = NULL,
     .len = 0,
     .arena = arena_create(32768),
+  };
+
+  size_t tts = sizeof(enum token_type);
+  struct pair(char **, enum token_type) operators[] = {
+    pair_from(CPL(char *, "("),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LPAREN),              tts),
+    pair_from(CPL(char *, ")"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RPAREN),              tts),
+    pair_from(CPL(char *, "["),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LBRACKET),            tts),
+    pair_from(CPL(char *, "]"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RBRACKET),            tts),
+    pair_from(CPL(char *, "{"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LBRACE),              tts),
+    pair_from(CPL(char *, "}"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_RBRACE),              tts),
+    pair_from(CPL(char *, "#"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_HASH),                tts),
+    pair_from(CPL(char *, "."),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PERIOD),              tts),
+    pair_from(CPL(char *, ";"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_SEMICOLON),           tts),
+    pair_from(CPL(char *, ","),  sizeof(char *), CPL(enum token_type, TOKENTYPE_COMMA),               tts),
+    pair_from(CPL(char *, ">"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_GREATERTHAN),         tts),
+    pair_from(CPL(char *, "<"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_LESSTHAN),            tts),
+    pair_from(CPL(char *, "="),  sizeof(char *), CPL(enum token_type, TOKENTYPE_EQUALS),              tts),
+    pair_from(CPL(char *, "&"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_AMPERSAND),           tts),
+    pair_from(CPL(char *, "*"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_ASTERISK),            tts),
+    pair_from(CPL(char *, "+"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PLUS),                tts),
+    pair_from(CPL(char *, "-"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_MINUS),               tts),
+    pair_from(CPL(char *, "/"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_FORWARDSLASH),        tts),
+    pair_from(CPL(char *, "|"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PIPE),                tts),
+    pair_from(CPL(char *, "^"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_CARET),               tts),
+    pair_from(CPL(char *, "?"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_QUESTIONMARK),        tts),
+    pair_from(CPL(char *, "\\"), sizeof(char *), CPL(enum token_type, TOKENTYPE_BACKWARDSLASH),       tts),
+    pair_from(CPL(char *, "!"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_BANG),                tts),
+    pair_from(CPL(char *, "@"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_AT),                  tts),
+    pair_from(CPL(char *, "$"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_DOLLARSIGN),          tts),
+    pair_from(CPL(char *, "%"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_PERCENT),             tts),
+    pair_from(CPL(char *, "`"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_BACKTICK),            tts),
+    pair_from(CPL(char *, "~"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_TILDE),               tts),
+    pair_from(CPL(char *, ":"),  sizeof(char *), CPL(enum token_type, TOKENTYPE_COLON),               tts),
+    pair_from(CPL(char *, "&&"), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_AMPERSAND),    tts),
+    pair_from(CPL(char *, "||"), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_PIPE),         tts),
+    pair_from(CPL(char *, ">="), sizeof(char *), CPL(enum token_type, TOKENTYPE_GREATERTHAN_EQUALS),  tts),
+    pair_from(CPL(char *, "<="), sizeof(char *), CPL(enum token_type, TOKENTYPE_LESSTHAN_EQUALS),     tts),
+    pair_from(CPL(char *, "=="), sizeof(char *), CPL(enum token_type, TOKENTYPE_DOUBLE_EQUALS),       tts),
+    pair_from(CPL(char *, "!="), sizeof(char *), CPL(enum token_type, TOKENTYPE_BANG_EQUALS),         tts),
+    pair_from(CPL(char *, "+="), sizeof(char *), CPL(enum token_type, TOKENTYPE_PLUS_EQUALS),         tts),
+    pair_from(CPL(char *, "-="), sizeof(char *), CPL(enum token_type, TOKENTYPE_MINUS_EQUALS),        tts),
+    pair_from(CPL(char *, "*="), sizeof(char *), CPL(enum token_type, TOKENTYPE_ASTERISK_EQUALS),     tts),
+    pair_from(CPL(char *, "/="), sizeof(char *), CPL(enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS), tts),
+    pair_from(CPL(char *, "%="), sizeof(char *), CPL(enum token_type, TOKENTYPE_PERCENT_EQUALS),      tts),
   };
 
   size_t i, row, col;
@@ -388,9 +317,10 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     case '`':
     case '~':
     case ':': {
-      tok = token_alloc(&lexer, lexeme, 1, symtbl[SYMTIDX(c)], row, col, filepath);
-      lexer_append(&lexer, tok);
-      ++col;
+      assert(0 && "unimplemented");
+      /* tok = token_alloc(&lexer, lexeme, 1, symtbl[SYMTIDX(c)], row, col, filepath); */
+      /* lexer_append(&lexer, tok); */
+      /* ++col; */
     } break;
     case '"': {
       size_t strlit_len = consume_until(lexeme+1, is_quote);
@@ -437,11 +367,4 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 
   free(src);
   return lexer;
-}
-
-void
-lexer_free(struct lexer *lexer)
-{
-  arena_free(lexer->arena);
-  lexer->len = 0;
 }
