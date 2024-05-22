@@ -1,30 +1,9 @@
-// MIT License
-
-// Copyright (c) 2023 malloc-nbytes
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
-#include "hashtbl.h"
 #include "utils.h"
+#include "hashtbl.h"
 
 static void
 try_resize(struct hashtbl *ht)
@@ -56,20 +35,20 @@ hashtbl_node_alloc(struct hashtbl *ht, void *key, void *value, struct hashtbl_no
 {
   struct hashtbl_node *n = utils_safe_malloc(sizeof(struct hashtbl_node));
   n->next = next;
-  n->value = malloc(ht->value_stride);
-  n->key = malloc(ht->key_stride);
+  n->value = utils_safe_malloc(ht->value_stride);
+  n->key = utils_safe_malloc(ht->key_stride);
 
-  (void)memcpy(n->key, key, ht->key_stride);
-  (void)memcpy(n->value, value, ht->value_stride);
+  memcpy(n->key, key, ht->key_stride);
+  memcpy(n->value, value, ht->value_stride);
 
   return n;
 }
 
-static struct hashtbl_node *
-find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
+static struct
+hashtbl_node *find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
 {
   struct hashtbl_node *it = lst;
-  while (it && ht->keycompar(key, it->key) == 0) {
+  while (it && ht->keycompar(key, it->key) != 0) {
     it = it->next;
   }
   return it;
@@ -80,15 +59,15 @@ hashtbl_create(size_t key_stride, size_t value_stride,
                unsigned (*hashfunc)(void *key, size_t bytes),
                int (*keycompar)(void *x, void *y))
 {
-  return (struct hashtbl) {
-    .tbl = NULL,
-    .hashfunc = hashfunc,
-    .keycompar = keycompar,
-    .key_stride = key_stride,
-    .value_stride = value_stride,
-    .len = 0,
-    .cap = 0,
-  };
+  struct hashtbl ht;
+  ht.tbl = NULL;
+  ht.hashfunc = hashfunc;
+  ht.keycompar = keycompar;
+  ht.key_stride = key_stride;
+  ht.value_stride = value_stride;
+  ht.len = 0;
+  ht.cap = 0;
+  return ht;
 }
 
 void
@@ -96,42 +75,25 @@ hashtbl_insert(struct hashtbl *ht, void *key, void *value)
 {
   try_resize(ht);
 
-  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
+  unsigned idx = ht->hashfunc(key, ht->key_stride) % ht->cap;
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
 
   if (!p) {
-    struct hashtbl_node * tmp = hashtbl_node_alloc(ht, key, value, ht->tbl[idx]);
-    ht->tbl[idx] = tmp;
+    struct hashtbl_node *temp = hashtbl_node_alloc(ht, key, value, ht->tbl[idx]);
+    ht->tbl[idx] = temp;
     ht->len++;
-  }
-  else {
-    (void)memcpy(p->value, value, ht->key_stride);
+  } else {
+    memcpy(p->value, value, ht->value_stride);
   }
 }
 
 uint8_t *
 hashtbl_get(struct hashtbl *ht, void *key)
 {
-  unsigned idx = ht->hashfunc(key, ht->key_stride)%ht->cap;
+  if (ht->cap == 0) return NULL;
+
+  unsigned idx = ht->hashfunc(key, ht->key_stride) % ht->cap;
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
-  return !p ? NULL : p->value;
-}
 
-struct hashtbl_node **
-hashtbl_asbytes(struct hashtbl *ht)
-{
-  return ht->tbl;
-}
-
-void
-hashtbl_free(struct hashtbl *ht)
-{
-  for (size_t i = 0; i < ht->cap; ++i) {
-    if (ht->tbl[i]) {
-      free(ht->tbl[i]->value);
-      free(ht->tbl[i]->key);
-      free(ht->tbl[i]);
-    }
-  }
-  free(ht->tbl);
+  return p ? p->value : NULL;
 }

@@ -50,7 +50,7 @@ test_hashtbl_insert(void)
   TEST_ASSERT_EQ(2, hashtbl_deref_get(ht, val, int));
   TEST_ASSERT_EQ(4, *(int *)hashtbl_get(&ht, &val2));
 
-  hashtbl_free(&ht);
+  /* hashtbl_free(&ht); */
 
   return TEST_OK;
 }
@@ -84,7 +84,7 @@ test_hashtbl_insert_with_strs(void)
   TEST_ASSERT_EQ(hashtbl_deref_get(ht, lt_key, int), lt_val);
   TEST_ASSERT_EQ(hashtbl_deref_get(ht, doubleeq_key, int), doubleeq_val);
 
-  hashtbl_free(&ht);
+  /* hashtbl_free(&ht); */
 
   return TEST_OK;
 }
@@ -102,7 +102,7 @@ test_hashtbl_insert_compound_literals(void)
   TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "hello world")), 2);
   TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "||")), 3);
 
-  hashtbl_free(&ht);
+  /* hashtbl_free(&ht); */
   return TEST_OK;
 }
 
@@ -129,6 +129,6 @@ test_hashtbl_insert_inplace(void)
   TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "ab")),              7);
   TEST_ASSERT_EQ(*(int *)hashtbl_get(&ht, CPL(char *, "abc")),             8);
 
-  hashtbl_free(&ht);
+  /* hashtbl_free(&ht); */
   return TEST_OK;
 }

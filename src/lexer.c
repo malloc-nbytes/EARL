@@ -211,17 +211,14 @@ lexer_free(struct lexer *lexer)
 static int
 __keycompar(void *k1, void *k2)
 {
-  printf("comparing: %s and %s\n", *(char **)k1, *(char **)k2);
-  return strcmp((char *)k1, (char *)k2);
+  return strcmp(*(char **)k1, *(char **)k2);
 }
 
 static unsigned
 __hashfunc(void *x, size_t bytes)
 {
   (void)bytes;
-  unsigned idx = strlen(*(char **)x);
-  printf("hashing: %s to be %d\n", *(char **)x, idx);
-  return idx;
+  return strlen(*(char **)x);
 }
 
 struct lexer
@@ -352,11 +349,16 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     else {
       const size_t bufcap = 256;
       size_t buflen = 0;
-
       char *buf = malloc(bufcap);
-      memset(buf, '\0', bufcap);
-      buf[0] = '=';
 
+      /* char buf[bufcap]; */
+      memset(buf, '\0', bufcap);
+
+      buf[0] = '<';
+      buf[1] = '=';
+      /* buf[2] = '='; */
+
+      printf("--- SEARCHING ---\n");
       int *value = (int *)hashtbl_get(&ht, &buf);
       printf("buf: %s (%d)\n", buf, value == NULL ? -1 : *value);
       abort();
