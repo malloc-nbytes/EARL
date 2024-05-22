@@ -58,6 +58,7 @@ enum token_type {
   TOKENTYPE_BACKTICK,
   TOKENTYPE_TILDE,
   TOKENTYPE_COLON,
+  TOKENTYPE_SYM_LEN, // DO NOT USE! Used for the length of symbols.
 
   // Multi character
   TOKENTYPE_DOUBLE_AMPERSAND,
@@ -71,7 +72,6 @@ enum token_type {
   TOKENTYPE_ASTERISK_EQUALS,
   TOKENTYPE_FORWARDSLASH_EQUALS,
   TOKENTYPE_PERCENT_EQUALS,
-  TOKENTYPE_SYM_LEN, // DO NOT USE! Used for the length of symbols.
 
   // Other
   TOKENTYPE_EOF,
@@ -80,6 +80,7 @@ enum token_type {
   TOKENTYPE_CHARLIT,
   TOKENTYPE_IDENT,
   TOKENTYPE_KEYWORD,
+  TOKENTYPE_TOTAL_LEN
 };
 
 struct token {
