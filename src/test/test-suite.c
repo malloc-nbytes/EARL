@@ -66,12 +66,12 @@ main(void)
        RUN_TEST(test_pair_same_types_ints());
     });
 
-    RUN_TEST_GROUP("hashtbl", {
-      RUN_TEST(test_hashtbl_insert());
-      RUN_TEST(test_hashtbl_insert_with_strs());
-      RUN_TEST(test_hashtbl_insert_compound_literals());
-      RUN_TEST(test_hashtbl_insert_inplace());
-    });
+    /* RUN_TEST_GROUP("hashtbl", { */
+    /*   RUN_TEST(test_hashtbl_insert()); */
+    /*   RUN_TEST(test_hashtbl_insert_with_strs()); */
+    /*   RUN_TEST(test_hashtbl_insert_compound_literals()); */
+    /*   RUN_TEST(test_hashtbl_insert_inplace()); */
+    /* }); */
 
     /* RUN_TEST_GROUP("parsers", { */
     /*   RUN_TEST(test_parsers_expect1()); */

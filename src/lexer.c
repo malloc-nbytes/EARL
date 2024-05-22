@@ -156,7 +156,7 @@ void
 lexer_dump(struct lexer *lexer)
 {
   struct token *tok;
-  while ((tok = lexer_next(lexer))) {
+  while ((tok = lexer_next(lexer))->type != TOKENTYPE_EOF) {
     printf("lexeme: \"%s\", type: %s, row: %zu, col: %zu, fp: %s\n",
            tok->lexeme, tokentype_to_str(tok->type), tok->row, tok->col, tok->fp);
   }
@@ -274,6 +274,8 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
   hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
   hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
 
+  const size_t bufcap = 256;
+  char *buf = malloc(bufcap); // For search symbols in `ht`.
   size_t i = 0, row = 1, col = 1;
   while (src[i]) {
     char c = src[i];
@@ -347,37 +349,23 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 
     // Symbols
     else {
-      const size_t bufcap = 256;
       size_t buflen = 0;
-      char *buf = malloc(bufcap);
 
-      /* char buf[bufcap]; */
       memset(buf, '\0', bufcap);
 
-      buf[0] = '<';
-      buf[1] = '=';
-      /* buf[2] = '='; */
+      for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) {
+        if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') {
+          buf[buflen++] = src[i+j];
+        }
+      }
 
-      printf("--- SEARCHING ---\n");
-      int *value = (int *)hashtbl_get(&ht, &buf);
-      printf("buf: %s (%d)\n", buf, value == NULL ? -1 : *value);
-      abort();
-
-      /* for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) { */
-      /*   if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') { */
-      /*     buf[buflen++] = src[i+j]; */
-      /*   } */
-      /* } */
-
-      /* enum token_type *value = (enum token_type *)hashtbl_get(&ht, &buf); */
-      /* printf("buf: %s (%d)\n", buf, value == NULL ? -1 : *value); */
-      /* abort(); */
-      /* while (buflen > 0) { */
-      /*   if ((value = (enum token_type *)hashtbl_get(&ht, buf)) != NULL) { */
-      /*     break; */
-      /*   } */
-      /*   buf[--buflen] = '\0'; */
-      /* } */
+      enum token_type *value = NULL;
+      while (buflen > 0) {
+        if ((value = (enum token_type *)hashtbl_get(&ht, &buf)) != NULL) {
+          break;
+        }
+        buf[--buflen] = '\0';
+      }
 
       if (!value) {
         NOTIFY_ERR(NOTIFY_ERR_FATAL, "lex_file: `value` from `ht` is NULL");
@@ -392,6 +380,7 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 
   lexer_append(&lexer, token_alloc(&lexer, "EOF", 3, TOKENTYPE_EOF, row, col, filepath));
 
+  free(buf);
   free(src);
   return lexer;
 }
