@@ -69,7 +69,7 @@ static struct hashtbl_node *
 find(struct hashtbl *ht, struct hashtbl_node *lst, void *key)
 {
   struct hashtbl_node *it = lst;
-  while (it && !ht->keycompar(key, it->key)) {
+  while (it && ht->keycompar(key, it->key) == 0) {
     it = it->next;
   }
   return it;
