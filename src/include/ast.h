@@ -145,4 +145,7 @@ struct expr_funccall* expr_funccall_alloc(struct token *id, struct vector(struct
 struct expr_term*     expr_term_alloc(enum expr_term_type type, struct token *term);
 struct expr_binary*   expr_binary_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
 
+/*** DEBUGGING ***/
+void ast_dump(struct program *program);
+
 #endif // AST_H

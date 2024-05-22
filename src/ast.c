@@ -147,3 +147,9 @@ expr_funccall_alloc(struct token *id, struct vector(struct expr *) args)
   e->args = args;
   return e;
 }
+
+void
+ast_dump(struct program *program)
+{
+  assert(0 && "ast_dump unimplemented");
+}
