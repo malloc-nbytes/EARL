@@ -34,7 +34,7 @@
 #include "arena.h"
 #include "hashtbl.h"
 
-size_t
+static size_t
 consume_until(char *s, int (*predicate)(char))
 {
   size_t i;
@@ -53,7 +53,7 @@ consume_until(char *s, int (*predicate)(char))
   return i;
 }
 
-size_t
+static size_t
 find_comment_end(char *s)
 {
   size_t i;
@@ -65,25 +65,25 @@ find_comment_end(char *s)
   return i;
 }
 
-int
+static int
 is_newline(char c)
 {
   return c == '\n';
 }
 
-int
+static int
 is_quote(char c)
 {
   return c == '"';
 }
 
-int
+static int
 nisdigit(char c)
 {
   return !isdigit(c);
 }
 
-int
+static int
 nisvalid_ident(char c) {
   return !(c == '_' || isalnum(c));
 }
@@ -91,7 +91,7 @@ nisvalid_ident(char c) {
 // Code from:
 //   chux - Reinstate Monica
 //   https://stackoverflow.com/questions/174531/how-to-read-the-content-of-a-file-to-a-string-in-c
-char *
+static char *
 file_to_str(char *filepath) {
   FILE *f = fopen(filepath, "rb");
 
@@ -162,7 +162,7 @@ lexer_dump(struct lexer *lexer)
   }
 }
 
-int
+static int
 is_keyword(char *s, size_t len, char **keywords, size_t keywords_len)
 {
   for (size_t i = 0; i < keywords_len; ++i) {
@@ -171,6 +171,12 @@ is_keyword(char *s, size_t len, char **keywords, size_t keywords_len)
     }
   }
   return 0;
+}
+
+static int
+issym(char c)
+{
+  return !isalnum(c) && c != '_';
 }
 
 int
@@ -205,7 +211,7 @@ lexer_free(struct lexer *lexer)
 static int
 __keycompar(void *k1, void *k2)
 {
-  return utils_streq((char *)k1, (char *)k2);
+  return strcmp((char *)k1, (char *)k2);
 }
 
 static unsigned
@@ -267,8 +273,6 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
   hashtbl_insert_inplace(ht, char *, "*=", enum token_type, TOKENTYPE_ASTERISK_EQUALS);
   hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
   hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
-
-  size_t max_symlen = 2;
 
   size_t i = 0, row = 1, col = 1;
   while (src[i]) {
@@ -343,24 +347,40 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 
     // Symbols
     else {
-      const size_t bufcap = 256
-      char buf[bufcap];
+      const size_t bufcap = 256;
       size_t buflen = 0;
+      char *buf = malloc(bufcap);
       memset(buf, '\0', bufcap);
+      buf[0] = ':';
 
-      for (size_t j = 0; src[j] && j < max_symlen && issym(src[j]); ++j) {
-        buf[buflen++] = src[j];
+      int *value = (int *)hashtbl_get(&ht, &buf);
+      printf("buf: %s (%d)\n", buf, value == NULL ? -1 : *value);
+      abort();
+
+      /* for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) { */
+      /*   if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') { */
+      /*     buf[buflen++] = src[i+j]; */
+      /*   } */
+      /* } */
+
+      /* enum token_type *value = (enum token_type *)hashtbl_get(&ht, &buf); */
+      /* printf("buf: %s (%d)\n", buf, value == NULL ? -1 : *value); */
+      /* abort(); */
+      /* while (buflen > 0) { */
+      /*   if ((value = (enum token_type *)hashtbl_get(&ht, buf)) != NULL) { */
+      /*     break; */
+      /*   } */
+      /*   buf[--buflen] = '\0'; */
+      /* } */
+
+      if (!value) {
+        NOTIFY_ERR(NOTIFY_ERR_FATAL, "lex_file: `value` from `ht` is NULL");
       }
 
-      while (buflen > 0) {
-        enum token_type value = hashtbl_deref_get(ht, buf, enum token_type);
-        assert(0 && "unimplemented");
-        --buflen;
-      }
-
-      /* tok = token_alloc(&lexer, lexeme, 1, symtbl[SYMTIDX(c)], row, col, filepath); */
-      /* lexer_append(&lexer, tok); */
-      /* ++col; */
+      tok = token_alloc(&lexer, buf, buflen, *value, row, col, filepath);
+      lexer_append(&lexer, tok);
+      col += buflen;
+      i += buflen;
     }
   }
 
