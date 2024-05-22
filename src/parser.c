@@ -102,44 +102,62 @@ parser_parse_primary_expr(struct lexer *lexer)
 struct expr *
 parser_parse_multiplicative_expr(struct lexer *lexer)
 {
-  assert(0 && "parser_parse_multiplicative_expr: unimplemented");
+  struct expr *lhs = parser_parse_primary_expr(lexer);
+  struct token *cur = lexer_peek(lexer, 0);
+  while (cur && (cur->type == TOKENTYPE_ASTERISK
+                 || cur->type == TOKENTYPE_FORWARDSLASH)) {
+    struct token *op = lexer_next(lexer);
+    struct expr *rhs = parser_parse_primary_expr(lexer);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+  }
+  return lhs;
 }
 
 struct expr *
 parser_parse_additive_expr(struct lexer *lexer)
 {
-  assert(0 && "parser_parse_additive_expr: unimplemented");
+  struct expr *lhs = parser_parse_multiplicative_expr(lexer);
+  struct token *cur = lexer_peek(lexer, 0);
+  while (cur && (cur->type == TOKENTYPE_PLUS
+                 || cur->type == TOKENTYPE_MINUS)) {
+    struct token *op = lexer_next(lexer);
+    struct expr *rhs = parser_parse_multiplicative_expr(lexer);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+  }
+  return lhs;
 }
 
 struct expr *
 parser_parse_equalitative_expr(struct lexer *lexer)
 {
-  assert(0 && "parser_parse_equalitative_expr: unimplemented");
+  struct expr *lhs = parser_parse_additive_expr(lexer);
+  struct token *cur = lexer_peek(lexer, 0);
+  while (cur && (cur->type == TOKENTYPE_DOUBLE_EQUALS
+                 || cur->type == TOKENTYPE_GREATERTHAN_EQUALS
+                 || cur->type == TOKENTYPE_GREATERTHAN
+                 || cur->type == TOKENTYPE_LESSTHAN_EQUALS
+                 || cur->type == TOKENTYPE_LESSTHAN
+                 || cur->type == TOKENTYPE_BANG_EQUALS)) {
+    struct token *op = lexer_next(lexer);
+    struct expr *rhs = parser_parse_additive_expr(lexer);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+  }
+  return lhs;
 }
 
 struct expr *
 parser_parse_logical_expr(struct lexer *lexer)
 {
   struct expr *lhs = parser_parse_equalitative_expr(lexer);
-  while (1) {
-    struct token *peeked1 = lexer_peek(lexer, 0);
-    struct token *peeked2 = lexer_peek(lexer, 1);
-    int nonnull = peeked1 && peeked2;
-    int doubleamp = nonnull && (peeked1->type == TOKENTYPE_AMPERSAND && peeked2->type == TOKENTYPE_AMPERSAND);
-    int doublepipe = nonnull && (peeked1->type == TOKENTYPE_PIPE && peeked2->type == TOKENTYPE_PIPE);
-    if (doubleamp) {
-      lexer_discard(lexer);
-      lexer_discard(lexer);
-      struct expr *rhs = parser_parse_equalitative_expr(lexer);
-    }
-    else if (doublepipe) {
-      lexer_discard(lexer);
-      lexer_discard(lexer);
-      struct expr *rhs = parser_parse_equalitative_expr(lexer);
-    }
-    else {
-    }
+  struct token *cur = lexer_peek(lexer, 0);
+  while (cur && (cur->type == TOKENTYPE_DOUBLE_AMPERSAND
+                 || cur->type == TOKENTYPE_DOUBLE_PIPE)) {
+    struct token *op = lexer_next(lexer);
+    struct expr *rhs = parser_parse_equalitative_expr(lexer);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+
   }
+  return lhs;
 }
 
 struct expr *

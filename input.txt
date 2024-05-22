@@ -1,9 +1,5 @@
 let a: int = 1;
 let b: int = 2;
-let s: str = "hello world";
-
-let s: int = a == b;
-let s2: int = a += s;
 
 def sum(a: int, b: int) -> int {
   return a + b;
