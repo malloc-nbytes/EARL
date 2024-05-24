@@ -68,7 +68,8 @@ parser_expect_keyword(struct lexer *lexer, const char *keyword)
 {
   struct token *hd = lexer_next(lexer);
   if (hd->type != TOKENTYPE_KEYWORD || !utils_streq(hd->lexeme, keyword)) {
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_keyword: expected keyword %s but got %s", keyword, hd->lexeme);
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_keyword: expected keyword %s but got %s %s",
+                   keyword, tokentype_to_str(hd->type), hd->lexeme);
   }
   return hd;
 }
