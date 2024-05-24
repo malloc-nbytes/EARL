@@ -1,6 +1,7 @@
 main
 *.swp
 test-suite
+.vscode
 
 # Configure
 *.m4

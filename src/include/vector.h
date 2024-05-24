@@ -54,7 +54,7 @@ struct vector {
   };
 
 // Gives you the element in the vector `v` at `idx` and casts
-// it as `cast`.
+// it as *(`cast *`).
 #define vector_deref_at(v, idx, cast) (*((cast *)((v).data + (idx) * (v).stride)))
 
 // Debug prints the vector `v` with the format string
