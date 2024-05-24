@@ -5,10 +5,6 @@
 #include "utils.h"
 #include "hashtbl.h"
 
-/* struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride, */
-/*                               unsigned (*hashfunc)(void *key, size_t bytes), */
-/*                               int (*keycompar)(void *x, void *y)); */
-
 unsigned
 hashfunc_int(void *k, size_t bytes)
 {
@@ -19,7 +15,7 @@ hashfunc_int(void *k, size_t bytes)
 int
 keycompar_int(void *k, void *v)
 {
-  return *(int *)k == *(int *)v;
+  return (int *)k == (int *)v;
 }
 
 unsigned
@@ -32,13 +28,13 @@ hashfunc_str(void *x, size_t bytes)
 int
 keycompar_str(void *k, void *v)
 {
-  return utils_streq((char *)k, (char *)v);
+  return strcmp(*(char **)k, *(char **)v);
 }
 
 test_errno_t
 test_hashtbl_insert(void)
 {
-  struct hashtbl ht = hashtbl_create(sizeof(int), sizeof(int), hashfunc_int, keycompar_int);
+  struct hashtbl ht = hashtbl_create2(int *, int, hashfunc_int, keycompar_int);
 
   for (int i = 0; i < 5; ++i) {
     int j = i*2;
@@ -47,6 +43,8 @@ test_hashtbl_insert(void)
 
   int val = 1;
   int val2 = 2;
+
+  TEST_ASSERT_EQ(2, *(int *)hashtbl_get(&ht, &val));
   TEST_ASSERT_EQ(2, hashtbl_deref_get(ht, val, int));
   TEST_ASSERT_EQ(4, *(int *)hashtbl_get(&ht, &val2));
 
