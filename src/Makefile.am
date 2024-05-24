@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = main
-main_SOURCES = main.c arena.c ast.c hashtbl.c lexer.c pair.c parser.c token.c utils.c vector.c
+main_SOURCES = main.c arena.c ast.c hashtbl.c lexer.c pair.c parser.c token.c utils.c vector.c interpreter.c
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 

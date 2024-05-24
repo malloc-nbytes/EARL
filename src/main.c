@@ -28,6 +28,7 @@
 #include "utils.h"
 #include "parser.h"
 #include "lexer.h"
+#include "interpreter.h"
 
 char *RESERVED[] = COMMON_KW_AS_CPL;
 char *VARTYPES[] = COMMON_TY_AS_CPL;
@@ -85,6 +86,7 @@ main(int argc, char **argv)
   lexer_dump(&lexer);
   struct program program = parser_parse(&lexer);
   ast_dump(&program);
+  interpret(&program);
 
   lexer_free(&lexer);
   free(keywords);
