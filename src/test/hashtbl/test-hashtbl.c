@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "test-suite.h"
-#include "test-hashtbl.h"
 #include "utils.h"
 #include "hashtbl.h"
 

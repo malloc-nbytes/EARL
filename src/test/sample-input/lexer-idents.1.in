@@ -1,0 +1,2 @@
+# File for test test_lexer_identifiers
+x X _x x_ x_x xx__ X_x Xx xX __xX

@@ -26,7 +26,7 @@ typedef int test_errno_t;
     }                                           \
   } while (0)
 
-#define TEST_ASSERT_FALSE(expr) \
+#define TEST_ASSERT_FALSE(expr)                 \
   do {                                          \
     if ((expr) != 0) {                          \
       return TEST_ASSERT_FALSE_FAILURE;         \

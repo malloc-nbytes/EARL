@@ -22,8 +22,7 @@ test_parsers_expect1(void)
   TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_LESSTHAN)->lexeme, "<");
   TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_SEMICOLON)->lexeme, ";");
   TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_TILDE)->lexeme, "~");
-  TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_PERCENT)->lexeme, "%");
-  TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_EQUALS)->lexeme, "=");
+  TEST_ASSERT_STREQ(parser_expect(&lexer, TOKENTYPE_PERCENT_EQUALS)->lexeme, "%=");
 
   lexer_free(&lexer);
 

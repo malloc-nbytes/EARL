@@ -1,3 +1,4 @@
+#include "lexer/test-lexer.h"
 #include "hashtbl/test-hashtbl.h"
 #include "vector/test-vector.h"
 #include "pair/test-pair.h"
@@ -29,14 +30,14 @@ static int global_fail = 0;
     }                                                              \
   } while (0)
 
-#define RUN_TEST_GROUP(name, ...)                                                      \
-  do {                                                                                 \
-    int pass = 0;                                                                      \
-    int fail = 0;                                                                      \
-    printf("\033[0;36m[test group] (%s)\033[0m\n", name);                                               \
-    __VA_ARGS__                                                                        \
-    if (fail != 0) printf("  \033[0;31mBAD\033[0m\n");                                \
-    else printf("  \033[0;32mGood\033[0m\n");                         \
+#define RUN_TEST_GROUP(name, ...)                                       \
+  do {                                                                  \
+    int pass = 0;                                                       \
+    int fail = 0;                                                       \
+    printf("\033[0;36m[test group] (%s)\033[0m\n", name);               \
+    __VA_ARGS__                                                         \
+    if (fail != 0) printf("  \033[0;31mBAD\033[0m\n");                  \
+    else printf("  \033[0;32mGood\033[0m\n");                           \
   } while (0)
 
 #define TEST_SUITE(...)                                                                   \
@@ -73,13 +74,19 @@ main(void)
       RUN_TEST(test_hashtbl_insert_inplace());
     });
 
-    /* RUN_TEST_GROUP("parsers", { */
-    /*   RUN_TEST(test_parsers_expect1()); */
-    /*   RUN_TEST(test_parsers_expect2()); */
-    /*   RUN_TEST(test_parsers_expectkeyword1()); */
-    /*   RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_correctly()); */
-    /*   RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly()); */
-    /* }); */
+    RUN_TEST_GROUP("lexer", {
+        RUN_TEST(test_lexer_symbols());
+        RUN_TEST(test_lexer_identifiers());
+        RUN_TEST(test_lexer_keywords());
+    });
+
+    RUN_TEST_GROUP("parsers", {
+      RUN_TEST(test_parsers_expect1());
+      RUN_TEST(test_parsers_expect2());
+      RUN_TEST(test_parsers_expectkeyword1());
+      RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_correctly());
+      RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly());
+    });
   );
 
   return 0;
