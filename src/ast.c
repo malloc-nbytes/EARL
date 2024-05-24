@@ -157,7 +157,19 @@ static void dump_expr(struct expr *expr, int spaces);
 static void
 dump_expr_term(struct expr_term *expr, int spaces)
 {
-  UNIMPLEMENTED("dump_expr_term");
+  switch (expr->type) {
+  case EXPR_TERM_TYPE_IDENT:
+    SPACES(spaces); printf("(ident) %s\n", (expr->term)->lexeme);
+    break;
+  case EXPR_TERM_TYPE_INTLIT:
+    SPACES(spaces); printf("(intlit) %s\n", (expr->term)->lexeme);
+    break;
+  case EXPR_TERM_TYPE_STRLIT:
+    SPACES(spaces); printf("(strlit) %s\n", (expr->term)->lexeme);
+    break;
+  default:
+    NOTIFY_ERRARGS(NOTIFY_ERR_UNKNOWN, "dump_expr_term: unkown type: %d", expr->type);
+  }
 }
 
 static void
@@ -169,10 +181,10 @@ dump_expr_funccall(struct expr_funccall *expr, int spaces)
 static void
 dump_expr_binary(struct expr_binary *expr, int spaces)
 {
-  SPACES(spaces); printf("lhs = ");
+  SPACES(spaces); printf("lhs: ");
   dump_expr(expr->lhs, spaces);
-  putchar('\n');
-  SPACES(spaces); printf("rhs = ");
+  SPACES(spaces); printf("%s\n", (expr->op)->lexeme);
+  SPACES(spaces); printf("rhs: ");
   dump_expr(expr->rhs, spaces);
 }
 
@@ -180,17 +192,17 @@ static void
 dump_expr(struct expr *expr, int spaces)
 {
   switch (expr->type) {
-    case EXPR_TYPE_BINARY:
-      dump_expr_binary(expr->expr.binary, spaces+2);
-      break;
-    case EXPR_TYPE_FUNCCALL:
-      dump_expr_funccall(expr->expr.funccall, spaces+2);
-      break;
-    case EXPR_TYPE_TERM:
-      dump_expr_term(expr->expr.term, spaces+2);
-      break;
-    default:
-      printf("unkown expr: %d\n", expr->type);
+  case EXPR_TYPE_BINARY:
+    dump_expr_binary(expr->expr.binary, spaces+2);
+    break;
+  case EXPR_TYPE_FUNCCALL:
+    dump_expr_funccall(expr->expr.funccall, spaces+2);
+    break;
+  case EXPR_TYPE_TERM:
+    dump_expr_term(expr->expr.term, spaces+2);
+    break;
+  default:
+    printf("unkown expr: %d\n", expr->type);
   }
 }
 
@@ -203,7 +215,7 @@ dump_stmt_def(struct stmt_def *stmt, int spaces)
 static void
 dump_stmt_let(struct stmt_let *stmt, int spaces)
 {
-  printf("LET %s %s = (", stmt->type->lexeme, stmt->id->lexeme);
+  printf("LET %s %s =\n", stmt->type->lexeme, stmt->id->lexeme);
   dump_expr(stmt->expr, spaces+2);
 }
 
@@ -235,7 +247,8 @@ void
 ast_dump(struct program *program)
 {
   for (size_t i = 0; i < program->stmts.len; ++i) {
-    struct stmt *stmt = (struct stmt *)vector_at(&(program->stmts), i);
+    struct vector(stmt *) *stmts = &program->stmts;
+    struct stmt *stmt = *(struct stmt **)vector_at(stmts, i);
     dump_stmt(stmt, 0);
   }
 }

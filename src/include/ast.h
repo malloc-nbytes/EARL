@@ -122,7 +122,7 @@ struct stmt_def {
 };
 
 struct program {
-  struct vector(struct stmt *) stmts;
+  struct vector(struct stmt **) stmts;
 };
 
 /*** STATEMENT CONSTRUCTORS ***/

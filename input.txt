@@ -1,6 +1,2 @@
-let a: int = 1;
-# let b: int = 2;
-
-# def sum(a: int, b: int) -> int {
-#   return a + b;
-# }
+let a: int = 1 + 3 * 2;
+let b: int = a * 9;

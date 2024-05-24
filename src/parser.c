@@ -110,7 +110,7 @@ parser_parse_primary_expr(struct lexer *lexer)
     expr = expr_alloc(EXPR_TYPE_TERM, term);
   } break;
   default:
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %d", cur->type);
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %s", tokentype_to_str(cur->type));
   }
 
   return expr;
@@ -125,7 +125,9 @@ parser_parse_multiplicative_expr(struct lexer *lexer)
                  || cur->type == TOKENTYPE_FORWARDSLASH)) {
     struct token *op = lexer_next(lexer);
     struct expr *rhs = parser_parse_primary_expr(lexer);
-    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+    struct expr_binary *bin = expr_binary_alloc(lhs, op, rhs);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, bin);
+    cur = lexer_peek(lexer, 0);
   }
   return lhs;
 }
@@ -139,7 +141,9 @@ parser_parse_additive_expr(struct lexer *lexer)
                  || cur->type == TOKENTYPE_MINUS)) {
     struct token *op = lexer_next(lexer);
     struct expr *rhs = parser_parse_multiplicative_expr(lexer);
-    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+    struct expr_binary *bin = expr_binary_alloc(lhs, op, rhs);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, bin);
+    cur = lexer_peek(lexer, 0);
   }
   return lhs;
 }
@@ -157,7 +161,9 @@ parser_parse_equalitative_expr(struct lexer *lexer)
                  || cur->type == TOKENTYPE_BANG_EQUALS)) {
     struct token *op = lexer_next(lexer);
     struct expr *rhs = parser_parse_additive_expr(lexer);
-    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
+    struct expr_binary *bin = expr_binary_alloc(lhs, op, rhs);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, bin);
+    cur = lexer_peek(lexer, 0);
   }
   return lhs;
 }
@@ -171,8 +177,9 @@ parser_parse_logical_expr(struct lexer *lexer)
                  || cur->type == TOKENTYPE_DOUBLE_PIPE)) {
     struct token *op = lexer_next(lexer);
     struct expr *rhs = parser_parse_equalitative_expr(lexer);
-    lhs = expr_alloc(EXPR_TYPE_BINARY, expr_binary_alloc(lhs, op, rhs));
-
+    struct expr_binary *bin = expr_binary_alloc(lhs, op, rhs);
+    lhs = expr_alloc(EXPR_TYPE_BINARY, bin);
+    cur = lexer_peek(lexer, 0);
   }
   return lhs;
 }
@@ -300,7 +307,9 @@ parser_parse_stmt_let(struct lexer *lexer)
   (void)parser_expect(lexer, TOKENTYPE_EQUALS);
   struct expr *expr = parser_parse_expr(lexer);
   (void)parser_expect(lexer, TOKENTYPE_SEMICOLON);
-  return stmt_let_alloc(id, type, expr);
+
+  struct stmt_let *let = stmt_let_alloc(id, type, expr);
+  return let;
 }
 
 struct stmt *
@@ -315,7 +324,8 @@ parser_parse_stmt(struct lexer *lexer)
     }
     else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
       struct stmt_let *stmt_let = parser_parse_stmt_let(lexer);
-      return stmt_alloc(STMT_TYPE_LET, stmt_let);
+      struct stmt *stmt = stmt_alloc(STMT_TYPE_LET, stmt_let);
+      return stmt;
     }
   } break;
 
@@ -336,10 +346,12 @@ parser_parse_stmt(struct lexer *lexer)
 struct program
 parser_parse(struct lexer *lexer)
 {
-  struct vector stmts = vector_create2(struct stmt *);
+  struct vector stmts = vector_create2(struct stmt **);
 
-  while (lexer_peek(lexer, 0)->type != TOKENTYPE_EOF)
-    vector_append(&stmts, parser_parse_stmt(lexer));
+  while (lexer_peek(lexer, 0)->type != TOKENTYPE_EOF) {
+    struct stmt *stmt = parser_parse_stmt(lexer);
+    vector_append(&stmts, &stmt);
+  }
 
   return (struct program) {
     .stmts = stmts,
