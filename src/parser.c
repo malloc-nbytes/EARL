@@ -50,7 +50,7 @@ parser_expect(struct lexer *lexer, enum token_type exp)
 {
   struct token *hd = lexer_next(lexer);
   if (hd->type != exp) {
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect: expected %d but got %d", exp, hd->type);
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect: expected %s but got %s", tokentype_to_str(exp), tokentype_to_str(hd->type));
   }
   return hd;
 }
@@ -77,6 +77,7 @@ struct token *
 parser_expect_type(struct lexer *lexer)
 {
   char *keywords[] = COMMON_TY_AS_CPL;
+  // size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
   size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
 
   struct token *tok = lexer_next(lexer);
@@ -109,6 +110,10 @@ parser_parse_primary_expr(struct lexer *lexer)
     term = expr_term_alloc(EXPR_TERM_TYPE_INTLIT, cur);
     expr = expr_alloc(EXPR_TYPE_TERM, term);
   } break;
+  case TOKENTYPE_STRLIT: {
+    term = expr_term_alloc(EXPR_TERM_TYPE_STRLIT, cur);
+    expr = expr_alloc(EXPR_TYPE_TERM, term);
+  }
   default:
     NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %s", tokentype_to_str(cur->type));
   }

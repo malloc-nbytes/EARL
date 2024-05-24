@@ -33,6 +33,7 @@
 #include "utils.h"
 #include "arena.h"
 #include "hashtbl.h"
+#include "vector.h"
 
 static size_t
 consume_until(char *s, int (*predicate)(char))
@@ -155,21 +156,27 @@ lexer_discard(struct lexer *lexer)
 void
 lexer_dump(struct lexer *lexer)
 {
-  struct token *tok;
-  while ((tok = lexer_next(lexer))->type != TOKENTYPE_EOF) {
+  struct token *it = lexer->hd;
+  while (it) {
     printf("lexeme: \"%s\", type: %s, row: %zu, col: %zu, fp: %s\n",
-           tok->lexeme, tokentype_to_str(tok->type), tok->row, tok->col, tok->fp);
+           it->lexeme, tokentype_to_str(it->type), it->row, it->col, it->fp);
+    it = it->next;
   }
 }
 
 static int
 is_keyword(char *s, size_t len, char **keywords, size_t keywords_len)
 {
+  // TODO: possible stack overflow.
+  char real[256];
+  memset(real, '\0', len);
+  memcpy(real, s, len);
+
   for (size_t i = 0; i < keywords_len; ++i) {
-    if (strncmp(s, keywords[i], len) == 0) {
+    if (utils_streq(real, keywords[i]))
       return 1;
-    }
   }
+
   return 0;
 }
 
