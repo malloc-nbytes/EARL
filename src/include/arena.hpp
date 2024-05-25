@@ -20,29 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef PARSER_H
-#define PARSER_H
+// File: arena.h
+// Description:
+//   Provides an API for an arena allocator. This is
+//   helpful because we have a "pool" of memory that
+//   we can use and then free it all at once. If
+//   unfamiliar with arena allocators,
+//   https://en.wikipedia.org/wiki/Region-based_memory_management
 
-#include "lexer.h"
-#include "ast.h"
+#ifndef ARENA_H
+#define ARENA_H
 
-// Parsers
-struct program parser_parse(struct lexer *lexer);
-struct stmt *parser_parse_stmt(struct lexer *lexer);
-struct stmt_let *parser_parse_stmt_let(struct lexer *lexer);
+#include <stddef.h>
+#include <stdint.h>
 
-/* struct vector(struct pair(struct token *id, struct token *type)) */
-/*        parser_parse_stmt_def_args(struct lexer *lexer); */
+struct Arena {
+  uint8_t *m_mem;
+  size_t m_len;
+  size_t m_cap;
 
-struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
-struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);
+  Arena(size_t cap);
+  ~Arena();
+};
 
-// Expression Parsers
-struct expr *parser_parse_expr(struct lexer *lexer);
+// struct Arena {
+//   uint8_t *m_mem;
+//   size_t m_len;
+//   size_t m_cap;
 
-// Helpers
-struct token *parser_expect(struct lexer *lexer, enum token_type exp);
-struct token *parser_expect_keyword(struct lexer *lexer, const char *keyword);
-struct token *parser_expect_type(struct lexer *lexer);
+//   Arena(size_t cap) : m_cap(cap) {
+//     m_mem = new uint8_t[cap];
+//     m_len = 0;
+//   }
 
-#endif // PARSER_H
+//   ~Arena(void) {
+//     delete m_mem;
+//   }
+// };
+
+// Allocate `bytes` number of bytes in an arena.
+uint8_t *arena_alloc(Arena &arena, size_t bytes);
+
+#endif // ARENA_H

@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "notify.h"
-#include "utils.h"
+#include "notify.hpp"
+#include "utils.hpp"
 
 void *
 utils_safe_malloc(size_t bytes)

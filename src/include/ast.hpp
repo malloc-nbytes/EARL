@@ -28,7 +28,7 @@
 #ifndef AST_H
 #define AST_H
 
-#include "token.h"
+#include "token.hpp"
 
 enum stmt_type {
   STMT_TYPE_DEF = 0,

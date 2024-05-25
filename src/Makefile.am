@@ -1,17 +1,16 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = main
-main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp parser.cpp token.cpp utils.cpp interpreter.cpp
+main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp token.cpp utils.cpp
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
 SUBDIRS = test
 
-# Flags for C compiler
-AM_CFLAGS = -Wall -Wextra -pedantic -std=c99 -g -DDEBUG -Wno-gnu-zero-variadic-macro-arguments -O0
+# AM_CFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -DDEBUG -Wno-gnu-zero-variadic-macro-arguments -O0
 
 # Flags for C++ compiler
-AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++11 -g -DDEBUG
+AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -O0 -DDEBUG
 
 .PHONY: test
 test:

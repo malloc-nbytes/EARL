@@ -20,42 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdlib.h>
+#include <cstdlib>
 
-#include "arena.h"
-#include "utils.h"
+#include "arena.hpp"
+#include "utils.hpp"
 
-struct arena {
-  uint8_t *mem;
-  size_t len;
-  size_t cap;
-};
+Arena::Arena(size_t cap) {
+    m_mem = new uint8_t[cap];
+    m_len = 0;
+}
 
-uint8_t *
-arena_alloc(struct arena *arena, size_t bytes)
-{
-  if (arena->len+bytes > arena->cap) {
-    arena->cap *= 2;
-    arena->mem = static_cast<uint8_t *>(realloc(arena->mem, arena->cap));
+Arena::~Arena(void) {
+  delete m_mem;
+}
+
+uint8_t *arena_alloc(Arena &arena, size_t bytes) {
+  if (arena.m_len+bytes > arena.m_cap) {
+    arena.m_cap *= 2;
+    arena.m_mem = static_cast<uint8_t *>(realloc(arena.m_mem, arena.m_cap));
   }
-  uint8_t *mem = &arena->mem[arena->len];
-  arena->len += bytes;
+  uint8_t *mem = &arena.m_mem[arena.m_len];
+  arena.m_len += bytes;
   return mem;
-}
-
-void
-arena_free(struct arena *arena)
-{
-  free(arena->mem);
-  free(arena);
-}
-
-struct arena *
-arena_create(size_t cap)
-{
-  struct arena *arena = static_cast<struct arena *>(utils_safe_malloc(sizeof(struct arena)));
-  arena->mem = static_cast<uint8_t *>(utils_safe_malloc(cap));
-  arena->cap = cap;
-  arena->len = 0;
-  return arena;
 }

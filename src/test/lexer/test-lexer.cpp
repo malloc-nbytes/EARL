@@ -1,6 +1,6 @@
 #include "test-suite.h"
-#include "lexer.h"
-#include "token.h"
+#include "lexer.hpp"
+#include "token.hpp"
 
 test_errno_t
 test_lexer_symbols(void)

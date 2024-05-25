@@ -1,5 +1,4 @@
 #include "lexer/test-lexer.h"
-#include "parsers/test-parsers.h"
 #include "test-suite.h"
 
 #include <stdio.h>
@@ -53,14 +52,6 @@ main(void)
         RUN_TEST(test_lexer_symbols());
         RUN_TEST(test_lexer_identifiers());
         RUN_TEST(test_lexer_keywords());
-    });
-
-    RUN_TEST_GROUP("parsers", {
-      RUN_TEST(test_parsers_expect1());
-      RUN_TEST(test_parsers_expect2());
-      RUN_TEST(test_parsers_expectkeyword1());
-      RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_correctly());
-      RUN_TEST(test_parsers_parser_parse_def_stmt_args_can_parse_no_args_correctly());
     });
   );
 

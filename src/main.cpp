@@ -24,42 +24,29 @@
 #include <iostream>
 #include <vector>
 
-#include "common.h"
-#include "notify.h"
-#include "utils.h"
-#include "parser.h"
-#include "lexer.h"
-#include "interpreter.h"
-
-// char *RESERVED[] = COMMON_KW_AS_CPL;
-// char *VARTYPES[] = COMMON_TY_AS_CPL;
+#include "common.hpp"
+#include "notify.hpp"
+#include "utils.hpp"
+#include "lexer.hpp"
 
 std::vector<std::string> RESERVED = {"let", "def",};
 std::vector<std::string> VARTYPES = {"int","str",};
 
 const size_t VARTYPES_LEN = VARTYPES.size();
 
-void
-usage(char *progname)
-{
+void usage(char *progname) {
   (void)progname;
   assert(false && "fixme");
-  // NOTIFY_ERRARGS(ERR_USAGE, "%s <filepath>", progname);
 }
 
-// TODO: change from char ** to vector(char ***).
-std::vector<std::string>
-create_keywords(void)
-{
+std::vector<std::string> create_keywords(void) {
   std::vector<std::string> kws;
   std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
   std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
   return kws;
 }
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   if (argc != 2) {
     usage(*argv);
   }
@@ -68,7 +55,7 @@ main(int argc, char **argv)
 
   std::vector<std::string> keywords = create_keywords();
   size_t keywords_len = keywords.size();
-  char *comment = "#";
+  std::string comment = "#";
 
   return 0;
 }
