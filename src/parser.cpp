@@ -79,17 +79,17 @@ parser_expect_keyword(struct lexer *lexer, const char *keyword)
 struct token *
 parser_expect_type(struct lexer *lexer)
 {
-  char *keywords[] = COMMON_TY_AS_CPL;
+  // char *keywords[] = COMMON_TY_AS_CPL;
   // size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
-  size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
+  // size_t keywords_len = sizeof(keywords)/sizeof(*keywords);
 
   struct token *tok = lexer_next(lexer);
 
-  for (size_t i = 0; i < keywords_len; ++i) {
+  // for (size_t i = 0; i < keywords_len; ++i) {
     // if (utils_streq(tok->lexeme, keywords[i])) {
     //   return tok;
     // }
-  }
+  // }
 
   assert(false && "fixme");
   return NULL; // unreachable
@@ -274,7 +274,7 @@ struct stmt_def *
 parser_parse_stmt_def(struct lexer *lexer)
 {
   // def
-  (void)parser_expect_keyword(lexer, COMMON_KW_DEF);
+  // (void)parser_expect_keyword(lexer, COMMON_KW_DEF);
 
   // identifier
   struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
@@ -309,7 +309,7 @@ parser_parse_stmt_def(struct lexer *lexer)
 struct stmt_let *
 parser_parse_stmt_let(struct lexer *lexer)
 {
-  (void)parser_expect_keyword(lexer, COMMON_KW_LET);
+  (void)parser_expect_keyword(lexer, "let");
   struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
   (void)parser_expect(lexer, TOKENTYPE_COLON);
   struct token *type = parser_expect_type(lexer);

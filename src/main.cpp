@@ -20,8 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <algorithm>
+#include <iostream>
+#include <vector>
 
 #include "common.h"
 #include "notify.h"
@@ -30,44 +31,30 @@
 #include "lexer.h"
 #include "interpreter.h"
 
-char *RESERVED[] = COMMON_KW_AS_CPL;
-char *VARTYPES[] = COMMON_TY_AS_CPL;
+// char *RESERVED[] = COMMON_KW_AS_CPL;
+// char *VARTYPES[] = COMMON_TY_AS_CPL;
 
-const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
+std::vector<std::string> RESERVED = {"let", "def",};
+std::vector<std::string> VARTYPES = {"int","str",};
+
+const size_t VARTYPES_LEN = VARTYPES.size();
 
 void
 usage(char *progname)
 {
+  (void)progname;
   assert(false && "fixme");
   // NOTIFY_ERRARGS(ERR_USAGE, "%s <filepath>", progname);
 }
 
 // TODO: change from char ** to vector(char ***).
-char **
-create_keywords(size_t *keywords_len)
+std::vector<std::string>
+create_keywords(void)
 {
-  size_t cap = 1;
-  char **keywords = static_cast<char **>(utils_safe_malloc(sizeof(char *)*cap));
-
-  // Populate keywords with reserved words.
-  for (size_t i = 0; i < sizeof(RESERVED)/sizeof(*RESERVED); ++i) {
-    if (*keywords_len >= cap) {
-      cap *= 2;
-      keywords = static_cast<char **>(realloc(keywords, sizeof(char *)*cap));
-    }
-    keywords[(*keywords_len)++] = RESERVED[i];
-  }
-
-  // Populate keywords with variable types.
-  for (size_t i = 0; i < VARTYPES_LEN; ++i) {
-    if (*keywords_len >= cap) {
-      cap *= 2;
-      keywords = static_cast<char **>(realloc(keywords, sizeof(char *)*cap));
-    }
-    keywords[(*keywords_len)++] = VARTYPES[i];
-  }
-
-  return keywords;
+  std::vector<std::string> kws;
+  std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
+  std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
+  return kws;
 }
 
 int
@@ -79,18 +66,10 @@ main(int argc, char **argv)
 
   char *filepath = *(++argv);
 
-  size_t keywords_len = 0;
-  char **keywords = create_keywords(&keywords_len);
+  std::vector<std::string> keywords = create_keywords();
+  size_t keywords_len = keywords.size();
   char *comment = "#";
-
-  struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
-  // lexer_dump(&lexer);
-  struct program program = parser_parse(&lexer);
-  /* ast_dump(&program); */
-  interpret(&program);
-
-  lexer_free(&lexer);
-  free(keywords);
 
   return 0;
 }
+

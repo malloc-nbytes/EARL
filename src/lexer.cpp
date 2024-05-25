@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 #include <string>
+#include <unordered_map>
 
 #include <assert.h>
 #include <ctype.h>
@@ -241,47 +242,48 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
     .len = 0,
   };
 
-  // struct hashtbl ht = hashtbl_create2(char **, enum token_type, __hashfunc, __keycompar);
-  // hashtbl_insert_inplace(ht, char *, "(", enum token_type, TOKENTYPE_LPAREN);
-  // hashtbl_insert_inplace(ht, char *, ")", enum token_type, TOKENTYPE_RPAREN);
-  // hashtbl_insert_inplace(ht, char *, "[", enum token_type, TOKENTYPE_LBRACKET);
-  // hashtbl_insert_inplace(ht, char *, "]", enum token_type, TOKENTYPE_RBRACKET);
-  // hashtbl_insert_inplace(ht, char *, "{", enum token_type, TOKENTYPE_LBRACE);
-  // hashtbl_insert_inplace(ht, char *, "}", enum token_type, TOKENTYPE_RBRACE);
-  // hashtbl_insert_inplace(ht, char *, "#", enum token_type, TOKENTYPE_HASH);
-  // hashtbl_insert_inplace(ht, char *, ".", enum token_type, TOKENTYPE_PERIOD);
-  // hashtbl_insert_inplace(ht, char *, ";", enum token_type, TOKENTYPE_SEMICOLON);
-  // hashtbl_insert_inplace(ht, char *, ",", enum token_type, TOKENTYPE_COMMA);
-  // hashtbl_insert_inplace(ht, char *, ">", enum token_type, TOKENTYPE_GREATERTHAN);
-  // hashtbl_insert_inplace(ht, char *, "<", enum token_type, TOKENTYPE_LESSTHAN);
-  // hashtbl_insert_inplace(ht, char *, "=", enum token_type, TOKENTYPE_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "&", enum token_type, TOKENTYPE_AMPERSAND);
-  // hashtbl_insert_inplace(ht, char *, "*", enum token_type, TOKENTYPE_ASTERISK);
-  // hashtbl_insert_inplace(ht, char *, "+", enum token_type, TOKENTYPE_PLUS);
-  // hashtbl_insert_inplace(ht, char *, "-", enum token_type, TOKENTYPE_MINUS);
-  // hashtbl_insert_inplace(ht, char *, "/", enum token_type, TOKENTYPE_FORWARDSLASH);
-  // hashtbl_insert_inplace(ht, char *, "|", enum token_type, TOKENTYPE_PIPE);
-  // hashtbl_insert_inplace(ht, char *, "^", enum token_type, TOKENTYPE_CARET);
-  // hashtbl_insert_inplace(ht, char *, "?", enum token_type, TOKENTYPE_QUESTIONMARK);
-  // hashtbl_insert_inplace(ht, char *, "\\", enum token_type, TOKENTYPE_BACKWARDSLASH);
-  // hashtbl_insert_inplace(ht, char *, "!", enum token_type, TOKENTYPE_BANG);
-  // hashtbl_insert_inplace(ht, char *, "@", enum token_type, TOKENTYPE_AT);
-  // hashtbl_insert_inplace(ht, char *, "$", enum token_type, TOKENTYPE_DOLLARSIGN);
-  // hashtbl_insert_inplace(ht, char *, "%", enum token_type, TOKENTYPE_PERCENT);
-  // hashtbl_insert_inplace(ht, char *, "`", enum token_type, TOKENTYPE_BACKTICK);
-  // hashtbl_insert_inplace(ht, char *, "~", enum token_type, TOKENTYPE_TILDE);
-  // hashtbl_insert_inplace(ht, char *, ":", enum token_type, TOKENTYPE_COLON);
-  // hashtbl_insert_inplace(ht, char *, "&&", enum token_type, TOKENTYPE_DOUBLE_AMPERSAND);
-  // hashtbl_insert_inplace(ht, char *, "||", enum token_type, TOKENTYPE_DOUBLE_PIPE);
-  // hashtbl_insert_inplace(ht, char *, ">=", enum token_type, TOKENTYPE_GREATERTHAN_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "<=", enum token_type, TOKENTYPE_LESSTHAN_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "==", enum token_type, TOKENTYPE_DOUBLE_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "!=", enum token_type, TOKENTYPE_BANG_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "+=", enum token_type, TOKENTYPE_PLUS_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "-=", enum token_type, TOKENTYPE_MINUS_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "*=", enum token_type, TOKENTYPE_ASTERISK_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
-  // hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
+  std::unordered_map<std::string, token_type> ht;
+
+  ht["("] = TOKENTYPE_LPAREN;
+  ht[")"] = TOKENTYPE_RPAREN;
+  ht["["] = TOKENTYPE_LBRACKET;
+  ht["]"] = TOKENTYPE_RBRACKET;
+  ht["{"] = TOKENTYPE_LBRACE;
+  ht["}"] = TOKENTYPE_RBRACE;
+  ht["#"] = TOKENTYPE_HASH;
+  ht["."] = TOKENTYPE_PERIOD;
+  ht[";"] = TOKENTYPE_SEMICOLON;
+  ht[","] = TOKENTYPE_COMMA;
+  ht[">"] = TOKENTYPE_GREATERTHAN;
+  ht["<"] = TOKENTYPE_LESSTHAN;
+  ht["="] = TOKENTYPE_EQUALS;
+  ht["&"] = TOKENTYPE_AMPERSAND;
+  ht["*"] = TOKENTYPE_ASTERISK;
+  ht["+"] = TOKENTYPE_PLUS;
+  ht["-"] = TOKENTYPE_MINUS;
+  ht["/"] = TOKENTYPE_FORWARDSLASH;
+  ht["|"] = TOKENTYPE_PIPE;
+  ht["^"] = TOKENTYPE_CARET;
+  ht["?"] = TOKENTYPE_QUESTIONMARK;
+  ht["\\"] = TOKENTYPE_BACKWARDSLASH;
+  ht["!"] = TOKENTYPE_BANG;
+  ht["@"] = TOKENTYPE_AT;
+  ht["$"] = TOKENTYPE_DOLLARSIGN;
+  ht["%"] = TOKENTYPE_PERCENT;
+  ht["`"] = TOKENTYPE_BACKTICK;
+  ht["~"] = TOKENTYPE_TILDE;
+  ht[":"] = TOKENTYPE_COLON;
+  ht["&&"] = TOKENTYPE_DOUBLE_AMPERSAND;
+  ht["||"] = TOKENTYPE_DOUBLE_PIPE;
+  ht[">="] = TOKENTYPE_GREATERTHAN_EQUALS;
+  ht["<="] = TOKENTYPE_LESSTHAN_EQUALS;
+  ht["=="] = TOKENTYPE_DOUBLE_EQUALS;
+  ht["!="] = TOKENTYPE_BANG_EQUALS;
+  ht["+="] = TOKENTYPE_PLUS_EQUALS;
+  ht["-="] = TOKENTYPE_MINUS_EQUALS;
+  ht["*="] = TOKENTYPE_ASTERISK_EQUALS;
+  ht["/="] = TOKENTYPE_FORWARDSLASH_EQUALS;
+  ht["%="] = TOKENTYPE_PERCENT_EQUALS;
 
   const size_t bufcap = 256;
   char *buf = (char *)malloc(bufcap); // For search symbols in `ht`.

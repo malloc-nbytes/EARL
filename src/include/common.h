@@ -29,17 +29,17 @@
 #define COMMON_H
 
 // Keywords
-#define COMMON_KW_LET    "let"
-#define COMMON_KW_DEF    "def"
-#define COMMON_KW_RETURN "return"
+/* #define COMMON_KW_LET    "let" */
+/* #define COMMON_KW_DEF    "def" */
+/* #define COMMON_KW_RETURN "return" */
 
 // Types
-#define COMMON_TY_INT32 "int"
-#define COMMON_TY_STR   "str"
+/* #define COMMON_TY_INT32 "int" */
+/* #define COMMON_TY_STR   "str" */
 
 // Make sure to add to these when adding
 // new keywords and types.
-#define COMMON_KW_AS_CPL {COMMON_KW_LET, COMMON_KW_DEF, COMMON_KW_RETURN}
-#define COMMON_TY_AS_CPL {COMMON_TY_INT32, COMMON_TY_STR}
+/* #define COMMON_KW_AS_CPL {COMMON_KW_LET, COMMON_KW_DEF, COMMON_KW_RETURN} */
+/* #define COMMON_TY_AS_CPL {COMMON_TY_INT32, COMMON_TY_STR} */
 
 #endif // COMMON_H
