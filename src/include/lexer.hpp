@@ -47,7 +47,7 @@ struct Lexer {
   ~Lexer() = default;
 
   Token *next(void);
-  Token *peek(size_t n);
+  Token *peek(size_t n = 0);
   void append(Token *tok);
   void discard(void);
   void dump(void);

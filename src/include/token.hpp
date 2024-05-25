@@ -96,6 +96,8 @@ struct Token {
         TokenType type,
         size_t row, size_t col, std::string &fp);
 
+  const std::string &lexeme(void) const;
+  TokenType type(void) const;
   std::string to_str(void);
 };
 

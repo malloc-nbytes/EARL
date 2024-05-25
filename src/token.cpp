@@ -163,3 +163,11 @@ Token *token_alloc(Lexer &lexer,
 
   return tok;
 }
+
+const std::string &Token::lexeme(void) const {
+  return m_lexeme;
+}
+
+TokenType Token::type(void) const {
+  return m_type;
+}

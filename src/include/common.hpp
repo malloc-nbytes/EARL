@@ -29,8 +29,8 @@
 #define COMMON_H
 
 // Keywords
-/* #define COMMON_KW_LET    "let" */
-/* #define COMMON_KW_DEF    "def" */
+#define COMMON_KW_LET    "let"
+#define COMMON_KW_DEF    "def"
 /* #define COMMON_KW_RETURN "return" */
 
 // Types
