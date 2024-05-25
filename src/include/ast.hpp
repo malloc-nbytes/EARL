@@ -1,149 +1,144 @@
-// MIT License
-
-// Copyright (c) 2023 malloc-nbytes
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-// File: ast.h
-// Description:
-//   Provides a set of nodes for the abstract
-//   syntax tree. This also defines the grammar.
-
 #ifndef AST_H
 #define AST_H
 
+#include <vector>
+#include <memory>
+
 #include "token.hpp"
 
-enum stmt_type {
-  STMT_TYPE_DEF = 0,
-  STMT_TYPE_LET,
-  STMT_TYPE_BLOCK,
-  STMT_TYPE_MUT,
-  STMT_TYPE_STMT_EXPR,
+enum class StmtType {
+  Def,
+  Let,
+  Block,
+  Mut,
+  Stmt_Expr,
 };
 
-enum expr_type {
-  EXPR_TYPE_TERM = 0,
-  EXPR_TYPE_BINARY,
-  EXPR_TYPE_FUNCCALL,
+enum class ExprType {
+  Term,
+  Binary,
+  Func_Call
 };
 
-enum expr_term_type {
-  EXPR_TERM_TYPE_IDENT = 0,
-  EXPR_TERM_TYPE_INTLIT,
-  EXPR_TERM_TYPE_STRLIT,
+enum class ExprTermType {
+  Ident,
+  Int_Literal,
+  Str,Literal,
 };
 
-struct stmt_def;
-struct stmt_let;
-struct stmt_block;
-struct stmt_mut;
-struct expr;
+class StmtBlock;
 
-struct expr_binary;
-struct expr_funccall;
-struct expr_term;
-
-struct stmt {
-  enum stmt_type type;
-  union {
-    struct stmt_def *def;
-    struct stmt_let *let;
-    struct stmt_block *block;
-    struct stmt_mut *mut;
-    struct expr *expr;
-  } stmt;
+class Expr {
+public:
+  virtual ~Expr() = default;
+  virtual ExprType get_type() const = 0;
 };
 
-struct expr {
-  enum expr_type type;
-  union {
-    struct expr_term *term;
-    struct expr_binary *binary;
-    struct expr_funccall *funccall;
-  } expr;
+class ExprTerm : public Expr {
+public:
+  virtual ~ExprTerm() = default;
+  virtual ExprTermType get_term_type() const = 0;
 };
 
-struct expr_term {
-  enum expr_term_type type;
-  struct token *term;
+class ExprIdent : public ExprTerm {
+  std::unique_ptr<Token> m_id;
+
+public:
+  ExprIdent(std::unique_ptr<Token> id);
+  ExprType get_type() const override;
+  ExprTermType get_term_type() const override;
+  const Token &get_id() const;
 };
 
-struct expr_binary {
-  struct expr *lhs;
-  struct token *op;
-  struct expr *rhs;
+class ExprIntLit : public ExprTerm {
+public:
+  // TODO
 };
 
-struct expr_funccall {
-  struct token *id;
-  /* struct vector(struct expr *) args; */
+class ExprStrLit : public ExprTerm {
+public:
+  // TODO
 };
 
-struct stmt_mut {
-  struct expr *left;
-  struct token *op;
-  struct expr *right;
+class ExprBinary : public Expr {
+public:
+  // TODO
 };
 
-struct stmt_block {
-  /* struct vector(struct stmt *) stmts; */
+class ExprFuncCall : public Expr {
+public:
+  // TODO
 };
 
-struct stmt_let {
-  struct token *id;
-  struct token *type;
-  struct expr *expr;
+class Stmt {
+public:
+  virtual ~Stmt() = default;
+  virtual StmtType stmt_type() const = 0;
 };
 
-struct stmt_def {
-  struct token *id;
-  /* struct vector(struct pair(struct token *id, struct token *type)) args; */
-  struct token *rettype;
-  struct stmt_block *block;
+class StmtDef : public Stmt {
+
+  // Function name
+  std::unique_ptr<Token> m_id;
+
+  // id * type
+  std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> m_args;
+  std::unique_ptr<Token> m_rettype;
+  std::unique_ptr<StmtBlock> m_block;
+
+public:
+  StmtDef(std::unique_ptr<Token> id,
+          std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args,
+          std::unique_ptr<Token> rettype,
+          std::unique_ptr<StmtBlock> block);
+
+  StmtType stmt_type() const override;
 };
 
-struct program {
-  /* struct vector(struct stmt **) stmts; */
+class StmtLet : public Stmt {
+  std::unique_ptr<Token> m_id;
+  std::unique_ptr<Token> m_type;
+  std::unique_ptr<Expr> m_expr;
+
+public:
+  StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::unique_ptr<Expr> expr);
+
+  StmtType stmt_type() const override;
 };
 
-/*** STATEMENT CONSTRUCTORS ***/
-struct stmt*     stmt_alloc(enum stmt_type type, void *stmt);
-struct stmt_def* stmt_def_alloc(struct token *id,
-                                /* struct vector(struct pair(struct token *id, struct token *type)) args, */
-                                struct token *rettype,
-                                struct stmt_block *block);
+class StmtBlock : public Stmt {
+  std::vector<std::unique_ptr<Stmt>> m_stmts;
 
-struct stmt_let* stmt_let_alloc(struct token *id,
-                                struct token *type,
-                                struct expr *expr);
+public:
+  StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts);
+  void add_stmt(std::unique_ptr<Stmt> stmt);
+  const std::vector<std::unique_ptr<Stmt>> &get_stmts() const;
+  StmtType stmt_type() const override;
+};
 
-/* struct stmt_block* stmt_block_alloc(struct vector(struct stmt *) stmts); */
-struct stmt_mut*   stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
+class StmtMut : public Stmt {
+  std::unique_ptr<Expr> m_left;
+  std::unique_ptr<Token> m_op;
+  std::unique_ptr<Expr> m_right;
 
-/*** EXPRESSION CONSTRUCTORS ***/
-struct expr*          expr_alloc(enum expr_type type, void *expr);
-/* struct expr_funccall* expr_funccall_alloc(struct token *id, struct vector(struct expr *) args); */
-struct expr_term*     expr_term_alloc(enum expr_term_type type, struct token *term);
-struct expr_binary*   expr_binary_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
+public:
+  StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
+  StmtType stmt_type() const override;
+};
 
-/*** DEBUGGING ***/
-void ast_dump(struct program *program);
+class StmtExpr : public Stmt {
+  std::unique_ptr<Expr> m_expr;
+
+public:
+  StmtExpr(std::unique_ptr<Expr> expr);
+  StmtType stmt_type() const override;
+};
+
+class Program {
+  std::vector<std::unique_ptr<Stmt>> stmts;
+
+public:
+  // TODO
+};
 
 #endif // AST_H

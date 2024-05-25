@@ -99,9 +99,9 @@ struct Token {
   std::string to_str(void);
 };
 
-std::unique_ptr<Token> token_alloc(Lexer &lexer,
-                                   char *start, size_t len,
-                                   TokenType type,
-                                   size_t row, size_t col, char *fp);
+Token *token_alloc(Lexer &lexer,
+                   char *start, size_t len,
+                   TokenType type,
+                   size_t row, size_t col, std::string fp);
 
 #endif // TOKEN_H

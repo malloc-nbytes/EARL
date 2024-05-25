@@ -1,151 +1,71 @@
-// MIT License
+#include <cassert>
+#include <memory>
 
-// Copyright (c) 2023 malloc-nbytes
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-#include <stdlib.h>
-
-#include "utils.hpp"
-#include "notify.hpp"
 #include "ast.hpp"
 
-struct stmt *
-stmt_alloc(enum stmt_type type, void *stmt)
-{
-  struct stmt *s = static_cast<struct stmt *>(utils_safe_malloc(sizeof(struct stmt)));
-  s->type = type;
+/*** TERM EXPRESSIONS ***/
 
-  switch (type) {
-  case STMT_TYPE_DEF:
-    s->stmt.def = (struct stmt_def *)stmt;
-    break;
-  case STMT_TYPE_LET:
-    s->stmt.let = (struct stmt_let *)stmt;
-    break;
-  case STMT_TYPE_BLOCK:
-    s->stmt.block = (struct stmt_block *)stmt;
-    break;
-  case STMT_TYPE_MUT:
-    s->stmt.mut = (struct stmt_mut *)stmt;
-    break;
-  case STMT_TYPE_STMT_EXPR:
-    s->stmt.expr = (struct expr *)stmt;
-    break;
-  default:
-    assert(0 && "fixme");
-     // NOTIFY_ERRARGS(NOTIFY_ERR_UNKNOWN, "stmt_alloc: unkown type: %d", type);
-  }
+ExprIdent::ExprIdent(std::unique_ptr<Token> id) : m_id(std::move(id)) {}
 
-  return s;
+ExprType ExprIdent::get_type() const {
+  return ExprType::Term;
 }
 
-struct stmt_def *
-stmt_def_alloc(struct token *id,
-               // struct vector(struct pair(struct token *id, struct token *type)) args,
-               struct token *rettype,
-               struct stmt_block *block)
-{
-  struct stmt_def *s = static_cast<struct stmt_def *>(utils_safe_malloc(sizeof(struct stmt_def)));
-  s->id = id;
-  // s->args = args;
-  s->rettype = rettype;
-  s->block = block;
-  return s;
+ExprTermType ExprIdent::get_term_type() const {
+  return ExprTermType::Ident;
 }
 
-struct stmt_let *
-stmt_let_alloc(struct token *id, struct token *type, struct expr *expr)
-{
-  struct stmt_let *s = static_cast<struct stmt_let *>(utils_safe_malloc(sizeof(struct stmt_let)));
-  s->id = id;
-  s->type = type;
-  s->expr = expr;
-  return s;
+const Token &ExprIdent::get_id() const {
+  assert(false && "unimplemented");
 }
 
-// struct stmt_block *
-// stmt_block_alloc(struct vector(struct stmt *) stmts)
-// {
-//   struct stmt_block *s = utils_safe_malloc(sizeof(struct stmt_block));
-//   s->stmts = stmts;
-//   return s;
-// }
+/*** STATEMENTS ***/
 
-struct stmt_mut *
-stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs)
-{
-  struct stmt_mut *s = static_cast<struct stmt_mut *>(utils_safe_malloc(sizeof(struct stmt_mut)));
-  s->left = lhs;
-  s->op = op;
-  s->right = rhs;
-  return s;
+StmtDef::StmtDef(std::unique_ptr<Token> id,
+                 std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args,
+                 std::unique_ptr<Token> rettype,
+                 std::unique_ptr<StmtBlock> block) :
+    m_id(std::move(id)), m_args(std::move(args)),
+    m_rettype(std::move(rettype)), m_block(std::move(block)) {}
+
+StmtType StmtDef::stmt_type() const {
+  return StmtType::Def;
 }
 
-struct expr_term *
-expr_term_alloc(enum expr_term_type type, struct token *term)
-{
-  struct expr_term *e = static_cast<struct expr_term *>(utils_safe_malloc(sizeof(struct expr_term)));
-  e->type = type;
-  e->term = term;
-  return e;
+StmtLet::StmtLet(std::unique_ptr<Token> id,
+                 std::unique_ptr<Token> type,
+                 std::unique_ptr<Expr> expr)
+  : m_id(std::move(id)), m_type(std::move(type)), m_expr(std::move(expr)) {}
+
+StmtType StmtLet::stmt_type() const {
+  return StmtType::Let;
 }
 
-struct expr_binary *
-expr_binary_alloc(struct expr *lhs, struct token *op, struct expr *rhs)
-{
-  struct expr_binary *e = static_cast<struct expr_binary *>(utils_safe_malloc(sizeof(struct expr_binary)));
-  e->lhs = lhs;
-  e->op = op;
-  e->rhs = rhs;
-  return e;
+StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
+
+void add_stmt(std::unique_ptr<Stmt> stmt) {
+  assert(false && "unimplemented");
 }
 
-struct expr *
-expr_alloc(enum expr_type type, void *expr)
-{
-  struct expr *e = static_cast<struct expr *>(utils_safe_malloc(sizeof(struct expr)));
-  e->type = type;
-
-  switch (type) {
-  case EXPR_TYPE_TERM:
-    e->expr.term = (struct expr_term *)expr;
-    break;
-  case EXPR_TYPE_BINARY:
-    e->expr.binary = (struct expr_binary *)expr;
-    break;
-  case EXPR_TYPE_FUNCCALL:
-    e->expr.funccall = (struct expr_funccall *)expr;
-    break;
-  default:
-    assert(false && "fixme");
-    // NOTIFY_ERRARGS(NOTIFY_ERR_UNKNOWN, "expr_alloc: unkown type: %d", type);
-  }
-
-  return e;
+const std::vector<std::unique_ptr<Stmt>> &StmtBlock::get_stmts() const {
+  assert(false && "unimplemented");
 }
 
-// struct expr_funccall *
-// expr_funccall_alloc(struct token *id, struct vector(struct expr *) args)
-// {
-//   struct expr_funccall *e = utils_safe_malloc(sizeof(struct expr_funccall));
-//   e->id = id;
-//   e->args = args;
-//   return e;
-// }
+StmtType StmtBlock::stmt_type() const {
+  return StmtType::Block;
+}
+
+StmtMut::StmtMut(std::unique_ptr<Expr> left,
+                 std::unique_ptr<Token> op,
+                 std::unique_ptr<Expr> right)
+  : m_left(std::move(left)), m_op(std::move(op)), m_right(std::move(right)) {}
+
+StmtType StmtMut::stmt_type() const {
+  return StmtType::Mut;
+}
+
+StmtExpr::StmtExpr(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
+
+StmtType StmtExpr::stmt_type() const {
+  return StmtType::Stmt_Expr;
+}

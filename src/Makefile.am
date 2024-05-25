@@ -7,9 +7,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
 SUBDIRS = test
 
-# AM_CFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -DDEBUG -Wno-gnu-zero-variadic-macro-arguments -O0
-
-# Flags for C++ compiler
 AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -O0 -DDEBUG
 
 .PHONY: test

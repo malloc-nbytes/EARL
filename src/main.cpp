@@ -55,11 +55,10 @@ int main(int argc, char **argv) {
   char *filepath = *(++argv);
 
   std::vector<std::string> keywords = create_keywords();
-  size_t keywords_len = keywords.size();
   std::string comment = "#";
 
   Lexer lexer = lex_file(filepath, keywords, comment);
-  // lexer.dump();
+  lexer.dump();
 
   return 0;
 }

@@ -37,7 +37,7 @@
 struct Token;
 
 struct Lexer {
-  std::unique_ptr<Token> m_hd;
+  Token *m_hd;
   Token *m_tl;
   size_t m_len;
 
@@ -45,12 +45,10 @@ struct Lexer {
 
   Lexer();
   ~Lexer() = default;
-  Lexer(Lexer &&other) noexcept;
-  Lexer& operator=(Lexer &&other) noexcept;
 
-  std::unique_ptr<Token> next(void);
+  Token *next(void);
   Token *peek(size_t n);
-  void append(std::unique_ptr<Token> tok);
+  void append(Token *tok);
   void discard(void);
   void dump(void);
 };
@@ -60,25 +58,5 @@ struct Lexer {
 // in `keywords`. The identifier(s) for a SINGLE LINE comment is
 // provided as `comment`.
 Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment);
-
-// Get the next token in the lexer.
-Token *lexer_next(Lexer *lexer);
-
-// Discard the current `hd` of the lexer
-// and advance to the next token.
-void lexer_discard(Lexer *lexer);
-
-// Append a token in the lexer.
-void lexer_append(Lexer *lexer, Token *tok);
-
-// Peek the `n`th token in the lexer. While this returns
-// a pointer to the token, the ownership to the caller
-// should only happen with lexer_next. Otherwise, there
-// will be NULL in the middle of the linked list of tokens.
-Token *lexer_peek(Lexer *lexer, size_t n);
-
-// For debugging. Print the tokens
-// in a human-readable format.
-void lexer_dump(Lexer *lexer);
 
 #endif // LEXER_H

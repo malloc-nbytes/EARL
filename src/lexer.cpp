@@ -33,71 +33,54 @@
 #include "utils.hpp"
 #include "arena.hpp"
 
-Lexer::Lexer(Lexer&& other) noexcept
-  : m_hd(std::move(other.m_hd)), m_tl(other.m_tl),
-    m_len(other.m_len), m_arena(std::move(other.m_arena)) {
-  other.m_tl = nullptr;
-  other.m_len = 0;
-}
-
-Lexer& Lexer::operator=(Lexer&& other) noexcept {
-  if (this != &other) {
-    m_hd = std::move(other.m_hd);
-    m_tl = other.m_tl;
-    m_len = other.m_len;
-    m_arena = std::move(other.m_arena);
-
-    other.m_tl = nullptr;
-    other.m_len = 0;
-  }
-  return *this;
-}
-
 Lexer::Lexer() : m_arena(32768) {
+  m_hd = nullptr;
+  m_tl = nullptr;
   m_len = 0;
 }
 
-void Lexer::append(std::unique_ptr<Token> tok) {
+void Lexer::append(Token *tok) {
+  std::cout << "appending: " << tok->m_lexeme << std::endl;
   if (!m_hd) {
-    m_hd = std::move(tok);
-    m_tl = m_hd.get();
+    m_hd = tok;
+    m_tl = tok;
   } else {
-    m_tl->m_next = std::move(tok);
-    m_tl = m_tl->m_next.get();
+    m_tl->m_next = tok;
+    m_tl = tok;
   }
   ++m_len;
 }
 
 Token *Lexer::peek(size_t n) {
-  Token *tok = m_hd.get();
+  Token *tok = m_hd;
   for (size_t i = 0; i < n && tok; ++i) {
     tok = tok->m_next;
   }
   return tok;
 }
 
-std::unique_ptr<Token> Lexer::next(void) {
+Token *Lexer::next(void) {
   if (!m_hd)
     return nullptr;
 
-  std::unique_ptr<Token> tok = std::move(m_hd);
-  m_hd.reset(tok->m_next);
+  Token *tok = m_hd;
+  m_hd = tok->m_next;
 
   if (!m_hd)
     m_tl = nullptr;
 
   --m_len;
-  return std::move(tok);
+  return tok;
 }
 
 void Lexer::discard(void) {
   if (!m_hd)
     return;
-  m_hd.reset(m_hd->m_next);
+  m_hd = m_hd->m_next;
 }
 
 void Lexer::dump(void) {
-  Token *it = m_hd.get();
+  Token *it = m_hd;
   while (it) {
     printf("lexeme: \"%s\", type: %s, row: %zu, col: %zu, fp: %s\n",
            it->m_lexeme.c_str(), it->to_str().c_str(), it->m_row, it->m_col, it->m_fp.c_str());
@@ -132,38 +115,47 @@ static size_t find_comment_end(char *s) {
   return i;
 }
 
-static int is_newline(char c) {
-  return c == '\n';
-}
+static char *read_file(char *filepath) {
+  FILE *f = fopen(filepath, "rb");
 
-static int is_quote(char c) {
-  return c == '"';
-}
-
-static int nisdigit(char c) {
-  return !isdigit(c);
-}
-
-static int nisvalid_ident(char c) {
-  return !(c == '_' || isalnum(c));
-}
-
-std::string read_file(const std::string &filepath) {
-  std::ifstream file(filepath);
-  std::string content;
-
-  if (file.is_open()) {
-    std::string line;
-    while (std::getline(file, line)) {
-      content += line + '\n'; // Append each line to the content string
-    }
-    file.close();
-  } else {
-    std::cerr << "Unable to open file: " << filepath << std::endl;
+  if (f == NULL || fseek(f, 0, SEEK_END)) {
+    return NULL;
   }
 
-  return content;
+  long length = ftell(f);
+  rewind(f);
+  if (length == -1 || (unsigned long) length >= SIZE_MAX) {
+    return NULL;
+  }
+
+  size_t ulength = (size_t)length;
+  char *buffer = (char *)malloc(ulength+1);
+
+  if (buffer == NULL || fread(buffer, 1, ulength, f) != ulength) {
+    free(buffer);
+    return NULL;
+  }
+  buffer[ulength] = '\0';
+
+  return buffer;
 }
+
+// std::string read_file(const std::string &filepath) {
+//   std::ifstream file(filepath);
+//   std::string content;
+
+//   if (file.is_open()) {
+//     std::string line;
+//     while (std::getline(file, line)) {
+//       content += line;
+//     }
+//     file.close();
+//   } else {
+//     std::cerr << "Unable to open file: " << filepath << std::endl;
+//   }
+
+//   return content;
+// }
 
 static bool is_keyword(char *s, size_t len, std::vector<std::string> &keywords) {
 
@@ -235,7 +227,7 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
   ht["%="] = TokenType::Percent_Equals;
 
   size_t row = 0, col = 0, i = 0;
-  while (i < src.size()) {
+  while (src[i]) {
     char *lexeme = &src[i];
     char c = src[i];
 
@@ -270,8 +262,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
       size_t strlit_len = consume_until(lexeme, [](const char c) {
         return c == '"';
       });
-      std::unique_ptr<Token> tok = token_alloc(lexer, lexeme+1, strlit_len, TokenType::Strlit, row, col, filepath);
-      lexer.append(std::move(tok));
+      Token *tok = token_alloc(lexer, lexeme+1, strlit_len, TokenType::Strlit, row, col, filepath);
+      lexer.append(tok);
       i += 1 + strlit_len + 1;
       col += 1 + strlit_len + 1;
     }
@@ -279,8 +271,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
     // Character literal
     else if (c == '\'') {
       lexeme += 1;
-      std::unique_ptr<Token> tok = token_alloc(lexer, lexeme, 1, TokenType::Charlit, row, col, filepath);
-      lexer.append(std::move(tok));
+      Token *tok = token_alloc(lexer, lexeme, 1, TokenType::Charlit, row, col, filepath);
+      lexer.append(tok);
       i += 3;
       col += 1;
     }
@@ -291,8 +283,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
         return !(c == '_' || isalnum(c));
       });
       TokenType type = is_keyword(lexeme, ident_len, keywords) ? TokenType::Keyword : TokenType::Ident;
-      std::unique_ptr<Token> tok = token_alloc(lexer, lexeme, ident_len, type, row, col, filepath);
-      lexer.append(std::move(tok));
+      Token *tok = token_alloc(lexer, lexeme, ident_len, type, row, col, filepath);
+      lexer.append(tok);
       i += ident_len;
       col += ident_len;
     }
@@ -302,8 +294,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
       size_t intlit_len = consume_until(lexeme, [](char c) {
         return !isdigit(c);
       });
-      std::unique_ptr<Token> tok = token_alloc(lexer, lexeme, intlit_len, TokenType::Intlit, row, col, filepath);
-      lexer.append(std::move(tok));
+      Token *tok = token_alloc(lexer, lexeme, intlit_len, TokenType::Intlit, row, col, filepath);
+      lexer.append(tok);
       i += intlit_len;
       col += intlit_len;
     }
@@ -320,8 +312,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
       while (!buf.empty()) {
         auto it = ht.find(buf);
         if (it != ht.end()) {
-          std::unique_ptr<Token> tok = token_alloc(lexer, lexeme+buf.size(), buf.size(), (*it).second, row, col, filepath);
-          lexer.append(std::move(tok));
+          Token *tok = token_alloc(lexer, lexeme+buf.size()-1, buf.size(), (*it).second, row, col, filepath);
+          lexer.append(tok);
           col += buf.size();
           i += buf.size();
           break;
@@ -331,5 +323,5 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
 
   }
 
-  return std::move(lexer);
+  return lexer;
 }
