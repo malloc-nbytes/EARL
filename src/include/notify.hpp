@@ -20,30 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: arena.h
+// File: notify.h
 // Description:
-//   Provides an API for an arena allocator. This is
-//   helpful because we have a "pool" of memory that
-//   we can use and then free it all at once. If
-//   unfamiliar with arena allocators,
-//   https://en.wikipedia.org/wiki/Region-based_memory_management
+//   Provides ways to display an error message
+//   and quite the program.
 
-#ifndef ARENA_H
-#define ARENA_H
+#ifndef NOTIFY_H
+#define NOTIFY_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-struct arena;
+enum NOTIFY_ERR_TYPE {
+  NOTIFY_ERR_FATAL = 0,
+  NOTIFY_ERR_SYNTAX,
+  NOTIFY_ERR_UNKNOWN,
+  NOTIFY_ERR_USAGE,
+  NOTIFY_ERR_NOTOKENS,
+};
 
-// Create a new arena allocator with capacity as `cap`.
-struct arena *arena_create(size_t cap);
+#define NOTIFY_ERR(etype, msg)                         \
+  do {                                                 \
+    fprintf(stderr, "EARL: [" #etype "] " msg "\n");   \
+    exit(EXIT_FAILURE);                                \
+  } while (0)
 
-// Allocate `bytes` number of bytes in an arena.
-uint8_t *arena_alloc(struct arena *arena, size_t bytes);
+/* #define NOTIFY_ERRARGS(etype, msg, ...)                               \ */
+/*   do {                                                                \ */
+/*     fprintf(stderr, "EARL: [" #etype "] " msg "\n", ##__VA_ARGS__);   \ */
+/*     exit(EXIT_FAILURE);                                               \ */
+/*   } while (0) */
 
-// Free the memory inside of `arena` AS WELL AS
-// THE ARENA ITSELF.
-void arena_free(struct arena *arena);
-
-#endif // ARENA_H
+#endif // NOTIFY_H

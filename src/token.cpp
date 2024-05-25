@@ -20,110 +20,112 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
+#include <string>
+
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
 
-#include "utils.h"
-#include "arena.h"
-#include "token.h"
-#include "lexer.h"
+#include "utils.hpp"
+#include "arena.hpp"
+#include "token.hpp"
+#include "lexer.hpp"
 
-char *
-tokentype_to_str(enum token_type type)
+std::string Token::to_str(void)
 {
-  switch (type) {
-  case TOKENTYPE_LPAREN:
+  switch (m_type) {
+  case TokenType::Lparen:
     return "LPAREN";
-  case TOKENTYPE_RPAREN:
+  case TokenType::Rparen:
     return "RPAREN";
-  case TOKENTYPE_LBRACKET:
+  case TokenType::Lbracket:
     return "LBRACKET";
-  case TOKENTYPE_RBRACKET:
+  case TokenType::Rbracket:
     return "RBRACKET";
-  case TOKENTYPE_LBRACE:
+  case TokenType::Lbrace:
     return "LBRACE";
-  case TOKENTYPE_RBRACE:
+  case TokenType::Rbrace:
     return "RBRACE";
-  case TOKENTYPE_HASH:
+  case TokenType::Hash:
     return "HASH";
-  case TOKENTYPE_PERIOD:
+  case TokenType::Period:
     return "PERIOD";
-  case TOKENTYPE_COMMA:
+  case TokenType::Comma:
     return "COMMA";
-  case TOKENTYPE_SEMICOLON:
+  case TokenType::Semicolon:
     return "SEMICOLON";
-  case TOKENTYPE_GREATERTHAN:
+  case TokenType::Greaterthan:
     return "GREATERTHAN";
-  case TOKENTYPE_LESSTHAN:
+  case TokenType::Lessthan:
     return "LESSTHAN";
-  case TOKENTYPE_EQUALS:
+  case TokenType::Equals:
     return "EQUALS";
-  case TOKENTYPE_AMPERSAND:
+  case TokenType::Ampersand:
     return "AMPERSAND";
-  case TOKENTYPE_ASTERISK:
+  case TokenType::Asterisk:
     return "ASTERISK";
-  case TOKENTYPE_PLUS:
+  case TokenType::Plus:
     return "PLUS";
-  case TOKENTYPE_MINUS:
+  case TokenType::Minus:
     return "MINUS";
-  case TOKENTYPE_FORWARDSLASH:
+  case TokenType::Forwardslash:
     return "FORWARDSLASH";
-  case TOKENTYPE_PIPE:
+  case TokenType::Pipe:
     return "PIPE";
-  case TOKENTYPE_CARET:
+  case TokenType::Caret:
     return "CARET";
-  case TOKENTYPE_QUESTIONMARK:
+  case TokenType::Questionmark:
     return "QUESTIONMARK";
-  case TOKENTYPE_BACKWARDSLASH:
+  case TokenType::Backwardslash:
     return "BACKWARDSLASH";
-  case TOKENTYPE_BANG:
+  case TokenType::Bang:
     return "BANG";
-  case TOKENTYPE_AT:
+  case TokenType::At:
     return "AT";
-  case TOKENTYPE_DOLLARSIGN:
+  case TokenType::Dollarsign:
     return "DOLLARSIGN";
-  case TOKENTYPE_PERCENT:
+  case TokenType::Percent:
     return "PERCENT";
-  case TOKENTYPE_BACKTICK:
+  case TokenType::Backtick:
     return "BACKTICK";
-  case TOKENTYPE_TILDE:
+  case TokenType::Tilde:
     return "TILDE";
-  case TOKENTYPE_COLON:
+  case TokenType::Colon:
     return "COLON";
-  case TOKENTYPE_DOUBLE_AMPERSAND:
+  case TokenType::Double_Ampersand:
     return "DOUBLE_AMPERSAND";
-  case TOKENTYPE_DOUBLE_PIPE:
+  case TokenType::Double_Pipe:
     return "DOUBLE_PIPE";
-  case TOKENTYPE_GREATERTHAN_EQUALS:
+  case TokenType::Greaterthan_Equals:
     return "GREATERTHAN_EQUALS";
-  case TOKENTYPE_LESSTHAN_EQUALS:
+  case TokenType::Lessthan_Equals:
     return "LESSTHAN_EQUALS";
-  case TOKENTYPE_DOUBLE_EQUALS:
+  case TokenType::Double_Equals:
     return "DOUBLE_EQUALS";
-  case TOKENTYPE_BANG_EQUALS:
+  case TokenType::Bang_Equals:
     return "BANG_EQUALS";
-  case TOKENTYPE_PLUS_EQUALS:
+  case TokenType::Plus_Equals:
     return "PLUS_EQUALS";
-  case TOKENTYPE_MINUS_EQUALS:
+  case TokenType::Minus_Equals:
     return "MINUS_EQUALS";
-  case TOKENTYPE_ASTERISK_EQUALS:
+  case TokenType::Asterisk_Equals:
     return "ASTERISK_EQUALS";
-  case TOKENTYPE_FORWARDSLASH_EQUALS:
+  case TokenType::Forwardslash_Equals:
     return "FORWARDSLASH_EQUALS";
-  case TOKENTYPE_PERCENT_EQUALS:
+  case TokenType::Percent_Equals:
     return "PERCENT_EQUALS";
-  case TOKENTYPE_EOF:
+  case TokenType::Eof:
     return "EOF";
-  case TOKENTYPE_INTLIT:
+  case TokenType::Intlit:
     return "INTLIT";
-  case TOKENTYPE_STRLIT:
+  case TokenType::Strlit:
     return "STRLIT";
-  case TOKENTYPE_CHARLIT:
+  case TokenType::Charlit:
     return "CHARLIT";
-  case TOKENTYPE_IDENT:
+  case TokenType::Ident:
     return "IDENT";
-  case TOKENTYPE_KEYWORD:
+  case TokenType::Keyword:
     return "KEYWORD";
   default:
     assert(0 && "unknown type");
@@ -132,24 +134,40 @@ tokentype_to_str(enum token_type type)
   return NULL;
 }
 
-struct token *
-token_alloc(struct lexer *lexer,
+Token::Token(char *start, size_t len,
+             TokenType type,
+             size_t row, size_t col, std::string &fp)
+  : m_type(type), m_row(row), m_col(col), m_fp(std::move(fp)), m_next(nullptr) {
+  std::for_each(start, start+len, [&](char c) {this->m_lexeme.push_back(c);});
+}
+
+#include <iostream>
+
+Token *token_alloc(Lexer &lexer,
                    char *start, size_t len,
-                   enum token_type type,
-                   size_t row, size_t col, char *fp)
+                   TokenType type,
+                   size_t row, size_t col, std::string fp)
 {
-  struct token *tok = (struct token *)arena_alloc(lexer->arena, sizeof(struct token));
+  Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
 
-  char *lexeme = (char *)arena_alloc(lexer->arena, len+1);
-  (void)strncpy(lexeme, start, len);
-  lexeme[len] = '\0';
+  for (int i = 0; i < len; ++i) {
+    tok->m_lexeme.push_back(start[i]);
+  }
 
-  tok->lexeme = lexeme;
-  tok->type = type;
-  tok->row = row;
-  tok->col = col;
-  tok->fp = fp;
-  tok->next = NULL;
+  // tok->m_lexeme = std::string(start, len);
+  tok->m_type = type;
+  tok->m_row = row;
+  tok->m_col = col;
+  tok->m_fp = fp;
+  tok->m_next = nullptr;
 
   return tok;
+}
+
+const std::string &Token::lexeme(void) const {
+  return m_lexeme;
+}
+
+TokenType Token::type(void) const {
+  return m_type;
 }

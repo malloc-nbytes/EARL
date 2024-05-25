@@ -20,61 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils.h"
-#include "pair.h"
+#include "notify.hpp"
+#include "utils.hpp"
 
-struct pair
-pair_create(size_t fst_stride, size_t snd_stride)
+void *
+utils_safe_malloc(size_t bytes)
 {
-  struct pair p;
-  p.fst_stride = fst_stride;
-  p.snd_stride = snd_stride;
-  p.fst = p.snd = NULL;
+  void *p = malloc(bytes);
+  if (!p) {
+    assert(false && "fixme");
+    // NOTIFY_ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
+  }
   return p;
 }
 
-struct pair
-pair_from(void *fst, size_t fst_stride, void *snd, size_t snd_stride)
+int
+utils_streq(const char *s1, const char *s2)
 {
-  struct pair p = pair_create(fst_stride, snd_stride);
-  pair_make_unique(&p, fst, snd);
-  return p;
+  return strcmp(s1, s2) == 0;
 }
 
 void
-pair_make_unique(struct pair *pair, void *fst, void *snd)
+utils_iota_array(int *arr, size_t len)
 {
-  if (!pair->fst) {
-    pair->fst = utils_safe_malloc(pair->fst_stride);
+  for (size_t i = 0; i < len; ++i) {
+    arr[i] = i;
   }
-  if (!pair->snd) {
-    pair->snd = utils_safe_malloc(pair->snd_stride);
-  }
-  (void)memcpy(pair->fst, fst, pair->fst_stride);
-  (void)memcpy(pair->snd, snd, pair->snd_stride);
-}
-
-void *
-pair_fst(struct pair *p)
-{
-  DEBUG_ASSERT(p->fst);
-  return p->fst;
-}
-
-void *
-pair_snd(struct pair *p)
-{
-  DEBUG_ASSERT(p->snd);
-  return p->snd;
-}
-
-void
-pair_free(struct pair *p)
-{
-  free(p->fst);
-  free(p->snd);
 }

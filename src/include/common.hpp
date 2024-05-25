@@ -20,29 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef PARSER_H
-#define PARSER_H
+// File: common.h
+// Description:
+//   A few things that are useful
+//   throughout the entire project.
 
-#include "lexer.h"
-#include "ast.h"
+#ifndef COMMON_H
+#define COMMON_H
 
-// Parsers
-struct program parser_parse(struct lexer *lexer);
-struct stmt *parser_parse_stmt(struct lexer *lexer);
-struct stmt_let *parser_parse_stmt_let(struct lexer *lexer);
+// Keywords
+#define COMMON_KW_LET    "let"
+#define COMMON_KW_DEF    "def"
+/* #define COMMON_KW_RETURN "return" */
 
-struct vector(struct pair(struct token *id, struct token *type))
-       parser_parse_stmt_def_args(struct lexer *lexer);
+// Types
+/* #define COMMON_TY_INT32 "int" */
+/* #define COMMON_TY_STR   "str" */
 
-struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
-struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);
+// Make sure to add to these when adding
+// new keywords and types.
+/* #define COMMON_KW_AS_CPL {COMMON_KW_LET, COMMON_KW_DEF, COMMON_KW_RETURN} */
+/* #define COMMON_TY_AS_CPL {COMMON_TY_INT32, COMMON_TY_STR} */
 
-// Expression Parsers
-struct expr *parser_parse_expr(struct lexer *lexer);
-
-// Helpers
-struct token *parser_expect(struct lexer *lexer, enum token_type exp);
-struct token *parser_expect_keyword(struct lexer *lexer, const char *keyword);
-struct token *parser_expect_type(struct lexer *lexer);
-
-#endif // PARSER_H
+#endif // COMMON_H

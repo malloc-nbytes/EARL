@@ -20,35 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: notify.h
-// Description:
-//   Provides ways to display an error message
-//   and quite the program.
+#include <cstdlib>
 
-#ifndef NOTIFY_H
-#define NOTIFY_H
+#include "arena.hpp"
+#include "utils.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
+Arena::Arena(size_t cap) {
+    m_mem = new uint8_t[cap];
+    m_len = 0;
+}
 
-enum NOTIFY_ERR_TYPE {
-  NOTIFY_ERR_FATAL = 0,
-  NOTIFY_ERR_SYNTAX,
-  NOTIFY_ERR_UNKNOWN,
-  NOTIFY_ERR_USAGE,
-  NOTIFY_ERR_NOTOKENS,
-};
+Arena::~Arena(void) {
+  delete[] m_mem;
+}
 
-#define NOTIFY_ERR(etype, msg)                         \
-  do {                                                 \
-    fprintf(stderr, "EARL: [" #etype "] " msg "\n");   \
-    exit(EXIT_FAILURE);                                \
-  } while (0)
-
-#define NOTIFY_ERRARGS(etype, msg, ...)                               \
-  do {                                                                \
-    fprintf(stderr, "EARL: [" #etype "] " msg "\n", ##__VA_ARGS__);   \
-    exit(EXIT_FAILURE);                                               \
-  } while (0)
-
-#endif // NOTIFY_H
+uint8_t *arena_alloc(Arena &arena, size_t bytes) {
+  if (arena.m_len+bytes > arena.m_cap) {
+    arena.m_cap *= 2;
+    arena.m_mem = static_cast<uint8_t *>(realloc(arena.m_mem, arena.m_cap));
+  }
+  uint8_t *mem = &arena.m_mem[arena.m_len];
+  arena.m_len += bytes;
+  return mem;
+}

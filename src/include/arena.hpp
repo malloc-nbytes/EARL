@@ -20,42 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdlib.h>
+// File: arena.h
+// Description:
+//   Provides an API for an arena allocator. This is
+//   helpful because we have a "pool" of memory that
+//   we can use and then free it all at once. If
+//   unfamiliar with arena allocators,
+//   https://en.wikipedia.org/wiki/Region-based_memory_management
 
-#include "arena.h"
-#include "utils.h"
+#ifndef ARENA_H
+#define ARENA_H
 
-struct arena {
-  uint8_t *mem;
-  size_t len;
-  size_t cap;
+#include <stddef.h>
+#include <stdint.h>
+
+struct Arena {
+  uint8_t *m_mem;
+  size_t m_len;
+  size_t m_cap;
+
+  Arena(size_t cap);
+  ~Arena();
 };
 
-uint8_t *
-arena_alloc(struct arena *arena, size_t bytes)
-{
-  if (arena->len+bytes > arena->cap) {
-    arena->cap *= 2;
-    arena->mem = realloc(arena->mem, arena->cap);
-  }
-  uint8_t *mem = &arena->mem[arena->len];
-  arena->len += bytes;
-  return mem;
-}
+// Allocate `bytes` number of bytes in an arena.
+uint8_t *arena_alloc(Arena &arena, size_t bytes);
 
-void
-arena_free(struct arena *arena)
-{
-  free(arena->mem);
-  free(arena);
-}
-
-struct arena *
-arena_create(size_t cap)
-{
-  struct arena *arena = utils_safe_malloc(sizeof(struct arena));
-  arena->mem = utils_safe_malloc(cap);
-  arena->cap = cap;
-  arena->len = 0;
-  return arena;
-}
+#endif // ARENA_H

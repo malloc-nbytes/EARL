@@ -28,52 +28,35 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "arena.h"
-#include "token.h"
+#include <vector>
+#include <memory>
 
-struct lexer {
-  // The head of the linked list.
-  struct token *hd;
+#include "arena.hpp"
+#include "token.hpp"
 
-  // The tail of the linked list.
-  struct token *tl;
+struct Token;
 
-  // All memory that is allocated during
-  // the lexing process is alloc'd through
-  // an arena allocater. See `arena.h`.
-  struct arena *arena;
+struct Lexer {
+  Token *m_hd;
+  Token *m_tl;
+  size_t m_len;
 
-  // Number of tokens lex'd.
-  size_t len;
+  Arena m_arena;
+
+  Lexer();
+  ~Lexer() = default;
+
+  Token *next(void);
+  Token *peek(size_t n = 0);
+  void append(Token *tok);
+  void discard(void);
+  void dump(void);
 };
 
 // Produces a lexer with a list of tokens from the source
 // code of `filepath`. Any prevalent keywords should be provided
 // in `keywords`. The identifier(s) for a SINGLE LINE comment is
 // provided as `comment`.
-struct lexer lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment);
-
-// Get the next token in the lexer.
-struct token *lexer_next(struct lexer *lexer);
-
-// Discard the current `hd` of the lexer
-// and advance to the next token.
-void lexer_discard(struct lexer *lexer);
-
-// Append a token in the lexer.
-void lexer_append(struct lexer *lexer, struct token *tok);
-
-// Free the underlying memory in the lexer.
-void lexer_free(struct lexer *lexer);
-
-// Peek the `n`th token in the lexer. While this returns
-// a pointer to the token, the ownership to the caller
-// should only happen with lexer_next. Otherwise, there
-// will be NULL in the middle of the linked list of tokens.
-struct token *lexer_peek(struct lexer *lexer, size_t n);
-
-// For debugging. Print the tokens
-// in a human-readable format.
-void lexer_dump(struct lexer *lexer);
+Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment);
 
 #endif // LEXER_H

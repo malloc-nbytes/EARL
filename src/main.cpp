@@ -20,26 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: common.h
-// Description:
-//   A few things that are useful
-//   throughout the entire project.
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <iostream>
 
-#ifndef COMMON_H
-#define COMMON_H
+#include "parser.hpp"
+#include "ast.hpp"
+#include "common.hpp"
+#include "notify.hpp"
+#include "utils.hpp"
+#include "lexer.hpp"
 
-// Keywords
-#define COMMON_KW_LET    "let"
-#define COMMON_KW_DEF    "def"
-#define COMMON_KW_RETURN "return"
+std::vector<std::string> RESERVED = {"let", "def",};
+std::vector<std::string> VARTYPES = {"int","str",};
 
-// Types
-#define COMMON_TY_INT32 "int"
-#define COMMON_TY_STR   "str"
+const size_t VARTYPES_LEN = VARTYPES.size();
 
-// Make sure to add to these when adding
-// new keywords and types.
-#define COMMON_KW_AS_CPL {COMMON_KW_LET, COMMON_KW_DEF, COMMON_KW_RETURN}
-#define COMMON_TY_AS_CPL {COMMON_TY_INT32, COMMON_TY_STR}
+void usage(char *progname) {
+  (void)progname;
+  assert(false && "fixme");
+}
 
-#endif // COMMON_H
+std::vector<std::string> create_keywords(void) {
+  std::vector<std::string> kws;
+  std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
+  std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
+  return kws;
+}
+
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    usage(*argv);
+  }
+
+  char *filepath = *(++argv);
+
+  std::vector<std::string> keywords = create_keywords();
+  std::string comment = "#";
+
+  Lexer lexer = lex_file(filepath, keywords, comment);
+  // lexer.dump();
+  Program program = parse_program(lexer);
+
+  return 0;
+}
+

@@ -20,33 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "notify.h"
-#include "utils.h"
+#include "ast.hpp"
 
-void *
-utils_safe_malloc(size_t bytes)
-{
-  void *p = malloc(bytes);
-  if (!p) {
-    NOTIFY_ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
-  }
-  return p;
-}
+Program parse_program(Lexer &lexer);
 
-int
-utils_streq(const char *s1, const char *s2)
-{
-  return strcmp(s1, s2) == 0;
-}
-
-void
-utils_iota_array(int *arr, size_t len)
-{
-  for (size_t i = 0; i < len; ++i) {
-    arr[i] = i;
-  }
-}
+#endif // PARSER_H
