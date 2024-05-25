@@ -3,9 +3,59 @@
 
 #include "ast.hpp"
 
+/*** PROGRAM ***/
+
+Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
+  : m_stmts(std::move(stmts)) {}
+
+/*** EXPRESSIONS ***/
+
+ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
+                           std::vector<std::unique_ptr<Token>> params)
+  : m_id(std::move(id)), m_params(std::move(params)) {}
+
+ExprType ExprFuncCall::get_type() const {
+  return ExprType::Func_Call;
+}
+
+ExprBinary::ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
+  : m_lhs(std::move(lhs)), m_rhs(std::move(rhs)) {}
+
+ExprType ExprBinary::get_type() const {
+  return ExprType::Binary;
+}
+
 /*** TERM EXPRESSIONS ***/
 
-ExprIdent::ExprIdent(std::unique_ptr<Token> id) : m_id(std::move(id)) {}
+ExprStrLit::ExprStrLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+
+ExprType ExprStrLit::get_type() const {
+  return ExprType::Term;
+}
+
+ExprTermType ExprStrLit::get_term_type() const {
+  return ExprTermType::Str_Literal;
+}
+
+const Token &ExprStrLit::get_tok() const {
+  assert(false && "unimplemented");
+}
+
+ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+
+ExprType ExprIntLit::get_type() const {
+  return ExprType::Term;
+}
+
+ExprTermType ExprIntLit::get_term_type() const {
+  return ExprTermType::Int_Literal;
+}
+
+const Token &ExprIntLit::get_tok() const {
+  assert(false && "unimplemented");
+}
+
+ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIdent::get_type() const {
   return ExprType::Term;
@@ -15,7 +65,7 @@ ExprTermType ExprIdent::get_term_type() const {
   return ExprTermType::Ident;
 }
 
-const Token &ExprIdent::get_id() const {
+const Token &ExprIdent::get_tok() const {
   assert(false && "unimplemented");
 }
 

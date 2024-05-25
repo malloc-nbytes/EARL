@@ -23,7 +23,7 @@ enum class ExprType {
 enum class ExprTermType {
   Ident,
   Int_Literal,
-  Str,Literal,
+  Str_Literal,
 };
 
 class StmtBlock;
@@ -41,33 +41,52 @@ public:
 };
 
 class ExprIdent : public ExprTerm {
-  std::unique_ptr<Token> m_id;
+  std::unique_ptr<Token> m_tok;
 
 public:
-  ExprIdent(std::unique_ptr<Token> id);
+  ExprIdent(std::unique_ptr<Token> tok);
   ExprType get_type() const override;
   ExprTermType get_term_type() const override;
-  const Token &get_id() const;
+  const Token &get_tok() const;
 };
 
 class ExprIntLit : public ExprTerm {
+  std::unique_ptr<Token> m_tok;
+
 public:
-  // TODO
+  ExprIntLit(std::unique_ptr<Token> tok);
+  ExprType get_type() const override;
+  ExprTermType get_term_type() const override;
+  const Token &get_tok() const;
 };
 
 class ExprStrLit : public ExprTerm {
 public:
-  // TODO
+  std::unique_ptr<Token> m_tok;
+
+public:
+  ExprStrLit(std::unique_ptr<Token> tok);
+  ExprType get_type() const override;
+  ExprTermType get_term_type() const override;
+  const Token &get_tok() const;
 };
 
 class ExprBinary : public Expr {
+  std::unique_ptr<Expr> m_lhs;
+  std::unique_ptr<Expr> m_rhs;
+
 public:
-  // TODO
+  ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs);
+  ExprType get_type() const override;
 };
 
 class ExprFuncCall : public Expr {
+  std::unique_ptr<Token> m_id;
+  std::vector<std::unique_ptr<Token>> m_params;
+
 public:
-  // TODO
+  ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Token>> params);
+  ExprType get_type() const override;
 };
 
 class Stmt {
@@ -102,7 +121,6 @@ class StmtLet : public Stmt {
 
 public:
   StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::unique_ptr<Expr> expr);
-
   StmtType stmt_type() const override;
 };
 
@@ -135,10 +153,10 @@ public:
 };
 
 class Program {
-  std::vector<std::unique_ptr<Stmt>> stmts;
+  std::vector<std::unique_ptr<Stmt>> m_stmts;
 
 public:
-  // TODO
+  Program(std::vector<std::unique_ptr<Stmt>> stmts);
 };
 
 #endif // AST_H
