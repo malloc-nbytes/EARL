@@ -32,9 +32,9 @@
 #include "token.hpp"
 #include "lexer.hpp"
 
-std::string Token::to_str(TokenType type)
+std::string Token::to_str(void)
 {
-  switch (type) {
+  switch (m_type) {
   case TokenType::Lparen:
     return "LPAREN";
   case TokenType::Rparen:
@@ -141,12 +141,12 @@ Token::Token(char *start, size_t len,
   std::for_each(start, start+len, [&](char c) {this->m_lexeme.push_back(c);});
 }
 
-Token *token_alloc(Lexer &lexer,
+std::unique_ptr<Token> token_alloc(Lexer &lexer,
                    char *start, size_t len,
                    TokenType type,
                    size_t row, size_t col, char *fp)
 {
-  Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
+  std::unique_ptr<Token> tok((Token *)arena_alloc(lexer.m_arena, sizeof(Token)));
 
   std::for_each(start, start+len, [&](char c) {tok->m_lexeme.push_back(c);});
 
@@ -156,5 +156,5 @@ Token *token_alloc(Lexer &lexer,
   tok->m_fp = fp;
   tok->m_next = nullptr;
 
-  return tok;
+  return std::move(tok);
 }

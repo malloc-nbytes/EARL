@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <iostream>
 
 #include "common.hpp"
 #include "notify.hpp"
@@ -56,6 +57,9 @@ int main(int argc, char **argv) {
   std::vector<std::string> keywords = create_keywords();
   size_t keywords_len = keywords.size();
   std::string comment = "#";
+
+  Lexer lexer = lex_file(filepath, keywords, comment);
+  // lexer.dump();
 
   return 0;
 }

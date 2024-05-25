@@ -96,12 +96,12 @@ struct Token {
         TokenType type,
         size_t row, size_t col, std::string &fp);
 
-  std::string to_str(TokenType type);
+  std::string to_str(void);
 };
 
-Token *token_alloc(Lexer &lexer,
-                   char *start, size_t len,
-                   TokenType type,
-                   size_t row, size_t col, char *fp);
+std::unique_ptr<Token> token_alloc(Lexer &lexer,
+                                   char *start, size_t len,
+                                   TokenType type,
+                                   size_t row, size_t col, char *fp);
 
 #endif // TOKEN_H

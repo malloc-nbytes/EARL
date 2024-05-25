@@ -28,6 +28,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <vector>
 #include <memory>
 
 #include "arena.hpp"
@@ -58,7 +59,7 @@ struct Lexer {
 // code of `filepath`. Any prevalent keywords should be provided
 // in `keywords`. The identifier(s) for a SINGLE LINE comment is
 // provided as `comment`.
-Lexer lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment);
+Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment);
 
 // Get the next token in the lexer.
 Token *lexer_next(Lexer *lexer);
