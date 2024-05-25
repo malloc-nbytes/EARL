@@ -233,6 +233,7 @@ struct lexer
 lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 {
   char *src = file_to_str(filepath);
+
   struct lexer lexer = (struct lexer) {
     .hd = NULL,
     .tl = NULL,

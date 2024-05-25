@@ -16,7 +16,7 @@ struct var {
   void *value;
 };
 
-struct vector(hashtbl(char **, struct var **)) scope;
+struct vector(hashtbl(char **, struct var **) *) scope;
 
 static unsigned
 __symtbl_hash(void *k, size_t bytes)
@@ -34,7 +34,7 @@ __symtbl_keycompar(void *k1, void *k2)
 static void
 scope_push(void)
 {
-  struct hashtbl ht = hashtbl_create2(char **, struct var **, __symtbl_hash, __symtbl_keycompar);
+  struct hashtbl *ht = hashtbl_alloc(sizeof(char *), sizeof(struct var *), __symtbl_hash, __symtbl_keycompar);
   vector_append(&scope, &ht);
 }
 
@@ -43,8 +43,7 @@ var_in_scope(char *id)
 {
   for (size_t i = 0; i < scope.len; ++i) {
     struct hashtbl *ht = (struct hashtbl *)vector_at(&scope, i);
-    struct token *tok;
-    if ((tok = (struct token *)hashtbl_get(ht, id)) != NULL) {
+    if (hashtbl_get(ht, &id) != NULL) {
       return 1;
     }
   }
@@ -83,24 +82,35 @@ var_alloc(struct token *id, struct token *type, void *value)
 static void
 add_var_to_scope(struct token *id, struct token *ty, void *value)
 {
-  struct hashtbl *ht = (struct hashtbl *)vector_at(&scope, scope.len-1);
+  struct hashtbl *ht = (struct hashtbl *)vector_at(&scope, scope.len - 1);
+  char *key = id->lexeme;
   struct var *var = var_alloc(id, ty, value);
+  hashtbl_insert(ht, &key, &var);
+}
 
-  assert(ht != NULL);
-  assert(var != NULL);
-
-  printf("HERE1\n");
-  hashtbl_insert(ht, id->lexeme, var);
-  printf("HERE2\n");
+static void *
+eval_expr(struct expr *expr)
+{
+  switch (expr->type) {
+  case EXPR_TYPE_TERM:
+    UNIMPLEMENTED("eval_expr: EXPR_TYPE_TERM");
+  case EXPR_TYPE_BINARY:
+    UNIMPLEMENTED("eval_expr: EXPR_TYPE_BINARY");
+  case EXPR_TYPE_FUNCCALL:
+    UNIMPLEMENTED("eval_expr: EXPR_TYPE_FUNCCALL");
+  default:
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "eval_expr: unknown expr type: %d", expr->type);
+  }
 }
 
 static void
 eval_stmt_let(struct stmt_let *stmt)
 {
   if (var_in_scope(stmt->id->lexeme)) {
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX,
-                   "eval_stmt_let: variable %s is already defined", stmt->id->lexeme);
+    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "eval_stmt_let: variable already declared: %s", stmt->id->lexeme);
   }
+
+  // void *value = eval_expr(stmt->expr);
   add_var_to_scope(stmt->id, stmt->type, NULL);
 }
 
@@ -121,11 +131,10 @@ eval_stmt(struct stmt *stmt)
 int
 interpret(struct program *program)
 {
+  scope = vector_create(sizeof(struct hashtbl *));
   scope_push();
 
-  scope = vector_create2(struct hashtbl(char **, struct var *));
-
-  for (size_t i = 0; i < (program->stmts).len; ++i) {
+  for (size_t i = 0; i < program->stmts.len; ++i) {
     struct stmt *stmt = *(struct stmt **)vector_at(&program->stmts, i);
     eval_stmt(stmt);
   }
