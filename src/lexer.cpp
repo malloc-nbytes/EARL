@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <string>
+
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
@@ -32,8 +34,6 @@
 #include "lexer.h"
 #include "utils.h"
 #include "arena.h"
-#include "hashtbl.h"
-#include "vector.h"
 
 static size_t
 consume_until(char *s, int (*predicate)(char))
@@ -107,7 +107,7 @@ file_to_str(char *filepath) {
   }
 
   size_t ulength = (size_t)length;
-  char *buffer = utils_safe_malloc(ulength+1);
+  char *buffer = static_cast<char *>(utils_safe_malloc(ulength+1));
 
   if (buffer == NULL || fread(buffer, 1, ulength, f) != ulength) {
     free(buffer);
@@ -237,54 +237,54 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
   struct lexer lexer = (struct lexer) {
     .hd = NULL,
     .tl = NULL,
-    .len = 0,
     .arena = arena_create(32768),
+    .len = 0,
   };
 
-  struct hashtbl ht = hashtbl_create2(char **, enum token_type, __hashfunc, __keycompar);
-  hashtbl_insert_inplace(ht, char *, "(", enum token_type, TOKENTYPE_LPAREN);
-  hashtbl_insert_inplace(ht, char *, ")", enum token_type, TOKENTYPE_RPAREN);
-  hashtbl_insert_inplace(ht, char *, "[", enum token_type, TOKENTYPE_LBRACKET);
-  hashtbl_insert_inplace(ht, char *, "]", enum token_type, TOKENTYPE_RBRACKET);
-  hashtbl_insert_inplace(ht, char *, "{", enum token_type, TOKENTYPE_LBRACE);
-  hashtbl_insert_inplace(ht, char *, "}", enum token_type, TOKENTYPE_RBRACE);
-  hashtbl_insert_inplace(ht, char *, "#", enum token_type, TOKENTYPE_HASH);
-  hashtbl_insert_inplace(ht, char *, ".", enum token_type, TOKENTYPE_PERIOD);
-  hashtbl_insert_inplace(ht, char *, ";", enum token_type, TOKENTYPE_SEMICOLON);
-  hashtbl_insert_inplace(ht, char *, ",", enum token_type, TOKENTYPE_COMMA);
-  hashtbl_insert_inplace(ht, char *, ">", enum token_type, TOKENTYPE_GREATERTHAN);
-  hashtbl_insert_inplace(ht, char *, "<", enum token_type, TOKENTYPE_LESSTHAN);
-  hashtbl_insert_inplace(ht, char *, "=", enum token_type, TOKENTYPE_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "&", enum token_type, TOKENTYPE_AMPERSAND);
-  hashtbl_insert_inplace(ht, char *, "*", enum token_type, TOKENTYPE_ASTERISK);
-  hashtbl_insert_inplace(ht, char *, "+", enum token_type, TOKENTYPE_PLUS);
-  hashtbl_insert_inplace(ht, char *, "-", enum token_type, TOKENTYPE_MINUS);
-  hashtbl_insert_inplace(ht, char *, "/", enum token_type, TOKENTYPE_FORWARDSLASH);
-  hashtbl_insert_inplace(ht, char *, "|", enum token_type, TOKENTYPE_PIPE);
-  hashtbl_insert_inplace(ht, char *, "^", enum token_type, TOKENTYPE_CARET);
-  hashtbl_insert_inplace(ht, char *, "?", enum token_type, TOKENTYPE_QUESTIONMARK);
-  hashtbl_insert_inplace(ht, char *, "\\", enum token_type, TOKENTYPE_BACKWARDSLASH);
-  hashtbl_insert_inplace(ht, char *, "!", enum token_type, TOKENTYPE_BANG);
-  hashtbl_insert_inplace(ht, char *, "@", enum token_type, TOKENTYPE_AT);
-  hashtbl_insert_inplace(ht, char *, "$", enum token_type, TOKENTYPE_DOLLARSIGN);
-  hashtbl_insert_inplace(ht, char *, "%", enum token_type, TOKENTYPE_PERCENT);
-  hashtbl_insert_inplace(ht, char *, "`", enum token_type, TOKENTYPE_BACKTICK);
-  hashtbl_insert_inplace(ht, char *, "~", enum token_type, TOKENTYPE_TILDE);
-  hashtbl_insert_inplace(ht, char *, ":", enum token_type, TOKENTYPE_COLON);
-  hashtbl_insert_inplace(ht, char *, "&&", enum token_type, TOKENTYPE_DOUBLE_AMPERSAND);
-  hashtbl_insert_inplace(ht, char *, "||", enum token_type, TOKENTYPE_DOUBLE_PIPE);
-  hashtbl_insert_inplace(ht, char *, ">=", enum token_type, TOKENTYPE_GREATERTHAN_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "<=", enum token_type, TOKENTYPE_LESSTHAN_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "==", enum token_type, TOKENTYPE_DOUBLE_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "!=", enum token_type, TOKENTYPE_BANG_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "+=", enum token_type, TOKENTYPE_PLUS_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "-=", enum token_type, TOKENTYPE_MINUS_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "*=", enum token_type, TOKENTYPE_ASTERISK_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
-  hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
+  // struct hashtbl ht = hashtbl_create2(char **, enum token_type, __hashfunc, __keycompar);
+  // hashtbl_insert_inplace(ht, char *, "(", enum token_type, TOKENTYPE_LPAREN);
+  // hashtbl_insert_inplace(ht, char *, ")", enum token_type, TOKENTYPE_RPAREN);
+  // hashtbl_insert_inplace(ht, char *, "[", enum token_type, TOKENTYPE_LBRACKET);
+  // hashtbl_insert_inplace(ht, char *, "]", enum token_type, TOKENTYPE_RBRACKET);
+  // hashtbl_insert_inplace(ht, char *, "{", enum token_type, TOKENTYPE_LBRACE);
+  // hashtbl_insert_inplace(ht, char *, "}", enum token_type, TOKENTYPE_RBRACE);
+  // hashtbl_insert_inplace(ht, char *, "#", enum token_type, TOKENTYPE_HASH);
+  // hashtbl_insert_inplace(ht, char *, ".", enum token_type, TOKENTYPE_PERIOD);
+  // hashtbl_insert_inplace(ht, char *, ";", enum token_type, TOKENTYPE_SEMICOLON);
+  // hashtbl_insert_inplace(ht, char *, ",", enum token_type, TOKENTYPE_COMMA);
+  // hashtbl_insert_inplace(ht, char *, ">", enum token_type, TOKENTYPE_GREATERTHAN);
+  // hashtbl_insert_inplace(ht, char *, "<", enum token_type, TOKENTYPE_LESSTHAN);
+  // hashtbl_insert_inplace(ht, char *, "=", enum token_type, TOKENTYPE_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "&", enum token_type, TOKENTYPE_AMPERSAND);
+  // hashtbl_insert_inplace(ht, char *, "*", enum token_type, TOKENTYPE_ASTERISK);
+  // hashtbl_insert_inplace(ht, char *, "+", enum token_type, TOKENTYPE_PLUS);
+  // hashtbl_insert_inplace(ht, char *, "-", enum token_type, TOKENTYPE_MINUS);
+  // hashtbl_insert_inplace(ht, char *, "/", enum token_type, TOKENTYPE_FORWARDSLASH);
+  // hashtbl_insert_inplace(ht, char *, "|", enum token_type, TOKENTYPE_PIPE);
+  // hashtbl_insert_inplace(ht, char *, "^", enum token_type, TOKENTYPE_CARET);
+  // hashtbl_insert_inplace(ht, char *, "?", enum token_type, TOKENTYPE_QUESTIONMARK);
+  // hashtbl_insert_inplace(ht, char *, "\\", enum token_type, TOKENTYPE_BACKWARDSLASH);
+  // hashtbl_insert_inplace(ht, char *, "!", enum token_type, TOKENTYPE_BANG);
+  // hashtbl_insert_inplace(ht, char *, "@", enum token_type, TOKENTYPE_AT);
+  // hashtbl_insert_inplace(ht, char *, "$", enum token_type, TOKENTYPE_DOLLARSIGN);
+  // hashtbl_insert_inplace(ht, char *, "%", enum token_type, TOKENTYPE_PERCENT);
+  // hashtbl_insert_inplace(ht, char *, "`", enum token_type, TOKENTYPE_BACKTICK);
+  // hashtbl_insert_inplace(ht, char *, "~", enum token_type, TOKENTYPE_TILDE);
+  // hashtbl_insert_inplace(ht, char *, ":", enum token_type, TOKENTYPE_COLON);
+  // hashtbl_insert_inplace(ht, char *, "&&", enum token_type, TOKENTYPE_DOUBLE_AMPERSAND);
+  // hashtbl_insert_inplace(ht, char *, "||", enum token_type, TOKENTYPE_DOUBLE_PIPE);
+  // hashtbl_insert_inplace(ht, char *, ">=", enum token_type, TOKENTYPE_GREATERTHAN_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "<=", enum token_type, TOKENTYPE_LESSTHAN_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "==", enum token_type, TOKENTYPE_DOUBLE_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "!=", enum token_type, TOKENTYPE_BANG_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "+=", enum token_type, TOKENTYPE_PLUS_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "-=", enum token_type, TOKENTYPE_MINUS_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "*=", enum token_type, TOKENTYPE_ASTERISK_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "/=", enum token_type, TOKENTYPE_FORWARDSLASH_EQUALS);
+  // hashtbl_insert_inplace(ht, char *, "%=", enum token_type, TOKENTYPE_PERCENT_EQUALS);
 
   const size_t bufcap = 256;
-  char *buf = malloc(bufcap); // For search symbols in `ht`.
+  char *buf = (char *)malloc(bufcap); // For search symbols in `ht`.
   size_t i = 0, row = 1, col = 1;
   while (src[i]) {
     char c = src[i];
@@ -370,9 +370,9 @@ lex_file(char *filepath, char **keywords, size_t keywords_len, char *comment)
 
       enum token_type *value = NULL;
       while (buflen > 0) {
-        if ((value = (enum token_type *)hashtbl_get(&ht, &buf)) != NULL) {
-          break;
-        }
+        // if ((value = (enum token_type *)hashtbl_get(&ht, &buf)) != NULL) {
+        //   break;
+        // }
         buf[--buflen] = '\0';
       }
 

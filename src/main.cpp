@@ -38,7 +38,8 @@ const size_t VARTYPES_LEN = sizeof(VARTYPES)/sizeof(*VARTYPES);
 void
 usage(char *progname)
 {
-  NOTIFY_ERRARGS(ERR_USAGE, "%s <filepath>", progname);
+  assert(false && "fixme");
+  // NOTIFY_ERRARGS(ERR_USAGE, "%s <filepath>", progname);
 }
 
 // TODO: change from char ** to vector(char ***).
@@ -46,13 +47,13 @@ char **
 create_keywords(size_t *keywords_len)
 {
   size_t cap = 1;
-  char **keywords = utils_safe_malloc(sizeof(char *)*cap);
+  char **keywords = static_cast<char **>(utils_safe_malloc(sizeof(char *)*cap));
 
   // Populate keywords with reserved words.
   for (size_t i = 0; i < sizeof(RESERVED)/sizeof(*RESERVED); ++i) {
     if (*keywords_len >= cap) {
       cap *= 2;
-      keywords = realloc(keywords, sizeof(char *)*cap);
+      keywords = static_cast<char **>(realloc(keywords, sizeof(char *)*cap));
     }
     keywords[(*keywords_len)++] = RESERVED[i];
   }
@@ -61,7 +62,7 @@ create_keywords(size_t *keywords_len)
   for (size_t i = 0; i < VARTYPES_LEN; ++i) {
     if (*keywords_len >= cap) {
       cap *= 2;
-      keywords = realloc(keywords, sizeof(char *)*cap);
+      keywords = static_cast<char **>(realloc(keywords, sizeof(char *)*cap));
     }
     keywords[(*keywords_len)++] = VARTYPES[i];
   }

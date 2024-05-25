@@ -45,10 +45,10 @@ enum NOTIFY_ERR_TYPE {
     exit(EXIT_FAILURE);                                \
   } while (0)
 
-#define NOTIFY_ERRARGS(etype, msg, ...)                               \
-  do {                                                                \
-    fprintf(stderr, "EARL: [" #etype "] " msg "\n", ##__VA_ARGS__);   \
-    exit(EXIT_FAILURE);                                               \
-  } while (0)
+/* #define NOTIFY_ERRARGS(etype, msg, ...)                               \ */
+/*   do {                                                                \ */
+/*     fprintf(stderr, "EARL: [" #etype "] " msg "\n", ##__VA_ARGS__);   \ */
+/*     exit(EXIT_FAILURE);                                               \ */
+/*   } while (0) */
 
 #endif // NOTIFY_H

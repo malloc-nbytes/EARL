@@ -28,9 +28,7 @@
 #ifndef AST_H
 #define AST_H
 
-#include "pair.h"
 #include "token.h"
-#include "vector.h"
 
 enum stmt_type {
   STMT_TYPE_DEF = 0,
@@ -95,7 +93,7 @@ struct expr_binary {
 
 struct expr_funccall {
   struct token *id;
-  struct vector(struct expr *) args;
+  /* struct vector(struct expr *) args; */
 };
 
 struct stmt_mut {
@@ -105,7 +103,7 @@ struct stmt_mut {
 };
 
 struct stmt_block {
-  struct vector(struct stmt *) stmts;
+  /* struct vector(struct stmt *) stmts; */
 };
 
 struct stmt_let {
@@ -116,19 +114,19 @@ struct stmt_let {
 
 struct stmt_def {
   struct token *id;
-  struct vector(struct pair(struct token *id, struct token *type)) args;
+  /* struct vector(struct pair(struct token *id, struct token *type)) args; */
   struct token *rettype;
   struct stmt_block *block;
 };
 
 struct program {
-  struct vector(struct stmt **) stmts;
+  /* struct vector(struct stmt **) stmts; */
 };
 
 /*** STATEMENT CONSTRUCTORS ***/
 struct stmt*     stmt_alloc(enum stmt_type type, void *stmt);
 struct stmt_def* stmt_def_alloc(struct token *id,
-                                struct vector(struct pair(struct token *id, struct token *type)) args,
+                                /* struct vector(struct pair(struct token *id, struct token *type)) args, */
                                 struct token *rettype,
                                 struct stmt_block *block);
 
@@ -136,12 +134,12 @@ struct stmt_let* stmt_let_alloc(struct token *id,
                                 struct token *type,
                                 struct expr *expr);
 
-struct stmt_block* stmt_block_alloc(struct vector(struct stmt *) stmts);
+/* struct stmt_block* stmt_block_alloc(struct vector(struct stmt *) stmts); */
 struct stmt_mut*   stmt_mut_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
 
 /*** EXPRESSION CONSTRUCTORS ***/
 struct expr*          expr_alloc(enum expr_type type, void *expr);
-struct expr_funccall* expr_funccall_alloc(struct token *id, struct vector(struct expr *) args);
+/* struct expr_funccall* expr_funccall_alloc(struct token *id, struct vector(struct expr *) args); */
 struct expr_term*     expr_term_alloc(enum expr_term_type type, struct token *term);
 struct expr_binary*   expr_binary_alloc(struct expr *lhs, struct token *op, struct expr *rhs);
 

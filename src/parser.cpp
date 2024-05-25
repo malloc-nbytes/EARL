@@ -50,7 +50,8 @@ parser_expect(struct lexer *lexer, enum token_type exp)
 {
   struct token *hd = lexer_next(lexer);
   if (hd->type != exp) {
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect: expected %s but got %s", tokentype_to_str(exp), tokentype_to_str(hd->type));
+    assert(false && "fixme");
+    // NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect: expected %s but got %s", tokentype_to_str(exp), tokentype_to_str(hd->type));
   }
   return hd;
 }
@@ -66,12 +67,13 @@ parser_expect(struct lexer *lexer, enum token_type exp)
 struct token *
 parser_expect_keyword(struct lexer *lexer, const char *keyword)
 {
-  struct token *hd = lexer_next(lexer);
-  if (hd->type != TOKENTYPE_KEYWORD || !utils_streq(hd->lexeme, keyword)) {
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_keyword: expected keyword %s but got %s %s",
-                   keyword, tokentype_to_str(hd->type), hd->lexeme);
-  }
-  return hd;
+  // struct token *hd = lexer_next(lexer);
+  // if (hd->type != TOKENTYPE_KEYWORD || !utils_streq(hd->lexeme, keyword)) {
+  //   NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_keyword: expected keyword %s but got %s %s",
+  //                  keyword, tokentype_to_str(hd->type), hd->lexeme);
+  // }
+  // return hd;
+  return NULL; // fixme
 }
 
 struct token *
@@ -84,12 +86,12 @@ parser_expect_type(struct lexer *lexer)
   struct token *tok = lexer_next(lexer);
 
   for (size_t i = 0; i < keywords_len; ++i) {
-    if (utils_streq(tok->lexeme, keywords[i])) {
-      return tok;
-    }
+    // if (utils_streq(tok->lexeme, keywords[i])) {
+    //   return tok;
+    // }
   }
 
-  NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "expect_type: expected a type got %s", tok->lexeme);
+  assert(false && "fixme");
   return NULL; // unreachable
 }
 
@@ -116,7 +118,8 @@ parser_parse_primary_expr(struct lexer *lexer)
     expr = expr_alloc(EXPR_TYPE_TERM, term);
   }
   default:
-    NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %s", tokentype_to_str(cur->type));
+    assert(false && "fixme");
+    // NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "parser_parse_primary_expr: unknown term type: %s", tokentype_to_str(cur->type));
   }
 
   return expr;
@@ -206,37 +209,37 @@ parser_parse_expr(struct lexer *lexer)
 //
 // NOTE: Expects to have the LPAREN ('(') and RPAREN (')')
 //   and will consume those.
-struct vector(struct pair(struct token *id, struct token *type))
-parser_parse_stmt_def_args(struct lexer *lexer)
-{
-  (void)parser_expect(lexer, TOKENTYPE_LPAREN);
+// struct vector(struct pair(struct token *id, struct token *type))
+// parser_parse_stmt_def_args(struct lexer *lexer)
+// {
+//   (void)parser_expect(lexer, TOKENTYPE_LPAREN);
 
-  struct vector(pair(token *id, token *type)) args =
-    vector_create2(struct pair);
+//   struct vector(pair(token *id, token *type)) args =
+//     vector_create2(struct pair);
 
-  // Case of no arguments.
-  if (lexer_peek(lexer, 0)->type == TOKENTYPE_RPAREN) {
-    return args;
-  }
+//   // Case of no arguments.
+//   if (lexer_peek(lexer, 0)->type == TOKENTYPE_RPAREN) {
+//     return args;
+//   }
 
-  while (1) {
-    struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
-    (void)parser_expect(lexer, TOKENTYPE_COLON);
-    struct token *type = parser_expect_type(lexer);
+//   while (1) {
+//     struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
+//     (void)parser_expect(lexer, TOKENTYPE_COLON);
+//     struct token *type = parser_expect_type(lexer);
 
-    struct pair p = pair_create2(struct token *, struct token *);
-    pair_make_unique(&p, id, type);
-    vector_append(&args, &p);
+//     struct pair p = pair_create2(struct token *, struct token *);
+//     pair_make_unique(&p, id, type);
+//     vector_append(&args, &p);
 
-    if (lexer_peek(lexer, 0)->type != TOKENTYPE_COMMA) {
-      break;
-    }
-    (void)parser_expect(lexer, TOKENTYPE_COMMA);
-  }
+//     if (lexer_peek(lexer, 0)->type != TOKENTYPE_COMMA) {
+//       break;
+//     }
+//     (void)parser_expect(lexer, TOKENTYPE_COMMA);
+//   }
 
-  (void)parser_expect(lexer, TOKENTYPE_RPAREN);
-  return args;
-}
+//   (void)parser_expect(lexer, TOKENTYPE_RPAREN);
+//   return args;
+// }
 
 // Name: parser_parse_stmt_block
 //
@@ -252,19 +255,19 @@ parser_parse_stmt_block(struct lexer *lexer)
 {
   (void)parser_expect(lexer, TOKENTYPE_LBRACE);
 
-  struct vector stmts = vector_create2(struct stmt *);
+  // struct vector stmts = vector_create2(struct stmt *);
 
   while (1) {
     if (lexer_peek(lexer, 0)->type == TOKENTYPE_RBRACE) {
       break;
     }
     struct stmt *stmt = parser_parse_stmt(lexer);
-    vector_append(&stmts, stmt);
+    // vector_append(&stmts, stmt);
   }
 
   (void)parser_expect(lexer, TOKENTYPE_LBRACE);
 
-  return stmt_block_alloc(stmts);
+  // return stmt_block_alloc(stmts);
 }
 
 struct stmt_def *
@@ -277,8 +280,8 @@ parser_parse_stmt_def(struct lexer *lexer)
   struct token *id = parser_expect(lexer, TOKENTYPE_IDENT);
 
   // (...)
-  struct vector(struct pair(struct token *id, struct token *type)) args
-    = parser_parse_stmt_def_args(lexer);
+  // struct vector(struct pair(struct token *id, struct token *type)) args
+  //   = parser_parse_stmt_def_args(lexer);
 
   // ->
   (void)parser_expect(lexer, TOKENTYPE_MINUS);
@@ -290,7 +293,7 @@ parser_parse_stmt_def(struct lexer *lexer)
   // { ... }
   struct stmt_block *block = parser_parse_stmt_block(lexer);
 
-  return stmt_def_alloc(id, args, rettype, block);
+  // return stmt_def_alloc(id, args, rettype, block);
 }
 
 // Name: parser_parse_stmt_let
@@ -324,15 +327,15 @@ parser_parse_stmt(struct lexer *lexer)
   struct token *tok = lexer_peek(lexer, 0);
   switch (tok->type) {
   case TOKENTYPE_KEYWORD: {
-    if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
-      struct stmt_def *stmt_def = parser_parse_stmt_def(lexer);
-      return stmt_alloc(STMT_TYPE_DEF, stmt_def);
-    }
-    else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
-      struct stmt_let *stmt_let = parser_parse_stmt_let(lexer);
-      struct stmt *stmt = stmt_alloc(STMT_TYPE_LET, stmt_let);
-      return stmt;
-    }
+    // if (utils_streq(tok->lexeme, COMMON_KW_DEF)) {
+    //   struct stmt_def *stmt_def = parser_parse_stmt_def(lexer);
+    //   return stmt_alloc(STMT_TYPE_DEF, stmt_def);
+    // }
+    // else if (utils_streq(tok->lexeme, COMMON_KW_LET)) {
+    //   struct stmt_let *stmt_let = parser_parse_stmt_let(lexer);
+    //   struct stmt *stmt = stmt_alloc(STMT_TYPE_LET, stmt_let);
+    //   return stmt;
+    // }
   } break;
 
   case TOKENTYPE_IDENT: {
@@ -340,7 +343,8 @@ parser_parse_stmt(struct lexer *lexer)
   } break;
 
   default:
-    NOTIFY_ERRARGS(ERR_FATAL, "parse_stmt found an unkown statement of type ID (%d).", lexer->hd->type);
+    assert(false && "fixme");
+    // NOTIFY_ERRARGS(ERR_FATAL, "parse_stmt found an unkown statement of type ID (%d).", lexer->hd->type);
   }
 
   assert(0 && "parser_parse_stmt: ending is unimplemented");
@@ -352,14 +356,14 @@ parser_parse_stmt(struct lexer *lexer)
 struct program
 parser_parse(struct lexer *lexer)
 {
-  struct vector stmts = vector_create2(struct stmt **);
+  // struct vector stmts = vector_create2(struct stmt **);
 
   while (lexer_peek(lexer, 0)->type != TOKENTYPE_EOF) {
     struct stmt *stmt = parser_parse_stmt(lexer);
-    vector_append(&stmts, &stmt);
+    // vector_append(&stmts, &stmt);
   }
 
-  return (struct program) {
-    .stmts = stmts,
-  };
+  // return (struct program) {
+  //   .stmts = stmts,
+  // };
 }

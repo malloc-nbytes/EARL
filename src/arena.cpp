@@ -36,7 +36,7 @@ arena_alloc(struct arena *arena, size_t bytes)
 {
   if (arena->len+bytes > arena->cap) {
     arena->cap *= 2;
-    arena->mem = realloc(arena->mem, arena->cap);
+    arena->mem = static_cast<uint8_t *>(realloc(arena->mem, arena->cap));
   }
   uint8_t *mem = &arena->mem[arena->len];
   arena->len += bytes;
@@ -53,8 +53,8 @@ arena_free(struct arena *arena)
 struct arena *
 arena_create(size_t cap)
 {
-  struct arena *arena = utils_safe_malloc(sizeof(struct arena));
-  arena->mem = utils_safe_malloc(cap);
+  struct arena *arena = static_cast<struct arena *>(utils_safe_malloc(sizeof(struct arena)));
+  arena->mem = static_cast<uint8_t *>(utils_safe_malloc(cap));
   arena->cap = cap;
   arena->len = 0;
   return arena;

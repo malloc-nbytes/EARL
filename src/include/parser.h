@@ -31,8 +31,8 @@ struct program parser_parse(struct lexer *lexer);
 struct stmt *parser_parse_stmt(struct lexer *lexer);
 struct stmt_let *parser_parse_stmt_let(struct lexer *lexer);
 
-struct vector(struct pair(struct token *id, struct token *type))
-       parser_parse_stmt_def_args(struct lexer *lexer);
+/* struct vector(struct pair(struct token *id, struct token *type)) */
+/*        parser_parse_stmt_def_args(struct lexer *lexer); */
 
 struct stmt_block *parser_parse_stmt_block(struct lexer *lexer);
 struct stmt_def *parser_parse_stmt_def(struct lexer *lexer);

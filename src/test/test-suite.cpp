@@ -1,7 +1,4 @@
 #include "lexer/test-lexer.h"
-#include "hashtbl/test-hashtbl.h"
-#include "vector/test-vector.h"
-#include "pair/test-pair.h"
 #include "parsers/test-parsers.h"
 #include "test-suite.h"
 
@@ -52,28 +49,6 @@ int
 main(void)
 {
   TEST_SUITE(
-    RUN_TEST_GROUP("vector", {
-      RUN_TEST(test_vector_instantiation());
-      RUN_TEST(test_vector_insert_elems());
-      RUN_TEST(test_vector_large_elements());
-      RUN_TEST(test_vector_rm_at());
-      RUN_TEST(test_vector_can_hold_strings());
-      RUN_TEST(test_vector_can_hold_pairs());
-      RUN_TEST(test_vec_can_hold_large_amount_of_pairs());
-    });
-
-    RUN_TEST_GROUP("pair", {
-       RUN_TEST(test_pair_instantiation());
-       RUN_TEST(test_pair_same_types_ints());
-    });
-
-    RUN_TEST_GROUP("hashtbl", {
-      RUN_TEST(test_hashtbl_insert());
-      RUN_TEST(test_hashtbl_insert_with_strs());
-      RUN_TEST(test_hashtbl_insert_compound_literals());
-      RUN_TEST(test_hashtbl_insert_inplace());
-    });
-
     RUN_TEST_GROUP("lexer", {
         RUN_TEST(test_lexer_symbols());
         RUN_TEST(test_lexer_identifiers());
