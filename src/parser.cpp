@@ -55,9 +55,65 @@ std::unique_ptr<Token> parse_expect_type(Lexer &lexer) {
   return tok;
 }
 
+std::unique_ptr<Expr> parse_primary_expr(Lexer &lexer) {
+  Token *cur = lexer.next();
+
+  switch (cur->type()) {
+  case TokenType::Ident: {
+    return std::make_unique<ExprIdent>(std::make_unique<Token>(*cur));
+  } break;
+  case TokenType::Intlit: {
+    return std::make_unique<ExprIntLit>(std::make_unique<Token>(*cur));
+  } break;
+  case TokenType::Strlit: {
+    return std::make_unique<ExprStrLit>(std::make_unique<Token>(*cur));
+  } break;
+  default:
+    assert(false && "parse_primary_expr: invalid primary expression");
+  }
+}
+
+std::unique_ptr<Expr> parse_multiplicative_expr(Lexer &lexer) {
+  std::unique_ptr<Expr> lhs = parse_primary_expr(lexer);
+  Token *cur = lexer.peek();
+  while (cur && (cur->type() == TokenType::Asterisk
+                 || cur->type() == TokenType::Forwardslash)) {
+    std::unique_ptr<Token> op(lexer.next());
+    std::unique_ptr<Expr> rhs = parse_primary_expr(lexer);
+    lhs = std::make_unique<ExprBinary>(std::move(lhs), std::move(op), std::move(rhs));
+    cur = lexer.peek();
+  }
+  return lhs;
+}
+
+std::unique_ptr<Expr> parse_additive_expr(Lexer &lexer) {
+  std::unique_ptr<Expr> lhs = parse_multiplicative_expr(lexer);
+  Token *cur = lexer.peek();
+  while (cur && (cur->type() == TokenType::Plus
+                 || cur->type() == TokenType::Minus)) {
+    std::unique_ptr<Token> op(lexer.next());
+    std::unique_ptr<Expr> rhs = parse_multiplicative_expr(lexer);
+    lhs = std::make_unique<ExprBinary>(std::move(lhs), std::move(op), std::move(rhs));
+    cur = lexer.peek();
+  }
+  return lhs;
+}
+
 std::unique_ptr<Expr> parse_equalitative_expr(Lexer &lexer) {
-  (void)lexer;
-  assert(false && "unimplemented");
+  std::unique_ptr<Expr> lhs = parse_additive_expr(lexer);
+  Token *cur = lexer.peek();
+  while (cur && (cur->type() == TokenType::Double_Equals
+                 || cur->type() == TokenType::Greaterthan_Equals
+                 || cur->type() == TokenType::Greaterthan
+                 || cur->type() == TokenType::Lessthan_Equals
+                 || cur->type() == TokenType::Lessthan
+                 || cur->type() == TokenType::Bang_Equals)) {
+    std::unique_ptr<Token> op(lexer.next());
+    std::unique_ptr<Expr> rhs = parse_additive_expr(lexer);
+    lhs = std::make_unique<ExprBinary>(std::move(lhs), std::move(op), std::move(rhs));
+    cur = lexer.peek();
+  }
+  return lhs;
 }
 
 std::unique_ptr<Expr> parse_logical_expr(Lexer &lexer) {
