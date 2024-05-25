@@ -25,6 +25,8 @@
 #include <vector>
 #include <iostream>
 
+#include "parser.hpp"
+#include "ast.hpp"
 #include "common.hpp"
 #include "notify.hpp"
 #include "utils.hpp"
@@ -58,7 +60,8 @@ int main(int argc, char **argv) {
   std::string comment = "#";
 
   Lexer lexer = lex_file(filepath, keywords, comment);
-  lexer.dump();
+  // lexer.dump();
+  Program program = parse_program(lexer);
 
   return 0;
 }

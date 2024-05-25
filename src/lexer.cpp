@@ -40,7 +40,6 @@ Lexer::Lexer() : m_arena(32768) {
 }
 
 void Lexer::append(Token *tok) {
-  std::cout << "appending: " << tok->m_lexeme << std::endl;
   if (!m_hd) {
     m_hd = tok;
     m_tl = tok;
