@@ -90,6 +90,10 @@ struct hashtbl hashtbl_create(size_t key_stride, size_t value_stride,
                               unsigned (*hashfunc)(void *key, size_t bytes),
                               int (*keycompar)(void *x, void *y));
 
+struct hashtbl *hashtbl_alloc(size_t key_stride, size_t value_stride,
+                              unsigned (*hashfunc)(void *key, size_t bytes),
+                              int (*keycompar)(void *x, void *y));
+
 void hashtbl_insert(struct hashtbl *ht, void *key, void *value);
 uint8_t *hashtbl_get(struct hashtbl *ht, void *key);
 struct hashtbl_node **hashtbl_asbytes(struct hashtbl *ht);

@@ -73,6 +73,11 @@ hashtbl_create(size_t key_stride, size_t value_stride,
 void
 hashtbl_insert(struct hashtbl *ht, void *key, void *value)
 {
+  assert(ht);
+  assert(key);
+  assert(value);
+  assert(ht->hashfunc);
+
   try_resize(ht);
 
   unsigned idx = ht->hashfunc(key, ht->key_stride) % ht->cap;
@@ -96,4 +101,20 @@ hashtbl_get(struct hashtbl *ht, void *key)
   struct hashtbl_node *p = find(ht, ht->tbl[idx], key);
 
   return p ? p->value : NULL;
+}
+
+struct hashtbl *
+hashtbl_alloc(size_t key_stride, size_t value_stride,
+                              unsigned (*hashfunc)(void *key, size_t bytes),
+                              int (*keycompar)(void *x, void *y))
+{
+  struct hashtbl *ht = utils_safe_malloc(sizeof(struct hashtbl));
+  ht->key_stride = key_stride;
+  ht->value_stride = value_stride;
+  ht->tbl = NULL;
+  ht->hashfunc = hashfunc;
+  ht->keycompar = keycompar;
+  ht->len = 0;
+  ht->cap = 0;
+  return ht;
 }

@@ -7,7 +7,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
 SUBDIRS = test
 
-AM_CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -g -DDEBUG -Wno-gnu-zero-variadic-macro-arguments
+AM_CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -g -DDEBUG -Wno-gnu-zero-variadic-macro-arguments -O0
 
 .PHONY: test
 test:

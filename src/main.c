@@ -83,9 +83,9 @@ main(int argc, char **argv)
   char *comment = "#";
 
   struct lexer lexer = lex_file(filepath, keywords, keywords_len, comment);
-  lexer_dump(&lexer);
+  /* lexer_dump(&lexer); */
   struct program program = parser_parse(&lexer);
-  ast_dump(&program);
+  /* ast_dump(&program); */
   interpret(&program);
 
   lexer_free(&lexer);

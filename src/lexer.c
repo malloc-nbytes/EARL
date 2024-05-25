@@ -173,8 +173,9 @@ is_keyword(char *s, size_t len, char **keywords, size_t keywords_len)
   memcpy(real, s, len);
 
   for (size_t i = 0; i < keywords_len; ++i) {
-    if (utils_streq(real, keywords[i]))
+    if (utils_streq(real, keywords[i])) {
       return 1;
+    }
   }
 
   return 0;
