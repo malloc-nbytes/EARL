@@ -36,7 +36,7 @@
 struct Token;
 
 struct Lexer {
-  Token *m_hd;
+  std::unique_ptr<Token> m_hd;
   Token *m_tl;
   size_t m_len;
 
@@ -44,10 +44,12 @@ struct Lexer {
 
   Lexer();
   ~Lexer() = default;
+  Lexer(Lexer &&other) noexcept;
+  Lexer& operator=(Lexer &&other) noexcept;
 
-  Token *next(void);
+  std::unique_ptr<Token> next(void);
   Token *peek(size_t n);
-  void append(Token *tok);
+  void append(std::unique_ptr<Token> tok);
   void discard(void);
   void dump(void);
 };

@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <cassert>
 #include <string>
 #include <unordered_map>
 #include <functional>
 
-#include <assert.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -37,29 +37,61 @@
 #include "utils.hpp"
 #include "arena.hpp"
 
+Lexer::Lexer(Lexer&& other) noexcept
+    : m_hd(std::move(other.m_hd)), m_tl(other.m_tl),
+      m_len(other.m_len), m_arena(std::move(other.m_arena)) {
+  other.m_tl = nullptr;
+  other.m_len = 0;
+}
+
+Lexer& Lexer::operator=(Lexer&& other) noexcept {
+  if (this != &other) {
+    m_hd = std::move(other.m_hd);
+    m_tl = other.m_tl;
+    m_len = other.m_len;
+    m_arena = std::move(other.m_arena);
+
+    other.m_tl = nullptr;
+    other.m_len = 0;
+  }
+  return *this;
+}
+
 Lexer::Lexer() : m_arena(32768) {
-  m_hd = nullptr;
-  m_tl = nullptr;
   m_len = 0;
 }
 
-void Lexer::append(Token *tok) {
+void Lexer::append(std::unique_ptr<Token> tok) {
   if (!m_hd) {
-    m_hd = tok;
-    m_tl = tok;
+    m_hd = std::move(tok);
+    m_tl = m_hd.get();
   } else {
-    m_tl->m_next = tok;
-    m_tl = tok;
+    m_tl->m_next = tok.get();
+    m_tl = tok.get();
   }
   ++m_len;
 }
 
 Token *Lexer::peek(size_t n) {
-  assert(false && "todo");
+  Token *tok = m_hd.get();
+  for (size_t i = 0; i < n && tok; ++i) {
+    tok = tok->m_next;
+  }
+  return tok;
 }
 
-Token *Lexer::next(void) {
-  assert(false && "todo");
+std::unique_ptr<Token> Lexer::next(void) {
+  if (!m_hd)
+    return nullptr;
+
+  std::unique_ptr<Token> tok = std::move(m_hd);
+  m_hd.reset(tok->m_next);
+
+  if (!m_hd)
+    m_tl = nullptr;
+
+  --m_len;
+  return tok;
 }
 
 void Lexer::discard(void) {
@@ -171,7 +203,7 @@ int try_comment(char *src, char *comment) {
 Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment) {
   std::string src = std::string(file_to_str(filepath));
 
-  Lexer lexer = Lexer();
+  Lexer lexer;
 
   std::unordered_map<std::string, TokenType> ht;
 
@@ -260,5 +292,5 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
 
   }
 
-  return lexer;
+  return std::move(lexer);
 }

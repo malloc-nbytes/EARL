@@ -43,21 +43,6 @@ struct Arena {
   ~Arena();
 };
 
-// struct Arena {
-//   uint8_t *m_mem;
-//   size_t m_len;
-//   size_t m_cap;
-
-//   Arena(size_t cap) : m_cap(cap) {
-//     m_mem = new uint8_t[cap];
-//     m_len = 0;
-//   }
-
-//   ~Arena(void) {
-//     delete m_mem;
-//   }
-// };
-
 // Allocate `bytes` number of bytes in an arena.
 uint8_t *arena_alloc(Arena &arena, size_t bytes);
 

@@ -31,7 +31,7 @@ Arena::Arena(size_t cap) {
 }
 
 Arena::~Arena(void) {
-  delete m_mem;
+  delete[] m_mem;
 }
 
 uint8_t *arena_alloc(Arena &arena, size_t bytes) {
