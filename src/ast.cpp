@@ -121,6 +121,18 @@ StmtType StmtLet::stmt_type() const {
   return StmtType::Let;
 }
 
+const Token &StmtLet::id() const {
+  return *m_id;
+}
+
+const Token &StmtLet::type() const {
+  return *m_type;
+}
+
+const Expr &StmtLet::expr() const {
+  return *m_expr;
+}
+
 StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
 
 void add_stmt(std::unique_ptr<Stmt> stmt) {

@@ -138,13 +138,17 @@ public:
 };
 
 class StmtLet : public Stmt {
+
+public:
   std::unique_ptr<Token> m_id;
   std::unique_ptr<Token> m_type;
   std::unique_ptr<Expr> m_expr;
 
-public:
   StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::unique_ptr<Expr> expr);
   StmtType stmt_type() const override;
+  const Token &id() const;
+  const Token &type() const;
+  const Expr &expr() const;
 };
 
 class StmtBlock : public Stmt {
