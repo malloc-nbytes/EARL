@@ -319,8 +319,8 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
         }
       }
     }
-
   }
 
+  lexer.append(token_alloc(lexer, nullptr, 0, TokenType::Eof, row, col, filepath));
   return lexer;
 }

@@ -31,6 +31,7 @@
 #include "notify.hpp"
 #include "utils.hpp"
 #include "lexer.hpp"
+#include "interpreter.hpp"
 
 std::vector<std::string> RESERVED = {"let", "def",};
 std::vector<std::string> VARTYPES = {"int","str",};
@@ -60,8 +61,8 @@ int main(int argc, char **argv) {
   std::string comment = "#";
 
   Lexer lexer = lex_file(filepath, keywords, comment);
-  // lexer.dump();
   Program program = parse_program(lexer);
+  interpret(program);
 
   return 0;
 }

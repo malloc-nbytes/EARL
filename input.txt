@@ -1,1 +1,1 @@
-let a: int = 1 + 3 * 2;
+let a: int = 99 + 1 * 2;

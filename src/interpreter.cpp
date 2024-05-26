@@ -58,7 +58,6 @@ static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
   (void)ctx;
   switch (stmt->stmt_type()) {
   case StmtType::Let: {
-    std::cout << "HERE" << std::endl;
     // StmtLet *stmt_let = dynamic_cast<StmtLet *>(stmt.get());
     // eval_stmt_let(stmt_let, ctx);
     break;
