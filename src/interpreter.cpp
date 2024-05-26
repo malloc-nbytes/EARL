@@ -7,6 +7,7 @@
 #include "interpreter.hpp"
 #include "token.hpp"
 #include "ast.hpp"
+#include "ty.hpp"
 
 struct EarlVar {
   std::unique_ptr<Token> m_id;
