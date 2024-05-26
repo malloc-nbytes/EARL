@@ -18,7 +18,7 @@ enum class EarlTy {
 
 struct EarlVar {
   std::unique_ptr<Token> m_id;
-  std::unique_ptr<Token> m_type;
+  std::unique_ptr<Token> m_type; // TODO: change to EarlTy
   std::any m_value;
 
   uint32_t m_refcount;
@@ -55,7 +55,7 @@ struct Ctx {
 
   void add_earlvar(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr) {
     std::string name = id->lexeme();
-    m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), /*value=*/std::move(value)));
+    m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), std::move(value)));
   }
 
   bool has_earlvar(const std::string &id) const {
@@ -77,7 +77,7 @@ struct Ctx {
   }
 };
 
-EarlTy ty_to_earlty(TokenType ty) {
+static EarlTy ty_to_earlty(TokenType ty) {
   switch (ty) {
     case TokenType::Intlit:
       return EarlTy::Int;
@@ -178,13 +178,11 @@ static void eval_stmt_let(StmtLet *stmt, Ctx &ctx)
     return;
   }
   std::any value = eval_expr(&stmt->expr(), ctx);
-  ctx.add_earlvar(std::move(stmt->m_id), std::move(stmt->m_type), value);
+  ctx.add_earlvar(std::move(stmt->m_id), std::move(stmt->m_type), /*value=*/value);
 }
 
 static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
 {
-  (void)stmt;
-  (void)ctx;
   switch (stmt->stmt_type()) {
   case StmtType::Let: {
     if (auto stmt_let = dynamic_cast<StmtLet *>(stmt.get())) {
