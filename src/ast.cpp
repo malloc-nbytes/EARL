@@ -30,6 +30,14 @@
 Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
   : m_stmts(std::move(stmts)) {}
 
+std::unique_ptr<Stmt> &Program::get_stmt(size_t i) {
+  return m_stmts.at(i);
+}
+
+size_t Program::stmts_len(void) const {
+  return m_stmts.size();
+}
+
 /*** EXPRESSIONS ***/
 
 ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,

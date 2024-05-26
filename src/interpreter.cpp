@@ -1,94 +1,39 @@
-#include <stdio.h>
-#include <string.h>
+#include <cassert>
+#include <unordered_map>
+#include <vector>
+#include <iostream>
 
-#include "interpreter.h"
-#include "notify.h"
-#include "common.h"
-#include "utils.h"
-#include "token.h"
-#include "ast.h"
+#include "interpreter.hpp"
+#include "token.hpp"
+#include "ast.hpp"
 
-struct var {
-  struct token *id;
-  struct token *type;
-  void *value;
+struct EarlVar {
+  std::unique_ptr<Token> m_id;
+  std::unique_ptr<Token> m_type;
+  void *m_value;
 };
 
-// struct vector(hashtbl(char **, struct var **) *) scope;
+struct Ctx {
+  std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
 
-static unsigned
-__symtbl_hash(void *k, size_t bytes)
-{
-  (void)bytes;
-  return strlen(*(char **)k);
+  Ctx() {
+    m_scope.emplace_back();
+  }
+
+  void add_var_to_scope(std::unique_ptr<Token> id, std::unique_ptr<Token> type, void *value) {
+    m_scope.back()[id->lexeme()] = {std::move(id), std::move(type), value};
+  }
+};
+
+void push_scope(Ctx &ctx) {
+  ctx.m_scope.emplace_back();
 }
 
-static int
-__symtbl_keycompar(void *k1, void *k2)
+static void *eval_expr(std::unique_ptr<Expr> expr, Ctx &ctx)
 {
-  return utils_streq(*(char **)k1, *(char **)k2);
-}
-
-static void
-scope_push(void)
-{
-  // struct hashtbl *ht = hashtbl_alloc(sizeof(char *), sizeof(struct var *), __symtbl_hash, __symtbl_keycompar);
-  // vector_append(&scope, &ht);
-}
-
-static int
-var_in_scope(char *id)
-{
-  // for (size_t i = 0; i < scope.len; ++i) {
-  //   struct hashtbl *ht = (struct hashtbl *)vector_at(&scope, i);
-  //   if (hashtbl_get(ht, &id) != NULL) {
-  //     return 1;
-  //   }
-  // }
-  // return 0;
-}
-
-static size_t
-earltype_to_ctype_asbytes(struct token *ty)
-{
-  // if (utils_streq(ty->lexeme, COMMON_TY_INT32)) {
-  //   return sizeof(int);
-  // }
-  // else if (utils_streq(ty->lexeme, COMMON_TY_STR)) {
-  //   return sizeof(char *);
-  // }
-  // NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "earltype_to_ctype_asbytes: invalid EARL type: %s", ty->lexeme);
-}
-
-static struct var *
-var_alloc(struct token *id, struct token *type, void *value)
-{
-  // size_t tybytes = earltype_to_ctype_asbytes(type);
-
-  // struct var *var = utils_safe_malloc(sizeof(struct var));
-  // var->id = id;
-  // var->type = type;
-  // var->value = utils_safe_malloc(tybytes);
-
-  // if (value != NULL) {
-  //   (void)memcpy(var->value, value, tybytes);
-  // }
-
-  // return var;
-}
-
-static void
-add_var_to_scope(struct token *id, struct token *ty, void *value)
-{
-  // struct hashtbl *ht = (struct hashtbl *)vector_at(&scope, scope.len - 1);
-  // char *key = id->lexeme;
-  // struct var *var = var_alloc(id, ty, value);
-  // hashtbl_insert(ht, &key, &var);
-}
-
-static void *
-eval_expr(struct expr *expr)
-{
+  (void)expr;
+  (void)ctx;
+  return NULL;
   // switch (expr->type) {
   // case EXPR_TYPE_TERM:
   //   UNIMPLEMENTED("eval_expr: EXPR_TYPE_TERM");
@@ -101,41 +46,33 @@ eval_expr(struct expr *expr)
   // }
 }
 
-static void
-eval_stmt_let(struct stmt_let *stmt)
+static void eval_stmt_let(std::unique_ptr<StmtLet> stmt, Ctx &ctx)
 {
-  // if (var_in_scope(stmt->id->lexeme)) {
-  //   NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "eval_stmt_let: variable already declared: %s", stmt->id->lexeme);
-  // }
-
-  // // void *value = eval_expr(stmt->expr);
-  // add_var_to_scope(stmt->id, stmt->type, NULL);
+  (void)stmt;
+  (void)ctx;
 }
 
-static void
-eval_stmt(struct stmt *stmt)
+static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
 {
-  // switch (stmt->type) {
-  // case STMT_TYPE_LET:
-  //   eval_stmt_let(stmt->stmt.let);
-  //   break;
-  // case STMT_TYPE_DEF:
-  //   UNIMPLEMENTED("eval_stmt: STMT_TYPE_DEF");
-  // default:
-  //   NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "eval_stmt: unknown stmt type: %d", stmt->type);
-  // }
+  (void)stmt;
+  (void)ctx;
+  switch (stmt->stmt_type()) {
+  case StmtType::Let: {
+    std::cout << "HERE" << std::endl;
+    // StmtLet *stmt_let = dynamic_cast<StmtLet *>(stmt.get());
+    // eval_stmt_let(stmt_let, ctx);
+    break;
+  }
+  default:
+    assert(false && "eval_stmt: unknown stmt type");
+  }
 }
 
-int
-interpret(struct program *program)
+void interpret(Program &program)
 {
-  // scope = vector_create(sizeof(struct hashtbl *));
-  // scope_push();
+  Ctx ctx;
 
-  // for (size_t i = 0; i < program->stmts.len; ++i) {
-  //   struct stmt *stmt = *(struct stmt **)vector_at(&program->stmts, i);
-  //   eval_stmt(stmt);
-  // }
-
-  return 0;
+  for (size_t i = 0; i < program.stmts_len(); ++i) {
+    eval_stmt(std::move(program.get_stmt(i)), ctx);
+  }
 }

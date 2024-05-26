@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <iostream>
 
+#include "err.hpp"
 #include "ast.hpp"
 #include "common.hpp"
 #include "parser.hpp"
@@ -38,9 +40,13 @@ std::unique_ptr<Token> parse_expect_keyword(Lexer &lexer, std::string expected) 
   std::unique_ptr<Token> tok(lexer.next());
 
   if (tok->m_type != TokenType::Keyword)
-    assert(false && "parse_expect_keyword: not a keyword");
+    ERR_WARGS(ErrType::Syntax,
+              "parse_expect_keyword: %s `%s` is not a keyword",
+              tok->to_str().c_str(), tok->lexeme().c_str());
   if (tok->m_lexeme != expected)
-    assert(false && "parse_expect_keyword: wrong keyword");
+    ERR_WARGS(ErrType::Syntax,
+              "parse_expect_keyword: expected keyword `%s`, got %s `%s`",
+              expected.c_str(), tok->to_str().c_str(), tok->lexeme().c_str());
 
   return tok;
 }
@@ -136,7 +142,7 @@ std::unique_ptr<Expr> parse_expr(Lexer &lexer) {
 std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
   (void)parse_expect_keyword(lexer, COMMON_KW_LET);
   std::unique_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
-  (void)parse_expect(lexer, TokenType::Colon);
+  (void)parse_expect(lexer, TokenType::Colon); // fixme
   std::unique_ptr<Token> ty = parse_expect_type(lexer);
   (void)parse_expect(lexer, TokenType::Equals);
   std::unique_ptr<Expr> expr = parse_expr(lexer);
@@ -149,7 +155,7 @@ std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer) {
 }
 
 std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
-  Token *tok = lexer.next();
+  Token *tok = lexer.peek();
   switch (tok->type()) {
   case TokenType::Keyword: {
     if (tok->lexeme() == COMMON_KW_LET) {

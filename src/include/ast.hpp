@@ -180,6 +180,8 @@ class Program {
 
 public:
   Program(std::vector<std::unique_ptr<Stmt>> stmts);
+  std::unique_ptr<Stmt> &get_stmt(size_t i);
+  size_t stmts_len(void) const;
 };
 
 #endif // AST_H
