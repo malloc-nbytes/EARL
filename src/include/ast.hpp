@@ -69,7 +69,7 @@ public:
   ExprIdent(std::unique_ptr<Token> tok);
   ExprType get_type() const override;
   ExprTermType get_term_type() const override;
-  const Token &get_tok() const;
+  const Token &tok() const;
 };
 
 class ExprIntLit : public ExprTerm {
@@ -79,7 +79,7 @@ public:
   ExprIntLit(std::unique_ptr<Token> tok);
   ExprType get_type() const override;
   ExprTermType get_term_type() const override;
-  const Token &get_tok() const;
+  const Token &tok() const;
 };
 
 class ExprStrLit : public ExprTerm {
@@ -148,7 +148,7 @@ public:
   StmtType stmt_type() const override;
   const Token &id() const;
   const Token &type() const;
-  const Expr &expr() const;
+  Expr &expr();
 };
 
 class StmtBlock : public Stmt {

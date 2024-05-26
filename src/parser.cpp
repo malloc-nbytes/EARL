@@ -225,7 +225,6 @@ Program parse_program(Lexer &lexer) {
 
   while (lexer.peek()->type() != TokenType::Eof) {
     stmts.push_back(parse_stmt(lexer));
-    break;
   }
 
   return Program(std::move(stmts));

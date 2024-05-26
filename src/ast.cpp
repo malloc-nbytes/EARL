@@ -81,8 +81,8 @@ ExprTermType ExprIntLit::get_term_type() const {
   return ExprTermType::Int_Literal;
 }
 
-const Token &ExprIntLit::get_tok() const {
-  assert(false && "unimplemented");
+const Token &ExprIntLit::tok() const {
+  return *m_tok;
 }
 
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
@@ -95,8 +95,8 @@ ExprTermType ExprIdent::get_term_type() const {
   return ExprTermType::Ident;
 }
 
-const Token &ExprIdent::get_tok() const {
-  assert(false && "unimplemented");
+const Token &ExprIdent::tok() const {
+  return *m_tok;
 }
 
 /*** STATEMENTS ***/
@@ -129,7 +129,7 @@ const Token &StmtLet::type() const {
   return *m_type;
 }
 
-const Expr &StmtLet::expr() const {
+Expr &StmtLet::expr() {
   return *m_expr;
 }
 

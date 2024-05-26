@@ -43,7 +43,32 @@ struct Ctx {
     }
     return false;
   }
+
+  EarlVar &get_var(const std::string &id) {
+    for (auto it = m_scope.rbegin(); it != m_scope.rend(); ++it) {
+      if (it->find(id) != it->end()) {
+        return it->at(id);
+      }
+    }
+    assert(false && "get_var: variable not found");
+  }
 };
+
+void debug_dump_scope(Ctx &ctx) {
+  for (auto &scope : ctx.m_scope) {
+    for (auto &var : scope) {
+      // std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
+      switch (var.second.m_type.get()->type()) {
+        case TokenType::Keyword: // TODO: add type checking
+          std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
+          break;
+        default:
+          std::cerr << "error: unknown type" << std::endl;
+          break;
+      }
+    }
+  }
+}
 
 void scope_pop(Ctx &ctx) {
   ctx.m_scope.pop_back();
@@ -53,21 +78,38 @@ void scope_push(Ctx &ctx) {
   ctx.m_scope.emplace_back();
 }
 
-static std::any eval_expr(const Expr *expr, Ctx &ctx)
+static std::any eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+  switch (expr->get_term_type()) {
+    case ExprTermType::Ident: {
+      ExprIdent *expr_ident = dynamic_cast<ExprIdent *>(expr);
+      if (!ctx.has_var(expr_ident->tok().lexeme())) {
+        std::cerr << "error: variable '" << expr_ident->tok().lexeme() << "' not declared" << std::endl;
+        return nullptr;
+      }
+      return ctx.get_var(expr_ident->tok().lexeme()).m_value;
+    } break;
+    case ExprTermType::Int_Literal: {
+      ExprIntLit *expr_intlit = dynamic_cast<ExprIntLit *>(expr);
+      return std::stoi(expr_intlit->tok().lexeme());
+    } break;
+    default:
+      assert(false && "eval_expr_term: unknown term type");
+  }
+}
+
+static std::any eval_expr(Expr *expr, Ctx &ctx)
 {
-  (void)expr;
-  (void)ctx;
-  return NULL;
-  // switch (expr->type) {
-  // case EXPR_TYPE_TERM:
-  //   UNIMPLEMENTED("eval_expr: EXPR_TYPE_TERM");
-  // case EXPR_TYPE_BINARY:
-  //   UNIMPLEMENTED("eval_expr: EXPR_TYPE_BINARY");
-  // case EXPR_TYPE_FUNCCALL:
-  //   UNIMPLEMENTED("eval_expr: EXPR_TYPE_FUNCCALL");
-  // default:
-  //   NOTIFY_ERRARGS(NOTIFY_ERR_SYNTAX, "eval_expr: unknown expr type: %d", expr->type);
-  // }
+  switch (expr->get_type()) {
+  case ExprType::Term:
+    return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+    break;
+  case ExprType::Binary:
+    assert(false && "todo");
+  case ExprType::Func_Call:
+    assert(false && "todo");
+  default:
+    assert(false && "eval_expr: unknown expression");
+  }
 }
 
 static void eval_stmt_let(StmtLet *stmt, Ctx &ctx)
@@ -76,8 +118,8 @@ static void eval_stmt_let(StmtLet *stmt, Ctx &ctx)
     std::cerr << "error: variable '" << stmt->id().lexeme() << "' already declared" << std::endl;
     return;
   }
-  // std::any value = eval_expr(&stmt->expr(), ctx);
-  ctx.add_var(std::move(stmt->m_id), std::move(stmt->m_type));
+  std::any value = eval_expr(&stmt->expr(), ctx);
+  ctx.add_var(std::move(stmt->m_id), std::move(stmt->m_type), value);
 }
 
 static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
@@ -107,4 +149,6 @@ void interpret(Program &program)
   for (size_t i = 0; i < program.stmts_len(); ++i) {
     eval_stmt(std::move(program.get_stmt(i)), ctx);
   }
+
+  debug_dump_scope(ctx);
 }
