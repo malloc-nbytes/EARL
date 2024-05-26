@@ -139,29 +139,23 @@ static char *read_file(char *filepath) {
   return buffer;
 }
 
-// std::string read_file(const std::string &filepath) {
-//   std::ifstream file(filepath);
-//   std::string content;
-
-//   if (file.is_open()) {
-//     std::string line;
-//     while (std::getline(file, line)) {
-//       content += line;
-//     }
-//     file.close();
-//   } else {
-//     std::cerr << "Unable to open file: " << filepath << std::endl;
-//   }
-
-//   return content;
-// }
-
 static bool is_keyword(char *s, size_t len, std::vector<std::string> &keywords) {
 
   std::string word(s, len);
 
   for (std::string &kw : keywords)
     if (word == kw)
+      return true;
+
+  return false;
+}
+
+static bool is_type(char *s, size_t len, std::vector<std::string> &types) {
+
+  std::string word(s, len);
+
+  for (std::string &ty : types)
+    if (word == ty)
       return true;
 
   return false;
@@ -177,7 +171,7 @@ static bool try_comment(char *src, std::string &comment) {
   return false;
 }
 
-Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment) {
+Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
   std::string src = read_file(filepath);
 
   Lexer lexer;
@@ -281,8 +275,22 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &
       size_t ident_len = consume_until(lexeme, [](char c) {
         return !(c == '_' || isalnum(c));
       });
-      TokenType type = is_keyword(lexeme, ident_len, keywords) ? TokenType::Keyword : TokenType::Ident;
-      Token *tok = token_alloc(lexer, lexeme, ident_len, type, row, col, filepath);
+
+      Token *tok = nullptr;
+
+      bool is_ty = is_type(lexeme, ident_len, types);
+      bool is_kw = is_keyword(lexeme, ident_len, keywords);
+
+      if (is_ty) {
+        tok = token_alloc(lexer, lexeme, ident_len, TokenType::Type, row, col, filepath);
+      }
+      else if (is_kw) {
+        tok = token_alloc(lexer, lexeme, ident_len, TokenType::Keyword, row, col, filepath);
+      }
+      else {
+        tok = token_alloc(lexer, lexeme, ident_len, TokenType::Ident, row, col, filepath);
+      }
+
       lexer.append(tok);
       i += ident_len;
       col += ident_len;

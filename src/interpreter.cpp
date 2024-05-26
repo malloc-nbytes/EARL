@@ -7,7 +7,13 @@
 #include "interpreter.hpp"
 #include "token.hpp"
 #include "ast.hpp"
-#include "ty.hpp"
+
+#define earlty_to_cppty(ty) ty == EarlTy::Int ? int : std::string
+
+enum class EarlTy {
+  Int,
+  Str,
+};
 
 struct EarlVar {
   std::unique_ptr<Token> m_id;
@@ -22,9 +28,13 @@ struct EarlVar {
 
 struct Ctx {
   std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
+  std::unordered_map<EarlTy, EarlTy> m_earl_compat_tys;
 
   Ctx() {
     m_scope.emplace_back();
+
+    m_earl_compat_tys[EarlTy::Int] = EarlTy::Int;
+    m_earl_compat_tys[EarlTy::Str] = EarlTy::Str;
   }
 
   ~Ctx() {
@@ -61,7 +71,7 @@ void debug_dump_scope(Ctx &ctx) {
   for (auto &scope : ctx.m_scope) {
     for (auto &var : scope) {
       switch (var.second.m_type.get()->type()) {
-        case TokenType::Keyword: // TODO: add type checking
+        case TokenType::Type: // TODO: add type checking
           std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
           break;
         default:

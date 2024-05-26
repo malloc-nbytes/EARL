@@ -57,6 +57,6 @@ struct Lexer {
 // code of `filepath`. Any prevalent keywords should be provided
 // in `keywords`. The identifier(s) for a SINGLE LINE comment is
 // provided as `comment`.
-Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::string &comment);
+Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
 
 #endif // LEXER_H

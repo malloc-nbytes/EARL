@@ -127,6 +127,8 @@ std::string Token::to_str(void)
     return "IDENT";
   case TokenType::Keyword:
     return "KEYWORD";
+  case TokenType::Type:
+    return "TYPE";
   default:
     assert(0 && "unknown type");
     return NULL;

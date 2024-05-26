@@ -57,7 +57,7 @@ Token *parse_expect_keyword(Lexer &lexer, std::string expected) {
 
 Token *parse_expect_type(Lexer &lexer) {
   Token *tok = lexer.next();
-  if (tok->type() != TokenType::Keyword) {
+  if (tok->type() != TokenType::Type) {
     ERR_WARGS(ErrType::Syntax,
               "parse_expect_type: %s `%s` is not a keyword",
               tok->to_str().c_str(), tok->lexeme().c_str());
@@ -146,7 +146,7 @@ Expr *parse_expr(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
-  parse_expect_keyword(lexer, COMMON_KW_LET);
+  parse_expect_keyword(lexer, COMMON_EARLKW_LET);
   Token *id = parse_expect(lexer, TokenType::Ident);
   parse_expect(lexer, TokenType::Colon);
   Token *ty = parse_expect_type(lexer);
@@ -168,10 +168,10 @@ std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
   Token *tok = lexer.peek();
   switch (tok->type()) {
   case TokenType::Keyword: {
-    if (tok->lexeme() == COMMON_KW_LET) {
+    if (tok->lexeme() == COMMON_EARLKW_LET) {
       return parse_stmt_let(lexer);
     }
-    else if (tok->lexeme() == COMMON_KW_DEF) {
+    else if (tok->lexeme() == COMMON_EARLKW_DEF) {
       return parse_stmt_def(lexer);
     }
     else {

@@ -81,6 +81,7 @@ enum class TokenType {
   Charlit,
   Ident,
   Keyword,
+  Type,
   Total_Len
 };
 
