@@ -68,8 +68,8 @@ int main(int argc, char **argv) {
   std::string comment = "#";
 
   Lexer lexer = lex_file(filepath, keywords, types, comment);
-  lexer.dump();
   Program program = parse_program(lexer);
+
   interpret(program);
 
   return 0;

@@ -7,6 +7,7 @@
 #include "interpreter.hpp"
 #include "token.hpp"
 #include "ast.hpp"
+#include "common.hpp"
 
 #define earlty_to_cppty(ty) ty == EarlTy::Int ? int : std::string
 
@@ -22,31 +23,33 @@ struct EarlVar {
 
   uint32_t m_refcount;
 
-  EarlVar(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr, uint32_t refcount = 1)
-    : m_id(std::move(id)), m_type(std::move(type)), m_value(value), m_refcount(refcount) {}
+  EarlVar(std::unique_ptr<Token> id, std::unique_ptr<Token> type,
+          std::any value = nullptr, uint32_t refcount = 1)
+    : m_id(std::move(id)),
+      m_type(std::move(type)),
+      m_value(value),
+      m_refcount(refcount) {}
 };
 
 struct Ctx {
   std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
-  std::unordered_map<EarlTy, EarlTy> m_earl_compat_tys;
+  std::unordered_map<EarlTy, std::vector<EarlTy>> m_earl_compat_tys;
 
   Ctx() {
     m_scope.emplace_back();
 
-    m_earl_compat_tys[EarlTy::Int] = EarlTy::Int;
-    m_earl_compat_tys[EarlTy::Str] = EarlTy::Str;
+    m_earl_compat_tys[EarlTy::Int] = {EarlTy::Int};
+    m_earl_compat_tys[EarlTy::Str] = {EarlTy::Str};
   }
 
-  ~Ctx() {
-    m_scope.clear();
-  }
+  ~Ctx() = default;
 
-  void add_var(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr) {
+  void add_earlvar(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr) {
     std::string name = id->lexeme();
-    m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), std::move(value)));
+    m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), /*value=*/std::move(value)));
   }
 
-  bool has_var(const std::string &id) const {
+  bool has_earlvar(const std::string &id) const {
     for (auto it = m_scope.rbegin(); it != m_scope.rend(); ++it) {
       if (it->find(id) != it->end()) {
         return true;
@@ -55,7 +58,7 @@ struct Ctx {
     return false;
   }
 
-  EarlVar &get_var(const std::string &id) {
+  EarlVar &get_earlvar(const std::string &id) {
     for (auto it = m_scope.rbegin(); it != m_scope.rend(); ++it) {
       if (it->find(id) != it->end()) {
         return it->at(id);
@@ -64,8 +67,6 @@ struct Ctx {
     assert(false && "get_var: variable not found");
   }
 };
-
-static std::any eval_expr(Expr *, Ctx &);
 
 void debug_dump_scope(Ctx &ctx) {
   for (auto &scope : ctx.m_scope) {
@@ -90,15 +91,17 @@ void scope_push(Ctx &ctx) {
   ctx.m_scope.emplace_back();
 }
 
+static std::any eval_expr(Expr *, Ctx &);
+
 static std::any eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
       ExprIdent *expr_ident = dynamic_cast<ExprIdent *>(expr);
-      if (!ctx.has_var(expr_ident->tok().lexeme())) {
+      if (!ctx.has_earlvar(expr_ident->tok().lexeme())) {
         std::cerr << "error: variable '" << expr_ident->tok().lexeme() << "' not declared" << std::endl;
         return nullptr;
       }
-      return ctx.get_var(expr_ident->tok().lexeme()).m_value;
+      return ctx.get_earlvar(expr_ident->tok().lexeme()).m_value;
     } break;
     case ExprTermType::Int_Literal: {
       ExprIntLit *expr_intlit = dynamic_cast<ExprIntLit *>(expr);
@@ -150,12 +153,12 @@ static std::any eval_expr(Expr *expr, Ctx &ctx)
 
 static void eval_stmt_let(StmtLet *stmt, Ctx &ctx)
 {
-  if (ctx.has_var(stmt->id().lexeme())) {
+  if (ctx.has_earlvar(stmt->id().lexeme())) {
     std::cerr << "error: variable '" << stmt->id().lexeme() << "' already declared" << std::endl;
     return;
   }
   std::any value = eval_expr(&stmt->expr(), ctx);
-  ctx.add_var(std::move(stmt->m_id), std::move(stmt->m_type), value);
+  ctx.add_earlvar(std::move(stmt->m_id), std::move(stmt->m_type), value);
 }
 
 static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)

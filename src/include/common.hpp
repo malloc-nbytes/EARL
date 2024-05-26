@@ -39,4 +39,7 @@
 #define COMMON_EARLTY_STR   "str"
 #define COMMON_EARLTY_ASCPL {COMMON_EARLTY_INT32, COMMON_EARLTY_STR}
 
+extern std::vector<std::string> RESERVED;
+extern std::vector<std::string> VARTYPES;
+
 #endif // COMMON_H
