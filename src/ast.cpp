@@ -55,6 +55,18 @@ ExprType ExprBinary::get_type() const {
   return ExprType::Binary;
 }
 
+Expr &ExprBinary::lhs() {
+  return *m_lhs;
+}
+
+const Token &ExprBinary::op() const {
+  return *m_op;
+}
+
+Expr &ExprBinary::rhs() {
+  return *m_rhs;
+}
+
 /*** TERM EXPRESSIONS ***/
 
 ExprStrLit::ExprStrLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}

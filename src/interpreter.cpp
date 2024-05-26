@@ -54,10 +54,11 @@ struct Ctx {
   }
 };
 
+static std::any eval_expr(Expr *, Ctx &);
+
 void debug_dump_scope(Ctx &ctx) {
   for (auto &scope : ctx.m_scope) {
     for (auto &var : scope) {
-      // std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
       switch (var.second.m_type.get()->type()) {
         case TokenType::Keyword: // TODO: add type checking
           std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
@@ -92,19 +93,43 @@ static std::any eval_expr_term(ExprTerm *expr, Ctx &ctx) {
       ExprIntLit *expr_intlit = dynamic_cast<ExprIntLit *>(expr);
       return std::stoi(expr_intlit->tok().lexeme());
     } break;
+    case ExprTermType::Str_Literal: {
+      assert(false && "eval_expr_term: string literals not implemented");
+    } break;
     default:
       assert(false && "eval_expr_term: unknown term type");
+  }
+}
+
+static std::any eval_expr_binary(ExprBinary *expr, Ctx &ctx)
+{
+  std::any lhs = eval_expr(&expr->lhs(), ctx);
+  std::any rhs = eval_expr(&expr->rhs(), ctx);
+
+  // TODO: type checking and different types
+  switch (expr->op().type()) {
+  case TokenType::Plus:
+    return std::any_cast<int>(lhs) + std::any_cast<int>(rhs);
+  case TokenType::Minus:
+    return std::any_cast<int>(lhs) - std::any_cast<int>(rhs);
+  case TokenType::Asterisk:
+    return std::any_cast<int>(lhs) * std::any_cast<int>(rhs);
+  case TokenType::Forwardslash:
+    return std::any_cast<int>(lhs) / std::any_cast<int>(rhs);
+  default:
+    assert(false && "eval_expr_binary: unknown operator");
   }
 }
 
 static std::any eval_expr(Expr *expr, Ctx &ctx)
 {
   switch (expr->get_type()) {
-  case ExprType::Term:
+  case ExprType::Term: {
     return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
-    break;
-  case ExprType::Binary:
-    assert(false && "todo");
+  } break;
+  case ExprType::Binary: {
+    return eval_expr_binary(dynamic_cast<ExprBinary *>(expr), ctx);
+  }
   case ExprType::Func_Call:
     assert(false && "todo");
   default:
@@ -142,8 +167,6 @@ static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
 
 void interpret(Program &program)
 {
-  (void)eval_expr;
-
   Ctx ctx;
 
   for (size_t i = 0; i < program.stmts_len(); ++i) {

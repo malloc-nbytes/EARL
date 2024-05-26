@@ -28,40 +28,6 @@
 #include "common.hpp"
 #include "parser.hpp"
 
-// std::unique_ptr<Token> parse_expect(Lexer &lexer, TokenType expected) {
-//   Token *tok = lexer.next();
-//   if (tok->type() != expected) {
-//     assert(false && "parse_expect");
-//   }
-//   return std::make_unique<Token>(*tok);
-// }
-
-// std::unique_ptr<Token> parse_expect_keyword(Lexer &lexer, std::string expected) {
-//   Token *tok = lexer.next();
-
-//   if (tok->m_type != TokenType::Keyword)
-//     ERR_WARGS(ErrType::Syntax,
-//               "parse_expect_keyword: %s `%s` is not a keyword",
-//               tok->to_str().c_str(), tok->lexeme().c_str());
-//   if (tok->m_lexeme != expected)
-//     ERR_WARGS(ErrType::Syntax,
-//               "parse_expect_keyword: expected keyword `%s`, got %s `%s`",
-//               expected.c_str(), tok->to_str().c_str(), tok->lexeme().c_str());
-
-//   return std::make_unique<Token>(*tok);
-// }
-
-// std::unique_ptr<Token> parse_expect_type(Lexer &lexer) {
-//   Token *tok = lexer.next();
-//   if (tok->type() != TokenType::Keyword)
-//     ERR_WARGS(ErrType::Syntax,
-//               "parse_expect_type: %s `%s` is not a keyword",
-//               tok->to_str().c_str(), tok->lexeme().c_str());
-
-//   // TODO: verify that it is a type
-//   return std::make_unique<Token>(*tok);
-// }
-
 Token *parse_expect(Lexer &lexer, TokenType expected) {
   Token *tok = lexer.next();
   if (tok->type() != expected) {

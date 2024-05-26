@@ -101,6 +101,9 @@ class ExprBinary : public Expr {
 public:
   ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs);
   ExprType get_type() const override;
+  Expr &lhs();
+  const Token &op() const;
+  Expr &rhs();
 };
 
 class ExprFuncCall : public Expr {
