@@ -44,6 +44,15 @@ struct Ctx {
 
   ~Ctx() = default;
 
+  bool iscompat_type(EarlTy ty1, EarlTy ty2) {
+    for (EarlTy ty : m_earl_compat_tys[ty1]) {
+      if (ty == ty2) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void add_earlvar(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr) {
     std::string name = id->lexeme();
     m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), /*value=*/std::move(value)));
@@ -67,6 +76,17 @@ struct Ctx {
     assert(false && "get_var: variable not found");
   }
 };
+
+EarlTy ty_to_earlty(TokenType ty) {
+  switch (ty) {
+    case TokenType::Intlit:
+      return EarlTy::Int;
+    case TokenType::Strlit:
+      return EarlTy::Str;
+    default:
+      assert(false && "ty_to_earlty: unknown type");
+  }
+}
 
 void debug_dump_scope(Ctx &ctx) {
   for (auto &scope : ctx.m_scope) {
