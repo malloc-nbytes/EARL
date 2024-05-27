@@ -27,7 +27,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "notify.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
 #include "utils.hpp"

@@ -160,12 +160,20 @@ StmtType StmtBlock::stmt_type() const {
 }
 
 StmtMut::StmtMut(std::unique_ptr<Expr> left,
-                 std::unique_ptr<Token> op,
+                 /*std::unique_ptr<Token> op,*/
                  std::unique_ptr<Expr> right)
-  : m_left(std::move(left)), m_op(std::move(op)), m_right(std::move(right)) {}
+  : m_left(std::move(left)), /*m_op(std::move(op)),*/ m_right(std::move(right)) {}
 
 StmtType StmtMut::stmt_type() const {
   return StmtType::Mut;
+}
+
+Expr &StmtMut::left() {
+  return *m_left;
+}
+
+Expr &StmtMut::right() {
+  return *m_right;
 }
 
 StmtExpr::StmtExpr(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}

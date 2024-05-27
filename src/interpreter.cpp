@@ -89,6 +89,7 @@ static EarlTy ty_to_earlty(TokenType ty) {
 }
 
 void debug_dump_scope(Ctx &ctx) {
+  std::cout << "Dumping scope\n";
   for (auto &scope : ctx.m_scope) {
     for (auto &var : scope) {
       switch (var.second.m_type.get()->type()) {
@@ -135,8 +136,7 @@ static std::any eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   }
 }
 
-static std::any eval_expr_binary(ExprBinary *expr, Ctx &ctx)
-{
+static std::any eval_expr_binary(ExprBinary *expr, Ctx &ctx) {
   std::any lhs = eval_expr(&expr->lhs(), ctx);
   std::any rhs = eval_expr(&expr->rhs(), ctx);
 
@@ -171,8 +171,14 @@ static std::any eval_expr(Expr *expr, Ctx &ctx)
   }
 }
 
-static void eval_stmt_let(StmtLet *stmt, Ctx &ctx)
-{
+static void eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
+  std::any left = eval_expr(&stmt->left(), ctx);
+  std::any right = eval_expr(&stmt->right(), ctx);
+  (void)left;
+  (void)right;
+}
+
+static void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   if (ctx.has_earlvar(stmt->id().lexeme())) {
     std::cerr << "error: variable '" << stmt->id().lexeme() << "' already declared" << std::endl;
     return;
@@ -188,10 +194,17 @@ static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
     if (auto stmt_let = dynamic_cast<StmtLet *>(stmt.get())) {
       eval_stmt_let(stmt_let, ctx);
     } else {
-      assert(false && "eval_stmt: invalid stmt type");
+      assert(false && "eval_stmt (let): invalid stmt type");
     }
     break;
   }
+  case StmtType::Mut: {
+    if (auto stmt_mut = dynamic_cast<StmtMut *>(stmt.get())) {
+      eval_stmt_mut(stmt_mut, ctx);
+    } else {
+      assert(false && "eval_stmt (mut): invalid stmt type");
+    }
+  } break;
   default:
     assert(false && "eval_stmt: unknown stmt type");
   }
@@ -199,6 +212,8 @@ static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
 
 void interpret(Program &program)
 {
+  (void)ty_to_earlty;
+
   Ctx ctx;
 
   for (size_t i = 0; i < program.stmts_len(); ++i) {

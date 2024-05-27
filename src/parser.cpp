@@ -145,14 +145,22 @@ Expr *parse_expr(Lexer &lexer) {
   return parse_logical_expr(lexer);
 }
 
+std::unique_ptr<StmtMut> parse_stmt_mut(Lexer &lexer) {
+  Expr *left = parse_expr(lexer);
+  (void)parse_expect(lexer, TokenType::Equals);
+  Expr *right = parse_expr(lexer);
+  (void)parse_expect(lexer, TokenType::Semicolon);
+  return std::make_unique<StmtMut>(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+}
+
 std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
-  parse_expect_keyword(lexer, COMMON_EARLKW_LET);
+  (void)parse_expect_keyword(lexer, COMMON_EARLKW_LET);
   Token *id = parse_expect(lexer, TokenType::Ident);
-  parse_expect(lexer, TokenType::Colon);
+  (void)parse_expect(lexer, TokenType::Colon);
   Token *ty = parse_expect_type(lexer);
-  parse_expect(lexer, TokenType::Equals);
+  (void)parse_expect(lexer, TokenType::Equals);
   Expr *expr = parse_expr(lexer);
-  parse_expect(lexer, TokenType::Semicolon);
+  (void)parse_expect(lexer, TokenType::Semicolon);
 
   return std::make_unique<StmtLet>(std::make_unique<Token>(*id),
                                    std::make_unique<Token>(*ty),
@@ -179,7 +187,7 @@ std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
     }
   } break;
   case TokenType::Ident: {
-    assert(false && "parse_stmt: unimplemented");
+    return parse_stmt_mut(lexer);
   } break;
   default:
     assert(false && "parse_stmt: invalid statement");

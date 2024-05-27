@@ -166,12 +166,13 @@ public:
 
 class StmtMut : public Stmt {
   std::unique_ptr<Expr> m_left;
-  std::unique_ptr<Token> m_op;
   std::unique_ptr<Expr> m_right;
 
 public:
-  StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
+  StmtMut(std::unique_ptr<Expr> left, /*std::unique_ptr<Token> op,*/ std::unique_ptr<Expr> right);
   StmtType stmt_type() const override;
+  Expr &left();
+  Expr &right();
 };
 
 class StmtExpr : public Stmt {
