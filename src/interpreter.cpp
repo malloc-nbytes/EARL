@@ -18,15 +18,15 @@ enum class EarlTy {
 
 struct EarlVar {
   std::unique_ptr<Token> m_id;
-  std::unique_ptr<Token> m_type; // TODO: change to EarlTy
+  EarlTy m_type;
   std::any m_value;
 
   uint32_t m_refcount;
 
-  EarlVar(std::unique_ptr<Token> id, std::unique_ptr<Token> type,
+  EarlVar(std::unique_ptr<Token> id, EarlTy type,
           std::any value = nullptr, uint32_t refcount = 1)
     : m_id(std::move(id)),
-      m_type(std::move(type)),
+      m_type(type),
       m_value(value),
       m_refcount(refcount) {}
 };
@@ -53,9 +53,9 @@ struct Ctx {
     return false;
   }
 
-  void add_earlvar(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::any value = nullptr) {
+  void add_earlvar(std::unique_ptr<Token> id, EarlTy type, std::any value = nullptr) {
     std::string name = id->lexeme();
-    m_scope.back().emplace(name, EarlVar(std::move(id), std::move(type), std::move(value)));
+    m_scope.back().emplace(name, EarlVar(std::move(id), type, std::move(value)));
   }
 
   bool has_earlvar(const std::string &id) const {
@@ -92,13 +92,13 @@ void debug_dump_scope(Ctx &ctx) {
   std::cout << "Dumping scope\n";
   for (auto &scope : ctx.m_scope) {
     for (auto &var : scope) {
-      switch (var.second.m_type.get()->type()) {
-        case TokenType::Type: // TODO: add type checking
-          std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
-          break;
-        default:
-          std::cerr << "error: unknown type" << std::endl;
-          break;
+      switch (var.second.m_type) {
+      case EarlTy::Int: // TODO: add type checking
+        std::cout << var.first << " = " << std::any_cast<int>(var.second.m_value) << std::endl;
+        break;
+      default:
+        std::cerr << "error: unknown type" << std::endl;
+        break;
       }
     }
   }
@@ -178,13 +178,23 @@ static void eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
   (void)right;
 }
 
+static EarlTy gen_earlty(TokenType t) {
+  (void)t;
+  return EarlTy::Int;
+}
+
+static EarlTy gen_earlty(Token *t) {
+  (void)t;
+  return EarlTy::Int;
+}
+
 static void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   if (ctx.has_earlvar(stmt->id().lexeme())) {
     std::cerr << "error: variable '" << stmt->id().lexeme() << "' already declared" << std::endl;
     return;
   }
   std::any value = eval_expr(&stmt->expr(), ctx);
-  ctx.add_earlvar(std::move(stmt->m_id), std::move(stmt->m_type), /*value=*/value);
+  ctx.add_earlvar(std::move(stmt->m_id), gen_earlty(stmt->m_type.get()), /*value=*/value);
 }
 
 static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)
