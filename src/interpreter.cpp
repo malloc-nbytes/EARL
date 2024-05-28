@@ -79,12 +79,12 @@ struct Ctx {
 
 static EarlTy ty_to_earlty(TokenType ty) {
   switch (ty) {
-    case TokenType::Intlit:
-      return EarlTy::Int;
-    case TokenType::Strlit:
-      return EarlTy::Str;
-    default:
-      assert(false && "ty_to_earlty: unknown type");
+  case TokenType::Intlit:
+    return EarlTy::Int;
+  case TokenType::Strlit:
+    return EarlTy::Str;
+  default:
+    assert(false && "ty_to_earlty: unknown type");
   }
 }
 
@@ -116,23 +116,24 @@ static std::any eval_expr(Expr *, Ctx &);
 
 static std::any eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
-    case ExprTermType::Ident: {
-      ExprIdent *expr_ident = dynamic_cast<ExprIdent *>(expr);
-      if (!ctx.has_earlvar(expr_ident->tok().lexeme())) {
-        std::cerr << "error: variable '" << expr_ident->tok().lexeme() << "' not declared" << std::endl;
-        return nullptr;
-      }
-      return ctx.get_earlvar(expr_ident->tok().lexeme()).m_value;
-    } break;
-    case ExprTermType::Int_Literal: {
-      ExprIntLit *expr_intlit = dynamic_cast<ExprIntLit *>(expr);
-      return std::stoi(expr_intlit->tok().lexeme());
-    } break;
-    case ExprTermType::Str_Literal: {
-      assert(false && "eval_expr_term: string literals not implemented");
-    } break;
-    default:
-      assert(false && "eval_expr_term: unknown term type");
+  case ExprTermType::Ident: {
+    ExprIdent *expr_ident = dynamic_cast<ExprIdent *>(expr);
+    if (!ctx.has_earlvar(expr_ident->tok().lexeme())) {
+      std::cerr << "error: variable '" << expr_ident->tok().lexeme() << "' not declared" << std::endl;
+      return nullptr;
+    }
+    // return ctx.get_earlvar(expr_ident->tok().lexeme()).m_value;
+    return &ctx.get_earlvar(expr_ident->tok().lexeme());
+  } break;
+  case ExprTermType::Int_Literal: {
+    ExprIntLit *expr_intlit = dynamic_cast<ExprIntLit *>(expr);
+    return std::stoi(expr_intlit->tok().lexeme());
+  } break;
+  case ExprTermType::Str_Literal: {
+    assert(false && "eval_expr_term: string literals not implemented");
+  } break;
+  default:
+    assert(false && "eval_expr_term: unknown term type");
   }
 }
 
@@ -155,8 +156,7 @@ static std::any eval_expr_binary(ExprBinary *expr, Ctx &ctx) {
   }
 }
 
-static std::any eval_expr(Expr *expr, Ctx &ctx)
-{
+static std::any eval_expr(Expr *expr, Ctx &ctx) {
   switch (expr->get_type()) {
   case ExprType::Term: {
     return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
@@ -174,17 +174,18 @@ static std::any eval_expr(Expr *expr, Ctx &ctx)
 static void eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
   std::any left = eval_expr(&stmt->left(), ctx);
   std::any right = eval_expr(&stmt->right(), ctx);
-  (void)left;
-  (void)right;
+
+  if (left.type() == typeid(EarlVar *)) {
+    EarlVar *earlvar = std::any_cast<EarlVar *>(left);
+    earlvar->m_value = right;
+  }
+  else {
+    std::cerr << "error: left side of assignment is not a variable" << std::endl;
+  }
 }
 
-static EarlTy gen_earlty(TokenType t) {
-  (void)t;
-  return EarlTy::Int;
-}
-
-static EarlTy gen_earlty(Token *t) {
-  (void)t;
+static EarlTy gen_earlty(Token *tok) {
+  (void)tok;
   return EarlTy::Int;
 }
 
@@ -193,8 +194,16 @@ static void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     std::cerr << "error: variable '" << stmt->id().lexeme() << "' already declared" << std::endl;
     return;
   }
+
   std::any value = eval_expr(&stmt->expr(), ctx);
-  ctx.add_earlvar(std::move(stmt->m_id), gen_earlty(stmt->m_type.get()), /*value=*/value);
+
+  if (value.type() == typeid(EarlVar *)) {
+    value = std::any_cast<EarlVar *>(value)->m_value;
+    ctx.add_earlvar(std::move(stmt->m_id), gen_earlty(stmt->m_type.get()), /*value=*/value);
+  }
+  else {
+    ctx.add_earlvar(std::move(stmt->m_id), gen_earlty(stmt->m_type.get()), /*value=*/value);
+  }
 }
 
 static void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx)

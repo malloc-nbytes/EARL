@@ -1,4 +1,4 @@
 let a: int = 1;
-let b: int = 2;
-let d: int = a - b;
-a = 1 + 2;
+let b: int = a;
+let d: int = 2 + 1;
+a = 1 + 99;
