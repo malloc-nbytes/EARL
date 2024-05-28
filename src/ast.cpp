@@ -30,14 +30,6 @@
 Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
   : m_stmts(std::move(stmts)) {}
 
-std::unique_ptr<Stmt> &Program::get_stmt(size_t i) {
-  return m_stmts.at(i);
-}
-
-size_t Program::stmts_len(void) const {
-  return m_stmts.size();
-}
-
 /*** EXPRESSIONS ***/
 
 ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
@@ -55,18 +47,6 @@ ExprType ExprBinary::get_type() const {
   return ExprType::Binary;
 }
 
-Expr &ExprBinary::lhs() {
-  return *m_lhs;
-}
-
-const Token &ExprBinary::op() const {
-  return *m_op;
-}
-
-Expr &ExprBinary::rhs() {
-  return *m_rhs;
-}
-
 /*** TERM EXPRESSIONS ***/
 
 ExprStrLit::ExprStrLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
@@ -79,10 +59,6 @@ ExprTermType ExprStrLit::get_term_type() const {
   return ExprTermType::Str_Literal;
 }
 
-const Token &ExprStrLit::get_tok() const {
-  assert(false && "unimplemented");
-}
-
 ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIntLit::get_type() const {
@@ -93,10 +69,6 @@ ExprTermType ExprIntLit::get_term_type() const {
   return ExprTermType::Int_Literal;
 }
 
-const Token &ExprIntLit::tok() const {
-  return *m_tok;
-}
-
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIdent::get_type() const {
@@ -105,10 +77,6 @@ ExprType ExprIdent::get_type() const {
 
 ExprTermType ExprIdent::get_term_type() const {
   return ExprTermType::Ident;
-}
-
-const Token &ExprIdent::tok() const {
-  return *m_tok;
 }
 
 /*** STATEMENTS ***/
@@ -133,47 +101,18 @@ StmtType StmtLet::stmt_type() const {
   return StmtType::Let;
 }
 
-const Token &StmtLet::id() const {
-  return *m_id;
-}
-
-const Token &StmtLet::type() const {
-  return *m_type;
-}
-
-Expr &StmtLet::expr() {
-  return *m_expr;
-}
-
 StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
-
-void add_stmt(std::unique_ptr<Stmt> stmt) {
-  assert(false && "unimplemented");
-}
-
-const std::vector<std::unique_ptr<Stmt>> &StmtBlock::get_stmts() const {
-  assert(false && "unimplemented");
-}
 
 StmtType StmtBlock::stmt_type() const {
   return StmtType::Block;
 }
 
 StmtMut::StmtMut(std::unique_ptr<Expr> left,
-                 /*std::unique_ptr<Token> op,*/
                  std::unique_ptr<Expr> right)
-  : m_left(std::move(left)), /*m_op(std::move(op)),*/ m_right(std::move(right)) {}
+  : m_left(std::move(left)), m_right(std::move(right)) {}
 
 StmtType StmtMut::stmt_type() const {
   return StmtType::Mut;
-}
-
-Expr &StmtMut::left() {
-  return *m_left;
-}
-
-Expr &StmtMut::right() {
-  return *m_right;
 }
 
 StmtExpr::StmtExpr(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
