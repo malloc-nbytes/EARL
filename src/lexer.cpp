@@ -175,7 +175,7 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<s
 
   Lexer lexer;
 
-  std::unordered_map<std::string, TokenType> ht = {
+  const std::unordered_map<std::string, TokenType> ht = {
     {"(", TokenType::Lparen},
     {")", TokenType::Rparen},
     {"[", TokenType::Lbracket},

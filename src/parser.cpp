@@ -70,15 +70,24 @@ Token *parse_expect_type(Lexer &lexer) {
 
 std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
   std::vector<std::unique_ptr<Expr>> exprs;
-  assert(false && "unimplemented");
 
-  do {
+  (void)parse_expect(lexer, TokenType::Lparen);
+
+  while (1) {
+    // Only needed if no arguments are provided.
     if (lexer.peek()->type() == TokenType::Rparen) {
       break;
     }
     exprs.push_back(std::unique_ptr<Expr>(parse_expr(lexer)));
-  } while (lexer.peek()->type() == TokenType::Comma);
+    if (lexer.peek()->type() == TokenType::Comma) {
+      (void)parse_expect(lexer, TokenType::Comma);
+    }
+    else {
+      break;
+    }
+  }
 
+  parse_expect(lexer, TokenType::Rparen);
   return exprs;
 }
 
@@ -100,14 +109,14 @@ Expr *parse_primary_expr(Lexer &lexer) {
 
     // We are parsing a function call.
     if (exprs.has_value()) {
-      assert(false && "todo");
+      return new ExprFuncCall(std::make_unique<Token>(*tok), std::move(exprs.value()));
     }
 
     return new ExprIdent(std::make_unique<Token>(*tok));
-  }
+  } break;
   case TokenType::Intlit: {
     return new ExprIntLit(std::make_unique<Token>(*tok));
-  }
+  } break;
   default:
     assert(false && "parse_primary_expr: invalid primary expression");
   }
@@ -203,6 +212,14 @@ std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
                                    std::unique_ptr<Expr>(expr));
 }
 
+std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer) {
+  std::cout << "TOK: " << lexer.peek()->lexeme() << std::endl;
+
+  Expr *expr = parse_expr(lexer);
+  parse_expect(lexer, TokenType::Semicolon);
+  return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));
+}
+
 std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer) {
   (void)lexer;
   assert(false && "unimplemented");
@@ -224,6 +241,9 @@ std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
     }
   } break;
   case TokenType::Ident: {
+    if (lexer.peek(1)->type() == TokenType::Lparen) {
+      return parse_stmt_expr(lexer);
+    }
     return parse_stmt_mut(lexer);
   } break;
   default:

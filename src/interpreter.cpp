@@ -109,9 +109,6 @@ ExprEvalResult eval_expr(Expr *expr) {
   case ExprType::Binary: {
     assert(false && "unimplemented");
   } break;
-  case ExprType::Func_Call: {
-    assert(false && "unimplemented");
-  } break;
   default:
     ERR_WARGS(ErrType::Fatal, "expression type %d is not a valid expression",
               static_cast<int>(expr->get_type()));
@@ -140,6 +137,10 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval);
 }
 
+void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
+  assert(false && "todo");
+}
+
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
   switch (stmt->stmt_type()) {
   case StmtType::Let: {
@@ -155,7 +156,7 @@ void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
     assert(false && "unimplemented");
   } break;
   case StmtType::Stmt_Expr: {
-    assert(false && "unimplemented");
+    eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt.get()), ctx);
   } break;
   default:
     assert(false && "eval_stmt: invalid statement");

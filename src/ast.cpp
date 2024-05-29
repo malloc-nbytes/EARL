@@ -32,14 +32,6 @@ Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
 
 /*** EXPRESSIONS ***/
 
-ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
-                           std::vector<std::unique_ptr<Token>> params)
-  : m_id(std::move(id)), m_params(std::move(params)) {}
-
-ExprType ExprFuncCall::get_type() const {
-  return ExprType::Func_Call;
-}
-
 ExprBinary::ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs)
   : m_lhs(std::move(lhs)), m_op(std::move(op)), m_rhs(std::move(rhs)) {}
 
@@ -77,6 +69,18 @@ ExprType ExprIdent::get_type() const {
 
 ExprTermType ExprIdent::get_term_type() const {
   return ExprTermType::Ident;
+}
+
+ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
+                           std::vector<std::unique_ptr<Expr>> params)
+  : m_id(std::move(id)), m_params(std::move(params)) {}
+
+ExprType ExprFuncCall::get_type() const {
+  return ExprType::Term;
+}
+
+ExprTermType ExprFuncCall::get_term_type() const {
+  return ExprTermType::Func_Call;
 }
 
 /*** STATEMENTS ***/

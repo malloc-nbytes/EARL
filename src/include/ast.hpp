@@ -39,13 +39,13 @@ enum class StmtType {
 enum class ExprType {
   Term,
   Binary,
-  Func_Call
 };
 
 enum class ExprTermType {
   Ident,
   Int_Literal,
   Str_Literal,
+  Func_Call,
 };
 
 class StmtBlock;
@@ -86,10 +86,11 @@ struct ExprStrLit : public ExprTerm {
 
 struct ExprFuncCall : public ExprTerm {
   std::unique_ptr<Token> m_id;
-  std::vector<std::unique_ptr<Token>> m_params;
+  std::vector<std::unique_ptr<Expr>> m_params;
 
-  ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Token>> params);
+  ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Expr>> params);
   ExprType get_type() const override;
+  ExprTermType get_term_type() const override;
 };
 
 struct ExprBinary : public Expr {
