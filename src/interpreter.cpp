@@ -13,25 +13,40 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
+// Struct that all expressions return.
+// It contains information of the actual
+// value of the expression as well as
+// the type of expression that was evaluated.
 struct ExprEvalResult {
   // The actual evaluated result.
+  // <int, float, std::string, ...>
+  // or ident: Token
   std::any m_expr_value;
 
   // What kind of term did we encounter?
   // Integer? Identifier? etc...
   ExprTermType m_expr_term_type;
-};
 
-static EarlTy::Type expr_term_type_to_earl_type(ExprTermType type, Ctx &ctx) {
-  switch (type) {
-  case ExprTermType::Int_Literal:
-    return EarlTy::Type::Int;
-  case ExprTermType::Str_Literal:
-    return EarlTy::Type::Str;
-  default:
-    ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type", static_cast<int>(type));
+  EarlTy::Type to_earl_type(Ctx &ctx) {
+    if (m_expr_term_type == ExprTermType::Ident) {
+      Token *tok = std::any_cast<Token *>(m_expr_value);
+      if (!ctx.earlvar_in_scope(tok->lexeme())) {
+        ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
+      }
+      EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
+      return var.m_type;
+    }
+
+    switch (m_expr_term_type) {
+    case ExprTermType::Int_Literal:
+      return EarlTy::Type::Int;
+    case ExprTermType::Str_Literal:
+      return EarlTy::Type::Str;
+    default:
+      ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type", static_cast<int>(m_expr_term_type));
+    }
   }
-}
+};
 
 ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   (void)expr;

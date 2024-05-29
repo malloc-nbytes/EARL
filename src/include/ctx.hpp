@@ -23,6 +23,7 @@ public:
                             EarlTy::Type type,
                             bool allocd,
                             std::any value = nullptr);
+  EarlVar &get_earlvar_from_scope(const std::string &id);
 };
 
 #endif // CTX_H

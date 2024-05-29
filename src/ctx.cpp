@@ -4,6 +4,7 @@
 
 #include "earlty.hpp"
 #include "earlvar.hpp"
+#include "err.hpp"
 #include "ctx.hpp"
 
 Ctx::Ctx() {
@@ -31,3 +32,14 @@ bool Ctx::earlvar_in_scope(const std::string &id) {
   }
   return false;
 }
+
+EarlVar &Ctx::get_earlvar_from_scope(const std::string &id) {
+  for (std::unordered_map<std::string, EarlVar> &map : m_scope) {
+    auto it = map.find(id);
+    if (it != map.end()) {
+      return it->second;
+    }
+  }
+  ERR_WARGS(ErrType::Fatal, "%s is not in scope", id.c_str());
+}
+

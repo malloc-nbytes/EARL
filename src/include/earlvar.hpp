@@ -7,7 +7,7 @@
 #include "token.hpp"
 #include "earlty.hpp"
 
-class EarlVar {
+struct EarlVar {
   std::unique_ptr<Token> m_id;
   EarlTy::Type m_type;
   bool m_allocd;
@@ -15,7 +15,6 @@ class EarlVar {
 
   uint32_t m_refcount;
 
-public:
   EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
           std::any value = nullptr, uint32_t refcount = 1);
 };
