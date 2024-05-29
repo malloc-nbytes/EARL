@@ -175,48 +175,48 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<s
 
   Lexer lexer;
 
-  std::unordered_map<std::string, TokenType> ht;
-
-  ht["("] = TokenType::Lparen;
-  ht[")"] = TokenType::Rparen;
-  ht["["] = TokenType::Lbracket;
-  ht["]"] = TokenType::Rbracket;
-  ht["{"] = TokenType::Lbrace;
-  ht["}"] = TokenType::Rbrace;
-  ht["#"] = TokenType::Hash;
-  ht["."] = TokenType::Period;
-  ht[";"] = TokenType::Semicolon;
-  ht[","] = TokenType::Comma;
-  ht[">"] = TokenType::Greaterthan;
-  ht["<"] = TokenType::Lessthan;
-  ht["="] = TokenType::Equals;
-  ht["&"] = TokenType::Ampersand;
-  ht["*"] = TokenType::Asterisk;
-  ht["+"] = TokenType::Plus;
-  ht["-"] = TokenType::Minus;
-  ht["/"] = TokenType::Forwardslash;
-  ht["|"] = TokenType::Pipe;
-  ht["^"] = TokenType::Caret;
-  ht["?"] = TokenType::Questionmark;
-  ht["\\"] = TokenType::Backwardslash;
-  ht["!"] = TokenType::Bang;
-  ht["@"] = TokenType::At;
-  ht["$"] = TokenType::Dollarsign;
-  ht["%"] = TokenType::Percent;
-  ht["`"] = TokenType::Backtick;
-  ht["~"] = TokenType::Tilde;
-  ht[":"] = TokenType::Colon;
-  ht["&&"] = TokenType::Double_Ampersand;
-  ht["||"] = TokenType::Double_Pipe;
-  ht[">="] = TokenType::Greaterthan_Equals;
-  ht["<="] = TokenType::Lessthan_Equals;
-  ht["=="] = TokenType::Double_Equals;
-  ht["!="] = TokenType::Bang_Equals;
-  ht["+="] = TokenType::Plus_Equals;
-  ht["-="] = TokenType::Minus_Equals;
-  ht["*="] = TokenType::Asterisk_Equals;
-  ht["/="] = TokenType::Forwardslash_Equals;
-  ht["%="] = TokenType::Percent_Equals;
+  std::unordered_map<std::string, TokenType> ht = {
+    {"(", TokenType::Lparen},
+    {")", TokenType::Rparen},
+    {"[", TokenType::Lbracket},
+    {"]", TokenType::Rbracket},
+    {"{", TokenType::Lbrace},
+    {"}", TokenType::Rbrace},
+    {"#", TokenType::Hash},
+    {".", TokenType::Period},
+    {";", TokenType::Semicolon},
+    {",", TokenType::Comma},
+    {">", TokenType::Greaterthan},
+    {"<", TokenType::Lessthan},
+    {"=", TokenType::Equals},
+    {"&", TokenType::Ampersand},
+    {"*", TokenType::Asterisk},
+    {"+", TokenType::Plus},
+    {"-", TokenType::Minus},
+    {"/", TokenType::Forwardslash},
+    {"|", TokenType::Pipe},
+    {"^", TokenType::Caret},
+    {"?", TokenType::Questionmark},
+    {"\\", TokenType::Backwardslash},
+    {"!", TokenType::Bang},
+    {"@", TokenType::At},
+    {"$", TokenType::Dollarsign},
+    {"%", TokenType::Percent},
+    {"`", TokenType::Backtick},
+    {"~", TokenType::Tilde},
+    {":", TokenType::Colon},
+    {"&&", TokenType::Double_Ampersand},
+    {"||", TokenType::Double_Pipe},
+    {">=", TokenType::Greaterthan_Equals},
+    {"<=", TokenType::Lessthan_Equals},
+    {"==", TokenType::Double_Equals},
+    {"!=", TokenType::Bang_Equals},
+    {"+=", TokenType::Plus_Equals},
+    {"-=", TokenType::Minus_Equals},
+    {"*=", TokenType::Asterisk_Equals},
+    {"/=", TokenType::Forwardslash_Equals},
+    {"%=", TokenType::Percent_Equals},
+  };
 
   size_t row = 0, col = 0, i = 0;
   while (src[i]) {
@@ -324,6 +324,7 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<s
           i += buf.size();
           break;
         }
+        buf.pop_back();
       }
     }
   }
