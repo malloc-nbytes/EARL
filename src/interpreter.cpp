@@ -70,7 +70,8 @@ struct ExprEvalResult {
     case ExprTermType::Str_Literal:
       return EarlTy::Type::Str;
     default:
-      ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type", static_cast<int>(m_expr_term_type));
+      ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type",
+                static_cast<int>(m_expr_term_type));
     }
   }
 };

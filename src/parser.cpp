@@ -28,6 +28,8 @@
 #include "common.hpp"
 #include "parser.hpp"
 
+Expr *parse_expr(Lexer &lexer);
+
 Token *parse_expect(Lexer &lexer, TokenType expected) {
   Token *tok = lexer.next();
   if (tok->type() != expected) {
@@ -65,10 +67,34 @@ Token *parse_expect_type(Lexer &lexer) {
   return tok;
 }
 
+std::vector<Expr *> parse_comma_sep_exprs(Lexer &lexer) {
+  std::vector<Expr *> exprs;
+
+  do {
+    if (lexer.peek()->type() == TokenType::Rparen) break;
+    exprs.push_back(parse_expr(lexer));
+  } while (lexer.peek()->type() == TokenType::Comma);
+
+  return exprs;
+}
+
+bool try_parse_funccall(Lexer &lexer) {
+  if (lexer.peek()->type() == TokenType::LParen) {
+    std::vector<Expr *> exprs = parse_comma_sep_exprs(lexer);
+
+    return true;
+  }
+
+  return true;
+}
+
 Expr *parse_primary_expr(Lexer &lexer) {
   Token *tok = lexer.next();
   switch (tok->type()) {
   case TokenType::Ident:
+    if (try_parse_funccall(lexer)) {
+      assert(false && "unimplemented");
+    }
     return new ExprIdent(std::make_unique<Token>(*tok));
   case TokenType::Intlit:
     return new ExprIntLit(std::make_unique<Token>(*tok));
