@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "interpreter.hpp"
+#include "intrinsics.hpp"
 #include "err.hpp"
 #include "token.hpp"
 #include "ast.hpp"
@@ -56,17 +57,10 @@ EarlTy::Type ExprEvalResult::get_earl_type(Ctx &ctx) {
   }
 }
 
-ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
-
 ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
   // Check if it is intrinsic
   if (expr->m_id->lexeme() == "print") {
-    for (std::unique_ptr<Expr> &e : expr->m_params) {
-      ExprEvalResult param = eval_expr(e.get(), ctx);
-      if (param.m_expr_term_type == ExprTermType::Int_Literal) {
-        std::cout << std::any_cast<int>(param.m_expr_value) << '\n';
-      }
-    }
+    Intrinsics::print(ctx, expr);
   }
 
   // Check for user defined functions
