@@ -9,7 +9,7 @@ const std::unordered_map<std::string, EarlTy::Type> EarlTy::typemap = {
   {COMMON_EARLTY_STR, EarlTy::Type::Str},
 };
 
-EarlTy::Type EarlTy::of_str(std::string &s) {
+EarlTy::Type EarlTy::of_str(const std::string &s) {
   auto it = typemap.find(s);
   if (it != typemap.end()) {
     return it->second;

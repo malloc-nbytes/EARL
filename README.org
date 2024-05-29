@@ -7,6 +7,8 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
 # #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
+*NOTE*: THIS DOCUMENT IS DEPRECATED AS WE HAVE MOVED TO C++!
+
 *NOTE*: Open =README.html= in a browser to view this document
 in a much better format.
 

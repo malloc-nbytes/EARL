@@ -20,7 +20,10 @@ public:
   void push_scope(void);
 
   bool earlvar_in_scope(const std::string &id);
-  void add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd, std::any value = nullptr);
+  void add_earlvar_to_scope(std::unique_ptr<Token> id,
+                            EarlTy::Type type,
+                            bool allocd,
+                            std::any value = nullptr);
 };
 
 #endif // CTX_H

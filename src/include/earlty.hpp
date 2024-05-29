@@ -13,7 +13,7 @@ namespace EarlTy {
 
   extern const std::unordered_map<std::string, Type> typemap;
 
-  Type of_str(std::string &s);
+  Type of_str(const std::string &s);
 
 };
 
