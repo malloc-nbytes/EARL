@@ -10,7 +10,6 @@
 
 class Ctx {
   std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
-  std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> m_earl_compat_tys;
 
 public:
   Ctx();

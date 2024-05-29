@@ -22,8 +22,15 @@ struct ExprEvalResult {
   ExprTermType m_expr_term_type;
 };
 
-static expr_term_type_to_earlty_type(ExprTermType type, Ctx &ctx) {
-
+static EarlTy::Type expr_term_type_to_earl_type(ExprTermType type, Ctx &ctx) {
+  switch (type) {
+  case ExprTermType::Int_Literal:
+    return EarlTy::Type::Int;
+  case ExprTermType::Str_Literal:
+    return EarlTy::Type::Str;
+  default:
+    ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type", static_cast<int>(type));
+  }
 }
 
 ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {

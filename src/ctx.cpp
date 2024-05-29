@@ -8,9 +8,6 @@
 
 Ctx::Ctx() {
   m_scope.emplace_back();
-
-  m_earl_compat_tys[EarlTy::Type::Int] = {EarlTy::Type::Int};
-  m_earl_compat_tys[EarlTy::Type::Str] = {EarlTy::Type::Str};
 }
 
 void Ctx::pop_scope(void) {
