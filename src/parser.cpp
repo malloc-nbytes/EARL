@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <optional>
 
 #include "err.hpp"
 #include "ast.hpp"
@@ -67,37 +68,46 @@ Token *parse_expect_type(Lexer &lexer) {
   return tok;
 }
 
-std::vector<Expr *> parse_comma_sep_exprs(Lexer &lexer) {
-  std::vector<Expr *> exprs;
+std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
+  std::vector<std::unique_ptr<Expr>> exprs;
+  assert(false && "unimplemented");
 
   do {
-    if (lexer.peek()->type() == TokenType::Rparen) break;
-    exprs.push_back(parse_expr(lexer));
+    if (lexer.peek()->type() == TokenType::Rparen) {
+      break;
+    }
+    exprs.push_back(std::unique_ptr<Expr>(parse_expr(lexer)));
   } while (lexer.peek()->type() == TokenType::Comma);
 
   return exprs;
 }
 
-bool try_parse_funccall(Lexer &lexer) {
-  if (lexer.peek()->type() == TokenType::LParen) {
-    std::vector<Expr *> exprs = parse_comma_sep_exprs(lexer);
-
-    return true;
+std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexer &lexer) {
+  if (lexer.peek()->type() == TokenType::Lparen) {
+    std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
+    return exprs;
   }
 
-  return true;
+  return {};
 }
 
 Expr *parse_primary_expr(Lexer &lexer) {
   Token *tok = lexer.next();
+
   switch (tok->type()) {
-  case TokenType::Ident:
-    if (try_parse_funccall(lexer)) {
-      assert(false && "unimplemented");
+  case TokenType::Ident: {
+    auto exprs = try_parse_funccall(lexer);
+
+    // We are parsing a function call.
+    if (exprs.has_value()) {
+      assert(false && "todo");
     }
+
     return new ExprIdent(std::make_unique<Token>(*tok));
-  case TokenType::Intlit:
+  }
+  case TokenType::Intlit: {
     return new ExprIntLit(std::make_unique<Token>(*tok));
+  }
   default:
     assert(false && "parse_primary_expr: invalid primary expression");
   }
@@ -200,6 +210,7 @@ std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer) {
 
 std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
   Token *tok = lexer.peek();
+
   switch (tok->type()) {
   case TokenType::Keyword: {
     if (tok->lexeme() == COMMON_EARLKW_LET) {

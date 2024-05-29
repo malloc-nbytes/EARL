@@ -84,20 +84,20 @@ struct ExprStrLit : public ExprTerm {
   ExprTermType get_term_type() const override;
 };
 
+struct ExprFuncCall : public ExprTerm {
+  std::unique_ptr<Token> m_id;
+  std::vector<std::unique_ptr<Token>> m_params;
+
+  ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Token>> params);
+  ExprType get_type() const override;
+};
+
 struct ExprBinary : public Expr {
   std::unique_ptr<Expr> m_lhs;
   std::unique_ptr<Token> m_op;
   std::unique_ptr<Expr> m_rhs;
 
   ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs);
-  ExprType get_type() const override;
-};
-
-struct ExprFuncCall : public Expr {
-  std::unique_ptr<Token> m_id;
-  std::vector<std::unique_ptr<Token>> m_params;
-
-  ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Token>> params);
   ExprType get_type() const override;
 };
 
