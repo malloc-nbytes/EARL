@@ -36,7 +36,7 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
-EarlTy::Type ExprEvalResult::get_earl_type(Ctx &ctx) {
+EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
   if (m_expr_term_type == ExprTermType::Ident) {
     Token *tok = std::any_cast<Token *>(m_expr_value);
     if (!ctx.earlvar_in_scope(tok->lexeme())) {
@@ -57,7 +57,7 @@ EarlTy::Type ExprEvalResult::get_earl_type(Ctx &ctx) {
   }
 }
 
-ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
   // Check if it is intrinsic
   if (expr->m_id->lexeme() == "print") {
     Intrinsics::print(ctx, expr);
@@ -66,18 +66,18 @@ ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
   // Check for user defined functions
   // ...
 
-  return ExprEvalResult{};
+  return Interpreter::ExprEvalResult{};
 }
 
-ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
   case ExprTermType::Ident: {
     ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
-    return ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
+    return Interpreter::ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
   } break;
   case ExprTermType::Int_Literal: {
     ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
-    return ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
+    return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
   } break;
   case ExprTermType::Str_Literal: {
     assert(false && "unimplemented");
@@ -91,14 +91,14 @@ ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   }
 }
 
-ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
   assert(false && "unimplemented");
   (void)expr;
   (void)ctx;
-  return ExprEvalResult {};
+  return Interpreter::ExprEvalResult {};
 }
 
-ExprEvalResult eval_expr(Expr *expr, Ctx &ctx) {
+Interpreter::ExprEvalResult Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
   switch (expr->get_type()) {
   case ExprType::Term: {
     return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
@@ -121,7 +121,7 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   // The `let` type binding i.e., let x: <TYPE> = ...;
   EarlTy::Type binding_type = EarlTy::of_str(stmt->m_type->lexeme());
 
-  ExprEvalResult expr_eval = eval_expr(stmt->m_expr.get(), ctx);
+  Interpreter::ExprEvalResult expr_eval = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
   // The type of the right side of the equals sign
   EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
@@ -135,7 +135,7 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
-  (void)eval_expr(stmt->m_expr.get(), ctx);
+  (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
@@ -160,7 +160,7 @@ void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
   }
 }
 
-void interpret(Program &program) {
+void Interpreter::interpret(Program &program) {
   Ctx ctx;
 
   for (size_t i = 0; i < program.m_stmts.size(); ++i) {

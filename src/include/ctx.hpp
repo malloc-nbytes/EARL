@@ -45,7 +45,7 @@ public:
   void add_earlvar_to_scope(std::unique_ptr<Token> id,
                             EarlTy::Type type,
                             bool allocd,
-                            std::any value = nullptr);
+                            std::any value);
   EarlVar &get_earlvar_from_scope(const std::string &id);
 };
 

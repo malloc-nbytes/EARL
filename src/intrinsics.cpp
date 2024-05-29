@@ -4,18 +4,35 @@
 
 #include "intrinsics.hpp"
 #include "interpreter.hpp"
+#include "err.hpp"
 #include "ctx.hpp"
 #include "ast.hpp"
 
-const std::vector<std::string> Intrinsics::intrinsics = {
+const std::vector<std::string> Intrinsics::intrinsic_funcs = {
   "print",
 };
 
 void Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
    for (std::unique_ptr<Expr> &e : expr->m_params) {
-      ExprEvalResult param = eval_expr(e.get(), ctx);
+      Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
       if (param.m_expr_term_type == ExprTermType::Int_Literal) {
         std::cout << std::any_cast<int>(param.m_expr_value) << '\n';
+      }
+      else if (param.m_expr_term_type == ExprTermType::Str_Literal) {
+        assert(false && "unimplemented");
+      }
+      else {
+        // Identifier
+        Token *tok = std::any_cast<Token *>(param.m_expr_value);
+        EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
+        switch (var.m_type) {
+        case EarlTy::Type::Int: {
+          Interpreter::ExprEvalResult res = std::any_cast<Interpreter::ExprEvalResult>(var.m_value);
+          std::cout << std::any_cast<int>(res.m_expr_value) << std::endl;
+        } break;
+        default:
+          ERR_WARGS(ErrType::Fatal, "invalid type for printing (%d)", (int)var.m_type);
+        }
       }
     }
 }

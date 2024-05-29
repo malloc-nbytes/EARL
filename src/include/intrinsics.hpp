@@ -8,10 +8,9 @@
 #include "ast.hpp"
 
 namespace Intrinsics {
-  extern const std::vector<std::string> intrinsics;
+  extern const std::vector<std::string> intrinsic_funcs;
 
   void print(Ctx &ctx, ExprFuncCall *expr);
 };
-
 
 #endif // INTRINSICS_H
