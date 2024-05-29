@@ -7,6 +7,7 @@
 const std::unordered_map<std::string, EarlTy::Type> EarlTy::typemap = {
   {COMMON_EARLTY_INT32, EarlTy::Type::Int},
   {COMMON_EARLTY_STR, EarlTy::Type::Str},
+  {COMMON_EARLTY_UNIT, EarlTy::Type::Void},
 };
 
 const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> EarlTy::m_earl_compat_tys = {

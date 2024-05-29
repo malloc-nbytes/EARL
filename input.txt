@@ -2,3 +2,4 @@ let a: int = 1;
 let b: int = a;
 print(a);
 print(a, b);
+print(99, 100, 432);

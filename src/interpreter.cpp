@@ -76,7 +76,26 @@ struct ExprEvalResult {
   }
 };
 
-ExprEvalResult eval_expr_term(ExprTerm *expr) {
+ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
+
+ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
+  // Check if it is intrinsic
+  if (expr->m_id->lexeme() == "print") {
+    for (std::unique_ptr<Expr> &e : expr->m_params) {
+      ExprEvalResult param = eval_expr(e.get(), ctx);
+      if (param.m_expr_term_type == ExprTermType::Int_Literal) {
+        std::cout << std::any_cast<int>(param.m_expr_value) << '\n';
+      }
+    }
+  }
+
+  // Check for user defined functions
+  // ...
+
+  return ExprEvalResult{};
+}
+
+ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
   case ExprTermType::Ident: {
     ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
@@ -89,22 +108,26 @@ ExprEvalResult eval_expr_term(ExprTerm *expr) {
   case ExprTermType::Str_Literal: {
     assert(false && "unimplemented");
   } break;
+  case ExprTermType::Func_Call: {
+    return eval_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+  } break;
   default:
     ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
               static_cast<int>(expr->get_term_type()));
   }
 }
 
-ExprEvalResult eval_expr_bin(ExprBinary *expr) {
+ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
   assert(false && "unimplemented");
   (void)expr;
+  (void)ctx;
   return ExprEvalResult {};
 }
 
-ExprEvalResult eval_expr(Expr *expr) {
+ExprEvalResult eval_expr(Expr *expr, Ctx &ctx) {
   switch (expr->get_type()) {
   case ExprType::Term: {
-    return eval_expr_term(dynamic_cast<ExprTerm *>(expr));
+    return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
   } break;
   case ExprType::Binary: {
     assert(false && "unimplemented");
@@ -124,7 +147,7 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   // The `let` type binding i.e., let x: <TYPE> = ...;
   EarlTy::Type binding_type = EarlTy::of_str(stmt->m_type->lexeme());
 
-  ExprEvalResult expr_eval = eval_expr(stmt->m_expr.get());
+  ExprEvalResult expr_eval = eval_expr(stmt->m_expr.get(), ctx);
 
   // The type of the right side of the equals sign
   EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
@@ -138,7 +161,7 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
-  assert(false && "todo");
+  (void)eval_expr(stmt->m_expr.get(), ctx);
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {

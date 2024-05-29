@@ -213,8 +213,6 @@ std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer) {
-  std::cout << "TOK: " << lexer.peek()->lexeme() << std::endl;
-
   Expr *expr = parse_expr(lexer);
   parse_expect(lexer, TokenType::Semicolon);
   return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));

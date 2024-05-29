@@ -33,6 +33,7 @@ namespace EarlTy {
   enum class Type {
     Int,
     Str,
+    Void,
   };
 
   extern const std::unordered_map<std::string, Type> typemap;

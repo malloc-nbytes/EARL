@@ -39,7 +39,8 @@
 // Types
 #define COMMON_EARLTY_INT32 "int"
 #define COMMON_EARLTY_STR   "str"
-#define COMMON_EARLTY_ASCPL {COMMON_EARLTY_INT32, COMMON_EARLTY_STR}
+#define COMMON_EARLTY_UNIT  "void"
+#define COMMON_EARLTY_ASCPL {COMMON_EARLTY_INT32, COMMON_EARLTY_STR, COMMON_EARLTY_UNIT}
 
 extern std::vector<std::string> RESERVED;
 extern std::vector<std::string> VARTYPES;
