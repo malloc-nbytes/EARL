@@ -9,7 +9,7 @@ const std::unordered_map<std::string, EarlTy::Type> EarlTy::typemap = {
   {COMMON_EARLTY_STR, EarlTy::Type::Str},
 };
 
-const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> m_earl_compat_tys = {
+const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> EarlTy::m_earl_compat_tys = {
   {EarlTy::Type::Int, {EarlTy::Type::Int}},
   {EarlTy::Type::Str, {EarlTy::Type::Str}},
 };
@@ -21,4 +21,18 @@ EarlTy::Type EarlTy::of_str(const std::string &s) {
   } else {
     ERR_WARGS(Fatal, "EarlTy::of_str: type `%s` is not a valid EARL type", s.c_str());
   }
+}
+
+bool EarlTy::earlvar_type_compat(EarlTy::Type ty1, EarlTy::Type ty2) {
+  auto entry = EarlTy::m_earl_compat_tys.find(ty1);
+  if (entry == EarlTy::m_earl_compat_tys.end()) {
+    ERR_WARGS(ErrType::Fatal, "the type %d is not a valid EARL type",
+              static_cast<int>(ty1));
+  }
+  for (auto compat : entry->second) {
+    if (compat == ty2) {
+      return true;
+    }
+  }
+  return false;
 }

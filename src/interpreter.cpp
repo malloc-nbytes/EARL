@@ -1,3 +1,25 @@
+// MIT License
+
+// Copyright (c) 2023 malloc-nbytes
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 #include <any>
 #include <cassert>
 #include <unordered_map>
@@ -19,15 +41,20 @@
 // the type of expression that was evaluated.
 struct ExprEvalResult {
   // The actual evaluated result.
-  // <int, float, std::string, ...>
-  // or ident: Token
+  // <int, float, std::string, ... etc.>
+  // or holds an ident of Token.
   std::any m_expr_value;
 
   // What kind of term did we encounter?
   // Integer? Identifier? etc...
   ExprTermType m_expr_term_type;
 
-  EarlTy::Type to_earl_type(Ctx &ctx) {
+  // Given a valid ExprEvalResult, returns the
+  // type as EarlTy::Type. If the type of the
+  // expression is an identifier, it will do a
+  // lookup in the scope to find the type of the
+  // already stored variable.
+  EarlTy::Type get_earl_type(Ctx &ctx) {
     if (m_expr_term_type == ExprTermType::Ident) {
       Token *tok = std::any_cast<Token *>(m_expr_value);
       if (!ctx.earlvar_in_scope(tok->lexeme())) {
@@ -48,22 +75,46 @@ struct ExprEvalResult {
   }
 };
 
-ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+ExprEvalResult eval_expr_term(ExprTerm *expr) {
+  switch (expr->get_term_type()) {
+  case ExprTermType::Ident: {
+    ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+    return ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
+  } break;
+  case ExprTermType::Int_Literal: {
+    ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
+    return ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
+  } break;
+  case ExprTermType::Str_Literal: {
+    assert(false && "unimplemented");
+  } break;
+  default:
+    ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
+              static_cast<int>(expr->get_term_type()));
+  }
+}
+
+ExprEvalResult eval_expr_bin(ExprBinary *expr) {
+  assert(false && "unimplemented");
   (void)expr;
-  (void)ctx;
   return ExprEvalResult {};
 }
 
-ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
-  (void)expr;
-  (void)ctx;
-  return ExprEvalResult {};
-}
-
-ExprEvalResult eval_expr(Expr *expr, Ctx &ctx) {
-  (void)expr;
-  (void)ctx;
-  return ExprEvalResult {};
+ExprEvalResult eval_expr(Expr *expr) {
+  switch (expr->get_type()) {
+  case ExprType::Term: {
+    return eval_expr_term(dynamic_cast<ExprTerm *>(expr));
+  } break;
+  case ExprType::Binary: {
+    assert(false && "unimplemented");
+  } break;
+  case ExprType::Func_Call: {
+    assert(false && "unimplemented");
+  } break;
+  default:
+    ERR_WARGS(ErrType::Fatal, "expression type %d is not a valid expression",
+              static_cast<int>(expr->get_type()));
+  }
 }
 
 void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
@@ -72,24 +123,17 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     ERR_WARGS(ErrType::Redeclared, "variable `%s` is already defined", id.c_str());
   }
 
+  // The `let` type binding i.e., let x: <TYPE> = ...;
   EarlTy::Type binding_type = EarlTy::of_str(stmt->m_type->lexeme());
-  ExprEvalResult expr_eval = eval_expr(stmt->m_expr.get(), ctx);
-  // EarlTy::Type rval_type = EarlTy
 
-  switch (expr_eval.m_expr_term_type) {
-  case ExprTermType::Ident: {
-    assert(false && "unimplemented");
-  } break;
-  case ExprTermType::Int_Literal: {
-    assert(false && "unimplemented");
-  } break;
-  case ExprTermType::Str_Literal: {
-    assert(false && "unimplemented");
-  } break;
-  default:
-    ERR_WARGS(ErrType::Fatal,
-              "expression evaluation return type (%d) is not a valid return tyep",
-              static_cast<int>(expr_eval.m_expr_term_type));
+  ExprEvalResult expr_eval = eval_expr(stmt->m_expr.get());
+
+  // The type of the right side of the equals sign
+  EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
+
+  if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
+    ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
+              static_cast<int>(binding_type), static_cast<int>(rval_type));
   }
 
   ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval);
