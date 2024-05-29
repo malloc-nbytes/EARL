@@ -6,6 +6,8 @@ enum class ErrType {
   Runtime,
   Internal,
   Fatal,
+  Redeclared,
+  Undeclared,
 };
 
 #define ERR_WARGS(errtype, msg, ...) \
