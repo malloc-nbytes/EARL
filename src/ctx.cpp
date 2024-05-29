@@ -9,8 +9,8 @@
 Ctx::Ctx() {
   m_scope.emplace_back();
 
-  m_earl_compat_tys[EarlTy::Int] = {EarlTy::Int};
-  m_earl_compat_tys[EarlTy::Str] = {EarlTy::Str};
+  m_earl_compat_tys[EarlTy::Type::Int] = {EarlTy::Type::Int};
+  m_earl_compat_tys[EarlTy::Type::Str] = {EarlTy::Type::Str};
 }
 
 void Ctx::pop_scope(void) {
@@ -21,7 +21,7 @@ void Ctx::push_scope(void) {
   m_scope.emplace_back();
 }
 
-void Ctx::add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy type, bool allocd, std::any value) {
+void Ctx::add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd, std::any value) {
   std::string name = id->lexeme();
   m_scope.back().emplace(name, EarlVar(std::move(id), type, allocd, std::move(value)));
 }

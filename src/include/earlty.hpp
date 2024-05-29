@@ -1,13 +1,20 @@
 #ifndef EARLTY_H
 #define EARLTY_H
 
-enum class EarlTy {
-  Int,
-  Str,
-};
-// namespace EarlTy {
+#include <string>
+#include <unordered_map>
 
-//   Type of_str(std::string &s);
-// };
+namespace EarlTy {
+
+  enum class Type {
+    Int,
+    Str,
+  };
+
+  extern const std::unordered_map<std::string, Type> typemap;
+
+  Type of_str(std::string &s);
+
+};
 
 #endif // EARLTY_H

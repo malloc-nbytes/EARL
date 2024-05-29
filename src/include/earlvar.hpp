@@ -9,14 +9,14 @@
 
 class EarlVar {
   std::unique_ptr<Token> m_id;
-  EarlTy m_type;
+  EarlTy::Type m_type;
   bool m_allocd;
   std::any m_value;
 
   uint32_t m_refcount;
 
 public:
-  EarlVar(std::unique_ptr<Token> id, EarlTy type, bool allocd,
+  EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
           std::any value = nullptr, uint32_t refcount = 1);
 };
 
