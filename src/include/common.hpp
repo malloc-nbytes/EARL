@@ -28,6 +28,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <vector>
+
 // Keywords
 #define COMMON_EARLKW_LET    "let"
 #define COMMON_EARLKW_DEF    "def"

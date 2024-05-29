@@ -22,11 +22,14 @@
 
 #include <cassert>
 #include <iostream>
+#include <optional>
 
 #include "err.hpp"
 #include "ast.hpp"
 #include "common.hpp"
 #include "parser.hpp"
+
+Expr *parse_expr(Lexer &lexer);
 
 Token *parse_expect(Lexer &lexer, TokenType expected) {
   Token *tok = lexer.next();
@@ -65,13 +68,55 @@ Token *parse_expect_type(Lexer &lexer) {
   return tok;
 }
 
+std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
+  std::vector<std::unique_ptr<Expr>> exprs;
+
+  (void)parse_expect(lexer, TokenType::Lparen);
+
+  while (1) {
+    // Only needed if no arguments are provided.
+    if (lexer.peek()->type() == TokenType::Rparen) {
+      break;
+    }
+    exprs.push_back(std::unique_ptr<Expr>(parse_expr(lexer)));
+    if (lexer.peek()->type() == TokenType::Comma) {
+      (void)parse_expect(lexer, TokenType::Comma);
+    }
+    else {
+      break;
+    }
+  }
+
+  parse_expect(lexer, TokenType::Rparen);
+  return exprs;
+}
+
+std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexer &lexer) {
+  if (lexer.peek()->type() == TokenType::Lparen) {
+    std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
+    return exprs;
+  }
+
+  return {};
+}
+
 Expr *parse_primary_expr(Lexer &lexer) {
   Token *tok = lexer.next();
+
   switch (tok->type()) {
-  case TokenType::Ident:
+  case TokenType::Ident: {
+    auto exprs = try_parse_funccall(lexer);
+
+    // We are parsing a function call.
+    if (exprs.has_value()) {
+      return new ExprFuncCall(std::make_unique<Token>(*tok), std::move(exprs.value()));
+    }
+
     return new ExprIdent(std::make_unique<Token>(*tok));
-  case TokenType::Intlit:
+  } break;
+  case TokenType::Intlit: {
     return new ExprIntLit(std::make_unique<Token>(*tok));
+  } break;
   default:
     assert(false && "parse_primary_expr: invalid primary expression");
   }
@@ -167,6 +212,14 @@ std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer) {
                                    std::unique_ptr<Expr>(expr));
 }
 
+std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer) {
+  std::cout << "TOK: " << lexer.peek()->lexeme() << std::endl;
+
+  Expr *expr = parse_expr(lexer);
+  parse_expect(lexer, TokenType::Semicolon);
+  return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));
+}
+
 std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer) {
   (void)lexer;
   assert(false && "unimplemented");
@@ -174,6 +227,7 @@ std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer) {
 
 std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
   Token *tok = lexer.peek();
+
   switch (tok->type()) {
   case TokenType::Keyword: {
     if (tok->lexeme() == COMMON_EARLKW_LET) {
@@ -187,6 +241,9 @@ std::unique_ptr<Stmt> parse_stmt(Lexer &lexer) {
     }
   } break;
   case TokenType::Ident: {
+    if (lexer.peek(1)->type() == TokenType::Lparen) {
+      return parse_stmt_expr(lexer);
+    }
     return parse_stmt_mut(lexer);
   } break;
   default:

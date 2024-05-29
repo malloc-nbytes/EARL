@@ -20,32 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ERR_H
-#define ERR_H
+#ifndef EARLVAR_H
+#define EARLVAR_H
 
-enum class ErrType {
-  Syntax,
-  Runtime,
-  Internal,
-  Fatal,
-  Redeclared,
-  Undeclared,
+#include <any>
+#include <memory>
+
+#include "token.hpp"
+#include "earlty.hpp"
+
+// An `EarlVar` is the value of all variables
+// that are created during runtime.
+struct EarlVar {
+  // The unique identifier
+  std::unique_ptr<Token> m_id;
+
+  // The type of the variable in
+  // terms of an `EARL Type`
+  EarlTy::Type m_type;
+
+  // Whether it is heap or
+  // stack alloc'd
+  bool m_allocd;
+
+  // The actual value that the variable holds
+  // during runtime.
+  std::any m_value;
+
+  // The number of references that the
+  // variable currently has. Namely the
+  // number of `owners` that is has.
+  uint32_t m_refcount;
+
+  EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
+          std::any value = nullptr, uint32_t refcount = 1);
 };
 
-#define ERR_WARGS(errtype, msg, ...) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#define ERR(errtype, msg) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#endif // ERR_H
+#endif // EARLVAR_H

@@ -34,6 +34,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// An Arena allocator for easiser memory
+// management. Allocate a bunch of memory
+// up-front first, and then have other
+// heap-alloc'd objects use this pool
+// for the required memory.
 struct Arena {
   uint8_t *m_mem;
   size_t m_len;

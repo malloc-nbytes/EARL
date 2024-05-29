@@ -20,32 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ERR_H
-#define ERR_H
+#ifndef EARLTY_H
+#define EARLTY_H
 
-enum class ErrType {
-  Syntax,
-  Runtime,
-  Internal,
-  Fatal,
-  Redeclared,
-  Undeclared,
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+// Namespace of EARL Types.
+namespace EarlTy {
+
+  enum class Type {
+    Int,
+    Str,
+  };
+
+  extern const std::unordered_map<std::string, Type> typemap;
+  extern const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> m_earl_compat_tys;
+
+  bool earlvar_type_compat(EarlTy::Type ty1, EarlTy::Type ty2);
+  Type of_str(const std::string &s);
 };
 
-#define ERR_WARGS(errtype, msg, ...) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#define ERR(errtype, msg) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#endif // ERR_H
+#endif // EARLTY_H

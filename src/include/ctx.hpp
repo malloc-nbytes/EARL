@@ -20,32 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef ERR_H
-#define ERR_H
+#ifndef CTX_H
+#define CTX_H
 
-enum class ErrType {
-  Syntax,
-  Runtime,
-  Internal,
-  Fatal,
-  Redeclared,
-  Undeclared,
+#include <any>
+#include <vector>
+#include <unordered_map>
+
+#include "earlty.hpp"
+#include "earlvar.hpp"
+
+// The context that is used during runtime.
+class Ctx {
+  std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
+
+public:
+  Ctx();
+  ~Ctx() = default;
+
+  void pop_scope(void);
+  void push_scope(void);
+
+  bool earlvar_in_scope(const std::string &id);
+  void add_earlvar_to_scope(std::unique_ptr<Token> id,
+                            EarlTy::Type type,
+                            bool allocd,
+                            std::any value = nullptr);
+  EarlVar &get_earlvar_from_scope(const std::string &id);
 };
 
-#define ERR_WARGS(errtype, msg, ...) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#define ERR(errtype, msg) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
-  } while (0)
-
-#endif // ERR_H
+#endif // CTX_H
