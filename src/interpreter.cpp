@@ -35,46 +35,26 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
-// Struct that all expressions return.
-// It contains information of the actual
-// value of the expression as well as
-// the type of expression that was evaluated.
-struct ExprEvalResult {
-  // The actual evaluated result.
-  // <int, float, std::string, ... etc.>
-  // or holds an ident of Token.
-  std::any m_expr_value;
-
-  // What kind of term did we encounter?
-  // Integer? Identifier? etc...
-  ExprTermType m_expr_term_type;
-
-  // Given a valid ExprEvalResult, returns the
-  // type as EarlTy::Type. If the type of the
-  // expression is an identifier, it will do a
-  // lookup in the scope to find the type of the
-  // already stored variable.
-  EarlTy::Type get_earl_type(Ctx &ctx) {
-    if (m_expr_term_type == ExprTermType::Ident) {
-      Token *tok = std::any_cast<Token *>(m_expr_value);
-      if (!ctx.earlvar_in_scope(tok->lexeme())) {
-        ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
-      }
-      EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
-      return var.m_type;
+EarlTy::Type ExprEvalResult::get_earl_type(Ctx &ctx) {
+  if (m_expr_term_type == ExprTermType::Ident) {
+    Token *tok = std::any_cast<Token *>(m_expr_value);
+    if (!ctx.earlvar_in_scope(tok->lexeme())) {
+      ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
     }
-
-    switch (m_expr_term_type) {
-    case ExprTermType::Int_Literal:
-      return EarlTy::Type::Int;
-    case ExprTermType::Str_Literal:
-      return EarlTy::Type::Str;
-    default:
-      ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type",
-                static_cast<int>(m_expr_term_type));
-    }
+    EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
+    return var.m_type;
   }
-};
+
+  switch (m_expr_term_type) {
+  case ExprTermType::Int_Literal:
+    return EarlTy::Type::Int;
+  case ExprTermType::Str_Literal:
+    return EarlTy::Type::Str;
+  default:
+    ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type",
+              static_cast<int>(m_expr_term_type));
+  }
+}
 
 ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
 
