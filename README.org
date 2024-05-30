@@ -243,31 +243,31 @@ is how to do it:
 1. In =test/=, create a new directory for the type of tests you want
    to create. Let /testname/ be the directory name.
 2. Go into =test/Makefile.am= *note the =.am=.
-3. In =test_suite_SOURCES=, add =testname/test-testname.c=
-4. Create the /testname/ directory and add the =.c= and =.h= files.
+3. In =test_suite_SOURCES=, add =testname/test-testname.cpp=
+4. Create the /testname/ directory and add the =.cpp= and =.hpp= files.
    #+begin_src shell
      mkdir test/testname
-     touch test/testname/test-testname{.c,.h}
+     touch test/testname/test-testname{.cpp,.hpp}
    #+end_src
 
 5. Add include guards to the header
    #+begin_src shell
-     cat > test/testname/test-testname.h << "EOF"
+     cat > test/testname/test-testname.hpp << "EOF"
      #ifndef TESTNAME_H
      #define TESTNAME_H
 
-     #include "test-suite.h"
+     #include "test-suite.hpp"
 
      #endif // TESTNAME_H
      EOF
    #+end_src
 
-6. Add the appropriate headers to =test/testname/test-testname.c=
+6. Add the appropriate headers to =test/testname/test-testname.cpp=
    #+begin_src shell
-     echo "#include \"test-suite.h\"" > test/testname/test-testname.c
+     echo "#include \"test-suite.hpp\"" > test/testname/test-testname.cpp
    #+end_src
 
-7. In =test/test-suite.c= add the appropriate include header.
+7. In =test/test-suite.cpp= add the appropriate include header.
 8. Start adding your tests (see [[Adding more Tests to Ones that Exist][Adding more Tests to Ones that Exist]])
 
 * Interfaces
