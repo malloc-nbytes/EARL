@@ -124,12 +124,20 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
 
   switch (expr->m_op->type()) {
   case TokenType::Plus: {
+    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) + std::any_cast<int>(rhs.m_expr_value),
+                                        ExprTermType::Int_Literal};
   } break;
   case TokenType::Minus: {
+    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) - std::any_cast<int>(rhs.m_expr_value),
+                                        ExprTermType::Int_Literal};
   } break;
   case TokenType::Asterisk: {
+    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) * std::any_cast<int>(rhs.m_expr_value),
+                                        ExprTermType::Int_Literal};
   } break;
   case TokenType::Forwardslash: {
+    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) / std::any_cast<int>(rhs.m_expr_value),
+                                        ExprTermType::Int_Literal};
   } break;
   default:
     ERR_WARGS(ErrType::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
