@@ -20,6 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: ast.hpp
+// Description:
+//   The grammar of EARL.
+//     Program = list of statements
+//     statement =
+//       | Def
+//       | Let
+//       | Block
+//       | Mut
+//       | Stmt_Expr
+
 #ifndef AST_H
 #define AST_H
 
@@ -28,6 +39,7 @@
 
 #include "token.hpp"
 
+// The different types a statement can be.
 enum class StmtType {
   Def,
   Let,
@@ -36,11 +48,13 @@ enum class StmtType {
   Stmt_Expr,
 };
 
+// The different types an expression can be.
 enum class ExprType {
   Term,
   Binary,
 };
 
+// The different types a term can be.
 enum class ExprTermType {
   Ident,
   Int_Literal,
@@ -48,8 +62,9 @@ enum class ExprTermType {
   Func_Call,
 };
 
-class StmtBlock;
+struct StmtBlock;
 
+// Base class for an expression
 struct Expr {
   virtual ~Expr() = default;
   virtual ExprType get_type() const = 0;
@@ -112,7 +127,7 @@ struct StmtDef : public Stmt {
   // Function name
   std::unique_ptr<Token> m_id;
 
-  // id * type
+  // id X type
   std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> m_args;
   std::unique_ptr<Token> m_rettype;
   std::unique_ptr<StmtBlock> m_block;

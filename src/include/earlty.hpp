@@ -27,19 +27,31 @@
 #include <unordered_map>
 #include <vector>
 
-// Namespace of EARL Types.
+// File: lexer.hpp
+// Description:
+//   Provides an interface to work with the
+//   different types of EARL.
+
 namespace EarlTy {
 
+  // The different types of EARL.
   enum class Type {
     Int,
     Str,
     Void,
   };
 
+  // A map of C++ strings to the corrosponding EARL type.
   extern const std::unordered_map<std::string, Type> typemap;
+
+  // A map from an EARL type to a vector of compatable EARL types.
   extern const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> m_earl_compat_tys;
 
+  // Given EARL vars `ty1` and `ty2`, checks to see if they
+  // are compatible.
   bool earlvar_type_compat(EarlTy::Type ty1, EarlTy::Type ty2);
+
+  // Generate an EARL type from a string.
   Type of_str(const std::string &s);
 };
 

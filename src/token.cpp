@@ -166,7 +166,7 @@ Token *token_alloc(Lexer &lexer,
   return tok;
 }
 
-const std::string &Token::lexeme(void) const {
+std::string &Token::lexeme(void) {
   return m_lexeme;
 }
 

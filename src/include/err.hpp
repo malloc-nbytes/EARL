@@ -20,32 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: err.hpp
+// Description:
+//   Provides an easy way of displaying
+//   error messages and crashing.
+
 #ifndef ERR_H
 #define ERR_H
 
+// The different classes of errors
+// that can be issued.
 enum class ErrType {
-  Syntax,
-  Runtime,
-  Internal,
-  Fatal,
-  Redeclared,
-  Undeclared,
+  Syntax,     // Used for syntactical errors, usually during parsing
+  Runtime,    // Used for errors that ocur during runtime
+  Internal,   // An internal error
+  Fatal,      // Unrecoverable error
+  Redeclared, // Variable was redeclared at runtime
+  Undeclared, // Varriable is undeclared at runtime
+  Todo,       // For use during development of TODO functions
 };
 
-#define ERR_WARGS(errtype, msg, ...) \
-  do { \
+// Prints a error message of type `errtype`
+// with the message `msg` with any arguments of VA_ARGS.
+#define ERR_WARGS(errtype, msg, ...)   \
+  do {                                 \
     fprintf(stderr, "%s: ", __func__); \
     fprintf(stderr, msg, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
+    fprintf(stderr, "\n");             \
+    std::exit(1);                      \
   } while (0)
 
-#define ERR(errtype, msg) \
-  do { \
-    fprintf(stderr, "%s: ", __func__); \
-    fprintf(stderr, msg); \
-    fprintf(stderr, "\n"); \
-    std::exit(1); \
+// Prints a error message of type `errtype`
+// with the message `msg` with no arguments.
+#define ERR(errtype, msg)                       \
+  do {                                          \
+    fprintf(stderr, "%s: ", __func__);          \
+    fprintf(stderr, msg);                       \
+    fprintf(stderr, "\n");                      \
+    std::exit(1);                               \
   } while (0)
 
 #endif // ERR_H

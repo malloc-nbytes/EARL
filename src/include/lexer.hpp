@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: lexer.h
+// File: lexer.hpp
 // Description:
 //   The API for lexical analysis of
 //   a document.
@@ -36,20 +36,46 @@
 
 struct Token;
 
+// A Lexer (for lexical analysis) https://en.wikipedia.org/wiki/Lexical_analysis
+// is a tool that splits up and catagorizes individual 'tokens' for parsers.
+// This implementation constructs a linked list of tokens for the parsers
+// to traverse. It starts at `m_hd` and ends at `m_tl`.
 struct Lexer {
+  // Head and tail of the linked list
   Token *m_hd;
   Token *m_tl;
+
+  // The number of tokens present
   size_t m_len;
 
+  // Memory management via an arena allocator
   Arena m_arena;
 
   Lexer();
+
+  // No need to free the memory for the arena
+  // as it will free itself in it's destructor.
   ~Lexer() = default;
 
+  // Get the current token, namely the one
+  // that `m_hd` is currently at. It will
+  // return that one and update the head accordingly.
   Token *next(void);
+
+  // Peek `n` tokens into the lexer. This does not
+  // consume the current token, only views `n` tokens ahead.
+  // Returns nullptr if we peeked ahead too far.
   Token *peek(size_t n = 0);
+
+  // Append a token to the lexer at the end of the tail.
   void append(Token *tok);
+
+  // The same as Lexer::next() except it does not give
+  // back the token that was consumed.
   void discard(void);
+
+  // Debug function to show all tokens that were
+  // lex'd.
   void dump(void);
 };
 

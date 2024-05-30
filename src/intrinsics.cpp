@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -8,11 +9,21 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 
-const std::vector<std::string> Intrinsics::intrinsic_funcs = {
-  "print",
+const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
+  {"print", &Intrinsics::print},
 };
 
-void Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
+bool Intrinsics::is_intrinsic_function(const std::string &id) {
+  return intrinsic_functions.find(id) != intrinsic_functions.end();
+}
+
+Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(Ctx &ctx, ExprFuncCall *expr) {
+  auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(ctx, expr);
+
+  return Interpreter::ExprEvalResult{};
+}
+
+Interpreter::ExprEvalResult Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
   for (size_t i = 0; i < expr->m_params.size(); ++i) {
     std::unique_ptr<Expr> &e = expr->m_params[i];
     Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
@@ -40,4 +51,6 @@ void Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
     }
   }
   std::cout << '\n';
+  return Interpreter::ExprEvalResult{};
 }
+

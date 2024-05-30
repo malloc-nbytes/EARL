@@ -61,7 +61,7 @@ enum class TokenType {
   Backtick,
   Tilde,
   Colon,
-  Sym_Len, // DO NOT USE! Used for the length of symbols.
+  Sym_Len, // DO NOT USE! Used for the length of symbols. (deprecated)
 
   Double_Ampersand,
   Double_Pipe,
@@ -97,7 +97,7 @@ struct Token {
         TokenType type,
         size_t row, size_t col, std::string &fp);
 
-  const std::string &lexeme(void) const;
+  std::string &lexeme(void);
   TokenType type(void) const;
   std::string to_str(void);
 };
