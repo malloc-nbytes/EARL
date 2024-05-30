@@ -33,15 +33,51 @@
 #include "ast.hpp"
 
 namespace Parser {
+  // The entrypoint to parsing. Takes a lexer
+  // `lexer` and produces a Program.
   Program parse_program(Lexer &lexer);
+
+  // Given `lexer`, parses a statement.
   std::unique_ptr<Stmt> parse_stmt(Lexer &lexer);
+
+  // Given `lexer`, parses a statement of type
+  // statement definition.
+  // ex:
+  //     def my_func(a: int, b: int) -> int { ... }
   std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer);
+
+  // Given `lexer` parses a statement of type
+  // statement expression. Examples of this are functions
+  // where there is no return value (or the value is to
+  // be ignored), or math equations for the REPL i.e., 1+3.
   std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer);
+
+  // Given `lexer`, parses a statement of type 'let'.
+  // ex:
+  //   let x: int = 3;
   std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer);
+
+  // Given `lexer`, parses a statement of type mutate.
+  // ex:
+  //   x = 3 + a * 4 / 2;
   std::unique_ptr<StmtMut> parse_stmt_mut(Lexer &lexer);
+
+  // Given `lexer`, parses an expression. It uses
+  // a recursive descent parser to determine precidence.
+  // The precidence is as follows:
+  //   logical -> equalitative -> additive -> multiplicative -> primary.
   Expr *parse_expr(Lexer &lexer);
+
+  // Given `lexer`, a utility function for the parsers
+  // to use to expect the next token to be an EARL datatype.
   Token *parse_expect_type(Lexer &lexer);
+
+  // Given `lexer`, a utility function for the parsers
+  // to use to expect the next token to be an EARL keyword.
   Token *parse_expect_keyword(Lexer &lexer, std::string expected);
+
+  // Given `lexer`, a utility function for the parsers
+  // to use to expect the next token to be of type `expected`.
   Token *parse_expect(Lexer &lexer, TokenType expected);
 };
 
