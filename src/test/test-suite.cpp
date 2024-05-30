@@ -1,4 +1,5 @@
-#include "test-suite.h"
+#include "sample/test-sample.hpp"
+#include "test-suite.hpp"
 
 #include <stdio.h>
 #include <time.h>

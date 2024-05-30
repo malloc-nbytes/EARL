@@ -107,7 +107,7 @@ Interpreter::ExprEvalResult Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
     return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
   } break;
   case ExprType::Binary: {
-    assert(false && "unimplemented");
+    return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
   } break;
   default:
     ERR_WARGS(ErrType::Fatal, "expression type %d is not a valid expression",

@@ -17,38 +17,38 @@ then
 fi
 
 TESTNAME=$1
-INCLUDE_DIRECTIVE="#include \"$TESTNAME/test-$TESTNAME.h\""
+INCLUDE_DIRECTIVE="#include \"$TESTNAME/test-$TESTNAME.hpp\""
 
 echo "TESTNAME: $TESTNAME"
 echo "INCLUDE_DIRECTIVE: $INCLUDE_DIRECTIVE"
 
-sed -i "s/test_suite_SOURCES = \(.*\)/test_suite_SOURCES = \1 ${TESTNAME}\/test-${TESTNAME}.c/" Makefile.am
+sed -i "s/test_suite_SOURCES = \(.*\)/test_suite_SOURCES = \1 ${TESTNAME}\/test-${TESTNAME}.cpp/" Makefile.am
 echo "Update Makefile.am"
 
 mkdir -v "$TESTNAME"
 
-touch "$TESTNAME/test-$TESTNAME"{.c,.h}
+touch "$TESTNAME/test-$TESTNAME"{.cpp,.hpp}
 
-echo "Created $TESTNAME/test-$TESTNAME"{.c,.h}
+echo "Created $TESTNAME/test-$TESTNAME"{.cpp,.hpp}
 
-cat > "${TESTNAME}/test-${TESTNAME}.h" <<EOF
+cat > "${TESTNAME}/test-${TESTNAME}.hpp" <<EOF
 #ifndef ${TESTNAME^^}_H
 #define ${TESTNAME^^}_H
 
-#include "test-suite.h"
+#include "test-suite.hpp"
 
 // Add test prototypes here
 
 #endif // ${TESTNAME^^}_H
 EOF
 
-echo "Created prototype at ${TESTNAME}/test-${TESTNAME}.h"
+echo "Created prototype at ${TESTNAME}/test-${TESTNAME}.hpp"
 
-echo -e "#include \"test-suite.h\"\n\n// Add test implementations here" > "$TESTNAME/test-$TESTNAME.c"
+echo -e "#include \"test-suite.hpp\"\n\n// Add test implementations here" > "$TESTNAME/test-$TESTNAME.cpp"
 
-echo "Created implementation file at $TESTNAME/test-$TESTNAME.c"
+echo "Created implementation file at $TESTNAME/test-$TESTNAME.cpp"
 
-sed -i "1i$INCLUDE_DIRECTIVE" test-suite.c
+sed -i "1i$INCLUDE_DIRECTIVE" test-suite.cpp
 
-echo "Added necessary #include to test-suite.c"
+echo "Added necessary #include to test-suite.cpp"
 echo "Done"
