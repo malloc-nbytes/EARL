@@ -1,5 +1,6 @@
-let a: int = 1;
-let b: int = 3;
+let a: int = 9;
+let b: int = 10;
 let c: int = a;
+
 print(a, b, c);
-print(99, 100, 432);
+print(1, 2, 3);

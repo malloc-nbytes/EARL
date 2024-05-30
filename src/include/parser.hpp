@@ -25,6 +25,17 @@
 
 #include "ast.hpp"
 
-Program parse_program(Lexer &lexer);
+namespace Parser {
+  Program parse_program(Lexer &lexer);
+  std::unique_ptr<Stmt> parse_stmt(Lexer &lexer);
+  std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer);
+  std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer);
+  std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer);
+  std::unique_ptr<StmtMut> parse_stmt_mut(Lexer &lexer);
+  Expr *parse_expr(Lexer &lexer);
+  Token *parse_expect_type(Lexer &lexer);
+  Token *parse_expect_keyword(Lexer &lexer, std::string expected);
+  Token *parse_expect(Lexer &lexer, TokenType expected);
+};
 
 #endif // PARSER_H

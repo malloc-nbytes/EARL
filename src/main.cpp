@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
   std::string comment = "#";
 
   Lexer lexer = lex_file(filepath, keywords, types, comment);
-  Program program = parse_program(lexer);
+  Program program = Parser::parse_program(lexer);
 
   Interpreter::interpret(program);
 
