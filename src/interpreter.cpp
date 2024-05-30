@@ -73,9 +73,9 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
   case ExprTermType::Ident: {
     ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
-    // assert(ctx.earlvar_in_scope(ident->m_tok->lexeme()));
-    // EarlVar &var = ctx.get_earlvar_from_scope(ident->m_tok->lexeme());
-    // return Interpreter::ExprEvalResult {var.m_value, ident->get_term_type()};
+    if (!ctx.earlvar_in_scope(ident->m_tok->lexeme().c_str())) {
+      ERR_WARGS(ErrType::Undeclared, "variable `%s` is not in scope", ident->m_tok->lexeme().c_str());
+    }
     return Interpreter::ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
   } break;
   case ExprTermType::Int_Literal: {
