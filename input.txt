@@ -1,3 +1,5 @@
+# this is a comment
+
 let a: int = 9;
 let b: int = 10;
 let c: int = a;

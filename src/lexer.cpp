@@ -226,7 +226,7 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<s
     if (c == comment[0]) {
       size_t comment_len;
       if ((comment_len = try_comment(lexeme, comment)) >= comment.size()) {
-        i += comment_len;
+        while (src[i++] != '\n');
         col = 1;
         row += 1;
         continue;
