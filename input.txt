@@ -1,7 +1,5 @@
 let a: int = 1;
 let b: int = 3;
 let c: int = a;
-print(a);
-print(b);
-print(c);
+print(a, b, c);
 print(99, 100, 432);
