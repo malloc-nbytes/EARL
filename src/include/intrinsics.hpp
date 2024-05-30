@@ -13,9 +13,11 @@ namespace Intrinsics {
   Interpreter::ExprEvalResult run_intrinsic_function(Ctx &ctx, ExprFuncCall *expr);
 
   // Intrinsic functions
-  void print(Ctx &ctx, ExprFuncCall *expr);
+  Interpreter::ExprEvalResult print(Ctx &ctx, ExprFuncCall *expr);
 
-  extern const std::unordered_map<std::string, std::function<Interpreter::ExprEvalResult(Ctx &, ExprFuncCall *)>> intrinsic_functions;
+  using IntrinsicFunction = Interpreter::ExprEvalResult(*)(Ctx&, ExprFuncCall*);
+
+  extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
 };
 
 #endif // INTRINSICS_H

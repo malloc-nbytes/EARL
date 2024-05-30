@@ -9,20 +9,18 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 
-using IntrinsicFunction = Interpreter::ExprEvalResult(*)(Ctx&, ExprFuncCall*);
-
-const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions = {
-  {"print", Intrinsics::print},
+const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
+  {"print", &Intrinsics::print},
 };
 
 bool Intrinsics::is_intrinsic_function(const std::string &id) {
-  return std::find(Intrinsics::intrinsic_funcs.begin(),
-                   Intrinsics::intrinsic_funcs.end(), id)
-    != Intrinsics::intrinsic_funcs.end();
+  return intrinsic_functions.find(id) != intrinsic_functions.end();
 }
 
 Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(Ctx &ctx, ExprFuncCall *expr) {
-  
+  auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(ctx, expr);
+
+  return Interpreter::ExprEvalResult{};
 }
 
 Interpreter::ExprEvalResult Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
@@ -53,5 +51,6 @@ Interpreter::ExprEvalResult Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
     }
   }
   std::cout << '\n';
+  return Interpreter::ExprEvalResult{};
 }
 
