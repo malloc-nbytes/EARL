@@ -32,11 +32,12 @@
 // that can be issued.
 enum class ErrType {
   Syntax,     // Used for syntactical errors, usually during parsing
-  Runtime,    // Used for errors that ocur during runtime.
+  Runtime,    // Used for errors that ocur during runtime
   Internal,   // An internal error
   Fatal,      // Unrecoverable error
   Redeclared, // Variable was redeclared at runtime
   Undeclared, // Varriable is undeclared at runtime
+  Todo,       // For use during development of TODO functions
 };
 
 // Prints a error message of type `errtype`

@@ -1,8 +1,8 @@
 # this is a comment
 
-let a: int = 9;
-let b: int = 10;
-let c: int = a;
+let a: int = 9 + 9;
+let b: int = 10 + a;
+let c: int = a + b;
 
 print(a, b, c);
 print(1, 2, 3);

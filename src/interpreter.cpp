@@ -36,6 +36,20 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
+// Used when an ExprEvalResult has a expression term type
+// of `ident` to copy over the information from the ident
+// that it is assigned into it's actual value.
+// NOTE: expr.get_earl_type() should be called before calling
+// this function to properly get the correct EARL type.
+static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, Ctx &ctx) {
+  if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
+    const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
+    assert(ctx.earlvar_in_scope(id));
+    EarlVar &var = ctx.get_earlvar_from_scope(id);
+    expr_eval.m_expr_value = var.m_value;
+  }
+}
+
 EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
   if (m_expr_term_type == ExprTermType::Ident) {
     Token *tok = std::any_cast<Token *>(m_expr_value);
@@ -58,17 +72,11 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 }
 
 Interpreter::ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
-  // Check if it is intrinsic
-  // if (expr->m_id->lexeme() == "print") {
-  //   Intrinsics::print(ctx, expr);
-  // }
-
   if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
     return Intrinsics::run_intrinsic_function(ctx, expr);
   }
   else {
-    // Check for user defined functions
-    // ...
+    ERR(ErrType::Todo, "todo");
   }
 
   return Interpreter::ExprEvalResult{};
@@ -100,9 +108,35 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
 }
 
 Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
-  assert(false && "unimplemented");
-  (void)expr;
-  (void)ctx;
+  Interpreter::ExprEvalResult lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+  Interpreter::ExprEvalResult rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+
+  EarlTy::Type lhs_type = lhs.get_earl_type(ctx);
+  EarlTy::Type rhs_type = rhs.get_earl_type(ctx);
+
+  try_copy_ident_value(lhs, ctx);
+  try_copy_ident_value(rhs, ctx);
+
+  if (!EarlTy::earlvar_type_compat(lhs_type, rhs_type)) {
+    ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
+              static_cast<int>(lhs_type), static_cast<int>(rhs_type));
+  }
+
+  switch (expr->m_op->type()) {
+  case TokenType::Plus: {
+  } break;
+  case TokenType::Minus: {
+  } break;
+  case TokenType::Asterisk: {
+  } break;
+  case TokenType::Forwardslash: {
+  } break;
+  default:
+    ERR_WARGS(ErrType::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
+  }
+
+  assert(false && "todo");
+
   return Interpreter::ExprEvalResult {};
 }
 
@@ -134,12 +168,7 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   // The type of the right side of the equals sign
   EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
 
-  if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
-    const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
-    assert(ctx.earlvar_in_scope(id));
-    EarlVar &var = ctx.get_earlvar_from_scope(id);
-    expr_eval.m_expr_value = var.m_value;
-  }
+  try_copy_ident_value(expr_eval, ctx);
 
   if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
     ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
