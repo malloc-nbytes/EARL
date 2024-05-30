@@ -46,14 +46,14 @@
 
 (defconst earl-highlights
   `((,(regexp-opt earl-keywords 'symbols) . font-lock-keyword-face)
-    (,(rx (group "//" (zero-or-more nonl))) . font-lock-comment-face)))
+    (,(rx (group "#" (zero-or-more nonl))) . font-lock-comment-face)))
 
 ;;;###autoload
 (define-derived-mode earl-mode prog-mode "earl"
   "Major Mode for editing Earl source code."
   :syntax-table earl-mode-syntax-table
   (setq font-lock-defaults '(earl-highlights))
-  (setq-local comment-start "//")
+  (setq-local comment-start "#")
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 4)
   (setq-local indent-line-function #'earl-indent-line)
