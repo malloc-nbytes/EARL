@@ -183,11 +183,40 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
               static_cast<int>(binding_type), static_cast<int>(rval_type));
   }
 
-  ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
+  ctx.create_and_add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
   (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+}
+
+// void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+
+// void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+//   for (auto &stmt : block->m_stmts) {
+//     eval_stmt(stmt, ctx);
+//   }
+//   ctx.pop_scope();
+// }
+
+// TODO: once we have a function table, check
+// to make sure that the function name is not
+// already declared.
+// TODO: use m_rettype.
+void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
+  ctx.push_scope();
+
+  for (auto &pair : stmt->m_args) {
+    std::string &id = pair.first->lexeme();
+    EarlTy::Type type = EarlTy::of_str(pair.second->lexeme());
+
+    if (ctx.earlvar_in_scope(id))
+      ERR_WARGS(ErrType::Redeclared, "parameter `%s` is already in scope", id.c_str());
+
+    ctx.create_and_add_earlvar_to_scope(std::move(pair.first), type, false, nullptr);
+  }
+
+  eval_stmt_block(stmt->m_block.get(), ctx);
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
@@ -199,7 +228,7 @@ void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
     assert(false && "unimplemented");
   } break;
   case StmtType::Def: {
-    assert(false && "unimplemented");
+    eval_stmt_def(dynamic_cast<StmtDef *>(stmt.get()), ctx);
   } break;
   case StmtType::Block: {
     assert(false && "unimplemented");

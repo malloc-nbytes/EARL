@@ -59,10 +59,10 @@ public:
   // heap allocated with `allocd`, and the `value` that
   // the actual variable holds, will insert it into the
   // runtime scope.
-  void add_earlvar_to_scope(std::unique_ptr<Token> id,
-                            EarlTy::Type type,
-                            bool allocd,
-                            std::any value);
+  void create_and_add_earlvar_to_scope(std::unique_ptr<Token> id,
+                                       EarlTy::Type type,
+                                       bool allocd,
+                                       std::any value);
 
   // Will get you the EarlVar that corrosponds
   // to `id`.
