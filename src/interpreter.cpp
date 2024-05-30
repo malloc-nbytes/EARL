@@ -73,6 +73,9 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
   switch (expr->get_term_type()) {
   case ExprTermType::Ident: {
     ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+    // assert(ctx.earlvar_in_scope(ident->m_tok->lexeme()));
+    // EarlVar &var = ctx.get_earlvar_from_scope(ident->m_tok->lexeme());
+    // return Interpreter::ExprEvalResult {var.m_value, ident->get_term_type()};
     return Interpreter::ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
   } break;
   case ExprTermType::Int_Literal: {
@@ -126,12 +129,19 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   // The type of the right side of the equals sign
   EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
 
+  if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
+    const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
+    assert(ctx.earlvar_in_scope(id));
+    EarlVar &var = ctx.get_earlvar_from_scope(id);
+    expr_eval.m_expr_value = var.m_value;
+  }
+
   if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
     ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
               static_cast<int>(binding_type), static_cast<int>(rval_type));
   }
 
-  ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval);
+  ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
