@@ -20,9 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: parser.hpp
+// Description:
+//   Provides a set of parsers as well as
+//   some helper functions to parse the
+//   grammar of EARL.
+
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "lexer.hpp"
 #include "ast.hpp"
 
 namespace Parser {
