@@ -1,4 +1,4 @@
-# this is a comment
+// this is a comment
 
 let a: int = 1 + 9 - 9;
 let b: int = 9/a * 3;
