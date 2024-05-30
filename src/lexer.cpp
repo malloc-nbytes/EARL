@@ -216,6 +216,7 @@ Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<s
     {"*=", TokenType::Asterisk_Equals},
     {"/=", TokenType::Forwardslash_Equals},
     {"%=", TokenType::Percent_Equals},
+    {"->", TokenType::RightArrow},
   };
 
   size_t row = 0, col = 0, i = 0;

@@ -218,9 +218,58 @@ std::unique_ptr<StmtExpr> Parser::parse_stmt_expr(Lexer &lexer) {
   return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));
 }
 
+std::unique_ptr<StmtBlock> parse_stmt_block(Lexer &lexer) {
+  (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+
+  std::vector<std::unique_ptr<Stmt>> stmts;
+
+  while (lexer.peek()->type() != TokenType::Rbrace) {
+    std::unique_ptr<Stmt> stmt = Parser::parse_stmt(lexer);
+    stmts.push_back(std::move(stmt));
+  }
+
+  (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+
+  return std::make_unique<StmtBlock>(std::move(stmts));
+}
+
+std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>>
+parse_stmt_def_args(Lexer &lexer) {
+  std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args;
+
+  (void)Parser::parse_expect(lexer, TokenType::Lparen);
+  while (lexer.peek()->type() != TokenType::Rparen) {
+    Token *id = Parser::parse_expect(lexer, TokenType::Ident);
+    (void)Parser::parse_expect(lexer, TokenType::Colon);
+    Token *type = Parser::parse_expect_type(lexer);
+    auto pair = std::make_pair(std::make_unique<Token>(*id), std::make_unique<Token>(*type));
+    args.push_back(std::move(pair));
+
+    if (lexer.peek()->type() == TokenType::Comma)
+      lexer.discard();
+  }
+  (void)Parser::parse_expect(lexer, TokenType::Rparen);
+
+  return args;
+}
+
 std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer) {
-  (void)lexer;
-  assert(false && "unimplemented");
+  (void)parse_expect_keyword(lexer, COMMON_EARLKW_DEF);
+
+  Token *id = Parser::parse_expect(lexer, TokenType::Ident);
+
+  std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args
+    = parse_stmt_def_args(lexer);
+
+  (void)Parser::parse_expect(lexer, TokenType::RightArrow);
+
+  Token *rettype = parse_expect_type(lexer);
+
+  std::unique_ptr<StmtBlock> block = parse_stmt_block(lexer);
+  return std::make_unique<StmtDef>(std::make_unique<Token>(*id),
+                                   std::move(args),
+                                   std::make_unique<Token>(*rettype),
+                                   std::move(block));
 }
 
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
