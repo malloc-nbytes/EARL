@@ -61,7 +61,7 @@ enum class TokenType {
   Backtick,
   Tilde,
   Colon,
-  Sym_Len, // DO NOT USE! Used for the length of symbols.
+  Sym_Len, // DO NOT USE! Used for the length of symbols. (deprecated)
 
   Double_Ampersand,
   Double_Pipe,

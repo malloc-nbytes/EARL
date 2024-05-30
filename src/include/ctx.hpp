@@ -20,6 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+// File: lexer.hpp
+// Description:
+//   Provides a 'Context' struct that
+//   holds all relevant information
+//   that a runtime needs.
+
 #ifndef CTX_H
 #define CTX_H
 
@@ -30,22 +36,36 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 
-// The context that is used during runtime.
 class Ctx {
+  // The scope of all runtime variables.
   std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
 
 public:
   Ctx();
   ~Ctx() = default;
 
+  // Remove a new scope.
   void pop_scope(void);
+
+  // Add a new scope.
   void push_scope(void);
 
+  // Given `id`, checks if there is an
+  // EarlVar in the current scope.
   bool earlvar_in_scope(const std::string &id);
+
+  // Given `id` (indexes the scope by id->lexeme()),
+  // the EARL type of `type`, whether or not it is
+  // heap allocated with `allocd`, and the `value` that
+  // the actual variable holds, will insert it into the
+  // runtime scope.
   void add_earlvar_to_scope(std::unique_ptr<Token> id,
                             EarlTy::Type type,
                             bool allocd,
                             std::any value);
+
+  // Will get you the EarlVar that corrosponds
+  // to `id`.
   EarlVar &get_earlvar_from_scope(const std::string &id);
 };
 
