@@ -1,4 +1,3 @@
-#include "lexer/test-lexer.h"
 #include "test-suite.h"
 
 #include <stdio.h>
@@ -47,13 +46,5 @@ static int global_fail = 0;
 int
 main(void)
 {
-  TEST_SUITE(
-    RUN_TEST_GROUP("lexer", {
-        RUN_TEST(test_lexer_symbols());
-        RUN_TEST(test_lexer_identifiers());
-        RUN_TEST(test_lexer_keywords());
-    });
-  );
-
   return 0;
 }

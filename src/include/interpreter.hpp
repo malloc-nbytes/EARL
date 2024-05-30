@@ -55,7 +55,6 @@ namespace Interpreter {
 
   void interpret(Program &program);
   ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
-
 };
 
 #endif // INTERPRETER_H
