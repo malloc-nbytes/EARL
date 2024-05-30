@@ -59,12 +59,17 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 
 Interpreter::ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
   // Check if it is intrinsic
-  if (expr->m_id->lexeme() == "print") {
-    Intrinsics::print(ctx, expr);
-  }
+  // if (expr->m_id->lexeme() == "print") {
+  //   Intrinsics::print(ctx, expr);
+  // }
 
-  // Check for user defined functions
-  // ...
+  if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
+    return Intrinsics::run_intrinsic_function(ctx, expr);
+  }
+  else {
+    // Check for user defined functions
+    // ...
+  }
 
   return Interpreter::ExprEvalResult{};
 }
