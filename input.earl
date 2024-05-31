@@ -1,9 +1,13 @@
 def func() -> int {
     let x: int = 1;
-    let this_is_my_variable: int = 2*2;
+    let y: int = 2*2;
     print(x, y);
     print(x + y);
     print(99 + 1);
+}
+
+def func2() -> int {
+    print(420);
 }
 
 let a: int = 1 + 9 - 9;
@@ -11,3 +15,4 @@ let b: int = 9/a * 3;
 print(a, b);
 
 func();
+func2();

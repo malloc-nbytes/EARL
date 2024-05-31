@@ -152,7 +152,7 @@ Token *token_alloc(Lexer &lexer,
 {
   Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
 
-  for (int i = 0; i < len; ++i) {
+  for (size_t i = 0; i < len; ++i) {
     tok->m_lexeme.push_back(start[i]);
   }
 
