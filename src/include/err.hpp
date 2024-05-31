@@ -37,6 +37,7 @@ enum class ErrType {
   Fatal,      // Unrecoverable error
   Redeclared, // Variable was redeclared at runtime
   Undeclared, // Varriable is undeclared at runtime
+  Types,      // Incorrect usage of a type during runtime
   Todo,       // For use during development of TODO functions
 };
 

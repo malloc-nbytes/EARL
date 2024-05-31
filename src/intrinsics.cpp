@@ -17,13 +17,13 @@ bool Intrinsics::is_intrinsic_function(const std::string &id) {
   return intrinsic_functions.find(id) != intrinsic_functions.end();
 }
 
-Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(Ctx &ctx, ExprFuncCall *expr) {
-  auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(ctx, expr);
+Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(ExprFuncCall *expr, Ctx &ctx) {
+  auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(expr, ctx);
 
   return Interpreter::ExprEvalResult{};
 }
 
-Interpreter::ExprEvalResult Intrinsics::print(Ctx &ctx, ExprFuncCall *expr) {
+Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, Ctx &ctx) {
   for (size_t i = 0; i < expr->m_params.size(); ++i) {
     std::unique_ptr<Expr> &e = expr->m_params[i];
     Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);

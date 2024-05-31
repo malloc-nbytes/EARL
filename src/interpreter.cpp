@@ -36,6 +36,9 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
+void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+void eval_stmt_block(StmtBlock *block, Ctx &ctx);
+
 // Used when an ExprEvalResult has a expression term type
 // of `ident` to copy over the information from the ident
 // that it is assigned into it's actual value.
@@ -71,15 +74,19 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
   }
 }
 
-Interpreter::ExprEvalResult eval_funccall(ExprFuncCall *expr, Ctx &ctx) {
-  if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
-    return Intrinsics::run_intrinsic_function(ctx, expr);
+static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
+  if (!ctx.earlfunc_in_scope(expr->m_id->lexeme())) {
+    ERR_WARGS(ErrType::Undeclared, "function `%s` is not in scope", expr->m_id->lexeme().c_str());
   }
-  else {
-    ERR(ErrType::Todo, "todo");
-  }
+  EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+  assert(false);
+}
 
-  return Interpreter::ExprEvalResult{};
+Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
+  if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
+    return Intrinsics::run_intrinsic_function(expr, ctx);
+  }
+  return eval_user_defined_function(expr, ctx);
 }
 
 Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
@@ -99,7 +106,7 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     assert(false && "unimplemented");
   } break;
   case ExprTermType::Func_Call: {
-    return eval_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+    return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
   } break;
   default:
     ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
@@ -190,8 +197,6 @@ void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
   (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
-void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
-
 void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   for (auto &stmt : block->m_stmts) {
     eval_stmt(std::move(stmt), ctx);
@@ -199,6 +204,11 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   ctx.pop_scope();
 }
 
+// When we hit a statement `def` (a function declaration),
+// we do not actually want to execute this function.
+// We just want to add it to the global context so it
+// can be called later from either a statement expression
+// or a right-hand-side assignment.
 void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
   std::vector<std::unique_ptr<EarlVar>> args;
 
@@ -209,7 +219,7 @@ void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
   }
 
   ctx
-    .add_function_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
+    .add_earlfunc_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
                                                       EarlTy::of_str(stmt->m_rettype->lexeme()),
                                                       std::move(args),
                                                       std::move(stmt->m_block)));

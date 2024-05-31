@@ -43,17 +43,43 @@ EarlVar *Ctx::get_earlvar_from_scope(const std::string &id) {
       return map.at(id).get();
     }
   }
-  ERR_WARGS(ErrType::Fatal, "variable `%s` not found in scope", id.c_str());
+  ERR_WARGS(ErrType::Undeclared, "variable `%s` not found in scope", id.c_str());
   return nullptr; // unreachable
 }
 
-void Ctx::add_function_to_scope(std::unique_ptr<EarlFunc> func) {
+void Ctx::add_earlfunc_to_scope(std::unique_ptr<EarlFunc> func) {
   m_functions.back().emplace(func->m_id->lexeme(), std::move(func));
 }
 
-void Ctx::add_function_to_scope(std::unique_ptr<Token> id,
+void Ctx::add_earlfunc_to_scope(std::unique_ptr<Token> id,
                                 EarlTy::Type rettype,
                                 std::vector<std::unique_ptr<EarlVar>> args,
                                 std::unique_ptr<StmtBlock> block) {
-  m_functions.back().emplace(id->lexeme(), std::make_unique<EarlFunc>(std::move(id), rettype, std::move(args), std::move(block)));
+  m_functions
+    .back()
+    .emplace(id->lexeme(),
+             std::make_unique<EarlFunc>(std::move(id),
+                                        rettype,
+                                        std::move(args),
+                                        std::move(block)));
+}
+
+bool Ctx::earlfunc_in_scope(std::string &id) {
+  for (auto &map : m_functions) {
+    if (map.find(id) != map.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+EarlFunc *Ctx::get_earlfunc_from_scope(std::string &id) {
+  for (auto it = m_functions.rbegin(); it != m_functions.rend(); ++it) {
+    auto &map = *it;
+    if (map.find(id) != map.end()) {
+      return map.at(id).get();
+    }
+  }
+  ERR_WARGS(ErrType::Undeclared, "function `%s` not found in scope", id.c_str());
+  return nullptr; // unreachable
 }

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: lexer.hpp
+// File: ctx.hpp
 // Description:
 //   Provides a 'Context' struct that
 //   holds all relevant information
@@ -70,12 +70,19 @@ public:
   // to `id`.
   EarlVar *get_earlvar_from_scope(const std::string &id);
 
-  void add_function_to_scope(std::unique_ptr<EarlFunc> func);
+  // Add an `EarlFunc` to the global function scope.
+  void add_earlfunc_to_scope(std::unique_ptr<EarlFunc> func);
 
-  void add_function_to_scope(std::unique_ptr<Token> id,
+  // Another way to add an `EarlFunc` to the global function scope.
+  // This one constructs it for you.
+  void add_earlfunc_to_scope(std::unique_ptr<Token> id,
                              EarlTy::Type rettype,
                              std::vector<std::unique_ptr<EarlVar>> args,
                              std::unique_ptr<StmtBlock> block);
+
+  bool earlfunc_in_scope(std::string &id);
+
+  EarlFunc *get_earlfunc_from_scope(std::string &id);
 };
 
 #endif // CTX_H
