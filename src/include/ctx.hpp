@@ -85,6 +85,9 @@ public:
   bool earlfunc_in_scope(std::string &id);
 
   EarlFunc *get_earlfunc_from_scope(std::string &id);
+
+  void debug_dump_earlfuncs(void);
+  void debug_dump_earlvars(void);
 };
 
 #endif // CTX_H
