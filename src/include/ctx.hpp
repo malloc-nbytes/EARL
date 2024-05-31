@@ -70,9 +70,10 @@ public:
   // to `id`.
   EarlVar &get_earlvar_from_scope(const std::string &id);
 
-  // void add_function_to_scope(std::unique_ptr<id>,
-  //                            std::unique_ptr<Token> rettype,
-  //                            std::unique_ptr<StmtBlock> block);
+  void add_function_to_scope(std::unique_ptr<Token> id,
+                             EarlTy::Type rettype,
+                             std::vector<EarlVar> args,
+                             std::unique_ptr<StmtBlock> block);
 };
 
 #endif // CTX_H

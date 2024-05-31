@@ -45,3 +45,10 @@ EarlVar &Ctx::get_earlvar_from_scope(const std::string &id) {
   ERR_WARGS(ErrType::Fatal, "%s is not in scope", id.c_str());
 }
 
+void Ctx::add_function_to_scope(std::unique_ptr<Token> id,
+                                EarlTy::Type rettype,
+                                std::vector<EarlVar> args,
+                                std::unique_ptr<StmtBlock> block) {
+  std::string name = id->lexeme();
+  m_functions.back().emplace(name, EarlFunc(std::move(id), rettype, args, std::move(block)));
+}
