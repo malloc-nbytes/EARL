@@ -45,8 +45,8 @@ static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, Ctx &ct
   if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
     const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
     assert(ctx.earlvar_in_scope(id));
-    EarlVar &var = ctx.get_earlvar_from_scope(id);
-    expr_eval.m_expr_value = var.m_value;
+    EarlVar *var = ctx.get_earlvar_from_scope(id);
+    expr_eval.m_expr_value = var->m_value;
   }
 }
 
@@ -56,8 +56,8 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     if (!ctx.earlvar_in_scope(tok->lexeme())) {
       ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
     }
-    EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
-    return var.m_type;
+    EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+    return var->m_type;
   }
 
   switch (m_expr_term_type) {
@@ -183,11 +183,36 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
               static_cast<int>(binding_type), static_cast<int>(rval_type));
   }
 
-  ctx.add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
+  ctx.create_and_add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
   (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+}
+
+void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+
+void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+  for (auto &stmt : block->m_stmts) {
+    eval_stmt(std::move(stmt), ctx);
+  }
+  ctx.pop_scope();
+}
+
+void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
+  std::vector<std::unique_ptr<EarlVar>> args;
+
+  for (auto &arg : stmt->m_args) {
+    std::unique_ptr<Token> id = std::move(arg.first);
+    EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
+    args.push_back(std::make_unique<EarlVar>(std::move(id), type, false, nullptr));
+  }
+
+  ctx
+    .add_function_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
+                                                      EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                                      std::move(args),
+                                                      std::move(stmt->m_block)));
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
@@ -199,7 +224,7 @@ void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
     assert(false && "unimplemented");
   } break;
   case StmtType::Def: {
-    assert(false && "unimplemented");
+    eval_stmt_def(dynamic_cast<StmtDef *>(stmt.get()), ctx);
   } break;
   case StmtType::Block: {
     assert(false && "unimplemented");

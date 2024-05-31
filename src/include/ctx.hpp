@@ -35,10 +35,12 @@
 
 #include "earlty.hpp"
 #include "earlvar.hpp"
+#include "earlfunc.hpp"
 
 class Ctx {
   // The scope of all runtime variables.
-  std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
+  std::vector<std::unordered_map<std::string, std::unique_ptr<EarlVar>>> m_scope;
+  std::vector<std::unordered_map<std::string, std::unique_ptr<EarlFunc>>> m_functions;
 
 public:
   Ctx();
@@ -59,14 +61,21 @@ public:
   // heap allocated with `allocd`, and the `value` that
   // the actual variable holds, will insert it into the
   // runtime scope.
-  void add_earlvar_to_scope(std::unique_ptr<Token> id,
-                            EarlTy::Type type,
-                            bool allocd,
-                            std::any value);
+  void create_and_add_earlvar_to_scope(std::unique_ptr<Token> id,
+                                       EarlTy::Type type,
+                                       bool allocd,
+                                       std::any value);
 
   // Will get you the EarlVar that corrosponds
   // to `id`.
-  EarlVar &get_earlvar_from_scope(const std::string &id);
+  EarlVar *get_earlvar_from_scope(const std::string &id);
+
+  void add_function_to_scope(std::unique_ptr<EarlFunc> func);
+
+  void add_function_to_scope(std::unique_ptr<Token> id,
+                             EarlTy::Type rettype,
+                             std::vector<std::unique_ptr<EarlVar>> args,
+                             std::unique_ptr<StmtBlock> block);
 };
 
 #endif // CTX_H

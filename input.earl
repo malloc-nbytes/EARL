@@ -1,5 +1,11 @@
 # this is a comment
 
+def sum(a: int, b: int) -> int {
+    let x: int = 1;
+    let y: int = 2;
+    print(x, y);
+}
+
 let a: int = 1 + 9 - 9;
 let b: int = 9/a * 3;
 print(a, b);

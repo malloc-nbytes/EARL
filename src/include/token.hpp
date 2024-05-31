@@ -74,6 +74,7 @@ enum class TokenType {
   Asterisk_Equals,
   Forwardslash_Equals,
   Percent_Equals,
+  RightArrow,
 
   Eof,
   Intlit,
