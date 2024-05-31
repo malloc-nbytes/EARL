@@ -35,11 +35,12 @@
 
 #include "earlty.hpp"
 #include "earlvar.hpp"
+#include "earlfunc.hpp"
 
 class Ctx {
   // The scope of all runtime variables.
   std::vector<std::unordered_map<std::string, EarlVar>> m_scope;
-  std::vector<std::unordered_map<std::string, std::unique_ptr<StmtDef>>> m_functions;
+  std::vector<std::unordered_map<std::string, EarlFunc>> m_functions;
 
 public:
   Ctx();
@@ -69,9 +70,9 @@ public:
   // to `id`.
   EarlVar &get_earlvar_from_scope(const std::string &id);
 
-  void add_function_to_scope(std::unique_ptr<id>,
-                             std::unique_ptr<Token> rettype,
-                             std::unique_ptr<StmtBlock> block);
+  // void add_function_to_scope(std::unique_ptr<id>,
+  //                            std::unique_ptr<Token> rettype,
+  //                            std::unique_ptr<StmtBlock> block);
 };
 
 #endif // CTX_H
