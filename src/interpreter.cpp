@@ -45,8 +45,8 @@ static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, Ctx &ct
   if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
     const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
     assert(ctx.earlvar_in_scope(id));
-    EarlVar &var = ctx.get_earlvar_from_scope(id);
-    expr_eval.m_expr_value = var.m_value;
+    EarlVar *var = ctx.get_earlvar_from_scope(id);
+    expr_eval.m_expr_value = var->m_value;
   }
 }
 
@@ -56,8 +56,8 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     if (!ctx.earlvar_in_scope(tok->lexeme())) {
       ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
     }
-    EarlVar &var = ctx.get_earlvar_from_scope(tok->lexeme());
-    return var.m_type;
+    EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+    return var->m_type;
   }
 
   switch (m_expr_term_type) {

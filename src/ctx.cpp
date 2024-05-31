@@ -13,21 +13,21 @@ Ctx::Ctx() {
 
 void Ctx::pop_scope(void) {
   m_scope.pop_back();
-  // m_functions.pop_back();
+  m_functions.pop_back();
 }
 
 void Ctx::push_scope(void) {
   m_scope.emplace_back();
-  // m_functions.emplace_back();
+  m_functions.emplace_back();
 }
 
 void Ctx::create_and_add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd, std::any value) {
   std::string name = id->lexeme();
-  m_scope.back().emplace(name, EarlVar(std::move(id), type, allocd, std::move(value)));
+  m_scope.back().emplace(name, std::make_unique<EarlVar>(std::move(id), type, allocd, std::move(value)));
 }
 
 bool Ctx::earlvar_in_scope(const std::string &id) {
-  for (std::unordered_map<std::string, EarlVar> &map : m_scope) {
+  for (auto &map : m_scope) {
     if (map.find(id) != map.end()) {
       return true;
     }
@@ -35,14 +35,15 @@ bool Ctx::earlvar_in_scope(const std::string &id) {
   return false;
 }
 
-EarlVar &Ctx::get_earlvar_from_scope(const std::string &id) {
-  for (std::unordered_map<std::string, EarlVar> &map : m_scope) {
-    auto it = map.find(id);
-    if (it != map.end()) {
-      return it->second;
+EarlVar *Ctx::get_earlvar_from_scope(const std::string &id) {
+  for (auto it = m_scope.rbegin(); it != m_scope.rend(); ++it) {
+    auto &map = *it;
+    if (map.find(id) != map.end()) {
+      return map.at(id).get();
     }
   }
-  ERR_WARGS(ErrType::Fatal, "%s is not in scope", id.c_str());
+  ERR_WARGS(ErrType::Fatal, "variable `%s` not found in scope", id.c_str());
+  return nullptr; // unreachable
 }
 
 void Ctx::add_function_to_scope(std::unique_ptr<EarlFunc> func) {
