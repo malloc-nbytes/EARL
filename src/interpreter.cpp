@@ -36,8 +36,8 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
-void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
-void eval_stmt_block(StmtBlock *block, Ctx &ctx);
+Interpreter::ExprEvalResult eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
 // Used when an ExprEvalResult has a expression term type
 // of `ident` to copy over the information from the ident
@@ -80,6 +80,8 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
   }
   EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
   assert(false);
+
+  return Interpreter::ExprEvalResult{};
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -112,6 +114,7 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
               static_cast<int>(expr->get_term_type()));
   }
+  return Interpreter::ExprEvalResult{};
 }
 
 Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
@@ -131,26 +134,32 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
 
   switch (expr->m_op->type()) {
   case TokenType::Plus: {
-    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) + std::any_cast<int>(rhs.m_expr_value),
-                                        ExprTermType::Int_Literal};
+    return Interpreter::ExprEvalResult {
+      std::any_cast<int>(lhs.m_expr_value) + std::any_cast<int>(rhs.m_expr_value),
+      ExprTermType::Int_Literal
+    };
   } break;
   case TokenType::Minus: {
-    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) - std::any_cast<int>(rhs.m_expr_value),
-                                        ExprTermType::Int_Literal};
+    return Interpreter::ExprEvalResult {
+      std::any_cast<int>(lhs.m_expr_value) - std::any_cast<int>(rhs.m_expr_value),
+       ExprTermType::Int_Literal
+      };
   } break;
   case TokenType::Asterisk: {
-    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) * std::any_cast<int>(rhs.m_expr_value),
-                                        ExprTermType::Int_Literal};
+    return Interpreter::ExprEvalResult {
+      std::any_cast<int>(lhs.m_expr_value) * std::any_cast<int>(rhs.m_expr_value),
+      ExprTermType::Int_Literal
+    };
   } break;
   case TokenType::Forwardslash: {
-    return Interpreter::ExprEvalResult {std::any_cast<int>(lhs.m_expr_value) / std::any_cast<int>(rhs.m_expr_value),
-                                        ExprTermType::Int_Literal};
+    return Interpreter::ExprEvalResult {
+      std::any_cast<int>(lhs.m_expr_value) / std::any_cast<int>(rhs.m_expr_value),
+      ExprTermType::Int_Literal
+    };
   } break;
   default:
     ERR_WARGS(ErrType::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
   }
-
-  assert(false && "todo");
 
   return Interpreter::ExprEvalResult {};
 }
@@ -167,9 +176,10 @@ Interpreter::ExprEvalResult Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
     ERR_WARGS(ErrType::Fatal, "expression type %d is not a valid expression",
               static_cast<int>(expr->get_type()));
   }
+  return Interpreter::ExprEvalResult{};
 }
 
-void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   const std::string &id = stmt->m_id->lexeme();
   if (ctx.earlvar_in_scope(id)) {
     ERR_WARGS(ErrType::Redeclared, "variable `%s` is already defined", id.c_str());
@@ -191,17 +201,21 @@ void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
   }
 
   ctx.create_and_add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
+
+  return Interpreter::ExprEvalResult{};
 }
 
-void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
   (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+  return Interpreter::ExprEvalResult{};
 }
 
-void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   for (auto &stmt : block->m_stmts) {
     eval_stmt(std::move(stmt), ctx);
   }
   ctx.pop_scope();
+  return Interpreter::ExprEvalResult{};
 }
 
 // When we hit a statement `def` (a function declaration),
@@ -209,7 +223,7 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // We just want to add it to the global context so it
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
-void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
   std::vector<std::unique_ptr<EarlVar>> args;
 
   for (auto &arg : stmt->m_args) {
@@ -223,9 +237,10 @@ void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
                                                       EarlTy::of_str(stmt->m_rettype->lexeme()),
                                                       std::move(args),
                                                       std::move(stmt->m_block)));
+  return Interpreter::ExprEvalResult{};
 }
 
-void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
   switch (stmt->stmt_type()) {
   case StmtType::Let: {
     eval_stmt_let(dynamic_cast<StmtLet *>(stmt.get()), ctx);
@@ -245,12 +260,15 @@ void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
   default:
     assert(false && "eval_stmt: invalid statement");
   }
+  return Interpreter::ExprEvalResult{};
 }
 
-void Interpreter::interpret(Program &program) {
+Interpreter::ExprEvalResult Interpreter::interpret(Program &program) {
   Ctx ctx;
 
   for (size_t i = 0; i < program.m_stmts.size(); ++i) {
     eval_stmt(std::move(program.m_stmts.at(i)), ctx);
   }
+
+  return Interpreter::ExprEvalResult{};
 }

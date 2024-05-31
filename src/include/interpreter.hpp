@@ -53,7 +53,7 @@ namespace Interpreter {
     EarlTy::Type get_earl_type(Ctx &ctx);
   };
 
-  void interpret(Program &program);
+  ExprEvalResult interpret(Program &program);
   ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
 };
 
