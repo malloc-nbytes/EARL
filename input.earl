@@ -1,6 +1,6 @@
 # this is a comment
 
-def sum(a: int, b: int) -> void {
+def sum(a: int, b: int) -> int {
     let x: int = 1;
     let y: int = 2;
     print(x, y);

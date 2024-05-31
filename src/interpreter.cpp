@@ -207,12 +207,10 @@ void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     args.push_back(std::make_unique<EarlVar>(std::move(id), type, false, nullptr));
   }
 
-  auto func = std::make_unique<EarlFunc>(std::move(stmt->m_id),
-                                         EarlTy::of_str(stmt->m_rettype->lexeme()),
-                                         std::move(args),
-                                         std::move(stmt->m_block));
-
-  ctx.add_function_to_scope(std::move(func));
+  ctx.add_function_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
+                                                       EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                                       std::move(args),
+                                                       std::move(stmt->m_block)));
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {

@@ -9,6 +9,7 @@
 
 Ctx::Ctx() {
   m_scope.emplace_back();
+  m_functions.emplace_back();
 }
 
 void Ctx::pop_scope(void) {
