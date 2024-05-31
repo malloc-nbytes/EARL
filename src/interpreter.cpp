@@ -201,16 +201,18 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 
 void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
   std::vector<std::unique_ptr<EarlVar>> args;
+
   for (auto &arg : stmt->m_args) {
     std::unique_ptr<Token> id = std::move(arg.first);
     EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
     args.push_back(std::make_unique<EarlVar>(std::move(id), type, false, nullptr));
   }
 
-  ctx.add_function_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
-                                                       EarlTy::of_str(stmt->m_rettype->lexeme()),
-                                                       std::move(args),
-                                                       std::move(stmt->m_block)));
+  ctx
+    .add_function_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
+                                                      EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                                      std::move(args),
+                                                      std::move(stmt->m_block)));
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
