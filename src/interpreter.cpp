@@ -199,24 +199,25 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   ctx.pop_scope();
 }
 
-// TODO: once we have a function table, check
-// to make sure that the function name is not
-// already declared.
-// TODO: use m_rettype.
+// EarlFunc(std::unique_ptr<Token> id,
+//       EarlTy::Type rettype,
+//       std::vector<EarlVar> args,
+//       std::unique_ptr<StmtBlock> block);
+
+
 void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
-  ctx.push_scope();
-
-  for (auto &pair : stmt->m_args) {
-    std::string &id = pair.first->lexeme();
-    EarlTy::Type type = EarlTy::of_str(pair.second->lexeme());
-
-    if (ctx.earlvar_in_scope(id))
-      ERR_WARGS(ErrType::Redeclared, "parameter `%s` is already in scope", id.c_str());
-
-    ctx.create_and_add_earlvar_to_scope(std::move(pair.first), type, false, nullptr);
-  }
-
-  eval_stmt_block(stmt->m_block.get(), ctx);
+  // ctx.push_scope();
+  // for (auto &pair : stmt->m_args) {
+  //   std::string &id = pair.first->lexeme();
+  //   EarlTy::Type type = EarlTy::of_str(pair.second->lexeme());
+  //   if (ctx.earlvar_in_scope(id))
+  //     ERR_WARGS(ErrType::Redeclared, "parameter `%s` is already in scope", id.c_str());
+  //   ctx.create_and_add_earlvar_to_scope(std::move(pair.first), type, false, nullptr);
+  // }
+  // eval_stmt_block(stmt->m_block.get(), ctx);
+  // std::unique_ptr<Token> id = std::move(stmt->m_id);
+  // EarlTy::Type rettype = stmt->m_rettype;
+  // std::unique_ptr<StmtBlock> block = std::move(stmt->m_block);
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {

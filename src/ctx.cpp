@@ -52,7 +52,7 @@ void Ctx::add_function_to_scope(std::unique_ptr<EarlFunc> func) {
 
 void Ctx::add_function_to_scope(std::unique_ptr<Token> id,
                                 EarlTy::Type rettype,
-                                std::vector<EarlVar> args,
+                                std::vector<std::unique_ptr<EarlVar>> args,
                                 std::unique_ptr<StmtBlock> block) {
   m_functions.back().emplace(id->lexeme(), std::make_unique<EarlFunc>(std::move(id), rettype, std::move(args), std::move(block)));
 }

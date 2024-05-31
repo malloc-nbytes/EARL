@@ -74,7 +74,7 @@ public:
 
   void add_function_to_scope(std::unique_ptr<Token> id,
                              EarlTy::Type rettype,
-                             std::vector<EarlVar> args,
+                             std::vector<std::unique_ptr<EarlVar>> args,
                              std::unique_ptr<StmtBlock> block);
 };
 
