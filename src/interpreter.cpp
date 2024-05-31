@@ -190,14 +190,14 @@ void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
   (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
-// void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
 
-// void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
-//   for (auto &stmt : block->m_stmts) {
-//     eval_stmt(stmt, ctx);
-//   }
-//   ctx.pop_scope();
-// }
+void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+  for (auto &stmt : block->m_stmts) {
+    eval_stmt(std::move(stmt), ctx);
+  }
+  ctx.pop_scope();
+}
 
 // TODO: once we have a function table, check
 // to make sure that the function name is not

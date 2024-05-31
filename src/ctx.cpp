@@ -13,10 +13,12 @@ Ctx::Ctx() {
 
 void Ctx::pop_scope(void) {
   m_scope.pop_back();
+  m_functions.pop_back();
 }
 
 void Ctx::push_scope(void) {
   m_scope.emplace_back();
+  m_functions.emplace_back();
 }
 
 void Ctx::create_and_add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd, std::any value) {
