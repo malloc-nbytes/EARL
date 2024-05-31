@@ -73,14 +73,11 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 }
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
-  if (!ctx.earlfunc_in_scope(expr->m_id->lexeme())) {
-    ERR_WARGS(ErrType::Undeclared, "function `%s` is not in scope", expr->m_id->lexeme().c_str());
-  }
   EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
 
   ctx.push_scope();
   for (auto &arg : func->m_args) {
-    // assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
+    assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
     ctx.add_earlvar_to_scope(std::move(arg));
   }
 
@@ -220,7 +217,6 @@ Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   for (auto &stmt : block->m_stmts) {
     eval_stmt(std::move(stmt), ctx);
   }
-  ctx.pop_scope();
   return Interpreter::ExprEvalResult{};
 }
 

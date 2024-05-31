@@ -1,4 +1,5 @@
 #include <any>
+#include <iostream>
 #include <vector>
 #include <unordered_map>
 
@@ -79,7 +80,7 @@ bool Ctx::earlfunc_in_scope(std::string &id) {
 }
 
 EarlFunc *Ctx::get_earlfunc_from_scope(std::string &id) {
-  for (auto it = m_functions.rbegin(); it != m_functions.rend(); ++it) {
+  for (auto it = m_functions.begin(); it != m_functions.end(); ++it) {
     auto &map = *it;
     if (map.find(id) != map.end()) {
       return map.at(id).get();
@@ -87,4 +88,18 @@ EarlFunc *Ctx::get_earlfunc_from_scope(std::string &id) {
   }
   ERR_WARGS(ErrType::Undeclared, "function `%s` not found in scope", id.c_str());
   return nullptr; // unreachable
+}
+
+void Ctx::debug_dump_earlfuncs(void) {
+  int i = 0;
+  for (auto &scope : m_functions) {
+    std::cout << "scope level " << i << std::endl;
+    for (auto &func : scope) {
+       std::cout << "  " << func.first << std::endl;
+    }
+    ++i;
+  }
+}
+
+void Ctx::debug_dump_earlvars(void) {
 }
