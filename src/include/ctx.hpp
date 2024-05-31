@@ -66,6 +66,8 @@ public:
                                        bool allocd,
                                        std::any value);
 
+  void add_earlvar_to_scope(std::unique_ptr<EarlVar> var);
+
   // Will get you the EarlVar that corrosponds
   // to `id`.
   EarlVar *get_earlvar_from_scope(const std::string &id);

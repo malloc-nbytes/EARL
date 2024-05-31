@@ -27,6 +27,11 @@ void Ctx::create_and_add_earlvar_to_scope(std::unique_ptr<Token> id, EarlTy::Typ
   m_scope.back().emplace(name, std::make_unique<EarlVar>(std::move(id), type, allocd, std::move(value)));
 }
 
+void Ctx::add_earlvar_to_scope(std::unique_ptr<EarlVar> var) {
+  std::string name = var->m_id->lexeme();
+  m_scope.back().emplace(name, std::move(var));
+}
+
 bool Ctx::earlvar_in_scope(const std::string &id) {
   for (auto &map : m_scope) {
     if (map.find(id) != map.end()) {

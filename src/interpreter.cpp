@@ -79,9 +79,17 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
     ERR_WARGS(ErrType::Undeclared, "function `%s` is not in scope", expr->m_id->lexeme().c_str());
   }
   EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
-  assert(false);
 
-  return Interpreter::ExprEvalResult{};
+  ctx.push_scope();
+  for (auto &arg : func->m_args) {
+    // assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
+    ctx.add_earlvar_to_scope(std::move(arg));
+  }
+
+  Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block.get(), ctx);
+  ctx.pop_scope();
+
+  return blockresult;
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -243,19 +251,19 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
 Interpreter::ExprEvalResult eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
   switch (stmt->stmt_type()) {
   case StmtType::Let: {
-    eval_stmt_let(dynamic_cast<StmtLet *>(stmt.get()), ctx);
+    return eval_stmt_let(dynamic_cast<StmtLet *>(stmt.get()), ctx);
   } break;
   case StmtType::Mut: {
     assert(false && "unimplemented");
   } break;
   case StmtType::Def: {
-    eval_stmt_def(dynamic_cast<StmtDef *>(stmt.get()), ctx);
+    return eval_stmt_def(dynamic_cast<StmtDef *>(stmt.get()), ctx);
   } break;
   case StmtType::Block: {
     assert(false && "unimplemented");
   } break;
   case StmtType::Stmt_Expr: {
-    eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt.get()), ctx);
+    return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt.get()), ctx);
   } break;
   default:
     assert(false && "eval_stmt: invalid statement");
