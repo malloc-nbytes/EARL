@@ -199,25 +199,20 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
   ctx.pop_scope();
 }
 
-// EarlFunc(std::unique_ptr<Token> id,
-//       EarlTy::Type rettype,
-//       std::vector<EarlVar> args,
-//       std::unique_ptr<StmtBlock> block);
-
-
 void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
-  // ctx.push_scope();
-  // for (auto &pair : stmt->m_args) {
-  //   std::string &id = pair.first->lexeme();
-  //   EarlTy::Type type = EarlTy::of_str(pair.second->lexeme());
-  //   if (ctx.earlvar_in_scope(id))
-  //     ERR_WARGS(ErrType::Redeclared, "parameter `%s` is already in scope", id.c_str());
-  //   ctx.create_and_add_earlvar_to_scope(std::move(pair.first), type, false, nullptr);
-  // }
-  // eval_stmt_block(stmt->m_block.get(), ctx);
-  // std::unique_ptr<Token> id = std::move(stmt->m_id);
-  // EarlTy::Type rettype = stmt->m_rettype;
-  // std::unique_ptr<StmtBlock> block = std::move(stmt->m_block);
+  std::vector<std::unique_ptr<EarlVar>> args;
+  for (auto &arg : stmt->m_args) {
+    std::unique_ptr<Token> id = std::move(arg.first);
+    EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
+    args.push_back(std::make_unique<EarlVar>(std::move(id), type, false, nullptr));
+  }
+
+  auto func = std::make_unique<EarlFunc>(std::move(stmt->m_id),
+                                         EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                         std::move(args),
+                                         std::move(stmt->m_block));
+
+  ctx.add_function_to_scope(std::move(func));
 }
 
 void eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
