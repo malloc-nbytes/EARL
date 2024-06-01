@@ -29,24 +29,24 @@
 void *
 utils_safe_malloc(size_t bytes)
 {
-  void *p = malloc(bytes);
-  if (!p) {
-    assert(false && "fixme");
-    // NOTIFY_ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
-  }
-  return p;
+    void *p = malloc(bytes);
+    if (!p) {
+        assert(false && "fixme");
+        // NOTIFY_ERRARGS(ERR_FATAL, "utils_safe_malloc failed when allocating %zu bytes", bytes);
+    }
+    return p;
 }
 
 int
 utils_streq(const char *s1, const char *s2)
 {
-  return strcmp(s1, s2) == 0;
+    return strcmp(s1, s2) == 0;
 }
 
 void
 utils_iota_array(int *arr, size_t len)
 {
-  for (size_t i = 0; i < len; ++i) {
-    arr[i] = i;
-  }
+    for (size_t i = 0; i < len; ++i) {
+        arr[i] = i;
+    }
 }

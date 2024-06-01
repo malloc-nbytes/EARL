@@ -31,76 +31,76 @@
 struct Lexer;
 
 enum class TokenType {
-  // Single character
-  Lparen,
-  Rparen,
-  Lbracket,
-  Rbracket,
-  Lbrace,
-  Rbrace,
-  Hash,
-  Period,
-  Semicolon,
-  Comma,
-  Greaterthan,
-  Lessthan,
-  Equals,
-  Ampersand,
-  Asterisk,
-  Plus,
-  Minus,
-  Forwardslash,
-  Pipe,
-  Caret,
-  Questionmark,
-  Backwardslash,
-  Bang,
-  At,
-  Dollarsign,
-  Percent,
-  Backtick,
-  Tilde,
-  Colon,
-  Sym_Len, // DO NOT USE! Used for the length of symbols. (deprecated)
+    // Single character
+    Lparen,
+    Rparen,
+    Lbracket,
+    Rbracket,
+    Lbrace,
+    Rbrace,
+    Hash,
+    Period,
+    Semicolon,
+    Comma,
+    Greaterthan,
+    Lessthan,
+    Equals,
+    Ampersand,
+    Asterisk,
+    Plus,
+    Minus,
+    Forwardslash,
+    Pipe,
+    Caret,
+    Questionmark,
+    Backwardslash,
+    Bang,
+    At,
+    Dollarsign,
+    Percent,
+    Backtick,
+    Tilde,
+    Colon,
+    Sym_Len, // DO NOT USE! Used for the length of symbols. (deprecated)
 
-  Double_Ampersand,
-  Double_Pipe,
-  Greaterthan_Equals,
-  Lessthan_Equals,
-  Double_Equals,
-  Bang_Equals,
-  Plus_Equals,
-  Minus_Equals,
-  Asterisk_Equals,
-  Forwardslash_Equals,
-  Percent_Equals,
-  RightArrow,
+    Double_Ampersand,
+    Double_Pipe,
+    Greaterthan_Equals,
+    Lessthan_Equals,
+    Double_Equals,
+    Bang_Equals,
+    Plus_Equals,
+    Minus_Equals,
+    Asterisk_Equals,
+    Forwardslash_Equals,
+    Percent_Equals,
+    RightArrow,
 
-  Eof,
-  Intlit,
-  Strlit,
-  Charlit,
-  Ident,
-  Keyword,
-  Type,
-  Total_Len
+    Eof,
+    Intlit,
+    Strlit,
+    Charlit,
+    Ident,
+    Keyword,
+    Type,
+    Total_Len
 };
 
 struct Token {
-  std::string m_lexeme;
-  TokenType m_type;
-  size_t m_row;
-  size_t m_col;
-  std::string m_fp;
-  Token *m_next;
+    std::string m_lexeme;
+    TokenType m_type;
+    size_t m_row;
+    size_t m_col;
+    std::string m_fp;
+    Token *m_next;
 
-  Token(char *start, size_t len,
-        TokenType type,
-        size_t row, size_t col, std::string &fp);
+    Token(char *start, size_t len,
+          TokenType type,
+          size_t row, size_t col, std::string &fp);
 
-  std::string &lexeme(void);
-  TokenType type(void) const;
-  std::string to_str(void);
+    std::string &lexeme(void);
+    TokenType type(void) const;
+    std::string to_str(void);
 };
 
 Token *token_alloc(Lexer &lexer,
