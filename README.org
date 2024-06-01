@@ -104,6 +104,10 @@ typedef int my_type_t;
 
 * Test Suite
 
+*Note:* Because we have moved to C++, we have removed all tests for the relavent
+data structures that were made for this project as they are no longer needed due
+to C++ stdlib.
+
 At the time of writing this, the tests directory is structured as such:
 
 #+begin_example
