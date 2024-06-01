@@ -20,66 +20,66 @@ typedef int test_errno_t;
 #define TEST_ASSERT_MEMEQ_FAILURE    10
 
 #define TEST_ASSERT_TRUE(expr)                  \
-  do {                                          \
-    if ((expr) != 1) {                          \
-      return TEST_ASSERT_TRUE_FAILURE;          \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if ((expr) != 1) {                      \
+            return TEST_ASSERT_TRUE_FAILURE;    \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_FALSE(expr)                 \
-  do {                                          \
-    if ((expr) != 0) {                          \
-      return TEST_ASSERT_FALSE_FAILURE;         \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if ((expr) != 0) {                      \
+            return TEST_ASSERT_FALSE_FAILURE;   \
+        }                                       \
+    } while (0)
 
-#define TEST_ASSERT_NOT_NULL(expr)              \
-  do {                                          \
-    if ((expr) == NULL) {                       \
-      return TEST_ASSERT_NOT_NULL_FAILURE;      \
-    }                                           \
-  } while (0)
+#define TEST_ASSERT_NOT_NULL(expr)                      \
+    do {                                                \
+        if ((expr) == NULL) {                           \
+            return TEST_ASSERT_NOT_NULL_FAILURE;        \
+        }                                               \
+    } while (0)
 
 #define TEST_ASSERT_NULL(expr)                  \
-  do {                                          \
-    if ((expr) != NULL) {                       \
-      return TEST_ASSERT_NULL_FAILURE;          \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if ((expr) != NULL) {                   \
+            return TEST_ASSERT_NULL_FAILURE;    \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_EQ(lhs, rhs)                \
-  do {                                          \
-    if ((lhs) != (rhs)) {                       \
-      return TEST_ASSERT_EQ_FAILURE;            \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if ((lhs) != (rhs)) {                   \
+            return TEST_ASSERT_EQ_FAILURE;      \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_NEQ(lhs, rhs)               \
-  do {                                          \
-    if ((lhs) == (rhs)) {                       \
-      return TEST_ASSERT_EQ_FAILURE;            \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if ((lhs) == (rhs)) {                   \
+            return TEST_ASSERT_EQ_FAILURE;      \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_STREQ(lhs, rhs)             \
-  do {                                          \
-    if (strcmp(lhs, rhs) != 0) {                \
-      return TEST_ASSERT_STREQ_FAILURE;         \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if (strcmp(lhs, rhs) != 0) {            \
+            return TEST_ASSERT_STREQ_FAILURE;   \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_STRNEQ(lhs, rhs)            \
-  do {                                          \
-    if (strcmp(lhs, rhs) != 0) {                \
-      return TEST_ASSERT_STRNEQ_FAILURE;        \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if (strcmp(lhs, rhs) != 0) {            \
+            return TEST_ASSERT_STRNEQ_FAILURE;  \
+        }                                       \
+    } while (0)
 
 #define TEST_ASSERT_MEMEQ(lhs, rhs, bytes)      \
-  do {                                          \
-    if (memcmp(lhs, rhs, bytes) != 0) {         \
-      return TEST_ASSERT_STRNEQ_FAILURE;        \
-    }                                           \
-  } while (0)
+    do {                                        \
+        if (memcmp(lhs, rhs, bytes) != 0) {     \
+            return TEST_ASSERT_STRNEQ_FAILURE;  \
+        }                                       \
+    } while (0)
 
 #endif // TEST_SUITE_H
