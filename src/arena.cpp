@@ -26,22 +26,22 @@
 #include "utils.hpp"
 
 Arena::Arena(size_t cap) {
-  m_mem = new uint8_t[cap]{};
-  m_len = 0;
+    m_mem = new uint8_t[cap]{};
+    m_len = 0;
 }
 
 Arena::~Arena(void) {
-  delete[] m_mem;
+    delete[] m_mem;
 }
 
 uint8_t *arena_alloc(Arena &arena, size_t bytes) {
-  if (arena.m_len+bytes > arena.m_cap) {
-    arena.m_cap *= 2;
-    arena.m_mem = static_cast<uint8_t *>(realloc(arena.m_mem, arena.m_cap));
-    for (size_t i = arena.m_len; i < arena.m_len + bytes; ++i)
-      arena.m_mem[i] = 0x0;
-  }
-  uint8_t *mem = &arena.m_mem[arena.m_len];
-  arena.m_len += bytes;
-  return mem;
+    if (arena.m_len+bytes > arena.m_cap) {
+        arena.m_cap *= 2;
+        arena.m_mem = static_cast<uint8_t *>(realloc(arena.m_mem, arena.m_cap));
+        for (size_t i = arena.m_len; i < arena.m_len + bytes; ++i)
+            arena.m_mem[i] = 0x0;
+    }
+    uint8_t *mem = &arena.m_mem[arena.m_len];
+    arena.m_len += bytes;
+    return mem;
 }

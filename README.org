@@ -9,6 +9,8 @@
 
 *NOTE*: THIS DOCUMENT IS DEPRECATED AS WE HAVE MOVED TO C++!
 
+*NOTE*: Do not modify the README.html as it is auto generated from README.org by Emacs Org Mode.
+
 *NOTE*: Open =README.html= in a browser to view this document
 in a much better format.
 
@@ -51,6 +53,8 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - =make clean= \rightarrow cleans the project
 #+end_quote
 
+Now that the initial setup has been complete, you no longer have to use =autoconf=.
+
 * Contributing
 
 ** Style Guide
@@ -60,40 +64,30 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - Functions should be formatted as such:
 
 #+begin_example
-<return type>
-<name>(<params>)
-{
+<return type> <name>(<params>) {
   body...
 }
 #+end_example
 
-- All indents should be 2 spaces.
+- All indents should be 4 spaces and do not use tabs.
 - Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.
 - Always put a comment after =#endif= with what it is ending.
-- All functions should have the corrosponding data structure it is working with before the name.
-  For example, if I am making an =append= function for a =vector=, the name should be along the lines
-  of =vector_append=.
 
 *** Structs
 
 #+begin_example
-struct <name> {
+struct <NameOfStruct> {
   ...
 }
 #+end_example
 
-- All structs must start with =struct= and then (lowercase) =<name>=.
-- Typedefs for struct names are not allowed as of now.
-
-#+begin_example
-struct my_vector {
-  ...
-}
-#+end_example
+- All struct names must use pascal case =<NameOfStruct>=.
 
 *** Misc
 
 - All =if=, =for=, =while= etc. should have brackets (the left bracket should be on the same line as the statement).
+  While not required, if a conditional/loop only has one statement, you can ommit the brackets. Just make sure it
+  is on a different line.
 - =+=, =-=, =*=, =/=, etc. does not need whitespace, but == should.
 - Lines have a soft limit of 85 characters.
 - =typedef='d types should have =_t= appended to it.
@@ -103,12 +97,16 @@ struct my_vector {
 typedef int my_type_t;
 #+end_example
 
-- All variable, function, struct, and macro names should be =snake_case=.
+- All variable, function, and macro names should be =snake_case=.
 - All file names have a hyphen ('-') to separate words.
 - *Remove unnecessary trailing whitespace*.
-- *Disable auto-formatters*.
+- *Disable auto-formatters* (unless it conforms with the C default style of BSD).
 
 * Test Suite
+
+*Note:* Because we have moved to C++, we have removed all tests for the relavent
+data structures that were made for this project as they are no longer needed due
+to C++ stdlib.
 
 At the time of writing this, the tests directory is structured as such:
 
@@ -137,13 +135,13 @@ At the time of writing this, the tests directory is structured as such:
 
 ** Test Suite Source
 
-The test suite is composed of two files, =test-suite.c= and =test-suite.h=
+The test suite is composed of two files, =test-suite.cpp= and =test-suite.hpp=
 
-The file =test-suite.h= contains a bunch of custom assert macros that return
+The file =test-suite.hpp= contains a bunch of custom assert macros that return
 the correct values on failure. Use these when comparing values, checking for
 null, etc.
 
-The file =test-suite.c= is the file where you actually issue running the tests.
+The file =test-suite.cpp= is the file where you actually issue running the tests.
 This is done with the =#define RUN_TEST(func)= macro where =func= is the test
 that you want to run.
 
@@ -156,7 +154,7 @@ have =#include "../../include/"= when needing headers.
 
 If a test were to fail after running =make test=, it will output "FAILED ($n$)"
 where $n$ is some test assert failure number. To figure out what the number means,
-go into =test/test-suite.h= and match it to the appropriate =TEST_ASSERT_*_FAILURE= macro.
+go into =test/test-suite.hpp= and match it to the appropriate =TEST_ASSERT_*_FAILURE= macro.
 
 ** Adding more Tests to Ones that Exist
 
@@ -164,7 +162,7 @@ Simply go into the test directory that you want to add tests for and create a ne
 function. Then add it's prototype to its corrosponding header file.
 
 Lets say I want to add a new test to =vec=. I would go into
-=test/vec/test-vec.h= and add a new prototype
+=test/vec/test-vec.hpp= and add a new prototype
 
 #+begin_src c
   #ifndef VEC_TEST_H
@@ -180,12 +178,10 @@ Lets say I want to add a new test to =vec=. I would go into
   test_errno_t test_vector_my_new_test(void); // here
 #+end_src
 
-I would then go into =test/vec/test-vec.c= and add it's implementation
+I would then go into =test/vec/test-vec.cpp= and add it's implementation
 
 #+begin_src c
-  test_errno_t
-  test_vector_my_new_test(void)
-  {
+  test_errno_t test_vector_my_new_test(void) {
     struct vec v = vec_create2(int);
     ...
     TEST_ASSERT_EQ(vec_deref_at(v, 1, int), 99); // example of a test assert.
@@ -195,13 +191,11 @@ I would then go into =test/vec/test-vec.c= and add it's implementation
   }
 #+end_src
 
-Finally, go into =test/test-suite.c= and issue the macro to actually
+Finally, go into =test/test-suite.cpp= and issue the macro to actually
 run the newly created test.
 
 #+begin_src c
-  int
-  main(void)
-  {
+  int main(void) {
     int pass = 0;
     int fail = 0;
 
@@ -240,8 +234,12 @@ is how to do it:
 
 *NOTE*: The following steps are being performed in =EARL/src=.
 
+*NOTE*: The following code snippets are "copy-and-paste-able."
+
+*NOTE*: Anywhere that says /testname/, it is refering to the type of test group that you are creating.
+
 1. In =test/=, create a new directory for the type of tests you want
-   to create. Let /testname/ be the directory name.
+   to create. Let */testname/* be the directory name.
 2. Go into =test/Makefile.am= *note the =.am=.
 3. In =test_suite_SOURCES=, add =testname/test-testname.cpp=
 4. Create the /testname/ directory and add the =.cpp= and =.hpp= files.
@@ -344,7 +342,7 @@ A few things that are useful throughout the entire project.
 
 /The keywords and types of EARL as compound literals./
 
-** Notify
+** Notify *DEPRECATED*
 
 #+begin_quote
 File: notify.h
@@ -376,7 +374,7 @@ Provides ways to display an error message and quite the program.
 /It is the exact same as =NOTIFY_ERR= except it takes a variadic number of arguments.
 This is useful if your message has format specifiers in it such as ="%d"=, ="%zu"= etc./
 
-** Utils
+** Utils *DEPRECATED*
 
 #+begin_quote
 File: utils.h
@@ -432,7 +430,7 @@ and 0 on failure./
 
 /Fill an array from 0..len with values 0..len./
 
-** Vector
+** Vector *DEPRECATED*
 
 #+begin_quote
 File: vector.h
@@ -528,9 +526,9 @@ if the type does not match what it is actually holding./
 
 /Gives the underlying data as =uint8_t=./
 
-** TODO Pair
+** TODO Pair *DEPRECATED*
 
-** TODO Hashtbl
+** TODO Hashtbl *DEPRECATED*
 
 ** TODO Token
 

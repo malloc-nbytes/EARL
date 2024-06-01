@@ -38,39 +38,39 @@ std::vector<std::string> VARTYPES = COMMON_EARLTY_ASCPL;
 const size_t VARTYPES_LEN = VARTYPES.size();
 
 void usage(char *progname) {
-  (void)progname;
-  assert(false && "fixme");
+    (void)progname;
+    assert(false && "fixme");
 }
 
 std::vector<std::string> create_keywords(void) {
-  std::vector<std::string> kws;
-  std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
-  // std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
-  return kws;
+    std::vector<std::string> kws;
+    std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
+    // std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
+    return kws;
 }
 
 std::vector<std::string> create_types(void) {
-  std::vector<std::string> tys;
-  std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {tys.push_back(s);});
-  return tys;
+    std::vector<std::string> tys;
+    std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {tys.push_back(s);});
+    return tys;
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    usage(*argv);
-  }
+    if (argc != 2) {
+        usage(*argv);
+    }
 
-  char *filepath = *(++argv);
+    char *filepath = *(++argv);
 
-  std::vector<std::string> keywords = create_keywords();
-  std::vector<std::string> types = create_types();
-  std::string comment = "#";
+    std::vector<std::string> keywords = create_keywords();
+    std::vector<std::string> types = create_types();
+    std::string comment = "#";
 
-  Lexer lexer = lex_file(filepath, keywords, types, comment);
-  Program program = Parser::parse_program(lexer);
+    Lexer lexer = lex_file(filepath, keywords, types, comment);
+    Program program = Parser::parse_program(lexer);
 
-  Interpreter::interpret(program);
+    Interpreter::interpret(program);
 
-  return 0;
+    return 0;
 }
 

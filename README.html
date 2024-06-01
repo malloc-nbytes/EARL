@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-28 Tue 20:36 -->
+<!-- 2024-06-01 Sat 16:39 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL</title>
@@ -61,63 +61,63 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org1dba478">1. Introduction</a></li>
-<li><a href="#org981d896">2. Compiling</a></li>
-<li><a href="#org47f04c4">3. Contributing</a>
+<li><a href="#org9760aef">1. Introduction</a></li>
+<li><a href="#orge1a8f0a">2. Compiling</a></li>
+<li><a href="#orgd3c0e17">3. Contributing</a>
 <ul>
-<li><a href="#org3319131">3.1. Style Guide</a>
+<li><a href="#orgd62168d">3.1. Style Guide</a>
 <ul>
-<li><a href="#org3eedbce">3.1.1. Functions</a></li>
-<li><a href="#org78c0442">3.1.2. Structs</a></li>
-<li><a href="#org1cdef8f">3.1.3. Misc</a></li>
+<li><a href="#org47d353e">3.1.1. Functions</a></li>
+<li><a href="#org71fc695">3.1.2. Structs</a></li>
+<li><a href="#orgeea15d1">3.1.3. Misc</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org813162c">4. Test Suite</a>
+<li><a href="#org4c0e88c">4. Test Suite</a>
 <ul>
-<li><a href="#org23574ca">4.1. Test Suite Source</a></li>
-<li><a href="#org8e208c1">4.2. Adding more Tests to Ones that Exist</a></li>
-<li><a href="#org4cc8769">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
+<li><a href="#orgc3a14c8">4.1. Test Suite Source</a></li>
+<li><a href="#org3ca2508">4.2. Adding more Tests to Ones that Exist</a></li>
+<li><a href="#orgc89a9b2">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
 </ul>
 </li>
-<li><a href="#orgeac9509">5. Interfaces</a>
+<li><a href="#orgbde0384">5. Interfaces</a>
 <ul>
-<li><a href="#orgc9e8103">5.1. Arena</a>
+<li><a href="#org2fc39ad">5.1. Arena</a>
 <ul>
-<li><a href="#orgceae6c3">5.1.1. Functions</a></li>
+<li><a href="#org3377ae6">5.1.1. Functions</a></li>
 </ul>
 </li>
-<li><a href="#org998c6a0">5.2. Common</a>
+<li><a href="#org1630348">5.2. Common</a>
 <ul>
-<li><a href="#org3b41169">5.2.1. Macros</a></li>
+<li><a href="#orgc4733d9">5.2.1. Macros</a></li>
 </ul>
 </li>
-<li><a href="#org77096d1">5.3. Notify</a>
+<li><a href="#org5b15fc6">5.3. Notify <b>DEPRECATED</b></a>
 <ul>
-<li><a href="#orga6fac6d">5.3.1. Enums</a></li>
-<li><a href="#orga25e0df">5.3.2. Macros</a></li>
+<li><a href="#org4db4e77">5.3.1. Enums</a></li>
+<li><a href="#orgf7dce20">5.3.2. Macros</a></li>
 </ul>
 </li>
-<li><a href="#orgf99c995">5.4. Utils</a>
+<li><a href="#org8b44265">5.4. Utils <b>DEPRECATED</b></a>
 <ul>
-<li><a href="#orgb3b6a27">5.4.1. Macros</a></li>
-<li><a href="#org2db0f74">5.4.2. Functions</a></li>
+<li><a href="#org0ceb907">5.4.1. Macros</a></li>
+<li><a href="#org4e8ff71">5.4.2. Functions</a></li>
 </ul>
 </li>
-<li><a href="#orgaf99d93">5.5. Vector</a>
+<li><a href="#orgc12a0fa">5.5. Vector <b>DEPRECATED</b></a>
 <ul>
-<li><a href="#orgd934bb8">5.5.1. Structs</a></li>
-<li><a href="#orge0cf2b3">5.5.2. Macros</a></li>
-<li><a href="#org605b792">5.5.3. Functions</a></li>
+<li><a href="#org214f9d0">5.5.1. Structs</a></li>
+<li><a href="#org2f25cdd">5.5.2. Macros</a></li>
+<li><a href="#org02dad8e">5.5.3. Functions</a></li>
 </ul>
 </li>
-<li><a href="#org53a14fa">5.6. <span class="todo TODO">TODO</span> Pair</a></li>
-<li><a href="#org447186f">5.7. <span class="todo TODO">TODO</span> Hashtbl</a></li>
-<li><a href="#org3fe4716">5.8. <span class="todo TODO">TODO</span> Token</a></li>
-<li><a href="#org566a700">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
-<li><a href="#orge7c72e6">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
-<li><a href="#org32b163c">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
+<li><a href="#org37e6189">5.6. <span class="todo TODO">TODO</span> Pair <b>DEPRECATED</b></a></li>
+<li><a href="#org09e1940">5.7. <span class="todo TODO">TODO</span> Hashtbl <b>DEPRECATED</b></a></li>
+<li><a href="#org740ceef">5.8. <span class="todo TODO">TODO</span> Token</a></li>
+<li><a href="#orge8aeedd">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
+<li><a href="#orgdea4f9e">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
+<li><a href="#orgb1533dd">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
 </ul>
 </li>
 </ul>
@@ -128,18 +128,22 @@
 </p>
 
 <p>
+<b>NOTE</b>: Do not modify the README.html as it is auto generated from README.org by Emacs Org Mode.
+</p>
+
+<p>
 <b>NOTE</b>: Open <code>README.html</code> in a browser to view this document
 in a much better format.
 </p>
 
 
-<div id="org92e558c" class="figure">
+<div id="org8fedb66" class="figure">
 <p><img src="./imgs/earl-logo-resized.jpg" alt="earl-logo-resized.jpg" />
 </p>
 </div>
 
-<div id="outline-container-org1dba478" class="outline-2">
-<h2 id="org1dba478"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-org9760aef" class="outline-2">
+<h2 id="org9760aef"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <blockquote>
 <p>
@@ -150,8 +154,8 @@ and brackets.
 </div>
 </div>
 
-<div id="outline-container-org981d896" class="outline-2">
-<h2 id="org981d896"><span class="section-number-2">2.</span> Compiling</h2>
+<div id="outline-container-orge1a8f0a" class="outline-2">
+<h2 id="orge1a8f0a"><span class="section-number-2">2.</span> Compiling</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 EARL uses <a href="https://www.gnu.org/software/autoconf/">autoconf</a> to generate Makefiles. The following are required to build the project:
@@ -194,99 +198,93 @@ This will create the Makefiles. Use <code>make &lt;opt&gt;</code> where <code>&l
 <li><code>make clean</code> &rarr; cleans the project</li>
 </ul>
 </blockquote>
+
+<p>
+Now that the initial setup has been complete, you no longer have to use <code>autoconf</code>.
+</p>
 </div>
 </div>
 
-<div id="outline-container-org47f04c4" class="outline-2">
-<h2 id="org47f04c4"><span class="section-number-2">3.</span> Contributing</h2>
+<div id="outline-container-orgd3c0e17" class="outline-2">
+<h2 id="orgd3c0e17"><span class="section-number-2">3.</span> Contributing</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org3319131" class="outline-3">
-<h3 id="org3319131"><span class="section-number-3">3.1.</span> Style Guide</h3>
+<div id="outline-container-orgd62168d" class="outline-3">
+<h3 id="orgd62168d"><span class="section-number-3">3.1.</span> Style Guide</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org3eedbce" class="outline-4">
-<h4 id="org3eedbce"><span class="section-number-4">3.1.1.</span> Functions</h4>
+<div id="outline-container-org47d353e" class="outline-4">
+<h4 id="org47d353e"><span class="section-number-4">3.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>Functions should be formatted as such:</li>
 </ul>
 
-<pre class="example" id="orge066b2b">
-&lt;return type&gt;
-&lt;name&gt;(&lt;params&gt;)
-{
+<pre class="example" id="org884a385">
+&lt;return type&gt; &lt;name&gt;(&lt;params&gt;) {
   body...
 }
 </pre>
 
 <ul class="org-ul">
-<li>All indents should be 2 spaces.</li>
+<li>All indents should be 4 spaces and do not use tabs.</li>
 <li>Macros should be in CAPS. The only exception is for when you want to treat a macro as a function.</li>
 <li>Always put a comment after <code>#endif</code> with what it is ending.</li>
-<li>All functions should have the corrosponding data structure it is working with before the name.
-For example, if I am making an <code>append</code> function for a <code>vector</code>, the name should be along the lines
-of <code>vector_append</code>.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org78c0442" class="outline-4">
-<h4 id="org78c0442"><span class="section-number-4">3.1.2.</span> Structs</h4>
+<div id="outline-container-org71fc695" class="outline-4">
+<h4 id="org71fc695"><span class="section-number-4">3.1.2.</span> Structs</h4>
 <div class="outline-text-4" id="text-3-1-2">
-<pre class="example" id="orgf939d53">
-struct &lt;name&gt; {
+<pre class="example" id="orgc8a3156">
+struct &lt;NameOfStruct&gt; {
   ...
 }
 </pre>
 
 <ul class="org-ul">
-<li>All structs must start with <code>struct</code> and then (lowercase) <code>&lt;name&gt;</code>.</li>
-<li>Typedefs for struct names are not allowed as of now.</li>
+<li>All struct names must use pascal case <code>&lt;NameOfStruct&gt;</code>.</li>
 </ul>
-
-<pre class="example" id="org075a5f8">
-struct my_vector {
-  ...
-}
-</pre>
 </div>
 </div>
 
-<div id="outline-container-org1cdef8f" class="outline-4">
-<h4 id="org1cdef8f"><span class="section-number-4">3.1.3.</span> Misc</h4>
+<div id="outline-container-orgeea15d1" class="outline-4">
+<h4 id="orgeea15d1"><span class="section-number-4">3.1.3.</span> Misc</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <ul class="org-ul">
-<li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).</li>
+<li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).
+While not required, if a conditional/loop only has one statement, you can ommit the brackets. Just make sure it
+is on a different line.</li>
 <li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, etc. does not need whitespace, but == should.</li>
 <li>Lines have a soft limit of 85 characters.</li>
 <li><code>typedef</code>'d types should have <code>_t</code> appended to it.
 Example:</li>
 </ul>
 
-<pre class="example" id="orgcb3217e">
+<pre class="example" id="org310000c">
 typedef int my_type_t;
 </pre>
 
 <ul class="org-ul">
-<li>All variable, function, struct, and macro names should be <code>snake_case</code>.</li>
+<li>All variable, function, and macro names should be <code>snake_case</code>.</li>
 <li>All file names have a hyphen ('-') to separate words.</li>
 <li><b>Remove unnecessary trailing whitespace</b>.</li>
-<li><b>Disable auto-formatters</b>.</li>
+<li><b>Disable auto-formatters</b> (unless it conforms with the C default style of BSD).</li>
 </ul>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org813162c" class="outline-2">
-<h2 id="org813162c"><span class="section-number-2">4.</span> Test Suite</h2>
+<div id="outline-container-org4c0e88c" class="outline-2">
+<h2 id="org4c0e88c"><span class="section-number-2">4.</span> Test Suite</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 At the time of writing this, the tests directory is structured as such:
 </p>
 
-<pre class="example" id="org351bc4f">
+<pre class="example" id="org5906664">
 .
 ├── Makefile (generated)
 ├── Makefile.am (how to make the tests)
@@ -310,21 +308,21 @@ At the time of writing this, the tests directory is structured as such:
 </pre>
 </div>
 
-<div id="outline-container-org23574ca" class="outline-3">
-<h3 id="org23574ca"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
+<div id="outline-container-orgc3a14c8" class="outline-3">
+<h3 id="orgc3a14c8"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
-The test suite is composed of two files, <code>test-suite.c</code> and <code>test-suite.h</code>
+The test suite is composed of two files, <code>test-suite.cpp</code> and <code>test-suite.hpp</code>
 </p>
 
 <p>
-The file <code>test-suite.h</code> contains a bunch of custom assert macros that return
+The file <code>test-suite.hpp</code> contains a bunch of custom assert macros that return
 the correct values on failure. Use these when comparing values, checking for
 null, etc.
 </p>
 
 <p>
-The file <code>test-suite.c</code> is the file where you actually issue running the tests.
+The file <code>test-suite.cpp</code> is the file where you actually issue running the tests.
 This is done with the <code>#define RUN_TEST(func)</code> macro where <code>func</code> is the test
 that you want to run.
 </p>
@@ -343,13 +341,13 @@ have <code>#include "../../include/"</code> when needing headers.
 <p>
 If a test were to fail after running <code>make test</code>, it will output "FAILED (\(n\))"
 where \(n\) is some test assert failure number. To figure out what the number means,
-go into <code>test/test-suite.h</code> and match it to the appropriate <code>TEST_ASSERT_*_FAILURE</code> macro.
+go into <code>test/test-suite.hpp</code> and match it to the appropriate <code>TEST_ASSERT_*_FAILURE</code> macro.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org8e208c1" class="outline-3">
-<h3 id="org8e208c1"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
+<div id="outline-container-org3ca2508" class="outline-3">
+<h3 id="org3ca2508"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 Simply go into the test directory that you want to add tests for and create a new
@@ -358,7 +356,7 @@ function. Then add it's prototype to its corrosponding header file.
 
 <p>
 Lets say I want to add a new test to <code>vec</code>. I would go into
-<code>test/vec/test-vec.h</code> and add a new prototype
+<code>test/vec/test-vec.hpp</code> and add a new prototype
 </p>
 
 <div class="org-src-container">
@@ -377,13 +375,11 @@ test_errno_t test_vector_my_new_test(void); // here
 </div>
 
 <p>
-I would then go into <code>test/vec/test-vec.c</code> and add it's implementation
+I would then go into <code>test/vec/test-vec.cpp</code> and add it's implementation
 </p>
 
 <div class="org-src-container">
-<pre class="src src-c">test_errno_t
-test_vector_my_new_test(void)
-{
+<pre class="src src-c">test_errno_t test_vector_my_new_test(void) {
   struct vec v = vec_create2(int);
   ...
   TEST_ASSERT_EQ(vec_deref_at(v, 1, int), 99); // example of a test assert.
@@ -395,14 +391,12 @@ test_vector_my_new_test(void)
 </div>
 
 <p>
-Finally, go into <code>test/test-suite.c</code> and issue the macro to actually
+Finally, go into <code>test/test-suite.cpp</code> and issue the macro to actually
 run the newly created test.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-c">int
-main(void)
-{
+<pre class="src src-c">int main(void) {
   int pass = 0;
   int fail = 0;
 
@@ -435,8 +429,8 @@ That's it! Now run <code>make test</code> to see the output.
 </div>
 </div>
 
-<div id="outline-container-org4cc8769" class="outline-3">
-<h3 id="org4cc8769"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
+<div id="outline-container-orgc89a9b2" class="outline-3">
+<h3 id="orgc89a9b2"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 <b>UPDATE</b>: There is now a script <code>test/create-test.sh</code> that automates
@@ -453,17 +447,25 @@ is how to do it:
 <b>NOTE</b>: The following steps are being performed in <code>EARL/src</code>.
 </p>
 
+<p>
+<b>NOTE</b>: The following code snippets are "copy-and-paste-able."
+</p>
+
+<p>
+<b>NOTE</b>: Anywhere that says <i>testname</i>, it is refering to the type of test group that you are creating.
+</p>
+
 <ol class="org-ol">
 <li>In <code>test/</code>, create a new directory for the type of tests you want
-to create. Let <i>testname</i> be the directory name.</li>
+to create. Let <b><i>testname</i></b> be the directory name.</li>
 <li>Go into <code>test/Makefile.am</code> *note the <code>.am</code>.</li>
-<li>In <code>test_suite_SOURCES</code>, add <code>testname/test-testname.c</code></li>
+<li>In <code>test_suite_SOURCES</code>, add <code>testname/test-testname.cpp</code></li>
 <li><p>
-Create the <i>testname</i> directory and add the <code>.c</code> and <code>.h</code> files.
+Create the <i>testname</i> directory and add the <code>.cpp</code> and <code>.hpp</code> files.
 </p>
 <div class="org-src-container">
 <pre class="src src-shell">mkdir test/testname
-touch test/testname/test-testname{.c,.h}
+touch test/testname/test-testname{.cpp,.hpp}
 </pre>
 </div></li>
 
@@ -471,11 +473,11 @@ touch test/testname/test-testname{.c,.h}
 Add include guards to the header
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">cat &gt; test/testname/test-testname.h &lt;&lt; "EOF"
+<pre class="src src-shell">cat &gt; test/testname/test-testname.hpp &lt;&lt; "EOF"
 #ifndef TESTNAME_H
 #define TESTNAME_H
 
-#include "test-suite.h"
+#include "test-suite.hpp"
 
 #endif // TESTNAME_H
 EOF
@@ -483,26 +485,26 @@ EOF
 </div></li>
 
 <li><p>
-Add the appropriate headers to <code>test/testname/test-testname.c</code>
+Add the appropriate headers to <code>test/testname/test-testname.cpp</code>
 </p>
 <div class="org-src-container">
-<pre class="src src-shell">echo "#include \"test-suite.h\"" &gt; test/testname/test-testname.c
+<pre class="src src-shell">echo "#include \"test-suite.hpp\"" &gt; test/testname/test-testname.cpp
 </pre>
 </div></li>
 
-<li>In <code>test/test-suite.c</code> add the appropriate include header.</li>
-<li>Start adding your tests (see <a href="#org8e208c1">Adding more Tests to Ones that Exist</a>)</li>
+<li>In <code>test/test-suite.cpp</code> add the appropriate include header.</li>
+<li>Start adding your tests (see <a href="#org3ca2508">Adding more Tests to Ones that Exist</a>)</li>
 </ol>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgeac9509" class="outline-2">
-<h2 id="orgeac9509"><span class="section-number-2">5.</span> Interfaces</h2>
+<div id="outline-container-orgbde0384" class="outline-2">
+<h2 id="orgbde0384"><span class="section-number-2">5.</span> Interfaces</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-orgc9e8103" class="outline-3">
-<h3 id="orgc9e8103"><span class="section-number-3">5.1.</span> Arena</h3>
+<div id="outline-container-org2fc39ad" class="outline-3">
+<h3 id="org2fc39ad"><span class="section-number-3">5.1.</span> Arena</h3>
 <div class="outline-text-3" id="text-5-1">
 <blockquote>
 <p>
@@ -520,8 +522,8 @@ Description:
 </blockquote>
 </div>
 
-<div id="outline-container-orgceae6c3" class="outline-4">
-<h4 id="orgceae6c3"><span class="section-number-4">5.1.1.</span> Functions</h4>
+<div id="outline-container-org3377ae6" class="outline-4">
+<h4 id="org3377ae6"><span class="section-number-4">5.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-1-1">
 <div class="org-src-container">
 <pre class="src src-c">struct arena;
@@ -562,8 +564,8 @@ Description:
 </div>
 </div>
 
-<div id="outline-container-org998c6a0" class="outline-3">
-<h3 id="org998c6a0"><span class="section-number-3">5.2.</span> Common</h3>
+<div id="outline-container-org1630348" class="outline-3">
+<h3 id="org1630348"><span class="section-number-3">5.2.</span> Common</h3>
 <div class="outline-text-3" id="text-5-2">
 <blockquote>
 <p>
@@ -577,8 +579,8 @@ A few things that are useful throughout the entire project.
 </blockquote>
 </div>
 
-<div id="outline-container-org3b41169" class="outline-4">
-<h4 id="org3b41169"><span class="section-number-4">5.2.1.</span> Macros</h4>
+<div id="outline-container-orgc4733d9" class="outline-4">
+<h4 id="orgc4733d9"><span class="section-number-4">5.2.1.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-2-1">
 <div class="org-src-container">
 <pre class="src src-c">#define COMMON_KW_LET
@@ -614,8 +616,8 @@ A few things that are useful throughout the entire project.
 </div>
 </div>
 
-<div id="outline-container-org77096d1" class="outline-3">
-<h3 id="org77096d1"><span class="section-number-3">5.3.</span> Notify</h3>
+<div id="outline-container-org5b15fc6" class="outline-3">
+<h3 id="org5b15fc6"><span class="section-number-3">5.3.</span> Notify <b>DEPRECATED</b></h3>
 <div class="outline-text-3" id="text-5-3">
 <blockquote>
 <p>
@@ -629,8 +631,8 @@ Provides ways to display an error message and quite the program.
 </blockquote>
 </div>
 
-<div id="outline-container-orga6fac6d" class="outline-4">
-<h4 id="orga6fac6d"><span class="section-number-4">5.3.1.</span> Enums</h4>
+<div id="outline-container-org4db4e77" class="outline-4">
+<h4 id="org4db4e77"><span class="section-number-4">5.3.1.</span> Enums</h4>
 <div class="outline-text-4" id="text-5-3-1">
 <div class="org-src-container">
 <pre class="src src-c">enum NOTIFY_ERR_TYPE
@@ -643,8 +645,8 @@ Provides ways to display an error message and quite the program.
 </div>
 </div>
 
-<div id="outline-container-orga25e0df" class="outline-4">
-<h4 id="orga25e0df"><span class="section-number-4">5.3.2.</span> Macros</h4>
+<div id="outline-container-orgf7dce20" class="outline-4">
+<h4 id="orgf7dce20"><span class="section-number-4">5.3.2.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-3-2">
 <div class="org-src-container">
 <pre class="src src-c">#define NOTIFY_ERR(etype, msg)
@@ -668,8 +670,8 @@ This is useful if your message has format specifiers in it such as <code>"%d"</c
 </div>
 </div>
 
-<div id="outline-container-orgf99c995" class="outline-3">
-<h3 id="orgf99c995"><span class="section-number-3">5.4.</span> Utils</h3>
+<div id="outline-container-org8b44265" class="outline-3">
+<h3 id="org8b44265"><span class="section-number-3">5.4.</span> Utils <b>DEPRECATED</b></h3>
 <div class="outline-text-3" id="text-5-4">
 <blockquote>
 <p>
@@ -683,8 +685,8 @@ A bunch of helpful utility tools.
 </blockquote>
 </div>
 
-<div id="outline-container-orgb3b6a27" class="outline-4">
-<h4 id="orgb3b6a27"><span class="section-number-4">5.4.1.</span> Macros</h4>
+<div id="outline-container-org0ceb907" class="outline-4">
+<h4 id="org0ceb907"><span class="section-number-4">5.4.1.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-4-1">
 <div class="org-src-container">
 <pre class="src src-c">#define DEBUG_ASSERT(expr)
@@ -719,8 +721,8 @@ It prints <code>msg</code> and returns <code>retttype</code></i>
 </div>
 </div>
 
-<div id="outline-container-org2db0f74" class="outline-4">
-<h4 id="org2db0f74"><span class="section-number-4">5.4.2.</span> Functions</h4>
+<div id="outline-container-org4e8ff71" class="outline-4">
+<h4 id="org4e8ff71"><span class="section-number-4">5.4.2.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-4-2">
 <div class="org-src-container">
 <pre class="src src-c">void *utils_safe_malloc(size_t bytes);
@@ -755,8 +757,8 @@ and 0 on failure.</i>
 </div>
 </div>
 
-<div id="outline-container-orgaf99d93" class="outline-3">
-<h3 id="orgaf99d93"><span class="section-number-3">5.5.</span> Vector</h3>
+<div id="outline-container-orgc12a0fa" class="outline-3">
+<h3 id="orgc12a0fa"><span class="section-number-3">5.5.</span> Vector <b>DEPRECATED</b></h3>
 <div class="outline-text-3" id="text-5-5">
 <blockquote>
 <p>
@@ -772,8 +774,8 @@ Description:
 </blockquote>
 </div>
 
-<div id="outline-container-orgd934bb8" class="outline-4">
-<h4 id="orgd934bb8"><span class="section-number-4">5.5.1.</span> Structs</h4>
+<div id="outline-container-org214f9d0" class="outline-4">
+<h4 id="org214f9d0"><span class="section-number-4">5.5.1.</span> Structs</h4>
 <div class="outline-text-4" id="text-5-5-1">
 <div class="org-src-container">
 <pre class="src src-c">struct vector
@@ -786,8 +788,8 @@ Description:
 </div>
 </div>
 
-<div id="outline-container-orge0cf2b3" class="outline-4">
-<h4 id="orge0cf2b3"><span class="section-number-4">5.5.2.</span> Macros</h4>
+<div id="outline-container-org2f25cdd" class="outline-4">
+<h4 id="org2f25cdd"><span class="section-number-4">5.5.2.</span> Macros</h4>
 <div class="outline-text-4" id="text-5-5-2">
 <div class="org-src-container">
 <pre class="src src-c">#define vector_create2(type)
@@ -848,8 +850,8 @@ if the type does not match what it is actually holding.</i>
 </div>
 </div>
 
-<div id="outline-container-org605b792" class="outline-4">
-<h4 id="org605b792"><span class="section-number-4">5.5.3.</span> Functions</h4>
+<div id="outline-container-org02dad8e" class="outline-4">
+<h4 id="org02dad8e"><span class="section-number-4">5.5.3.</span> Functions</h4>
 <div class="outline-text-4" id="text-5-5-3">
 <div class="org-src-container">
 <pre class="src src-c">struct vector vector_create(size_t stride);
@@ -908,34 +910,34 @@ if the type does not match what it is actually holding.</i>
 </div>
 </div>
 
-<div id="outline-container-org53a14fa" class="outline-3">
-<h3 id="org53a14fa"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair</h3>
+<div id="outline-container-org37e6189" class="outline-3">
+<h3 id="org37e6189"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair <b>DEPRECATED</b></h3>
 </div>
 
-<div id="outline-container-org447186f" class="outline-3">
-<h3 id="org447186f"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl</h3>
+<div id="outline-container-org09e1940" class="outline-3">
+<h3 id="org09e1940"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl <b>DEPRECATED</b></h3>
 </div>
 
-<div id="outline-container-org3fe4716" class="outline-3">
-<h3 id="org3fe4716"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
+<div id="outline-container-org740ceef" class="outline-3">
+<h3 id="org740ceef"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
 </div>
 
-<div id="outline-container-org566a700" class="outline-3">
-<h3 id="org566a700"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
+<div id="outline-container-orge8aeedd" class="outline-3">
+<h3 id="orge8aeedd"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
 </div>
 
-<div id="outline-container-orge7c72e6" class="outline-3">
-<h3 id="orge7c72e6"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
+<div id="outline-container-orgdea4f9e" class="outline-3">
+<h3 id="orgdea4f9e"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
 </div>
 
-<div id="outline-container-org32b163c" class="outline-3">
-<h3 id="org32b163c"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
+<div id="outline-container-orgb1533dd" class="outline-3">
+<h3 id="orgb1533dd"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-05-28 Tue 20:36</p>
+<p class="date">Created: 2024-06-01 Sat 16:39</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -32,28 +32,28 @@
 // An `EarlVar` is the value of all variables
 // that are created during runtime.
 struct EarlVar {
-  // The unique identifier
-  std::unique_ptr<Token> m_id;
+    // The unique identifier
+    std::unique_ptr<Token> m_id;
 
-  // The type of the variable in
-  // terms of an `EARL Type`
-  EarlTy::Type m_type;
+    // The type of the variable in
+    // terms of an `EARL Type`
+    EarlTy::Type m_type;
 
-  // Whether it is heap or
-  // stack alloc'd
-  bool m_allocd;
+    // Whether it is heap or
+    // stack alloc'd
+    bool m_allocd;
 
-  // The actual value that the variable holds
-  // during runtime.
-  std::any m_value;
+    // The actual value that the variable holds
+    // during runtime.
+    std::any m_value;
 
-  // The number of references that the
-  // variable currently has. Namely the
-  // number of `owners` that is has.
-  uint32_t m_refcount;
+    // The number of references that the
+    // variable currently has. Namely the
+    // number of `owners` that is has.
+    uint32_t m_refcount;
 
-  EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
-          std::any value = nullptr, uint32_t refcount = 1);
+    EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
+            std::any value = nullptr, uint32_t refcount = 1);
 };
 
 #endif // EARLVAR_H

@@ -28,15 +28,15 @@
 /*** PROGRAM ***/
 
 Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
-  : m_stmts(std::move(stmts)) {}
+    : m_stmts(std::move(stmts)) {}
 
 /*** EXPRESSIONS ***/
 
 ExprBinary::ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs)
-  : m_lhs(std::move(lhs)), m_op(std::move(op)), m_rhs(std::move(rhs)) {}
+    : m_lhs(std::move(lhs)), m_op(std::move(op)), m_rhs(std::move(rhs)) {}
 
 ExprType ExprBinary::get_type() const {
-  return ExprType::Binary;
+    return ExprType::Binary;
 }
 
 /*** TERM EXPRESSIONS ***/
@@ -44,43 +44,43 @@ ExprType ExprBinary::get_type() const {
 ExprStrLit::ExprStrLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprStrLit::get_type() const {
-  return ExprType::Term;
+    return ExprType::Term;
 }
 
 ExprTermType ExprStrLit::get_term_type() const {
-  return ExprTermType::Str_Literal;
+    return ExprTermType::Str_Literal;
 }
 
 ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIntLit::get_type() const {
-  return ExprType::Term;
+    return ExprType::Term;
 }
 
 ExprTermType ExprIntLit::get_term_type() const {
-  return ExprTermType::Int_Literal;
+    return ExprTermType::Int_Literal;
 }
 
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIdent::get_type() const {
-  return ExprType::Term;
+    return ExprType::Term;
 }
 
 ExprTermType ExprIdent::get_term_type() const {
-  return ExprTermType::Ident;
+    return ExprTermType::Ident;
 }
 
 ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
                            std::vector<std::unique_ptr<Expr>> params)
-  : m_id(std::move(id)), m_params(std::move(params)) {}
+    : m_id(std::move(id)), m_params(std::move(params)) {}
 
 ExprType ExprFuncCall::get_type() const {
-  return ExprType::Term;
+    return ExprType::Term;
 }
 
 ExprTermType ExprFuncCall::get_term_type() const {
-  return ExprTermType::Func_Call;
+    return ExprTermType::Func_Call;
 }
 
 /*** STATEMENTS ***/
@@ -93,34 +93,34 @@ StmtDef::StmtDef(std::unique_ptr<Token> id,
     m_rettype(std::move(rettype)), m_block(std::move(block)) {}
 
 StmtType StmtDef::stmt_type() const {
-  return StmtType::Def;
+    return StmtType::Def;
 }
 
 StmtLet::StmtLet(std::unique_ptr<Token> id,
                  std::unique_ptr<Token> type,
                  std::unique_ptr<Expr> expr)
-  : m_id(std::move(id)), m_type(std::move(type)), m_expr(std::move(expr)) {}
+    : m_id(std::move(id)), m_type(std::move(type)), m_expr(std::move(expr)) {}
 
 StmtType StmtLet::stmt_type() const {
-  return StmtType::Let;
+    return StmtType::Let;
 }
 
 StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
 
 StmtType StmtBlock::stmt_type() const {
-  return StmtType::Block;
+    return StmtType::Block;
 }
 
 StmtMut::StmtMut(std::unique_ptr<Expr> left,
                  std::unique_ptr<Expr> right)
-  : m_left(std::move(left)), m_right(std::move(right)) {}
+    : m_left(std::move(left)), m_right(std::move(right)) {}
 
 StmtType StmtMut::stmt_type() const {
-  return StmtType::Mut;
+    return StmtType::Mut;
 }
 
 StmtExpr::StmtExpr(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 
 StmtType StmtExpr::stmt_type() const {
-  return StmtType::Stmt_Expr;
+    return StmtType::Stmt_Expr;
 }

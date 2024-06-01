@@ -43,16 +43,16 @@
 #define NOOP(x) ((void)(x))
 
 // Macro to print `msg` and fail.
-#define UNIMPLEMENTED(msg)                     \
-  fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
-  exit(1)
+#define UNIMPLEMENTED(msg)                              \
+    fprintf(stderr, "UNIMPLEMENTED: " msg "\n");        \
+    exit(1)
 
 // Used to silence compiler warning on a function with
 // some return value that is not yet returning anything.
 // It prints `msg` and returns `retttype`
-#define UNIMPLEMENTED_WITH(msg, rettype)       \
-  fprintf(stderr, "UNIMPLEMENTED: " msg "\n"); \
-  return rettype
+#define UNIMPLEMENTED_WITH(msg, rettype)                \
+    fprintf(stderr, "UNIMPLEMENTED: " msg "\n");        \
+    return rettype
 
 #define CPL(ty, x) ((void *)&(ty){(x)})
 

@@ -40,12 +40,12 @@
 // heap-alloc'd objects use this pool
 // for the required memory.
 struct Arena {
-  uint8_t *m_mem;
-  size_t m_len;
-  size_t m_cap;
+    uint8_t *m_mem;
+    size_t m_len;
+    size_t m_cap;
 
-  Arena(size_t cap);
-  ~Arena();
+    Arena(size_t cap);
+    ~Arena();
 };
 
 // Allocate `bytes` number of bytes in an arena.

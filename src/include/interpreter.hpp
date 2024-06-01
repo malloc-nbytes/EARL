@@ -31,30 +31,30 @@
 
 namespace Interpreter {
 
-  // Struct that all expressions return.
-  // It contains information of the actual
-  // value of the expression as well as
-  // the type of expression that was evaluated.
-  struct ExprEvalResult {
-    // The actual evaluated result.
-    // <int, float, std::string, ... etc.>
-    // or holds an ident of Token.
-    std::any m_expr_value;
+    // Struct that all expressions return.
+    // It contains information of the actual
+    // value of the expression as well as
+    // the type of expression that was evaluated.
+    struct ExprEvalResult {
+        // The actual evaluated result.
+        // <int, float, std::string, ... etc.>
+        // or holds an ident of Token.
+        std::any m_expr_value;
 
-    // What kind of term did we encounter?
-    // Integer? Identifier? etc...
-    ExprTermType m_expr_term_type;
+        // What kind of term did we encounter?
+        // Integer? Identifier? etc...
+        ExprTermType m_expr_term_type;
 
-    // Given a valid ExprEvalResult, returns the
-    // type as EarlTy::Type. If the type of the
-    // expression is an identifier, it will do a
-    // lookup in the scope to find the type of the
-    // already stored variable.
-    EarlTy::Type get_earl_type(Ctx &ctx);
-  };
+        // Given a valid ExprEvalResult, returns the
+        // type as EarlTy::Type. If the type of the
+        // expression is an identifier, it will do a
+        // lookup in the scope to find the type of the
+        // already stored variable.
+        EarlTy::Type get_earl_type(Ctx &ctx);
+    };
 
-  ExprEvalResult interpret(Program &program);
-  ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
+    ExprEvalResult interpret(Program &program);
+    ExprEvalResult eval_expr(Expr *expr, Ctx &ctx);
 };
 
 #endif // INTERPRETER_H
