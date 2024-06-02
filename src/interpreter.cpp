@@ -108,7 +108,8 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
     } break;
     case ExprTermType::Str_Literal: {
-        assert(false && "unimplemented");
+        ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
+        return Interpreter::ExprEvalResult {strlit->m_tok->lexeme(), strlit->get_term_type()};
     } break;
     case ExprTermType::Func_Call: {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
