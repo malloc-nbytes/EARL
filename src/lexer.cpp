@@ -27,6 +27,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "err.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
 #include "utils.hpp"
@@ -113,11 +114,11 @@ static size_t find_comment_end(char *s) {
     return i;
 }
 
-static char *read_file(char *filepath) {
+static char *read_file(const char *filepath) {
     FILE *f = fopen(filepath, "rb");
 
     if (f == NULL || fseek(f, 0, SEEK_END)) {
-        return NULL;
+        ERR_WARGS(ErrType::Fatal, "could not find the specified source filepath: %s", filepath);
     }
 
     long length = ftell(f);
@@ -170,7 +171,7 @@ static bool try_comment(char *src, std::string &comment) {
     return false;
 }
 
-Lexer lex_file(char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
+Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
     std::string src = read_file(filepath);
 
     Lexer lexer;

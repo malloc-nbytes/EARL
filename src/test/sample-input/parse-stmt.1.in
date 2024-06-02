@@ -1,0 +1,12 @@
+# File for test-parsers/test_parsers_parse_stmt
+# Tests to make sure the parser can differentiate between
+# different types of statements.
+
+let i: int = 1;
+let j: int = 2;
+
+def func() -> int {
+    print(1);
+}
+
+func();

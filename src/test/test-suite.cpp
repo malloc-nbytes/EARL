@@ -7,11 +7,6 @@
 static int global_pass = 0;
 static int global_fail = 0;
 
-#define GREEN "\033[0;32m"
-#define RED "\033[0;31m"
-#define CYAN "\033[0;36m"
-#define NOC "\033[0m"
-
 // NOTE: RUN_TEST requires that two
 // integers namely `pass` & `fail` be
 // defined before calling this macro, as it

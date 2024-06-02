@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "err.hpp"
 #include "utils.hpp"
 #include "arena.hpp"
 #include "token.hpp"
@@ -115,6 +116,8 @@ std::string Token::to_str(void)
         return "FORWARDSLASH_EQUALS";
     case TokenType::Percent_Equals:
         return "PERCENT_EQUALS";
+    case TokenType::RightArrow:
+        return "RIGHT_ARROW";
     case TokenType::Eof:
         return "EOF";
     case TokenType::Intlit:
@@ -130,7 +133,7 @@ std::string Token::to_str(void)
     case TokenType::Type:
         return "TYPE";
     default:
-        assert(0 && "unknown type");
+        ERR_WARGS(ErrType::Fatal, "unkown type: %d", static_cast<int>(m_type));
         return NULL;
     }
     return NULL;

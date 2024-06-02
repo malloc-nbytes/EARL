@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
         usage(*argv);
     }
 
-    char *filepath = *(++argv);
+    const char *filepath = *(++argv);
 
     std::vector<std::string> keywords = create_keywords();
     std::vector<std::string> types = create_types();
