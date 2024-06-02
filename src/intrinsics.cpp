@@ -34,7 +34,8 @@ Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, Ctx &ctx) {
         }
 
         else if (param.m_expr_term_type == ExprTermType::Str_Literal) {
-            assert(false && "unimplemented");
+            std::cout << std::any_cast<std::string>(param.m_expr_value) <<
+                (i == expr->m_params.size()-1 ? "" : " ");
         }
 
         // Identifier
