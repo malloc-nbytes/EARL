@@ -1,0 +1,11 @@
+# File for test-parsers/test_parsers_parse_stmt_def
+# Tests to make sure the stmt defs are parsed.
+
+def func1() -> void {}
+def func2(a: int) -> void {
+    print(a);
+}
+def func3(a: int, b: int) -> void {
+    let s: int = a+b;
+    print(s);
+}

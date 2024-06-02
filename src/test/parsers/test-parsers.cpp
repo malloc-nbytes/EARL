@@ -13,11 +13,13 @@ std::vector<std::string> types = COMMON_EARLTY_ASCPL;
 std::string comment = "#";
 
 test_errno_t test_parsers_parse_stmt(void) {
-    std::string filepath = std::string("test/sample-input/parse-stmt.1.in").c_str();
+    std::string filepath = "test/sample-input/parse-stmt.1.in";
 
     StmtType tys[] = {
         StmtType::Let,
         StmtType::Let,
+        StmtType::Def,
+        StmtType::Def,
         StmtType::Def,
         StmtType::Stmt_Expr,
     };
@@ -35,6 +37,9 @@ test_errno_t test_parsers_parse_stmt(void) {
 }
 
 test_errno_t test_parsers_parse_stmt_def(void) {
+    std::string filepath = std::string("test/sample-input/parse_stmt_def.1.in");
+    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+
     return TEST_OK;
 }
 

@@ -9,4 +9,12 @@ def func() -> int {
     print(1);
 }
 
+def func(a: int) -> void {}
+
+def func(a: int, b: int) -> void {
+    print(a, b);
+    print(a);
+    print(b);
+}
+
 func();
