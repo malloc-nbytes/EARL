@@ -37,8 +37,21 @@ test_errno_t test_parsers_parse_stmt(void) {
 }
 
 test_errno_t test_parsers_parse_stmt_def(void) {
-    std::string filepath = std::string("test/sample-input/parse_stmt_def.1.in");
+    std::string filepath = std::string("test/sample-input/parse-stmt-def.1.in");
     Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    Program program = Parser::parse_program(lexer);
+
+    std::string func_names[] = {"func1","func2","func3"};
+    std::string rettypes[] = {"void","int","void"};
+
+    int i = 0;
+    for (auto &stmt : program.m_stmts) {
+        TEST_ASSERT_EQ(stmt->stmt_type(), StmtType::Def, true);
+        StmtDef *def = dynamic_cast<StmtDef *>(stmt.get());
+        TEST_ASSERT_EQ(def->m_id->lexeme(), func_names[i], true);
+        TEST_ASSERT_EQ(def->m_rettype->lexeme(), rettypes[i], true);
+        ++i;
+    }
 
     return TEST_OK;
 }

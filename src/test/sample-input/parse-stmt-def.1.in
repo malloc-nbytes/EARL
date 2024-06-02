@@ -2,7 +2,7 @@
 # Tests to make sure the stmt defs are parsed.
 
 def func1() -> void {}
-def func2(a: int) -> void {
+def func2(a: int) -> int {
     print(a);
 }
 def func3(a: int, b: int) -> void {
