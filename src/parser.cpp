@@ -117,6 +117,9 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     case TokenType::Intlit: {
         return new ExprIntLit(std::make_unique<Token>(*tok));
     } break;
+    case TokenType::Strlit: {
+        return new ExprStrLit(std::make_unique<Token>(*tok));
+    } break;
     default:
         assert(false && "parse_primary_expr: invalid primary expression");
     }
