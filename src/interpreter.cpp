@@ -36,7 +36,7 @@
 #include "earlvar.hpp"
 #include "common.hpp"
 
-Interpreter::ExprEvalResult eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx);
+Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx);
 Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
 // Used when an ExprEvalResult has a expression term type
@@ -81,7 +81,7 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
         ctx.add_earlvar_to_scope(std::move(arg));
     }
 
-    Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block.get(), ctx);
+    Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
     ctx.pop_scope();
 
     return blockresult;
@@ -204,20 +204,20 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
                   static_cast<int>(binding_type), static_cast<int>(rval_type));
     }
 
-    ctx.create_and_add_earlvar_to_scope(std::move(stmt->m_id), binding_type, false, expr_eval.m_expr_value);
+    ctx.add_earlvar_to_scope(std::make_unique<EarlVar>(stmt->m_id.get(), binding_type, false, expr_eval.m_expr_value));
 
     return Interpreter::ExprEvalResult{};
 }
 
 Interpreter::ExprEvalResult eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
-    (void)Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    return Interpreter::ExprEvalResult{};
+    return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
 Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     for (auto &stmt : block->m_stmts) {
-        eval_stmt(std::move(stmt), ctx);
+        eval_stmt(stmt.get(), ctx);
     }
+
     return Interpreter::ExprEvalResult{};
 }
 
@@ -230,35 +230,34 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     std::vector<std::unique_ptr<EarlVar>> args;
 
     for (auto &arg : stmt->m_args) {
-        std::unique_ptr<Token> id = std::move(arg.first);
+        Token *id = arg.first.get();
         EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
-        args.push_back(std::make_unique<EarlVar>(std::move(id), type, false, nullptr));
+        args.push_back(std::make_unique<EarlVar>(id, type, false, nullptr));
     }
 
-    ctx
-        .add_earlfunc_to_scope(std::make_unique<EarlFunc>(std::move(stmt->m_id),
-                                                          EarlTy::of_str(stmt->m_rettype->lexeme()),
-                                                          std::move(args),
-                                                          std::move(stmt->m_block)));
+    ctx.add_earlfunc_to_scope(std::make_unique<EarlFunc>(stmt->m_id.get(),
+                                                         EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                                         std::move(args),
+                                                         stmt->m_block.get()));
     return Interpreter::ExprEvalResult{};
 }
 
-Interpreter::ExprEvalResult eval_stmt(std::unique_ptr<Stmt> stmt, Ctx &ctx) {
+Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
-        return eval_stmt_let(dynamic_cast<StmtLet *>(stmt.get()), ctx);
+        return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
     } break;
     case StmtType::Mut: {
         assert(false && "unimplemented");
     } break;
     case StmtType::Def: {
-        return eval_stmt_def(dynamic_cast<StmtDef *>(stmt.get()), ctx);
+        return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
     } break;
     case StmtType::Block: {
         assert(false && "unimplemented");
     } break;
     case StmtType::Stmt_Expr: {
-        return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt.get()), ctx);
+        return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");
@@ -270,7 +269,7 @@ Interpreter::ExprEvalResult Interpreter::interpret(Program &program) {
     Ctx ctx;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        eval_stmt(std::move(program.m_stmts.at(i)), ctx);
+        eval_stmt(program.m_stmts.at(i).get(), ctx);
     }
 
     return Interpreter::ExprEvalResult{};

@@ -56,16 +56,6 @@ public:
     // EarlVar in the current scope.
     bool earlvar_in_scope(const std::string &id);
 
-    // Given `id` (indexes the scope by id->lexeme()),
-    // the EARL type of `type`, whether or not it is
-    // heap allocated with `allocd`, and the `value` that
-    // the actual variable holds, will insert it into the
-    // runtime scope.
-    void create_and_add_earlvar_to_scope(std::unique_ptr<Token> id,
-                                         EarlTy::Type type,
-                                         bool allocd,
-                                         std::any value);
-
     void add_earlvar_to_scope(std::unique_ptr<EarlVar> var);
 
     // Will get you the EarlVar that corrosponds
@@ -74,13 +64,6 @@ public:
 
     // Add an `EarlFunc` to the global function scope.
     void add_earlfunc_to_scope(std::unique_ptr<EarlFunc> func);
-
-    // Another way to add an `EarlFunc` to the global function scope.
-    // This one constructs it for you.
-    void add_earlfunc_to_scope(std::unique_ptr<Token> id,
-                               EarlTy::Type rettype,
-                               std::vector<std::unique_ptr<EarlVar>> args,
-                               std::unique_ptr<StmtBlock> block);
 
     bool earlfunc_in_scope(std::string &id);
 

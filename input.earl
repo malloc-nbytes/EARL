@@ -1,6 +1,5 @@
-let s1: str = "hello world";
-let s2: str = "this is another string";
-let x: int = 38;
-let y: int = 31;
-print(s1);
-print(s2, x, y, x+y);
+def func() -> void {
+    print("in func");
+}
+
+func();
