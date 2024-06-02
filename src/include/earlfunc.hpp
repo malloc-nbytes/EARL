@@ -30,18 +30,26 @@
 #include "earlvar.hpp"
 #include "token.hpp"
 
-struct EarlFunc {
-    Token *m_id;
-    EarlTy::Type m_rettype;
-    std::vector<std::unique_ptr<EarlVar>> m_args;
-    StmtBlock *m_block;
+namespace EarlFunc {
+    enum class Attr {
+        Pub = 1 << 0,
+        World = 1 << 1,
+    };
 
-    EarlFunc(Token *id,
-             EarlTy::Type rettype,
-             std::vector<std::unique_ptr<EarlVar>> args,
-             StmtBlock *block);
+    struct Func {
+        Token *m_id;
+        EarlTy::Type m_rettype;
+        std::vector<std::unique_ptr<EarlVar>> m_args;
+        StmtBlock *m_block;
 
-    ~EarlFunc() = default;
+        Func(Token *id,
+                 EarlTy::Type rettype,
+                 std::vector<std::unique_ptr<EarlVar>> args,
+                 StmtBlock *block);
+
+        ~Func() = default;
+    };
 };
+
 
 #endif // EARLFUNC_H

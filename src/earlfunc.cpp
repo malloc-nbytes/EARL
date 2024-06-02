@@ -4,7 +4,7 @@
 #include "token.hpp"
 #include "earlfunc.hpp"
 
-EarlFunc::EarlFunc(Token *id,
+EarlFunc::Func::Func(Token *id,
                    EarlTy::Type rettype,
                    std::vector<std::unique_ptr<EarlVar>> args,
                    StmtBlock *block)

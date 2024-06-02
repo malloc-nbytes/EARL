@@ -40,7 +40,7 @@
 class Ctx {
     // The scope of all runtime variables.
     std::vector<std::unordered_map<std::string, std::unique_ptr<EarlVar>>> m_scope;
-    std::vector<std::unordered_map<std::string, std::unique_ptr<EarlFunc>>> m_functions;
+    std::vector<std::unordered_map<std::string, std::unique_ptr<EarlFunc::Func>>> m_functions;
 
 public:
     Ctx();
@@ -63,11 +63,11 @@ public:
     EarlVar *get_earlvar_from_scope(const std::string &id);
 
     // Add an `EarlFunc` to the global function scope.
-    void add_earlfunc_to_scope(std::unique_ptr<EarlFunc> func);
+    void add_earlfunc_to_scope(std::unique_ptr<EarlFunc::Func> func);
 
     bool earlfunc_in_scope(std::string &id);
 
-    EarlFunc *get_earlfunc_from_scope(std::string &id);
+    EarlFunc::Func *get_earlfunc_from_scope(std::string &id);
 
     void debug_dump_earlfuncs(void);
     void debug_dump_earlvars(void);

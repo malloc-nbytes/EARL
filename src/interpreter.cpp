@@ -73,7 +73,7 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 }
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
-    EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+    EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
 
     ctx.push_scope();
     for (auto &arg : func->m_args) {
@@ -235,10 +235,10 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
         args.push_back(std::make_unique<EarlVar>(id, type, false, nullptr));
     }
 
-    ctx.add_earlfunc_to_scope(std::make_unique<EarlFunc>(stmt->m_id.get(),
-                                                         EarlTy::of_str(stmt->m_rettype->lexeme()),
-                                                         std::move(args),
-                                                         stmt->m_block.get()));
+    ctx.add_earlfunc_to_scope(std::make_unique<EarlFunc::Func>(stmt->m_id.get(),
+                                                               EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                                               std::move(args),
+                                                               stmt->m_block.get()));
     return Interpreter::ExprEvalResult{};
 }
 

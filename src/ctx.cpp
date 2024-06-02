@@ -48,7 +48,7 @@ EarlVar *Ctx::get_earlvar_from_scope(const std::string &id) {
     return nullptr; // unreachable
 }
 
-void Ctx::add_earlfunc_to_scope(std::unique_ptr<EarlFunc> func) {
+void Ctx::add_earlfunc_to_scope(std::unique_ptr<EarlFunc::Func> func) {
     m_functions.back().emplace(func->m_id->lexeme(), std::move(func));
 }
 
@@ -61,7 +61,7 @@ bool Ctx::earlfunc_in_scope(std::string &id) {
     return false;
 }
 
-EarlFunc *Ctx::get_earlfunc_from_scope(std::string &id) {
+EarlFunc::Func *Ctx::get_earlfunc_from_scope(std::string &id) {
     for (auto it = m_functions.begin(); it != m_functions.end(); ++it) {
         auto &map = *it;
         if (map.find(id) != map.end()) {
@@ -84,4 +84,12 @@ void Ctx::debug_dump_earlfuncs(void) {
 }
 
 void Ctx::debug_dump_earlvars(void) {
+    int i = 0;
+    for (auto &scope : m_scope) {
+        std::cout << "scope level " << i << std::endl;
+        for (auto &var : scope) {
+            std::cout << "  " << var.first << std::endl;
+        }
+        ++i;
+    }
 }
