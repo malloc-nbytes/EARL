@@ -3,4 +3,3 @@ def func() -> void {
 }
 
 func();
-func();

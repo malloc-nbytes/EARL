@@ -45,30 +45,79 @@ Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 // NOTE: expr.get_earl_type() should be called before calling
 // this function to properly get the correct EARL type.
 static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, Ctx &ctx) {
-    (void)expr_eval;
-    (void)ctx;
+    if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
+        const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
+        assert(ctx.earlvar_in_scope(id));
+        EarlVar *var = ctx.get_earlvar_from_scope(id);
+        expr_eval.m_expr_value = var->m_value;
+    }
 }
 
 EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
-    (void)ctx;
-    return EarlTy::Type::Int;
+    if (m_expr_term_type == ExprTermType::Ident) {
+        Token *tok = std::any_cast<Token *>(m_expr_value);
+        if (!ctx.earlvar_in_scope(tok->lexeme())) {
+            ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
+        }
+        EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+        return var->m_type;
+    }
+
+    switch (m_expr_term_type) {
+    case ExprTermType::Int_Literal: return EarlTy::Type::Int;
+    case ExprTermType::Str_Literal: return EarlTy::Type::Str;
+    default:
+        ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type",
+                  static_cast<int>(m_expr_term_type));
+    }
 }
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
-    (void)expr;
-    (void)ctx;
-    return Interpreter::ExprEvalResult{};
+    EarlFunc *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+
+    ctx.push_scope();
+    for (auto &arg : func->m_args) {
+        assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
+        ctx.add_earlvar_to_scope(std::move(arg));
+    }
+
+    Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
+    ctx.pop_scope();
+
+    return blockresult;
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    (void)expr;
-    (void)ctx;
-    return Interpreter::ExprEvalResult{};
+    if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
+        return Intrinsics::run_intrinsic_function(expr, ctx);
+    }
+    return eval_user_defined_function(expr, ctx);
 }
 
 Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
-    (void)expr;
-    (void)ctx;
+    switch (expr->get_term_type()) {
+    case ExprTermType::Ident: {
+        ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+        if (!ctx.earlvar_in_scope(ident->m_tok->lexeme().c_str())) {
+            ERR_WARGS(ErrType::Undeclared, "variable `%s` is not in scope", ident->m_tok->lexeme().c_str());
+        }
+        return Interpreter::ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
+    } break;
+    case ExprTermType::Int_Literal: {
+        ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
+        return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
+    } break;
+    case ExprTermType::Str_Literal: {
+        ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
+        return Interpreter::ExprEvalResult {strlit->m_tok->lexeme(), strlit->get_term_type()};
+    } break;
+    case ExprTermType::Func_Call: {
+        return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+    } break;
+    default:
+        ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
+                  static_cast<int>(expr->get_term_type()));
+    }
     return Interpreter::ExprEvalResult{};
 }
 
