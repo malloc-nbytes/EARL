@@ -1,5 +1,7 @@
-def func() -> void {
-    print("in func");
+def func2() -> void {
+    let i: int = 1;
+    print(i);
+    func2();
 }
 
-func();
+func2();

@@ -42,6 +42,8 @@
       "struct" "char" "import"
       ;; intrinsic functions
       "print" "type"
+      ;; function attributes
+      "world" "pub"
       )))
 
 (defconst earl-highlights
