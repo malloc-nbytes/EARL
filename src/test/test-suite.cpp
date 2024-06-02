@@ -58,9 +58,6 @@ int main(void)
             RUN_TEST(test_parsers_parse_expect_keyword());
             RUN_TEST(test_parsers_parse_expect());
         });
-        RUN_TEST_GROUP("lexer", {
-            RUN_TEST(test_parsers_parse_expect());
-        });
     });
 
     return 0;
