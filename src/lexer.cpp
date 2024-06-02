@@ -253,7 +253,7 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
 
         // String literal
         else if (c == '"') {
-            size_t strlit_len = consume_until(lexeme, [](const char c) {
+            size_t strlit_len = consume_until(lexeme+1, [](const char c) {
                 return c == '"';
             });
             Token *tok = token_alloc(lexer, lexeme+1, strlit_len, TokenType::Strlit, row, col, filepath);
