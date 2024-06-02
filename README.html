@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-06-01 Sat 16:39 -->
+<!-- 2024-06-02 Sun 09:01 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL</title>
@@ -61,63 +61,24 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org9760aef">1. Introduction</a></li>
-<li><a href="#orge1a8f0a">2. Compiling</a></li>
-<li><a href="#orgd3c0e17">3. Contributing</a>
+<li><a href="#orgb00aec3">1. Introduction</a></li>
+<li><a href="#org79df358">2. Compiling</a></li>
+<li><a href="#org6228ffa">3. Contributing</a>
 <ul>
-<li><a href="#orgd62168d">3.1. Style Guide</a>
+<li><a href="#org5bdec2d">3.1. Style Guide</a>
 <ul>
-<li><a href="#org47d353e">3.1.1. Functions</a></li>
-<li><a href="#org71fc695">3.1.2. Structs</a></li>
-<li><a href="#orgeea15d1">3.1.3. Misc</a></li>
+<li><a href="#org9cbd758">3.1.1. Functions</a></li>
+<li><a href="#orga5ec6cc">3.1.2. Structs</a></li>
+<li><a href="#orge927f25">3.1.3. Misc</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org4c0e88c">4. Test Suite</a>
+<li><a href="#org4509d57">4. Test Suite</a>
 <ul>
-<li><a href="#orgc3a14c8">4.1. Test Suite Source</a></li>
-<li><a href="#org3ca2508">4.2. Adding more Tests to Ones that Exist</a></li>
-<li><a href="#orgc89a9b2">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
-</ul>
-</li>
-<li><a href="#orgbde0384">5. Interfaces</a>
-<ul>
-<li><a href="#org2fc39ad">5.1. Arena</a>
-<ul>
-<li><a href="#org3377ae6">5.1.1. Functions</a></li>
-</ul>
-</li>
-<li><a href="#org1630348">5.2. Common</a>
-<ul>
-<li><a href="#orgc4733d9">5.2.1. Macros</a></li>
-</ul>
-</li>
-<li><a href="#org5b15fc6">5.3. Notify <b>DEPRECATED</b></a>
-<ul>
-<li><a href="#org4db4e77">5.3.1. Enums</a></li>
-<li><a href="#orgf7dce20">5.3.2. Macros</a></li>
-</ul>
-</li>
-<li><a href="#org8b44265">5.4. Utils <b>DEPRECATED</b></a>
-<ul>
-<li><a href="#org0ceb907">5.4.1. Macros</a></li>
-<li><a href="#org4e8ff71">5.4.2. Functions</a></li>
-</ul>
-</li>
-<li><a href="#orgc12a0fa">5.5. Vector <b>DEPRECATED</b></a>
-<ul>
-<li><a href="#org214f9d0">5.5.1. Structs</a></li>
-<li><a href="#org2f25cdd">5.5.2. Macros</a></li>
-<li><a href="#org02dad8e">5.5.3. Functions</a></li>
-</ul>
-</li>
-<li><a href="#org37e6189">5.6. <span class="todo TODO">TODO</span> Pair <b>DEPRECATED</b></a></li>
-<li><a href="#org09e1940">5.7. <span class="todo TODO">TODO</span> Hashtbl <b>DEPRECATED</b></a></li>
-<li><a href="#org740ceef">5.8. <span class="todo TODO">TODO</span> Token</a></li>
-<li><a href="#orge8aeedd">5.9. <span class="todo TODO">TODO</span> Lexer</a></li>
-<li><a href="#orgdea4f9e">5.10. <span class="todo TODO">TODO</span> Ast</a></li>
-<li><a href="#orgb1533dd">5.11. <span class="todo TODO">TODO</span> Parser</a></li>
+<li><a href="#orgc53c04a">4.1. Test Suite Source</a></li>
+<li><a href="#org26350f3">4.2. Adding more Tests to Ones that Exist</a></li>
+<li><a href="#orgf766e15">4.3. Creating New Tests not Associated with Ones that Exist</a></li>
 </ul>
 </li>
 </ul>
@@ -137,13 +98,13 @@ in a much better format.
 </p>
 
 
-<div id="org8fedb66" class="figure">
+<div id="org1e16986" class="figure">
 <p><img src="./imgs/earl-logo-resized.jpg" alt="earl-logo-resized.jpg" />
 </p>
 </div>
 
-<div id="outline-container-org9760aef" class="outline-2">
-<h2 id="org9760aef"><span class="section-number-2">1.</span> Introduction</h2>
+<div id="outline-container-orgb00aec3" class="outline-2">
+<h2 id="orgb00aec3"><span class="section-number-2">1.</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <blockquote>
 <p>
@@ -154,8 +115,8 @@ and brackets.
 </div>
 </div>
 
-<div id="outline-container-orge1a8f0a" class="outline-2">
-<h2 id="orge1a8f0a"><span class="section-number-2">2.</span> Compiling</h2>
+<div id="outline-container-org79df358" class="outline-2">
+<h2 id="org79df358"><span class="section-number-2">2.</span> Compiling</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 EARL uses <a href="https://www.gnu.org/software/autoconf/">autoconf</a> to generate Makefiles. The following are required to build the project:
@@ -205,22 +166,22 @@ Now that the initial setup has been complete, you no longer have to use <code>au
 </div>
 </div>
 
-<div id="outline-container-orgd3c0e17" class="outline-2">
-<h2 id="orgd3c0e17"><span class="section-number-2">3.</span> Contributing</h2>
+<div id="outline-container-org6228ffa" class="outline-2">
+<h2 id="org6228ffa"><span class="section-number-2">3.</span> Contributing</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-orgd62168d" class="outline-3">
-<h3 id="orgd62168d"><span class="section-number-3">3.1.</span> Style Guide</h3>
+<div id="outline-container-org5bdec2d" class="outline-3">
+<h3 id="org5bdec2d"><span class="section-number-3">3.1.</span> Style Guide</h3>
 <div class="outline-text-3" id="text-3-1">
 </div>
-<div id="outline-container-org47d353e" class="outline-4">
-<h4 id="org47d353e"><span class="section-number-4">3.1.1.</span> Functions</h4>
+<div id="outline-container-org9cbd758" class="outline-4">
+<h4 id="org9cbd758"><span class="section-number-4">3.1.1.</span> Functions</h4>
 <div class="outline-text-4" id="text-3-1-1">
 <ul class="org-ul">
 <li>Functions should be formatted as such:</li>
 </ul>
 
-<pre class="example" id="org884a385">
+<pre class="example" id="orgc41185c">
 &lt;return type&gt; &lt;name&gt;(&lt;params&gt;) {
   body...
 }
@@ -234,10 +195,10 @@ Now that the initial setup has been complete, you no longer have to use <code>au
 </div>
 </div>
 
-<div id="outline-container-org71fc695" class="outline-4">
-<h4 id="org71fc695"><span class="section-number-4">3.1.2.</span> Structs</h4>
+<div id="outline-container-orga5ec6cc" class="outline-4">
+<h4 id="orga5ec6cc"><span class="section-number-4">3.1.2.</span> Structs</h4>
 <div class="outline-text-4" id="text-3-1-2">
-<pre class="example" id="orgc8a3156">
+<pre class="example" id="org33b6fb2">
 struct &lt;NameOfStruct&gt; {
   ...
 }
@@ -249,8 +210,8 @@ struct &lt;NameOfStruct&gt; {
 </div>
 </div>
 
-<div id="outline-container-orgeea15d1" class="outline-4">
-<h4 id="orgeea15d1"><span class="section-number-4">3.1.3.</span> Misc</h4>
+<div id="outline-container-orge927f25" class="outline-4">
+<h4 id="orge927f25"><span class="section-number-4">3.1.3.</span> Misc</h4>
 <div class="outline-text-4" id="text-3-1-3">
 <ul class="org-ul">
 <li>All <code>if</code>, <code>for</code>, <code>while</code> etc. should have brackets (the left bracket should be on the same line as the statement).
@@ -262,7 +223,7 @@ is on a different line.</li>
 Example:</li>
 </ul>
 
-<pre class="example" id="org310000c">
+<pre class="example" id="org0f01683">
 typedef int my_type_t;
 </pre>
 
@@ -277,14 +238,20 @@ typedef int my_type_t;
 </div>
 </div>
 
-<div id="outline-container-org4c0e88c" class="outline-2">
-<h2 id="org4c0e88c"><span class="section-number-2">4.</span> Test Suite</h2>
+<div id="outline-container-org4509d57" class="outline-2">
+<h2 id="org4509d57"><span class="section-number-2">4.</span> Test Suite</h2>
 <div class="outline-text-2" id="text-4">
+<p>
+<b>Note:</b> Because we have moved to C++, we have removed all tests for the relavent
+data structures that were made for this project as they are no longer needed due
+to C++ stdlib.
+</p>
+
 <p>
 At the time of writing this, the tests directory is structured as such:
 </p>
 
-<pre class="example" id="org5906664">
+<pre class="example" id="org6ed23ed">
 .
 ├── Makefile (generated)
 ├── Makefile.am (how to make the tests)
@@ -308,8 +275,8 @@ At the time of writing this, the tests directory is structured as such:
 </pre>
 </div>
 
-<div id="outline-container-orgc3a14c8" class="outline-3">
-<h3 id="orgc3a14c8"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
+<div id="outline-container-orgc53c04a" class="outline-3">
+<h3 id="orgc53c04a"><span class="section-number-3">4.1.</span> Test Suite Source</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 The test suite is composed of two files, <code>test-suite.cpp</code> and <code>test-suite.hpp</code>
@@ -346,8 +313,8 @@ go into <code>test/test-suite.hpp</code> and match it to the appropriate <code>T
 </div>
 </div>
 
-<div id="outline-container-org3ca2508" class="outline-3">
-<h3 id="org3ca2508"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
+<div id="outline-container-org26350f3" class="outline-3">
+<h3 id="org26350f3"><span class="section-number-3">4.2.</span> Adding more Tests to Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-2">
 <p>
 Simply go into the test directory that you want to add tests for and create a new
@@ -429,8 +396,8 @@ That's it! Now run <code>make test</code> to see the output.
 </div>
 </div>
 
-<div id="outline-container-orgc89a9b2" class="outline-3">
-<h3 id="orgc89a9b2"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
+<div id="outline-container-orgf766e15" class="outline-3">
+<h3 id="orgf766e15"><span class="section-number-3">4.3.</span> Creating New Tests not Associated with Ones that Exist</h3>
 <div class="outline-text-3" id="text-4-3">
 <p>
 <b>UPDATE</b>: There is now a script <code>test/create-test.sh</code> that automates
@@ -493,451 +460,15 @@ Add the appropriate headers to <code>test/testname/test-testname.cpp</code>
 </div></li>
 
 <li>In <code>test/test-suite.cpp</code> add the appropriate include header.</li>
-<li>Start adding your tests (see <a href="#org3ca2508">Adding more Tests to Ones that Exist</a>)</li>
+<li>Start adding your tests (see <a href="#org26350f3">Adding more Tests to Ones that Exist</a>)</li>
 </ol>
 </div>
-</div>
-</div>
-
-<div id="outline-container-orgbde0384" class="outline-2">
-<h2 id="orgbde0384"><span class="section-number-2">5.</span> Interfaces</h2>
-<div class="outline-text-2" id="text-5">
-</div>
-<div id="outline-container-org2fc39ad" class="outline-3">
-<h3 id="org2fc39ad"><span class="section-number-3">5.1.</span> Arena</h3>
-<div class="outline-text-3" id="text-5-1">
-<blockquote>
-<p>
-File: arena.h
-</p>
-
-<p>
-Description:
-   Provides an API for an arena allocator. This is
-   helpful because we have a "pool" of memory that
-   we can use and then free it all at once. If
-   unfamiliar with arena allocators,
-   <a href="https://en.wikipedia.org/wiki/Region-based_memory_management">https://en.wikipedia.org/wiki/Region-based_memory_management</a>
-</p>
-</blockquote>
-</div>
-
-<div id="outline-container-org3377ae6" class="outline-4">
-<h4 id="org3377ae6"><span class="section-number-4">5.1.1.</span> Functions</h4>
-<div class="outline-text-4" id="text-5-1-1">
-<div class="org-src-container">
-<pre class="src src-c">struct arena;
-</pre>
-</div>
-
-<p>
-<i>The <code>arena</code> struct.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">struct arena *arena_create(size_t cap);
-</pre>
-</div>
-
-<p>
-<i>Create a new arena allocator with capacity as <code>cap</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">uint8_t *arena_alloc(struct arena *arena, size_t bytes);
-</pre>
-</div>
-
-<p>
-<i>Allocate <code>bytes</code> number of bytes in an <code>arena</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void arena_free(struct arena *arena);
-</pre>
-</div>
-
-<p>
-<i>Free the memory inside of <code>arena</code> <b>AS WELL AS THE ARENA ITSELF</b>.</i>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org1630348" class="outline-3">
-<h3 id="org1630348"><span class="section-number-3">5.2.</span> Common</h3>
-<div class="outline-text-3" id="text-5-2">
-<blockquote>
-<p>
-File: common.h
-</p>
-
-<p>
-Description:
-A few things that are useful throughout the entire project.
-</p>
-</blockquote>
-</div>
-
-<div id="outline-container-orgc4733d9" class="outline-4">
-<h4 id="orgc4733d9"><span class="section-number-4">5.2.1.</span> Macros</h4>
-<div class="outline-text-4" id="text-5-2-1">
-<div class="org-src-container">
-<pre class="src src-c">#define COMMON_KW_LET
-#define COMMON_KW_DEF
-#define COMMON_KW_RETURN
-</pre>
-</div>
-
-<p>
-<i>The keywords of EARL.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define COMMON_TY_INT32
-#define COMMON_TY_STR
-</pre>
-</div>
-
-<p>
-<i>The types of EARL.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define COMMON_KW_AS_CPL
-#define COMMON_TY_AS_CPL
-</pre>
-</div>
-
-<p>
-<i>The keywords and types of EARL as compound literals.</i>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org5b15fc6" class="outline-3">
-<h3 id="org5b15fc6"><span class="section-number-3">5.3.</span> Notify <b>DEPRECATED</b></h3>
-<div class="outline-text-3" id="text-5-3">
-<blockquote>
-<p>
-File: notify.h
-</p>
-
-<p>
-Description:
-Provides ways to display an error message and quite the program.
-</p>
-</blockquote>
-</div>
-
-<div id="outline-container-org4db4e77" class="outline-4">
-<h4 id="org4db4e77"><span class="section-number-4">5.3.1.</span> Enums</h4>
-<div class="outline-text-4" id="text-5-3-1">
-<div class="org-src-container">
-<pre class="src src-c">enum NOTIFY_ERR_TYPE
-</pre>
-</div>
-
-<p>
-<i>Provides different types of errors.</i>
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgf7dce20" class="outline-4">
-<h4 id="orgf7dce20"><span class="section-number-4">5.3.2.</span> Macros</h4>
-<div class="outline-text-4" id="text-5-3-2">
-<div class="org-src-container">
-<pre class="src src-c">#define NOTIFY_ERR(etype, msg)
-</pre>
-</div>
-
-<p>
-<i>Macro that prints the error type <code>etype</code> as well as prints <code>msg</code>. It will exit with a status of 1.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define NOTIFY_ERRARGS(etype, msg, ...)
-</pre>
-</div>
-
-<p>
-<i>It is the exact same as <code>NOTIFY_ERR</code> except it takes a variadic number of arguments.
-This is useful if your message has format specifiers in it such as <code>"%d"</code>, <code>"%zu"</code> etc.</i>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org8b44265" class="outline-3">
-<h3 id="org8b44265"><span class="section-number-3">5.4.</span> Utils <b>DEPRECATED</b></h3>
-<div class="outline-text-3" id="text-5-4">
-<blockquote>
-<p>
-File: utils.h
-</p>
-
-<p>
-Description:
-A bunch of helpful utility tools.
-</p>
-</blockquote>
-</div>
-
-<div id="outline-container-org0ceb907" class="outline-4">
-<h4 id="org0ceb907"><span class="section-number-4">5.4.1.</span> Macros</h4>
-<div class="outline-text-4" id="text-5-4-1">
-<div class="org-src-container">
-<pre class="src src-c">#define DEBUG_ASSERT(expr)
-</pre>
-</div>
-
-<p>
-<i>Debug assertions that are taken out
-when compiling in "release" mode.
-In "debug" mode, they will function.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define NOOP(x)
-</pre>
-</div>
-
-<p>
-<i>A macro that <code>void</code>'s <code>x</code>. This is useful to silence compiler warnings.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define UNIMPLEMENTED(msg, rettype)
-</pre>
-</div>
-
-<p>
-<i>Used to silence compiler warning on a function with
-some return value that is not yet returning anything.
-It prints <code>msg</code> and returns <code>retttype</code></i>
-</p>
-</div>
-</div>
-
-<div id="outline-container-org4e8ff71" class="outline-4">
-<h4 id="org4e8ff71"><span class="section-number-4">5.4.2.</span> Functions</h4>
-<div class="outline-text-4" id="text-5-4-2">
-<div class="org-src-container">
-<pre class="src src-c">void *utils_safe_malloc(size_t bytes);
-</pre>
-</div>
-
-<p>
-<i>A malloc wrapper that checks if
-malloc failed. Allocates <code>bytes</code> number of bytes.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">int utils_streq(const char *s1, const char *s2);
-</pre>
-</div>
-
-<p>
-<i>A wrapper for strcmp that checks if the
-strings are equal. Returns 1 on success,
-and 0 on failure.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void utils_iota_array(int *arr, size_t len);
-</pre>
-</div>
-
-<p>
-<i>Fill an array from 0..len with values 0..len.</i>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-orgc12a0fa" class="outline-3">
-<h3 id="orgc12a0fa"><span class="section-number-3">5.5.</span> Vector <b>DEPRECATED</b></h3>
-<div class="outline-text-3" id="text-5-5">
-<blockquote>
-<p>
-File: vector.h
-</p>
-
-<p>
-Description:
-   A vector interface. It is a generic array
-   that grows by \((\) <code>vector.cap</code> \(\times 2)\) when the length
-   matches the capacity.
-</p>
-</blockquote>
-</div>
-
-<div id="outline-container-org214f9d0" class="outline-4">
-<h4 id="org214f9d0"><span class="section-number-4">5.5.1.</span> Structs</h4>
-<div class="outline-text-4" id="text-5-5-1">
-<div class="org-src-container">
-<pre class="src src-c">struct vector
-</pre>
-</div>
-
-<p>
-<i>The vector struct.</i>
-</p>
-</div>
-</div>
-
-<div id="outline-container-org2f25cdd" class="outline-4">
-<h4 id="org2f25cdd"><span class="section-number-4">5.5.2.</span> Macros</h4>
-<div class="outline-text-4" id="text-5-5-2">
-<div class="org-src-container">
-<pre class="src src-c">#define vector_create2(type)
-</pre>
-</div>
-
-<p>
-<i>Macro to make it clear what kind of
-element the vector is going to hold. It creates
-a vector that will hold the <code>type</code></i>
-</p>
-
-<p>
-<i>Example:</i> <code>struct vector v = vector_create2(int);</code>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define vector_deref_at(v, idx, cast)
-</pre>
-</div>
-
-<p>
-<i>Gives you the element in the vector <code>v</code> at <code>idx</code> and casts it as <code>cast</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define vector_debug_dump(v, formatstr, type)
-</pre>
-</div>
-
-<p>
-<i>Debug prints the vector <code>v</code> with the format string
-<code>formatstr</code> and casted as <code>type</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">#define vector(type)
-</pre>
-</div>
-
-<p>
-<i>Only used when instantiating a new vector or dispalying its typey.
-This allows to explicitly state what it holds, however nothing happens
-if the type does not match what it is actually holding.</i>
-</p>
-
-<p>
-<i>Example:</i>
-</p>
-
-<p>
-<code>struct vector(int) v = vector_create(int);</code>
-</p>
-
-<p>
-<code>struct F { struct vector(int) v, ... };</code>
-</p>
-</div>
-</div>
-
-<div id="outline-container-org02dad8e" class="outline-4">
-<h4 id="org02dad8e"><span class="section-number-4">5.5.3.</span> Functions</h4>
-<div class="outline-text-4" id="text-5-5-3">
-<div class="org-src-container">
-<pre class="src src-c">struct vector vector_create(size_t stride);
-</pre>
-</div>
-
-<p>
-<i>Create a vector where the size of each element to be stored is <code>stride</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void vector_append(struct vector *v, void *data);
-</pre>
-</div>
-
-<p>
-<i>Appends <code>data</code> to the END of the vector <code>v</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void *vector_at(struct vector *v, size_t i);
-</pre>
-</div>
-
-<p>
-<i>Retrieve an element at <code>i</code>. It is up to the caller to cast as necessary.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void vector_free(struct vector *v);
-</pre>
-</div>
-
-<p>
-<i>Free the underlying data in <code>v</code>. Resets all member variables.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">void vector_rm_at(struct vector *v, size_t idx);
-</pre>
-</div>
-
-<p>
-<i>Remove an element at a specific index <code>idx</code>.</i>
-</p>
-
-<div class="org-src-container">
-<pre class="src src-c">uint8_t *vector_asbytes(struct vector *v);
-</pre>
-</div>
-
-<p>
-<i>Gives the underlying data as <code>uint8_t</code>.</i>
-</p>
-</div>
-</div>
-</div>
-
-<div id="outline-container-org37e6189" class="outline-3">
-<h3 id="org37e6189"><span class="section-number-3">5.6.</span> <span class="todo TODO">TODO</span> Pair <b>DEPRECATED</b></h3>
-</div>
-
-<div id="outline-container-org09e1940" class="outline-3">
-<h3 id="org09e1940"><span class="section-number-3">5.7.</span> <span class="todo TODO">TODO</span> Hashtbl <b>DEPRECATED</b></h3>
-</div>
-
-<div id="outline-container-org740ceef" class="outline-3">
-<h3 id="org740ceef"><span class="section-number-3">5.8.</span> <span class="todo TODO">TODO</span> Token</h3>
-</div>
-
-<div id="outline-container-orge8aeedd" class="outline-3">
-<h3 id="orge8aeedd"><span class="section-number-3">5.9.</span> <span class="todo TODO">TODO</span> Lexer</h3>
-</div>
-
-<div id="outline-container-orgdea4f9e" class="outline-3">
-<h3 id="orgdea4f9e"><span class="section-number-3">5.10.</span> <span class="todo TODO">TODO</span> Ast</h3>
-</div>
-
-<div id="outline-container-orgb1533dd" class="outline-3">
-<h3 id="orgb1533dd"><span class="section-number-3">5.11.</span> <span class="todo TODO">TODO</span> Parser</h3>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-06-01 Sat 16:39</p>
+<p class="date">Created: 2024-06-02 Sun 09:01</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
