@@ -33,7 +33,7 @@
 // that are created during runtime.
 struct EarlVar {
     // The unique identifier
-    std::unique_ptr<Token> m_id;
+    Token *m_id;
 
     // The type of the variable in
     // terms of an `EARL Type`
@@ -52,7 +52,7 @@ struct EarlVar {
     // number of `owners` that is has.
     uint32_t m_refcount;
 
-    EarlVar(std::unique_ptr<Token> id, EarlTy::Type type, bool allocd,
+    EarlVar(Token *id, EarlTy::Type type, bool allocd,
             std::any value = nullptr, uint32_t refcount = 1);
 };
 
