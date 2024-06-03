@@ -14,6 +14,14 @@ template <typename K, typename V> struct UniqueScope {
 
     inline ~UniqueScope() = default;
 
+    // Disable copying
+    UniqueScope(const UniqueScope&) = delete;
+    UniqueScope& operator=(const UniqueScope&) = delete;
+
+    // Move constructor and move assignment operator
+    UniqueScope(UniqueScope&&) noexcept = default;
+    UniqueScope& operator=(UniqueScope&&) noexcept = default;
+
     inline void push(void) {
         m_map.emplace_back();
     }

@@ -29,6 +29,7 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "token.hpp"
+#include "unique-scope.hpp"
 
 namespace EarlFunc {
     enum class Attr {
@@ -42,14 +43,23 @@ namespace EarlFunc {
         std::vector<std::unique_ptr<EarlVar>> m_args;
         StmtBlock *m_block;
 
+        std::vector<UniqueScope<std::string, EarlVar>> m_local_scope;
+
         Func(Token *id,
-                 EarlTy::Type rettype,
-                 std::vector<std::unique_ptr<EarlVar>> args,
-                 StmtBlock *block);
+             EarlTy::Type rettype,
+             std::vector<std::unique_ptr<EarlVar>> args,
+             StmtBlock *block);
 
         ~Func() = default;
+
+        void add_earlvar_to_local_scope(std::unique_ptr<EarlVar> var);
+        EarlVar *get_earlvar_from_local_scope(const std::string &id);
+        bool has_earlvar_in_local_scope(const std::string &id);
+        void add_new_local_scope_context(void);
+
+        void pop_scope(void);
+        void push_scope(void);
     };
 };
-
 
 #endif // EARLFUNC_H
