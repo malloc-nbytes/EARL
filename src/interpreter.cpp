@@ -44,11 +44,14 @@ Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 // that it is assigned into it's actual value.
 // NOTE: expr.get_earl_type() should be called before calling
 // this function to properly get the correct EARL type.
-static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, Ctx &ctx) {
+static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, bool get_global, Ctx &ctx) {
     if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
         const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
-        assert(ctx.earlvar_in_scope(id));
-        EarlVar *var = ctx.get_earlvar_from_scope(id);
+        EarlVar *var = nullptr;
+        if (get_global)
+            var = ctx.get_global_earlvar_from_scope(id);
+        else
+            var = ctx.get_earlvar_from_scope(id);
         expr_eval.m_expr_value = var->m_value;
     }
 }
@@ -72,38 +75,47 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     }
 }
 
-static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
-    std::vector<Interpreter::ExprEvalResult> arg_values;
-    for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        std::unique_ptr<Expr> &e = expr->m_params[i];
-        Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
-        arg_values.push_back(param);
-    }
-
+static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
     EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
-    ctx.set_current_earlfunc(func);
 
-    int i = 0;
-    ctx.push_scope();
-    for (std::unique_ptr<EarlVar> &arg : func->m_args) {
-        assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
+    // ctx.set_current_earlfunc(func);
+    // ctx.push_scope();
 
-        arg->m_value = arg_values[i];
-        ctx.add_earlvar_to_scope(std::move(arg));
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        Interpreter::ExprEvalResult param = params[i];
+
+        if (param.m_expr_term_type == ExprTermType::Ident) {
+            Token *tok = std::any_cast<Token *>(param.m_expr_value);
+            EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+            func->m_args[i]->m_value = var->m_value;
+        }
+
+        else {
+            func->m_args[i]->m_value = param.m_expr_value;
+        }
+
+        ctx.add_earlvar_to_scope(std::move(func->m_args[i]));
     }
 
     Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
-    ctx.pop_scope();
+    // ctx.pop_scope();
+    // ctx.unset_current_earlfunc();
 
-    ctx.unset_current_earlfunc();
     return blockresult;
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
-        return Intrinsics::run_intrinsic_function(expr, ctx);
+    std::vector<Interpreter::ExprEvalResult> arg_evals;
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        std::unique_ptr<Expr> &e = expr->m_params[i];
+        Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
+        arg_evals.push_back(param);
     }
-    return eval_user_defined_function(expr, ctx);
+
+    if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
+        return Intrinsics::run_intrinsic_function(expr, arg_evals, ctx);
+    }
+    return eval_user_defined_function(expr, arg_evals, ctx);
 }
 
 Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
@@ -140,8 +152,8 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     EarlTy::Type lhs_type = lhs.get_earl_type(ctx);
     EarlTy::Type rhs_type = rhs.get_earl_type(ctx);
 
-    try_copy_ident_value(lhs, ctx);
-    try_copy_ident_value(rhs, ctx);
+    try_copy_ident_value(lhs, false, ctx);
+    try_copy_ident_value(rhs, false, ctx);
 
     if (!EarlTy::earlvar_type_compat(lhs_type, rhs_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
@@ -209,7 +221,7 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     // The type of the right side of the equals sign
     EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
 
-    try_copy_ident_value(expr_eval, ctx);
+    try_copy_ident_value(expr_eval, false, ctx);
 
     if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
