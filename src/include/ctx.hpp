@@ -36,12 +36,15 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "earlfunc.hpp"
-#include "scope.hpp"
+#include "unique-scope.hpp"
 
 class Ctx {
     // The scope of all runtime variables.
     std::vector<std::unordered_map<std::string, std::unique_ptr<EarlVar>>> m_scope;
     std::vector<std::unordered_map<std::string, std::unique_ptr<EarlFunc::Func>>> m_functions;
+
+    UniqueScope<std::string, EarlVar> m_global_earlvars;
+    UniqueScope<std::string, EarlFunc::Func> m_global_earlfuncs;
 
 public:
     Ctx();

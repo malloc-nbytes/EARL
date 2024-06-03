@@ -1,5 +1,5 @@
-#ifndef SCOPE_H
-#define SCOPE_H
+#ifndef UNIQUE_SCOPE_H
+#define UNIQUE_SCOPE_H
 
 #include <memory>
 #include <vector>
@@ -20,6 +20,10 @@ template <typename K, typename V> struct UniqueScope {
 
     inline void pop(void) {
         m_map.pop_back();
+    }
+
+    inline void add(K key, std::unique_ptr<V> value) {
+        m_map.back().emplace(key, std::move(value));
     }
 
     inline bool contains(K key) {
