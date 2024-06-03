@@ -73,12 +73,22 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 }
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
+    std::vector<Interpreter::ExprEvalResult> arg_values;
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        std::unique_ptr<Expr> &e = expr->m_params[i];
+        Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
+        arg_values.push_back(param);
+    }
+
     EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
     ctx.set_current_earlfunc(func);
 
+    int i = 0;
     ctx.push_scope();
-    for (auto &arg : func->m_args) {
+    for (std::unique_ptr<EarlVar> &arg : func->m_args) {
         assert(!ctx.earlvar_in_scope(arg->m_id->lexeme()));
+
+        arg->m_value = arg_values[i];
         ctx.add_earlvar_to_scope(std::move(arg));
     }
 
