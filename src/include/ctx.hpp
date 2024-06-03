@@ -36,15 +36,20 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "earlfunc.hpp"
+#include "unique-scope.hpp"
 
 class Ctx {
-    // The scope of all runtime variables.
-    std::vector<std::unordered_map<std::string, std::unique_ptr<EarlVar>>> m_scope;
-    std::vector<std::unordered_map<std::string, std::unique_ptr<EarlFunc::Func>>> m_functions;
+    EarlFunc::Func *m_cur_earlfunc;
+
+    UniqueScope<std::string, EarlVar> m_global_earlvars;
+    UniqueScope<std::string, EarlFunc::Func> m_global_earlfuncs;
 
 public:
     Ctx();
     ~Ctx() = default;
+
+    void set_current_earlfunc(EarlFunc::Func *func);
+    void unset_current_earlfunc(void);
 
     // Remove a new scope.
     void pop_scope(void);
@@ -68,6 +73,13 @@ public:
     bool earlfunc_in_scope(std::string &id);
 
     EarlFunc::Func *get_earlfunc_from_scope(std::string &id);
+
+    // Functions on function-specific scope with m_cur_earlfunc
+    void push_scope_in_earlfunc(void);
+    void pop_scope_in_earlfunc(void);
+    void add_earlvar_to_scope_in_earlfunc(std::unique_ptr<EarlVar> var);
+    bool earlvar_in_earlfunc_scope(const std::string &id);
+    EarlVar *get_earlvar_in_earlfunc_scope(const std::string &id);
 
     void debug_dump_earlfuncs(void);
     void debug_dump_earlvars(void);

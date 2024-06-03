@@ -74,6 +74,7 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, Ctx &ctx) {
     EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+    ctx.set_current_earlfunc(func);
 
     ctx.push_scope();
     for (auto &arg : func->m_args) {
@@ -84,6 +85,7 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
     Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
     ctx.pop_scope();
 
+    ctx.unset_current_earlfunc();
     return blockresult;
 }
 

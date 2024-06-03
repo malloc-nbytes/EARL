@@ -1,7 +1,16 @@
 def func2() -> void {
     let i: int = 1;
-    print(i);
+    print("in func2", i);
     func2();
 }
 
-func2();
+def func() -> void {
+    let i: int = 99;
+    print("in func()", i);
+    func2();
+}
+
+let i: int = 3;
+let j: int = 5;
+print(i, j, "hello");
+func();
