@@ -36,6 +36,7 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "earlfunc.hpp"
+#include "scope.hpp"
 
 class Ctx {
     // The scope of all runtime variables.
