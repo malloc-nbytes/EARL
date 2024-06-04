@@ -51,7 +51,9 @@ namespace Interpreter {
         // expression is an identifier, it will do a
         // lookup in the scope to find the type of the
         // already stored variable.
-        EarlTy::Type get_earl_type(Ctx &ctx);
+        EarlTy::Type get_earl_type(Ctx &ctx); // DEPRECATED
+
+        std::any value(void);
 
     };
 

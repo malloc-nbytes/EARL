@@ -77,7 +77,12 @@ public:
     // Retrive a registered EarlFunc from the current scope.
     EarlFunc::Func *get_registered_earlfunc(const std::string &id);
 
+    EarlVar *get_registered_global_earlvar(const std::string &id);
+
+    // Get the EarlFunc that we are currently in. Can be null.
     EarlFunc::Func *get_cur_earlfunc(void);
+
+    // Check if we are currently in an EarlFunc.
     bool in_earlfunc(void);
 };
 

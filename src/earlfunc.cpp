@@ -39,3 +39,7 @@ EarlVar *EarlFunc::Func::get_local_earlvar(const std::string &id) {
         ERR_WARGS(ErrType::Fatal, "variable `%s` is not in local scope", id.c_str());
     return *var;
 }
+
+size_t EarlFunc::Func::context_size(void) {
+    return m_local_scope.size();
+}

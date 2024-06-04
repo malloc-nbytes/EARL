@@ -61,6 +61,8 @@ namespace EarlFunc {
 
         // Get an EarlVar in the local scope.
         EarlVar *get_local_earlvar(const std::string &id);
+
+        size_t context_size(void);
     };
 };
 

@@ -39,6 +39,10 @@
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx);
 Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
+std::any Interpreter::ExprEvalResult::value(void) {
+    return m_expr_value;
+}
+
 EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     if (m_expr_term_type == ExprTermType::Ident) {
         Token *tok = std::any_cast<Token *>(m_expr_value);
@@ -57,6 +61,7 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 
 static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
     // EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+    auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
 
     // ctx.set_current_earlfunc(func);
     // ctx.push_scope();
@@ -65,13 +70,13 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
         Interpreter::ExprEvalResult param = params[i];
 
         if (param.m_expr_term_type == ExprTermType::Ident) {
-            Token *tok = std::any_cast<Token *>(param.m_expr_value);
+            Token *tok = std::any_cast<Token *>(param.value());
             // EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
             // func->m_args[i]->m_value = var->m_value;
         }
 
         else {
-            // func->m_args[i]->m_value = param.m_expr_value;
+            func->m_args[i]->set_value(param.m_expr_value);
         }
 
         // ctx.add_earlvar_to_scope(std::move(func->m_args[i]));

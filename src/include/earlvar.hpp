@@ -54,6 +54,10 @@ struct EarlVar {
 
     EarlVar(Token *id, EarlTy::Type type, bool allocd,
             std::any value = nullptr, uint32_t refcount = 1);
+
+    ~EarlVar() = default;
+
+    void set_value(std::any value);
 };
 
 #endif // EARLVAR_H

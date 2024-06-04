@@ -83,6 +83,11 @@ EarlFunc::Func *Ctx::get_registered_earlfunc(const std::string &id) {
     return *func;
 }
 
+EarlVar *Ctx::get_registered_global_earlvar(const std::string &id) {
+    // Check
+    assert(!in_earlfunc() || get_cur_earlfunc()->context_size() == 1);
+}
+
 EarlFunc::Func *Ctx::get_cur_earlfunc(void) {
     return m_cur_earlfunc;
 }

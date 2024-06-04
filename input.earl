@@ -4,6 +4,5 @@ def func(a: int, b: int) -> void {
 
 let i: int = 1;
 let j: int = 2;
-let sum: int = i+j+1;
-# func(sum);
 
+func(i, j);
