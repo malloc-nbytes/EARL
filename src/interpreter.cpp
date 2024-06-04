@@ -127,12 +127,9 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     Interpreter::ExprEvalResult lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
     Interpreter::ExprEvalResult rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
 
-    EarlTy::Type lhs_type = lhs.get_earl_type(ctx);
-    EarlTy::Type rhs_type = rhs.get_earl_type(ctx);
-
-    if (!EarlTy::earlvar_type_compat(lhs_type, rhs_type)) {
+    if (!EarlTy::earlvar_type_compat(lhs.m_earl_type, rhs.m_earl_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
-                  static_cast<int>(lhs_type), static_cast<int>(rhs_type));
+                  static_cast<int>(lhs.m_earl_type), static_cast<int>(rhs.m_earl_type));
     }
 
     switch (expr->m_op->type()) {
