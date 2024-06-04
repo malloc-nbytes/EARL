@@ -21,7 +21,7 @@ template <typename K, typename V> struct Scope {
         m_map.pop_back();
     }
 
-    inline bool contains(K key) {
+    inline bool contains(const K key) {
        for (auto &map : m_map) {
             if (map.find(key) != map.end())
                 return true;
@@ -37,7 +37,7 @@ template <typename K, typename V> struct Scope {
         for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
             auto &map = *it;
             if (map.find(key) != map.end()) {
-                return map.at(key).get();
+                return &map.at(key);
             }
         }
         return nullptr;

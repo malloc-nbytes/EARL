@@ -43,7 +43,8 @@ namespace Interpreter {
 
         // What kind of term did we encounter?
         // Integer? Identifier? etc...
-        ExprTermType m_expr_term_type;
+        ExprTermType m_expr_term_type; // DEPRECATED
+        EarlTy::Type m_earl_type;
 
         // Given a valid ExprEvalResult, returns the
         // type as EarlTy::Type. If the type of the
@@ -51,6 +52,7 @@ namespace Interpreter {
         // lookup in the scope to find the type of the
         // already stored variable.
         EarlTy::Type get_earl_type(Ctx &ctx);
+
     };
 
     ExprEvalResult interpret(Program &program);
