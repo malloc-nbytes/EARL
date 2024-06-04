@@ -226,15 +226,20 @@ Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
 Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
-    std::vector<std::unique_ptr<EarlVar>> args;
-
+    std::vector<EarlVar *> args;
     for (auto &arg : stmt->m_args) {
         Token *id = arg.first.get();
         EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
-        args.push_back(std::make_unique<EarlVar>(id, type, false, nullptr));
+        args.push_back(new EarlVar(id, type, false, nullptr));
     }
 
-    auto *func = new EarlFunc::Func(stmt->m_id.get(), EarlTy::of_str(stmt->m_rettype->lexeme()), std::move(args), stmt->m_block.get());
+    auto *func = new EarlFunc::Func(stmt->m_id.get(),
+                                    EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                    std::move(args),
+                                    stmt->m_block.get());
+
+    ctx.register_earlfunc(func);
+
     return Interpreter::ExprEvalResult{};
 }
 
