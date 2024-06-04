@@ -59,6 +59,9 @@ namespace EarlFunc {
 
         void pop_scope(void);
         void push_scope(void);
+
+        /*** DEBUG ***/
+        void dump_local_scope(void);
     };
 };
 

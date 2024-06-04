@@ -28,6 +28,7 @@
 #ifndef INTRINSICS_H
 #define INTRINSICS_H
 
+#include <vector>
 #include <unordered_map>
 
 #include "interpreter.hpp"
@@ -42,7 +43,7 @@ namespace Intrinsics {
     // Runs the intrinsic function. It takes the contex `ctx` and the function
     // call expression `expr`.
     // NOTE: it is expected to run `is_intrinsic_function` before calling this function.
-    Interpreter::ExprEvalResult run_intrinsic_function(ExprFuncCall *expr, Ctx &ctx);
+    Interpreter::ExprEvalResult run_intrinsic_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
@@ -50,9 +51,9 @@ namespace Intrinsics {
     // will print the values separated by a space, with the last one
     // not having that extra space. It is ended with a newline. It does
     // not flush the output.
-    Interpreter::ExprEvalResult print(ExprFuncCall *expr, Ctx &ctx);
+    Interpreter::ExprEvalResult print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
 
-    using IntrinsicFunction = Interpreter::ExprEvalResult(*)(ExprFuncCall*, Ctx&);
+    using IntrinsicFunction = Interpreter::ExprEvalResult(*)(ExprFuncCall*, std::vector<Interpreter::ExprEvalResult>, Ctx&);
 
     // A map of string -> function pointers. All intrinsics are expected
     // to have the signature of Interpreter::ExprEvalResult(*)(Ctx&, ExprFuncCall*).

@@ -61,6 +61,15 @@ void Ctx::push_scope(void) {
     }
 }
 
+EarlVar *Ctx::get_global_earlvar_from_scope(const std::string &id) {
+    EarlVar *var = m_global_earlvars.get(id);
+    if (!var) {
+        ERR_WARGS(ErrType::Undeclared, "variable `%s` not found in scope", id.c_str());
+    }
+    return var;
+
+}
+
 void Ctx::add_earlvar_to_scope_in_earlfunc(std::unique_ptr<EarlVar> var) {
     m_cur_earlfunc->add_earlvar_to_local_scope(std::move(var));
 }

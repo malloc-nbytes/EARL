@@ -67,11 +67,11 @@ public:
     // to `id`.
     EarlVar *get_earlvar_from_scope(const std::string &id);
 
+    EarlVar *get_global_earlvar_from_scope(const std::string &id);
+
     // Add an `EarlFunc` to the global function scope.
     void add_earlfunc_to_scope(std::unique_ptr<EarlFunc::Func> func);
-
     bool earlfunc_in_scope(std::string &id);
-
     EarlFunc::Func *get_earlfunc_from_scope(std::string &id);
 
     // Functions on function-specific scope with m_cur_earlfunc

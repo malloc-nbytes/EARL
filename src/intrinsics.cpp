@@ -17,16 +17,15 @@ bool Intrinsics::is_intrinsic_function(const std::string &id) {
     return intrinsic_functions.find(id) != intrinsic_functions.end();
 }
 
-Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(ExprFuncCall *expr, Ctx &ctx) {
-    auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(expr, ctx);
+Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
+    auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(expr, params, ctx);
 
     return Interpreter::ExprEvalResult{};
 }
 
-Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, Ctx &ctx) {
+Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        std::unique_ptr<Expr> &e = expr->m_params[i];
-        Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
+        Interpreter::ExprEvalResult param = params[i];
 
         if (param.m_expr_term_type == ExprTermType::Int_Literal) {
             std::cout << std::any_cast<int>(param.m_expr_value) <<

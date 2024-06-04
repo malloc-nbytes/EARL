@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "ast.hpp"
 #include "earlty.hpp"
 #include "earlvar.hpp"
@@ -42,4 +44,19 @@ void EarlFunc::Func::pop_scope(void) {
 
 bool EarlFunc::Func::has_earlvar_in_local_scope(const std::string &id) {
     return m_local_scope.back().contains(id);
+}
+
+/*** DEBUG ***/
+
+void EarlFunc::Func::dump_local_scope(void) {
+    int i = 0;
+    for (auto &scope : m_local_scope) {
+        std::cout << "LOCAL SCOPE LEVEL " << i << std::endl;
+        for (const auto& map : scope.m_map) {
+            for (const auto& pair : map) {
+                std::cout << "    Key: " << pair.first << ", Value: " << pair.second->m_id->lexeme() << std::endl;
+            }
+        }
+        ++i;
+    }
 }
