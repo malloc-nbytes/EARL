@@ -40,17 +40,17 @@ Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, std::vector<In
         // Identifier
         else {
             Token *tok = std::any_cast<Token *>(param.m_expr_value);
-            EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
-            switch (var->m_type) {
-            case EarlTy::Type::Int: {
-                std::cout << std::any_cast<int>(var->m_value) << (i == expr->m_params.size()-1 ? "" : " ");
-            } break;
-            case EarlTy::Type::Str: {
-                std::cout << std::any_cast<std::string>(var->m_value) << (i == expr->m_params.size()-1 ? "" : " ");
-            } break;
-            default:
-                ERR_WARGS(ErrType::Fatal, "invalid type for printing (%d)", (int)var->m_type);
-            }
+            // EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+            // switch (var->m_type) {
+            // case EarlTy::Type::Int: {
+            //     std::cout << std::any_cast<int>(var->m_value) << (i == expr->m_params.size()-1 ? "" : " ");
+            // } break;
+            // case EarlTy::Type::Str: {
+            //     std::cout << std::any_cast<std::string>(var->m_value) << (i == expr->m_params.size()-1 ? "" : " ");
+            // } break;
+            // default:
+            //     ERR_WARGS(ErrType::Fatal, "invalid type for printing (%d)", (int)var->m_type);
+            // }
         }
     }
     std::cout << '\n';

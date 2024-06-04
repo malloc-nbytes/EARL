@@ -37,12 +37,16 @@
 #include "earlvar.hpp"
 #include "earlfunc.hpp"
 #include "unique-scope.hpp"
+#include "scope.hpp"
 
 class Ctx {
     EarlFunc::Func *m_cur_earlfunc;
 
-    UniqueScope<std::string, EarlVar> m_global_earlvars;
-    UniqueScope<std::string, EarlFunc::Func> m_global_earlfuncs;
+    UniqueScope<std::string, EarlVar> m_global_earlvars; // rem
+    UniqueScope<std::string, EarlFunc::Func> m_global_earlfuncs; // rem
+
+    Scope<std::string, EarlVar> m_global_earlvars2;
+    Scope<std::string, EarlFunc::Func> m_global_earlfuncs2;
 
 public:
     Ctx();
@@ -57,32 +61,7 @@ public:
     // Add a new scope.
     void push_scope(void);
 
-    // Given `id`, checks if there is an
-    // EarlVar in the current scope.
-    bool earlvar_in_scope(const std::string &id);
 
-    void add_earlvar_to_scope(std::unique_ptr<EarlVar> var);
-
-    // Will get you the EarlVar that corrosponds
-    // to `id`.
-    EarlVar *get_earlvar_from_scope(const std::string &id);
-
-    EarlVar *get_global_earlvar_from_scope(const std::string &id);
-
-    // Add an `EarlFunc` to the global function scope.
-    void add_earlfunc_to_scope(std::unique_ptr<EarlFunc::Func> func);
-    bool earlfunc_in_scope(std::string &id);
-    EarlFunc::Func *get_earlfunc_from_scope(std::string &id);
-
-    // Functions on function-specific scope with m_cur_earlfunc
-    void push_scope_in_earlfunc(void);
-    void pop_scope_in_earlfunc(void);
-    void add_earlvar_to_scope_in_earlfunc(std::unique_ptr<EarlVar> var);
-    bool earlvar_in_earlfunc_scope(const std::string &id);
-    EarlVar *get_earlvar_in_earlfunc_scope(const std::string &id);
-
-    void debug_dump_earlfuncs(void);
-    void debug_dump_earlvars(void);
 };
 
 #endif // CTX_H
