@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -20,6 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+/**
+ * Provides all of the possible token types in EARL
+ * as well as define what a `Token` is.
+ */
+
 #ifndef TOKEN_H
 #define TOKEN_H
 
@@ -31,7 +38,6 @@
 struct Lexer;
 
 enum class TokenType {
-    // Single character
     Lparen,
     Rparen,
     Lbracket,
@@ -86,25 +92,51 @@ enum class TokenType {
     Total_Len
 };
 
+/// @brief The definition of a token.
 struct Token {
+    /// @brief The actual value of the `Token`
     std::string m_lexeme;
+
+    /// @brief The type of the token
     TokenType m_type;
+
+    /// @brief The row of the token
     size_t m_row;
+
+    /// @brief The column of the token
     size_t m_col;
+
+    /// @brief The filepath of the token
     std::string m_fp;
+
+    /// @brief A pointer to the next token
     Token *m_next;
 
     Token(char *start, size_t len,
           TokenType type,
           size_t row, size_t col, std::string &fp);
 
+    /// @brief Get the `lexeme` of the current token
     std::string &lexeme(void);
+
+    /// @brief Get the `type` of the current token
     TokenType type(void) const;
+
+    /// @brief Get the stringified version of the type
     std::string to_str(void);
 };
 
+/// @brief Allocate a `Token` using an `Arena Allocator`
+/// @param lexer The lexer that is currently being used. It is needed for it's `arena`.
+/// @param start A pointer to the start of the lexeme to create
+/// @param len How many characters for the lexeme
+/// @param type The type of the token to create
+/// @param row The row of the token
+/// @param col The column of the token
+/// @param fp The filepath of the token
 Token *token_alloc(Lexer &lexer,
-                   char *start, size_t len,
+                   char *start,
+                   size_t len,
                    TokenType type,
                    size_t row, size_t col, std::string fp);
 

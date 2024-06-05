@@ -4,4 +4,4 @@ set -xe
 
 autoreconf --install --verbose
 ./configure
-make test
+make all

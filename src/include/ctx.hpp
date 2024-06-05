@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -20,11 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: ctx.hpp
-// Description:
-//   Provides a 'Context' struct that
-//   holds all relevant information
-//   that a runtime needs.
+/**
+ * Provides a 'Context' struct that
+ * holds all relevant information
+ * that a runtime needs.
+ */
 
 #ifndef CTX_H
 #define CTX_H
@@ -38,6 +40,7 @@
 #include "earlfunc.hpp"
 #include "scope.hpp"
 
+/// @brief The global "Context" of the runtime interpreter
 class Ctx {
     EarlFunc::Func *m_cur_earlfunc;
 
@@ -48,42 +51,60 @@ public:
     Ctx();
     ~Ctx() = default;
 
+    /// @brief Sets the current running function during runtime
+    /// @param func The function to set
     void set_current_earlfunc(EarlFunc::Func *func);
+
+    /// @brief Unsets the current function during runtime
     void unset_current_earlfunc(void);
 
-    // Remove a new scope.
+    /// @brief Pops the current scope from the context
     void pop_scope(void);
 
-    // Add a new scope.
+    /// @brief Pushes a new scope in the context
     void push_scope(void);
 
-    // Add an EarlVar to the current scope.
+    /// @brief Register an `EarlVar` into the current scope
+    /// @param var The variable to add
     void register_earlvar(EarlVar *var);
-    // Remove an EarlVar to the current scope.
+
+    /// @brief Deregister an `EarlVar` in the current scope
+    /// @param var The variable to remove
     void deregister_earlvar(EarlVar *var);
 
-    // Add an EarlFunc to the current scope.
+    /// @brief Add an `EarlFunc` to the current scope
+    /// @param func The function to register
     void register_earlfunc(EarlFunc::Func *func);
-    // Remove an EarlFunc to the current scope.
+
+    /// @brief Remove an `EarlFunc` to the current scope
+    /// @param func The function to deregister
     void deregister_earlfunc(EarlFunc::Func *func);
 
-    // Check if an EarlVar with the name of `id` is registered.
+    /// @brief Check if an `EarlVar` is registered
+    /// @param id The identifier of the `EarlVar`
     bool is_registered_earlvar(const std::string &id);
-    // Check if an EarlFunc with the name of `id` is registered.
+
+    /// @brief Check if an `EarlFunc` is registered
+    /// @param id The identifier of the `EarlFunc`
     bool is_registered_earlfunc(const std::string &id);
 
-    // Retrive a registered EarlVar from the current scope.
+    /// @brief Retrive a registered `EarlVar` from the current scope
+    /// @param id The identifier of the `EarlVar` to get
     EarlVar *get_registered_earlvar(const std::string &id);
-    // Retrive a registered EarlFunc from the current scope.
+
+    /// @brief Retrive a registered `EarlFunc` from the current scope
+    /// @param id The identifier of the `EarlFunc` to get
     EarlFunc::Func *get_registered_earlfunc(const std::string &id);
 
-    // Get the EarlVar with the id of `id` ONLY in the global scope.
+    /// @brief Get the `EarlVar` registered ONLY in the global scope
+    /// @param id The identifier of the `EarlVar` to get
     EarlVar *get_registered_global_earlvar(const std::string &id);
 
-    // Get the EarlFunc that we are currently in. Can be null.
+    /// @brief Get the `EarlFunc` that we are currently in
+    /// @attention Can return `NULL`
     EarlFunc::Func *get_cur_earlfunc(void);
 
-    // Check if we are currently in an EarlFunc.
+    /// @brief Check if we are currently in an `EarlFunc`
     bool in_earlfunc(void);
 };
 

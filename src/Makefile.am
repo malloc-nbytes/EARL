@@ -9,7 +9,15 @@ SUBDIRS = test
 
 AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -O0 -DDEBUG
 
-.PHONY: test
+.PHONY: test docs all
 test:
 	$(MAKE) -C test test_suite
 	./test/test_suite
+
+docs:
+	doxygen Doxyfile
+	@echo "--- Documentation generated in src/docs/html/index.html ---"
+
+all: docs main test
+
+.DEFAULT_GOAL = main

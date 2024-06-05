@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -20,29 +22,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: err.hpp
-// Description:
-//   Provides an easy way of displaying
-//   error messages and crashing.
+/**
+ * Provides an easy way of displaying
+ * error messages and crashing.
+ */
 
 #ifndef ERR_H
 #define ERR_H
 
-// The different classes of errors
-// that can be issued.
+/// @brief The different classes of errors
+/// that can be issued.
 enum class ErrType {
-    Syntax,     // Used for syntactical errors, usually during parsing
-    Runtime,    // Used for errors that ocur during runtime
-    Internal,   // An internal error
-    Fatal,      // Unrecoverable error
-    Redeclared, // Variable was redeclared at runtime
-    Undeclared, // Varriable is undeclared at runtime
-    Types,      // Incorrect usage of a type during runtime
-    Todo,       // For use during development of TODO functions
+    /** Used for syntactical errors, usually during parsing */
+    Syntax,
+    /** Used for errors that ocur during runtime */
+    Runtime,
+    /** An internal error */
+    Internal,
+    /** Unrecoverable error */
+    Fatal,
+    /** Variable was redeclared at runtime */
+    Redeclared,
+    /** Varriable is undeclared at runtime */
+    Undeclared,
+    /** Incorrect usage of a type during runtime */
+    Types,
+    /** For use during development of TODO functions */
+    Todo,
 };
 
-// Prints a error message of type `errtype`
-// with the message `msg` with any arguments of VA_ARGS.
+/// \brief Prints a error message of type `errtype`
+/// with the message `msg` with any arguments of VA_ARGS.
 #define ERR_WARGS(errtype, msg, ...)            \
     do {                                        \
         fprintf(stderr, "%s: ", __func__);      \
@@ -51,8 +61,8 @@ enum class ErrType {
         std::exit(1);                           \
     } while (0)
 
-// Prints a error message of type `errtype`
-// with the message `msg` with no arguments.
+/// @brief Prints a error message of type `errtype`
+/// with the message `msg` with no arguments.
 #define ERR(errtype, msg)                       \
     do {                                        \
         fprintf(stderr, "%s: ", __func__);      \
