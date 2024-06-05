@@ -124,3 +124,9 @@ StmtExpr::StmtExpr(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 StmtType StmtExpr::stmt_type() const {
     return StmtType::Stmt_Expr;
 }
+
+StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
+
+StmtType StmtReturn::stmt_type() const {
+    return StmtType::Stmt_Return;
+}
