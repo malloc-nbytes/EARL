@@ -130,25 +130,29 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     case TokenType::Plus: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.m_expr_value) + std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Minus: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.m_expr_value) - std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Asterisk: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.m_expr_value) * std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Forwardslash: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.m_expr_value) / std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     default:

@@ -201,6 +201,23 @@ std::unique_ptr<StmtMut> Parser::parse_stmt_mut(Lexer &lexer) {
     return std::make_unique<StmtMut>(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
 }
 
+std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IF);
+    Expr *expr = Parser::parse_expr(lexer);
+    std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
+
+    // Handle the `else` block if applicable
+    std::optional<std::unique_ptr<StmtBlock>> else_ = {};
+    Token *tok = lexer.peek();
+    if (tok->type() == TokenType::Keyword && tok->lexeme() == COMMON_EARLKW_ELSE) {
+        assert(false && "unimplemented");
+    }
+
+    return std::make_unique<StmtIf>(std::unique_ptr<Expr>(expr),
+                                    std::move(block),
+                                    std::move(else_));
+}
+
 std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     Token *id = parse_expect(lexer, TokenType::Ident);
@@ -221,7 +238,7 @@ std::unique_ptr<StmtExpr> Parser::parse_stmt_expr(Lexer &lexer) {
     return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));
 }
 
-std::unique_ptr<StmtBlock> parse_stmt_block(Lexer &lexer) {
+std::unique_ptr<StmtBlock> Parser::parse_stmt_block(Lexer &lexer) {
     (void)Parser::parse_expect(lexer, TokenType::Lbrace);
 
     std::vector<std::unique_ptr<Stmt>> stmts;
@@ -268,7 +285,7 @@ std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer) {
 
     Token *rettype = parse_expect_type(lexer);
 
-    std::unique_ptr<StmtBlock> block = parse_stmt_block(lexer);
+    std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
     return std::make_unique<StmtDef>(std::make_unique<Token>(*id),
                                      std::move(args),
                                      std::make_unique<Token>(*rettype),
@@ -285,6 +302,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         }
         else if (tok->lexeme() == COMMON_EARLKW_DEF) {
             return parse_stmt_def(lexer);
+        }
+        else if (tok->lexeme() == COMMON_EARLKW_IF) {
+            return parse_stmt_if(lexer);
         }
         else {
             assert(false && "parse_stmt: invalid keyword");

@@ -10,5 +10,9 @@ def func1(a: int) -> void {
 }
 
 let a: int = 9;
-func1(a);
+
+if a == 9 {
+    func1(a);
+}
 func2(a);
+
