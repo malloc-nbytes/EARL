@@ -77,6 +77,7 @@ public:
     // Retrive a registered EarlFunc from the current scope.
     EarlFunc::Func *get_registered_earlfunc(const std::string &id);
 
+    // Get the EarlVar with the id of `id` ONLY in the global scope.
     EarlVar *get_registered_global_earlvar(const std::string &id);
 
     // Get the EarlFunc that we are currently in. Can be null.

@@ -1,5 +1,8 @@
 def func(a: int, b: int) -> void {
-    print("in func()", a, b);
+    let x: int = 3;
+    let y: int = 4;
+    print("in func()", a, b, x, y);
+    func(a,b);
 }
 
 let i: int = 1;

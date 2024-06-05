@@ -14,8 +14,9 @@ EarlFunc::Func::Func(Token *id,
     : m_id(id),
       m_rettype(rettype),
       m_args(std::move(args)),
-      m_block(block),
-      m_local_scope(1) {}
+      m_block(block) {
+    m_local_scope.emplace_back();
+}
 
 void EarlFunc::Func::push_scope(void) {
     m_local_scope.back().push();
@@ -29,15 +30,24 @@ void EarlFunc::Func::new_scope_context(void) {
     m_local_scope.emplace_back();
 }
 
+void EarlFunc::Func::drop_scope_context(void) {
+    m_local_scope.pop_back();
+}
+
 bool EarlFunc::Func::contains_local_earlvar(const std::string &id) {
     return m_local_scope.back().contains(id);
 }
 
 EarlVar *EarlFunc::Func::get_local_earlvar(const std::string &id) {
     EarlVar **var = m_local_scope.back().get(id);
-    if (!*var)
+    if (!var || !*var)
         ERR_WARGS(ErrType::Fatal, "variable `%s` is not in local scope", id.c_str());
     return *var;
+}
+
+void EarlFunc::Func::add_local_earlvar(EarlVar *var) {
+    const std::string &id = var->m_id->lexeme();
+    m_local_scope.back().add(id, var);
 }
 
 size_t EarlFunc::Func::context_size(void) {

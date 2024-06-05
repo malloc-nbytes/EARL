@@ -59,34 +59,23 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     }
 }
 
-static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    // EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> user_params, Ctx &ctx) {
     auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
 
-    // ctx.set_current_earlfunc(func);
-    // ctx.push_scope();
+    ctx.set_current_earlfunc(func);
+    ctx.push_scope();
 
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        Interpreter::ExprEvalResult param = params[i];
-
-        if (param.m_expr_term_type == ExprTermType::Ident) {
-            Token *tok = std::any_cast<Token *>(param.value());
-            // EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
-            // func->m_args[i]->m_value = var->m_value;
-        }
-
-        else {
-            func->m_args[i]->set_value(param.m_expr_value);
-        }
-
-        // ctx.add_earlvar_to_scope(std::move(func->m_args[i]));
+        Interpreter::ExprEvalResult user_param = user_params[i];
+        func->m_args[i]->set_value(user_param.value());
+        ctx.register_earlvar(func->m_args[i]);
     }
 
-    // Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
-    // ctx.pop_scope();
-    // ctx.unset_current_earlfunc();
+    Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
+    ctx.unset_current_earlfunc();
+    ctx.pop_scope();
 
-    // return blockresult;
+    return blockresult;
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {

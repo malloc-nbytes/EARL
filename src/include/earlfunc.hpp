@@ -56,12 +56,17 @@ namespace EarlFunc {
         // Create a new context in the local scope.
         void new_scope_context(void);
 
+        void drop_scope_context(void);
+
         // Check if an EarlVar with the id of `id` is in the local scope.
         bool contains_local_earlvar(const std::string &id);
 
         // Get an EarlVar in the local scope.
         EarlVar *get_local_earlvar(const std::string &id);
 
+        void add_local_earlvar(EarlVar *var);
+
+        // Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
         size_t context_size(void);
     };
 };
