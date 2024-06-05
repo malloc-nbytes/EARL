@@ -29,39 +29,45 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "token.hpp"
-#include "unique-scope.hpp"
+#include "scope.hpp"
 
 namespace EarlFunc {
-    enum class Attr {
-        Pub = 1 << 0,
-        World = 1 << 1,
-    };
-
     struct Func {
         Token *m_id;
         EarlTy::Type m_rettype;
-        std::vector<std::unique_ptr<EarlVar>> m_args;
+        std::vector<EarlVar *> m_args;
         StmtBlock *m_block;
 
-        std::vector<UniqueScope<std::string, EarlVar>> m_local_scope;
+        std::vector<Scope<std::string, EarlVar *>> m_local_scope;
 
         Func(Token *id,
              EarlTy::Type rettype,
-             std::vector<std::unique_ptr<EarlVar>> args,
+             std::vector<EarlVar *> args,
              StmtBlock *block);
 
         ~Func() = default;
 
-        void add_earlvar_to_local_scope(std::unique_ptr<EarlVar> var);
-        EarlVar *get_earlvar_from_local_scope(const std::string &id);
-        bool has_earlvar_in_local_scope(const std::string &id);
-        void add_new_local_scope_context(void);
-
-        void pop_scope(void);
+        // Push a new local scope.
         void push_scope(void);
 
-        /*** DEBUG ***/
-        void dump_local_scope(void);
+        // Pop a local scope.
+        void pop_scope(void);
+
+        // Create a new context in the local scope.
+        void new_scope_context(void);
+
+        void drop_scope_context(void);
+
+        // Check if an EarlVar with the id of `id` is in the local scope.
+        bool contains_local_earlvar(const std::string &id);
+
+        // Get an EarlVar in the local scope.
+        EarlVar *get_local_earlvar(const std::string &id);
+
+        void add_local_earlvar(EarlVar *var);
+
+        // Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
+        size_t context_size(void);
     };
 };
 

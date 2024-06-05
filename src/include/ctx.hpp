@@ -36,13 +36,13 @@
 #include "earlty.hpp"
 #include "earlvar.hpp"
 #include "earlfunc.hpp"
-#include "unique-scope.hpp"
+#include "scope.hpp"
 
 class Ctx {
     EarlFunc::Func *m_cur_earlfunc;
 
-    UniqueScope<std::string, EarlVar> m_global_earlvars;
-    UniqueScope<std::string, EarlFunc::Func> m_global_earlfuncs;
+    Scope<std::string, EarlVar *> m_global_earlvars;
+    Scope<std::string, EarlFunc::Func *> m_global_earlfuncs;
 
 public:
     Ctx();
@@ -57,32 +57,34 @@ public:
     // Add a new scope.
     void push_scope(void);
 
-    // Given `id`, checks if there is an
-    // EarlVar in the current scope.
-    bool earlvar_in_scope(const std::string &id);
+    // Add an EarlVar to the current scope.
+    void register_earlvar(EarlVar *var);
+    // Remove an EarlVar to the current scope.
+    void deregister_earlvar(EarlVar *var);
 
-    void add_earlvar_to_scope(std::unique_ptr<EarlVar> var);
+    // Add an EarlFunc to the current scope.
+    void register_earlfunc(EarlFunc::Func *func);
+    // Remove an EarlFunc to the current scope.
+    void deregister_earlfunc(EarlFunc::Func *func);
 
-    // Will get you the EarlVar that corrosponds
-    // to `id`.
-    EarlVar *get_earlvar_from_scope(const std::string &id);
+    // Check if an EarlVar with the name of `id` is registered.
+    bool is_registered_earlvar(const std::string &id);
+    // Check if an EarlFunc with the name of `id` is registered.
+    bool is_registered_earlfunc(const std::string &id);
 
-    EarlVar *get_global_earlvar_from_scope(const std::string &id);
+    // Retrive a registered EarlVar from the current scope.
+    EarlVar *get_registered_earlvar(const std::string &id);
+    // Retrive a registered EarlFunc from the current scope.
+    EarlFunc::Func *get_registered_earlfunc(const std::string &id);
 
-    // Add an `EarlFunc` to the global function scope.
-    void add_earlfunc_to_scope(std::unique_ptr<EarlFunc::Func> func);
-    bool earlfunc_in_scope(std::string &id);
-    EarlFunc::Func *get_earlfunc_from_scope(std::string &id);
+    // Get the EarlVar with the id of `id` ONLY in the global scope.
+    EarlVar *get_registered_global_earlvar(const std::string &id);
 
-    // Functions on function-specific scope with m_cur_earlfunc
-    void push_scope_in_earlfunc(void);
-    void pop_scope_in_earlfunc(void);
-    void add_earlvar_to_scope_in_earlfunc(std::unique_ptr<EarlVar> var);
-    bool earlvar_in_earlfunc_scope(const std::string &id);
-    EarlVar *get_earlvar_in_earlfunc_scope(const std::string &id);
+    // Get the EarlFunc that we are currently in. Can be null.
+    EarlFunc::Func *get_cur_earlfunc(void);
 
-    void debug_dump_earlfuncs(void);
-    void debug_dump_earlvars(void);
+    // Check if we are currently in an EarlFunc.
+    bool in_earlfunc(void);
 };
 
 #endif // CTX_H

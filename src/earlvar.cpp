@@ -11,3 +11,7 @@ EarlVar::EarlVar(Token *id, EarlTy::Type type, bool allocd,
       m_allocd(allocd),
       m_value(value),
       m_refcount(refcount) {}
+
+void EarlVar::set_value(std::any value) {
+  m_value = value;
+}

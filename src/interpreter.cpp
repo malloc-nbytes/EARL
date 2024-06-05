@@ -39,30 +39,14 @@
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx);
 Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
-// Used when an ExprEvalResult has a expression term type
-// of `ident` to copy over the information from the ident
-// that it is assigned into it's actual value.
-// NOTE: expr.get_earl_type() should be called before calling
-// this function to properly get the correct EARL type.
-static void try_copy_ident_value(Interpreter::ExprEvalResult &expr_eval, bool get_global, Ctx &ctx) {
-    if (expr_eval.m_expr_term_type == ExprTermType::Ident) {
-        const std::string &id = std::any_cast<Token *>(expr_eval.m_expr_value)->lexeme();
-        EarlVar *var = nullptr;
-        if (get_global)
-            var = ctx.get_global_earlvar_from_scope(id);
-        else
-            var = ctx.get_earlvar_from_scope(id);
-        expr_eval.m_expr_value = var->m_value;
-    }
+std::any Interpreter::ExprEvalResult::value(void) {
+    return m_expr_value;
 }
 
 EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     if (m_expr_term_type == ExprTermType::Ident) {
         Token *tok = std::any_cast<Token *>(m_expr_value);
-        if (!ctx.earlvar_in_scope(tok->lexeme())) {
-            ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", tok->lexeme().c_str());
-        }
-        EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
+        auto *var = ctx.get_registered_earlvar(tok->lexeme());
         return var->m_type;
     }
 
@@ -75,31 +59,21 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     }
 }
 
-static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    EarlFunc::Func *func = ctx.get_earlfunc_from_scope(expr->m_id->lexeme());
+static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> user_params, Ctx &ctx) {
+    auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
 
-    // ctx.set_current_earlfunc(func);
-    // ctx.push_scope();
+    ctx.set_current_earlfunc(func);
+    ctx.push_scope();
 
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        Interpreter::ExprEvalResult param = params[i];
-
-        if (param.m_expr_term_type == ExprTermType::Ident) {
-            Token *tok = std::any_cast<Token *>(param.m_expr_value);
-            EarlVar *var = ctx.get_earlvar_from_scope(tok->lexeme());
-            func->m_args[i]->m_value = var->m_value;
-        }
-
-        else {
-            func->m_args[i]->m_value = param.m_expr_value;
-        }
-
-        ctx.add_earlvar_to_scope(std::move(func->m_args[i]));
+        Interpreter::ExprEvalResult user_param = user_params[i];
+        func->m_args[i]->set_value(user_param.value());
+        ctx.register_earlvar(func->m_args[i]);
     }
 
     Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
-    // ctx.pop_scope();
-    // ctx.unset_current_earlfunc();
+    ctx.unset_current_earlfunc();
+    ctx.pop_scope();
 
     return blockresult;
 }
@@ -122,18 +96,16 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
-        if (!ctx.earlvar_in_scope(ident->m_tok->lexeme().c_str())) {
-            ERR_WARGS(ErrType::Undeclared, "variable `%s` is not in scope", ident->m_tok->lexeme().c_str());
-        }
-        return Interpreter::ExprEvalResult {ident->m_tok.get(), ident->get_term_type()};
+        EarlVar *stored = ctx.get_registered_earlvar(ident->m_tok->lexeme());
+        return Interpreter::ExprEvalResult {stored->m_value, ident->get_term_type(), stored->m_type};
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
-        return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type()};
+        return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type(), EarlTy::Type::Int};
     } break;
     case ExprTermType::Str_Literal: {
         ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
-        return Interpreter::ExprEvalResult {strlit->m_tok->lexeme(), strlit->get_term_type()};
+        return Interpreter::ExprEvalResult {strlit->m_tok->lexeme(), strlit->get_term_type(), EarlTy::Type::Str};
     } break;
     case ExprTermType::Func_Call: {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
@@ -149,15 +121,9 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     Interpreter::ExprEvalResult lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
     Interpreter::ExprEvalResult rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
 
-    EarlTy::Type lhs_type = lhs.get_earl_type(ctx);
-    EarlTy::Type rhs_type = rhs.get_earl_type(ctx);
-
-    try_copy_ident_value(lhs, false, ctx);
-    try_copy_ident_value(rhs, false, ctx);
-
-    if (!EarlTy::earlvar_type_compat(lhs_type, rhs_type)) {
+    if (!EarlTy::earlvar_type_compat(lhs.m_earl_type, rhs.m_earl_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
-                  static_cast<int>(lhs_type), static_cast<int>(rhs_type));
+                  static_cast<int>(lhs.m_earl_type), static_cast<int>(rhs.m_earl_type));
     }
 
     switch (expr->m_op->type()) {
@@ -209,7 +175,8 @@ Interpreter::ExprEvalResult Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
 
 Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     const std::string &id = stmt->m_id->lexeme();
-    if (ctx.earlvar_in_scope(id)) {
+
+    if (ctx.is_registered_earlvar(id)) {
         ERR_WARGS(ErrType::Redeclared, "variable `%s` is already defined", id.c_str());
     }
 
@@ -221,14 +188,13 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     // The type of the right side of the equals sign
     EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
 
-    try_copy_ident_value(expr_eval, false, ctx);
-
     if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
                   static_cast<int>(binding_type), static_cast<int>(rval_type));
     }
 
-    ctx.add_earlvar_to_scope(std::make_unique<EarlVar>(stmt->m_id.get(), binding_type, false, expr_eval.m_expr_value));
+    EarlVar *var = new EarlVar(stmt->m_id.get(), binding_type, false, expr_eval.m_expr_value);
+    ctx.register_earlvar(var);
 
     return Interpreter::ExprEvalResult{};
 }
@@ -251,18 +217,20 @@ Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
 Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
-    std::vector<std::unique_ptr<EarlVar>> args;
-
+    std::vector<EarlVar *> args;
     for (auto &arg : stmt->m_args) {
         Token *id = arg.first.get();
         EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
-        args.push_back(std::make_unique<EarlVar>(id, type, false, nullptr));
+        args.push_back(new EarlVar(id, type, false, nullptr));
     }
 
-    ctx.add_earlfunc_to_scope(std::make_unique<EarlFunc::Func>(stmt->m_id.get(),
-                                                               EarlTy::of_str(stmt->m_rettype->lexeme()),
-                                                               std::move(args),
-                                                               stmt->m_block.get()));
+    auto *func = new EarlFunc::Func(stmt->m_id.get(),
+                                    EarlTy::of_str(stmt->m_rettype->lexeme()),
+                                    std::move(args),
+                                    stmt->m_block.get());
+
+    ctx.register_earlfunc(func);
+
     return Interpreter::ExprEvalResult{};
 }
 
