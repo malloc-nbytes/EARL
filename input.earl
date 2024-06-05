@@ -1,5 +1,6 @@
-def sum(a: int, b: int) -> void {
-    print(a,b);
+def func(a: int) -> void {
+    print("in func()", a);
 }
 
-sum(1,2);
+let a: int = 9;
+sum(a);

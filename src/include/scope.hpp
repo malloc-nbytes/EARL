@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -26,7 +28,11 @@
 #include <unordered_map>
 #include <vector>
 
+/// @brief A generic scope structure
 template <typename K, typename V> struct Scope {
+
+    /// @brief The map from `K` -> `V` that represents
+    /// the scope.
     std::vector<std::unordered_map<K, V>> m_map;
 
     Scope() {
@@ -35,14 +41,20 @@ template <typename K, typename V> struct Scope {
 
     ~Scope() = default;
 
+    /// @brief Pushes a new scope context
     inline void push(void) {
         m_map.emplace_back();
     }
 
+    /// @brief Pops a scope context
     inline void pop(void) {
         m_map.pop_back();
     }
 
+    /// @brief Check to see if `key` is a part
+    /// of any of the scope contexts.
+    /// @param key The key to find
+    /// @returns True if present, false if otherwise
     inline bool contains(const K key) {
        for (auto &map : m_map) {
             if (map.find(key) != map.end())
@@ -51,10 +63,16 @@ template <typename K, typename V> struct Scope {
         return false;
     }
 
+    /// @brief Add a key-value to the scope
+    /// @param key The key
+    /// @param value The value
     inline void add(K key, V value) {
         m_map.back().emplace(key, value);
     }
 
+    /// @brief Get the value associated with `key` in
+    /// any of the scope contexts.
+    /// @param key The key associated with the value needed
     inline V *get(K key) {
         for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
             auto &map = *it;
