@@ -63,36 +63,47 @@ public:
     /// @brief Pushes a new scope in the context
     void push_scope(void);
 
-    /// @brief Register an EarlVar into the current scope
+    /// @brief Register an `EarlVar` into the current scope
     /// @param var The variable to add
     void register_earlvar(EarlVar *var);
 
-    /// @brief Deregister an EarlVar in the current scope.
+    /// @brief Deregister an `EarlVar` in the current scope
     /// @param var The variable to remove
     void deregister_earlvar(EarlVar *var);
 
-    // Add an EarlFunc to the current scope.
+    /// @brief Add an `EarlFunc` to the current scope
+    /// @param func The function to register
     void register_earlfunc(EarlFunc::Func *func);
-    // Remove an EarlFunc to the current scope.
+    
+    /// @brief Remove an `EarlFunc` to the current scope
+    /// @param func The function to deregister
     void deregister_earlfunc(EarlFunc::Func *func);
 
-    // Check if an EarlVar with the name of `id` is registered.
+    /// @brief Check if an `EarlVar` is registered
+    /// @param id The identifier of the `EarlVar`
     bool is_registered_earlvar(const std::string &id);
-    // Check if an EarlFunc with the name of `id` is registered.
+
+    /// @brief Check if an `EarlFunc` is registered
+    /// @param id The identifier of the `EarlFunc`
     bool is_registered_earlfunc(const std::string &id);
 
-    // Retrive a registered EarlVar from the current scope.
+    /// @brief Retrive a registered `EarlVar` from the current scope
+    /// @param id The identifier of the `EarlVar` to get
     EarlVar *get_registered_earlvar(const std::string &id);
-    // Retrive a registered EarlFunc from the current scope.
+
+    /// @brief Retrive a registered `EarlFunc` from the current scope
+    /// @param id The identifier of the `EarlFunc` to get
     EarlFunc::Func *get_registered_earlfunc(const std::string &id);
 
-    // Get the EarlVar with the id of `id` ONLY in the global scope.
+    /// @brief Get the `EarlVar` registered ONLY in the global scope
+    /// @param id The identifier of the `EarlVar` to get
     EarlVar *get_registered_global_earlvar(const std::string &id);
 
-    // Get the EarlFunc that we are currently in. Can be null.
+    /// @brief Get the `EarlFunc` that we are currently in
+    /// @attention Can return `NULL`
     EarlFunc::Func *get_cur_earlfunc(void);
 
-    // Check if we are currently in an EarlFunc.
+    /// @brief Check if we are currently in an `EarlFunc`
     bool in_earlfunc(void);
 };
 
