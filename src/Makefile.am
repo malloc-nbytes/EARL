@@ -19,3 +19,5 @@ docs:
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
 
 all: docs main test
+
+.DEFAULT_GOAL = main

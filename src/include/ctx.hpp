@@ -56,7 +56,6 @@ public:
     /// @brief Unsets the current function during runtime
     void unset_current_earlfunc(void);
 
-
     /// @brief Pops the current scope from the context
     void pop_scope(void);
 
@@ -74,7 +73,7 @@ public:
     /// @brief Add an `EarlFunc` to the current scope
     /// @param func The function to register
     void register_earlfunc(EarlFunc::Func *func);
-    
+
     /// @brief Remove an `EarlFunc` to the current scope
     /// @param func The function to deregister
     void deregister_earlfunc(EarlFunc::Func *func);

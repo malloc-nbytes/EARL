@@ -20,64 +20,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: parser.hpp
-// Description:
-//   Provides a set of parsers as well as
-//   some helper functions to parse the
-//   grammar of EARL.
-
 #ifndef PARSER_H
 #define PARSER_H
 
 #include "lexer.hpp"
 #include "ast.hpp"
 
+/// @brief Provides a set of parsers as well as
+/// some helper functions to parse the
+/// grammar of EARL.
 namespace Parser {
-    // The entrypoint to parsing. Takes a lexer
-    // `lexer` and produces a Program.
+    /// @brief The entrypoint to parsing.
+    /// @param lexer The lexer that has
+    /// the linked list of tokens to parse
     Program parse_program(Lexer &lexer);
 
-    // Given `lexer`, parses a statement.
+    /// @brief Parses a statement.
+    /// @param lexer The lexer with the linked list
+    /// of tokens
     std::unique_ptr<Stmt> parse_stmt(Lexer &lexer);
 
-    // Given `lexer`, parses a statement of type
-    // statement definition.
-    // ex:
-    //     def my_func(a: int, b: int) -> int { ... }
+    /// @brief Parses a statement of type statement definition.
+    /// @note ex:
+    /// def my_func(a: int, b: int) -> int { ... }
+    /// @param lexer The lexer with the linked list of tokens
     std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer);
 
-    // Given `lexer` parses a statement of type
-    // statement expression. Examples of this are functions
-    // where there is no return value (or the value is to
-    // be ignored), or math equations for the REPL i.e., 1+3.
+    /// @brief Parses a statement of type
+    /// statement expression. Examples of this are functions
+    /// where there is no return value (or the value is to
+    /// be ignored), or math equations for the REPL i.e., 1+3.
+    /// @param lexer The lexer with the linked list of tokens
     std::unique_ptr<StmtExpr> parse_stmt_expr(Lexer &lexer);
 
-    // Given `lexer`, parses a statement of type 'let'.
-    // ex:
-    //   let x: int = 3;
+    /// @brief Parses a statement of type 'let'.
+    /// @note ex: let x: int = 3;
+    /// @param lexer The lexer with the linked list of tokens
     std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer);
 
-    // Given `lexer`, parses a statement of type mutate.
-    // ex:
-    //   x = 3 + a * 4 / 2;
+    /// @brief Parses a statement of type mutate.
+    /// @note ex: x = 3 + a * 4 / 2;
+    /// @param lexer The lexer with the linked list of tokens
     std::unique_ptr<StmtMut> parse_stmt_mut(Lexer &lexer);
 
-    // Given `lexer`, parses an expression. It uses
-    // a recursive descent parser to determine precidence.
-    // The precidence is as follows:
-    //   logical -> equalitative -> additive -> multiplicative -> primary.
+    /// @brief Parses an expression. It uses
+    /// a recursive descent parser to determine precidence.
+    /// @note The precidence is as follows:
+    /// logical -> equalitative -> additive -> multiplicative -> primary.
+    /// @param lexer The lexer with the linked list of tokens
     Expr *parse_expr(Lexer &lexer);
 
-    // Given `lexer`, a utility function for the parsers
-    // to use to expect the next token to be an EARL datatype.
+    /// @brief A utility function for the parsers
+    /// to use to expect the next token to be an EARL datatype.
+    /// @param lexer The lexer with the linked list of tokens
     Token *parse_expect_type(Lexer &lexer);
 
-    // Given `lexer`, a utility function for the parsers
-    // to use to expect the next token to be an EARL keyword.
+    /// @brief A utility function for the parsers
+    /// to use to expect the next token to be an EARL keyword.
+    /// @param lexer The lexer with the linked list of tokens
+    /// @param expected The keyword to expect
     Token *parse_expect_keyword(Lexer &lexer, std::string expected);
 
-    // Given `lexer`, a utility function for the parsers
-    // to use to expect the next token to be of type `expected`.
+    /// @brief A utility function for the parsers
+    /// to use to expect the next token to be of type `expected`.
+    /// @param lexer The lexer with the linked list of tokens
+    /// @param expected The type to expect
     Token *parse_expect(Lexer &lexer, TokenType expected);
 };
 
