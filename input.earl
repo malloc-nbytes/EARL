@@ -1,11 +1,5 @@
-def func(a: int, b: int) -> void {
-    let x: int = 3;
-    let y: int = 4;
-    print("in func()", a, b, x, y);
-    func(a,b);
+def sum(a: int, b: int) -> void {
+    print(a,b);
 }
 
-let i: int = 1;
-let j: int = 2;
-
-func(i, j);
+sum(1,2);
