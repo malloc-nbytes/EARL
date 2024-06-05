@@ -12,6 +12,12 @@ AC_PROG_CXX
 # Check for C compiler
 AC_PROG_CC
 
+# Check for doxygen
+AC_CHECK_PROG([DOXYGEN], [doxygen], [doxygen], [no])
+if test "x$DOXYGEN" = "xno"; then
+  AC_MSG_WARN([Doxygen is required to build the documentation. Please install it.])
+fi
+
 # Tells automake to create Makefiles in specified directories
 AC_CONFIG_FILES([Makefile
                 test/Makefile])
