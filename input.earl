@@ -1,12 +1,9 @@
 def func2(a: int) -> void {
-    let x: int = 2;
-    print("in func2()", a+x);
+    print("in func2()", a);
 }
 
 def func1(a: int) -> void {
     print("in func1()", a);
-    let x: int = 2;
-    func2(x);
 }
 
 let a: int = 9;
