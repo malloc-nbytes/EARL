@@ -72,8 +72,8 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
     }
 
     Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
-    ctx.unset_current_earlfunc();
     ctx.pop_scope();
+    ctx.unset_current_earlfunc();
 
     return blockresult;
 }

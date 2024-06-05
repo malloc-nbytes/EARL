@@ -86,7 +86,7 @@ bool Ctx::is_registered_earlfunc(const std::string &id) {
 }
 
 EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
-    EarlVar **var;
+    EarlVar **var = nullptr;
 
     if (in_earlfunc()) {
         auto *func = get_cur_earlfunc();
@@ -96,7 +96,7 @@ EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
         var = m_global_earlvars.get(id);
     }
 
-    if (!*var) {
+    if (!var || !*var) {
         ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", id.c_str());
     }
 
