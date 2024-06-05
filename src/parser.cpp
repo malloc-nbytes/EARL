@@ -24,6 +24,7 @@
 #include <iostream>
 #include <optional>
 
+#include "utils.hpp"
 #include "err.hpp"
 #include "ast.hpp"
 #include "common.hpp"
@@ -203,6 +204,7 @@ std::unique_ptr<StmtMut> Parser::parse_stmt_mut(Lexer &lexer) {
 
 std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IF);
+
     Expr *expr = Parser::parse_expr(lexer);
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
 
@@ -210,7 +212,7 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
     std::optional<std::unique_ptr<StmtBlock>> else_ = {};
     Token *tok = lexer.peek();
     if (tok->type() == TokenType::Keyword && tok->lexeme() == COMMON_EARLKW_ELSE) {
-        assert(false && "unimplemented");
+        UNIMPLEMENTED("Parser::parse_stmt_if: handle else block");
     }
 
     return std::make_unique<StmtIf>(std::unique_ptr<Expr>(expr),

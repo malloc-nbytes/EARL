@@ -238,6 +238,10 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     return Interpreter::ExprEvalResult{};
 }
 
+Interpreter::ExprEvalResult eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
+    assert(false);
+}
+
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -254,6 +258,9 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Stmt_Expr: {
         return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
+    } break;
+    case StmtType::If: {
+        return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");
