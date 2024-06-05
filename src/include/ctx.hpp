@@ -20,11 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: ctx.hpp
-// Description:
-//   Provides a 'Context' struct that
-//   holds all relevant information
-//   that a runtime needs.
+/**
+ * Provides a 'Context' struct that
+ * holds all relevant information
+ * that a runtime needs.
+ */
 
 #ifndef CTX_H
 #define CTX_H
@@ -38,6 +38,7 @@
 #include "earlfunc.hpp"
 #include "scope.hpp"
 
+/// @brief The global "Context" of the runtime interpreter
 class Ctx {
     EarlFunc::Func *m_cur_earlfunc;
 
@@ -48,18 +49,26 @@ public:
     Ctx();
     ~Ctx() = default;
 
+    /// @brief Sets the current running function during runtime
+    /// @param func The function to set
     void set_current_earlfunc(EarlFunc::Func *func);
+
+    /// @brief Unsets the current function during runtime
     void unset_current_earlfunc(void);
 
-    // Remove a new scope.
+
+    /// @brief Pops the current scope from the context
     void pop_scope(void);
 
-    // Add a new scope.
+    /// @brief Pushes a new scope in the context
     void push_scope(void);
 
-    // Add an EarlVar to the current scope.
+    /// @brief Register an EarlVar into the current scope
+    /// @param var The variable to add
     void register_earlvar(EarlVar *var);
-    // Remove an EarlVar to the current scope.
+
+    /// @brief Deregister an EarlVar in the current scope.
+    /// @param var The variable to remove
     void deregister_earlvar(EarlVar *var);
 
     // Add an EarlFunc to the current scope.
