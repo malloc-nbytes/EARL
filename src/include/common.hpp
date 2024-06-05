@@ -20,15 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: common.h
-// Description:
-//   A few things that are useful
-//   throughout the entire project.
-
 #ifndef COMMON_H
 #define COMMON_H
 
 #include <vector>
+
+/**
+ * A few things that are useful throughout the entire project.
+ */
 
 // Keywords
 #define COMMON_EARLKW_LET    "let"
