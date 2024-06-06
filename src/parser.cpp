@@ -36,8 +36,9 @@ Expr *parse_expr(Lexer &lexer);
 Token *Parser::parse_expect(Lexer &lexer, TokenType expected) {
     Token *tok = lexer.next();
     if (tok->type() != expected) {
-        ERR_WARGS(ErrType::Syntax,
-                  "parse_expect: expected %d, got %s `%s`",
+        Err::err_wtok(tok);
+        ERR_WARGS(Err::Type::Syntax,
+                  "expected %d, got %s `%s`",
                   (int)expected, tok->to_str().c_str(), tok->lexeme().c_str());
     }
     return tok;
@@ -47,13 +48,13 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     Token *tok = lexer.next();
 
     if (tok->type() != TokenType::Keyword) {
-        ERR_WARGS(ErrType::Syntax,
-                  "parse_expect_keyword: %s `%s` is not a keyword",
+        ERR_WARGS(Err::Type::Syntax,
+                  "%s `%s` is not a keyword",
                   tok->to_str().c_str(), tok->lexeme().c_str());
     }
     if (tok->lexeme() != expected) {
-        ERR_WARGS(ErrType::Syntax,
-                  "parse_expect_keyword: expected keyword `%s`, got %s `%s`",
+        ERR_WARGS(Err::Type::Syntax,
+                  "expected keyword `%s`, got %s `%s`",
                   expected.c_str(), tok->to_str().c_str(), tok->lexeme().c_str());
     }
 
@@ -63,8 +64,8 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
 Token *Parser::parse_expect_type(Lexer &lexer) {
     Token *tok = lexer.next();
     if (tok->type() != TokenType::Type) {
-        ERR_WARGS(ErrType::Syntax,
-                  "parse_expect_type: %s `%s` is not a keyword",
+        ERR_WARGS(Err::Type::Syntax,
+                  "%s `%s` is not a keyword",
                   tok->to_str().c_str(), tok->lexeme().c_str());
     }
     return tok;
@@ -354,7 +355,7 @@ static FuncAttr translate_attr(Lexer &lexer) {
         return FuncAttr::World;
     }
     else {
-        ERR_WARGS(ErrType::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
+        ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
     }
 }
 
@@ -403,7 +404,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         }
     } while (attrs != 0);
 
-    ERR(ErrType::Internal,
+    ERR(Err::Type::Internal,
         "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
     return nullptr;
 }

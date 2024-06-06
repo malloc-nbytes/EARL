@@ -106,7 +106,7 @@ EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
             var = get_cur_earlfunc()->m_local_scope.back().get(id);
         }
         else if (get_cur_earlfunc()->contains_local_earlvar(id)) { // Is in global, make sure its not in local
-            ERR_WARGS(ErrType::Redeclaration, "duplicate variable `%s`", id.c_str());
+            ERR_WARGS(Err::Type::Redeclaration, "duplicate variable `%s`", id.c_str());
         }
     }
     else if (in_earlfunc()) {
@@ -118,7 +118,7 @@ EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
     }
 
     if (!var || !*var) {
-        ERR_WARGS(ErrType::Fatal, "variable `%s` is not in scope", id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in scope", id.c_str());
     }
 
     return *var;
@@ -127,7 +127,7 @@ EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
 EarlFunc::Func *Ctx::get_registered_earlfunc(const std::string &id) {
     EarlFunc::Func **func = m_global_earlfuncs.get(id);
     if (!*func) {
-        ERR_WARGS(ErrType::Fatal, "function `%s` is not in scope", id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "function `%s` is not in scope", id.c_str());
     }
     return *func;
 }
@@ -136,7 +136,7 @@ EarlVar *Ctx::get_registered_global_earlvar(const std::string &id) {
     assert(!in_earlfunc() || get_cur_earlfunc()->context_size() == 1);
     EarlVar **var = m_global_earlvars.get(id);
     if (!*var) {
-        ERR_WARGS(ErrType::Fatal, "variable `%s` is not in global scope", id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in global scope", id.c_str());
     }
     return *var;
 }

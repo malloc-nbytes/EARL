@@ -135,7 +135,7 @@ std::string Token::to_str(void)
     case TokenType::Type:
         return "TYPE";
     default:
-        ERR_WARGS(ErrType::Fatal, "unkown type: %d", static_cast<int>(m_type));
+        ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(m_type));
         return NULL;
     }
     return NULL;

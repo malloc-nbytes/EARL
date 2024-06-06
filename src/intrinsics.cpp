@@ -35,7 +35,7 @@ Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, std::vector<In
             std::cout << std::any_cast<std::string>(param.value());
         }
         else {
-            ERR_WARGS(ErrType::Fatal, "no printing for earltype %d", static_cast<int>(param.m_earl_type));
+            ERR_WARGS(Err::Type::Fatal, "no printing for earltype %d", static_cast<int>(param.m_earl_type));
         }
     }
     std::cout << '\n';
