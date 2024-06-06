@@ -44,6 +44,7 @@ enum class StmtType {
     Stmt_Expr,
     If,
     Stmt_Return,
+    Stmt_While,
 };
 
 /// The different types an expression can be.
@@ -235,13 +236,24 @@ struct StmtIf : public Stmt {
     StmtType stmt_type() const override;
 };
 
-/// @brief The Statementc Return class
+/// @brief The Statement Return class
 struct StmtReturn : public Stmt {
-
     /// @brief The expression that the Statement Return is returning
     std::unique_ptr<Expr> m_expr;
 
     StmtReturn(std::unique_ptr<Expr> expr);
+    StmtType stmt_type() const override;
+};
+
+/// @brief The Statement While class
+struct StmtWhile : public Stmt {
+    /// @brief The expression to loop while it is true
+    std::unique_ptr<Expr> m_expr;
+
+    /// @brief The block of the while loop to loop
+    std::unique_ptr<StmtBlock> m_block;
+
+    StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block);
     StmtType stmt_type() const override;
 };
 
