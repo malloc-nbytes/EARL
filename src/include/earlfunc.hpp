@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "common.hpp"
 #include "ast.hpp"
 #include "earlty.hpp"
 #include "earlvar.hpp"
@@ -49,6 +50,10 @@ namespace EarlFunc {
 
         /// @brief The function body
         StmtBlock *m_block;
+
+        /// @brief The attributes of the function. Uses the
+        /// flags from FuncAttr.
+        uint32_t attrs;
 
         /// @brief The local scope of the function
         std::vector<Scope<std::string, EarlVar *>> m_local_scope;

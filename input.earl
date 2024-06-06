@@ -1,18 +1,7 @@
-def fizzbuzz(start: int, end: int) -> void {
-    for i in start..end {
-        if i % 5 == 0 && i % 3 == 0 {
-            print("FizzBuzz");
-        }
-        else if i % 5 == 0 {
-            print("Fizz");
-        }
-        else if i % 3 == 0 {
-            print("Buzz");
-        }
-        else {
-            print(i);
-        }
-    }
+@world
+def func() -> void {
+    print("i: ", i);
 }
 
-fizzbuzz(1, 101);
+let i: int = 1;
+

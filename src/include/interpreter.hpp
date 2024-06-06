@@ -31,8 +31,11 @@
 #include "earlty.hpp"
 #include "ast.hpp"
 
+/// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
 
+    /// @brief Used for an `ExprEvalResult` that shows
+    /// the exact literal result that it was e.i, Token, Integer Literal etc..
     namespace LiteralResult {
         using Ident = EarlVar*;
         using Literal = Token*;
@@ -60,6 +63,7 @@ namespace Interpreter {
         /// @brief The type that was returned as an EARL type
         EarlTy::Type m_earl_type;
 
+        /// @brief The literal value of the evaluated result
         LiteralResult::Result m_literal_result;
 
         /// @brief Given a valid ExprEvalResult, returns the

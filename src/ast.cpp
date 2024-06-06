@@ -88,9 +88,11 @@ ExprTermType ExprFuncCall::get_term_type() const {
 StmtDef::StmtDef(std::unique_ptr<Token> id,
                  std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args,
                  std::unique_ptr<Token> rettype,
-                 std::unique_ptr<StmtBlock> block) :
+                 std::unique_ptr<StmtBlock> block,
+                 uint32_t attrs) :
     m_id(std::move(id)), m_args(std::move(args)),
-    m_rettype(std::move(rettype)), m_block(std::move(block)) {}
+    m_rettype(std::move(rettype)), m_block(std::move(block)),
+    m_attrs(attrs) {}
 
 StmtType StmtDef::stmt_type() const {
     return StmtType::Def;

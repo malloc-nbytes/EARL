@@ -290,7 +290,7 @@ parse_stmt_def_args(Lexer &lexer) {
     return args;
 }
 
-std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer) {
+std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_DEF);
 
     Token *id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -306,7 +306,8 @@ std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer) {
     return std::make_unique<StmtDef>(std::make_unique<Token>(*id),
                                      std::move(args),
                                      std::make_unique<Token>(*rettype),
-                                     std::move(block));
+                                     std::move(block),
+                                     attrs);
 }
 
 std::unique_ptr<StmtReturn> parse_stmt_return(Lexer &lexer) {
@@ -342,42 +343,68 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
                                      std::move(block));
 }
 
-std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
-    Token *tok = lexer.peek();
+static FuncAttr translate_attr(Lexer &lexer) {
+    (void)Parser::parse_expect(lexer, TokenType::At);
 
-    switch (tok->type()) {
-    case TokenType::Keyword: {
-        if (tok->lexeme() == COMMON_EARLKW_LET) {
-            return parse_stmt_let(lexer);
-        }
-        else if (tok->lexeme() == COMMON_EARLKW_DEF) {
-            return parse_stmt_def(lexer);
-        }
-        else if (tok->lexeme() == COMMON_EARLKW_IF) {
-            return parse_stmt_if(lexer);
-        }
-        else if (tok->lexeme() == COMMON_EARLKW_RETURN) {
-            return parse_stmt_return(lexer);
-        }
-        else if (tok->lexeme() == COMMON_EARLKW_WHILE) {
-            return parse_stmt_while(lexer);
-        }
-        else if (tok->lexeme() == COMMON_EARLKW_FOR) {
-            return parse_stmt_for(lexer);
-        }
-        else {
-            assert(false && "parse_stmt: invalid keyword");
-        }
-    } break;
-    case TokenType::Ident: {
-        if (lexer.peek(1)->type() == TokenType::Lparen) {
-            return parse_stmt_expr(lexer);
-        }
-        return parse_stmt_mut(lexer);
-    } break;
-    default:
-        assert(false && "parse_stmt: invalid statement");
+    Token *attr = Parser::parse_expect(lexer, TokenType::Ident);
+    if (attr->lexeme() == COMMON_EARLATTR_PUB) {
+        return FuncAttr::Pub;
     }
+    if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
+        return FuncAttr::World;
+    }
+    else {
+        ERR_WARGS(ErrType::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
+    }
+}
+
+std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
+
+    uint32_t attrs = 0;
+
+    do {
+        Token *tok = lexer.peek();
+
+        switch (tok->type()) {
+        case TokenType::Keyword: {
+            if (tok->lexeme() == COMMON_EARLKW_LET) {
+                return parse_stmt_let(lexer);
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_DEF) {
+                return parse_stmt_def(lexer, attrs);
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_IF) {
+                return parse_stmt_if(lexer);
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_RETURN) {
+                return parse_stmt_return(lexer);
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_WHILE) {
+                return parse_stmt_while(lexer);
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_FOR) {
+                return parse_stmt_for(lexer);
+            }
+            else {
+                assert(false && "parse_stmt: invalid keyword");
+            }
+        } break;
+        case TokenType::Ident: {
+            if (lexer.peek(1)->type() == TokenType::Lparen) {
+                return parse_stmt_expr(lexer);
+            }
+            return parse_stmt_mut(lexer);
+        } break;
+        case TokenType::At: {
+            attrs |= static_cast<uint32_t>(translate_attr(lexer));
+        } break;
+        default:
+            assert(false && "parse_stmt: invalid statement");
+        }
+    } while (attrs != 0);
+
+    assert(false && "unreachable");
+    return nullptr;
 }
 
 Program Parser::parse_program(Lexer &lexer) {

@@ -31,6 +31,14 @@
  * A few things that are useful throughout the entire project.
  */
 
+#define COMMON_EARLATTR_WORLD "world"
+#define COMMON_EARLATTR_PUB "pub"
+
+enum class FuncAttr {
+    World = 1 << 0,
+    Pub = 1 << 1,
+};
+
 // Keywords
 #define COMMON_EARLKW_LET    "let"
 #define COMMON_EARLKW_DEF    "def"
