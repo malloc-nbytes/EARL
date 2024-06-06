@@ -33,109 +33,109 @@
 #include "token.hpp"
 #include "lexer.hpp"
 
-std::string Token::to_str(void)
+std::string tokentype_to_str(TokenType type)
 {
-    switch (m_type) {
+    switch (type) {
     case TokenType::Lparen:
-        return "`(`";
+        return "LPAREN";
     case TokenType::Rparen:
-        return "`)`";
+        return "RPAREN";
     case TokenType::Lbracket:
-        return "`[`";
+        return "LBRACKET";
     case TokenType::Rbracket:
-        return "`]`";
+        return "RBRACKET";
     case TokenType::Lbrace:
-        return "`{`";
+        return "LBRACE";
     case TokenType::Rbrace:
-        return "`}`";
+        return "RBRACE";
     case TokenType::Hash:
-        return "`#`";
+        return "HASH";
     case TokenType::Period:
-        return "`.`";
+        return "PERIOD";
     case TokenType::Comma:
-        return "`,`";
+        return "COMMA";
     case TokenType::Semicolon:
-        return "`;`";
+        return "SEMICOLON";
     case TokenType::Greaterthan:
-        return "`>`";
+        return "GREATERTHAN";
     case TokenType::Lessthan:
-        return "`<`";
+        return "LESSTHAN";
     case TokenType::Equals:
-        return "`=`";
+        return "EQUALS";
     case TokenType::Ampersand:
-        return "`&`";
+        return "AMPERSAND";
     case TokenType::Asterisk:
-        return "`*`";
+        return "ASTERISK";
     case TokenType::Plus:
-        return "`+`";
+        return "PLUS";
     case TokenType::Minus:
-        return "`-`";
+        return "MINUS";
     case TokenType::Forwardslash:
-        return "`/`";
+        return "FORWARDSLASH";
     case TokenType::Pipe:
-        return "`|`";
+        return "PIPE";
     case TokenType::Caret:
-        return "`^`";
+        return "CARET";
     case TokenType::Questionmark:
-        return "`?`";
+        return "QUESTIONMARK";
     case TokenType::Backwardslash:
-        return "`\\`";
+        return "BACKWARDSLASH";
     case TokenType::Bang:
-        return "`!`";
+        return "BANG";
     case TokenType::At:
-        return "`@`";
+        return "AT";
     case TokenType::Dollarsign:
-        return "`$`";
+        return "DOLLARSIGN";
     case TokenType::Percent:
-        return "`@`";
+        return "PERCENT";
     case TokenType::Backtick:
-        return "```";
+        return "BACKTICK";
     case TokenType::Tilde:
-        return "`~`";
+        return "TILDE";
     case TokenType::Colon:
-        return "`:`";
+        return "COLON";
     case TokenType::Double_Ampersand:
-        return "`&&`";
+        return "DOUBLE_AMPERSAND";
     case TokenType::Double_Pipe:
-        return "`||`";
+        return "DOUBLE_PIPE";
     case TokenType::Greaterthan_Equals:
-        return "`>=`";
+        return "GREATERTHAN_EQUALS";
     case TokenType::Lessthan_Equals:
-        return "`<=`";
+        return "LESSTHAN_EQUALS";
     case TokenType::Double_Equals:
-        return "`==`";
+        return "DOUBLE_EQUALS";
     case TokenType::Bang_Equals:
-        return "`!=`";
+        return "BANG_EQUALS";
     case TokenType::Plus_Equals:
-        return "`+=`";
+        return "PLUS_EQUALS";
     case TokenType::Minus_Equals:
-        return "`-=`";
+        return "MINUS_EQUALS";
     case TokenType::Asterisk_Equals:
-        return "`*=`";
+        return "ASTERISK_EQUALS";
     case TokenType::Forwardslash_Equals:
-        return "`/=`";
+        return "FORWARDSLASH_EQUALS";
     case TokenType::Percent_Equals:
-        return "`%=`";
+        return "PERCENT_EQUALS";
     case TokenType::RightArrow:
-        return "`->`";
+        return "`RIGHTARROW`";
     case TokenType::Double_Period:
-        return "`..`";
+        return "`DOUBLE_PERIOD`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:
-        return "`INTLIT`";
+        return "INTLIT";
     case TokenType::Strlit:
-        return "`STRLIT`";
+        return "STRLIT";
     case TokenType::Charlit:
-        return "`CHARLIT`";
+        return "CHARLIT";
     case TokenType::Ident:
-        return "`IDENTIFIER`";
+        return "IDENTIFIER";
     case TokenType::Keyword:
-        return "`KEYWORD`";
+        return "KEYWORD";
     case TokenType::Type:
-        return "`TYPE`";
+        return "TYPE";
     default:
-        ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(m_type));
+        ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(type));
         return nullptr;
     }
     return nullptr;

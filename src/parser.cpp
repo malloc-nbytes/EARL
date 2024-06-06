@@ -38,8 +38,8 @@ Token *Parser::parse_expect(Lexer &lexer, TokenType expected) {
     if (tok->type() != expected) {
         Err::err_wtok(tok);
         ERR_WARGS(Err::Type::Syntax,
-                  "expected %d, got %s `%s`",
-                  (int)expected, tok->to_str().c_str(), tok->lexeme().c_str());
+                  "expected %s, got %s `%s`",
+                  tokentype_to_str(expected).c_str(), tokentype_to_str(tok->m_type).c_str(), tok->lexeme().c_str());
     }
     return tok;
 }
@@ -50,12 +50,12 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     if (tok->type() != TokenType::Keyword) {
         ERR_WARGS(Err::Type::Syntax,
                   "%s `%s` is not a keyword",
-                  tok->to_str().c_str(), tok->lexeme().c_str());
+                  tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
     }
     if (tok->lexeme() != expected) {
         ERR_WARGS(Err::Type::Syntax,
                   "expected keyword `%s`, got %s `%s`",
-                  expected.c_str(), tok->to_str().c_str(), tok->lexeme().c_str());
+                  expected.c_str(), tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
     }
 
     return tok;
@@ -66,7 +66,7 @@ Token *Parser::parse_expect_type(Lexer &lexer) {
     if (tok->type() != TokenType::Type) {
         ERR_WARGS(Err::Type::Syntax,
                   "%s `%s` is not a keyword",
-                  tok->to_str().c_str(), tok->lexeme().c_str());
+                  tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
     }
     return tok;
 }

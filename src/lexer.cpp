@@ -82,7 +82,7 @@ void Lexer::dump(void) {
     Token *it = m_hd;
     while (it) {
         printf("lexeme: \"%s\", type: %s, row: %zu, col: %zu, fp: %s\n",
-               it->m_lexeme.c_str(), it->to_str().c_str(), it->m_row, it->m_col, it->m_fp.c_str());
+               it->m_lexeme.c_str(), tokentype_to_str(it->type()).c_str(), it->m_row, it->m_col, it->m_fp.c_str());
         it = it->m_next;
     }
 }

@@ -93,6 +93,8 @@ enum class TokenType {
     Total_Len
 };
 
+std::string tokentype_to_str(TokenType type);
+
 /// @brief The definition of a token.
 struct Token {
     /// @brief The actual value of the `Token`
@@ -122,9 +124,6 @@ struct Token {
 
     /// @brief Get the `type` of the current token
     TokenType type(void) const;
-
-    /// @brief Get the stringified version of the type
-    std::string to_str(void);
 };
 
 /// @brief Allocate a `Token` using an `Arena Allocator`
