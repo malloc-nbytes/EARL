@@ -403,7 +403,8 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         }
     } while (attrs != 0);
 
-    assert(false && "unreachable");
+    ERR(ErrType::Internal,
+        "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
     return nullptr;
 }
 

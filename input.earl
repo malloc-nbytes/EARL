@@ -1,7 +1,22 @@
 @world
-def func() -> void {
-    print("i: ", i);
+def fizzbuzz() -> void {
+    for i in start..end {
+        if i % 5 == 0 && i % 3 == 0 {
+            print("FizzBuzz");
+        }
+        else if i % 5 == 0 {
+            print("Fizz");
+        }
+        else if i % 3 == 0 {
+            print("Buzz");
+        }
+        else {
+            print(i);
+        }
+    }
 }
 
-let i: int = 1;
+let start: int = 1;
+let end: int = 101;
 
+fizzbuzz();

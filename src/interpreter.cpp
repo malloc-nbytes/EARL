@@ -62,8 +62,7 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
 
 static Interpreter::ExprEvalResult
 eval_user_defined_function(ExprFuncCall *expr,
-                           std::vector<Interpreter::ExprEvalResult>
-                           user_params,
+                           std::vector<Interpreter::ExprEvalResult> user_params,
                            Ctx &ctx) {
 
     auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
@@ -84,17 +83,18 @@ eval_user_defined_function(ExprFuncCall *expr,
 }
 
 Interpreter::ExprEvalResult eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    std::vector<Interpreter::ExprEvalResult> arg_evals;
+    std::vector<Interpreter::ExprEvalResult> param_evals;
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         std::unique_ptr<Expr> &e = expr->m_params[i];
         Interpreter::ExprEvalResult param = Interpreter::eval_expr(e.get(), ctx);
-        arg_evals.push_back(param);
+        param_evals.push_back(param);
     }
 
     if (Intrinsics::is_intrinsic_function(expr->m_id->lexeme())) {
-        return Intrinsics::run_intrinsic_function(expr, arg_evals, ctx);
+        return Intrinsics::run_intrinsic_function(expr, param_evals, ctx);
     }
-    return eval_user_defined_function(expr, arg_evals, ctx);
+
+    return eval_user_defined_function(expr, param_evals, ctx);
 }
 
 Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
@@ -302,7 +302,8 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     auto *func = new EarlFunc::Func(stmt->m_id.get(),
                                     EarlTy::of_str(stmt->m_rettype->lexeme()),
                                     std::move(args),
-                                    stmt->m_block.get());
+                                    stmt->m_block.get(),
+                                    stmt->m_attrs);
 
     ctx.register_earlfunc(func);
 

@@ -53,12 +53,12 @@ namespace EarlFunc {
 
         /// @brief The attributes of the function. Uses the
         /// flags from FuncAttr.
-        uint32_t attrs;
+        uint32_t m_attrs;
 
         /// @brief The local scope of the function
         std::vector<Scope<std::string, EarlVar *>> m_local_scope;
 
-        Func(Token *id, EarlTy::Type rettype, std::vector<EarlVar *> args, StmtBlock *block);
+        Func(Token *id, EarlTy::Type rettype, std::vector<EarlVar *> args, StmtBlock *block, uint32_t attrs);
 
         ~Func() = default;
 
@@ -89,7 +89,12 @@ namespace EarlFunc {
         /// @brief Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
         size_t context_size(void);
 
+        /// @brief Remove a earlvar from the local scope
+        /// @param var The variable to remove
         void remove_local_earlvar(EarlVar *var);
+
+        /// @brief Check if the `EarlFunc` is a part of the @world
+        bool is_world(void) const;
     };
 };
 
