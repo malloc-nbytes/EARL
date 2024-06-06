@@ -1,16 +1,9 @@
-def func(c: int) -> int {
-    let x: int = 9;
-
-    if x == 9 {
-       let y: int = 1;
-       print("y:", y);
+def func(a: int) -> int {
+    while a == 1 {
+        print("here");
+        return 1;
     }
-
-    print("x:", x);
-    print("c:", c);
-
-    return 99;
 }
 
-let x: int = 1;
-print(func(x));
+let x: int = func(1);
+let a: int = 1;

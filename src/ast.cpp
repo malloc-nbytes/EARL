@@ -140,3 +140,10 @@ StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 StmtType StmtReturn::stmt_type() const {
     return StmtType::Stmt_Return;
 }
+
+StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block)
+    : m_expr(std::move(expr)), m_block(std::move(block)) {}
+
+StmtType StmtWhile::stmt_type() const {
+    return StmtType::Stmt_While;
+}

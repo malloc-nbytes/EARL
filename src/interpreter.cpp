@@ -274,6 +274,19 @@ Interpreter::ExprEvalResult eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
     return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
+Interpreter::ExprEvalResult eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
+    Interpreter::ExprEvalResult expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    Interpreter::ExprEvalResult result{};
+
+    while (std::any_cast<bool>(expr_result.value()) == true) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+        if (result.value().has_value())
+            break;
+    }
+
+    return result;
+}
+
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -296,6 +309,9 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Stmt_Return: {
         return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
+    } break;
+    case StmtType::Stmt_While: {
+        return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");
