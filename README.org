@@ -392,6 +392,24 @@ def fizzbuzz(start: int, end: int) -> void {
 fizzbuzz(1, 101);
 #+end_example
 
+** Collatz Conjecture
+
+#+begin_example
+def collatz(n: int) -> void {
+    while n != 1 {
+        if n % 2 == 0 {
+            n = n / 2;
+        }
+        else {
+            n = n * 3 + 1;
+        }
+        print(n);
+    }
+}
+
+collatz(69420);
+#+end_example
+
 ** Function Attributes
 
 Attributes are flags for functions to enable them to have more features.

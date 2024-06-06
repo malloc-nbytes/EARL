@@ -65,10 +65,10 @@ int main(int argc, char **argv) {
     std::string comment = "#";
 
     Lexer lexer = lex_file(filepath, keywords, types, comment);
-
     Program program = Parser::parse_program(lexer);
+    Interpreter::ExprEvalResult result = Interpreter::interpret(program);
 
-    Interpreter::interpret(program);
+    (void)result;
 
     return 0;
 }
