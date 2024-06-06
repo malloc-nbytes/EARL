@@ -27,7 +27,7 @@ EarlTy::Type EarlTy::of_str(const std::string &s) {
 bool EarlTy::earlvar_type_compat(EarlTy::Type ty1, EarlTy::Type ty2) {
     auto entry = EarlTy::m_earl_compat_tys.find(ty1);
     if (entry == EarlTy::m_earl_compat_tys.end()) {
-        ERR_WARGS(ErrType::Fatal, "the type %d is not a valid EARL type",
+        ERR_WARGS(Err::Type::Fatal, "the type %d is not a valid EARL type",
                   static_cast<int>(ty1));
     }
     for (auto compat : entry->second) {

@@ -33,9 +33,9 @@
 #include "token.hpp"
 #include "lexer.hpp"
 
-std::string Token::to_str(void)
+std::string tokentype_to_str(TokenType type)
 {
-    switch (m_type) {
+    switch (type) {
     case TokenType::Lparen:
         return "LPAREN";
     case TokenType::Rparen:
@@ -117,11 +117,11 @@ std::string Token::to_str(void)
     case TokenType::Percent_Equals:
         return "PERCENT_EQUALS";
     case TokenType::RightArrow:
-        return "RIGHT_ARROW";
+        return "`RIGHTARROW`";
     case TokenType::Double_Period:
-        return "DOUBLE_PERIOD";
+        return "`DOUBLE_PERIOD`";
     case TokenType::Eof:
-        return "EOF";
+        return "`EOF`";
     case TokenType::Intlit:
         return "INTLIT";
     case TokenType::Strlit:
@@ -129,16 +129,16 @@ std::string Token::to_str(void)
     case TokenType::Charlit:
         return "CHARLIT";
     case TokenType::Ident:
-        return "IDENT";
+        return "IDENTIFIER";
     case TokenType::Keyword:
         return "KEYWORD";
     case TokenType::Type:
         return "TYPE";
     default:
-        ERR_WARGS(ErrType::Fatal, "unkown type: %d", static_cast<int>(m_type));
-        return NULL;
+        ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(type));
+        return nullptr;
     }
-    return NULL;
+    return nullptr;
 }
 
 Token::Token(char *start, size_t len,

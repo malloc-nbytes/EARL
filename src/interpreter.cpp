@@ -55,7 +55,7 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     case ExprTermType::Int_Literal: return EarlTy::Type::Int;
     case ExprTermType::Str_Literal: return EarlTy::Type::Str;
     default:
-        ERR_WARGS(ErrType::Fatal, "ExprTermType `%d` is not a valid EARL type",
+        ERR_WARGS(Err::Type::Fatal, "ExprTermType `%d` is not a valid EARL type",
                   static_cast<int>(m_expr_term_type));
     }
 }
@@ -131,7 +131,7 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
     } break;
     default:
-        ERR_WARGS(ErrType::Fatal, "%d is not a valid expression term type is not valid",
+        ERR_WARGS(Err::Type::Fatal, "%d is not a valid expression term type is not valid",
                   static_cast<int>(expr->get_term_type()));
     }
     return Interpreter::ExprEvalResult{};
@@ -142,7 +142,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     Interpreter::ExprEvalResult rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
 
     if (!EarlTy::earlvar_type_compat(lhs.m_earl_type, rhs.m_earl_type)) {
-        ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
+        ERR_WARGS(Err::Type::ERR_FATAL, "type (%d) is not compatable with type (%d)",
                   static_cast<int>(lhs.m_earl_type), static_cast<int>(rhs.m_earl_type));
     }
 
@@ -220,7 +220,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
         };
     } break;
     default:
-        ERR_WARGS(ErrType::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
+        ERR_WARGS(Err::Type::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
     }
 
     // Unreachable
@@ -236,7 +236,7 @@ Interpreter::ExprEvalResult Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
         return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
     } break;
     default:
-        ERR_WARGS(ErrType::Fatal, "expression type %d is not a valid expression",
+        ERR_WARGS(Err::Type::Fatal, "expression type %d is not a valid expression",
                   static_cast<int>(expr->get_type()));
     }
     return Interpreter::ExprEvalResult{};
@@ -246,7 +246,7 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     const std::string &id = stmt->m_id->lexeme();
 
     if (ctx.is_registered_earlvar(id)) {
-        ERR_WARGS(ErrType::Redeclared, "variable `%s` is already defined", id.c_str());
+        ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already defined", id.c_str());
     }
 
     // The `let` type binding i.e., let x: <TYPE> = ...;
@@ -258,7 +258,7 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     EarlTy::Type rval_type = expr_eval.m_earl_type;
 
     if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
-        ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
+        ERR_WARGS(Err::Type::ERR_FATAL, "type (%d) is not compatable with type (%d)",
                   static_cast<int>(binding_type), static_cast<int>(rval_type));
     }
 

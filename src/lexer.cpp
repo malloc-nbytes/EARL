@@ -82,7 +82,7 @@ void Lexer::dump(void) {
     Token *it = m_hd;
     while (it) {
         printf("lexeme: \"%s\", type: %s, row: %zu, col: %zu, fp: %s\n",
-               it->m_lexeme.c_str(), it->to_str().c_str(), it->m_row, it->m_col, it->m_fp.c_str());
+               it->m_lexeme.c_str(), tokentype_to_str(it->type()).c_str(), it->m_row, it->m_col, it->m_fp.c_str());
         it = it->m_next;
     }
 }
@@ -118,7 +118,7 @@ static char *read_file(const char *filepath) {
     FILE *f = fopen(filepath, "rb");
 
     if (f == NULL || fseek(f, 0, SEEK_END)) {
-        ERR_WARGS(ErrType::Fatal, "could not find the specified source filepath: %s", filepath);
+        ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
     }
 
     long length = ftell(f);
@@ -221,7 +221,7 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
         {"..", TokenType::Double_Period},
     };
 
-    size_t row = 0, col = 0, i = 0;
+    size_t row = 1, col = 1, i = 0;
     while (src[i]) {
         char *lexeme = &src[i];
         char c = src[i];
@@ -323,7 +323,7 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
                 if (it != ht.end()) {
                     Token *tok = token_alloc(lexer, lexeme, buf.size(), (*it).second, row, col, filepath);
                     lexer.append(tok);
-                    col += buf.size();
+                    col += buf.size()-1;
                     i += buf.size();
                     break;
                 }

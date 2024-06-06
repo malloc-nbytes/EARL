@@ -27,29 +27,38 @@
  * error messages and crashing.
  */
 
+#include "token.hpp"
+
 #ifndef ERR_H
 #define ERR_H
 
-/// @brief The different classes of errors
-/// that can be issued.
-enum class ErrType {
-    /** Used for syntactical errors, usually during parsing */
-    Syntax,
-    /** Used for errors that ocur during runtime */
-    Runtime,
-    /** An internal error */
-    Internal,
-    /** Unrecoverable error */
-    Fatal,
-    /** Variable was redeclared at runtime */
-    Redeclared,
-    /** Varriable is undeclared at runtime */
-    Undeclared,
-    /** Incorrect usage of a type during runtime */
-    Types,
-    /** For use during development of TODO functions */
-    Todo,
+/// @brief The namespace for all errors
+namespace Err {
+    /// @brief The different classes of errors
+    /// that can be issued.
+    enum class Type {
+        /** Used for syntactical errors, usually during parsing */
+        Syntax,
+        /** Used for errors that ocur during runtime */
+        Runtime,
+        /** An internal error */
+        Internal,
+        /** Unrecoverable error */
+        Fatal,
+        /** Variable was redeclared at runtime */
+        Redeclared,
+        /** Varriable is undeclared at runtime */
+        Undeclared,
+        /** Incorrect usage of a type during runtime */
+        Types,
+        /** For use during development of TODO functions */
+        Todo,
+    };
+
+    void err_wtok(Token *tok);
+    void err_wconflict(Token *tok1, Token *tok2);
 };
+
 
 /// \brief Prints a error message of type `errtype`
 /// with the message `msg` with any arguments of VA_ARGS.

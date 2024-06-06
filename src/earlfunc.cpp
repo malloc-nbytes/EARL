@@ -44,7 +44,7 @@ bool EarlFunc::Func::contains_local_earlvar(const std::string &id) {
 EarlVar *EarlFunc::Func::get_local_earlvar(const std::string &id) {
     EarlVar **var = m_local_scope.back().get(id);
     if (!var || !*var)
-        ERR_WARGS(ErrType::Fatal, "variable `%s` is not in local scope", id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in local scope", id.c_str());
     return *var;
 }
 
