@@ -337,6 +337,10 @@ Interpreter::ExprEvalResult eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     return Interpreter::ExprEvalResult{};
 }
 
+Interpreter::ExprEvalResult eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
+    assert(false);
+}
+
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -362,6 +366,9 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Stmt_While: {
         return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
+    } break;
+    case StmtType::Stmt_For: {
+        return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");

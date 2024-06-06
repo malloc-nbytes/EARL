@@ -45,6 +45,7 @@ enum class StmtType {
     If,
     Stmt_Return,
     Stmt_While,
+    Stmt_For,
 };
 
 /// The different types an expression can be.
@@ -254,6 +255,28 @@ struct StmtWhile : public Stmt {
     std::unique_ptr<StmtBlock> m_block;
 
     StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block);
+    StmtType stmt_type() const override;
+};
+
+/// @brief The Statement For class
+struct StmtFor : public Stmt {
+    /// @brief The identifier of the enumerator variable
+    std::unique_ptr<Token> m_enumerator;
+
+    /// @brief The starting expression
+    std::unique_ptr<Expr> m_start;
+
+    /// @brief The starting expression
+    std::unique_ptr<Expr> m_end;
+
+    /// @brief The block for the loop to execute
+    std::unique_ptr<StmtBlock> m_block;
+
+    StmtFor(std::unique_ptr<Token> enumerator,
+            std::unique_ptr<Expr> start,
+            std::unique_ptr<Expr> end,
+            std::unique_ptr<StmtBlock> block);
+
     StmtType stmt_type() const override;
 };
 

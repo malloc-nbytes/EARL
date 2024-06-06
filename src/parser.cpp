@@ -322,6 +322,25 @@ std::unique_ptr<StmtWhile> parse_stmt_while(Lexer &lexer) {
     return std::make_unique<StmtWhile>(std::unique_ptr<Expr>(expr), std::move(block));
 }
 
+std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
+
+    Token *enumerator = Parser::parse_expect(lexer, TokenType::Ident);
+
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
+
+    Expr *start_expr = Parser::parse_expr(lexer);
+    (void)Parser::parse_expect(lexer, TokenType::Double_Period);
+    Expr *end_expr = Parser::parse_expr(lexer);
+
+    std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
+
+    return std::make_unique<StmtFor>(std::make_unique<Token>(*enumerator),
+                                     std::unique_ptr<Expr>(start_expr),
+                                     std::unique_ptr<Expr>(end_expr),
+                                     std::move(block));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
     Token *tok = lexer.peek();
 
@@ -341,6 +360,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         }
         else if (tok->lexeme() == COMMON_EARLKW_WHILE) {
             return parse_stmt_while(lexer);
+        }
+        else if (tok->lexeme() == COMMON_EARLKW_FOR) {
+            return parse_stmt_for(lexer);
         }
         else {
             assert(false && "parse_stmt: invalid keyword");
