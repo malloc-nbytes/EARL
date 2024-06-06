@@ -1,0 +1,190 @@
+\doxysection{Unique\+Scope\texorpdfstring{$<$}{<} K, V \texorpdfstring{$>$}{>} Struct Template Reference}
+\hypertarget{structUniqueScope}{}\label{structUniqueScope}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+
+
+{\ttfamily \#include $<$unique-\/scope.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structUniqueScope_a6bb195ea7a5bb6862d109fc806184505}\label{structUniqueScope_a6bb195ea7a5bb6862d109fc806184505} 
+{\bfseries Unique\+Scope} (const \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \&)=delete
+\item 
+\Hypertarget{structUniqueScope_adda3881e6a908268297d5c3e5f1bc0fc}\label{structUniqueScope_adda3881e6a908268297d5c3e5f1bc0fc} 
+\mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \& {\bfseries operator=} (const \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \&)=delete
+\item 
+\Hypertarget{structUniqueScope_a3ce1b57e97aeee6d4250324edcec8f8a}\label{structUniqueScope_a3ce1b57e97aeee6d4250324edcec8f8a} 
+{\bfseries Unique\+Scope} (\mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \&\&) noexcept=default
+\item 
+\Hypertarget{structUniqueScope_ac9f600db99ff62a901cf64cd316597c1}\label{structUniqueScope_ac9f600db99ff62a901cf64cd316597c1} 
+\mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \& {\bfseries operator=} (\mbox{\hyperlink{structUniqueScope}{Unique\+Scope}} \&\&) noexcept=default
+\item 
+void \mbox{\hyperlink{structUniqueScope_ab1d3f75725c9d166379d4df5353417ed}{push}} (void)
+\item 
+void \mbox{\hyperlink{structUniqueScope_abb7d46fa15f3d3670711db9d08565a0e}{pop}} (void)
+\item 
+void \mbox{\hyperlink{structUniqueScope_a4e1f4ea45233858a93ee80c0b9b742e8}{add}} (K key, std\+::unique\+\_\+ptr$<$ V $>$ value)
+\item 
+bool \mbox{\hyperlink{structUniqueScope_a0193f242b054ddc39f515b3e1d82bb80}{contains}} (K key)
+\item 
+V \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structUniqueScope_a77d1fe2378ccd05c6cc41ed6dfd61710}{get}} (K key)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::unordered\+\_\+map$<$ K, std\+::unique\+\_\+ptr$<$ V $>$ $>$ $>$ \mbox{\hyperlink{structUniqueScope_a561bdc9b68e085f3dcd3cb61fd8a85a9}{m\+\_\+map}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename K, typename V$>$\newline
+struct Unique\+Scope$<$ K, V $>$}
+A scope structure that holds {\ttfamily unique\+\_\+ptr\texorpdfstring{$<$}{<}V\texorpdfstring{$>$}{>}} as the value. \begin{DoxyRefDesc}{Deprecated}
+\item[\mbox{\hyperlink{deprecated__deprecated000001}{Deprecated}}]\end{DoxyRefDesc}
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00038}{38}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structUniqueScope_a2b4bc78a729ace8d82322d403fdf2465}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!UniqueScope@{UniqueScope}}
+\index{UniqueScope@{UniqueScope}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{UniqueScope()}{UniqueScope()}}
+{\footnotesize\ttfamily \label{structUniqueScope_a2b4bc78a729ace8d82322d403fdf2465} 
+template$<$typename K , typename V $>$ \\
+\mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\mbox{\hyperlink{structUniqueScope}{\+::\+Unique\+Scope}} (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00042}{42}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ m\_map.emplace\_back();}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structUniqueScope_a4e1f4ea45233858a93ee80c0b9b742e8}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!add@{add}}
+\index{add@{add}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{add()}{add()}}
+{\footnotesize\ttfamily \label{structUniqueScope_a4e1f4ea45233858a93ee80c0b9b742e8} 
+template$<$typename K , typename V $>$ \\
+void \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::add (\begin{DoxyParamCaption}\item[{K}]{key}{, }\item[{std\+::unique\+\_\+ptr$<$ V $>$}]{value}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00070}{70}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ m\_map.back().emplace(key,\ std::move(value));}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structUniqueScope_a0193f242b054ddc39f515b3e1d82bb80}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!contains@{contains}}
+\index{contains@{contains}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{contains()}{contains()}}
+{\footnotesize\ttfamily \label{structUniqueScope_a0193f242b054ddc39f515b3e1d82bb80} 
+template$<$typename K , typename V $>$ \\
+bool \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::contains (\begin{DoxyParamCaption}\item[{K}]{key}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00075}{75}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&map\ :\ m\_map)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map.find(key)\ !=\ map.end())}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00081\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structUniqueScope_a77d1fe2378ccd05c6cc41ed6dfd61710}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!get@{get}}
+\index{get@{get}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily \label{structUniqueScope_a77d1fe2378ccd05c6cc41ed6dfd61710} 
+template$<$typename K , typename V $>$ \\
+V \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::get (\begin{DoxyParamCaption}\item[{K}]{key}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00084}{84}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ m\_map.rbegin();\ it\ !=\ m\_map.rend();\ ++it)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \&map\ =\ *it;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map.find(key)\ !=\ map.end())\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ map.at(key).get();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structUniqueScope_abb7d46fa15f3d3670711db9d08565a0e}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!pop@{pop}}
+\index{pop@{pop}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{pop()}{pop()}}
+{\footnotesize\ttfamily \label{structUniqueScope_abb7d46fa15f3d3670711db9d08565a0e} 
+template$<$typename K , typename V $>$ \\
+void \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::pop (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00065}{65}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ m\_map.pop\_back();}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{structUniqueScope_ab1d3f75725c9d166379d4df5353417ed}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!push@{push}}
+\index{push@{push}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{push()}{push()}}
+{\footnotesize\ttfamily \label{structUniqueScope_ab1d3f75725c9d166379d4df5353417ed} 
+template$<$typename K , typename V $>$ \\
+void \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::push (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00060}{60}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ m\_map.emplace\_back();}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structUniqueScope_a561bdc9b68e085f3dcd3cb61fd8a85a9}\index{UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}!m\_map@{m\_map}}
+\index{m\_map@{m\_map}!UniqueScope$<$ K, V $>$@{UniqueScope$<$ K, V $>$}}
+\doxysubsubsection{\texorpdfstring{m\_map}{m\_map}}
+{\footnotesize\ttfamily \label{structUniqueScope_a561bdc9b68e085f3dcd3cb61fd8a85a9} 
+template$<$typename K , typename V $>$ \\
+std\+::vector$<$std\+::unordered\+\_\+map$<$K, std\+::unique\+\_\+ptr$<$V$>$ $>$ $>$ \mbox{\hyperlink{structUniqueScope}{Unique\+Scope}}$<$ K, V $>$\+::m\+\_\+map}
+
+
+
+Definition at line \mbox{\hyperlink{unique-scope_8hpp_source_l00039}{39}} of file \mbox{\hyperlink{unique-scope_8hpp_source}{unique-\/scope.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{unique-scope_8hpp}{unique-\/scope.\+hpp}}\end{DoxyCompactItemize}

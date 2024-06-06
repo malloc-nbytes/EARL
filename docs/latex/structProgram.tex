@@ -1,0 +1,69 @@
+\doxysection{Program Struct Reference}
+\hypertarget{structProgram}{}\label{structProgram}\index{Program@{Program}}
+
+
+The \doxylink{structProgram}{Program} class. It is the starting point of the whole program.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structProgram_a61824a14f9e125e1d934bda5ffff65a7}{Program}} (std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmt}{Stmt}} $>$ $>$ stmts)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmt}{Stmt}} $>$ $>$ \mbox{\hyperlink{structProgram_af8a54c2cffa23ecfe14832e834d96351}{m\+\_\+stmts}}
+\begin{DoxyCompactList}\small\item\em A vector of statement to evaluate. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The \doxylink{structProgram}{Program} class. It is the starting point of the whole program. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00285}{285}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structProgram_a61824a14f9e125e1d934bda5ffff65a7}\index{Program@{Program}!Program@{Program}}
+\index{Program@{Program}!Program@{Program}}
+\doxysubsubsection{\texorpdfstring{Program()}{Program()}}
+{\footnotesize\ttfamily \label{structProgram_a61824a14f9e125e1d934bda5ffff65a7} 
+Program\+::\+Program (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmt}{Stmt}} $>$ $>$}]{stmts}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00030}{30}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00031\ \ \ \ \ :\ \mbox{\hyperlink{structProgram_af8a54c2cffa23ecfe14832e834d96351}{m\_stmts}}(std::move(stmts))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structProgram_af8a54c2cffa23ecfe14832e834d96351}\index{Program@{Program}!m\_stmts@{m\_stmts}}
+\index{m\_stmts@{m\_stmts}!Program@{Program}}
+\doxysubsubsection{\texorpdfstring{m\_stmts}{m\_stmts}}
+{\footnotesize\ttfamily \label{structProgram_af8a54c2cffa23ecfe14832e834d96351} 
+std\+::vector$<$std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structStmt}{Stmt}}$>$ $>$ Program\+::m\+\_\+stmts}
+
+
+
+A vector of statement to evaluate. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00287}{287}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

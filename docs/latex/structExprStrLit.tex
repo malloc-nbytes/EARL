@@ -1,0 +1,138 @@
+\doxysection{Expr\+Str\+Lit Struct Reference}
+\hypertarget{structExprStrLit}{}\label{structExprStrLit}\index{ExprStrLit@{ExprStrLit}}
+
+
+The Expression String Literal class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Expr\+Str\+Lit\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{structExprStrLit}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structExprStrLit_a505dcb835fc1cdf4cc73359322efb830}{Expr\+Str\+Lit}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ tok)
+\item 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} \mbox{\hyperlink{structExprStrLit_ac7a1d5ec85d234034b54741baea9b3c3}{get\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em The get expression type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{ast_8hpp_a273af28a8fa3b5c59f246360a30b4dd2}{Expr\+Term\+Type}} \mbox{\hyperlink{structExprStrLit_a6821539225121e4358587868ff3fb25d}{get\+\_\+term\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em Get the Expression Term type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structExprStrLit_a5a2a7cf504087b4c90cfb5ca4fee582f}{m\+\_\+tok}}
+\begin{DoxyCompactList}\small\item\em The token of the string literal. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Expression String Literal class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00106}{106}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structExprStrLit_a505dcb835fc1cdf4cc73359322efb830}\index{ExprStrLit@{ExprStrLit}!ExprStrLit@{ExprStrLit}}
+\index{ExprStrLit@{ExprStrLit}!ExprStrLit@{ExprStrLit}}
+\doxysubsubsection{\texorpdfstring{ExprStrLit()}{ExprStrLit()}}
+{\footnotesize\ttfamily \label{structExprStrLit_a505dcb835fc1cdf4cc73359322efb830} 
+Expr\+Str\+Lit\+::\+Expr\+Str\+Lit (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{tok}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00044}{44}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00044\ :\ \mbox{\hyperlink{structExprStrLit_a5a2a7cf504087b4c90cfb5ca4fee582f}{m\_tok}}(std::move(tok))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structExprStrLit_a6821539225121e4358587868ff3fb25d}\index{ExprStrLit@{ExprStrLit}!get\_term\_type@{get\_term\_type}}
+\index{get\_term\_type@{get\_term\_type}!ExprStrLit@{ExprStrLit}}
+\doxysubsubsection{\texorpdfstring{get\_term\_type()}{get\_term\_type()}}
+{\footnotesize\ttfamily \label{structExprStrLit_a6821539225121e4358587868ff3fb25d} 
+\mbox{\hyperlink{ast_8hpp_a273af28a8fa3b5c59f246360a30b4dd2}{Expr\+Term\+Type}} Expr\+Str\+Lit\+::get\+\_\+term\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get the Expression Term type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the expression term 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structExprTerm_a98c099de07ddbb4c35e9331d043d8c71}{Expr\+Term}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00050}{50}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{return}\ ExprTermType::Str\_Literal;}
+\DoxyCodeLine{00052\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structExprStrLit_ac7a1d5ec85d234034b54741baea9b3c3}\index{ExprStrLit@{ExprStrLit}!get\_type@{get\_type}}
+\index{get\_type@{get\_type}!ExprStrLit@{ExprStrLit}}
+\doxysubsubsection{\texorpdfstring{get\_type()}{get\_type()}}
+{\footnotesize\ttfamily \label{structExprStrLit_ac7a1d5ec85d234034b54741baea9b3c3} 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} Expr\+Str\+Lit\+::get\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+The get expression type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the expression 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structExpr_a4d5071f1f191b0140ebe2afc0fb168ea}{Expr}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00046}{46}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ ExprType::Term;}
+\DoxyCodeLine{00048\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structExprStrLit_a5a2a7cf504087b4c90cfb5ca4fee582f}\index{ExprStrLit@{ExprStrLit}!m\_tok@{m\_tok}}
+\index{m\_tok@{m\_tok}!ExprStrLit@{ExprStrLit}}
+\doxysubsubsection{\texorpdfstring{m\_tok}{m\_tok}}
+{\footnotesize\ttfamily \label{structExprStrLit_a5a2a7cf504087b4c90cfb5ca4fee582f} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Expr\+Str\+Lit\+::m\+\_\+tok}
+
+
+
+The token of the string literal. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

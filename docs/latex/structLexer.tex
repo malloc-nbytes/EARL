@@ -1,0 +1,280 @@
+\doxysection{Lexer Struct Reference}
+\hypertarget{structLexer}{}\label{structLexer}\index{Lexer@{Lexer}}
+
+
+The API for lexical analysis of a document.  
+
+
+
+
+{\ttfamily \#include $<$lexer.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}} (void)
+\begin{DoxyCompactList}\small\item\em Get the current token, namely the one that {\ttfamily m\+\_\+hd} is currently at. It will return that one and update the head accordingly. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}} (size\+\_\+t n=0)
+\begin{DoxyCompactList}\small\item\em Peek {\ttfamily n} tokens into the lexer. This does not consume the current token, only views {\ttfamily n} tokens ahead. Returns nullptr if we peeked ahead too far. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}} (\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*}tok)
+\begin{DoxyCompactList}\small\item\em Append a token to the lexer at the end of the tail. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structLexer_a706a671d555d1cc8a6329ef83508fab8}{discard}} (void)
+\begin{DoxyCompactList}\small\item\em The same as {\ttfamily \doxylink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{Lexer\+::next()}} except it does not give back the token that was consumed. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structLexer_a6c36e5962f08462014dab5dcc8a16714}{dump}} (void)
+\begin{DoxyCompactList}\small\item\em Function to show all tokens that were lex\textquotesingle{}d. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\+\_\+hd}}
+\begin{DoxyCompactList}\small\item\em Head of the linked list. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\+\_\+tl}}
+\begin{DoxyCompactList}\small\item\em Tail of the linked list. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{structLexer_a1237c4b7a28bf854725498921a30458d}{m\+\_\+len}}
+\begin{DoxyCompactList}\small\item\em The number of tokens present. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structArena}{Arena}} \mbox{\hyperlink{structLexer_af3892cb310975caaeefde46e935fd85c}{m\+\_\+arena}}
+\begin{DoxyCompactList}\small\item\em Memory management via an arena allocator. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The API for lexical analysis of a document. 
+
+A \doxylink{structLexer}{Lexer} (for lexical analysis) \href{https://en.wikipedia.org/wiki/Lexical_analysis}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Lexical\+\_\+analysis}} is a tool that splits up and catagorizes individual \textquotesingle{}tokens\textquotesingle{} for parsers. This implementation constructs a linked list of tokens for the parsers to traverse. It starts at {\ttfamily m\+\_\+hd} and ends at {\ttfamily m\+\_\+tl}. 
+
+Definition at line \mbox{\hyperlink{lexer_8hpp_source_l00043}{43}} of file \mbox{\hyperlink{lexer_8hpp_source}{lexer.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structLexer_a2752a2b16cc1ffbcb8fc3e82e95bf331}\index{Lexer@{Lexer}!Lexer@{Lexer}}
+\index{Lexer@{Lexer}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{Lexer()}{Lexer()}}
+{\footnotesize\ttfamily \label{structLexer_a2752a2b16cc1ffbcb8fc3e82e95bf331} 
+Lexer\+::\+Lexer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00036}{36}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \mbox{\hyperlink{structLexer_af3892cb310975caaeefde46e935fd85c}{m\_arena}}(32768)\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00038\ \ \ \ \ \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\_tl}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00039\ \ \ \ \ \mbox{\hyperlink{structLexer_a1237c4b7a28bf854725498921a30458d}{m\_len}}\ =\ 0;}
+\DoxyCodeLine{00040\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structLexer_a850f49ba18b9834dfc47c0549850b09b}\index{Lexer@{Lexer}!append@{append}}
+\index{append@{append}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{append()}{append()}}
+{\footnotesize\ttfamily \label{structLexer_a850f49ba18b9834dfc47c0549850b09b} 
+void Lexer\+::append (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*}}]{tok}{}\end{DoxyParamCaption})}
+
+
+
+Append a token to the lexer at the end of the tail. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em tok} & The token to append \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00042}{42}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}})\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}}\ =\ tok;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\_tl}}\ =\ tok;}
+\DoxyCodeLine{00046\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\_tl}}-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}}\ =\ tok;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\_tl}}\ =\ tok;}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \ \ ++\mbox{\hyperlink{structLexer_a1237c4b7a28bf854725498921a30458d}{m\_len}};}
+\DoxyCodeLine{00051\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structLexer_a706a671d555d1cc8a6329ef83508fab8}\index{Lexer@{Lexer}!discard@{discard}}
+\index{discard@{discard}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{discard()}{discard()}}
+{\footnotesize\ttfamily \label{structLexer_a706a671d555d1cc8a6329ef83508fab8} 
+void Lexer\+::discard (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+The same as {\ttfamily \doxylink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{Lexer\+::next()}} except it does not give back the token that was consumed. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00075}{75}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}})}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00078\ \ \ \ \ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}}\ =\ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}}-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}};}
+\DoxyCodeLine{00079\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structLexer_a6c36e5962f08462014dab5dcc8a16714}\index{Lexer@{Lexer}!dump@{dump}}
+\index{dump@{dump}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{dump()}{dump()}}
+{\footnotesize\ttfamily \label{structLexer_a6c36e5962f08462014dab5dcc8a16714} 
+void Lexer\+::dump (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Function to show all tokens that were lex\textquotesingle{}d. 
+
+\begin{DoxyAttention}{Attention}
+DEBUG 
+\end{DoxyAttention}
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00081}{81}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *it\ =\ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}};}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{while}\ (it)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ printf(\textcolor{stringliteral}{"{}lexeme:\ \(\backslash\)"{}\%s\(\backslash\)"{},\ type:\ \%s,\ row:\ \%zu,\ col:\ \%zu,\ fp:\ \%s\(\backslash\)n"{}},}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it-\/>\mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\_lexeme}}.c\_str(),\ it-\/>\mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}().c\_str(),\ it-\/>\mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{m\_row}},\ it-\/>\mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{m\_col}},\ it-\/>\mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{m\_fp}}.c\_str());}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ it\ =\ it-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}};}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}\index{Lexer@{Lexer}!next@{next}}
+\index{next@{next}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{next()}{next()}}
+{\footnotesize\ttfamily \label{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8} 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} Lexer\+::next (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Get the current token, namely the one that {\ttfamily m\+\_\+hd} is currently at. It will return that one and update the head accordingly. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00061}{61}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}})}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}};}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}}\ =\ tok-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}};}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordflow}{if}\ (!\mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}})}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structLexer_a4e48b294d299a654b376306e5ffa34aa}{m\_tl}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ -\/-\/\mbox{\hyperlink{structLexer_a1237c4b7a28bf854725498921a30458d}{m\_len}};}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{00073\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structLexer_ae517c2c5bec6261c616e552c747b6222}\index{Lexer@{Lexer}!peek@{peek}}
+\index{peek@{peek}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{peek()}{peek()}}
+{\footnotesize\ttfamily \label{structLexer_ae517c2c5bec6261c616e552c747b6222} 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} Lexer\+::peek (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{n}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+
+
+Peek {\ttfamily n} tokens into the lexer. This does not consume the current token, only views {\ttfamily n} tokens ahead. Returns nullptr if we peeked ahead too far. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & (Optional) how many tokens to peek ahead \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00053}{53}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ \mbox{\hyperlink{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}{m\_hd}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ n\ \&\&\ tok;\ ++i)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ tok\ =\ tok-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}};}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{00059\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structLexer_af3892cb310975caaeefde46e935fd85c}\index{Lexer@{Lexer}!m\_arena@{m\_arena}}
+\index{m\_arena@{m\_arena}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{m\_arena}{m\_arena}}
+{\footnotesize\ttfamily \label{structLexer_af3892cb310975caaeefde46e935fd85c} 
+\mbox{\hyperlink{structArena}{Arena}} Lexer\+::m\+\_\+arena}
+
+
+
+Memory management via an arena allocator. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8hpp_source_l00053}{53}} of file \mbox{\hyperlink{lexer_8hpp_source}{lexer.\+hpp}}.
+
+\Hypertarget{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d}\index{Lexer@{Lexer}!m\_hd@{m\_hd}}
+\index{m\_hd@{m\_hd}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{m\_hd}{m\_hd}}
+{\footnotesize\ttfamily \label{structLexer_a1c4aa5825a0c0111aef5c6e736c2148d} 
+\mbox{\hyperlink{structToken}{Token}}\texorpdfstring{$\ast$}{*} Lexer\+::m\+\_\+hd}
+
+
+
+Head of the linked list. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8hpp_source_l00045}{45}} of file \mbox{\hyperlink{lexer_8hpp_source}{lexer.\+hpp}}.
+
+\Hypertarget{structLexer_a1237c4b7a28bf854725498921a30458d}\index{Lexer@{Lexer}!m\_len@{m\_len}}
+\index{m\_len@{m\_len}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{m\_len}{m\_len}}
+{\footnotesize\ttfamily \label{structLexer_a1237c4b7a28bf854725498921a30458d} 
+size\+\_\+t Lexer\+::m\+\_\+len}
+
+
+
+The number of tokens present. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8hpp_source_l00050}{50}} of file \mbox{\hyperlink{lexer_8hpp_source}{lexer.\+hpp}}.
+
+\Hypertarget{structLexer_a4e48b294d299a654b376306e5ffa34aa}\index{Lexer@{Lexer}!m\_tl@{m\_tl}}
+\index{m\_tl@{m\_tl}!Lexer@{Lexer}}
+\doxysubsubsection{\texorpdfstring{m\_tl}{m\_tl}}
+{\footnotesize\ttfamily \label{structLexer_a4e48b294d299a654b376306e5ffa34aa} 
+\mbox{\hyperlink{structToken}{Token}}\texorpdfstring{$\ast$}{*} Lexer\+::m\+\_\+tl}
+
+
+
+Tail of the linked list. 
+
+
+
+Definition at line \mbox{\hyperlink{lexer_8hpp_source_l00047}{47}} of file \mbox{\hyperlink{lexer_8hpp_source}{lexer.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{lexer_8hpp}{lexer.\+hpp}}\item 
+lexer.\+cpp\end{DoxyCompactItemize}

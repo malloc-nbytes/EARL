@@ -1,0 +1,162 @@
+\doxysection{include/err.hpp File Reference}
+\hypertarget{err_8hpp}{}\label{err_8hpp}\index{include/err.hpp@{include/err.hpp}}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\+\_\+\+WARGS}}(errtype,  msg, ...)
+\begin{DoxyCompactList}\small\item\em Prints a error message of type {\ttfamily errtype} with the message {\ttfamily msg} with any arguments of VA\+\_\+\+ARGS. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{err_8hpp_ad1b222baa587631b95dab266f8f54c2a}{ERR}}(errtype,  msg)
+\begin{DoxyCompactList}\small\item\em Prints a error message of type {\ttfamily errtype} with the message {\ttfamily msg} with no arguments. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a}{Err\+Type}} \{ \newline
+\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{Syntax}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc366f2d0ba3d681e7a3899917c5d3de}{Runtime}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaafbf0897a5a83fdd873dfb032ec695d3}{Internal}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{Fatal}}
+, \newline
+\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaac901afa5b83cd9b859882d03d3af5ab}{Redeclared}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa2af457eff1694fff8c7ef6c3a8974ce6}{Undeclared}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaf2d346b1bb7c1c85ab6f7f21e3666b9f}{Types}}
+, \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc97e12414b8ea00107c66aa552029ae}{Todo}}
+ \}
+\begin{DoxyCompactList}\small\item\em The different classes of errors that can be issued. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{err_8hpp_ad1b222baa587631b95dab266f8f54c2a}\index{err.hpp@{err.hpp}!ERR@{ERR}}
+\index{ERR@{ERR}!err.hpp@{err.hpp}}
+\doxysubsubsection{\texorpdfstring{ERR}{ERR}}
+{\footnotesize\ttfamily \label{err_8hpp_ad1b222baa587631b95dab266f8f54c2a} 
+\#define ERR(\begin{DoxyParamCaption}\item[{}]{errtype}{, }\item[{}]{msg}{}\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{do}\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}\%s:\ "{}},\ \_\_func\_\_);\ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ msg);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \}\ \textcolor{keywordflow}{while}\ (0)}
+
+\end{DoxyCode}
+
+
+Prints a error message of type {\ttfamily errtype} with the message {\ttfamily msg} with no arguments. 
+
+
+
+Definition at line \mbox{\hyperlink{err_8hpp_source_l00066}{66}} of file \mbox{\hyperlink{err_8hpp_source}{err.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00066\ \textcolor{preprocessor}{\#define\ ERR(errtype,\ msg)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00067\ \textcolor{preprocessor}{\ \ \ \ do\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00068\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ "{}\%s:\ "{},\ \_\_func\_\_);\ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00069\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ msg);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00070\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ "{}\(\backslash\)n"{});\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\ \ \ \ \}\ while\ (0)}}
+
+\end{DoxyCode}
+\Hypertarget{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}\index{err.hpp@{err.hpp}!ERR\_WARGS@{ERR\_WARGS}}
+\index{ERR\_WARGS@{ERR\_WARGS}!err.hpp@{err.hpp}}
+\doxysubsubsection{\texorpdfstring{ERR\_WARGS}{ERR\_WARGS}}
+{\footnotesize\ttfamily \label{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23} 
+\#define ERR\+\_\+\+WARGS(\begin{DoxyParamCaption}\item[{}]{errtype}{, }\item[{}]{msg}{, }\item[{}]{}...{}\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{do}\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}\%s:\ "{}},\ \_\_func\_\_);\ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ msg,\ \_\_VA\_ARGS\_\_);\ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ fprintf(stderr,\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}});\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}
+\DoxyCodeLine{\ \ \ \ \}\ \textcolor{keywordflow}{while}\ (0)}
+
+\end{DoxyCode}
+
+
+Prints a error message of type {\ttfamily errtype} with the message {\ttfamily msg} with any arguments of VA\+\_\+\+ARGS. 
+
+
+
+Definition at line \mbox{\hyperlink{err_8hpp_source_l00056}{56}} of file \mbox{\hyperlink{err_8hpp_source}{err.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#define\ ERR\_WARGS(errtype,\ msg,\ ...)\ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\ \ \ \ do\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ "{}\%s:\ "{},\ \_\_func\_\_);\ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ msg,\ \_\_VA\_ARGS\_\_);\ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ fprintf(stderr,\ "{}\(\backslash\)n"{});\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ std::exit(1);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\ \ \ \ \}\ while\ (0)}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a}\index{err.hpp@{err.hpp}!ErrType@{ErrType}}
+\index{ErrType@{ErrType}!err.hpp@{err.hpp}}
+\doxysubsubsection{\texorpdfstring{ErrType}{ErrType}}
+{\footnotesize\ttfamily \label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+enum class \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a}{Err\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+
+
+The different classes of errors that can be issued. 
+
+Provides an easy way of displaying error messages and crashing. \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Syntax@{Syntax}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Syntax@{Syntax}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Syntax&Used for syntactical errors, usually during parsing \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Runtime@{Runtime}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Runtime@{Runtime}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc366f2d0ba3d681e7a3899917c5d3de}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Runtime&Used for errors that ocur during runtime \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Internal@{Internal}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Internal@{Internal}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaafbf0897a5a83fdd873dfb032ec695d3}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Internal&An internal error \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Fatal@{Fatal}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Fatal@{Fatal}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Fatal&Unrecoverable error \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Redeclared@{Redeclared}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Redeclared@{Redeclared}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaac901afa5b83cd9b859882d03d3af5ab}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Redeclared&Variable was redeclared at runtime \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Undeclared@{Undeclared}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Undeclared@{Undeclared}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa2af457eff1694fff8c7ef6c3a8974ce6}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Undeclared&Varriable is undeclared at runtime \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Types@{Types}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Types@{Types}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaf2d346b1bb7c1c85ab6f7f21e3666b9f}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Types&Incorrect usage of a type during runtime \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Todo@{Todo}!err.hpp@{err.hpp}}\index{err.hpp@{err.hpp}!Todo@{Todo}}}\Hypertarget{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc97e12414b8ea00107c66aa552029ae}\label{err_8hpp_a8a44eabce4dccc3d22171ed3699b769a} 
+Todo&For use during development of TODO functions \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line \mbox{\hyperlink{err_8hpp_source_l00035}{35}} of file \mbox{\hyperlink{err_8hpp_source}{err.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{Syntax}},}
+\DoxyCodeLine{00039\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc366f2d0ba3d681e7a3899917c5d3de}{Runtime}},}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaafbf0897a5a83fdd873dfb032ec695d3}{Internal}},}
+\DoxyCodeLine{00043\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{Fatal}},}
+\DoxyCodeLine{00045\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaac901afa5b83cd9b859882d03d3af5ab}{Redeclared}},}
+\DoxyCodeLine{00047\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa2af457eff1694fff8c7ef6c3a8974ce6}{Undeclared}},}
+\DoxyCodeLine{00049\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aaf2d346b1bb7c1c85ab6f7f21e3666b9f}{Types}},}
+\DoxyCodeLine{00051\ \ \ \ \ \mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aabc97e12414b8ea00107c66aa552029ae}{Todo}},}
+\DoxyCodeLine{00052\ \};}
+
+\end{DoxyCode}

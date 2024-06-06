@@ -1,0 +1,140 @@
+\doxysection{Stmt\+Let Struct Reference}
+\hypertarget{structStmtLet}{}\label{structStmtLet}\index{StmtLet@{StmtLet}}
+
+
+The Statement Let class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Stmt\+Let\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structStmtLet}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structStmtLet_a9c5f2bb58c9267c6419fde5d55276ed1}{Stmt\+Let}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ id, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ type, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ expr)
+\item 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} \mbox{\hyperlink{structStmtLet_afd37232773ebc57025f251623876eaf9}{stmt\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em Get the statement type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structStmtLet_ab3dba9c94a7099fdbdeae49544741e78}{m\+\_\+id}}
+\begin{DoxyCompactList}\small\item\em The token of the identifer. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structStmtLet_a32be652a2cdf1c84db32b01b1243817e}{m\+\_\+type}}
+\begin{DoxyCompactList}\small\item\em The token of the Let binding. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ \mbox{\hyperlink{structStmtLet_ab7df48f121571b52b870f6ba2dbbd0a8}{m\+\_\+expr}}
+\begin{DoxyCompactList}\small\item\em The expression of the Let Statement. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Statement Let class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00177}{177}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structStmtLet_a9c5f2bb58c9267c6419fde5d55276ed1}\index{StmtLet@{StmtLet}!StmtLet@{StmtLet}}
+\index{StmtLet@{StmtLet}!StmtLet@{StmtLet}}
+\doxysubsubsection{\texorpdfstring{StmtLet()}{StmtLet()}}
+{\footnotesize\ttfamily \label{structStmtLet_a9c5f2bb58c9267c6419fde5d55276ed1} 
+Stmt\+Let\+::\+Stmt\+Let (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{id}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{type}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$}]{expr}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00099}{99}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00102\ \ \ \ \ :\ \mbox{\hyperlink{structStmtLet_ab3dba9c94a7099fdbdeae49544741e78}{m\_id}}(std::move(\textcolor{keywordtype}{id})),\ \mbox{\hyperlink{structStmtLet_a32be652a2cdf1c84db32b01b1243817e}{m\_type}}(std::move(type)),\ \mbox{\hyperlink{structStmtLet_ab7df48f121571b52b870f6ba2dbbd0a8}{m\_expr}}(std::move(expr))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structStmtLet_afd37232773ebc57025f251623876eaf9}\index{StmtLet@{StmtLet}!stmt\_type@{stmt\_type}}
+\index{stmt\_type@{stmt\_type}!StmtLet@{StmtLet}}
+\doxysubsubsection{\texorpdfstring{stmt\_type()}{stmt\_type()}}
+{\footnotesize\ttfamily \label{structStmtLet_afd37232773ebc57025f251623876eaf9} 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} Stmt\+Let\+::stmt\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get the statement type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the statement 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structStmt_ab3880f167b3942ee29e7692e1a599b2d}{Stmt}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00104}{104}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{return}\ StmtType::Let;}
+\DoxyCodeLine{00106\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structStmtLet_ab7df48f121571b52b870f6ba2dbbd0a8}\index{StmtLet@{StmtLet}!m\_expr@{m\_expr}}
+\index{m\_expr@{m\_expr}!StmtLet@{StmtLet}}
+\doxysubsubsection{\texorpdfstring{m\_expr}{m\_expr}}
+{\footnotesize\ttfamily \label{structStmtLet_ab7df48f121571b52b870f6ba2dbbd0a8} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ Stmt\+Let\+::m\+\_\+expr}
+
+
+
+The expression of the Let Statement. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00185}{185}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtLet_ab3dba9c94a7099fdbdeae49544741e78}\index{StmtLet@{StmtLet}!m\_id@{m\_id}}
+\index{m\_id@{m\_id}!StmtLet@{StmtLet}}
+\doxysubsubsection{\texorpdfstring{m\_id}{m\_id}}
+{\footnotesize\ttfamily \label{structStmtLet_ab3dba9c94a7099fdbdeae49544741e78} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Stmt\+Let\+::m\+\_\+id}
+
+
+
+The token of the identifer. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00179}{179}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtLet_a32be652a2cdf1c84db32b01b1243817e}\index{StmtLet@{StmtLet}!m\_type@{m\_type}}
+\index{m\_type@{m\_type}!StmtLet@{StmtLet}}
+\doxysubsubsection{\texorpdfstring{m\_type}{m\_type}}
+{\footnotesize\ttfamily \label{structStmtLet_a32be652a2cdf1c84db32b01b1243817e} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Stmt\+Let\+::m\+\_\+type}
+
+
+
+The token of the Let binding. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00182}{182}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

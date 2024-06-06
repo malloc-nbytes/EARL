@@ -1,0 +1,326 @@
+\doxysection{Token Struct Reference}
+\hypertarget{structToken}{}\label{structToken}\index{Token@{Token}}
+
+
+The definition of a token.  
+
+
+
+
+{\ttfamily \#include $<$token.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structToken_ac196e2b350f16579f201085da4e18c47}{Token}} (char \texorpdfstring{$\ast$}{*}start, size\+\_\+t len, Token\+Type \mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}, size\+\_\+t row, size\+\_\+t col, std\+::string \&fp)
+\item 
+std\+::string \& \mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}} (void)
+\begin{DoxyCompactList}\small\item\em Get the {\ttfamily lexeme} of the current token. \end{DoxyCompactList}\item 
+Token\+Type \mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}} (void) const
+\begin{DoxyCompactList}\small\item\em Get the {\ttfamily type} of the current token. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\+\_\+str}} (void)
+\begin{DoxyCompactList}\small\item\em Get the stringified version of the type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\+\_\+lexeme}}
+\begin{DoxyCompactList}\small\item\em The actual value of the {\ttfamily \doxylink{structToken}{Token}} \end{DoxyCompactList}\item 
+Token\+Type \mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\+\_\+type}}
+\begin{DoxyCompactList}\small\item\em The type of the token. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{m\+\_\+row}}
+\begin{DoxyCompactList}\small\item\em The row of the token. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{m\+\_\+col}}
+\begin{DoxyCompactList}\small\item\em The column of the token. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{m\+\_\+fp}}
+\begin{DoxyCompactList}\small\item\em The filepath of the token. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\+\_\+next}}
+\begin{DoxyCompactList}\small\item\em A pointer to the next token. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The definition of a token. 
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00097}{97}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structToken_ac196e2b350f16579f201085da4e18c47}\index{Token@{Token}!Token@{Token}}
+\index{Token@{Token}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{Token()}{Token()}}
+{\footnotesize\ttfamily \label{structToken_ac196e2b350f16579f201085da4e18c47} 
+Token\+::\+Token (\begin{DoxyParamCaption}\item[{char \texorpdfstring{$\ast$}{*}}]{start}{, }\item[{size\+\_\+t}]{len}{, }\item[{Token\+Type}]{type}{, }\item[{size\+\_\+t}]{row}{, }\item[{size\+\_\+t}]{col}{, }\item[{std\+::string \&}]{fp}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{token_8cpp_source_l00144}{144}} of file \mbox{\hyperlink{token_8cpp_source}{token.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00147\ \ \ \ \ :\ \mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}}(\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}),\ \mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{m\_row}}(row),\ \mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{m\_col}}(col),\ \mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{m\_fp}}(std::move(fp)),\ \mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}}(\textcolor{keyword}{nullptr})\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ std::for\_each(start,\ start+len,\ [\&](\textcolor{keywordtype}{char}\ c)\ \{this-\/>\mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\_lexeme}}.push\_back(c);\});}
+\DoxyCodeLine{00149\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structToken_a5bb2331dcfe4c63adae9f2da20545c03}\index{Token@{Token}!lexeme@{lexeme}}
+\index{lexeme@{lexeme}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{lexeme()}{lexeme()}}
+{\footnotesize\ttfamily \label{structToken_a5bb2331dcfe4c63adae9f2da20545c03} 
+std\+::string \& Token\+::lexeme (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Get the {\ttfamily lexeme} of the current token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8cpp_source_l00174}{174}} of file \mbox{\hyperlink{token_8cpp_source}{token.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\_lexeme}};}
+\DoxyCodeLine{00176\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structToken_ac4ac09b34b6599146d1005ee7d6acdec}\index{Token@{Token}!to\_str@{to\_str}}
+\index{to\_str@{to\_str}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{to\_str()}{to\_str()}}
+{\footnotesize\ttfamily \label{structToken_ac4ac09b34b6599146d1005ee7d6acdec} 
+std\+::string Token\+::to\+\_\+str (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Get the stringified version of the type. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8cpp_source_l00036}{36}} of file \mbox{\hyperlink{token_8cpp_source}{token.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00037\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{switch}\ (\mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}})\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Lparen:}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}LPAREN"{}};}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Rparen:}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RPAREN"{}};}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Lbracket:}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}LBRACKET"{}};}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Rbracket:}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RBRACKET"{}};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Lbrace:}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}LBRACE"{}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Rbrace:}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RBRACE"{}};}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Hash:}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}HASH"{}};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Period:}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PERIOD"{}};}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Comma:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}COMMA"{}};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Semicolon:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}SEMICOLON"{}};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Greaterthan:}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GREATERTHAN"{}};}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Lessthan:}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}LESSTHAN"{}};}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Equals:}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}EQUALS"{}};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Ampersand:}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}AMPERSAND"{}};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Asterisk:}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ASTERISK"{}};}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Plus:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PLUS"{}};}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Minus:}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}MINUS"{}};}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Forwardslash:}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FORWARDSLASH"{}};}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Pipe:}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PIPE"{}};}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Caret:}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}CARET"{}};}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Questionmark:}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}QUESTIONMARK"{}};}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Backwardslash:}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BACKWARDSLASH"{}};}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Bang:}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BANG"{}};}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::At:}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}AT"{}};}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Dollarsign:}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DOLLARSIGN"{}};}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Percent:}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PERCENT"{}};}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Backtick:}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BACKTICK"{}};}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Tilde:}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TILDE"{}};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Colon:}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}COLON"{}};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Double\_Ampersand:}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DOUBLE\_AMPERSAND"{}};}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Double\_Pipe:}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DOUBLE\_PIPE"{}};}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Greaterthan\_Equals:}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}GREATERTHAN\_EQUALS"{}};}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Lessthan\_Equals:}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}LESSTHAN\_EQUALS"{}};}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Double\_Equals:}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DOUBLE\_EQUALS"{}};}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Bang\_Equals:}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}BANG\_EQUALS"{}};}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Plus\_Equals:}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PLUS\_EQUALS"{}};}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Minus\_Equals:}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}MINUS\_EQUALS"{}};}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Asterisk\_Equals:}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ASTERISK\_EQUALS"{}};}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Forwardslash\_Equals:}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}FORWARDSLASH\_EQUALS"{}};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Percent\_Equals:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}PERCENT\_EQUALS"{}};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::RightArrow:}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}RIGHT\_ARROW"{}};}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Double\_Period:}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}DOUBLE\_PERIOD"{}};}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Eof:}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}EOF"{}};}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Intlit:}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}INTLIT"{}};}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Strlit:}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}STRLIT"{}};}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Charlit:}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}CHARLIT"{}};}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Ident:}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}IDENT"{}};}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Keyword:}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}KEYWORD"{}};}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Type:}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}TYPE"{}};}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{ErrType::Fatal}},\ \textcolor{stringliteral}{"{}unkown\ type:\ \%d"{}},\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(\mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}}));}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ NULL;}
+\DoxyCodeLine{00140\ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordflow}{return}\ NULL;}
+\DoxyCodeLine{00142\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}\index{Token@{Token}!type@{type}}
+\index{type@{type}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{type()}{type()}}
+{\footnotesize\ttfamily \label{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c} 
+Token\+Type Token\+::type (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption}) const}
+
+
+
+Get the {\ttfamily type} of the current token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8cpp_source_l00178}{178}} of file \mbox{\hyperlink{token_8cpp_source}{token.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}};}
+\DoxyCodeLine{00180\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structToken_a91f36e18f52bbf770905eac5b85f0fdf}\index{Token@{Token}!m\_col@{m\_col}}
+\index{m\_col@{m\_col}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_col}{m\_col}}
+{\footnotesize\ttfamily \label{structToken_a91f36e18f52bbf770905eac5b85f0fdf} 
+size\+\_\+t Token\+::m\+\_\+col}
+
+
+
+The column of the token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00108}{108}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+\Hypertarget{structToken_a81902822c4e463eb2cf950a6fb331932}\index{Token@{Token}!m\_fp@{m\_fp}}
+\index{m\_fp@{m\_fp}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_fp}{m\_fp}}
+{\footnotesize\ttfamily \label{structToken_a81902822c4e463eb2cf950a6fb331932} 
+std\+::string Token\+::m\+\_\+fp}
+
+
+
+The filepath of the token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00111}{111}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+\Hypertarget{structToken_ad463eda850868a54f47cf911e0e32d85}\index{Token@{Token}!m\_lexeme@{m\_lexeme}}
+\index{m\_lexeme@{m\_lexeme}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_lexeme}{m\_lexeme}}
+{\footnotesize\ttfamily \label{structToken_ad463eda850868a54f47cf911e0e32d85} 
+std\+::string Token\+::m\+\_\+lexeme}
+
+
+
+The actual value of the {\ttfamily \doxylink{structToken}{Token}} 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00099}{99}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+\Hypertarget{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}\index{Token@{Token}!m\_next@{m\_next}}
+\index{m\_next@{m\_next}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_next}{m\_next}}
+{\footnotesize\ttfamily \label{structToken_ac1247f5b5cbfb8a93d1a89abb314c740} 
+\mbox{\hyperlink{structToken}{Token}}\texorpdfstring{$\ast$}{*} Token\+::m\+\_\+next}
+
+
+
+A pointer to the next token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00114}{114}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+\Hypertarget{structToken_a9c73b86b9088aeb52fe9293558055e22}\index{Token@{Token}!m\_row@{m\_row}}
+\index{m\_row@{m\_row}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_row}{m\_row}}
+{\footnotesize\ttfamily \label{structToken_a9c73b86b9088aeb52fe9293558055e22} 
+size\+\_\+t Token\+::m\+\_\+row}
+
+
+
+The row of the token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00105}{105}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+\Hypertarget{structToken_aaf051623929edd968dd7f991442833fc}\index{Token@{Token}!m\_type@{m\_type}}
+\index{m\_type@{m\_type}!Token@{Token}}
+\doxysubsubsection{\texorpdfstring{m\_type}{m\_type}}
+{\footnotesize\ttfamily \label{structToken_aaf051623929edd968dd7f991442833fc} 
+Token\+Type Token\+::m\+\_\+type}
+
+
+
+The type of the token. 
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00102}{102}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{token_8hpp}{token.\+hpp}}\item 
+token.\+cpp\end{DoxyCompactItemize}

@@ -1,0 +1,66 @@
+\doxysection{earlfunc.\+cpp}
+\hypertarget{earlfunc_8cpp_source}{}\label{earlfunc_8cpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00001}00001\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00003}00003\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ast_8hpp}{ast.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00004}00004\ \textcolor{preprocessor}{\#include\ "{}earlty.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00005}00005\ \textcolor{preprocessor}{\#include\ "{}earlvar.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00006}00006\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{token_8hpp}{token.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00007}00007\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{earlfunc_8hpp}{earlfunc.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00008}00008\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{err_8hpp}{err.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00010}00010\ EarlFunc::Func::Func(\mbox{\hyperlink{structToken}{Token}}\ *\textcolor{keywordtype}{id},}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00011}00011\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EarlTy::Type\ rettype,}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00012}00012\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<EarlVar\ *>\ args,}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00013}00013\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structStmtBlock}{StmtBlock}}\ *block)}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00014}00014\ \ \ \ \ :\ m\_id(id),}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00015}00015\ \ \ \ \ \ \ m\_rettype(rettype),}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00016}00016\ \ \ \ \ \ \ m\_args(std::move(args)),}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00017}00017\ \ \ \ \ \ \ m\_block(block)\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00018}00018\ \ \ \ \ m\_local\_scope.emplace\_back();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00019}00019\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00021}\mbox{\hyperlink{structEarlFunc_1_1Func_a30c9b28a31f1b79ef70fd21385438350}{00021}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a30c9b28a31f1b79ef70fd21385438350}{EarlFunc::Func::push\_scope}}(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00022}00022\ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func_a0deaad11a96dbee3f356704c93be9b2c}{m\_local\_scope}}.back().push();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00023}00023\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00025}\mbox{\hyperlink{structEarlFunc_1_1Func_a1ca504cc1e4282473b13e36f51e1080e}{00025}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a1ca504cc1e4282473b13e36f51e1080e}{EarlFunc::Func::pop\_scope}}(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00026}00026\ \ \ \ \ m\_local\_scope.back().pop();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00027}00027\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00029}00029\ \textcolor{keywordtype}{void}\ EarlFunc::Func::new\_scope\_context(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00030}00030\ \ \ \ \ m\_local\_scope.emplace\_back();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00031}00031\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00033}00033\ \textcolor{keywordtype}{void}\ EarlFunc::Func::drop\_scope\_context(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00034}00034\ \ \ \ \ m\_local\_scope.pop\_back();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00035}00035\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00036}00036\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00037}\mbox{\hyperlink{structEarlFunc_1_1Func_a347ad335e5eec36a9146c42ee18e52b8}{00037}}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a347ad335e5eec36a9146c42ee18e52b8}{EarlFunc::Func::contains\_local\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00038}00038\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_local\_scope.back().contains(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00039}00039\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00041}\mbox{\hyperlink{structEarlFunc_1_1Func_ab03a2ace73266a1bd5096707b15f5bae}{00041}}\ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ *\mbox{\hyperlink{structEarlFunc_1_1Func_ab03a2ace73266a1bd5096707b15f5bae}{EarlFunc::Func::get\_local\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ **var\ =\ m\_local\_scope.back().get(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordflow}{if}\ (!var\ ||\ !*var)}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00044}00044\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{ErrType::Fatal}},\ \textcolor{stringliteral}{"{}variable\ \`{}\%s`\ is\ not\ in\ local\ scope"{}},\ \textcolor{keywordtype}{id}.c\_str());}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00045}00045\ \ \ \ \ \textcolor{keywordflow}{return}\ *var;}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00046}00046\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00047}00047\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00048}\mbox{\hyperlink{structEarlFunc_1_1Func_a7f4dfa6dcea3701c3bd326b60f0605c8}{00048}}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a7f4dfa6dcea3701c3bd326b60f0605c8}{EarlFunc::Func::add\_local\_earlvar}}(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var)\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00049}00049\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id}\ =\ var-\/>m\_id-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00050}00050\ \ \ \ \ m\_local\_scope.back().add(\textcolor{keywordtype}{id},\ var);}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00051}00051\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00053}\mbox{\hyperlink{structEarlFunc_1_1Func_ad7382d3e367e2e3053f70450e6d14b62}{00053}}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structEarlFunc_1_1Func_ad7382d3e367e2e3053f70450e6d14b62}{EarlFunc::Func::context\_size}}(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_local\_scope.size();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00055}00055\ \}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00056}00056\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00057}00057\ \textcolor{keywordtype}{void}\ EarlFunc::Func::remove\_local\_earlvar(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var)\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00058}00058\ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id}\ =\ var-\/>m\_id-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00059}00059\ \ \ \ \ m\_local\_scope.back().remove(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00060}00060\ \ \ \ \ abort();}
+\DoxyCodeLine{\Hypertarget{earlfunc_8cpp_source_l00061}00061\ \}}
+
+\end{DoxyCode}

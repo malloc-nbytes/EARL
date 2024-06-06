@@ -1,0 +1,140 @@
+\doxysection{Expr\+Binary Struct Reference}
+\hypertarget{structExprBinary}{}\label{structExprBinary}\index{ExprBinary@{ExprBinary}}
+
+
+The Expression Binary class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Expr\+Binary\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structExprBinary}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structExprBinary_af41a152a89e233219a1bc4e2e3a68a65}{Expr\+Binary}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ lhs, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ op, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ rhs)
+\item 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} \mbox{\hyperlink{structExprBinary_a27dd7cd6c9dc7a74813367c71496274a}{get\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em The get expression type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ \mbox{\hyperlink{structExprBinary_addee8cd71ed68a4f7de12a8d32b8a34a}{m\+\_\+lhs}}
+\begin{DoxyCompactList}\small\item\em The expression of the left hand side. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structExprBinary_a933ebaeeeb84c5db80ea9c763d43132d}{m\+\_\+op}}
+\begin{DoxyCompactList}\small\item\em The token of the binary operator. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ \mbox{\hyperlink{structExprBinary_af25c8b843f3285e21b04de0eadf92908}{m\+\_\+rhs}}
+\begin{DoxyCompactList}\small\item\em The expression of the right hand side. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Expression Binary class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00130}{130}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structExprBinary_af41a152a89e233219a1bc4e2e3a68a65}\index{ExprBinary@{ExprBinary}!ExprBinary@{ExprBinary}}
+\index{ExprBinary@{ExprBinary}!ExprBinary@{ExprBinary}}
+\doxysubsubsection{\texorpdfstring{ExprBinary()}{ExprBinary()}}
+{\footnotesize\ttfamily \label{structExprBinary_af41a152a89e233219a1bc4e2e3a68a65} 
+Expr\+Binary\+::\+Expr\+Binary (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$}]{lhs}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{op}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$}]{rhs}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00035}{35}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00036\ \ \ \ \ :\ \mbox{\hyperlink{structExprBinary_addee8cd71ed68a4f7de12a8d32b8a34a}{m\_lhs}}(std::move(lhs)),\ \mbox{\hyperlink{structExprBinary_a933ebaeeeb84c5db80ea9c763d43132d}{m\_op}}(std::move(op)),\ \mbox{\hyperlink{structExprBinary_af25c8b843f3285e21b04de0eadf92908}{m\_rhs}}(std::move(rhs))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structExprBinary_a27dd7cd6c9dc7a74813367c71496274a}\index{ExprBinary@{ExprBinary}!get\_type@{get\_type}}
+\index{get\_type@{get\_type}!ExprBinary@{ExprBinary}}
+\doxysubsubsection{\texorpdfstring{get\_type()}{get\_type()}}
+{\footnotesize\ttfamily \label{structExprBinary_a27dd7cd6c9dc7a74813367c71496274a} 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} Expr\+Binary\+::get\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+The get expression type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the expression 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structExpr_a4d5071f1f191b0140ebe2afc0fb168ea}{Expr}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00038}{38}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordflow}{return}\ ExprType::Binary;}
+\DoxyCodeLine{00040\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structExprBinary_addee8cd71ed68a4f7de12a8d32b8a34a}\index{ExprBinary@{ExprBinary}!m\_lhs@{m\_lhs}}
+\index{m\_lhs@{m\_lhs}!ExprBinary@{ExprBinary}}
+\doxysubsubsection{\texorpdfstring{m\_lhs}{m\_lhs}}
+{\footnotesize\ttfamily \label{structExprBinary_addee8cd71ed68a4f7de12a8d32b8a34a} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ Expr\+Binary\+::m\+\_\+lhs}
+
+
+
+The expression of the left hand side. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00132}{132}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structExprBinary_a933ebaeeeb84c5db80ea9c763d43132d}\index{ExprBinary@{ExprBinary}!m\_op@{m\_op}}
+\index{m\_op@{m\_op}!ExprBinary@{ExprBinary}}
+\doxysubsubsection{\texorpdfstring{m\_op}{m\_op}}
+{\footnotesize\ttfamily \label{structExprBinary_a933ebaeeeb84c5db80ea9c763d43132d} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Expr\+Binary\+::m\+\_\+op}
+
+
+
+The token of the binary operator. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00135}{135}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structExprBinary_af25c8b843f3285e21b04de0eadf92908}\index{ExprBinary@{ExprBinary}!m\_rhs@{m\_rhs}}
+\index{m\_rhs@{m\_rhs}!ExprBinary@{ExprBinary}}
+\doxysubsubsection{\texorpdfstring{m\_rhs}{m\_rhs}}
+{\footnotesize\ttfamily \label{structExprBinary_af25c8b843f3285e21b04de0eadf92908} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ Expr\+Binary\+::m\+\_\+rhs}
+
+
+
+The expression of the right hand side. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00138}{138}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

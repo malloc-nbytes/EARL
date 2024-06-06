@@ -1,0 +1,61 @@
+\doxysection{parser.\+hpp}
+\hypertarget{parser_8hpp_source}{}\label{parser_8hpp_source}\index{include/parser.hpp@{include/parser.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00001}00001\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00003}00003\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00006}00006\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00007}00007\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00008}00008\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00009}00009\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00010}00010\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00012}00012\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00013}00013\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00015}00015\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00016}00016\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00017}00017\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00018}00018\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00019}00019\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00020}00020\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00021}00021\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#ifndef\ PARSER\_H}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#define\ PARSER\_H}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{lexer_8hpp}{lexer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ast_8hpp}{ast.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00032}\mbox{\hyperlink{namespaceParser}{00032}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceParser}{Parser}}\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00036}00036\ \ \ \ \ \mbox{\hyperlink{structProgram}{Program}}\ \mbox{\hyperlink{namespaceParser_ab1d41dd88fa329f2bf7ff2dc309e0e98}{parse\_program}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00041}00041\ \ \ \ \ std::unique\_ptr<Stmt>\ \mbox{\hyperlink{namespaceParser_a52269d174d13fa46ebb309581cd26354}{parse\_stmt}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00047}00047\ \ \ \ \ std::unique\_ptr<StmtDef>\ \mbox{\hyperlink{namespaceParser_a702b487ca07b25be721bcda9189d477c}{parse\_stmt\_def}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00054}00054\ \ \ \ \ std::unique\_ptr<StmtExpr>\ \mbox{\hyperlink{namespaceParser_a216c3c911ab0cdcb244f7206a24bf6ab}{parse\_stmt\_expr}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00059}00059\ \ \ \ \ std::unique\_ptr<StmtLet>\ \mbox{\hyperlink{namespaceParser_af3f54c424309804738d5741952b0d623}{parse\_stmt\_let}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00064}00064\ \ \ \ \ std::unique\_ptr<StmtMut>\ \mbox{\hyperlink{namespaceParser_ae248bd26d2df118bc36e64bc874e2304}{parse\_stmt\_mut}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00068}00068\ \ \ \ \ std::unique\_ptr<StmtBlock>\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{parse\_stmt\_block}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00069}00069\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00072}00072\ \ \ \ \ std::unique\_ptr<StmtIf>\ \mbox{\hyperlink{namespaceParser_a2861924d156eb5b94a82b56bdb526afb}{parse\_stmt\_if}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00073}00073\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00079}00079\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *\mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{parse\_expr}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00084}00084\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{parse\_expect\_type}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00090}00090\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{parse\_expect\_keyword}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer,\ std::string\ expected);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00096}00096\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer,\ TokenType\ expected);}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00097}00097\ \};}
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{parser_8hpp_source_l00099}00099\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ PARSER\_H}}
+
+\end{DoxyCode}

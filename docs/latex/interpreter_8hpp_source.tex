@@ -1,0 +1,72 @@
+\doxysection{interpreter.\+hpp}
+\hypertarget{interpreter_8hpp_source}{}\label{interpreter_8hpp_source}\index{include/interpreter.hpp@{include/interpreter.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00001}00001\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00003}00003\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00006}00006\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00007}00007\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00008}00008\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00009}00009\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00010}00010\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00012}00012\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00013}00013\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00015}00015\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00016}00016\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00017}00017\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00018}00018\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00019}00019\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00020}00020\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00021}00021\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00023}00023\ \textcolor{preprocessor}{\#ifndef\ INTERPRETER\_H}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00024}00024\ \textcolor{preprocessor}{\#define\ INTERPRETER\_H}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ <any>}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00027}00027\ \textcolor{preprocessor}{\#include\ <variant>}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00028}00028\ \textcolor{preprocessor}{\#include\ <tuple>}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00030}00030\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ctx_8hpp}{ctx.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#include\ "{}earlty.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00032}00032\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ast_8hpp}{ast.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00034}00034\ \textcolor{keyword}{namespace\ }Interpreter\ \{}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{namespace\ }LiteralResult\ \{}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00037}00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }Ident\ =\ \mbox{\hyperlink{structEarlVar}{EarlVar}}*;}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }Literal\ =\ \mbox{\hyperlink{structToken}{Token}}*;}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }None\ =\ bool;}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00041}\mbox{\hyperlink{structInterpreter_1_1LiteralResult_1_1Result}{00041}}\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structInterpreter_1_1LiteralResult_1_1Result}{Result}}\ \{}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00042}00042\ \ \ \ \ \ \ \ \ \ \ \ \ std::variant<Ident,\ Literal,\ None>\ m\_value;}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00043}00043\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00045}00045\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00051}\mbox{\hyperlink{structInterpreter_1_1ExprEvalResult}{00051}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structInterpreter_1_1ExprEvalResult}{ExprEvalResult}}\ \{}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00054}\mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_a37364c51da2cea55e3b6c94550b501a8}{00054}}\ \ \ \ \ \ \ \ \ std::any\ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_a37364c51da2cea55e3b6c94550b501a8}{m\_expr\_value}};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00058}\mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_ae86187dba3a18bdc16a15557542ebc7c}{00058}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{ast_8hpp_a273af28a8fa3b5c59f246360a30b4dd2}{ExprTermType}}\ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_ae86187dba3a18bdc16a15557542ebc7c}{m\_expr\_term\_type}};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00061}\mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_ad888d939f3f520c678255a1eb4537595}{00061}}\ \ \ \ \ \ \ \ \ EarlTy::Type\ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_ad888d939f3f520c678255a1eb4537595}{m\_earl\_type}};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structInterpreter_1_1LiteralResult_1_1Result}{LiteralResult::Result}}\ m\_literal\_result;}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ EarlTy::Type\ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_a3045782c48a193c5e13a4ffb80faaaa8}{get\_earl\_type}}(\mbox{\hyperlink{classCtx}{Ctx}}\ \&ctx);}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00073}00073\ \ \ \ \ \ \ \ \ std::any\ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult_afc9d65fa40d1490649d53f18153fa6f4}{value}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00075}00075\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00077}00077\ \ \ \ \ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult}{ExprEvalResult}}\ interpret(\mbox{\hyperlink{structProgram}{Program}}\ \&program);}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00078}00078\ \ \ \ \ \mbox{\hyperlink{structInterpreter_1_1ExprEvalResult}{ExprEvalResult}}\ eval\_expr(\mbox{\hyperlink{structExpr}{Expr}}\ *expr,\ \mbox{\hyperlink{classCtx}{Ctx}}\ \&ctx);}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00079}00079\ \};}
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00080}00080\ }
+\DoxyCodeLine{\Hypertarget{interpreter_8hpp_source_l00081}00081\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ INTERPRETER\_H}}
+
+\end{DoxyCode}

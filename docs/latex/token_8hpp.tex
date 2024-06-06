@@ -1,0 +1,210 @@
+\doxysection{include/token.hpp File Reference}
+\hypertarget{token_8hpp}{}\label{token_8hpp}\index{include/token.hpp@{include/token.hpp}}
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include "{}lexer.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structToken}{Token}}
+\begin{DoxyCompactList}\small\item\em The definition of a token. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class {\bfseries Token\+Type} \{ \newline
+{\bfseries Lparen}
+, {\bfseries Rparen}
+, {\bfseries Lbracket}
+, {\bfseries Rbracket}
+, \newline
+{\bfseries Lbrace}
+, {\bfseries Rbrace}
+, {\bfseries Hash}
+, {\bfseries Period}
+, \newline
+{\bfseries Semicolon}
+, {\bfseries Comma}
+, {\bfseries Greaterthan}
+, {\bfseries Lessthan}
+, \newline
+{\bfseries Equals}
+, {\bfseries Ampersand}
+, {\bfseries Asterisk}
+, {\bfseries Plus}
+, \newline
+{\bfseries Minus}
+, {\bfseries Forwardslash}
+, {\bfseries Pipe}
+, {\bfseries Caret}
+, \newline
+{\bfseries Questionmark}
+, {\bfseries Backwardslash}
+, {\bfseries Bang}
+, {\bfseries At}
+, \newline
+{\bfseries Dollarsign}
+, {\bfseries Percent}
+, {\bfseries Backtick}
+, {\bfseries Tilde}
+, \newline
+{\bfseries Colon}
+, {\bfseries Sym\+\_\+\+Len}
+, {\bfseries Double\+\_\+\+Ampersand}
+, {\bfseries Double\+\_\+\+Pipe}
+, \newline
+{\bfseries Greaterthan\+\_\+\+Equals}
+, {\bfseries Lessthan\+\_\+\+Equals}
+, {\bfseries Double\+\_\+\+Equals}
+, {\bfseries Bang\+\_\+\+Equals}
+, \newline
+{\bfseries Plus\+\_\+\+Equals}
+, {\bfseries Minus\+\_\+\+Equals}
+, {\bfseries Asterisk\+\_\+\+Equals}
+, {\bfseries Forwardslash\+\_\+\+Equals}
+, \newline
+{\bfseries Percent\+\_\+\+Equals}
+, {\bfseries Right\+Arrow}
+, {\bfseries Double\+\_\+\+Period}
+, {\bfseries Eof}
+, \newline
+{\bfseries Intlit}
+, {\bfseries Strlit}
+, {\bfseries Charlit}
+, {\bfseries Ident}
+, \newline
+{\bfseries Keyword}
+, {\bfseries Type}
+, {\bfseries Total\+\_\+\+Len}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{token_8hpp_a9729a0ece25bd909f01e80185e3ea801}{token\+\_\+alloc}} (\mbox{\hyperlink{structLexer}{Lexer}} \&lexer, char \texorpdfstring{$\ast$}{*}start, size\+\_\+t len, Token\+Type type, size\+\_\+t row, size\+\_\+t col, std\+::string fp)
+\begin{DoxyCompactList}\small\item\em Allocate a {\ttfamily \doxylink{structToken}{Token}} using an {\ttfamily \doxylink{structArena}{Arena} Allocator} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{token_8hpp_aa520fbf142ba1e7e659590c07da31921}\index{token.hpp@{token.hpp}!TokenType@{TokenType}}
+\index{TokenType@{TokenType}!token.hpp@{token.hpp}}
+\doxysubsubsection{\texorpdfstring{TokenType}{TokenType}}
+{\footnotesize\ttfamily \label{token_8hpp_aa520fbf142ba1e7e659590c07da31921} 
+enum class Token\+Type\hspace{0.3cm}{\ttfamily [strong]}}
+
+
+
+Definition at line \mbox{\hyperlink{token_8hpp_source_l00040}{40}} of file \mbox{\hyperlink{token_8hpp_source}{token.\+hpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00041\ \ \ \ \ Lparen,}
+\DoxyCodeLine{00042\ \ \ \ \ Rparen,}
+\DoxyCodeLine{00043\ \ \ \ \ Lbracket,}
+\DoxyCodeLine{00044\ \ \ \ \ Rbracket,}
+\DoxyCodeLine{00045\ \ \ \ \ Lbrace,}
+\DoxyCodeLine{00046\ \ \ \ \ Rbrace,}
+\DoxyCodeLine{00047\ \ \ \ \ Hash,}
+\DoxyCodeLine{00048\ \ \ \ \ Period,}
+\DoxyCodeLine{00049\ \ \ \ \ Semicolon,}
+\DoxyCodeLine{00050\ \ \ \ \ Comma,}
+\DoxyCodeLine{00051\ \ \ \ \ Greaterthan,}
+\DoxyCodeLine{00052\ \ \ \ \ Lessthan,}
+\DoxyCodeLine{00053\ \ \ \ \ Equals,}
+\DoxyCodeLine{00054\ \ \ \ \ Ampersand,}
+\DoxyCodeLine{00055\ \ \ \ \ Asterisk,}
+\DoxyCodeLine{00056\ \ \ \ \ Plus,}
+\DoxyCodeLine{00057\ \ \ \ \ Minus,}
+\DoxyCodeLine{00058\ \ \ \ \ Forwardslash,}
+\DoxyCodeLine{00059\ \ \ \ \ Pipe,}
+\DoxyCodeLine{00060\ \ \ \ \ Caret,}
+\DoxyCodeLine{00061\ \ \ \ \ Questionmark,}
+\DoxyCodeLine{00062\ \ \ \ \ Backwardslash,}
+\DoxyCodeLine{00063\ \ \ \ \ Bang,}
+\DoxyCodeLine{00064\ \ \ \ \ At,}
+\DoxyCodeLine{00065\ \ \ \ \ Dollarsign,}
+\DoxyCodeLine{00066\ \ \ \ \ Percent,}
+\DoxyCodeLine{00067\ \ \ \ \ Backtick,}
+\DoxyCodeLine{00068\ \ \ \ \ Tilde,}
+\DoxyCodeLine{00069\ \ \ \ \ Colon,}
+\DoxyCodeLine{00070\ \ \ \ \ Sym\_Len,\ \textcolor{comment}{//\ DO\ NOT\ USE!\ Used\ for\ the\ length\ of\ symbols.\ (deprecated)}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ Double\_Ampersand,}
+\DoxyCodeLine{00073\ \ \ \ \ Double\_Pipe,}
+\DoxyCodeLine{00074\ \ \ \ \ Greaterthan\_Equals,}
+\DoxyCodeLine{00075\ \ \ \ \ Lessthan\_Equals,}
+\DoxyCodeLine{00076\ \ \ \ \ Double\_Equals,}
+\DoxyCodeLine{00077\ \ \ \ \ Bang\_Equals,}
+\DoxyCodeLine{00078\ \ \ \ \ Plus\_Equals,}
+\DoxyCodeLine{00079\ \ \ \ \ Minus\_Equals,}
+\DoxyCodeLine{00080\ \ \ \ \ Asterisk\_Equals,}
+\DoxyCodeLine{00081\ \ \ \ \ Forwardslash\_Equals,}
+\DoxyCodeLine{00082\ \ \ \ \ Percent\_Equals,}
+\DoxyCodeLine{00083\ \ \ \ \ RightArrow,}
+\DoxyCodeLine{00084\ \ \ \ \ Double\_Period,}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ Eof,}
+\DoxyCodeLine{00087\ \ \ \ \ Intlit,}
+\DoxyCodeLine{00088\ \ \ \ \ Strlit,}
+\DoxyCodeLine{00089\ \ \ \ \ Charlit,}
+\DoxyCodeLine{00090\ \ \ \ \ Ident,}
+\DoxyCodeLine{00091\ \ \ \ \ Keyword,}
+\DoxyCodeLine{00092\ \ \ \ \ Type,}
+\DoxyCodeLine{00093\ \ \ \ \ Total\_Len}
+\DoxyCodeLine{00094\ \};}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{token_8hpp_a9729a0ece25bd909f01e80185e3ea801}\index{token.hpp@{token.hpp}!token\_alloc@{token\_alloc}}
+\index{token\_alloc@{token\_alloc}!token.hpp@{token.hpp}}
+\doxysubsubsection{\texorpdfstring{token\_alloc()}{token\_alloc()}}
+{\footnotesize\ttfamily \label{token_8hpp_a9729a0ece25bd909f01e80185e3ea801} 
+\mbox{\hyperlink{structToken}{Token}} \texorpdfstring{$\ast$}{*} token\+\_\+alloc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structLexer}{Lexer}} \&}]{lexer}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{start}{, }\item[{size\+\_\+t}]{len}{, }\item[{Token\+Type}]{type}{, }\item[{size\+\_\+t}]{row}{, }\item[{size\+\_\+t}]{col}{, }\item[{std\+::string}]{fp}{}\end{DoxyParamCaption})}
+
+
+
+Allocate a {\ttfamily \doxylink{structToken}{Token}} using an {\ttfamily \doxylink{structArena}{Arena} Allocator} 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lexer} & The lexer that is currently being used. It is needed for it\textquotesingle{}s {\ttfamily arena}. \\
+\hline
+{\em start} & A pointer to the start of the lexeme to create \\
+\hline
+{\em len} & How many characters for the lexeme \\
+\hline
+{\em type} & The type of the token to create \\
+\hline
+{\em row} & The row of the token \\
+\hline
+{\em col} & The column of the token \\
+\hline
+{\em fp} & The filepath of the token \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{token_8cpp_source_l00153}{153}} of file \mbox{\hyperlink{token_8cpp_source}{token.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00157\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ (\mbox{\hyperlink{structToken}{Token}}\ *)arena\_alloc(lexer.\mbox{\hyperlink{structLexer_af3892cb310975caaeefde46e935fd85c}{m\_arena}},\ \textcolor{keyword}{sizeof}(\mbox{\hyperlink{structToken}{Token}}));}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ i\ =\ 0;\ i\ <\ len;\ ++i)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\_lexeme}}.push\_back(start[i]);}
+\DoxyCodeLine{00162\ \ \ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{comment}{//\ tok-\/>m\_lexeme\ =\ std::string(start,\ len);}}
+\DoxyCodeLine{00165\ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}}\ =\ type;}
+\DoxyCodeLine{00166\ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{m\_row}}\ =\ row;}
+\DoxyCodeLine{00167\ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{m\_col}}\ =\ col;}
+\DoxyCodeLine{00168\ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{m\_fp}}\ =\ fp;}
+\DoxyCodeLine{00169\ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}}\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{00172\ \}}
+
+\end{DoxyCode}

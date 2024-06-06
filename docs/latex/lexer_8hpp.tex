@@ -1,0 +1,212 @@
+\doxysection{include/lexer.hpp File Reference}
+\hypertarget{lexer_8hpp}{}\label{lexer_8hpp}\index{include/lexer.hpp@{include/lexer.hpp}}
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include "{}arena.\+hpp"{}}\newline
+{\ttfamily \#include "{}token.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structLexer}{Lexer}}
+\begin{DoxyCompactList}\small\item\em The API for lexical analysis of a document. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structLexer}{Lexer}} \mbox{\hyperlink{lexer_8hpp_aaa236575a5c4b420816c39d1797a412e}{lex\+\_\+file}} (const char \texorpdfstring{$\ast$}{*}filepath, std\+::vector$<$ std\+::string $>$ \&keywords, std\+::vector$<$ std\+::string $>$ \&types, std\+::string \&comment)
+\begin{DoxyCompactList}\small\item\em Produces a lexer with a list of tokens from the source code of {\ttfamily filepath}. Any prevalent keywords should be provided in {\ttfamily keywords}. The identifier(s) for a SINGLE LINE comment is provided as {\ttfamily comment}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{lexer_8hpp_aaa236575a5c4b420816c39d1797a412e}\index{lexer.hpp@{lexer.hpp}!lex\_file@{lex\_file}}
+\index{lex\_file@{lex\_file}!lexer.hpp@{lexer.hpp}}
+\doxysubsubsection{\texorpdfstring{lex\_file()}{lex\_file()}}
+{\footnotesize\ttfamily \label{lexer_8hpp_aaa236575a5c4b420816c39d1797a412e} 
+\mbox{\hyperlink{structLexer}{Lexer}} lex\+\_\+file (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{filepath}{, }\item[{std\+::vector$<$ std\+::string $>$ \&}]{keywords}{, }\item[{std\+::vector$<$ std\+::string $>$ \&}]{types}{, }\item[{std\+::string \&}]{comment}{}\end{DoxyParamCaption})}
+
+
+
+Produces a lexer with a list of tokens from the source code of {\ttfamily filepath}. Any prevalent keywords should be provided in {\ttfamily keywords}. The identifier(s) for a SINGLE LINE comment is provided as {\ttfamily comment}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & The filepath to read the source code from \\
+\hline
+{\em keywords} & A vector of strings that are the keywords of the language \\
+\hline
+{\em types} & A vector of strings that specify the types in the language \\
+\hline
+{\em comment} & What a single line comment is in the language \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{lexer_8cpp_source_l00174}{174}} of file \mbox{\hyperlink{lexer_8cpp_source}{lexer.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00175\ \ \ \ \ std::string\ src\ =\ read\_file(filepath);}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ \mbox{\hyperlink{structLexer}{Lexer}}\ lexer;}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ TokenType>\ ht\ =\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}("{}},\ TokenType::Lparen\},}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{})"{}},\ TokenType::Rparen\},}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}["{}},\ TokenType::Lbracket\},}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}]"{}},\ TokenType::Rbracket\},}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\{"{}},\ TokenType::Lbrace\},}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\}"{}},\ TokenType::Rbrace\},}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\#"{}},\ TokenType::Hash\},}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}."{}},\ TokenType::Period\},}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{};"{}},\ TokenType::Semicolon\},}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{},"{}},\ TokenType::Comma\},}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}>"{}},\ TokenType::Greaterthan\},}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}<"{}},\ TokenType::Lessthan\},}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}="{}},\ TokenType::Equals\},}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\&"{}},\ TokenType::Ampersand\},}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}*"{}},\ TokenType::Asterisk\},}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}+"{}},\ TokenType::Plus\},}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}-\/"{}},\ TokenType::Minus\},}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}/"{}},\ TokenType::Forwardslash\},}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}|"{}},\ TokenType::Pipe\},}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\string^"{}},\ TokenType::Caret\},}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}?"{}},\ TokenType::Questionmark\},}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\ TokenType::Backwardslash\},}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}!"{}},\ TokenType::Bang\},}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}@"{}},\ TokenType::At\},}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\$"{}},\ TokenType::Dollarsign\},}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\%"{}},\ TokenType::Percent\},}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\`{}"{}},\ TokenType::Backtick\},}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\string~"{}},\ TokenType::Tilde\},}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}:"{}},\ TokenType::Colon\},}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\&\&"{}},\ TokenType::Double\_Ampersand\},}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}||"{}},\ TokenType::Double\_Pipe\},}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}>="{}},\ TokenType::Greaterthan\_Equals\},}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}<="{}},\ TokenType::Lessthan\_Equals\},}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}=="{}},\ TokenType::Double\_Equals\},}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}!="{}},\ TokenType::Bang\_Equals\},}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}+="{}},\ TokenType::Plus\_Equals\},}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}-\/="{}},\ TokenType::Minus\_Equals\},}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}*="{}},\ TokenType::Asterisk\_Equals\},}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}/="{}},\ TokenType::Forwardslash\_Equals\},}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}\%="{}},\ TokenType::Percent\_Equals\},}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}-\/>"{}},\ TokenType::RightArrow\},}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}.."{}},\ TokenType::Double\_Period\},}
+\DoxyCodeLine{00222\ \ \ \ \ \};}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ row\ =\ 0,\ col\ =\ 0,\ i\ =\ 0;}
+\DoxyCodeLine{00225\ \ \ \ \ \textcolor{keywordflow}{while}\ (src[i])\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ *lexeme\ =\ \&src[i];}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c\ =\ src[i];}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (c\ ==\ comment[0])\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ comment\_len;}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((comment\_len\ =\ try\_comment(lexeme,\ comment))\ >=\ comment.size())\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (src[i++]\ !=\ \textcolor{charliteral}{'\(\backslash\)n'});}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ col\ =\ 1;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ row\ +=\ 1;}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ lexeme\ =\ \&src[i];}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Newlines}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (c\ ==\ \textcolor{charliteral}{'\(\backslash\)r'}\ ||\ c\ ==\ \textcolor{charliteral}{'\(\backslash\)n'})\ \{}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ ++row;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ col\ =\ 1;}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ ++i;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Tabs/empty\ spaces}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (c\ ==\ \textcolor{charliteral}{'\(\backslash\)t'}\ ||\ c\ ==\ \textcolor{charliteral}{'\ '})\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ ++col;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ ++i;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ String\ literal}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (c\ ==\ \textcolor{charliteral}{'"{}'})\ \{}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ strlit\_len\ =\ consume\_until(lexeme+1,\ [](\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ c)\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ c\ ==\ \textcolor{charliteral}{'"{}'};}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ token\_alloc(lexer,\ lexeme+1,\ strlit\_len,\ TokenType::Strlit,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(tok);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ i\ +=\ 1\ +\ strlit\_len\ +\ 1;}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ col\ +=\ 1\ +\ strlit\_len\ +\ 1;}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Character\ literal}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (c\ ==\ \textcolor{charliteral}{'\(\backslash\)''})\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ lexeme\ +=\ 1;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ token\_alloc(lexer,\ lexeme,\ 1,\ TokenType::Charlit,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(tok);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ i\ +=\ 3;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ col\ +=\ 1;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Identifers/Keywords}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (isalpha(c)\ ||\ c\ ==\ \textcolor{charliteral}{'\_'})\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ ident\_len\ =\ consume\_until(lexeme,\ [](\textcolor{keywordtype}{char}\ c)\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ !(c\ ==\ \textcolor{charliteral}{'\_'}\ ||\ isalnum(c));}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00280\ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_ty\ =\ is\_type(lexeme,\ ident\_len,\ types);}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ is\_kw\ =\ is\_keyword(lexeme,\ ident\_len,\ keywords);}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (is\_ty)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tok\ =\ token\_alloc(lexer,\ lexeme,\ ident\_len,\ TokenType::Type,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (is\_kw)\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tok\ =\ token\_alloc(lexer,\ lexeme,\ ident\_len,\ TokenType::Keyword,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tok\ =\ token\_alloc(lexer,\ lexeme,\ ident\_len,\ TokenType::Ident,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(tok);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ i\ +=\ ident\_len;}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ col\ +=\ ident\_len;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Numbers}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (isdigit(c))\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ intlit\_len\ =\ consume\_until(lexeme,\ [](\textcolor{keywordtype}{char}\ c)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ !isdigit(c);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ token\_alloc(lexer,\ lexeme,\ intlit\_len,\ TokenType::Intlit,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(tok);}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ i\ +=\ intlit\_len;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ col\ +=\ intlit\_len;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Symbols}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ buf;}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ j\ =\ 0;\ src[i+j]\ \&\&\ issym(src[i+j]);\ ++j)\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (src[i+j]\ !=\ \textcolor{charliteral}{'\ '}\ \&\&\ src[i+j]\ !=\ \textcolor{charliteral}{'\(\backslash\)t'}\ \&\&\ src[i+j]\ !=\ \textcolor{charliteral}{'\(\backslash\)n'}\ \&\&\ src[i+j]\ !=\ \textcolor{charliteral}{'\(\backslash\)t'})\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buf.push\_back(src[i+j]);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!buf.empty())\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ ht.find(buf);}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ ht.end())\ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ token\_alloc(lexer,\ lexeme,\ buf.size(),\ (*it).second,\ row,\ col,\ filepath);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(tok);}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ col\ +=\ buf.size();}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i\ +=\ buf.size();}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buf.pop\_back();}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ \}}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a850f49ba18b9834dfc47c0549850b09b}{append}}(token\_alloc(lexer,\ \textcolor{keyword}{nullptr},\ 0,\ TokenType::Eof,\ row,\ col,\ filepath));}
+\DoxyCodeLine{00336\ \ \ \ \ \textcolor{keywordflow}{return}\ lexer;}
+\DoxyCodeLine{00337\ \}}
+
+\end{DoxyCode}

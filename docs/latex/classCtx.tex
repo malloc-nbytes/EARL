@@ -1,0 +1,517 @@
+\doxysection{Ctx Class Reference}
+\hypertarget{classCtx}{}\label{classCtx}\index{Ctx@{Ctx}}
+
+
+The global "{}\+Context"{} of the runtime interpreter.  
+
+
+
+
+{\ttfamily \#include $<$ctx.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classCtx_a0ae8a8b99b1d61238c77583b0f3ba058}{set\+\_\+current\+\_\+earlfunc}} (\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}func)
+\begin{DoxyCompactList}\small\item\em Sets the current running function during runtime. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a1f73915d14b7e543e13004c4319d10f0}{unset\+\_\+current\+\_\+earlfunc}} (void)
+\begin{DoxyCompactList}\small\item\em Unsets the current function during runtime. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_abb052dc96568180f195ce6ec2ab63210}{pop\+\_\+scope}} (void)
+\begin{DoxyCompactList}\small\item\em Pops the current scope from the context. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a174c8cc396cc35cb5463a36894a316f8}{push\+\_\+scope}} (void)
+\begin{DoxyCompactList}\small\item\em Pushes a new scope in the context. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a19cee02c57381972786441bb4407225c}{register\+\_\+earlvar}} (\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*}var)
+\begin{DoxyCompactList}\small\item\em Register an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} into the current scope. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a91322f1d8e9097ad10b1716c07981f72}{deregister\+\_\+earlvar}} (\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*}var)
+\begin{DoxyCompactList}\small\item\em Deregister an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} in the current scope. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a60f26f75caa875a444ef126bf2048daa}{register\+\_\+earlfunc}} (\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}func)
+\begin{DoxyCompactList}\small\item\em Add an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} to the current scope. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classCtx_a0accc05b766b6142b8161535f89a4c0a}{deregister\+\_\+earlfunc}} (\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}func)
+\begin{DoxyCompactList}\small\item\em Remove an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} to the current scope. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classCtx_a30023e708b7c97ab6fd6ec8a4794ef74}{is\+\_\+registered\+\_\+earlvar}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Check if an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} is registered. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classCtx_a6a7a463fb1200f3d6444d1e086658c93}{is\+\_\+registered\+\_\+earlfunc}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Check if an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} is registered. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classCtx_aa0dae52fb54e57415b4dcf9f77016f79}{get\+\_\+registered\+\_\+earlvar}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Retrive a registered {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} from the current scope. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classCtx_a251bf24b570dbdd3e712137e1351e5e7}{get\+\_\+registered\+\_\+earlfunc}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Retrive a registered {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} from the current scope. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classCtx_a0285c89c9642b82b6cb4521f816c54eb}{get\+\_\+registered\+\_\+global\+\_\+earlvar}} (const std\+::string \&id)
+\begin{DoxyCompactList}\small\item\em Get the {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} registered ONLY in the global scope. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\+\_\+cur\+\_\+earlfunc}} (void)
+\begin{DoxyCompactList}\small\item\em Get the {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} that we are currently in. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\+\_\+earlfunc}} (void)
+\begin{DoxyCompactList}\small\item\em Check if we are currently in an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The global "{}\+Context"{} of the runtime interpreter. 
+
+Provides a \textquotesingle{}Context\textquotesingle{} struct that holds all relevant information that a runtime needs. 
+
+Definition at line \mbox{\hyperlink{ctx_8hpp_source_l00044}{44}} of file \mbox{\hyperlink{ctx_8hpp_source}{ctx.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classCtx_a606aa525492ccfb16cbcc7e48fe05a5a}\index{Ctx@{Ctx}!Ctx@{Ctx}}
+\index{Ctx@{Ctx}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{Ctx()}{Ctx()}}
+{\footnotesize\ttfamily \label{classCtx_a606aa525492ccfb16cbcc7e48fe05a5a} 
+Ctx\+::\+Ctx (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00012}{12}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00013\ \ \ \ \ m\_cur\_earlfunc\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00014\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classCtx_a0accc05b766b6142b8161535f89a4c0a}\index{Ctx@{Ctx}!deregister\_earlfunc@{deregister\_earlfunc}}
+\index{deregister\_earlfunc@{deregister\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{deregister\_earlfunc()}{deregister\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a0accc05b766b6142b8161535f89a4c0a} 
+void Ctx\+::deregister\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}}]{func}{}\end{DoxyParamCaption})}
+
+
+
+Remove an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} to the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & The function to deregister \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00084}{84}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ (void)func;}
+\DoxyCodeLine{00086\ \ \ \ \ assert(\textcolor{keyword}{false}\ \&\&\ \textcolor{stringliteral}{"{}unimplemented"{}});}
+\DoxyCodeLine{00087\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a91322f1d8e9097ad10b1716c07981f72}\index{Ctx@{Ctx}!deregister\_earlvar@{deregister\_earlvar}}
+\index{deregister\_earlvar@{deregister\_earlvar}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{deregister\_earlvar()}{deregister\_earlvar()}}
+{\footnotesize\ttfamily \label{classCtx_a91322f1d8e9097ad10b1716c07981f72} 
+void Ctx\+::deregister\+\_\+earlvar (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*}}]{var}{}\end{DoxyParamCaption})}
+
+
+
+Deregister an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} in the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em var} & The variable to remove \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00067}{67}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00068\ \ \ \ \ std::string\ \&\textcolor{keywordtype}{id}\ =\ var-\/>m\_id-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}();}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ *func\ =\ \mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\_cur\_earlfunc}}();}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ func-\/>add\_local\_earlvar(var);}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ m\_global\_earlvars.\mbox{\hyperlink{structScope_a0b17f1c799a3ff6e9391bb37b7e37ef1}{add}}(\textcolor{keywordtype}{id},\ var);}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a40fe2778ce10256ffba97d92224d146f}\index{Ctx@{Ctx}!get\_cur\_earlfunc@{get\_cur\_earlfunc}}
+\index{get\_cur\_earlfunc@{get\_cur\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{get\_cur\_earlfunc()}{get\_cur\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a40fe2778ce10256ffba97d92224d146f} 
+\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*} Ctx\+::get\+\_\+cur\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Get the {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} that we are currently in. 
+
+\begin{DoxyAttention}{Attention}
+Can return {\ttfamily NULL} 
+\end{DoxyAttention}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00135}{135}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_cur\_earlfunc;}
+\DoxyCodeLine{00137\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a251bf24b570dbdd3e712137e1351e5e7}\index{Ctx@{Ctx}!get\_registered\_earlfunc@{get\_registered\_earlfunc}}
+\index{get\_registered\_earlfunc@{get\_registered\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{get\_registered\_earlfunc()}{get\_registered\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a251bf24b570dbdd3e712137e1351e5e7} 
+\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*} Ctx\+::get\+\_\+registered\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Retrive a registered {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} from the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The identifier of the {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} to get \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00118}{118}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ **func\ =\ m\_global\_earlfuncs.\mbox{\hyperlink{structScope_ab9b8656d72dff49e108c7e3a88f2b8ba}{get}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordflow}{if}\ (!*func)\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{ErrType::Fatal}},\ \textcolor{stringliteral}{"{}function\ \`{}\%s`\ is\ not\ in\ scope"{}},\ \textcolor{keywordtype}{id}.c\_str());}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{return}\ *func;}
+\DoxyCodeLine{00124\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_aa0dae52fb54e57415b4dcf9f77016f79}\index{Ctx@{Ctx}!get\_registered\_earlvar@{get\_registered\_earlvar}}
+\index{get\_registered\_earlvar@{get\_registered\_earlvar}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{get\_registered\_earlvar()}{get\_registered\_earlvar()}}
+{\footnotesize\ttfamily \label{classCtx_aa0dae52fb54e57415b4dcf9f77016f79} 
+\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*} Ctx\+::get\+\_\+registered\+\_\+earlvar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Retrive a registered {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} from the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The identifier of the {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} to get \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00100}{100}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ **var\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ *func\ =\ \mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\_cur\_earlfunc}}();}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ var\ =\ func-\/>m\_local\_scope.back().get(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ var\ =\ m\_global\_earlvars.\mbox{\hyperlink{structScope_ab9b8656d72dff49e108c7e3a88f2b8ba}{get}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordflow}{if}\ (!var\ ||\ !*var)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{ErrType::Fatal}},\ \textcolor{stringliteral}{"{}variable\ \`{}\%s`\ is\ not\ in\ scope"{}},\ \textcolor{keywordtype}{id}.c\_str());}
+\DoxyCodeLine{00113\ \ \ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordflow}{return}\ *var;}
+\DoxyCodeLine{00116\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a0285c89c9642b82b6cb4521f816c54eb}\index{Ctx@{Ctx}!get\_registered\_global\_earlvar@{get\_registered\_global\_earlvar}}
+\index{get\_registered\_global\_earlvar@{get\_registered\_global\_earlvar}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{get\_registered\_global\_earlvar()}{get\_registered\_global\_earlvar()}}
+{\footnotesize\ttfamily \label{classCtx_a0285c89c9642b82b6cb4521f816c54eb} 
+\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*} Ctx\+::get\+\_\+registered\+\_\+global\+\_\+earlvar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Get the {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} registered ONLY in the global scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The identifier of the {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} to get \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00126}{126}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00127\ \ \ \ \ assert(!\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}()\ ||\ \mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\_cur\_earlfunc}}()-\/>context\_size()\ ==\ 1);}
+\DoxyCodeLine{00128\ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ **var\ =\ m\_global\_earlvars.\mbox{\hyperlink{structScope_ab9b8656d72dff49e108c7e3a88f2b8ba}{get}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{if}\ (!*var)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa882384ec38ce8d9582b57e70861730e4}{ErrType::Fatal}},\ \textcolor{stringliteral}{"{}variable\ \`{}\%s`\ is\ not\ in\ global\ scope"{}},\ \textcolor{keywordtype}{id}.c\_str());}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordflow}{return}\ *var;}
+\DoxyCodeLine{00133\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}\index{Ctx@{Ctx}!in\_earlfunc@{in\_earlfunc}}
+\index{in\_earlfunc@{in\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{in\_earlfunc()}{in\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8} 
+bool Ctx\+::in\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Check if we are currently in an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} 
+
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00139}{139}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_cur\_earlfunc\ !=\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00141\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a6a7a463fb1200f3d6444d1e086658c93}\index{Ctx@{Ctx}!is\_registered\_earlfunc@{is\_registered\_earlfunc}}
+\index{is\_registered\_earlfunc@{is\_registered\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{is\_registered\_earlfunc()}{is\_registered\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a6a7a463fb1200f3d6444d1e086658c93} 
+bool Ctx\+::is\+\_\+registered\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Check if an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} is registered. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The identifier of the {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00096}{96}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_global\_earlfuncs.\mbox{\hyperlink{structScope_a5da9038d5cbfce1e356ac17b4e1a787a}{contains}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00098\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a30023e708b7c97ab6fd6ec8a4794ef74}\index{Ctx@{Ctx}!is\_registered\_earlvar@{is\_registered\_earlvar}}
+\index{is\_registered\_earlvar@{is\_registered\_earlvar}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{is\_registered\_earlvar()}{is\_registered\_earlvar()}}
+{\footnotesize\ttfamily \label{classCtx_a30023e708b7c97ab6fd6ec8a4794ef74} 
+bool Ctx\+::is\+\_\+registered\+\_\+earlvar (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{id}{}\end{DoxyParamCaption})}
+
+
+
+Check if an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} is registered. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & The identifier of the {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00089}{89}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_cur\_earlfunc-\/>\mbox{\hyperlink{structEarlFunc_1_1Func_a347ad335e5eec36a9146c42ee18e52b8}{contains\_local\_earlvar}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_global\_earlvars.\mbox{\hyperlink{structScope_a5da9038d5cbfce1e356ac17b4e1a787a}{contains}}(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00094\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_abb052dc96568180f195ce6ec2ab63210}\index{Ctx@{Ctx}!pop\_scope@{pop\_scope}}
+\index{pop\_scope@{pop\_scope}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{pop\_scope()}{pop\_scope()}}
+{\footnotesize\ttfamily \label{classCtx_abb052dc96568180f195ce6ec2ab63210} 
+void Ctx\+::pop\+\_\+scope (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Pops the current scope from the context. 
+
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00034}{34}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc-\/>\mbox{\hyperlink{structEarlFunc_1_1Func_a1ca504cc1e4282473b13e36f51e1080e}{pop\_scope}}();}
+\DoxyCodeLine{00037\ \ \ \ \ \}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ m\_global\_earlvars.\mbox{\hyperlink{structScope_a1f64daf27ff480add5bfbcce16d2366b}{pop}}();}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ m\_global\_earlfuncs.\mbox{\hyperlink{structScope_a1f64daf27ff480add5bfbcce16d2366b}{pop}}();}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a174c8cc396cc35cb5463a36894a316f8}\index{Ctx@{Ctx}!push\_scope@{push\_scope}}
+\index{push\_scope@{push\_scope}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{push\_scope()}{push\_scope()}}
+{\footnotesize\ttfamily \label{classCtx_a174c8cc396cc35cb5463a36894a316f8} 
+void Ctx\+::push\+\_\+scope (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Pushes a new scope in the context. 
+
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00044}{44}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc-\/>\mbox{\hyperlink{structEarlFunc_1_1Func_a30c9b28a31f1b79ef70fd21385438350}{push\_scope}}();}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ m\_global\_earlvars.\mbox{\hyperlink{structScope_aadaf0aed895657a7a0419e7b1dd8c76d}{push}}();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ m\_global\_earlfuncs.\mbox{\hyperlink{structScope_aadaf0aed895657a7a0419e7b1dd8c76d}{push}}();}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a60f26f75caa875a444ef126bf2048daa}\index{Ctx@{Ctx}!register\_earlfunc@{register\_earlfunc}}
+\index{register\_earlfunc@{register\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{register\_earlfunc()}{register\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a60f26f75caa875a444ef126bf2048daa} 
+void Ctx\+::register\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}}]{func}{}\end{DoxyParamCaption})}
+
+
+
+Add an {\ttfamily \doxylink{namespaceEarlFunc}{Earl\+Func}} to the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & The function to register \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00079}{79}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ std::string\ \&\textcolor{keywordtype}{id}\ =\ func-\/>\mbox{\hyperlink{structEarlFunc_1_1Func_a4d693c3ecd44dc1b9c8c8a67c511fcef}{m\_id}}-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}();}
+\DoxyCodeLine{00081\ \ \ \ \ m\_global\_earlfuncs.\mbox{\hyperlink{structScope_a0b17f1c799a3ff6e9391bb37b7e37ef1}{add}}(\textcolor{keywordtype}{id},\ func);}
+\DoxyCodeLine{00082\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a19cee02c57381972786441bb4407225c}\index{Ctx@{Ctx}!register\_earlvar@{register\_earlvar}}
+\index{register\_earlvar@{register\_earlvar}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{register\_earlvar()}{register\_earlvar()}}
+{\footnotesize\ttfamily \label{classCtx_a19cee02c57381972786441bb4407225c} 
+void Ctx\+::register\+\_\+earlvar (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structEarlVar}{Earl\+Var}} \texorpdfstring{$\ast$}{*}}]{var}{}\end{DoxyParamCaption})}
+
+
+
+Register an {\ttfamily \doxylink{structEarlVar}{Earl\+Var}} into the current scope. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em var} & The variable to add \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00055}{55}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00056\ \ \ \ \ std::string\ \&\textcolor{keywordtype}{id}\ =\ var-\/>m\_id-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}();}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ *func\ =\ \mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\_cur\_earlfunc}}();}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ func-\/>add\_local\_earlvar(var);}
+\DoxyCodeLine{00061\ \ \ \ \ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ m\_global\_earlvars.\mbox{\hyperlink{structScope_a0b17f1c799a3ff6e9391bb37b7e37ef1}{add}}(\textcolor{keywordtype}{id},\ var);}
+\DoxyCodeLine{00064\ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a0ae8a8b99b1d61238c77583b0f3ba058}\index{Ctx@{Ctx}!set\_current\_earlfunc@{set\_current\_earlfunc}}
+\index{set\_current\_earlfunc@{set\_current\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{set\_current\_earlfunc()}{set\_current\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a0ae8a8b99b1d61238c77583b0f3ba058} 
+void Ctx\+::set\+\_\+current\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structEarlFunc_1_1Func}{Earl\+Func\+::\+Func}} \texorpdfstring{$\ast$}{*}}]{func}{}\end{DoxyParamCaption})}
+
+
+
+Sets the current running function during runtime. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em func} & The function to set \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00016}{16}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}())\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc-\/>new\_scope\_context();}
+\DoxyCodeLine{00019\ \ \ \ \ \}}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc\ =\ func;}
+\DoxyCodeLine{00022\ \ \ \ \ \}}
+\DoxyCodeLine{00023\ \}}
+
+\end{DoxyCode}
+\Hypertarget{classCtx_a1f73915d14b7e543e13004c4319d10f0}\index{Ctx@{Ctx}!unset\_current\_earlfunc@{unset\_current\_earlfunc}}
+\index{unset\_current\_earlfunc@{unset\_current\_earlfunc}!Ctx@{Ctx}}
+\doxysubsubsection{\texorpdfstring{unset\_current\_earlfunc()}{unset\_current\_earlfunc()}}
+{\footnotesize\ttfamily \label{classCtx_a1f73915d14b7e543e13004c4319d10f0} 
+void Ctx\+::unset\+\_\+current\+\_\+earlfunc (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Unsets the current function during runtime. 
+
+
+
+Definition at line \mbox{\hyperlink{ctx_8cpp_source_l00025}{25}} of file \mbox{\hyperlink{ctx_8cpp_source}{ctx.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordflow}{if}\ (\mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}()\ \&\&\ m\_cur\_earlfunc-\/>\mbox{\hyperlink{structEarlFunc_1_1Func_ad7382d3e367e2e3053f70450e6d14b62}{context\_size}}()\ !=\ 1)\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc-\/>drop\_scope\_context();}
+\DoxyCodeLine{00028\ \ \ \ \ \}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ m\_cur\_earlfunc\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ctx_8hpp}{ctx.\+hpp}}\item 
+ctx.\+cpp\end{DoxyCompactItemize}

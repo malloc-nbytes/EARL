@@ -1,0 +1,395 @@
+\doxysection{parser.\+cpp}
+\hypertarget{parser_8cpp_source}{}\label{parser_8cpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00001}00001\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00003}00003\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00005}00005\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00006}00006\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00007}00007\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00008}00008\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00009}00009\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00010}00010\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00012}00012\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00013}00013\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00014}00014\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00015}00015\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00016}00016\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00017}00017\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00018}00018\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00019}00019\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00020}00020\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00021}00021\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00023}00023\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00024}00024\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00025}00025\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00026}00026\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00028}00028\ \textcolor{preprocessor}{\#include\ "{}utils.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00029}00029\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{err_8hpp}{err.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00030}00030\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ast_8hpp}{ast.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00031}00031\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{common_8hpp}{common.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00032}00032\ \textcolor{preprocessor}{\#include\ "{}parser.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00034}00034\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00036}\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{00036}}\ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer,\ TokenType\ expected)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00037}00037\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00038}00038\ \ \ \ \ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ expected)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{ErrType::Syntax}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00040}00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}parse\_expect:\ expected\ \%d,\ got\ \%s\ \`{}\%s`"{}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{int})expected,\ tok-\/>\mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}().c\_str(),\ tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00042}00042\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00043}00043\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00044}00044\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00046}\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{00046}}\ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer,\ std::string\ expected)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00047}00047\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00049}00049\ \ \ \ \ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ TokenType::Keyword)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00050}00050\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{ErrType::Syntax}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}parse\_expect\_keyword:\ \%s\ \`{}\%s`\ is\ not\ a\ keyword"{}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00052}00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}().c\_str(),\ tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00053}00053\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00054}00054\ \ \ \ \ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ !=\ expected)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00055}00055\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{ErrType::Syntax}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}parse\_expect\_keyword:\ expected\ keyword\ \`{}\%s`,\ got\ \%s\ \`{}\%s`"{}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00057}00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ expected.c\_str(),\ tok-\/>\mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}().c\_str(),\ tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00058}00058\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00060}00060\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00061}00061\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00063}\mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{00063}}\ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{Parser::parse\_expect\_type}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00064}00064\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00065}00065\ \ \ \ \ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ TokenType::Type)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{err_8hpp_a25c153b472aedde9d62e2f1ae3ce8f23}{ERR\_WARGS}}(\mbox{\hyperlink{err_8hpp_a8a44eabce4dccc3d22171ed3699b769aa92e9d6227d5534e7afc27a11179c808e}{ErrType::Syntax}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}parse\_expect\_type:\ \%s\ \`{}\%s`\ is\ not\ a\ keyword"{}},}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tok-\/>\mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}().c\_str(),\ tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}().c\_str());}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00069}00069\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00070}00070\ \ \ \ \ \textcolor{keywordflow}{return}\ tok;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00071}00071\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00073}00073\ \textcolor{keyword}{static}\ std::vector<std::unique\_ptr<Expr>>\ parse\_comma\_sep\_exprs(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00074}00074\ \ \ \ \ std::vector<std::unique\_ptr<Expr>>\ exprs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00076}00076\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Lparen);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00078}00078\ \ \ \ \ \textcolor{keywordflow}{while}\ (1)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Only\ needed\ if\ no\ arguments\ are\ provided.}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Rparen)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00083}00083\ \ \ \ \ \ \ \ \ exprs.push\_back(std::unique\_ptr<Expr>(\mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer)));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Comma)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Comma);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00086}00086\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00090}00090\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00092}00092\ \ \ \ \ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Rparen);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00093}00093\ \ \ \ \ \textcolor{keywordflow}{return}\ exprs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00094}00094\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00096}00096\ \textcolor{keyword}{static}\ std::optional<std::vector<std::unique\_ptr<Expr>>>\ try\_parse\_funccall(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00097}00097\ \ \ \ \ \textcolor{keywordflow}{if}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Lparen)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00098}00098\ \ \ \ \ \ \ \ \ std::vector<std::unique\_ptr<Expr>>\ exprs\ =\ parse\_comma\_sep\_exprs(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ exprs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00102}00102\ \ \ \ \ \textcolor{keywordflow}{return}\ \{\};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00103}00103\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00104}00104\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00105}00105\ \textcolor{keyword}{static}\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_primary\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00106}00106\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00108}00108\ \ \ \ \ \textcolor{keywordflow}{switch}\ (tok-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}())\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00109}00109\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Ident:\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ exprs\ =\ try\_parse\_funccall(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ are\ parsing\ a\ function\ call.}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exprs.has\_value())\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprFuncCall}{ExprFuncCall}}(std::make\_unique<Token>(*tok),\ std::move(exprs.value()));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00115}00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00116}00116\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprIdent}{ExprIdent}}(std::make\_unique<Token>(*tok));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00118}00118\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00119}00119\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Intlit:\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprIntLit}{ExprIntLit}}(std::make\_unique<Token>(*tok));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00121}00121\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00122}00122\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Strlit:\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprStrLit}{ExprStrLit}}(std::make\_unique<Token>(*tok));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00124}00124\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00125}00125\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00126}00126\ \ \ \ \ \ \ \ \ assert(\textcolor{keyword}{false}\ \&\&\ \textcolor{stringliteral}{"{}parse\_primary\_expr:\ invalid\ primary\ expression"{}});}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00127}00127\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00128}00128\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00130}00130\ \textcolor{keyword}{static}\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_multiplicative\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00131}00131\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *lhs\ =\ parse\_primary\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00132}00132\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00133}00133\ \ \ \ \ \textcolor{keywordflow}{while}\ (cur\ \&\&\ (cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Asterisk}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Forwardslash))\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00135}00135\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *op\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00136}00136\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *rhs\ =\ parse\_primary\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00137}00137\ \ \ \ \ \ \ \ \ lhs\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprBinary}{ExprBinary}}(std::unique\_ptr<Expr>(lhs),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*op),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(rhs));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00140}00140\ \ \ \ \ \ \ \ \ cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00141}00141\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00142}00142\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00143}00143\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00144}00144\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00145}00145\ \textcolor{keyword}{static}\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_additive\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00146}00146\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *lhs\ =\ parse\_multiplicative\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00147}00147\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00148}00148\ \ \ \ \ \textcolor{keywordflow}{while}\ (cur\ \&\&\ (cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Plus}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Minus))\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00150}00150\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *op\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00151}00151\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *rhs\ =\ parse\_multiplicative\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00152}00152\ \ \ \ \ \ \ \ \ lhs\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprBinary}{ExprBinary}}(std::unique\_ptr<Expr>(lhs),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*op),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(rhs));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00155}00155\ \ \ \ \ \ \ \ \ cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00156}00156\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00157}00157\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00158}00158\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00159}00159\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00160}00160\ \textcolor{keyword}{static}\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_equalitative\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00161}00161\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *lhs\ =\ parse\_additive\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00162}00162\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00163}00163\ \ \ \ \ \textcolor{keywordflow}{while}\ (cur\ \&\&\ (cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Double\_Equals}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Greaterthan\_Equals}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Greaterthan}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Lessthan\_Equals}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Lessthan}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Bang\_Equals))\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00169}00169\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *op\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00170}00170\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *rhs\ =\ parse\_additive\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00171}00171\ \ \ \ \ \ \ \ \ lhs\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprBinary}{ExprBinary}}(std::unique\_ptr<Expr>(lhs),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*op),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(rhs));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00174}00174\ \ \ \ \ \ \ \ \ cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00175}00175\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00176}00176\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00177}00177\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00178}00178\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00179}00179\ \textcolor{keyword}{static}\ \mbox{\hyperlink{structExpr}{Expr}}\ *parse\_logical\_expr(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00180}00180\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *lhs\ =\ parse\_equalitative\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00181}00181\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00182}00182\ \ \ \ \ \textcolor{keywordflow}{while}\ (cur\ \&\&\ (cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Double\_Ampersand}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cur-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Double\_Pipe))\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00184}00184\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *op\ =\ lexer.\mbox{\hyperlink{structLexer_aa0d9bfb6911e4dcec192d61d88b577f8}{next}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00185}00185\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *rhs\ =\ parse\_equalitative\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00186}00186\ \ \ \ \ \ \ \ \ lhs\ =\ \textcolor{keyword}{new}\ \mbox{\hyperlink{structExprBinary}{ExprBinary}}(std::unique\_ptr<Expr>(lhs),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*op),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(rhs));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00189}00189\ \ \ \ \ \ \ \ \ cur\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00190}00190\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00191}00191\ \ \ \ \ \textcolor{keywordflow}{return}\ lhs;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00192}00192\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00194}\mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{00194}}\ \mbox{\hyperlink{structExpr}{Expr}}\ *\mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00195}00195\ \ \ \ \ \textcolor{keywordflow}{return}\ parse\_logical\_expr(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00196}00196\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00197}00197\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00198}\mbox{\hyperlink{namespaceParser_ae248bd26d2df118bc36e64bc874e2304}{00198}}\ std::unique\_ptr<StmtMut>\ \mbox{\hyperlink{namespaceParser_ae248bd26d2df118bc36e64bc874e2304}{Parser::parse\_stmt\_mut}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00199}00199\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *left\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00200}00200\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Equals);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00201}00201\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *right\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00202}00202\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Semicolon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00203}00203\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtMut>(std::unique\_ptr<Expr>(left),\ std::unique\_ptr<Expr>(right));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00204}00204\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00205}00205\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00206}\mbox{\hyperlink{namespaceParser_a2861924d156eb5b94a82b56bdb526afb}{00206}}\ std::unique\_ptr<StmtIf>\ \mbox{\hyperlink{namespaceParser_a2861924d156eb5b94a82b56bdb526afb}{Parser::parse\_stmt\_if}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00207}00207\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_IF);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00208}00208\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00209}00209\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00210}00210\ \ \ \ \ std::unique\_ptr<StmtBlock>\ block\ =\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{Parser::parse\_stmt\_block}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00211}00211\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00212}00212\ \ \ \ \ \textcolor{comment}{//\ Handle\ the\ \`{}else\ if`\ or\ \`{}else`\ blocks\ if\ applicable}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00213}00213\ \ \ \ \ std::optional<std::unique\_ptr<StmtBlock>>\ else\_\ =\ \{\};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00214}00214\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok1\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00215}00215\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok2\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}(1);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00216}00216\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00217}00217\ \ \ \ \ \textcolor{keywordtype}{bool}\ tok1\_else\ =\ tok1-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Keyword\ \&\&\ tok1-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_ELSE;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00218}00218\ \ \ \ \ \textcolor{keywordtype}{bool}\ tok2\_if\ =\ tok2-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Keyword\ \&\&\ tok2-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_IF;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00219}00219\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00220}00220\ \ \ \ \ \textcolor{keywordflow}{if}\ (tok1\_else\ \&\&\ tok2\_if)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00221}00221\ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a706a671d555d1cc8a6329ef83508fab8}{discard}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00222}00222\ \ \ \ \ \ \ \ \ std::vector<std::unique\_ptr<Stmt>>\ tmp;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00223}00223\ \ \ \ \ \ \ \ \ std::unique\_ptr<StmtIf>\ nested\_if\ =\ \mbox{\hyperlink{namespaceParser_a2861924d156eb5b94a82b56bdb526afb}{parse\_stmt\_if}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00224}00224\ \ \ \ \ \ \ \ \ tmp.push\_back(std::move(nested\_if));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00225}00225\ \ \ \ \ \ \ \ \ else\_\ =\ std::make\_unique<StmtBlock>(std::move(tmp));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00226}00226\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00227}00227\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok1\_else)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00228}00228\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_ELSE);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00229}00229\ \ \ \ \ \ \ \ \ else\_\ =\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{parse\_stmt\_block}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00230}00230\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00231}00231\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00232}00232\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtIf>(std::unique\_ptr<Expr>(expr),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(block),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(else\_));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00235}00235\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00236}00236\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00237}\mbox{\hyperlink{namespaceParser_af3f54c424309804738d5741952b0d623}{00237}}\ std::unique\_ptr<StmtLet>\ \mbox{\hyperlink{namespaceParser_af3f54c424309804738d5741952b0d623}{Parser::parse\_stmt\_let}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00238}00238\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{parse\_expect\_keyword}}(lexer,\ \mbox{\hyperlink{common_8hpp_a24bf0e825be794bd0509448f1b5e5e09}{COMMON\_EARLKW\_LET}});}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00239}00239\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\textcolor{keywordtype}{id}\ =\ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Ident);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00240}00240\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Colon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00241}00241\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *ty\ =\ \mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{parse\_expect\_type}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00242}00242\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Equals);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00243}00243\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00244}00244\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Semicolon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00245}00245\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00246}00246\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtLet>(std::make\_unique<Token>(*\textcolor{keywordtype}{id}),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*ty),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(expr));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00249}00249\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00250}00250\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00251}\mbox{\hyperlink{namespaceParser_a216c3c911ab0cdcb244f7206a24bf6ab}{00251}}\ std::unique\_ptr<StmtExpr>\ \mbox{\hyperlink{namespaceParser_a216c3c911ab0cdcb244f7206a24bf6ab}{Parser::parse\_stmt\_expr}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00252}00252\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00253}00253\ \ \ \ \ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{parse\_expect}}(lexer,\ TokenType::Semicolon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00254}00254\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtExpr>(std::unique\_ptr<Expr>(expr));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00255}00255\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00256}00256\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00257}\mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{00257}}\ std::unique\_ptr<StmtBlock>\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{Parser::parse\_stmt\_block}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00258}00258\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Lbrace);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00259}00259\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00260}00260\ \ \ \ \ std::vector<std::unique\_ptr<Stmt>>\ stmts;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00262}00262\ \ \ \ \ \textcolor{keywordflow}{while}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ TokenType::Rbrace)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00263}00263\ \ \ \ \ \ \ \ \ std::unique\_ptr<Stmt>\ stmt\ =\ \mbox{\hyperlink{namespaceParser_a52269d174d13fa46ebb309581cd26354}{Parser::parse\_stmt}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00264}00264\ \ \ \ \ \ \ \ \ stmts.push\_back(std::move(stmt));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00265}00265\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00266}00266\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00267}00267\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Rbrace);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00268}00268\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00269}00269\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtBlock>(std::move(stmts));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00270}00270\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00271}00271\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00272}00272\ std::vector<std::pair<std::unique\_ptr<Token>,\ std::unique\_ptr<Token>>>}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00273}00273\ parse\_stmt\_def\_args(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00274}00274\ \ \ \ \ std::vector<std::pair<std::unique\_ptr<Token>,\ std::unique\_ptr<Token>>>\ args;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00275}00275\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00276}00276\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Lparen);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00277}00277\ \ \ \ \ \textcolor{keywordflow}{while}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ TokenType::Rparen)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00278}00278\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\textcolor{keywordtype}{id}\ =\ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Ident);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00279}00279\ \ \ \ \ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Colon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00280}00280\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *type\ =\ \mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{Parser::parse\_expect\_type}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00281}00281\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ pair\ =\ std::make\_pair(std::make\_unique<Token>(*\textcolor{keywordtype}{id}),\ std::make\_unique<Token>(*type));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00282}00282\ \ \ \ \ \ \ \ \ args.push\_back(std::move(pair));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00283}00283\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00284}00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Comma)}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ lexer.\mbox{\hyperlink{structLexer_a706a671d555d1cc8a6329ef83508fab8}{discard}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00286}00286\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00287}00287\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Rparen);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00288}00288\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00289}00289\ \ \ \ \ \textcolor{keywordflow}{return}\ args;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00290}00290\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00291}00291\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00292}\mbox{\hyperlink{namespaceParser_a702b487ca07b25be721bcda9189d477c}{00292}}\ std::unique\_ptr<StmtDef>\ \mbox{\hyperlink{namespaceParser_a702b487ca07b25be721bcda9189d477c}{Parser::parse\_stmt\_def}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00293}00293\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_DEF);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00294}00294\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00295}00295\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\textcolor{keywordtype}{id}\ =\ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Ident);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00296}00296\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00297}00297\ \ \ \ \ std::vector<std::pair<std::unique\_ptr<Token>,\ std::unique\_ptr<Token>>>\ args}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00298}00298\ \ \ \ \ \ \ \ \ =\ parse\_stmt\_def\_args(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00299}00299\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00300}00300\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::RightArrow);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00301}00301\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00302}00302\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *rettype\ =\ \mbox{\hyperlink{namespaceParser_a8def027da447c4fcc9a51895ab4da066}{parse\_expect\_type}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00303}00303\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00304}00304\ \ \ \ \ std::unique\_ptr<StmtBlock>\ block\ =\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{Parser::parse\_stmt\_block}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00305}00305\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtDef>(std::make\_unique<Token>(*\textcolor{keywordtype}{id}),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(args),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::make\_unique<Token>(*rettype),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(block));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00309}00309\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00310}00310\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00311}00311\ std::unique\_ptr<StmtReturn>\ parse\_stmt\_return(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00312}00312\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_RETURN);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00313}00313\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00314}00314\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Semicolon);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00315}00315\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtReturn>(std::unique\_ptr<Expr>(expr));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00316}00316\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00317}00317\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00318}00318\ std::unique\_ptr<StmtWhile>\ parse\_stmt\_while(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00319}00319\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_WHILE);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00320}00320\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00321}00321\ \ \ \ \ std::unique\_ptr<StmtBlock>\ block\ =\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{Parser::parse\_stmt\_block}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00322}00322\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtWhile>(std::unique\_ptr<Expr>(expr),\ std::move(block));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00323}00323\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00324}00324\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00325}00325\ std::unique\_ptr<StmtFor>\ parse\_stmt\_for(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00326}00326\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_FOR);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00327}00327\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00328}00328\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *enumerator\ =\ \mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Ident);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00329}00329\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00330}00330\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a7285a6be4d103b3a30771222e5ed59ae}{Parser::parse\_expect\_keyword}}(lexer,\ COMMON\_EARLKW\_IN);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00331}00331\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00332}00332\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *start\_expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00333}00333\ \ \ \ \ (void)\mbox{\hyperlink{namespaceParser_a4cdc5c6bdd17399df7ad11d1ef9e77a8}{Parser::parse\_expect}}(lexer,\ TokenType::Double\_Period);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00334}00334\ \ \ \ \ \mbox{\hyperlink{structExpr}{Expr}}\ *end\_expr\ =\ \mbox{\hyperlink{namespaceParser_ada66787a9558b28ad03b52c7381d2e75}{Parser::parse\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00335}00335\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00336}00336\ \ \ \ \ std::unique\_ptr<StmtBlock>\ block\ =\ \mbox{\hyperlink{namespaceParser_a6c1ef539de1de0e6b5db8444bb64f755}{Parser::parse\_stmt\_block}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00337}00337\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00338}00338\ \ \ \ \ \textcolor{keywordflow}{return}\ std::make\_unique<StmtFor>(std::make\_unique<Token>(*enumerator),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00339}00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(start\_expr),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00340}00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Expr>(end\_expr),}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00341}00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::move(block));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00342}00342\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00343}00343\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00344}\mbox{\hyperlink{namespaceParser_a52269d174d13fa46ebb309581cd26354}{00344}}\ std::unique\_ptr<Stmt>\ \mbox{\hyperlink{namespaceParser_a52269d174d13fa46ebb309581cd26354}{Parser::parse\_stmt}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00345}00345\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *tok\ =\ lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}();}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00346}00346\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00347}00347\ \ \ \ \ \textcolor{keywordflow}{switch}\ (tok-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}())\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00348}00348\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Keyword:\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ \mbox{\hyperlink{common_8hpp_a24bf0e825be794bd0509448f1b5e5e09}{COMMON\_EARLKW\_LET}})\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceParser_af3f54c424309804738d5741952b0d623}{parse\_stmt\_let}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00351}00351\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00352}00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_DEF)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceParser_a702b487ca07b25be721bcda9189d477c}{parse\_stmt\_def}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00354}00354\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00355}00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_IF)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceParser_a2861924d156eb5b94a82b56bdb526afb}{parse\_stmt\_if}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00357}00357\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00358}00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_RETURN)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parse\_stmt\_return(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00360}00360\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00361}00361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_WHILE)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parse\_stmt\_while(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00363}00363\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00364}00364\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tok-\/>\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}()\ ==\ COMMON\_EARLKW\_FOR)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parse\_stmt\_for(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00366}00366\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00367}00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ assert(\textcolor{keyword}{false}\ \&\&\ \textcolor{stringliteral}{"{}parse\_stmt:\ invalid\ keyword"{}});}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00369}00369\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00370}00370\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00371}00371\ \ \ \ \ \textcolor{keywordflow}{case}\ TokenType::Ident:\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00372}00372\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}(1)-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ ==\ TokenType::Lparen)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceParser_a216c3c911ab0cdcb244f7206a24bf6ab}{parse\_stmt\_expr}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00374}00374\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00375}00375\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{namespaceParser_ae248bd26d2df118bc36e64bc874e2304}{parse\_stmt\_mut}}(lexer);}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00376}00376\ \ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00377}00377\ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00378}00378\ \ \ \ \ \ \ \ \ assert(\textcolor{keyword}{false}\ \&\&\ \textcolor{stringliteral}{"{}parse\_stmt:\ invalid\ statement"{}});}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00379}00379\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00380}00380\ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00381}00381\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00382}\mbox{\hyperlink{namespaceParser_ab1d41dd88fa329f2bf7ff2dc309e0e98}{00382}}\ \mbox{\hyperlink{structProgram}{Program}}\ \mbox{\hyperlink{namespaceParser_ab1d41dd88fa329f2bf7ff2dc309e0e98}{Parser::parse\_program}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00383}00383\ \ \ \ \ std::vector<std::unique\_ptr<Stmt>>\ stmts;}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00384}00384\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00385}00385\ \ \ \ \ \textcolor{keywordflow}{while}\ (lexer.\mbox{\hyperlink{structLexer_ae517c2c5bec6261c616e552c747b6222}{peek}}()-\/>\mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}()\ !=\ TokenType::Eof)\ \{}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00386}00386\ \ \ \ \ \ \ \ \ stmts.push\_back(\mbox{\hyperlink{namespaceParser_a52269d174d13fa46ebb309581cd26354}{parse\_stmt}}(lexer));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00387}00387\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00388}00388\ }
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00389}00389\ \ \ \ \ \textcolor{keywordflow}{return}\ \mbox{\hyperlink{structProgram}{Program}}(std::move(stmts));}
+\DoxyCodeLine{\Hypertarget{parser_8cpp_source_l00390}00390\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,154 @@
+\doxysection{Expr\+Func\+Call Struct Reference}
+\hypertarget{structExprFuncCall}{}\label{structExprFuncCall}\index{ExprFuncCall@{ExprFuncCall}}
+
+
+The Expression Function Call class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Expr\+Func\+Call\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{structExprFuncCall}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structExprFuncCall_aa20f1883a9a5db2465151fe3cd159778}{Expr\+Func\+Call}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ id, std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ $>$ params)
+\item 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} \mbox{\hyperlink{structExprFuncCall_adcaba04d9a4c21ecc685c49d854ca77b}{get\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em The get expression type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{ast_8hpp_a273af28a8fa3b5c59f246360a30b4dd2}{Expr\+Term\+Type}} \mbox{\hyperlink{structExprFuncCall_a4fef1779dee6362cab42c3d8c449b8ec}{get\+\_\+term\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em Get the Expression Term type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structExprFuncCall_acce7a83d3408873da81ddeee268059ca}{m\+\_\+id}}
+\begin{DoxyCompactList}\small\item\em The token of the function call. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ $>$ \mbox{\hyperlink{structExprFuncCall_a281b5ed8e281c8628e779861875555ea}{m\+\_\+params}}
+\begin{DoxyCompactList}\small\item\em A vector of expressions that is passed to the function call. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Expression Function Call class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00116}{116}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structExprFuncCall_aa20f1883a9a5db2465151fe3cd159778}\index{ExprFuncCall@{ExprFuncCall}!ExprFuncCall@{ExprFuncCall}}
+\index{ExprFuncCall@{ExprFuncCall}!ExprFuncCall@{ExprFuncCall}}
+\doxysubsubsection{\texorpdfstring{ExprFuncCall()}{ExprFuncCall()}}
+{\footnotesize\ttfamily \label{structExprFuncCall_aa20f1883a9a5db2465151fe3cd159778} 
+Expr\+Func\+Call\+::\+Expr\+Func\+Call (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{id}{, }\item[{std\+::vector$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ $>$}]{params}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00074}{74}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00076\ \ \ \ \ :\ \mbox{\hyperlink{structExprFuncCall_acce7a83d3408873da81ddeee268059ca}{m\_id}}(std::move(\textcolor{keywordtype}{id})),\ \mbox{\hyperlink{structExprFuncCall_a281b5ed8e281c8628e779861875555ea}{m\_params}}(std::move(params))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structExprFuncCall_a4fef1779dee6362cab42c3d8c449b8ec}\index{ExprFuncCall@{ExprFuncCall}!get\_term\_type@{get\_term\_type}}
+\index{get\_term\_type@{get\_term\_type}!ExprFuncCall@{ExprFuncCall}}
+\doxysubsubsection{\texorpdfstring{get\_term\_type()}{get\_term\_type()}}
+{\footnotesize\ttfamily \label{structExprFuncCall_a4fef1779dee6362cab42c3d8c449b8ec} 
+\mbox{\hyperlink{ast_8hpp_a273af28a8fa3b5c59f246360a30b4dd2}{Expr\+Term\+Type}} Expr\+Func\+Call\+::get\+\_\+term\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get the Expression Term type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the expression term 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structExprTerm_a98c099de07ddbb4c35e9331d043d8c71}{Expr\+Term}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00082}{82}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordflow}{return}\ ExprTermType::Func\_Call;}
+\DoxyCodeLine{00084\ \}}
+
+\end{DoxyCode}
+\Hypertarget{structExprFuncCall_adcaba04d9a4c21ecc685c49d854ca77b}\index{ExprFuncCall@{ExprFuncCall}!get\_type@{get\_type}}
+\index{get\_type@{get\_type}!ExprFuncCall@{ExprFuncCall}}
+\doxysubsubsection{\texorpdfstring{get\_type()}{get\_type()}}
+{\footnotesize\ttfamily \label{structExprFuncCall_adcaba04d9a4c21ecc685c49d854ca77b} 
+\mbox{\hyperlink{ast_8hpp_a3e262b377dc15baba6e58438868decb7}{Expr\+Type}} Expr\+Func\+Call\+::get\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+The get expression type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the expression 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structExpr_a4d5071f1f191b0140ebe2afc0fb168ea}{Expr}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00078}{78}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordflow}{return}\ ExprType::Term;}
+\DoxyCodeLine{00080\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structExprFuncCall_acce7a83d3408873da81ddeee268059ca}\index{ExprFuncCall@{ExprFuncCall}!m\_id@{m\_id}}
+\index{m\_id@{m\_id}!ExprFuncCall@{ExprFuncCall}}
+\doxysubsubsection{\texorpdfstring{m\_id}{m\_id}}
+{\footnotesize\ttfamily \label{structExprFuncCall_acce7a83d3408873da81ddeee268059ca} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Expr\+Func\+Call\+::m\+\_\+id}
+
+
+
+The token of the function call. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00118}{118}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structExprFuncCall_a281b5ed8e281c8628e779861875555ea}\index{ExprFuncCall@{ExprFuncCall}!m\_params@{m\_params}}
+\index{m\_params@{m\_params}!ExprFuncCall@{ExprFuncCall}}
+\doxysubsubsection{\texorpdfstring{m\_params}{m\_params}}
+{\footnotesize\ttfamily \label{structExprFuncCall_a281b5ed8e281c8628e779861875555ea} 
+std\+::vector$<$std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ $>$ Expr\+Func\+Call\+::m\+\_\+params}
+
+
+
+A vector of expressions that is passed to the function call. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00122}{122}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

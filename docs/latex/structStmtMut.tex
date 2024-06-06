@@ -1,0 +1,124 @@
+\doxysection{Stmt\+Mut Struct Reference}
+\hypertarget{structStmtMut}{}\label{structStmtMut}\index{StmtMut@{StmtMut}}
+
+
+The Statement Mutation class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Stmt\+Mut\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structStmtMut}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structStmtMut_aa73b78541981a9f5e2d5416c334053d5}{Stmt\+Mut}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ left, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ right)
+\item 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} \mbox{\hyperlink{structStmtMut_ac4e2d411e778230734b19c1bede9b5d0}{stmt\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em Get the statement type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ \mbox{\hyperlink{structStmtMut_aa6c570372f9005e32ea2ced640482f33}{m\+\_\+left}}
+\begin{DoxyCompactList}\small\item\em The expression of the left hand side. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$ \mbox{\hyperlink{structStmtMut_a904c07f5ae6cbe191f0e95faeea3bad1}{m\+\_\+right}}
+\begin{DoxyCompactList}\small\item\em The expression of the right hand side. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Statement Mutation class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00202}{202}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structStmtMut_aa73b78541981a9f5e2d5416c334053d5}\index{StmtMut@{StmtMut}!StmtMut@{StmtMut}}
+\index{StmtMut@{StmtMut}!StmtMut@{StmtMut}}
+\doxysubsubsection{\texorpdfstring{StmtMut()}{StmtMut()}}
+{\footnotesize\ttfamily \label{structStmtMut_aa73b78541981a9f5e2d5416c334053d5} 
+Stmt\+Mut\+::\+Stmt\+Mut (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$}]{left}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structExpr}{Expr}} $>$}]{right}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00114}{114}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00116\ \ \ \ \ :\ \mbox{\hyperlink{structStmtMut_aa6c570372f9005e32ea2ced640482f33}{m\_left}}(std::move(left)),\ \mbox{\hyperlink{structStmtMut_a904c07f5ae6cbe191f0e95faeea3bad1}{m\_right}}(std::move(right))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structStmtMut_ac4e2d411e778230734b19c1bede9b5d0}\index{StmtMut@{StmtMut}!stmt\_type@{stmt\_type}}
+\index{stmt\_type@{stmt\_type}!StmtMut@{StmtMut}}
+\doxysubsubsection{\texorpdfstring{stmt\_type()}{stmt\_type()}}
+{\footnotesize\ttfamily \label{structStmtMut_ac4e2d411e778230734b19c1bede9b5d0} 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} Stmt\+Mut\+::stmt\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get the statement type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the statement 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structStmt_ab3880f167b3942ee29e7692e1a599b2d}{Stmt}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00118}{118}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{return}\ StmtType::Mut;}
+\DoxyCodeLine{00120\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structStmtMut_aa6c570372f9005e32ea2ced640482f33}\index{StmtMut@{StmtMut}!m\_left@{m\_left}}
+\index{m\_left@{m\_left}!StmtMut@{StmtMut}}
+\doxysubsubsection{\texorpdfstring{m\_left}{m\_left}}
+{\footnotesize\ttfamily \label{structStmtMut_aa6c570372f9005e32ea2ced640482f33} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ Stmt\+Mut\+::m\+\_\+left}
+
+
+
+The expression of the left hand side. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00204}{204}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtMut_a904c07f5ae6cbe191f0e95faeea3bad1}\index{StmtMut@{StmtMut}!m\_right@{m\_right}}
+\index{m\_right@{m\_right}!StmtMut@{StmtMut}}
+\doxysubsubsection{\texorpdfstring{m\_right}{m\_right}}
+{\footnotesize\ttfamily \label{structStmtMut_a904c07f5ae6cbe191f0e95faeea3bad1} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structExpr}{Expr}}$>$ Stmt\+Mut\+::m\+\_\+right}
+
+
+
+The expression of the right hand side. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00207}{207}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

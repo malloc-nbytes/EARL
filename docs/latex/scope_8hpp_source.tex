@@ -1,0 +1,88 @@
+\doxysection{scope.\+hpp}
+\hypertarget{scope_8hpp_source}{}\label{scope_8hpp_source}\index{include/scope.hpp@{include/scope.hpp}}
+\mbox{\hyperlink{scope_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00003}00003\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00007}00007\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00008}00008\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00009}00009\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00010}00010\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00011}00011\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00012}00012\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00014}00014\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00015}00015\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00017}00017\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00018}00018\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00019}00019\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00020}00020\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00021}00021\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00022}00022\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00023}00023\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00025}00025\ \textcolor{preprocessor}{\#ifndef\ SCOPE\_H}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#define\ SCOPE\_H}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00028}00028\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00029}00029\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00030}00030\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00032}\mbox{\hyperlink{structScope}{00032}}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{typename}\ K,\ \textcolor{keyword}{typename}\ V>\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structScope}{Scope}}\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00036}\mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{00036}}\ \ \ \ \ std::vector<std::unordered\_map<K,\ V>>\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00038}00038\ \ \ \ \ \mbox{\hyperlink{structScope}{Scope}}()\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00039}00039\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.emplace\_back();}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00040}00040\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00041}00041\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00042}00042\ \ \ \ \ \mbox{\hyperlink{structScope}{\string~Scope}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00045}\mbox{\hyperlink{structScope_aadaf0aed895657a7a0419e7b1dd8c76d}{00045}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structScope_aadaf0aed895657a7a0419e7b1dd8c76d}{push}}(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00046}00046\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.emplace\_back();}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00047}00047\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00048}00048\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00050}\mbox{\hyperlink{structScope_a1f64daf27ff480add5bfbcce16d2366b}{00050}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structScope_a1f64daf27ff480add5bfbcce16d2366b}{pop}}(\textcolor{keywordtype}{void})\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00051}00051\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.pop\_back();}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00052}00052\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00058}\mbox{\hyperlink{structScope_a5da9038d5cbfce1e356ac17b4e1a787a}{00058}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structScope_a5da9038d5cbfce1e356ac17b4e1a787a}{contains}}(\textcolor{keyword}{const}\ K\ key)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00059}00059\ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ \&map\ :\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}})\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map.find(key)\ !=\ map.end())}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00062}00062\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00063}00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00064}00064\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00069}\mbox{\hyperlink{structScope_a0b17f1c799a3ff6e9391bb37b7e37ef1}{00069}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structScope_a0b17f1c799a3ff6e9391bb37b7e37ef1}{add}}(K\ key,\ V\ value)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.back().emplace(key,\ value);}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00076}\mbox{\hyperlink{structScope_ab9b8656d72dff49e108c7e3a88f2b8ba}{00076}}\ \ \ \ \ \textcolor{keyword}{inline}\ V\ *\mbox{\hyperlink{structScope_ab9b8656d72dff49e108c7e3a88f2b8ba}{get}}(K\ key)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.rbegin();\ it\ !=\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.rend();\ ++it)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \&map\ =\ *it;}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map.find(key)\ !=\ map.end())\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&map.at(key);}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00084}00084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00088}\mbox{\hyperlink{structScope_a43ff54692a2da11441fbbb3c90bda9a9}{00088}}\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structScope_a43ff54692a2da11441fbbb3c90bda9a9}{remove}}(K\ key)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.rbegin();\ it\ !=\ \mbox{\hyperlink{structScope_a281c5025323cf842fdd1ba329957d94b}{m\_map}}.rend();\ ++it)\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ \&map\ =\ *it;}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mapIt\ =\ map.find(key);}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mapIt\ !=\ map.end())\ \{}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ map.erase(mapIt);}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00096}00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00097}00097\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00098}00098\ \};}
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{scope_8hpp_source_l00100}00100\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ SCOPE\_H}}
+
+\end{DoxyCode}

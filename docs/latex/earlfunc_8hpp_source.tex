@@ -1,0 +1,80 @@
+\doxysection{earlfunc.\+hpp}
+\hypertarget{earlfunc_8hpp_source}{}\label{earlfunc_8hpp_source}\index{include/earlfunc.hpp@{include/earlfunc.hpp}}
+\mbox{\hyperlink{earlfunc_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00003}00003\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00007}00007\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00008}00008\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00009}00009\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00010}00010\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00011}00011\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00012}00012\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00014}00014\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00015}00015\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00017}00017\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00018}00018\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00019}00019\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00020}00020\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00021}00021\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00022}00022\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00023}00023\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00025}00025\ \textcolor{preprocessor}{\#ifndef\ EARLFUNC\_H}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00026}00026\ \textcolor{preprocessor}{\#define\ EARLFUNC\_H}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00028}00028\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00029}00029\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00030}00030\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{ast_8hpp}{ast.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#include\ "{}earlty.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00032}00032\ \textcolor{preprocessor}{\#include\ "{}earlvar.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00033}00033\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{token_8hpp}{token.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00034}00034\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scope_8hpp}{scope.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00037}\mbox{\hyperlink{namespaceEarlFunc}{00037}}\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceEarlFunc}{EarlFunc}}\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00038}00038\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00040}\mbox{\hyperlink{structEarlFunc_1_1Func}{00040}}\ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structEarlFunc_1_1Func}{Func}}\ \{}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00042}\mbox{\hyperlink{structEarlFunc_1_1Func_a4d693c3ecd44dc1b9c8c8a67c511fcef}{00042}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{structEarlFunc_1_1Func_a4d693c3ecd44dc1b9c8c8a67c511fcef}{m\_id}};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00043}00043\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00045}\mbox{\hyperlink{structEarlFunc_1_1Func_a4d292f8d697e3923e450e20fd0a6baa1}{00045}}\ \ \ \ \ \ \ \ \ EarlTy::Type\ \mbox{\hyperlink{structEarlFunc_1_1Func_a4d292f8d697e3923e450e20fd0a6baa1}{m\_rettype}};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00048}\mbox{\hyperlink{structEarlFunc_1_1Func_a3e4aca091547823ef130075ca75f8e08}{00048}}\ \ \ \ \ \ \ \ \ std::vector<EarlVar\ *>\ \mbox{\hyperlink{structEarlFunc_1_1Func_a3e4aca091547823ef130075ca75f8e08}{m\_args}};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00051}\mbox{\hyperlink{structEarlFunc_1_1Func_abb86dbd4577d7a63313e480067765746}{00051}}\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structStmtBlock}{StmtBlock}}\ *\mbox{\hyperlink{structEarlFunc_1_1Func_abb86dbd4577d7a63313e480067765746}{m\_block}};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00052}00052\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00054}\mbox{\hyperlink{structEarlFunc_1_1Func_a0deaad11a96dbee3f356704c93be9b2c}{00054}}\ \ \ \ \ \ \ \ \ std::vector<Scope<std::string,\ EarlVar\ *>>\ \mbox{\hyperlink{structEarlFunc_1_1Func_a0deaad11a96dbee3f356704c93be9b2c}{m\_local\_scope}};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00056}00056\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{Func}}(\mbox{\hyperlink{structToken}{Token}}\ *\textcolor{keywordtype}{id},\ EarlTy::Type\ rettype,\ std::vector<EarlVar\ *>\ args,\ \mbox{\hyperlink{structStmtBlock}{StmtBlock}}\ *block);}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00058}00058\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{\string~Func}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00059}00059\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00061}00061\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a30c9b28a31f1b79ef70fd21385438350}{push\_scope}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00062}00062\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a1ca504cc1e4282473b13e36f51e1080e}{pop\_scope}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ @brief\ Create\ a\ new\ context\ in\ the\ local\ scope}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ new\_scope\_context(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ @brief\ Remove\ a\ scope\ context}}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ drop\_scope\_context(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a347ad335e5eec36a9146c42ee18e52b8}{contains\_local\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00075}00075\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00078}00078\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ *\mbox{\hyperlink{structEarlFunc_1_1Func_ab03a2ace73266a1bd5096707b15f5bae}{get\_local\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00079}00079\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structEarlFunc_1_1Func_a7f4dfa6dcea3701c3bd326b60f0605c8}{add\_local\_earlvar}}(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var);}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structEarlFunc_1_1Func_ad7382d3e367e2e3053f70450e6d14b62}{context\_size}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ remove\_local\_earlvar(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var);}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00088}00088\ \ \ \ \ \};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00089}00089\ \};}
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{earlfunc_8hpp_source_l00091}00091\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ EARLFUNC\_H}}
+
+\end{DoxyCode}

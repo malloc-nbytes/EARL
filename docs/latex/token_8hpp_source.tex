@@ -1,0 +1,126 @@
+\doxysection{token.\+hpp}
+\hypertarget{token_8hpp_source}{}\label{token_8hpp_source}\index{include/token.hpp@{include/token.hpp}}
+\mbox{\hyperlink{token_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00003}00003\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00007}00007\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00008}00008\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00009}00009\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00010}00010\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00011}00011\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00012}00012\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00014}00014\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00015}00015\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00017}00017\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00018}00018\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00019}00019\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00020}00020\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00021}00021\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00022}00022\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00023}00023\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00030}00030\ \textcolor{preprocessor}{\#ifndef\ TOKEN\_H}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#define\ TOKEN\_H}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00032}00032\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00033}00033\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00034}00034\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00035}00035\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00036}00036\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{lexer_8hpp}{lexer.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00038}00038\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structLexer}{Lexer}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00040}00040\ \textcolor{keyword}{enum\ class}\ TokenType\ \{}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00041}00041\ \ \ \ \ Lparen,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00042}00042\ \ \ \ \ Rparen,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00043}00043\ \ \ \ \ Lbracket,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00044}00044\ \ \ \ \ Rbracket,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00045}00045\ \ \ \ \ Lbrace,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00046}00046\ \ \ \ \ Rbrace,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00047}00047\ \ \ \ \ Hash,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00048}00048\ \ \ \ \ Period,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00049}00049\ \ \ \ \ Semicolon,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00050}00050\ \ \ \ \ Comma,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00051}00051\ \ \ \ \ Greaterthan,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00052}00052\ \ \ \ \ Lessthan,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00053}00053\ \ \ \ \ Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00054}00054\ \ \ \ \ Ampersand,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00055}00055\ \ \ \ \ Asterisk,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00056}00056\ \ \ \ \ Plus,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00057}00057\ \ \ \ \ Minus,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00058}00058\ \ \ \ \ Forwardslash,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00059}00059\ \ \ \ \ Pipe,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00060}00060\ \ \ \ \ Caret,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00061}00061\ \ \ \ \ Questionmark,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00062}00062\ \ \ \ \ Backwardslash,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00063}00063\ \ \ \ \ Bang,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00064}00064\ \ \ \ \ At,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00065}00065\ \ \ \ \ Dollarsign,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00066}00066\ \ \ \ \ Percent,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00067}00067\ \ \ \ \ Backtick,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00068}00068\ \ \ \ \ Tilde,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00069}00069\ \ \ \ \ Colon,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00070}00070\ \ \ \ \ Sym\_Len,\ \textcolor{comment}{//\ DO\ NOT\ USE!\ Used\ for\ the\ length\ of\ symbols.\ (deprecated)}}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00071}00071\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00072}00072\ \ \ \ \ Double\_Ampersand,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00073}00073\ \ \ \ \ Double\_Pipe,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00074}00074\ \ \ \ \ Greaterthan\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00075}00075\ \ \ \ \ Lessthan\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00076}00076\ \ \ \ \ Double\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00077}00077\ \ \ \ \ Bang\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00078}00078\ \ \ \ \ Plus\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00079}00079\ \ \ \ \ Minus\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00080}00080\ \ \ \ \ Asterisk\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00081}00081\ \ \ \ \ Forwardslash\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00082}00082\ \ \ \ \ Percent\_Equals,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00083}00083\ \ \ \ \ RightArrow,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00084}00084\ \ \ \ \ Double\_Period,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00086}00086\ \ \ \ \ Eof,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00087}00087\ \ \ \ \ Intlit,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00088}00088\ \ \ \ \ Strlit,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00089}00089\ \ \ \ \ Charlit,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00090}00090\ \ \ \ \ Ident,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00091}00091\ \ \ \ \ Keyword,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00092}00092\ \ \ \ \ Type,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00093}00093\ \ \ \ \ Total\_Len}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00094}00094\ \};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00097}\mbox{\hyperlink{structToken}{00097}}\ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structToken}{Token}}\ \{}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00099}\mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{00099}}\ \ \ \ \ std::string\ \mbox{\hyperlink{structToken_ad463eda850868a54f47cf911e0e32d85}{m\_lexeme}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00100}00100\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00102}\mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{00102}}\ \ \ \ \ TokenType\ \mbox{\hyperlink{structToken_aaf051623929edd968dd7f991442833fc}{m\_type}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00105}\mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{00105}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structToken_a9c73b86b9088aeb52fe9293558055e22}{m\_row}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00108}\mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{00108}}\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{structToken_a91f36e18f52bbf770905eac5b85f0fdf}{m\_col}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00111}\mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{00111}}\ \ \ \ \ std::string\ \mbox{\hyperlink{structToken_a81902822c4e463eb2cf950a6fb331932}{m\_fp}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00112}00112\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00114}\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{00114}}\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{structToken_ac1247f5b5cbfb8a93d1a89abb314c740}{m\_next}};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00115}00115\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00116}00116\ \ \ \ \ \mbox{\hyperlink{structToken}{Token}}(\textcolor{keywordtype}{char}\ *start,\ \textcolor{keywordtype}{size\_t}\ len,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ TokenType\ \mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}},}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ row,\ \textcolor{keywordtype}{size\_t}\ col,\ std::string\ \&fp);}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00119}00119\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00121}00121\ \ \ \ \ std::string\ \&\mbox{\hyperlink{structToken_a5bb2331dcfe4c63adae9f2da20545c03}{lexeme}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00122}00122\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00124}00124\ \ \ \ \ TokenType\ \mbox{\hyperlink{structToken_adc598cf8fa0a7ad230bdacfd10d58d6c}{type}}(\textcolor{keywordtype}{void})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00127}00127\ \ \ \ \ std::string\ \mbox{\hyperlink{structToken_ac4ac09b34b6599146d1005ee7d6acdec}{to\_str}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00128}00128\ \};}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00129}00129\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00138}00138\ \mbox{\hyperlink{structToken}{Token}}\ *\mbox{\hyperlink{token_8hpp_a9729a0ece25bd909f01e80185e3ea801}{token\_alloc}}(\mbox{\hyperlink{structLexer}{Lexer}}\ \&lexer,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ *start,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ len,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TokenType\ type,}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ row,\ \textcolor{keywordtype}{size\_t}\ col,\ std::string\ fp);}
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00143}00143\ }
+\DoxyCodeLine{\Hypertarget{token_8hpp_source_l00144}00144\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ TOKEN\_H}}
+
+\end{DoxyCode}

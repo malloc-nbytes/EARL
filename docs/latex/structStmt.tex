@@ -1,0 +1,54 @@
+\doxysection{Stmt Struct Reference}
+\hypertarget{structStmt}{}\label{structStmt}\index{Stmt@{Stmt}}
+
+
+The base Statement class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Stmt\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=10.000000cm]{structStmt}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} \mbox{\hyperlink{structStmt_ab3880f167b3942ee29e7692e1a599b2d}{stmt\+\_\+type}} () const =0
+\begin{DoxyCompactList}\small\item\em Get the statement type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The base Statement class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00145}{145}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structStmt_ab3880f167b3942ee29e7692e1a599b2d}\index{Stmt@{Stmt}!stmt\_type@{stmt\_type}}
+\index{stmt\_type@{stmt\_type}!Stmt@{Stmt}}
+\doxysubsubsection{\texorpdfstring{stmt\_type()}{stmt\_type()}}
+{\footnotesize\ttfamily \label{structStmt_ab3880f167b3942ee29e7692e1a599b2d} 
+virtual \mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} Stmt\+::stmt\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Get the statement type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the statement 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{structStmtBlock_a73ef344e821320020dd2779c3c6d5800}{Stmt\+Block}}, \mbox{\hyperlink{structStmtDef_a81e945c0d2feeb91fd7ad8b18e571edd}{Stmt\+Def}}, \mbox{\hyperlink{structStmtExpr_a6dffa4feb0f89a01af39f6b99df39936}{Stmt\+Expr}}, \mbox{\hyperlink{structStmtFor_a7ac19f666616ba0678ade18ca7664dc4}{Stmt\+For}}, \mbox{\hyperlink{structStmtIf_a0e0192e44179dc7772fb4be230304b99}{Stmt\+If}}, \mbox{\hyperlink{structStmtLet_afd37232773ebc57025f251623876eaf9}{Stmt\+Let}}, \mbox{\hyperlink{structStmtMut_ac4e2d411e778230734b19c1bede9b5d0}{Stmt\+Mut}}, \mbox{\hyperlink{structStmtReturn_a10f5661f2d5ba73fde62e84c1472c174}{Stmt\+Return}}, and \mbox{\hyperlink{structStmtWhile_a58bf104acb0fd22a47323e1b732284ae}{Stmt\+While}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\end{DoxyCompactItemize}

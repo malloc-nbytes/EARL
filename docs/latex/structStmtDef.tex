@@ -1,0 +1,158 @@
+\doxysection{Stmt\+Def Struct Reference}
+\hypertarget{structStmtDef}{}\label{structStmtDef}\index{StmtDef@{StmtDef}}
+
+
+The Statement Definition Class.  
+
+
+
+
+{\ttfamily \#include $<$ast.\+hpp$>$}
+
+Inheritance diagram for Stmt\+Def\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{structStmtDef}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structStmtDef_a5809b3954bcc61a093cbcd169d4204b0}{Stmt\+Def}} (std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ id, std\+::vector$<$ std\+::pair$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ $>$ $>$ args, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ rettype, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmtBlock}{Stmt\+Block}} $>$ block)
+\item 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} \mbox{\hyperlink{structStmtDef_a81e945c0d2feeb91fd7ad8b18e571edd}{stmt\+\_\+type}} () const override
+\begin{DoxyCompactList}\small\item\em Get the statement type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structStmtDef_a1d95157f70bdd99c24ca83092bc966dd}{m\+\_\+id}}
+\begin{DoxyCompactList}\small\item\em The token of the function name. \end{DoxyCompactList}\item 
+std\+::vector$<$ std\+::pair$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ $>$ $>$ \mbox{\hyperlink{structStmtDef_aa8f4afbffda533a620c2849f1f33c476}{m\+\_\+args}}
+\begin{DoxyCompactList}\small\item\em A vector of {\ttfamily \texorpdfstring{$<$}{<}Identifer, Type\texorpdfstring{$>$}{>}} of the statement definition. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ \mbox{\hyperlink{structStmtDef_a521aab4212d833e7f5df8bdd07e2c91f}{m\+\_\+rettype}}
+\begin{DoxyCompactList}\small\item\em The token of the return type. \end{DoxyCompactList}\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmtBlock}{Stmt\+Block}} $>$ \mbox{\hyperlink{structStmtDef_ae3676e39c36e87590a021169fd289ad6}{m\+\_\+block}}
+\begin{DoxyCompactList}\small\item\em The Statement Block of the Statement Definition. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The Statement Definition Class. 
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00154}{154}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{structStmtDef_a5809b3954bcc61a093cbcd169d4204b0}\index{StmtDef@{StmtDef}!StmtDef@{StmtDef}}
+\index{StmtDef@{StmtDef}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{StmtDef()}{StmtDef()}}
+{\footnotesize\ttfamily \label{structStmtDef_a5809b3954bcc61a093cbcd169d4204b0} 
+Stmt\+Def\+::\+Stmt\+Def (\begin{DoxyParamCaption}\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{id}{, }\item[{std\+::vector$<$ std\+::pair$<$ std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$, std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$ $>$ $>$}]{args}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structToken}{Token}} $>$}]{rettype}{, }\item[{std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{structStmtBlock}{Stmt\+Block}} $>$}]{block}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00088}{88}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :}
+\DoxyCodeLine{00092\ \ \ \ \ \mbox{\hyperlink{structStmtDef_a1d95157f70bdd99c24ca83092bc966dd}{m\_id}}(std::move(\textcolor{keywordtype}{id})),\ \mbox{\hyperlink{structStmtDef_aa8f4afbffda533a620c2849f1f33c476}{m\_args}}(std::move(args)),}
+\DoxyCodeLine{00093\ \ \ \ \ \mbox{\hyperlink{structStmtDef_a521aab4212d833e7f5df8bdd07e2c91f}{m\_rettype}}(std::move(rettype)),\ \mbox{\hyperlink{structStmtDef_ae3676e39c36e87590a021169fd289ad6}{m\_block}}(std::move(block))\ \{\}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structStmtDef_a81e945c0d2feeb91fd7ad8b18e571edd}\index{StmtDef@{StmtDef}!stmt\_type@{stmt\_type}}
+\index{stmt\_type@{stmt\_type}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{stmt\_type()}{stmt\_type()}}
+{\footnotesize\ttfamily \label{structStmtDef_a81e945c0d2feeb91fd7ad8b18e571edd} 
+\mbox{\hyperlink{ast_8hpp_a9c1bfaf3c0a28d12826afa7bd1b0a3db}{Stmt\+Type}} Stmt\+Def\+::stmt\+\_\+type (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Get the statement type. 
+
+\begin{DoxyReturn}{Returns}
+The type of the statement 
+\end{DoxyReturn}
+
+
+Implements \mbox{\hyperlink{structStmt_ab3880f167b3942ee29e7692e1a599b2d}{Stmt}}.
+
+
+
+Definition at line \mbox{\hyperlink{ast_8cpp_source_l00095}{95}} of file \mbox{\hyperlink{ast_8cpp_source}{ast.\+cpp}}.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ StmtType::Def;}
+\DoxyCodeLine{00097\ \}}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structStmtDef_aa8f4afbffda533a620c2849f1f33c476}\index{StmtDef@{StmtDef}!m\_args@{m\_args}}
+\index{m\_args@{m\_args}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{m\_args}{m\_args}}
+{\footnotesize\ttfamily \label{structStmtDef_aa8f4afbffda533a620c2849f1f33c476} 
+std\+::vector$<$std\+::pair$<$std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$, std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ $>$ $>$ Stmt\+Def\+::m\+\_\+args}
+
+
+
+A vector of {\ttfamily \texorpdfstring{$<$}{<}Identifer, Type\texorpdfstring{$>$}{>}} of the statement definition. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00160}{160}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtDef_ae3676e39c36e87590a021169fd289ad6}\index{StmtDef@{StmtDef}!m\_block@{m\_block}}
+\index{m\_block@{m\_block}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{m\_block}{m\_block}}
+{\footnotesize\ttfamily \label{structStmtDef_ae3676e39c36e87590a021169fd289ad6} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structStmtBlock}{Stmt\+Block}}$>$ Stmt\+Def\+::m\+\_\+block}
+
+
+
+The Statement Block of the Statement Definition. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00166}{166}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtDef_a1d95157f70bdd99c24ca83092bc966dd}\index{StmtDef@{StmtDef}!m\_id@{m\_id}}
+\index{m\_id@{m\_id}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{m\_id}{m\_id}}
+{\footnotesize\ttfamily \label{structStmtDef_a1d95157f70bdd99c24ca83092bc966dd} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Stmt\+Def\+::m\+\_\+id}
+
+
+
+The token of the function name. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00157}{157}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+\Hypertarget{structStmtDef_a521aab4212d833e7f5df8bdd07e2c91f}\index{StmtDef@{StmtDef}!m\_rettype@{m\_rettype}}
+\index{m\_rettype@{m\_rettype}!StmtDef@{StmtDef}}
+\doxysubsubsection{\texorpdfstring{m\_rettype}{m\_rettype}}
+{\footnotesize\ttfamily \label{structStmtDef_a521aab4212d833e7f5df8bdd07e2c91f} 
+std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{structToken}{Token}}$>$ Stmt\+Def\+::m\+\_\+rettype}
+
+
+
+The token of the return type. 
+
+
+
+Definition at line \mbox{\hyperlink{ast_8hpp_source_l00163}{163}} of file \mbox{\hyperlink{ast_8hpp_source}{ast.\+hpp}}.
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{ast_8hpp}{ast.\+hpp}}\item 
+ast.\+cpp\end{DoxyCompactItemize}

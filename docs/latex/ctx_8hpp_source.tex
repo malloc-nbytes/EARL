@@ -1,0 +1,83 @@
+\doxysection{ctx.\+hpp}
+\hypertarget{ctx_8hpp_source}{}\label{ctx_8hpp_source}\index{include/ctx.hpp@{include/ctx.hpp}}
+\mbox{\hyperlink{ctx_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00001}00001\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00003}00003\ \textcolor{comment}{//\ MIT\ License}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00005}00005\ \textcolor{comment}{//\ Copyright\ (c)\ 2023\ malloc-\/nbytes}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00007}00007\ \textcolor{comment}{//\ Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00008}00008\ \textcolor{comment}{//\ of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00009}00009\ \textcolor{comment}{//\ in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00010}00010\ \textcolor{comment}{//\ to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00011}00011\ \textcolor{comment}{//\ copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00012}00012\ \textcolor{comment}{//\ furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00014}00014\ \textcolor{comment}{//\ The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00015}00015\ \textcolor{comment}{//\ copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00016}00016\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00017}00017\ \textcolor{comment}{//\ THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00018}00018\ \textcolor{comment}{//\ IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00019}00019\ \textcolor{comment}{//\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00020}00020\ \textcolor{comment}{//\ AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00021}00021\ \textcolor{comment}{//\ LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00022}00022\ \textcolor{comment}{//\ OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00023}00023\ \textcolor{comment}{//\ SOFTWARE.}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00031}00031\ \textcolor{preprocessor}{\#ifndef\ CTX\_H}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00032}00032\ \textcolor{preprocessor}{\#define\ CTX\_H}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00033}00033\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00034}00034\ \textcolor{preprocessor}{\#include\ <any>}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00035}00035\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00036}00036\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00038}00038\ \textcolor{preprocessor}{\#include\ "{}earlty.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00039}00039\ \textcolor{preprocessor}{\#include\ "{}earlvar.hpp"{}}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00040}00040\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{earlfunc_8hpp}{earlfunc.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00041}00041\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{scope_8hpp}{scope.hpp}}"{}}}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00042}00042\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00044}\mbox{\hyperlink{classCtx}{00044}}\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classCtx}{Ctx}}\ \{}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00045}00045\ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *m\_cur\_earlfunc;}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00046}00046\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00047}00047\ \ \ \ \ \mbox{\hyperlink{structScope}{Scope<std::string,\ EarlVar\ *>}}\ m\_global\_earlvars;}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00048}00048\ \ \ \ \ \mbox{\hyperlink{structScope}{Scope<std::string,\ EarlFunc::Func\ *>}}\ m\_global\_earlfuncs;}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00050}00050\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00051}00051\ \ \ \ \ \mbox{\hyperlink{classCtx}{Ctx}}();}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00052}00052\ \ \ \ \ \mbox{\hyperlink{classCtx}{\string~Ctx}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00053}00053\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00056}00056\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a0ae8a8b99b1d61238c77583b0f3ba058}{set\_current\_earlfunc}}(\mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *func);}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00059}00059\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a1f73915d14b7e543e13004c4319d10f0}{unset\_current\_earlfunc}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00060}00060\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00062}00062\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_abb052dc96568180f195ce6ec2ab63210}{pop\_scope}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00065}00065\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a174c8cc396cc35cb5463a36894a316f8}{push\_scope}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00069}00069\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a19cee02c57381972786441bb4407225c}{register\_earlvar}}(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var);}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00070}00070\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00073}00073\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a91322f1d8e9097ad10b1716c07981f72}{deregister\_earlvar}}(\mbox{\hyperlink{structEarlVar}{EarlVar}}\ *var);}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00074}00074\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00077}00077\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a60f26f75caa875a444ef126bf2048daa}{register\_earlfunc}}(\mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *func);}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00081}00081\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{classCtx_a0accc05b766b6142b8161535f89a4c0a}{deregister\_earlfunc}}(\mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *func);}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00082}00082\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00085}00085\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classCtx_a30023e708b7c97ab6fd6ec8a4794ef74}{is\_registered\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00086}00086\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00089}00089\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classCtx_a6a7a463fb1200f3d6444d1e086658c93}{is\_registered\_earlfunc}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00093}00093\ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ *\mbox{\hyperlink{classCtx_aa0dae52fb54e57415b4dcf9f77016f79}{get\_registered\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00097}00097\ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *\mbox{\hyperlink{classCtx_a251bf24b570dbdd3e712137e1351e5e7}{get\_registered\_earlfunc}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00098}00098\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00101}00101\ \ \ \ \ \mbox{\hyperlink{structEarlVar}{EarlVar}}\ *\mbox{\hyperlink{classCtx_a0285c89c9642b82b6cb4521f816c54eb}{get\_registered\_global\_earlvar}}(\textcolor{keyword}{const}\ std::string\ \&\textcolor{keywordtype}{id});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00102}00102\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00105}00105\ \ \ \ \ \mbox{\hyperlink{structEarlFunc_1_1Func}{EarlFunc::Func}}\ *\mbox{\hyperlink{classCtx_a40fe2778ce10256ffba97d92224d146f}{get\_cur\_earlfunc}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00106}00106\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00108}00108\ \ \ \ \ \textcolor{keywordtype}{bool}\ \mbox{\hyperlink{classCtx_af46ce94059a8b1bbf5c78e1644d9e9a8}{in\_earlfunc}}(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00109}00109\ \};}
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00110}00110\ }
+\DoxyCodeLine{\Hypertarget{ctx_8hpp_source_l00111}00111\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ CTX\_H}}
+
+\end{DoxyCode}
