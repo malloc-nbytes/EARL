@@ -11,3 +11,4 @@ def collatz(n: int) -> void {
 }
 
 collatz(69420);
+

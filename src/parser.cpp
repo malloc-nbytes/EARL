@@ -117,11 +117,13 @@ static Expr *parse_primary_expr(Lexer &lexer) {
 
         return new ExprIdent(std::make_unique<Token>(*tok));
     } break;
-    case TokenType::Intlit: {
-        return new ExprIntLit(std::make_unique<Token>(*tok));
-    } break;
-    case TokenType::Strlit: {
-        return new ExprStrLit(std::make_unique<Token>(*tok));
+    case TokenType::Intlit: return new ExprIntLit(std::make_unique<Token>(*tok));
+    case TokenType::Strlit: return new ExprStrLit(std::make_unique<Token>(*tok));
+    case TokenType::Lparen: {
+        // No need to consume Lparen, as `tok` is `lexer.next()`
+        Expr *expr = Parser::parse_expr(lexer);
+        (void)Parser::parse_expect(lexer, TokenType::Rparen);
+        return expr;
     } break;
     default:
         assert(false && "parse_primary_expr: invalid primary expression");
