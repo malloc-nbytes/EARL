@@ -2,13 +2,21 @@ main
 *.swp
 test-suite
 .vscode
+*.tex
 *.pdf
-*aux
-*idx
-*ilg
-*ind
-*log
-*toc
+*.sty
+*.html
+*.css
+*.eps
+*.aux
+*.idx
+*.ilg
+*.ind
+*.log
+*.toc
+*.png
+*.svg
+*.js
 
 # Configure
 *.m4
