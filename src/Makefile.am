@@ -16,6 +16,7 @@ test:
 
 docs:
 	doxygen Doxyfile
+	-$(MAKE) -C ../docs/latex/
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
 
 all: docs main test

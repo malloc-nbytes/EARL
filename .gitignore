@@ -3,6 +3,12 @@ main
 test-suite
 .vscode
 *.pdf
+*aux
+*idx
+*ilg
+*ind
+*log
+*toc
 
 # Configure
 *.m4
