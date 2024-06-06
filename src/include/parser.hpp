@@ -63,6 +63,14 @@ namespace Parser {
     /// @param lexer The lexer with the linked list of tokens
     std::unique_ptr<StmtMut> parse_stmt_mut(Lexer &lexer);
 
+    /// @brief Parses a statement of type block
+    /// @param lexer The lexer with the linked list of tokens
+    std::unique_ptr<StmtBlock> parse_stmt_block(Lexer &lexer);
+
+    /// @brief Parses a statement of type if.
+    /// @param lexer The lexer with the linked list of tokens
+    std::unique_ptr<StmtIf> parse_stmt_if(Lexer &lexer);
+
     /// @brief Parses an expression. It uses
     /// a recursive descent parser to determine precidence.
     /// @note The precidence is as follows:

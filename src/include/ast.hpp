@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <memory>
+#include <optional>
 
 #include "token.hpp"
 
@@ -41,6 +42,7 @@ enum class StmtType {
     Block,
     Mut,
     Stmt_Expr,
+    If,
     Stmt_Return,
 };
 
@@ -212,6 +214,24 @@ struct StmtExpr : public Stmt {
     std::unique_ptr<Expr> m_expr;
 
     StmtExpr(std::unique_ptr<Expr> expr);
+    StmtType stmt_type() const override;
+};
+
+/// @brief The Statement If class
+struct StmtIf : public Stmt {
+    /// @brief The expression that the `if` evaluates
+    std::unique_ptr<Expr> m_expr;
+
+    /// @brief The `block` of the statement.
+    std::unique_ptr<StmtBlock> m_block;
+
+    /// @brief The `block` of the else part of the `if` statement.
+    std::optional<std::unique_ptr<StmtBlock>> m_else;
+
+    StmtIf(std::unique_ptr<Expr> expr,
+           std::unique_ptr<StmtBlock> block,
+           std::optional<std::unique_ptr<StmtBlock>> else_);
+
     StmtType stmt_type() const override;
 };
 

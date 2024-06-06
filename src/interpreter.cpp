@@ -27,6 +27,7 @@
 #include <iostream>
 #include <memory>
 
+#include "utils.hpp"
 #include "interpreter.hpp"
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -129,26 +130,37 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     switch (expr->m_op->type()) {
     case TokenType::Plus: {
         return Interpreter::ExprEvalResult {
-            std::any_cast<int>(lhs.m_expr_value) + std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            std::any_cast<int>(lhs.value()) + std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Minus: {
         return Interpreter::ExprEvalResult {
-            std::any_cast<int>(lhs.m_expr_value) - std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            std::any_cast<int>(lhs.value()) - std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Asterisk: {
         return Interpreter::ExprEvalResult {
-            std::any_cast<int>(lhs.m_expr_value) * std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            std::any_cast<int>(lhs.value()) * std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     case TokenType::Forwardslash: {
         return Interpreter::ExprEvalResult {
-            std::any_cast<int>(lhs.m_expr_value) / std::any_cast<int>(rhs.m_expr_value),
-            ExprTermType::Int_Literal
+            std::any_cast<int>(lhs.value()) / std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
+        };
+    } break;
+    case TokenType::Double_Equals: {
+        return Interpreter::ExprEvalResult {
+            std::any_cast<int>(lhs.value()) == std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
         };
     } break;
     default:
@@ -234,6 +246,20 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     return Interpreter::ExprEvalResult{};
 }
 
+Interpreter::ExprEvalResult eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
+    Interpreter::ExprEvalResult expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    Interpreter::ExprEvalResult result{};
+
+    if (std::any_cast<bool>(expr_result.value()) == true) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+    }
+    else if (stmt->m_else.has_value()) {
+        result = eval_stmt_block(stmt->m_else.value().get(), ctx);
+    }
+
+    return result;
+}
+
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -250,6 +276,9 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Stmt_Expr: {
         return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
+    } break;
+    case StmtType::If: {
+        return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");

@@ -125,6 +125,16 @@ StmtType StmtExpr::stmt_type() const {
     return StmtType::Stmt_Expr;
 }
 
+StmtIf::StmtIf(std::unique_ptr<Expr> expr,
+               std::unique_ptr<StmtBlock> block,
+               std::optional<std::unique_ptr<StmtBlock>> else_)
+    : m_expr(std::move(expr)), m_block(std::move(block)), m_else(std::move(else_)) {}
+
+StmtType StmtIf::stmt_type() const {
+    return StmtType::If;
+}
+
+
 StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 
 StmtType StmtReturn::stmt_type() const {
