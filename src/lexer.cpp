@@ -321,7 +321,7 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
             while (!buf.empty()) {
                 auto it = ht.find(buf);
                 if (it != ht.end()) {
-                    Token *tok = token_alloc(lexer, lexeme+buf.size()-1, buf.size(), (*it).second, row, col, filepath);
+                    Token *tok = token_alloc(lexer, lexeme, buf.size(), (*it).second, row, col, filepath);
                     lexer.append(tok);
                     col += buf.size();
                     i += buf.size();

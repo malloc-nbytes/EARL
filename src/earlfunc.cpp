@@ -53,3 +53,9 @@ void EarlFunc::Func::add_local_earlvar(EarlVar *var) {
 size_t EarlFunc::Func::context_size(void) {
     return m_local_scope.size();
 }
+
+void EarlFunc::Func::remove_local_earlvar(EarlVar *var) {
+    const std::string &id = var->m_id->lexeme();
+    m_local_scope.back().remove(id);
+    abort();
+}

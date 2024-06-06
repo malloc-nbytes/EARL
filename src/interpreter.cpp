@@ -303,20 +303,6 @@ Interpreter::ExprEvalResult eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
     return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
-Interpreter::ExprEvalResult eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
-    Interpreter::ExprEvalResult expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    Interpreter::ExprEvalResult result{};
-
-    while (std::any_cast<bool>(expr_result.value()) == true) {
-        result = eval_stmt_block(stmt->m_block.get(), ctx);
-        if (result.value().has_value())
-            break;
-        expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    }
-
-    return result;
-}
-
 Interpreter::ExprEvalResult eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     Interpreter::ExprEvalResult left = Interpreter::eval_expr(stmt->m_left.get(), ctx);
     Interpreter::ExprEvalResult right = Interpreter::eval_expr(stmt->m_right.get(), ctx);
@@ -337,8 +323,45 @@ Interpreter::ExprEvalResult eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     return Interpreter::ExprEvalResult{};
 }
 
+Interpreter::ExprEvalResult eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
+    Interpreter::ExprEvalResult expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    Interpreter::ExprEvalResult result{};
+
+    while (std::any_cast<bool>(expr_result.value()) == true) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+        if (result.value().has_value())
+            break;
+        expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    }
+
+    return result;
+}
+
 Interpreter::ExprEvalResult eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
-    assert(false);
+
+    Interpreter::ExprEvalResult result{};
+
+    Interpreter::ExprEvalResult start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx);
+    Interpreter::ExprEvalResult end_expr = Interpreter::eval_expr(stmt->m_end.get(), ctx);
+
+    EarlVar *enumerator = new EarlVar(stmt->m_enumerator.get(), EarlTy::Type::Int, false, std::any_cast<int>(start_expr.value()));
+    assert(!ctx.is_registered_earlvar(enumerator->m_id->lexeme()));
+    ctx.register_earlvar(enumerator);
+
+    while (std::any_cast<int>(enumerator->m_value) < std::any_cast<int>(end_expr.value())) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result.value().has_value())
+            break;
+
+        enumerator->m_value = std::any_cast<int>(enumerator->m_value)+1;
+    }
+
+    // Remove the enumerator as it is only a tmp variable.
+    ctx.deregister_earlvar(enumerator);
+    delete enumerator;
+
+    return result;
 }
 
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
