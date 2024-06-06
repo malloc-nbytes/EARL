@@ -29,13 +29,11 @@ Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, std::vector<In
         Interpreter::ExprEvalResult param = params[i];
 
         if (param.m_earl_type == EarlTy::Type::Int) {
-            std::cout << std::any_cast<int>(param.value()) <<
-                (i == expr->m_params.size()-1 ? "" : " ");
+            std::cout << std::any_cast<int>(param.value());
         }
 
         else if (param.m_earl_type == EarlTy::Type::Str) {
-            std::cout << std::any_cast<std::string>(param.value()) <<
-                (i == expr->m_params.size()-1 ? "" : " ");
+            std::cout << std::any_cast<std::string>(param.value());
         }
         else {
             ERR_WARGS(ErrType::Fatal, "no printing for earltype %d", static_cast<int>(param.m_earl_type));

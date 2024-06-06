@@ -24,6 +24,8 @@
 #define INTERPRETER_H
 
 #include <any>
+#include <variant>
+#include <tuple>
 
 #include "ctx.hpp"
 #include "earlty.hpp"
@@ -31,29 +33,43 @@
 
 namespace Interpreter {
 
-    // Struct that all expressions return.
-    // It contains information of the actual
-    // value of the expression as well as
-    // the type of expression that was evaluated.
+    namespace LiteralResult {
+        using Ident = EarlVar*;
+        using Literal = Token*;
+        using None = bool;
+
+        struct Result {
+            std::variant<Ident, Literal, None> m_value;
+        };
+
+    };
+
+    /// @brief Struct that all expressions return.
+    /// It contains information of the actual
+    /// value of the expression as well as
+    /// the type of expression that was evaluated.
     struct ExprEvalResult {
-        // The actual evaluated result.
-        // <int, float, std::string, ... etc.>
-        // or holds an ident of Token.
+        /// @brief The actual evaluated result.
+        /// <int, float, std::string, ... etc.>
         std::any m_expr_value;
 
-        // What kind of term did we encounter?
-        // Integer? Identifier? etc...
+        /// What kind of term did we encounter?
+        /// Integer? Identifier? etc...
         ExprTermType m_expr_term_type;
 
+        /// @brief The type that was returned as an EARL type
         EarlTy::Type m_earl_type;
 
-        // Given a valid ExprEvalResult, returns the
-        // type as EarlTy::Type. If the type of the
-        // expression is an identifier, it will do a
-        // lookup in the scope to find the type of the
-        // already stored variable.
+        LiteralResult::Result m_literal_result;
+
+        /// @brief Given a valid ExprEvalResult, returns the
+        /// type as EarlTy::Type. If the type of the
+        /// expression is an identifier, it will do a
+        /// lookup in the scope to find the type of the
+        /// already stored variable.
         EarlTy::Type get_earl_type(Ctx &ctx);
 
+        /// @brief Get the inner value of the `ExprEvalResult`
         std::any value(void);
 
     };

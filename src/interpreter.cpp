@@ -102,15 +102,30 @@ Interpreter::ExprEvalResult eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
         EarlVar *stored = ctx.get_registered_earlvar(ident->m_tok->lexeme());
-        return Interpreter::ExprEvalResult {stored->m_value, ident->get_term_type(), stored->m_type};
+        return Interpreter::ExprEvalResult {
+            stored->m_value,
+            ident->get_term_type(),
+            stored->m_type,
+            Interpreter::LiteralResult::Result { stored },
+        };
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
-        return Interpreter::ExprEvalResult {std::stoi(intlit->m_tok->lexeme()), intlit->get_term_type(), EarlTy::Type::Int};
+        return Interpreter::ExprEvalResult {
+            std::stoi(intlit->m_tok->lexeme()),
+            intlit->get_term_type(),
+            EarlTy::Type::Int,
+            Interpreter::LiteralResult::Result { intlit->m_tok.get() },
+        };
     } break;
     case ExprTermType::Str_Literal: {
         ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
-        return Interpreter::ExprEvalResult {strlit->m_tok->lexeme(), strlit->get_term_type(), EarlTy::Type::Str};
+        return Interpreter::ExprEvalResult {
+            strlit->m_tok->lexeme(),
+            strlit->get_term_type(),
+            EarlTy::Type::Str,
+            Interpreter::LiteralResult::Result { strlit->m_tok.get() },
+        };
     } break;
     case ExprTermType::Func_Call: {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
@@ -137,6 +152,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             std::any_cast<int>(lhs.value()) + std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
         };
     } break;
     case TokenType::Minus: {
@@ -144,6 +160,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             std::any_cast<int>(lhs.value()) - std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
         };
     } break;
     case TokenType::Asterisk: {
@@ -151,6 +168,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             std::any_cast<int>(lhs.value()) * std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
         };
     } break;
     case TokenType::Forwardslash: {
@@ -158,6 +176,7 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             std::any_cast<int>(lhs.value()) / std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
         };
     } break;
     case TokenType::Double_Equals: {
@@ -165,12 +184,22 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             std::any_cast<int>(lhs.value()) == std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
+        };
+    } break;
+    case TokenType::Bang_Equals: {
+        return Interpreter::ExprEvalResult {
+            std::any_cast<int>(lhs.value()) != std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
         };
     } break;
     default:
         ERR_WARGS(ErrType::Fatal, "%s is not a valid binary operator", expr->m_op->lexeme().c_str());
     }
 
+    // Unreachable
     return Interpreter::ExprEvalResult {};
 }
 
@@ -282,9 +311,30 @@ Interpreter::ExprEvalResult eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
         result = eval_stmt_block(stmt->m_block.get(), ctx);
         if (result.value().has_value())
             break;
+        expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     }
 
     return result;
+}
+
+Interpreter::ExprEvalResult eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
+    Interpreter::ExprEvalResult left = Interpreter::eval_expr(stmt->m_left.get(), ctx);
+    Interpreter::ExprEvalResult right = Interpreter::eval_expr(stmt->m_right.get(), ctx);
+
+    EarlVar *var = std::get<EarlVar *>(left.m_literal_result.m_value);
+    assert(ctx.is_registered_earlvar(var->m_id->lexeme()));
+
+    if (!EarlTy::earlvar_type_compat(left.m_earl_type, right.m_earl_type)) {
+        ERR_WARGS(ErrorType::Fatal,
+                  "type %d is not compatable with type %d",
+                  static_cast<int>(left.m_earl_type),
+                  static_cast<int>(right.m_earl_type));
+    }
+
+    var = ctx.get_registered_earlvar(var->m_id->lexeme());
+    var->set_value(right.value());
+
+    return Interpreter::ExprEvalResult{};
 }
 
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
@@ -293,7 +343,7 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
         return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
     } break;
     case StmtType::Mut: {
-        assert(false && "unimplemented");
+        return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);
     } break;
     case StmtType::Def: {
         return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
