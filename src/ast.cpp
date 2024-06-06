@@ -134,3 +134,9 @@ StmtType StmtIf::stmt_type() const {
     return StmtType::If;
 }
 
+
+StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
+
+StmtType StmtReturn::stmt_type() const {
+    return StmtType::Stmt_Return;
+}

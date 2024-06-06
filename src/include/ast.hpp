@@ -43,6 +43,7 @@ enum class StmtType {
     Mut,
     Stmt_Expr,
     If,
+    Stmt_Return,
 };
 
 /// The different types an expression can be.
@@ -231,6 +232,16 @@ struct StmtIf : public Stmt {
            std::unique_ptr<StmtBlock> block,
            std::optional<std::unique_ptr<StmtBlock>> else_);
 
+    StmtType stmt_type() const override;
+};
+
+/// @brief The Statementc Return class
+struct StmtReturn : public Stmt {
+
+    /// @brief The expression that the Statement Return is returning
+    std::unique_ptr<Expr> m_expr;
+
+    StmtReturn(std::unique_ptr<Expr> expr);
     StmtType stmt_type() const override;
 };
 

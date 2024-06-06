@@ -23,6 +23,7 @@
 #include <cassert>
 #include <iostream>
 #include <optional>
+#include <optional>
 
 #include "utils.hpp"
 #include "err.hpp"
@@ -307,6 +308,13 @@ std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer) {
                                      std::move(block));
 }
 
+std::unique_ptr<StmtReturn> parse_stmt_return(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_RETURN);
+    Expr *expr = Parser::parse_expr(lexer);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtReturn>(std::unique_ptr<Expr>(expr));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
     Token *tok = lexer.peek();
 
@@ -320,6 +328,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         }
         else if (tok->lexeme() == COMMON_EARLKW_IF) {
             return parse_stmt_if(lexer);
+        }
+        else if (tok->lexeme() == COMMON_EARLKW_RETURN) {
+            return parse_stmt_return(lexer);
         }
         else {
             assert(false && "parse_stmt: invalid keyword");
