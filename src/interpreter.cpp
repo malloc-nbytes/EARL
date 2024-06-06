@@ -254,7 +254,7 @@ Interpreter::ExprEvalResult eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
         result = eval_stmt_block(stmt->m_block.get(), ctx);
     }
     else if (stmt->m_else.has_value()) {
-        UNIMPLEMENTED("eval_stmt_if: `else` case");
+        result = eval_stmt_block(stmt->m_else.value().get(), ctx);
     }
 
     return result;

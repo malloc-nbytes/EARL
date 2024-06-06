@@ -208,11 +208,24 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
     Expr *expr = Parser::parse_expr(lexer);
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
 
-    // Handle the `else` block if applicable
+    // Handle the `else if` or `else` blocks if applicable
     std::optional<std::unique_ptr<StmtBlock>> else_ = {};
-    Token *tok = lexer.peek();
-    if (tok->type() == TokenType::Keyword && tok->lexeme() == COMMON_EARLKW_ELSE) {
-        UNIMPLEMENTED("Parser::parse_stmt_if: handle else block");
+    Token *tok1 = lexer.peek();
+    Token *tok2 = lexer.peek(1);
+
+    bool tok1_else = tok1->type() == TokenType::Keyword && tok1->lexeme() == COMMON_EARLKW_ELSE;
+    bool tok2_if = tok2->type() == TokenType::Keyword && tok2->lexeme() == COMMON_EARLKW_IF;
+
+    if (tok1_else && tok2_if) {
+        lexer.discard();
+        std::vector<std::unique_ptr<Stmt>> tmp;
+        std::unique_ptr<StmtIf> nested_if = parse_stmt_if(lexer);
+        tmp.push_back(std::move(nested_if));
+        else_ = std::make_unique<StmtBlock>(std::move(tmp));
+    }
+    else if (tok1_else) {
+        Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ELSE);
+        else_ = parse_stmt_block(lexer);
     }
 
     return std::make_unique<StmtIf>(std::unique_ptr<Expr>(expr),

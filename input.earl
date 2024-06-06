@@ -1,15 +1,20 @@
-def func2(a: int) -> void {
-    print("in func2()", a);
+def func(a: int) -> void {
+    print("in func()", a);
 }
 
-def func1(a: int) -> void {
-    print("in func1()", a);
-}
+let a: int = 2;
 
-let a: int = 9;
-
-if a == 9 {
-    func1(a);
+if a == 1 {
+    func(100);
 }
-func2(a);
+else if a == 2 {
+    print(a);
+    if a == 5 {
+        func(999);
+    }
+    func(101);
+}
+else {
+    func(102);
+}
 
