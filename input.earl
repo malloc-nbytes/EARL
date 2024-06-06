@@ -1,22 +1,9 @@
 @world
-def fizzbuzz() -> void {
-    for i in start..end {
-        if i % 5 == 0 && i % 3 == 0 {
-            print("FizzBuzz");
-        }
-        else if i % 5 == 0 {
-            print("Fizz");
-        }
-        else if i % 3 == 0 {
-            print("Buzz");
-        }
-        else {
-            print(i);
-        }
-    }
+def sum() -> int {
+    return a + b;
 }
 
-let start: int = 1;
-let end: int = 101;
+let a: int = 1;
+let b: int = 2;
 
-fizzbuzz();
+print(sum());

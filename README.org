@@ -392,3 +392,23 @@ def fizzbuzz(start: int, end: int) -> void {
 fizzbuzz(1, 101);
 #+end_example
 
+** Function Attributes
+
+Attributes are flags for functions to enable them to have more features.
+
+*** @world
+
+The =@world= attribute allows the function to see variables
+declared in the global scope.
+
+#+begin_example
+@world
+def sum() -> int {
+    return a + b;
+}
+
+let a: int = 1;
+let b: int = 2;
+
+print(sum());
+#+end_example
