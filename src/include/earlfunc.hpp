@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -31,42 +33,55 @@
 #include "token.hpp"
 #include "scope.hpp"
 
+/// @brief Provides the EarlFunc namespace
 namespace EarlFunc {
+
+    /// @brief The structure of a function in EARL
     struct Func {
+        /// @brief The identifier of the function
         Token *m_id;
+
+        /// @brief The return type of the function
         EarlTy::Type m_rettype;
+
+        /// @brief The arguments that the function needs
         std::vector<EarlVar *> m_args;
+
+        /// @brief The function body
         StmtBlock *m_block;
 
+        /// @brief The local scope of the function
         std::vector<Scope<std::string, EarlVar *>> m_local_scope;
 
-        Func(Token *id,
-             EarlTy::Type rettype,
-             std::vector<EarlVar *> args,
-             StmtBlock *block);
+        Func(Token *id, EarlTy::Type rettype, std::vector<EarlVar *> args, StmtBlock *block);
 
         ~Func() = default;
 
-        // Push a new local scope.
+        /// @brief Push a new local scope
         void push_scope(void);
 
-        // Pop a local scope.
+        /// @brief Pop a local scope
         void pop_scope(void);
 
-        // Create a new context in the local scope.
+        // @brief Create a new context in the local scope
         void new_scope_context(void);
 
+        // @brief Remove a scope context
         void drop_scope_context(void);
 
-        // Check if an EarlVar with the id of `id` is in the local scope.
+        /// @brief Check if an `EarlVar` is in the local scope
+        /// @param id The identifier of the `EarlVar`
         bool contains_local_earlvar(const std::string &id);
 
-        // Get an EarlVar in the local scope.
+        /// @brief Get an `EarlVar` in the local scope
+        /// @param id The identifier of the `EarlVar`
         EarlVar *get_local_earlvar(const std::string &id);
 
+        /// @brief Add an `EarlVar` to the local scope
+        /// @param var The `EarlVar` to add
         void add_local_earlvar(EarlVar *var);
 
-        // Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
+        /// @brief Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
         size_t context_size(void);
     };
 };
