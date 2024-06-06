@@ -44,7 +44,6 @@ void usage(char *progname) {
 std::vector<std::string> create_keywords(void) {
     std::vector<std::string> kws;
     std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
-    // std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {kws.push_back(s);});
     return kws;
 }
 

@@ -43,7 +43,6 @@ namespace Interpreter {
 
         // What kind of term did we encounter?
         // Integer? Identifier? etc...
-        [[deprecated]]
         ExprTermType m_expr_term_type;
 
         EarlTy::Type m_earl_type;
@@ -53,8 +52,7 @@ namespace Interpreter {
         // expression is an identifier, it will do a
         // lookup in the scope to find the type of the
         // already stored variable.
-        [[deprecated]]
-        EarlTy::Type get_earl_type(Ctx &ctx); // DEPRECATED
+        EarlTy::Type get_earl_type(Ctx &ctx);
 
         std::any value(void);
 

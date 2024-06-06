@@ -65,6 +65,7 @@ void Ctx::register_earlvar(EarlVar *var) {
 }
 
 void Ctx::deregister_earlvar(EarlVar *var) {
+    (void)var;
     assert(false && "unimplemented");
 }
 
@@ -74,6 +75,7 @@ void Ctx::register_earlfunc(EarlFunc::Func *func) {
 }
 
 void Ctx::deregister_earlfunc(EarlFunc::Func *func) {
+    (void)func;
     assert(false && "unimplemented");
 }
 
