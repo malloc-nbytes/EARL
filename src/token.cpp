@@ -37,108 +37,108 @@ std::string Token::to_str(void)
 {
     switch (m_type) {
     case TokenType::Lparen:
-        return "LPAREN";
+        return "`(`";
     case TokenType::Rparen:
-        return "RPAREN";
+        return "`)`";
     case TokenType::Lbracket:
-        return "LBRACKET";
+        return "`[`";
     case TokenType::Rbracket:
-        return "RBRACKET";
+        return "`]`";
     case TokenType::Lbrace:
-        return "LBRACE";
+        return "`{`";
     case TokenType::Rbrace:
-        return "RBRACE";
+        return "`}`";
     case TokenType::Hash:
-        return "HASH";
+        return "`#`";
     case TokenType::Period:
-        return "PERIOD";
+        return "`.`";
     case TokenType::Comma:
-        return "COMMA";
+        return "`,`";
     case TokenType::Semicolon:
-        return "SEMICOLON";
+        return "`;`";
     case TokenType::Greaterthan:
-        return "GREATERTHAN";
+        return "`>`";
     case TokenType::Lessthan:
-        return "LESSTHAN";
+        return "`<`";
     case TokenType::Equals:
-        return "EQUALS";
+        return "`=`";
     case TokenType::Ampersand:
-        return "AMPERSAND";
+        return "`&`";
     case TokenType::Asterisk:
-        return "ASTERISK";
+        return "`*`";
     case TokenType::Plus:
-        return "PLUS";
+        return "`+`";
     case TokenType::Minus:
-        return "MINUS";
+        return "`-`";
     case TokenType::Forwardslash:
-        return "FORWARDSLASH";
+        return "`/`";
     case TokenType::Pipe:
-        return "PIPE";
+        return "`|`";
     case TokenType::Caret:
-        return "CARET";
+        return "`^`";
     case TokenType::Questionmark:
-        return "QUESTIONMARK";
+        return "`?`";
     case TokenType::Backwardslash:
-        return "BACKWARDSLASH";
+        return "`\\`";
     case TokenType::Bang:
-        return "BANG";
+        return "`!`";
     case TokenType::At:
-        return "AT";
+        return "`@`";
     case TokenType::Dollarsign:
-        return "DOLLARSIGN";
+        return "`$`";
     case TokenType::Percent:
-        return "PERCENT";
+        return "`@`";
     case TokenType::Backtick:
-        return "BACKTICK";
+        return "```";
     case TokenType::Tilde:
-        return "TILDE";
+        return "`~`";
     case TokenType::Colon:
-        return "COLON";
+        return "`:`";
     case TokenType::Double_Ampersand:
-        return "DOUBLE_AMPERSAND";
+        return "`&&`";
     case TokenType::Double_Pipe:
-        return "DOUBLE_PIPE";
+        return "`||`";
     case TokenType::Greaterthan_Equals:
-        return "GREATERTHAN_EQUALS";
+        return "`>=`";
     case TokenType::Lessthan_Equals:
-        return "LESSTHAN_EQUALS";
+        return "`<=`";
     case TokenType::Double_Equals:
-        return "DOUBLE_EQUALS";
+        return "`==`";
     case TokenType::Bang_Equals:
-        return "BANG_EQUALS";
+        return "`!=`";
     case TokenType::Plus_Equals:
-        return "PLUS_EQUALS";
+        return "`+=`";
     case TokenType::Minus_Equals:
-        return "MINUS_EQUALS";
+        return "`-=`";
     case TokenType::Asterisk_Equals:
-        return "ASTERISK_EQUALS";
+        return "`*=`";
     case TokenType::Forwardslash_Equals:
-        return "FORWARDSLASH_EQUALS";
+        return "`/=`";
     case TokenType::Percent_Equals:
-        return "PERCENT_EQUALS";
+        return "`%=`";
     case TokenType::RightArrow:
-        return "RIGHT_ARROW";
+        return "`->`";
     case TokenType::Double_Period:
-        return "DOUBLE_PERIOD";
+        return "`..`";
     case TokenType::Eof:
-        return "EOF";
+        return "`EOF`";
     case TokenType::Intlit:
-        return "INTLIT";
+        return "`INTLIT`";
     case TokenType::Strlit:
-        return "STRLIT";
+        return "`STRLIT`";
     case TokenType::Charlit:
-        return "CHARLIT";
+        return "`CHARLIT`";
     case TokenType::Ident:
-        return "IDENT";
+        return "`IDENTIFIER`";
     case TokenType::Keyword:
-        return "KEYWORD";
+        return "`KEYWORD`";
     case TokenType::Type:
-        return "TYPE";
+        return "`TYPE`";
     default:
         ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(m_type));
-        return NULL;
+        return nullptr;
     }
-    return NULL;
+    return nullptr;
 }
 
 Token::Token(char *start, size_t len,

@@ -3,8 +3,6 @@
 #include "err.hpp"
 #include "token.hpp"
 
-// err.cpp:9:1: error
-
 void Err::err_wtok(Token *tok) {
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << '\n';
 }
