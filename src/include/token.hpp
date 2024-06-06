@@ -48,7 +48,7 @@ enum class TokenType {
     Period,
     Semicolon,
     Comma,
-    Greaterthan,
+    Greaterthan, // 10
     Lessthan,
     Equals,
     Ampersand,
@@ -58,7 +58,7 @@ enum class TokenType {
     Forwardslash,
     Pipe,
     Caret,
-    Questionmark,
+    Questionmark, // 20
     Backwardslash,
     Bang,
     At,

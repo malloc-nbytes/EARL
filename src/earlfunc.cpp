@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "common.hpp"
 #include "ast.hpp"
 #include "earlty.hpp"
 #include "earlvar.hpp"
@@ -10,11 +11,13 @@
 EarlFunc::Func::Func(Token *id,
                      EarlTy::Type rettype,
                      std::vector<EarlVar *> args,
-                     StmtBlock *block)
+                     StmtBlock *block,
+                     uint32_t attrs)
     : m_id(id),
       m_rettype(rettype),
       m_args(std::move(args)),
-      m_block(block) {
+      m_block(block),
+      m_attrs(attrs) {
     m_local_scope.emplace_back();
 }
 
@@ -58,4 +61,8 @@ void EarlFunc::Func::remove_local_earlvar(EarlVar *var) {
     const std::string &id = var->m_id->lexeme();
     m_local_scope.back().remove(id);
     abort();
+}
+
+bool EarlFunc::Func::is_world(void) const {
+    return (m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
 }

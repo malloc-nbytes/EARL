@@ -165,10 +165,13 @@ struct StmtDef : public Stmt {
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
 
+    uint32_t m_attrs;
+
     StmtDef(std::unique_ptr<Token> id,
             std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args,
             std::unique_ptr<Token> rettype,
-            std::unique_ptr<StmtBlock> block);
+            std::unique_ptr<StmtBlock> block,
+            uint32_t attrs);
 
     StmtType stmt_type() const override;
 };

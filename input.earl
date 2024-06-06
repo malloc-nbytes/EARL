@@ -1,4 +1,5 @@
-def fizzbuzz(start: int, end: int) -> void {
+@world
+def fizzbuzz() -> void {
     for i in start..end {
         if i % 5 == 0 && i % 3 == 0 {
             print("FizzBuzz");
@@ -15,4 +16,7 @@ def fizzbuzz(start: int, end: int) -> void {
     }
 }
 
-fizzbuzz(1, 101);
+let start: int = 1;
+let end: int = 101;
+
+fizzbuzz();

@@ -24,7 +24,6 @@ Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(ExprFuncCall *exp
 }
 
 Interpreter::ExprEvalResult Intrinsics::print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    (void)ctx;
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         Interpreter::ExprEvalResult param = params[i];
 

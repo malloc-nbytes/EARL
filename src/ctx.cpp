@@ -100,7 +100,16 @@ bool Ctx::is_registered_earlfunc(const std::string &id) {
 EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
     EarlVar **var = nullptr;
 
-    if (in_earlfunc()) {
+    if (in_earlfunc() && get_cur_earlfunc()->is_world()) { // The function is a @world function
+        var = m_global_earlvars.get(id); // Check in global scope
+        if (!var || !*var) { // Not in global, check local
+            var = get_cur_earlfunc()->m_local_scope.back().get(id);
+        }
+        else if (get_cur_earlfunc()->contains_local_earlvar(id)) { // Is in global, make sure its not in local
+            ERR_WARGS(ErrType::Redeclaration, "duplicate variable `%s`", id.c_str());
+        }
+    }
+    else if (in_earlfunc()) {
         auto *func = get_cur_earlfunc();
         var = func->m_local_scope.back().get(id);
     }
