@@ -10,5 +10,6 @@ def collatz(n: int) -> void {
     }
 }
 
-collatz(69420);
+let n: str = "hello";
+collatz();
 

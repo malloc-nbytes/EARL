@@ -56,6 +56,7 @@ namespace Err {
     };
 
     void err_wtok(Token *tok);
+    void err_w2tok(Token *tok1, Token *tok2);
     void err_wconflict(Token *tok1, Token *tok2);
 };
 
