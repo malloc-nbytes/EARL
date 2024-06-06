@@ -118,6 +118,8 @@ std::string Token::to_str(void)
         return "PERCENT_EQUALS";
     case TokenType::RightArrow:
         return "RIGHT_ARROW";
+    case TokenType::Double_Period:
+        return "DOUBLE_PERIOD";
     case TokenType::Eof:
         return "EOF";
     case TokenType::Intlit:

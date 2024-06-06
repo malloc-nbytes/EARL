@@ -147,3 +147,16 @@ StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> bloc
 StmtType StmtWhile::stmt_type() const {
     return StmtType::Stmt_While;
 }
+
+StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
+                 std::unique_ptr<Expr> start,
+                 std::unique_ptr<Expr> end,
+                 std::unique_ptr<StmtBlock> block)
+    : m_enumerator(std::move(enumerator)),
+      m_start(std::move(start)),
+      m_end(std::move(end)),
+      m_block(std::move(block)) {}
+
+StmtType StmtFor::stmt_type() const {
+    return StmtType::Stmt_For;
+}

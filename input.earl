@@ -1,12 +1,14 @@
-def func(a: int) -> void {
-    while a != 10 {
-        print("func() ", a);
-        a = a+1;
+def func(end: int) -> int {
+    let x: int = 0;
+    for i in 0..end {
+        print("func: ", i);
+        x = i;
+        for j in i..end+100 {
+            if j == 50 { return j; }
+        }
     }
+    return x;
 }
 
-let x: int = 0;
-while x != 10 {
-    func(x);
-    x = x + 1;
-}
+let a: int = func(10);
+print("a: ", a);

@@ -65,8 +65,15 @@ void Ctx::register_earlvar(EarlVar *var) {
 }
 
 void Ctx::deregister_earlvar(EarlVar *var) {
-    (void)var;
-    assert(false && "unimplemented");
+    std::string &id = var->m_id->lexeme();
+
+    if (in_earlfunc()) {
+        auto *func = get_cur_earlfunc();
+        func->add_local_earlvar(var);
+    }
+    else {
+        m_global_earlvars.add(id, var);
+    }
 }
 
 void Ctx::register_earlfunc(EarlFunc::Func *func) {

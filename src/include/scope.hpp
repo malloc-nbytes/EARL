@@ -82,6 +82,19 @@ template <typename K, typename V> struct Scope {
         }
         return nullptr;
     }
+
+    /// @brief Remove a key from the scope
+    /// @param key The key to remove
+    inline void remove(K key) {
+        for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
+            auto &map = *it;
+            auto mapIt = map.find(key);
+            if (mapIt != map.end()) {
+                map.erase(mapIt);
+                return;
+            }
+        }
+    }
 };
 
 #endif // SCOPE_H

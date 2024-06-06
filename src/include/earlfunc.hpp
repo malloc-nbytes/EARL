@@ -83,6 +83,8 @@ namespace EarlFunc {
 
         /// @brief Get the number of 'contexts' (not to be confused with `Ctx` [src/include/ctx.hpp]).
         size_t context_size(void);
+
+        void remove_local_earlvar(EarlVar *var);
     };
 };
 

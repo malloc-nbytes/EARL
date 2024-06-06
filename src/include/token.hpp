@@ -81,6 +81,7 @@ enum class TokenType {
     Forwardslash_Equals,
     Percent_Equals,
     RightArrow,
+    Double_Period,
 
     Eof,
     Intlit,
