@@ -1,14 +1,18 @@
-def func(end: int) -> int {
-    let x: int = 0;
-    for i in 0..end {
-        print("func: ", i);
-        x = i;
-        for j in i..end+100 {
-            if j == 50 { return j; }
+def fizzbuzz(start: int, end: int) -> void {
+    for i in start..end {
+        if i % 5 == 0 && i % 3 == 0 {
+            print("FizzBuzz");
+        }
+        else if i % 5 == 0 {
+            print("Fizz");
+        }
+        else if i % 3 == 0 {
+            print("Buzz");
+        }
+        else {
+            print(i);
         }
     }
-    return x;
 }
 
-let a: int = func(10);
-print("a: ", a);
+fizzbuzz(1, 101);

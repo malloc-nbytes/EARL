@@ -171,6 +171,14 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
             Interpreter::LiteralResult::Result {false},
         };
     } break;
+    case TokenType::Percent: {
+        return Interpreter::ExprEvalResult {
+            std::any_cast<int>(lhs.value()) % std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
+        };
+    } break;
     case TokenType::Forwardslash: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.value()) / std::any_cast<int>(rhs.value()),
@@ -190,6 +198,22 @@ Interpreter::ExprEvalResult eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     case TokenType::Bang_Equals: {
         return Interpreter::ExprEvalResult {
             std::any_cast<int>(lhs.value()) != std::any_cast<int>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
+        };
+    } break;
+    case TokenType::Double_Ampersand: {
+        return Interpreter::ExprEvalResult {
+            std::any_cast<bool>(lhs.value()) && std::any_cast<bool>(rhs.value()),
+            ExprTermType::Int_Literal,
+            lhs.m_earl_type,
+            Interpreter::LiteralResult::Result {false},
+        };
+    } break;
+    case TokenType::Lessthan: {
+        return Interpreter::ExprEvalResult {
+            std::any_cast<int>(lhs.value()) < std::any_cast<int>(rhs.value()),
             ExprTermType::Int_Literal,
             lhs.m_earl_type,
             Interpreter::LiteralResult::Result {false},
