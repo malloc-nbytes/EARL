@@ -60,11 +60,15 @@ EarlTy::Type Interpreter::ExprEvalResult::get_earl_type(Ctx &ctx) {
     }
 }
 
-static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> user_params, Ctx &ctx) {
+static Interpreter::ExprEvalResult
+eval_user_defined_function(ExprFuncCall *expr,
+                           std::vector<Interpreter::ExprEvalResult>
+                           user_params,
+                           Ctx &ctx) {
+
     auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
 
     ctx.set_current_earlfunc(func);
-    ctx.push_scope();
 
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         Interpreter::ExprEvalResult user_param = user_params[i];
@@ -73,7 +77,7 @@ static Interpreter::ExprEvalResult eval_user_defined_function(ExprFuncCall *expr
     }
 
     Interpreter::ExprEvalResult blockresult = eval_stmt_block(func->m_block, ctx);
-    ctx.pop_scope();
+
     ctx.unset_current_earlfunc();
 
     return blockresult;
@@ -198,7 +202,7 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     Interpreter::ExprEvalResult expr_eval = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
     // The type of the right side of the equals sign
-    EarlTy::Type rval_type = expr_eval.get_earl_type(ctx);
+    EarlTy::Type rval_type = expr_eval.m_earl_type;
 
     if (!EarlTy::earlvar_type_compat(binding_type, rval_type)) {
         ERR_WARGS(ErrType::ERR_FATAL, "type (%d) is not compatable with type (%d)",
@@ -216,11 +220,17 @@ Interpreter::ExprEvalResult eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
 }
 
 Interpreter::ExprEvalResult eval_stmt_block(StmtBlock *block, Ctx &ctx) {
-    for (auto &stmt : block->m_stmts) {
-        eval_stmt(stmt.get(), ctx);
-    }
+    Interpreter::ExprEvalResult result{};
 
-    return Interpreter::ExprEvalResult{};
+    ctx.push_scope();
+    for (auto &stmt : block->m_stmts) {
+        result = eval_stmt(stmt.get(), ctx);
+        if (result.value().has_value())
+            break;
+    }
+    ctx.pop_scope();
+
+    return result;
 }
 
 // When we hit a statement `def` (a function declaration),
@@ -260,6 +270,10 @@ Interpreter::ExprEvalResult eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
     return result;
 }
 
+Interpreter::ExprEvalResult eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
+    return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+}
+
 Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -279,6 +293,9 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::If: {
         return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
+    } break;
+    case StmtType::Stmt_Return: {
+        return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");

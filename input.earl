@@ -1,20 +1,16 @@
-def func(a: int) -> void {
-    print("in func()", a);
-}
+def func(c: int) -> int {
+    let x: int = 9;
 
-let a: int = 2;
-
-if a == 1 {
-    func(100);
-}
-else if a == 2 {
-    print(a);
-    if a == 5 {
-        func(999);
+    if x == 9 {
+       let y: int = 1;
+       print("y:", y);
     }
-    func(101);
-}
-else {
-    func(102);
+
+    print("x:", x);
+    print("c:", c);
+
+    return 99;
 }
 
+let x: int = 1;
+print(func(x));

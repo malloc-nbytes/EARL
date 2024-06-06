@@ -80,6 +80,9 @@ void Ctx::deregister_earlfunc(EarlFunc::Func *func) {
 }
 
 bool Ctx::is_registered_earlvar(const std::string &id) {
+    if (in_earlfunc()) {
+        return m_cur_earlfunc->contains_local_earlvar(id);
+    }
     return m_global_earlvars.contains(id);
 }
 
