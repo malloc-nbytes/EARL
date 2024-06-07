@@ -64,7 +64,14 @@ namespace Intrinsics {
     /// @param params The evaluated parameters that is given to the function
     /// @param ctx The current context of runtime
     /// @returns An expression evaluation result
-    Interpreter::ExprEvalResult print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
+    Interpreter::ExprEvalResult intrinsic_print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
+
+    /// @brief A basic assertion function for EARL. Strings are always true.
+    /// @param expr The function call expression to evaluate
+    /// @param params The evaluated parameters that is given to the function
+    /// @param ctx The current context of runtime
+    /// @return An expression evaluation result
+    Interpreter::ExprEvalResult intrinsic_assert(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
 
     /// @brief The signature of ALL intrinsic functions
     using IntrinsicFunction = Interpreter::ExprEvalResult(*)(ExprFuncCall*, std::vector<Interpreter::ExprEvalResult>, Ctx&);
