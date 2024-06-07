@@ -440,9 +440,11 @@ Interpreter::ExprEvalResult eval_stmt(Stmt *stmt, Ctx &ctx) {
 Interpreter::ExprEvalResult Interpreter::interpret(Program &program) {
     Ctx ctx;
 
+    Interpreter::ExprEvalResult result{};
+
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        eval_stmt(program.m_stmts.at(i).get(), ctx);
+        result = eval_stmt(program.m_stmts.at(i).get(), ctx);
     }
 
-    return Interpreter::ExprEvalResult{};
+    return result;
 }

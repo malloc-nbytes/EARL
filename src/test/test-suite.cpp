@@ -1,3 +1,4 @@
+#include "loops/test-loops.hpp"
 #include "parsers/test-parsers.hpp"
 #include "test-suite.hpp"
 
@@ -57,6 +58,11 @@ int main(void)
             RUN_TEST(test_parsers_parse_expect_type());
             RUN_TEST(test_parsers_parse_expect_keyword());
             RUN_TEST(test_parsers_parse_expect());
+        });
+
+        RUN_TEST_GROUP("loops", {
+            RUN_TEST(test_loops_basic_while());
+            RUN_TEST(test_loops_large_while());
         });
     });
 
