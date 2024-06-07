@@ -298,10 +298,10 @@ The syntax to EARL is as follows:
 ** Variable Creation
 
 #+begin_example
-let x: int = 1;
-let a: int = x;
-let b: int = x + a;
-let s: str = "hello world";
+x: int = 1;
+a: int = x;
+b: int = x + a;
+s: str = "hello world";
 #+end_example
 
 ** Mutation
@@ -332,7 +332,7 @@ def func3(a: int, s: str) -> int {
 ** Conditionals
 
 #+begin_example
-let x: int = 3;
+x: int = 3;
 
 if x == 1 {
     print("x is one");
@@ -348,7 +348,7 @@ else {
 ** While Loops
 
 #+begin_example
-let i: int = 0;
+i: int = 0;
 
 while i < 10 {
     print("i: ", i);
@@ -363,7 +363,7 @@ for i in 0..10 {
     print("i: ", i);
 }
 
-let end: int = 10;
+end: int = 10;
 for i in 0..end {
     print("i: ", i);
 }
@@ -425,8 +425,8 @@ def sum() -> int {
     return a + b;
 }
 
-let a: int = 1;
-let b: int = 2;
+a: int = 1;
+b: int = 2;
 
 print(sum());
 #+end_example
