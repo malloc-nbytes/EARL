@@ -1,0 +1,10 @@
+# File for test-functions/functions-return-passed-param
+# Tests if the function can accept a parameter and then return it
+
+def func(a: int) -> int {
+    return a;
+}
+
+let x: int = 99;
+x = func(x);
+return x;

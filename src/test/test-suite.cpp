@@ -80,6 +80,9 @@ int main(void)
 
         RUN_TEST_GROUP("functions", {
             RUN_TEST(test_functions_basic_no_return());
+            RUN_TEST(test_functions_return_passed_param());
+            RUN_TEST(test_functions_return_summed_element());
+            RUN_TEST(test_functions_count_evens());
         });
 
 
