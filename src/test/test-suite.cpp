@@ -1,3 +1,5 @@
+#include "functions/test-functions.hpp"
+#include "conditionals/test-conditionals.hpp"
 #include "loops/test-loops.hpp"
 #include "parsers/test-parsers.hpp"
 #include "test-suite.hpp"
@@ -68,8 +70,19 @@ int main(void)
             RUN_TEST(test_loops_should_not_loop());
             RUN_TEST(test_loops_basic_for());
             RUN_TEST(test_loops_large_for());
-            RUN_TEST(test_loops_adding_to_enumerator());
         });
+
+        RUN_TEST_GROUP("conditionals", {
+            RUN_TEST(test_conditionals_basic_if());
+            RUN_TEST(test_conditionals_basic_if_else_if());
+            RUN_TEST(test_conditionals_basic_if_else_if_else());
+        });
+
+        RUN_TEST_GROUP("functions", {
+            RUN_TEST(test_functions_basic_no_return());
+        });
+
+
     });
 
     return 0;

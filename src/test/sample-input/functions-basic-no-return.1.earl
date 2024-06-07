@@ -1,0 +1,9 @@
+# File for test-functions/test_functions_basic_no_return
+# The bare bones test for a function.
+
+def func() -> void {
+}
+
+func();
+
+return 0;

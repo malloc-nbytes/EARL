@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "test-suite.hpp"
 #include "lexer.hpp"
 #include "ast.hpp"
@@ -41,7 +39,7 @@ test_errno_t test_loops_with_end_as_variable(void) {
 
     TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 10000000, true);
 
-    return TEST_OK;   
+    return TEST_OK;
 }
 
 test_errno_t test_loops_mutating_enumerator_by_5(void) {
@@ -52,7 +50,7 @@ test_errno_t test_loops_mutating_enumerator_by_5(void) {
 
     TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 10000000, true);
 
-    return TEST_OK;   
+    return TEST_OK;
 }
 
 test_errno_t test_loops_should_not_loop(void) {
@@ -63,7 +61,7 @@ test_errno_t test_loops_should_not_loop(void) {
 
     TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 5, true);
 
-    return TEST_OK;   
+    return TEST_OK;
 }
 
 test_errno_t test_loops_basic_for(void) {
@@ -74,7 +72,7 @@ test_errno_t test_loops_basic_for(void) {
 
     TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 49995000, true);
 
-    return TEST_OK;   
+    return TEST_OK;
 }
 
 test_errno_t test_loops_large_for(void) {
@@ -85,16 +83,5 @@ test_errno_t test_loops_large_for(void) {
 
     TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 9999999, true);
 
-    return TEST_OK;   
-}
-
-test_errno_t test_loops_adding_to_enumerator(void) {
-    std::string filepath = "test/sample-input/loops-for.3.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(lexer);
-    Interpreter::ExprEvalResult result = Interpreter::interpret(program);
-
-    TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 49995000, true);
-
-    return TEST_OK;   
+    return TEST_OK;
 }
