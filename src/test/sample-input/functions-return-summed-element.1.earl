@@ -2,14 +2,14 @@
 # Does a loop in a function summing the elements and returning it.
 
 def summation(start: int, end: int) -> int {
-    let sum: int = 0;
+    sum: int = 0;
     for i in start..end {
         sum = sum + i;
     }
     return sum;
 }
 
-let start: int = 0;
-let end: int = 10;
+start: int = 0;
+end: int = 10;
 
 return summation(start, end);

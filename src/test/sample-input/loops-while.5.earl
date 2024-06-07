@@ -2,7 +2,7 @@
 # This test is for making sure the loop does not
 # happen when the condition starts as false.
 
-let i: int = 5;
+i: int = 5;
 while (i != 5) {
     print("should not be here");
 }

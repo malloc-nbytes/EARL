@@ -239,7 +239,6 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
-    (void)parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     Token *id = parse_expect(lexer, TokenType::Ident);
     (void)parse_expect(lexer, TokenType::Colon);
     Token *ty = parse_expect_type(lexer);
@@ -370,29 +369,27 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
 
         switch (tok->type()) {
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_LET) {
-                return parse_stmt_let(lexer);
-            }
-            else if (tok->lexeme() == COMMON_EARLKW_DEF) {
+            if (tok->lexeme() == COMMON_EARLKW_DEF) {
                 return parse_stmt_def(lexer, attrs);
             }
-            else if (tok->lexeme() == COMMON_EARLKW_IF) {
+            if (tok->lexeme() == COMMON_EARLKW_IF) {
                 return parse_stmt_if(lexer);
             }
-            else if (tok->lexeme() == COMMON_EARLKW_RETURN) {
+            if (tok->lexeme() == COMMON_EARLKW_RETURN) {
                 return parse_stmt_return(lexer);
             }
-            else if (tok->lexeme() == COMMON_EARLKW_WHILE) {
+            if (tok->lexeme() == COMMON_EARLKW_WHILE) {
                 return parse_stmt_while(lexer);
             }
-            else if (tok->lexeme() == COMMON_EARLKW_FOR) {
+            if (tok->lexeme() == COMMON_EARLKW_FOR) {
                 return parse_stmt_for(lexer);
             }
-            else {
-                assert(false && "parse_stmt: invalid keyword");
-            }
+            assert(false && "parse_stmt: invalid keyword");
         } break;
         case TokenType::Ident: {
+            if (lexer.peek(1)->type() == TokenType::Colon) {
+                return parse_stmt_let(lexer);
+            }
             if (lexer.peek(1)->type() == TokenType::Lparen) {
                 return parse_stmt_expr(lexer);
             }

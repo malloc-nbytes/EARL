@@ -1,7 +1,7 @@
 # File for test-conditionals/test_conditionals_basic_if_else_if_else
 # Test the `else if else` case. This returns 3 on success.
 
-let x: int = 3;
+x: int = 3;
 if x == 1 {
     return 1;
 }

@@ -1,7 +1,7 @@
 # File for test-loops/test_loops_adding_to_enumerator
 # A larger for loop that does mutation to x and i.
 
-let x: int = 0;
+x: int = 0;
 for i in 0..10000 {
     x = x + i;
     i = x;

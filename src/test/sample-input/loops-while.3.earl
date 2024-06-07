@@ -1,8 +1,8 @@
 # File for test-loops/test_loops_with_end_as_variable
 # Tests a loop by having the end be a variable.
 
-let i: int = 0;
-let end: int = 10000000;
+i: int = 0;
+end: int = 10000000;
 while i < end {
     i = i + 1;
 }

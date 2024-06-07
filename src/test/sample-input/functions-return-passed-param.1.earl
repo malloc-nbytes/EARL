@@ -5,6 +5,6 @@ def func(a: int) -> int {
     return a;
 }
 
-let x: int = 99;
+x: int = 99;
 x = func(x);
 return x;

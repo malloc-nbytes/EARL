@@ -2,7 +2,7 @@
 # Counts the number of even numbers in a range
 
 def count_evens(start: int, end: int) -> int {
-    let count: int = 0;
+    count: int = 0;
 
     for i in start..end {
         if i % 2 == 0 {
@@ -13,6 +13,6 @@ def count_evens(start: int, end: int) -> int {
     return count;
 }
 
-let start: int = 0;
-let end: int = 10000000;
+start: int = 0;
+end: int = 10000000;
 return count_evens(start, end);
