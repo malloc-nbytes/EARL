@@ -37,3 +37,13 @@ bool EarlTy::earlvar_type_compat(EarlTy::Type ty1, EarlTy::Type ty2) {
     }
     return false;
 }
+
+std::string EarlTy::to_string(Type ty) {
+    switch (ty) {
+    case EarlTy::Type::Int: return COMMON_EARLTY_INT32;
+    case EarlTy::Type::Str: return COMMON_EARLTY_STR;
+    case EarlTy::Type::Void: return COMMON_EARLTY_UNIT;
+    default:
+        ERR_WARGS(ErrType::Fatal, "unknown EarlTy::Type: %d", (int)ty);
+    }
+}

@@ -66,11 +66,25 @@ eval_user_defined_function(ExprFuncCall *expr,
                            Ctx &ctx) {
 
     auto *func = ctx.get_registered_earlfunc(expr->m_id->lexeme());
-
     ctx.set_current_earlfunc(func);
+
+    if (func->m_args.size() != user_params.size()) {
+        Err::err_w2tok(func->m_id, expr->m_id.get());
+        ERR_WARGS(ErrType::Fatal, "The number of given function parameters (%zu) do not match what is expected (%zu)",
+                  func->m_args.size(), user_params.size());
+    }
 
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         Interpreter::ExprEvalResult user_param = user_params[i];
+
+        if (!EarlTy::earlvar_type_compat(user_param.m_earl_type, func->m_args[i]->m_type)) {
+            Err::err_wtok(func->m_args[i]->m_id);
+            ERR_WARGS(ErrType::Fatal, "the provided argument (%s) does not match what was expected (%s) in function (%s)",
+                      EarlTy::to_string(user_param.m_earl_type).c_str(),
+                      EarlTy::to_string(func->m_args[i]->m_type).c_str(),
+                      func->m_id->lexeme().c_str());
+        }
+
         func->m_args[i]->set_value(user_param.value());
         ctx.register_earlvar(func->m_args[i]);
     }
@@ -333,7 +347,6 @@ Interpreter::ExprEvalResult eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     Interpreter::ExprEvalResult right = Interpreter::eval_expr(stmt->m_right.get(), ctx);
 
     EarlVar *var = std::get<EarlVar *>(left.m_literal_result.m_value);
-    assert(ctx.is_registered_earlvar(var->m_id->lexeme()));
 
     if (!EarlTy::earlvar_type_compat(left.m_earl_type, right.m_earl_type)) {
         ERR_WARGS(ErrorType::Fatal,
