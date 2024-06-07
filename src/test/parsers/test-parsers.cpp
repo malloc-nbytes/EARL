@@ -8,9 +8,9 @@
 #include "parser.hpp"
 #include "common.hpp"
 
-std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-std::vector<std::string> types = COMMON_EARLTY_ASCPL;
-std::string comment = "#";
+static std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+static std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+static std::string comment = "#";
 
 test_errno_t test_parsers_parse_stmt(void) {
     std::string filepath = "test/sample-input/parse-stmt.1.in";

@@ -1,0 +1,8 @@
+# File for test-loops/test_loops_basic_for
+# Tests a basic for loop by summing elements.
+
+let sum: int = 0;
+for i in 0..10000 {
+    sum = sum + i;
+}
+return sum;

@@ -63,6 +63,12 @@ int main(void)
         RUN_TEST_GROUP("loops", {
             RUN_TEST(test_loops_basic_while());
             RUN_TEST(test_loops_large_while());
+            RUN_TEST(test_loops_with_end_as_variable());
+            RUN_TEST(test_loops_mutating_enumerator_by_5());
+            RUN_TEST(test_loops_should_not_loop());
+            RUN_TEST(test_loops_basic_for());
+            RUN_TEST(test_loops_large_for());
+            RUN_TEST(test_loops_adding_to_enumerator());
         });
     });
 
