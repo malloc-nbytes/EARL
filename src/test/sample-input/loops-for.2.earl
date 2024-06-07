@@ -2,7 +2,7 @@
 # Tests a large for loop by setting x = i
 # and returning it.
 
-let x: int = 0;
+x: int = 0;
 for i in 0..10000000 {
     x = i;
 }

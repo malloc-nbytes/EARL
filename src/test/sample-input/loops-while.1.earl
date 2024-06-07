@@ -2,8 +2,8 @@
 # Tests a basic loop by summing all elements
 # from [0..10]. Answer is 45.
 
-let i: int = 0;
-let sum: int = 0;
+i: int = 0;
+sum: int = 0;
 
 while i < 10 {
     sum = sum + i;

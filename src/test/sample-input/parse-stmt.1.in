@@ -2,8 +2,8 @@
 # Tests to make sure the parser can differentiate between
 # different types of statements.
 
-let i: int = 1;
-let j: int = 2;
+i: int = 1;
+j: int = 2;
 
 def func() -> int {
     print(1);

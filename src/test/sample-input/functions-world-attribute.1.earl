@@ -6,5 +6,5 @@ def func() -> int {
     return i;
 }
 
-let i: int = 10;
+i: int = 10;
 return func();

@@ -6,6 +6,6 @@ def func2(a: int) -> int {
     print(a);
 }
 def func3(a: int, b: int) -> void {
-    let s: int = a+b;
+    s: int = a+b;
     print(s);
 }
