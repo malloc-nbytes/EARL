@@ -90,6 +90,7 @@ enum class TokenType {
     Ident,
     Keyword,
     Type,
+    TypeList,
     Total_Len
 };
 

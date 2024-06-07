@@ -63,6 +63,7 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
 
 Token *Parser::parse_expect_type(Lexer &lexer) {
     Token *tok = lexer.next();
+
     if (tok->type() != TokenType::Type) {
         ERR_WARGS(Err::Type::Syntax,
                   "%s `%s` is not a keyword",

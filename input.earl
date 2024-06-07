@@ -1,12 +1,6 @@
-def func(a: int, b: int, c: int, s: str) -> void {
-    print("in func(): ", a, b, c, s);
+
+lst: [int] = [1,2,3,4,5];
+
+for i in 0..len(lst) {
+    print(lst[i]);
 }
-
-a: int = 1;
-b: int = a*3;
-c: int = (a+b)*3;
-s: str = "hello world";
-
-print(a, b, c, s);
-
-func(a,b,c,s);
