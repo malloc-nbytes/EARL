@@ -52,3 +52,14 @@ test_errno_t test_functions_count_evens(void) {
 
     return TEST_OK;
 }
+
+test_errno_t test_functions_world_attribute(void) {
+    std::string filepath = "test/sample-input/functions-world-attribute.1.earl";
+    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    Program program = Parser::parse_program(lexer);
+    Interpreter::ExprEvalResult result = Interpreter::interpret(program);
+
+    TEST_ASSERT_EQ(std::any_cast<int>(result.value()), 10, true);
+
+    return TEST_OK;
+}

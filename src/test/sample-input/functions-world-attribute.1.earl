@@ -1,0 +1,10 @@
+# File for test-functions/test_functions_world_attribute
+# Tests the @world attribute.
+
+@world
+def func() -> int {
+    return i;
+}
+
+let i: int = 10;
+return func();
