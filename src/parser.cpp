@@ -64,18 +64,18 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
 Token *Parser::parse_expect_type(Lexer &lexer) {
     Token *tok = lexer.next();
 
-    if (tok->type() != TokenType::Type) {
+    if (tok->type() != TokenType::Type && tok->type() != TokenType::TypeList) {
         ERR_WARGS(Err::Type::Syntax,
-                  "%s `%s` is not a keyword",
+                  "%s `%s` is not a type",
                   tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
     }
     return tok;
 }
 
+// NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
+// This makes this function more reusable.
 static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
     std::vector<std::unique_ptr<Expr>> exprs;
-
-    (void)Parser::parse_expect(lexer, TokenType::Lparen);
 
     while (1) {
         // Only needed if no arguments are provided.
@@ -91,13 +91,14 @@ static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
         }
     }
 
-    Parser::parse_expect(lexer, TokenType::Rparen);
     return exprs;
 }
 
 static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexer &lexer) {
     if (lexer.peek()->type() == TokenType::Lparen) {
+        (void)Parser::parse_expect(lexer, TokenType::Lparen);
         std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
+        (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return exprs;
     }
 
@@ -120,8 +121,12 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     } break;
     case TokenType::Intlit: return new ExprIntLit(std::make_unique<Token>(*tok));
     case TokenType::Strlit: return new ExprStrLit(std::make_unique<Token>(*tok));
+    case TokenType::Lbracket: {
+        std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
+        (void)Parser::parse_expect(lexer, TokenType::Rbracket);
+        return new ExprListLit(std::move(lst));
+    } break;
     case TokenType::Lparen: {
-        // No need to consume Lparen, as `tok` is `lexer.next()`
         Expr *expr = Parser::parse_expr(lexer);
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;

@@ -60,6 +60,7 @@ enum class ExprTermType {
     Int_Literal,
     Str_Literal,
     Func_Call,
+    List_Literal,
 };
 
 struct StmtBlock;
@@ -122,6 +123,16 @@ struct ExprFuncCall : public ExprTerm {
     std::vector<std::unique_ptr<Expr>> m_params;
 
     ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Expr>> params);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+/// @brief The Expression List Literal class
+struct ExprListLit : public ExprTerm {
+    /// @brief The elements in the list
+    std::vector<std::unique_ptr<Expr>> m_elems;
+
+    ExprListLit(std::vector<std::unique_ptr<Expr>> elems);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
