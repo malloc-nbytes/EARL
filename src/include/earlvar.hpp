@@ -29,30 +29,33 @@
 #include "token.hpp"
 #include "earlty.hpp"
 
-// An `EarlVar` is the value of all variables
-// that are created during runtime.
+/// @brief An `EarlVar` is the value of all variables
+/// that are created during runtime.
 struct EarlVar {
-    // The unique identifier
+    /// @brief The unique identifier'
     Token *m_id;
 
-    // The type of the variable in
-    // terms of an `EARL Type`
+    /// @brief The type of the variable in
+    /// terms of an `EARL Type`
     EarlTy::Type m_type;
 
-    // Whether it is heap or
-    // stack alloc'd
+    /// @brief How many nested lists (if any).
+    size_t m_list_depth;
+
+    /// @brief Whether it is heap or
+    /// stack alloc'd
     bool m_allocd;
 
-    // The actual value that the variable holds
-    // during runtime.
+    /// @brief The actual value that the variable holds
+    /// during runtime.
     std::any m_value;
 
-    // The number of references that the
-    // variable currently has. Namely the
-    // number of `owners` that is has.
+    /// @brief The number of references that the
+    /// variable currently has. Namely the
+    /// number of `owners` that is has.
     uint32_t m_refcount;
 
-    EarlVar(Token *id, EarlTy::Type type, bool allocd,
+    EarlVar(Token *id, EarlTy::Type type, size_t list_depth, bool allocd,
             std::any value = nullptr, uint32_t refcount = 1);
 
     ~EarlVar() = default;

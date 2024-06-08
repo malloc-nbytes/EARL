@@ -276,7 +276,7 @@ Interpreter::ExprEvalResult eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
                   static_cast<int>(binding_type), static_cast<int>(rval_type));
     }
 
-    EarlVar *var = new EarlVar(stmt->m_id.get(), binding_type, false, expr_eval.m_expr_value);
+    EarlVar *var = new EarlVar(stmt->m_id.get(), binding_type, 1, false, expr_eval.m_expr_value);
     ctx.register_earlvar(var);
 
     return Interpreter::ExprEvalResult{};
@@ -310,7 +310,7 @@ Interpreter::ExprEvalResult eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     for (auto &arg : stmt->m_args) {
         Token *id = arg.first.get();
         EarlTy::Type type = EarlTy::of_str(arg.second->lexeme());
-        args.push_back(new EarlVar(id, type, false, nullptr));
+        args.push_back(new EarlVar(id, type, 1, false, nullptr));
     }
 
     auto *func = new EarlFunc::Func(stmt->m_id.get(),
