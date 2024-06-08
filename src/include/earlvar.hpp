@@ -23,11 +23,17 @@
 #ifndef EARLVAR_H
 #define EARLVAR_H
 
+#include <variant>
 #include <any>
 #include <memory>
 
 #include "token.hpp"
 #include "earlty.hpp"
+
+struct Value {
+    EarlTy::Type type;
+    std::variant<EarlTy::Int, EarlTy::Str, EarlTy::List> value;
+};
 
 /// @brief An `EarlVar` is the value of all variables
 /// that are created during runtime.
@@ -49,6 +55,8 @@ struct EarlVar {
     /// @brief The actual value that the variable holds
     /// during runtime.
     std::any m_value;
+
+    Value m_value2;
 
     /// @brief The number of references that the
     /// variable currently has. Namely the

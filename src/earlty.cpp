@@ -1,3 +1,4 @@
+#include <iostream>
 #include <unordered_map>
 
 #include "earlty.hpp"
@@ -14,6 +15,23 @@ const std::unordered_map<EarlTy::Type, std::vector<EarlTy::Type>> EarlTy::m_earl
     {EarlTy::Type::Int, {EarlTy::Type::Int}},
     {EarlTy::Type::Str, {EarlTy::Type::Str}},
 };
+
+// EarlTy::Result EarlTy::of_str2(const std::string &s) {
+//     uint16_t depth = 0;
+
+//     size_t i = 0;
+//     std::string buf = "";
+
+//     for (; i < s.size() && s[i] == '['; ++i) ++depth;
+
+//     while (i < s.size() && isalpha(s[i])) {
+//         std::cout << s[i] << std::endl;
+//         buf += s[i];
+//         ++i;
+//     }
+
+//     return EarlTy::Result{EarlTy::of_str(buf), depth};
+// }
 
 EarlTy::Type EarlTy::of_str(const std::string &s) {
     auto it = typemap.find(s);

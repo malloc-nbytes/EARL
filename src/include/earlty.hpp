@@ -23,9 +23,11 @@
 #ifndef EARLTY_H
 #define EARLTY_H
 
+#include <any>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cstdint>
 
 /// @brief Provides an interface to work with the
 /// different types of EARL.
@@ -36,6 +38,19 @@ namespace EarlTy {
         Int,
         Str,
         Void,
+        List,
+    };
+
+    struct Int {
+        int value;
+    };
+
+    struct Str {
+        std::string value;
+    };
+
+    struct List {
+        std::any elems;
     };
 
     /// @brief A map of C++ strings to the corrosponding EARL type.
