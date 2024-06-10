@@ -77,14 +77,27 @@ namespace earl {
                 void new_scope_context(void);
                 void drop_scope_context(void);
 
-                variable::Obj *get_local(const std::string &id) const;
-                bool           has_local(const std::string &id) const;
+                variable::Obj &get_local(const std::string &id);
+                bool           has_local(const std::string &id);
                 void           add_local(variable::Obj *var);
                 void           remove_local(const std::string &id);
-                void           remove_local(const variable::Obj &var);
+                void           remove_local(const variable::Obj *var);
 
                 size_t context_size(void) const;
                 bool is_world(void) const;
+            };
+        };
+
+        namespace evalres {
+            struct Obj {
+                Obj(value::Obj value);
+                ~Obj() = default;
+
+                value::RuntimeValue value(void);
+                primitive::Type type(void);
+
+            private:
+                value::Obj m_value;
             };
         };
     };
