@@ -56,7 +56,14 @@ earl::runtime::evalres::Obj Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
 }
 
 earl::runtime::evalres::Obj eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_let");
+    const std::string &id = stmt->m_id->lexeme();
+
+    if (ctx.variable_is_registered(id)) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already defined", stmt->m_id->lexeme().c_str());
+    }
+
+    return earl::runtime::evalres::Obj(earl::runtime::value::Unit(nullptr));
 }
 
 earl::runtime::evalres::Obj eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
@@ -136,4 +143,6 @@ earl::runtime::evalres::Obj Interpreter::interpret(Program &program) {
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
         eval_stmt(program.m_stmts.at(i).get(), ctx);
     }
+
+    return earl::runtime::evalres::Obj{0};
 }

@@ -38,7 +38,7 @@
 #include "scope.hpp"
 
 struct Ctx {
-    Ctx() = default;
+    Ctx();
     ~Ctx() = default;
 
     void set_function(earl::runtime::function::Obj &func);
@@ -56,9 +56,9 @@ struct Ctx {
     void unregister_function(const std::string &id);
 
     bool variable_is_registered(earl::runtime::variable::Obj &var);
-    bool variable_is_registered(const std::string &id) const;
+    bool variable_is_registered(const std::string &id);
     bool function_is_registered(earl::runtime::function::Obj &func);
-    bool function_is_registered(const std::string &id) const;
+    bool function_is_registered(const std::string &id);
     bool in_function(void) const;
 
     earl::runtime::variable::Obj &get_registered_variable(const std::string &id);

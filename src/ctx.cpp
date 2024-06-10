@@ -1,8 +1,30 @@
 #include <cassert>
-#include <any>
 #include <iostream>
-#include <vector>
-#include <unordered_map>
 
 #include "err.hpp"
 #include "ctx.hpp"
+
+Ctx::Ctx() : m_curfunc(nullptr) {}
+
+bool Ctx::variable_is_registered(earl::runtime::variable::Obj &var) {
+    if (in_function()) {
+        return get_curfunc().has_local(var.id());
+    }
+    return m_globalvars.contains(var.id());
+}
+
+bool Ctx::variable_is_registered(const std::string &id) {
+    if (in_function()) {
+        return get_curfunc().has_local(id);
+    }
+    return m_globalvars.contains(id);
+}
+
+earl::runtime::function::Obj &Ctx::get_curfunc(void) {
+    assert(m_curfunc);
+    return *m_curfunc;
+}
+
+bool Ctx::in_function(void) const {
+    return m_curfunc != nullptr;
+}

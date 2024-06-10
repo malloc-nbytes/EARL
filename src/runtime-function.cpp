@@ -40,7 +40,7 @@ variable::Obj &function::Obj::get_local(const std::string &id) {
 }
 
 void function::Obj::add_local(variable::Obj *var) {
-    const std::string &id = var->m_id->lexeme();
+    const std::string &id = var->id();
     m_local.back().add(id, var);
 }
 
@@ -53,10 +53,14 @@ void function::Obj::remove_local(const std::string &id) {
 }
 
 void function::Obj::remove_local(const variable::Obj *var) {
-    const std::string &id = var->m_id->lexeme();
+    const std::string &id = var->id();
     m_local.back().remove(id);
 }
 
 bool function::Obj::is_world(void) const {
     return (m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
+}
+
+const std::string &function::Obj::id(void) const {
+    return m_id->lexeme();
 }

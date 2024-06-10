@@ -27,16 +27,16 @@ namespace earl {
 
             using Int = int;
             using Str = std::string;
-            using Void = std::nullptr_t;
+            using Unit = std::nullptr_t;
             using List = std::vector<Obj>;
-            using RuntimeValue = std::variant<Int, Str, Void, List>;
+            using RuntimeValue = std::variant<Int, Str, Unit, List>;
 
             struct Obj {
                 Obj() = default;
                 ~Obj() = default;
                 Obj(Int val);
                 Obj(Str val);
-                Obj(Void val);
+                Obj(Unit val);
                 Obj(List val);
 
                 RuntimeValue get() const;
@@ -50,25 +50,20 @@ namespace earl {
 
         namespace variable {
             struct Obj {
-                Token *m_id;
-                value::Obj m_value;
-
                 Obj(Token *id, value::Obj value);
                 ~Obj() = default;
 
                 primitive::Type type(void) const;
+                const std::string &id(void) const;
+
+            private:
+                Token *m_id;
+                value::Obj m_value;
             };
         };
 
         namespace function {
             struct Obj {
-                Token *m_id;
-                Token *m_rettype;
-                std::vector<variable::Obj *> m_args;
-                StmtBlock *m_block;
-                uint32_t m_attrs;
-                std::vector<Scope<std::string, variable::Obj *>> m_local;
-
                 Obj(Token *id, Token *rettype, std::vector<variable::Obj *> args, StmtBlock *block, uint32_t attrs);
                 ~Obj() = default;
 
@@ -85,6 +80,16 @@ namespace earl {
 
                 size_t context_size(void) const;
                 bool is_world(void) const;
+
+                const std::string &id(void) const;
+
+            private:
+                Token *m_id;
+                Token *m_rettype;
+                std::vector<variable::Obj *> m_args;
+                StmtBlock *m_block;
+                uint32_t m_attrs;
+                std::vector<Scope<std::string, variable::Obj *>> m_local;
             };
         };
 
