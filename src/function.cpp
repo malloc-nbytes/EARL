@@ -1,34 +1,8 @@
 #include "earl.hpp"
-#include "common.hpp"
-#include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 using namespace earl::runtime;
-
-/*** EARL VALUE IMPLEMENTATION ***/
-
-value::Obj::Obj(value::Int val) : m_value(val) {}
-value::Obj::Obj(value::Str val) : m_value(val) {}
-value::Obj::Obj(value::Void val) : m_value(val) {}
-value::Obj::Obj(value::List val) : m_value(val) {}
-
-value::RuntimeValue value::Obj::get() const {
-    return m_value;
-}
-
-earl::primitive::Type value::Obj::type(void) const {
-    return m_type;
-}
-
-/*** EARL VARIABLE IMPLEMENTATION ***/
-
-variable::Obj::Obj(Token *id, value::Obj value) : m_id(id), m_value(value) {}
-
-earl::primitive::Type variable::Obj::type(void) const {
-    return m_value.type();
-}
-
-/*** EARL FUNCTION IMPLEMENTATION ***/
 
 function::Obj::Obj(Token *id,
                    Token *rettype,
@@ -85,16 +59,4 @@ void function::Obj::remove_local(const variable::Obj *var) {
 
 bool function::Obj::is_world(void) const {
     return (m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
-}
-
-/*** EVAL RESULT IMPLEMENTATION ***/
-
-evalres::Obj::Obj(value::Obj value) : m_value(std::move(value)) {}
-
-value::RuntimeValue evalres::Obj::value(void) {
-    return m_value.get();
-}
-
-earl::primitive::Type evalres::Obj::type(void) {
-    return m_value.type();
 }
