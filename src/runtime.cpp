@@ -1,43 +1,74 @@
 #include "earl.hpp"
+#include "utils.hpp"
 
-using namespace EARL::Runtime;
+using namespace earl::runtime;
 
-Value::Obj::Obj(Value::Int val) : m_value(val) {}
-Value::Obj::Obj(Value::Str val) : m_value(val) {}
-Value::Obj::Obj(Value::Void val) : m_value(val) {}
-Value::Obj::Obj(Value::List val) : m_value(val) {}
+value::Obj::Obj(value::Int val) : m_value(val) {}
+value::Obj::Obj(value::Str val) : m_value(val) {}
+value::Obj::Obj(value::Void val) : m_value(val) {}
+value::Obj::Obj(value::List val) : m_value(val) {}
 
-Value::RuntimeValue Value::Obj::get() const {
+value::RuntimeValue value::Obj::get() const {
     return m_value;
 }
 
-Variable::Obj::Obj(Token *id, Value::Obj value) : m_id(id), m_value(value) {}
+earl::primitive::Type value::Obj::type(void) const {
+    return m_type;
+}
 
-Function::Obj::Obj(Token *id,
+variable::Obj::Obj(Token *id, value::Obj value) : m_id(id), m_value(value) {}
+
+earl::primitive::Type variable::Obj::type(void) const {
+    return m_value.type();
+}
+
+function::Obj::Obj(Token *id,
                    Token *rettype,
-                   std::vector<Variable::Obj *> args,
+                   std::vector<variable::Obj *> args,
                    StmtBlock *block,
                    uint32_t attrs)
     : m_id(id), m_rettype(rettype), m_args(std::move(args)), m_block(block), m_attrs(attrs) {}
 
-void Function::Obj::push_scope(void) {}
+void function::Obj::push_scope(void) {
+    UNIMPLEMENTED("push_scope");
+}
 
-void Function::Obj::pop_scope(void) {}
+void function::Obj::pop_scope(void) {
+    UNIMPLEMENTED("pop_scope");
+}
 
-void Function::Obj::new_scope_context(void) {}
+void function::Obj::new_scope_context(void) {
+    UNIMPLEMENTED("new_scope_context");
+}
 
-void Function::Obj::drop_scope_context(void) {}
+void function::Obj::drop_scope_context(void) {
+    UNIMPLEMENTED("drop_scope_context");
+}
 
-bool Function::Obj::has_local(const std::string &id) const {}
+bool function::Obj::has_local(const std::string &id) const {
+    UNIMPLEMENTED("has_local");
+}
 
-Variable::Obj *Function::Obj::get_local(const std::string &id) const {}
+variable::Obj *function::Obj::get_local(const std::string &id) const {
+    UNIMPLEMENTED("get_local");
+}
 
-void Function::Obj::add_local(Variable::Obj *var) {}
+void function::Obj::add_local(variable::Obj *var) {
+    UNIMPLEMENTED("add_local");
+}
 
-size_t Function::Obj::context_size(void) const {}
+size_t function::Obj::context_size(void) const {
+    UNIMPLEMENTED("context_size");
+}
 
-void Function::Obj::remove_local(const std::string &id) {}
+void function::Obj::remove_local(const std::string &id) {
+    UNIMPLEMENTED("remove_local");
+}
 
-void Function::Obj::remove_local(const Variable::Obj &var) {}
+void function::Obj::remove_local(const variable::Obj &var) {
+    UNIMPLEMENTED("remove_local");
+}
 
-bool is_world(void);
+bool function::Obj::is_world(void) const {
+    UNIMPLEMENTED("is_world");
+}

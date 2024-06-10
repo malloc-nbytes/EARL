@@ -11,8 +11,8 @@
 #include "ast.hpp"
 #include "token.hpp"
 
-namespace EARL {
-    namespace Primitive {
+namespace earl {
+    namespace primitive {
         enum class Type {
             Int = 0,
             Str,
@@ -21,8 +21,8 @@ namespace EARL {
         };
     };
 
-    namespace Runtime {
-        namespace Value {
+    namespace runtime {
+        namespace value {
             struct Obj;
 
             using Int = int;
@@ -40,33 +40,36 @@ namespace EARL {
                 Obj(List val);
 
                 RuntimeValue get() const;
+                primitive::Type type(void) const;
 
             private:
                 RuntimeValue m_value;
-                Primitive::Type m_type;
+                primitive::Type m_type;
             };
         };
 
-        namespace Variable {
+        namespace variable {
             struct Obj {
                 Token *m_id;
-                Value::Obj m_value;
+                value::Obj m_value;
 
-                Obj(Token *id, Value::Obj value);
+                Obj(Token *id, value::Obj value);
                 ~Obj() = default;
+
+                primitive::Type type(void) const;
             };
         };
 
-        namespace Function {
+        namespace function {
             struct Obj {
                 Token *m_id;
                 Token *m_rettype;
-                std::vector<Variable::Obj *> m_args;
+                std::vector<variable::Obj *> m_args;
                 StmtBlock *m_block;
                 uint32_t m_attrs;
-                std::vector<Scope<std::string, Variable::Obj *>> m_local;
+                std::vector<Scope<std::string, variable::Obj *>> m_local;
 
-                Obj(Token *id, Token *rettype, std::vector<Variable::Obj *> args, StmtBlock *block, uint32_t attrs);
+                Obj(Token *id, Token *rettype, std::vector<variable::Obj *> args, StmtBlock *block, uint32_t attrs);
                 ~Obj() = default;
 
                 void push_scope(void);
@@ -74,14 +77,14 @@ namespace EARL {
                 void new_scope_context(void);
                 void drop_scope_context(void);
 
-                bool has_local(const std::string &id) const;
-                Variable::Obj *get_local(const std::string &id) const;
-                void add_local(Variable::Obj *var);
-                size_t context_size(void) const;
-                void remove_local(const std::string &id);
-                void remove_local(const Variable::Obj &var);
+                variable::Obj *get_local(const std::string &id) const;
+                bool           has_local(const std::string &id) const;
+                void           add_local(variable::Obj *var);
+                void           remove_local(const std::string &id);
+                void           remove_local(const variable::Obj &var);
 
-                bool is_world(void);
+                size_t context_size(void) const;
+                bool is_world(void) const;
             };
         };
     };
