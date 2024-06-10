@@ -23,18 +23,15 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
-#include <any>
-#include <variant>
-#include <tuple>
-
 #include "ctx.hpp"
 #include "ast.hpp"
+#include "earl.hpp"
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
 
-    void interpret(Program &program);
-    void eval_expr(Expr *expr, Ctx &ctx);
+    earl::runtime::evalres::Obj interpret(Program &program);
+    earl::runtime::evalres::Obj eval_expr(Expr *expr, Ctx &ctx);
 };
 
 #endif // INTERPRETER_H
