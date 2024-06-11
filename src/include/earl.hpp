@@ -12,6 +12,20 @@
 #include "token.hpp"
 
 namespace earl {
+    namespace typetree {
+        enum class Type {
+            Int = 0,
+            Str,
+            Void,
+            List,
+        };
+
+        struct Node {
+            Type type;
+            std::vector<Node> children;
+        };
+    };
+
     namespace primitive {
         enum class Type {
             Int = 0,
@@ -25,6 +39,7 @@ namespace earl {
         std::vector<Type> of_str(const std::string &s);
         void fill_typemap(void);
         bool types_compatable(Type ty1, Type ty2);
+        bool types_compatable(const std::vector<Type> &ty1, const std::vector<Type> &ty2);
     };
 
     namespace runtime {
@@ -108,11 +123,13 @@ namespace earl {
                 Obj(value::Obj value);
                 ~Obj() = default;
 
-                value::RuntimeValue value(void);
+                value::Obj &value(void);
                 primitive::Type type(void);
+                std::vector<earl::primitive::Type> &non_primitive_type(void);
 
             private:
                 value::Obj m_value;
+                std::vector<earl::primitive::Type> m_type;
             };
         };
     };

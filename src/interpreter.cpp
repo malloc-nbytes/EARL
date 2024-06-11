@@ -56,16 +56,20 @@ earl::runtime::evalres::Obj Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
 }
 
 earl::runtime::evalres::Obj eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
-    const std::string &id = stmt->m_id->lexeme();
+    // const std::string &id = stmt->m_id->lexeme();
 
-    if (ctx.variable_is_registered(id)) {
-        Err::err_wtok(stmt->m_id.get());
-        ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already defined", stmt->m_id->lexeme().c_str());
-    }
+    // if (ctx.variable_is_registered(id)) {
+    //     Err::err_wtok(stmt->m_id.get());
+    //     ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already defined", stmt->m_id->lexeme().c_str());
+    // }
 
-    std::vector<earl::primitive::Type> binding_type = earl::primitive::of_str(stmt->m_type.get()->lexeme());
+    // std::vector<earl::primitive::Type> binding_type = earl::primitive::of_str(stmt->m_type.get()->lexeme());
+    // earl::runtime::evalres::Obj expr_eval = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
-    earl::runtime::evalres::Obj expr_eval = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    // if (!earl::primitive::types_compatable(binding_type, expr_eval.non_primitive_type())) {
+    //     Err::err_wtok(stmt->m_id.get());
+    //     ERR(Err::Type::Fatal, "The types are not compatable");
+    // }
 
     return earl::runtime::evalres::Obj(earl::runtime::value::Unit(nullptr));
 }

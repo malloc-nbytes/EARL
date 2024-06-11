@@ -30,6 +30,17 @@ bool earl::primitive::types_compatable(Type ty1, Type ty2) {
     return false;
 }
 
+bool earl::primitive::types_compatable(const std::vector<earl::primitive::Type> &ty1,
+                                       const std::vector<earl::primitive::Type> &ty2) {
+    if (ty1.size() != ty2.size())
+        return false;
+    for (size_t i = 0; i < ty1.size(); ++i) {
+        if (ty1.at(i) != ty2.at(i))
+            return false;
+    }
+    return true;
+}
+
 static void parse_list_type(const char *s, std::vector<earl::primitive::Type> &acc) {
     if (s[0] == '[') {
         acc.push_back(earl::primitive::Type::List);
