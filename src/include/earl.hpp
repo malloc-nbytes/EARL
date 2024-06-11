@@ -1,7 +1,7 @@
 #ifndef EARL_H
 #define EARL_H
 
-#include <unordered_set>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <any>
@@ -19,6 +19,12 @@ namespace earl {
             Void,
             List,
         };
+
+        extern std::unordered_map<Type, std::vector<Type>> compat_types;
+
+        std::vector<Type> of_str(const std::string &s);
+        void fill_typemap(void);
+        bool types_compatable(Type ty1, Type ty2);
     };
 
     namespace runtime {
@@ -42,10 +48,14 @@ namespace earl {
                 RuntimeValue get() const;
                 primitive::Type type(void) const;
 
+                bool is_compatable(Obj &other);
+
             private:
                 RuntimeValue m_value;
                 primitive::Type m_type;
             };
+
+            bool ensure_type_compatability(Obj &value1, Obj &value2);
         };
 
         namespace variable {

@@ -4,7 +4,9 @@
 #include "err.hpp"
 #include "ctx.hpp"
 
-Ctx::Ctx() : m_curfunc(nullptr) {}
+Ctx::Ctx() : m_curfunc(nullptr) {
+    earl::primitive::fill_typemap();
+}
 
 bool Ctx::variable_is_registered(earl::runtime::variable::Obj &var) {
     if (in_function()) {

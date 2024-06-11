@@ -63,6 +63,10 @@ earl::runtime::evalres::Obj eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
         ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already defined", stmt->m_id->lexeme().c_str());
     }
 
+    std::vector<earl::primitive::Type> binding_type = earl::primitive::of_str(stmt->m_type.get()->lexeme());
+
+    earl::runtime::evalres::Obj expr_eval = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
     return earl::runtime::evalres::Obj(earl::runtime::value::Unit(nullptr));
 }
 

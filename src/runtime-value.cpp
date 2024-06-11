@@ -1,4 +1,5 @@
 #include "earl.hpp"
+#include "utils.hpp"
 
 using namespace earl::runtime;
 
@@ -13,4 +14,11 @@ value::RuntimeValue value::Obj::get() const {
 
 earl::primitive::Type value::Obj::type(void) const {
     return m_type;
+}
+
+bool value::Obj::is_compatable(value::Obj &other) {
+    if (this->type() == earl::primitive::Type::List) {
+        UNIMPLEMENTED("is_compatable: list");
+    }
+    return this->type() == other.type();
 }
