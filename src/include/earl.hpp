@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <any>
+#include <optional>
 #include <variant>
 
 #include "scope.hpp"
@@ -27,40 +27,42 @@ namespace earl {
         };
 
         struct Int : public Obj {
-            Int(int value);
+            Int(std::optional<int> value);
             int value(void);
             Type type(void) const override;
 
         private:
-            int m_value;
+            std::optional<int> m_value;
         };
 
         struct Str : public Obj {
-            Str(std::string value);
+            Str(std::optional<std::string> value);
             std::string &value(void);
             Type type(void) const override;
 
         private:
-            std::string m_value;
+            std::optional<std::string> m_value;
         };
 
         struct Void : public Obj {
-            Void(void *value = nullptr);
+            Void(std::optional<void *> value = nullptr);
             void *value(void);
             Type type(void) const override;
 
         private:
-            void *m_value;
+            std::optional<void *> m_value;
         };
 
         struct List : public Obj {
-            List(std::vector<Obj> value);
+            List(std::optional<std::vector<Obj>> value);
             std::vector<Obj> &value(void);
             Type type(void) const override;
 
         private:
-            std::vector<Obj> m_value;
+            std::optional<std::vector<Obj>> m_value;
         };
+
+        Obj of_str();
     };
 
     namespace variable {

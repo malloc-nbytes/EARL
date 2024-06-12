@@ -56,6 +56,12 @@ void Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
 }
 
 void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
+    if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
+        ERR_WARGS(Err::Type::Redeclared,
+                  "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
+    }
+
+    
 }
 
 void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
