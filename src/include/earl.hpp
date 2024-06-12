@@ -12,18 +12,49 @@
 #include "token.hpp"
 
 namespace earl {
-    namespace typetree {
-        enum class Type {
+    namespace types {
+        enum class PrimitiveType {
             Int = 0,
             Str,
             Void,
             List,
         };
 
-        struct Node {
-            Type type;
-            std::vector<Node> children;
+        struct Type {
+            PrimitiveType type;
+
+            ~Type() = default;
+            virtual PrimitiveType get_type(void) const = 0;
         };
+
+        struct Int : public Type {
+            int m_value;
+
+            Int(int value);
+            PrimitiveType get_type(void) const override;
+        };
+
+        struct Str : public Type {
+            std::string m_value;
+
+            Str(std::string value);
+            PrimitiveType get_type(void) const override;
+        };
+
+        struct Void : public Type {
+            void *m_value; // should always be nullptr
+
+            Void(void *value = nullptr);
+            PrimitiveType get_type(void) const override;
+        };
+
+        struct List : public Type {
+            std::vector<Type> m_value;
+
+            List(std::vector<Type> value);
+            PrimitiveType get_type(void) const override;
+        };
+
     };
 
     namespace primitive {

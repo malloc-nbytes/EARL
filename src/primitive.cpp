@@ -21,6 +21,38 @@ void earl::primitive::fill_typemap(void) {
     compat_types[earl::primitive::Type::Void] = std::vector{earl::primitive::Type::Void};
 }
 
+/*** INT ***/
+
+earl::types::Int::Int(int value) : m_value(value) {}
+
+earl::types::PrimitiveType earl::types::Int::get_type(void) const {
+    return earl::types::PrimitiveType::Int;
+}
+
+/*** STR ***/
+
+earl::types::Str::Str(std::string value) : m_value(std::move(value)) {}
+
+earl::types::PrimitiveType earl::types::Str::get_type(void) const {
+    return earl::types::PrimitiveType::Str;
+}
+
+/*** VOID ***/
+
+earl::types::Void::Void(void *value) : m_value(value) {}
+
+earl::types::PrimitiveType earl::types::Void::get_type(void) const {
+    return earl::types::PrimitiveType::Void;
+}
+
+/*** LIST ***/
+
+earl::types::List::List(std::vector<Type> value) : m_value(std::move(value)) {}
+
+earl::types::PrimitiveType earl::types::List::get_type(void) const {
+    return earl::types::PrimitiveType::List;
+}
+
 bool earl::primitive::types_compatable(Type ty1, Type ty2) {
     auto &candidates = earl::primitive::compat_types.at(ty1);
     for (auto &potential_ty : candidates) {
