@@ -41,37 +41,37 @@ struct Ctx {
     Ctx();
     ~Ctx() = default;
 
-    void set_function(earl::runtime::function::Obj &func);
+    void set_function(earl::function::Obj &func);
     void unset_function(void);
 
     void push_scope(void);
     void pop_scope(void);
 
-    void register_variable(earl::runtime::variable::Obj *var);
-    void unregister_variable(earl::runtime::variable::Obj *var);
+    void register_variable(earl::variable::Obj *var);
+    void unregister_variable(earl::variable::Obj *var);
     void unregister_variable(const std::string &id);
 
-    void register_function(earl::runtime::function::Obj *func);
-    void unregister_function(earl::runtime::function::Obj *func);
+    void register_function(earl::function::Obj *func);
+    void unregister_function(earl::function::Obj *func);
     void unregister_function(const std::string &id);
 
-    bool variable_is_registered(earl::runtime::variable::Obj &var);
+    bool variable_is_registered(earl::variable::Obj &var);
     bool variable_is_registered(const std::string &id);
-    bool function_is_registered(earl::runtime::function::Obj &func);
+    bool function_is_registered(earl::function::Obj &func);
     bool function_is_registered(const std::string &id);
     bool in_function(void) const;
 
-    earl::runtime::variable::Obj &get_registered_variable(const std::string &id);
-    earl::runtime::function::Obj &get_registered_function(const std::string &id);
+    earl::variable::Obj &get_registered_variable(const std::string &id);
+    earl::function::Obj &get_registered_function(const std::string &id);
 
-    earl::runtime::variable::Obj &get_global_registered_variable(const std::string &id);
+    earl::variable::Obj &get_global_registered_variable(const std::string &id);
 
-    earl::runtime::function::Obj &get_curfunc(void);
+    earl::function::Obj &get_curfunc(void);
 
 private:
-    earl::runtime::function::Obj *m_curfunc;
-    Scope<std::string, earl::runtime::variable::Obj *> m_globalvars;
-    Scope<std::string, earl::runtime::function::Obj *> m_globalfuncs;
+    earl::function::Obj *m_curfunc;
+    Scope<std::string, earl::variable::Obj *> m_globalvars;
+    Scope<std::string, earl::function::Obj *> m_globalfuncs;
 };
 
 #endif // CTX_H

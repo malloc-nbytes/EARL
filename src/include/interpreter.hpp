@@ -30,8 +30,8 @@
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
 
-    earl::runtime::evalres::Obj interpret(Program &program);
-    earl::runtime::evalres::Obj eval_expr(Expr *expr, Ctx &ctx);
+    void interpret(Program &program);
+    void eval_expr(Expr *expr, Ctx &ctx);
 };
 
 #endif // INTERPRETER_H

@@ -63,7 +63,12 @@ namespace earl {
     };
 
     namespace variable {
-        struct Obj;
+        struct Obj {
+
+	private:
+	    Token *m_id;
+	    
+	};
     };
 
     namespace function {

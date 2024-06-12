@@ -36,26 +36,26 @@
 #include "common.hpp"
 #include "earl.hpp"
 
-earl::runtime::evalres::Obj eval_stmt(Stmt *stmt, Ctx &ctx);
-earl::runtime::evalres::Obj eval_stmt_block(StmtBlock *block, Ctx &ctx);
+void eval_stmt(Stmt *stmt, Ctx &ctx);
+void eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
-earl::runtime::evalres::Obj eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
+void eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_funccall");
 }
 
-earl::runtime::evalres::Obj eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+void eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_term");
 }
 
-earl::runtime::evalres::Obj eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
+void eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_bin");
 }
 
-earl::runtime::evalres::Obj Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
+void Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr");
 }
 
-earl::runtime::evalres::Obj eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
+void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     // const std::string &id = stmt->m_id->lexeme();
 
     // if (ctx.variable_is_registered(id)) {
@@ -71,14 +71,14 @@ earl::runtime::evalres::Obj eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     //     ERR(Err::Type::Fatal, "The types are not compatable");
     // }
 
-    return earl::runtime::evalres::Obj(earl::runtime::value::Unit(nullptr));
+    // return earl::runtime::evalres::Obj(earl::runtime::value::Unit(nullptr));
 }
 
-earl::runtime::evalres::Obj eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
+void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_expr");
 }
 
-earl::runtime::evalres::Obj eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_block");
 }
 
@@ -87,31 +87,31 @@ earl::runtime::evalres::Obj eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // We just want to add it to the global context so it
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
-earl::runtime::evalres::Obj eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
+void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_def");
 }
 
-earl::runtime::evalres::Obj eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
+void eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_if");
 }
 
-earl::runtime::evalres::Obj eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
+void eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_return");
 }
 
-earl::runtime::evalres::Obj eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
+void eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_mut");
 }
 
-earl::runtime::evalres::Obj eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
+void eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_while");
 }
 
-earl::runtime::evalres::Obj eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
+void eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_for");
 }
 
-earl::runtime::evalres::Obj eval_stmt(Stmt *stmt, Ctx &ctx) {
+void eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
         return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
@@ -145,12 +145,10 @@ earl::runtime::evalres::Obj eval_stmt(Stmt *stmt, Ctx &ctx) {
     }
 }
 
-earl::runtime::evalres::Obj Interpreter::interpret(Program &program) {
+void Interpreter::interpret(Program &program) {
     Ctx ctx;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
         eval_stmt(program.m_stmts.at(i).get(), ctx);
     }
-
-    return earl::runtime::evalres::Obj{0};
 }
