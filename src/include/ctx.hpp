@@ -70,8 +70,8 @@ struct Ctx {
 
 private:
     earl::function::Obj *m_curfunc;
-    Scope<std::string, earl::variable::Obj *> m_globalvars;
-    Scope<std::string, earl::function::Obj *> m_globalfuncs;
+    // Scope<std::string, earl::variable::Obj *> m_globalvars;
+    // Scope<std::string, earl::function::Obj *> m_globalfuncs;
 };
 
 #endif // CTX_H
