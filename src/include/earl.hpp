@@ -22,6 +22,7 @@ namespace earl {
 
         struct Obj {
             ~Obj() = default;
+
             virtual Type type(void) const = 0;
         };
 
@@ -63,16 +64,61 @@ namespace earl {
     };
 
     namespace variable {
-        struct Obj;
+        struct Obj {
+            Obj(Token *id, std::unique_ptr<value::Obj> value);
+            ~Obj() = default;
+
+            bool is_global(void) const;
+            value::Obj *value(void) const;
+            value::Type type(void) const;
+
+        private:
+            Token *m_id;
+            std::unique_ptr<value::Obj> m_value;
+        };
     };
 
     namespace function {
-        struct Obj;
+        struct Obj {
+            Obj(StmtDef *stmtdef);
+            ~Obj() = default;
+
+            std::string &id(void) const;
+
+            void load_parameters(std::vector<value::Obj *>);
+
+            void push_scope(void);
+            void pop_scope(void);
+            void new_scope_context(void);
+            void drop_scope_context(void);
+
+            bool has_local(const std::string &id);
+            void add_local(variable::Obj *var);
+            void remove_local(const std::string &id);
+            variable::Obj &get_local(const std::string &id);
+
+            size_t context_size(void);
+            bool is_world(void) const;
+
+        private:
+            StmtDef *m_stmtdef;
+        };
     };
 
-    namespace evalres {
-        struct Obj;
-    };
+    using meta = std::unique_ptr<value::Obj>;
+
 };
+
+/*
+
+def func(a: int, b: int, c: int) -> int {
+  return a+b+c;
+}
+
+x: int = 1;
+y: int = 2;
+func(x, y, 99+y);
+
+*/
 
 #endif // EARL_H

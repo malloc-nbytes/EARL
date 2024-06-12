@@ -9,10 +9,10 @@ Ctx::Ctx() : m_curfunc(nullptr) {
 }
 
 bool Ctx::variable_is_registered(earl::variable::Obj &var) {
-    // if (in_function()) {
-    //     return get_curfunc().has_local(var.id());
-    // }
-    // return m_globalvars.contains(var.id());
+    if (in_function()) {
+        return get_curfunc().has_local(var.id());
+    }
+    return m_globalvars.contains(var.id());
 }
 
 bool Ctx::variable_is_registered(const std::string &id) {
