@@ -66,6 +66,7 @@ namespace earl {
         };
 
         std::unique_ptr<Obj> of_str(const std::string &s);
+        Obj *of_str2(const std::string &s);
         bool type_is_compatable(Obj *const obj1, Obj *const obj2);
     };
 
@@ -112,21 +113,6 @@ namespace earl {
             Scope<std::string, variable::Obj *> m_local;
         };
     };
-
-    using meta = std::unique_ptr<value::Obj>;
-
 };
-
-/*
-
-def func(a: int, b: int, c: int) -> int {
-  return a+b+c;
-}
-
-x: int = 1;
-y: int = 2;
-func(x, y, 99+y);
-
-*/
 
 #endif // EARL_H

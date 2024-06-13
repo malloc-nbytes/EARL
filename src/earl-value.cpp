@@ -90,6 +90,35 @@ static std::unique_ptr<Obj> parse_list_type(const std::string &s) {
     return earl::value::of_str(inner);
 }
 
+static Obj *parse_list_type2(const std::string &s) {
+    if (s[0] != '[' || s[s.size() - 1] != ']')
+        ERR_WARGS(Err::Type::Fatal, "invalid list type: %s", s.c_str());
+    auto inner = s.substr(1, s.size() - 2);
+    if (inner.empty())
+        ERR_WARGS(Err::Type::Fatal, "empty list type: %s", s.c_str());
+    return earl::value::of_str2(inner);
+}
+
+Obj *earl::value::of_str2(const std::string &s) {
+    if (s[0] == '[') {
+        return parse_list_type2(s);
+    } else {
+        auto it = str_to_type_map.find(s);
+        if (it == str_to_type_map.end())
+            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
+        switch (it->second) {
+        case Type::Int:
+            return new Int();
+        case Type::Str:
+            return new Str();
+        case Type::Void:
+            return new Void();
+        default:
+            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
+        }
+    }
+}
+
 std::unique_ptr<Obj> earl::value::of_str(const std::string &s) {
     if (s[0] == '[') {
         return parse_list_type(s);
