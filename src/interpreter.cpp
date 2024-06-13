@@ -44,7 +44,26 @@ earl::meta eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
 }
 
 earl::meta eval_expr_term(ExprTerm *expr, Ctx &ctx) {
-    UNIMPLEMENTED("eval_expr_term");
+    switch (expr->get_term_type()) {
+    case ExprTermType::Ident: {
+        ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+        earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
+        UNIMPLEMENTED("eval_expr_term: Ident");
+    } break;
+    case ExprTermType::Int_Literal: {
+        ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
+        return std::make_unique<earl::value::Int>(std::stoi(intlit->m_tok->lexeme()));
+    } break;
+    case ExprTermType::Str_Literal: {
+        UNIMPLEMENTED("eval_expr_term: Str_Literal");
+    } break;
+    case ExprTermType::Func_Call: {
+        UNIMPLEMENTED("eval_expr_term: Func_Call");
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
+    } break;
+    }
 }
 
 earl::meta eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
@@ -52,7 +71,17 @@ earl::meta eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
 }
 
 earl::meta Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
-    UNIMPLEMENTED("eval_expr");
+    switch (expr->get_type()) {
+    case ExprType::Term: {
+        return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+    } break;
+    case ExprType::Binary: {
+        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "unknown expr type %d", static_cast<int>(expr->get_type()));
+    } break;
+    }
 }
 
 earl::meta eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
@@ -60,6 +89,20 @@ earl::meta eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
         ERR_WARGS(Err::Type::Redeclared,
                   "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
+
+    std::unique_ptr<earl::value::Obj> binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
+
+    earl::meta rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    if (!earl::value::type_is_compatable(binding_type.get(), rhs_result.get())) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR(Err::Type::Fatal, "binding type does not match the resulting expression type");
+    }
+
+    earl::variable::Obj *created_variable =
+        new earl::variable::Obj(stmt->m_id.get(), std::move(rhs_result));
+
+    ctx.register_variable(created_variable);
 
     abort();
 }

@@ -66,6 +66,7 @@ namespace earl {
         };
 
         std::unique_ptr<Obj> of_str(const std::string &s);
+        bool type_is_compatable(Obj *const obj1, Obj *const obj2);
     };
 
     namespace variable {
@@ -73,6 +74,7 @@ namespace earl {
             Obj(Token *id, std::unique_ptr<value::Obj> value);
             ~Obj() = default;
 
+            const std::string &id(void) const;
             bool is_global(void) const;
             value::Obj *value(void) const;
             value::Type type(void) const;

@@ -61,10 +61,10 @@ struct Ctx {
     bool function_is_registered(const std::string &id);
     bool in_function(void) const;
 
-    earl::variable::Obj &get_registered_variable(const std::string &id);
+    earl::variable::Obj *get_registered_variable(const std::string &id);
     earl::function::Obj &get_registered_function(const std::string &id);
 
-    earl::variable::Obj &get_global_registered_variable(const std::string &id);
+    earl::variable::Obj *get_global_registered_variable(const std::string &id);
 
     earl::function::Obj &get_curfunc(void);
 
