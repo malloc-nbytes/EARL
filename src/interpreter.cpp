@@ -48,7 +48,7 @@ earl::meta eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
-        UNIMPLEMENTED("eval_expr_term: Ident");
+        return std::unique_ptr<earl::value::Obj>(stored->value());
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
@@ -96,7 +96,7 @@ earl::meta eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     if (!earl::value::type_is_compatable(binding_type.get(), rhs_result.get())) {
         Err::err_wtok(stmt->m_id.get());
-        ERR(Err::Type::Fatal, "binding type does not match the resulting expression type");
+        ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
     }
 
     earl::variable::Obj *created_variable =
@@ -104,7 +104,7 @@ earl::meta eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     ctx.register_variable(created_variable);
 
-    abort();
+    return std::make_unique<earl::value::Void>();
 }
 
 earl::meta eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
@@ -180,8 +180,11 @@ earl::meta eval_stmt(Stmt *stmt, Ctx &ctx) {
 
 earl::meta Interpreter::interpret(Program &program) {
     Ctx ctx;
+    earl::meta meta;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        eval_stmt(program.m_stmts.at(i).get(), ctx);
+        meta = eval_stmt(program.m_stmts.at(i).get(), ctx);
     }
+
+    return std::make_unique<earl::value::Void>();
 }
