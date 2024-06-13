@@ -56,15 +56,15 @@
 //     }
 // }
 
-std::unique_ptr<earl::value::Obj> earl::value::of_str(const std::string &s) {
-    if (s[0] == '[') {
-        std::vector<earl::primitive::Type> acc;
-        parse_list_type(s.c_str(), acc);
-        return acc;
-    }
-    auto entry = str_to_type_map.find(s);
-    if (entry == str_to_type_map.end()) {
-        ERR_WARGS(Err::Type::Fatal, "%s is not a valid EARL type", s.c_str());
-    }
-    return std::vector{entry->second};
-}
+// std::unique_ptr<earl::value::Obj> earl::value::of_str(const std::string &s) {
+//     if (s[0] == '[') {
+//         std::vector<earl::primitive::Type> acc;
+//         parse_list_type(s.c_str(), acc);
+//         return acc;
+//     }
+//     auto entry = str_to_type_map.find(s);
+//     if (entry == str_to_type_map.end()) {
+//         ERR_WARGS(Err::Type::Fatal, "%s is not a valid EARL type", s.c_str());
+//     }
+//     return std::vector{entry->second};
+// }
