@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "err.hpp"
 #include "earl.hpp"
 #include "utils.hpp"
@@ -74,29 +75,38 @@ Type List::type(void) const {
 
 /*** OTHER ***/
 
-static void parse_list_type(const char *s, std::vector<earl::primitive::Type> &acc) {
-    if (s[0] == '[') {
-        acc.push_back(earl::primitive::Type::List);
-        parse_list_type(++s, acc);
-    }
-    else {
-        int pos = 0;
-        while (s[pos] != ']' && s[pos++] != '\0');
-        auto primitive = earl::primitive::of_str(std::string(s, s+pos));
-        acc.insert(acc.end(), primitive.begin(), primitive.end());
-    }
+static const std::unordered_map<std::string, earl::value::Type> str_to_type_map = {
+    {COMMON_EARLTY_INT32, earl::value::Type::Int},
+    {COMMON_EARLTY_STR, earl::value::Type::Str},
+    {COMMON_EARLTY_UNIT, earl::value::Type::Void},
+};
+
+static std::unique_ptr<Obj> parse_list_type(const std::string &s) {
+    if (s[0] != '[' || s[s.size() - 1] != ']')
+        ERR_WARGS(Err::Type::Fatal, "invalid list type: %s", s.c_str());
+    auto inner = s.substr(1, s.size() - 2);
+    if (inner.empty())
+        ERR_WARGS(Err::Type::Fatal, "empty list type: %s", s.c_str());
+    return earl::value::of_str(inner);
 }
 
 std::unique_ptr<Obj> earl::value::of_str(const std::string &s) {
     if (s[0] == '[') {
-        std::vector<earl::primitive::Type> acc;
-        parse_list_type(s.c_str(), acc);
-        return acc;
+        return parse_list_type(s);
+    } else {
+        auto it = str_to_type_map.find(s);
+        if (it == str_to_type_map.end())
+            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
+        switch (it->second) {
+        case Type::Int:
+            return std::make_unique<Int>();
+        case Type::Str:
+            return std::make_unique<Str>();
+        case Type::Void:
+            return std::make_unique<Void>();
+        default:
+            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
+        }
     }
-    auto entry = str_to_type_map.find(s);
-    if (entry == str_to_type_map.end()) {
-        ERR_WARGS(Err::Type::Fatal, "%s is not a valid EARL type", s.c_str());
-    }
-    return std::vector{entry->second};
 }
 

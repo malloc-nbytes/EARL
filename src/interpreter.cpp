@@ -36,39 +36,39 @@
 #include "common.hpp"
 #include "earl.hpp"
 
-void eval_stmt(Stmt *stmt, Ctx &ctx);
-void eval_stmt_block(StmtBlock *block, Ctx &ctx);
+earl::meta eval_stmt(Stmt *stmt, Ctx &ctx);
+earl::meta eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
-void eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
+earl::meta eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_funccall");
 }
 
-void eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+earl::meta eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_term");
 }
 
-void eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
+earl::meta eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr_bin");
 }
 
-void Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
+earl::meta Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
     UNIMPLEMENTED("eval_expr");
 }
 
-void eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
+earl::meta eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
         ERR_WARGS(Err::Type::Redeclared,
                   "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    
+    abort();
 }
 
-void eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
+earl::meta eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_expr");
 }
 
-void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+earl::meta eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_block");
 }
 
@@ -77,31 +77,31 @@ void eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // We just want to add it to the global context so it
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
-void eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
+earl::meta eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_def");
 }
 
-void eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
+earl::meta eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_if");
 }
 
-void eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
+earl::meta eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_return");
 }
 
-void eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
+earl::meta eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_mut");
 }
 
-void eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
+earl::meta eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_while");
 }
 
-void eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
+earl::meta eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_for");
 }
 
-void eval_stmt(Stmt *stmt, Ctx &ctx) {
+earl::meta eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
         return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
@@ -135,7 +135,7 @@ void eval_stmt(Stmt *stmt, Ctx &ctx) {
     }
 }
 
-void Interpreter::interpret(Program &program) {
+earl::meta Interpreter::interpret(Program &program) {
     Ctx ctx;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {

@@ -16,17 +16,17 @@ bool Ctx::variable_is_registered(earl::variable::Obj &var) {
 }
 
 bool Ctx::variable_is_registered(const std::string &id) {
-    // if (in_function()) {
-    //     return get_curfunc().has_local(id);
-    // }
-    // return m_globalvars.contains(id);
+    if (in_function()) {
+        return get_curfunc().has_local(id);
+    }
+    return m_globalvars.contains(id);
 }
 
 earl::function::Obj &Ctx::get_curfunc(void) {
-    // assert(m_curfunc);
-    // return *m_curfunc;
+    assert(m_curfunc);
+    return *m_curfunc;
 }
 
 bool Ctx::in_function(void) const {
-    // return m_curfunc != nullptr;
+    return m_curfunc != nullptr;
 }
