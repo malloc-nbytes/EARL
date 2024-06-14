@@ -32,6 +32,7 @@ void Ctx::register_variable(earl::variable::Obj *var) {
 }
 
 bool Ctx::variable_is_registered(earl::variable::Obj &var) {
+    UNIMPLEMENTED("variable_is_registered");
     // if (in_function()) {
     //     return get_curfunc().has_local(var.id());
     // }
@@ -43,6 +44,10 @@ bool Ctx::variable_is_registered(const std::string &id) {
         return get_curfunc().has_local(id);
     }
     return m_globalvars.contains(id);
+}
+
+bool Ctx::function_is_registered(const std::string &id) {
+    return m_globalfuncs.contains(id);
 }
 
 earl::function::Obj &Ctx::get_curfunc(void) {

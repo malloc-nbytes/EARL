@@ -93,7 +93,7 @@ namespace earl {
             Obj(StmtDef *stmtdef);
             ~Obj() = default;
 
-            std::string &id(void) const;
+            const std::string &id(void) const;
 
             void load_parameters(std::vector<value::Obj *>);
 

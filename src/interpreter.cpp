@@ -40,9 +40,9 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    // if (!ctx.function_is_registered(expr->m_id->lexeme())) {
-    //     ERR_WARGS(Err::Type::Fatal, "function `%s` is not declared", expr->m_id->lexeme().c_str());
-    // }
+    if (!ctx.function_is_registered(expr->m_id->lexeme())) {
+        ERR_WARGS(Err::Type::Fatal, "function `%s` is not declared", expr->m_id->lexeme().c_str());
+    }
 
     // if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
     //     return Intrinsics::call(expr->m_id->lexeme(), expr->m_args, ctx);
