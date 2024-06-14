@@ -42,9 +42,11 @@
 namespace Intrinsics {
     bool is_intrinsic(const std::string &id);
 
-    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> params, Ctx &ctx);
+    earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
-    using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>, Ctx&);
+    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>&, Ctx&);
 
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
 };

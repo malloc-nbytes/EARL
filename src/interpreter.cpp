@@ -39,14 +39,22 @@
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
+earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> params, Ctx &ctx) {
+    UNIMPLEMENTED("eval_user_defined_function");
+}
+
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    if (!ctx.function_is_registered(expr->m_id->lexeme())) {
-        ERR_WARGS(Err::Type::Fatal, "function `%s` is not declared", expr->m_id->lexeme().c_str());
+    std::vector<earl::value::Obj *> params;
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), ctx));
     }
 
-    // if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
-    //     return Intrinsics::call(expr->m_id->lexeme(), expr->m_args, ctx);
-    // }
+    if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
+        return Intrinsics::call(expr, params, ctx);
+    }
+
+    earl::function::Obj *func = ctx.get_registered_function(expr->m_id->lexeme());
+    return eval_user_defined_function(func, params, ctx);
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
@@ -121,7 +129,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_expr");
+    return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx) {

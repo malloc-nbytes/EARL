@@ -50,6 +50,17 @@ bool Ctx::function_is_registered(const std::string &id) {
     return m_globalfuncs.contains(id);
 }
 
+earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
+    earl::function::Obj **func = nullptr;
+    func = m_globalfuncs.get(id);
+    if (!func) {
+        ERR_WARGS(Err::Type::Fatal,
+                  "function `%s` is not in global scope",
+                  id.c_str());
+    }
+    return *func;
+}
+
 earl::function::Obj &Ctx::get_curfunc(void) {
     assert(m_curfunc);
     return *m_curfunc;
