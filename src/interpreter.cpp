@@ -36,30 +36,36 @@
 #include "common.hpp"
 #include "earl.hpp"
 
-earl::value::Obj * eval_stmt(Stmt *stmt, Ctx &ctx);
-earl::value::Obj * eval_stmt_block(StmtBlock *block, Ctx &ctx);
+earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
+earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
-earl::value::Obj * eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
-    UNIMPLEMENTED("eval_expr_funccall");
+earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
+    // if (!ctx.function_is_registered(expr->m_id->lexeme())) {
+    //     ERR_WARGS(Err::Type::Fatal, "function `%s` is not declared", expr->m_id->lexeme().c_str());
+    // }
+
+    // if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
+    //     return Intrinsics::call(expr->m_id->lexeme(), expr->m_args, ctx);
+    // }
 }
 
-earl::value::Obj * eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
-        abort();
-        // return new earl::value::Obj(stored->value());
+        return stored->value();
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
         return new earl::value::Int(std::stoi(intlit->m_tok->lexeme()));
     } break;
     case ExprTermType::Str_Literal: {
-        UNIMPLEMENTED("eval_expr_term: Str_Literal");
+        ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
+        return new earl::value::Str(strlit->m_tok->lexeme());
     } break;
     case ExprTermType::Func_Call: {
-        UNIMPLEMENTED("eval_expr_term: Func_Call");
+        return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
@@ -92,7 +98,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     }
 
     // std::unique_ptr<earl::value::Obj> binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
-    earl::value::Obj *binding_type = earl::value::of_str2(stmt->m_type.get()->lexeme());
+    earl::value::Obj *binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
 
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
@@ -101,10 +107,10 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
         ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
     }
 
-    // if (!earl::value::type_is_compatable(binding_type.get(), rhs_result)) {
-    //     Err::err_wtok(stmt->m_id.get());
-    //     ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
-    // }
+    if (!earl::value::type_is_compatable(binding_type, rhs_result)) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
+    }
 
     earl::variable::Obj *created_variable =
         new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result));

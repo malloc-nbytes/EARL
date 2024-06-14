@@ -1,3 +1,5 @@
+/** @file */
+
 #ifndef EARL_H
 #define EARL_H
 
@@ -22,6 +24,7 @@ namespace earl {
 
         struct Obj {
             ~Obj() = default;
+            int x;
 
             virtual Type type(void) const = 0;
         };
@@ -65,8 +68,7 @@ namespace earl {
             std::optional<std::vector<Obj>> m_value;
         };
 
-        std::unique_ptr<Obj> of_str(const std::string &s);
-        Obj *of_str2(const std::string &s);
+        Obj *of_str(const std::string &s);
         bool type_is_compatable(Obj *const obj1, Obj *const obj2);
     };
 

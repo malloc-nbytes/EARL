@@ -36,8 +36,17 @@
 #include "interpreter.hpp"
 #include "ctx.hpp"
 #include "ast.hpp"
+#include "earl.hpp"
 
 /// @brief The `Intrinsics` namespace
-namespace Intrinsics {};
+namespace Intrinsics {
+    bool is_intrinsic(const std::string &id);
+
+    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> params, Ctx &ctx);
+
+    using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>, Ctx&);
+
+    extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
+};
 
 #endif // INTRINSICS_H
