@@ -40,7 +40,9 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
 earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> params, Ctx &ctx) {
-    UNIMPLEMENTED("eval_user_defined_function");
+    func->load_parameters(params);
+
+    eval_stmt_block(func->block(), ctx);
 }
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -145,11 +147,8 @@ earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
         ERR_WARGS(Err::Type::Redeclared,
                   "function `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
-
     earl::function::Obj *created_function = new earl::function::Obj(stmt);
-
     ctx.register_function(created_function);
-
     return new earl::value::Void();
 }
 

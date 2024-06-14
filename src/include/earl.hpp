@@ -94,8 +94,9 @@ namespace earl {
             ~Obj() = default;
 
             const std::string &id(void) const;
+            StmtBlock *block(void) const;
 
-            void load_parameters(std::vector<value::Obj *> exprs);
+            void load_parameters(std::vector<value::Obj *> values);
 
             void push_scope(void);
             void pop_scope(void);
