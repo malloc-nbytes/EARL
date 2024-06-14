@@ -45,5 +45,6 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
         earl::variable::Obj *var = new earl::variable::Obj(m_stmtdef->m_args[i].first.get(), std::unique_ptr<earl::value::Obj>(value));
 
         add_local(var);
+
     }
 }

@@ -41,7 +41,7 @@ struct Ctx {
     Ctx();
     ~Ctx() = default;
 
-    void set_function(earl::function::Obj &func);
+    void set_function(earl::function::Obj *func);
     void unset_function(void);
 
     void push_scope(void);
@@ -66,7 +66,7 @@ struct Ctx {
 
     earl::variable::Obj *get_global_registered_variable(const std::string &id);
 
-    earl::function::Obj &get_curfunc(void);
+    earl::function::Obj *get_curfunc(void);
 
 private:
     earl::function::Obj *m_curfunc;

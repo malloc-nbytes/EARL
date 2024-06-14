@@ -9,8 +9,27 @@ Ctx::Ctx() : m_curfunc(nullptr) {
     // earl::primitive::fill_typemap();
 }
 
+void Ctx::set_function(earl::function::Obj *func) {
+    m_curfunc = func;
+}
+
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     earl::variable::Obj **var = nullptr;
+
+    if (in_function() && get_curfunc()->is_world()) {
+        var = m_globalvars.get(id);
+        if (!var) { // not global, check local
+            var = get_curfunc()->m_local.back().get(id);
+        }
+        else if (get_curfunc()->contains_local(id)) { // is in global, make sure its not in local
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
+        }
+    }
+    else if (in_function()) {
+        auto *func = get_curfunc();
+        var = func->m_local.back().get(id);
+    }
+
     var = m_globalvars.get(id);
     if (!var) {
         ERR_WARGS(Err::Type::Fatal,
@@ -41,7 +60,7 @@ bool Ctx::variable_is_registered(earl::variable::Obj &var) {
 
 bool Ctx::variable_is_registered(const std::string &id) {
     if (in_function()) {
-        return get_curfunc().has_local(id);
+        return get_curfunc()->has_local(id);
     }
     return m_globalvars.contains(id);
 }
@@ -66,9 +85,9 @@ earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
     return *func;
 }
 
-earl::function::Obj &Ctx::get_curfunc(void) {
+earl::function::Obj *Ctx::get_curfunc(void) {
     assert(m_curfunc);
-    return *m_curfunc;
+    return m_curfunc;
 }
 
 bool Ctx::in_function(void) const {
