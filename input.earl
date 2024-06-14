@@ -1,4 +1,10 @@
+def func(a: int) -> void {
+    print("in func: ", a);
+}
+
 x: int = 99;
 y: int = x;
 
 print("x: ", x, " y: ", y);
+
+func(x);

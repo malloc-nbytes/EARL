@@ -105,7 +105,6 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
                   "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    // std::unique_ptr<earl::value::Obj> binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
     earl::value::Obj *binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
 
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
@@ -142,7 +141,16 @@ earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx) {
 // can be called later from either a statement expression
 // or a right-hand-side assignment.
 earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_def");
+    if (ctx.function_is_registered(stmt->m_id->lexeme())) {
+        ERR_WARGS(Err::Type::Redeclared,
+                  "function `%s` is already declared", stmt->m_id->lexeme().c_str());
+    }
+
+    earl::function::Obj *created_function = new earl::function::Obj(stmt);
+
+    ctx.register_function(created_function);
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_stmt_if(StmtIf *stmt, Ctx &ctx) {

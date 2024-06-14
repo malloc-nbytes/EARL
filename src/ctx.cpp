@@ -50,6 +50,11 @@ bool Ctx::function_is_registered(const std::string &id) {
     return m_globalfuncs.contains(id);
 }
 
+void Ctx::register_function(earl::function::Obj *func) {
+    const std::string &id = func->id();
+    m_globalfuncs.add(id, func);
+}
+
 earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
     earl::function::Obj **func = nullptr;
     func = m_globalfuncs.get(id);
