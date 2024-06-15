@@ -42,6 +42,9 @@ Obj *Int::binop(Token *op, Obj *other) {
     case TokenType::Forwardslash: {
         return new Int(this->value() / dynamic_cast<Int *>(other)->value());
     } break;
+    case TokenType::Lessthan: {
+        return new Int(static_cast<int>(this->value() < dynamic_cast<Int *>(other)->value()));
+    }
     default: {
         Err::err_wtok(op);
         ERR(Err::Type::Fatal, "invalid binary operator");
@@ -50,7 +53,7 @@ Obj *Int::binop(Token *op, Obj *other) {
 }
 
 bool Int::boolean(void) {
-    return this->value() != 0;
+    return this->value();
 }
 
 void Int::mutate(Obj *other) {

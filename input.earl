@@ -1,12 +1,3 @@
-def test(a: int) -> void {
-    a = a + 9;
-    print("a: ", a);
+for i in 0..10 {
+    print(i);
 }
-
-x: int = 10;
-
-print("before: ", x);
-
-test(x);
-
-print("after: ", x);

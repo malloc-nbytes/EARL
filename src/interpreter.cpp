@@ -188,13 +188,14 @@ earl::value::Obj *eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
-    earl::value::Obj *expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    earl::value::Obj *expr_result = nullptr;
     earl::value::Obj *result = nullptr;
 
-    while (expr_result->boolean()) {
+    while ((expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx))->boolean()) {
         result = eval_stmt_block(stmt->m_block.get(), ctx);
         if (result && result->type() != earl::value::Type::Void)
             break;
+        delete expr_result;
     }
 
     return result;
@@ -244,6 +245,7 @@ earl::value::Obj *Interpreter::interpret(Program &program) {
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
         meta = eval_stmt(program.m_stmts.at(i).get(), ctx);
+        delete meta;
     }
 
     return new earl::value::Void();

@@ -23,8 +23,7 @@ namespace earl {
         };
 
         struct Obj {
-            ~Obj() = default;
-
+            virtual ~Obj() {}
             virtual Type type(void) const = 0;
             virtual Obj *binop(Token *op, Obj *other) = 0;
             virtual bool boolean(void) = 0;
@@ -109,8 +108,6 @@ namespace earl {
 
     namespace function {
         struct Obj {
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
-
             Obj(StmtDef *stmtdef);
             ~Obj() = default;
 
@@ -132,6 +129,7 @@ namespace earl {
             size_t context_size(void);
             bool is_world(void) const;
 
+            std::vector<Scope<std::string, variable::Obj *>> m_local;
         private:
             StmtDef *m_stmtdef;
         };
