@@ -90,9 +90,9 @@ earl::value::Obj *eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
     earl::value::Obj *lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
     earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
 
-    lhs->binop(expr->m_op.get(), rhs);
+    earl::value::Obj *result = lhs->binop(expr->m_op.get(), rhs);
 
-    return lhs;
+    return result;
 }
 
 earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx) {

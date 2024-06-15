@@ -6,17 +6,6 @@
 
 using namespace earl::value;
 
-Obj *obj_cast(Obj *obj) {
-    switch (obj->type()) {
-    case Type::Int: return dynamic_cast<Int *>(obj);
-    case Type::Str: return dynamic_cast<Str *>(obj);
-    case Type::Void: return dynamic_cast<Void *>(obj);
-    case Type::List: return dynamic_cast<List *>(obj);
-    default:
-        ERR(Err::Type::Fatal, "cannot cast object");
-    }
-}
-
 /*** INT ***/
 
 Int::Int(std::optional<int> value) : m_value(value) {}
@@ -35,23 +24,23 @@ Type Int::type(void) const {
     return Type::Int;
 }
 
-void Int::binop(Token *op, Obj *other) {
+Obj *Int::binop(Token *op, Obj *other) {
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot binop (fix this message)");
     }
 
     switch (op->type()) {
     case TokenType::Plus: {
-        this->fill(this->value() + dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() + dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Minus: {
-        UNIMPLEMENTED("TokenType::Minus");
+        return new Int(this->value() - dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Asterisk: {
-        UNIMPLEMENTED("TokenType::Asterisk");
+        return new Int(this->value() * dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Forwardslash: {
-        UNIMPLEMENTED("TokenType::Forwardslash");
+        return new Int(this->value() / dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -78,8 +67,20 @@ Type Str::type(void) const {
     return Type::Str;
 }
 
-void Str::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("Str::binop");
+Obj *Str::binop(Token *op, Obj *other) {
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    switch (op->type()) {
+    case TokenType::Plus: {
+        return new Str(this->value() + dynamic_cast<Str *>(other)->value());
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    }
+    }
 }
 
 /*** VOID ***/
@@ -96,7 +97,7 @@ Type Void::type(void) const {
     return Type::Void;
 }
 
-void Void::binop(Token *op, Obj *other) {
+Obj *Void::binop(Token *op, Obj *other) {
     UNIMPLEMENTED("Void::binop");
 }
 
@@ -118,7 +119,7 @@ Type List::type(void) const {
     return Type::List;
 }
 
-void List::binop(Token *op, Obj *other) {
+Obj *List::binop(Token *op, Obj *other) {
     UNIMPLEMENTED("List::binop");
 }
 
