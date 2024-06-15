@@ -3,7 +3,7 @@ def func() -> void {
     print("in func: ", x);
 }
 
-x: int = 99;
+x: int = 10 + 20 + 50;
 y: int = x;
 
 func();

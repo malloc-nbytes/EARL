@@ -87,7 +87,12 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
-    UNIMPLEMENTED("eval_expr_bin");
+    earl::value::Obj *lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+    earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+
+    lhs->binop(expr->m_op.get(), rhs);
+
+    return lhs;
 }
 
 earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
