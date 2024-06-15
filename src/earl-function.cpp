@@ -72,9 +72,13 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
                       m_stmtdef->m_id->lexeme().c_str());
         }
 
+        // NOTE: To handle references, replace:
+        //     std::unique_ptr<earl::value::Obj>(value->copy())
+        // with:
+        //     std::unique_ptr<earl::value::Obj>(value)
         earl::variable::Obj *var =
             new earl::variable::Obj(m_stmtdef->m_args[i].first.get(),
-                                    std::unique_ptr<earl::value::Obj>(value));
+                                    std::unique_ptr<earl::value::Obj>(value->copy()));
 
         add_local(var);
     }

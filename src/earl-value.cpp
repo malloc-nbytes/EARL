@@ -68,6 +68,10 @@ void Int::mutate(Obj *other) {
     }
 }
 
+Obj *Int::copy(void) {
+    return new Int(this->value());
+}
+
 /*** STR ***/
 
 Str::Str(std::optional<std::string> value) : m_value(std::move(value)) {}
@@ -110,6 +114,10 @@ void Str::mutate(Obj *other) {
     UNIMPLEMENTED("Str::mutate");
 }
 
+Obj *Str::copy(void) {
+    return new Str(this->value());
+}
+
 /*** VOID ***/
 
 Void::Void(std::optional<void *> value) : m_value(value) {}
@@ -134,6 +142,10 @@ bool Void::boolean(void) {
 
 void Void::mutate(Obj *other) {
     UNIMPLEMENTED("Void::mutate");
+}
+
+Obj *Void::copy(void) {
+    return new Void(this->value());
 }
 
 /*** LIST ***/
@@ -164,6 +176,10 @@ bool List::boolean(void) {
 
 void List::mutate(Obj *other) {
     UNIMPLEMENTED("List::mutate");
+}
+
+Obj *List::copy(void) {
+    UNIMPLEMENTED("List::copy");
 }
 
 /*** OTHER ***/

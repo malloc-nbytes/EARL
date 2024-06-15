@@ -1,8 +1,12 @@
-def func(i: int) -> void {
-    while i {
-        print(i);
-        i = i-1;
-    }
+def test(a: int) -> void {
+    a = a + 9;
+    print("a: ", a);
 }
 
-func(10);
+x: int = 10;
+
+print("before: ", x);
+
+test(x);
+
+print("after: ", x);
