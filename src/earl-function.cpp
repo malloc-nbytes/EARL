@@ -4,7 +4,9 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef) : m_stmtdef(stmtdef) {}
+Obj::Obj(StmtDef *stmtdef) : m_stmtdef(stmtdef) {
+    m_local.emplace_back();
+}
 
 const std::string &Obj::id(void) const {
     return m_stmtdef->m_id->lexeme();
@@ -15,7 +17,19 @@ StmtBlock *Obj::block(void) const {
 }
 
 bool Obj::has_local(const std::string &id) {
-    return m_local.contains(id);
+    return m_local.back().contains(id);
+}
+
+earl::variable::Obj *Obj::get_local(const std::string &id) {
+    auto **var = m_local.back().get(id);
+
+    if (!var) {
+        ERR_WARGS(Err::Type::Fatal,
+                  "variable `%s` is not in local scope",
+                  id.c_str());
+    }
+
+    return *var;
 }
 
 void Obj::add_local(variable::Obj *var) {
@@ -26,7 +40,7 @@ void Obj::add_local(variable::Obj *var) {
                   m_stmtdef->m_id->lexeme().c_str());
     }
 
-    m_local.add(var->id(), var);
+    m_local.back().add(var->id(), var);
 }
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> values) {

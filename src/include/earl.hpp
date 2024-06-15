@@ -106,14 +106,14 @@ namespace earl {
             bool has_local(const std::string &id);
             void add_local(variable::Obj *var);
             void remove_local(const std::string &id);
-            variable::Obj &get_local(const std::string &id);
+            variable::Obj *get_local(const std::string &id);
 
             size_t context_size(void);
             bool is_world(void) const;
 
+            std::vector<Scope<std::string, variable::Obj *>> m_local;
         private:
             StmtDef *m_stmtdef;
-            Scope<std::string, variable::Obj *> m_local;
         };
     };
 };

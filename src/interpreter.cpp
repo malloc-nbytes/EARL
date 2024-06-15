@@ -42,7 +42,8 @@ earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> params, Ctx &ctx) {
     ctx.set_function(func);
     func->load_parameters(params);
-    eval_stmt_block(func->block(), ctx);
+    earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
+    return result;
 }
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -56,6 +57,7 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     }
 
     earl::function::Obj *func = ctx.get_registered_function(expr->m_id->lexeme());
+
     return eval_user_defined_function(func, params, ctx);
 }
 

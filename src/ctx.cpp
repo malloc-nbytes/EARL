@@ -16,26 +16,20 @@ void Ctx::set_function(earl::function::Obj *func) {
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     earl::variable::Obj **var = nullptr;
 
-    if (in_function() && get_curfunc()->is_world()) {
-        var = m_globalvars.get(id);
-        if (!var) { // not global, check local
-            var = get_curfunc()->m_local.back().get(id);
-        }
-        else if (get_curfunc()->contains_local(id)) { // is in global, make sure its not in local
-            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
-        }
-    }
-    else if (in_function()) {
+    if (in_function()) {
         auto *func = get_curfunc();
         var = func->m_local.back().get(id);
     }
+    else {
+        var = m_globalvars.get(id);
+    }
 
-    var = m_globalvars.get(id);
     if (!var) {
         ERR_WARGS(Err::Type::Fatal,
-                  "variable `%s` is not in global scope",
+                  "variable `%s` is not in scope",
                   id.c_str());
     }
+
     return *var;
 }
 
