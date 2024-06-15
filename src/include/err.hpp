@@ -51,6 +51,8 @@ namespace Err {
         Undeclared,
         /** Incorrect usage of a type during runtime */
         Types,
+        /** Call to the intrinsic `assert` function failed */
+        Assertion,
         /** For use during development of TODO functions */
         Todo,
     };

@@ -40,15 +40,28 @@
 
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {
-    bool is_intrinsic(const std::string &id);
-
-    earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
-
-    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>&, Ctx&);
 
+    /// @brief A map of all intrinsic functions in EARL
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
+
+    /// @brief Check if an identifier is the name of an intrinsic function
+    /// @param id The identifier to check
+    /// @return true if intrinsic, false if otherwise
+    bool is_intrinsic(const std::string &id);
+
+    /// @brief Call an intrinsic function
+    /// @note It is expected to call `is_intrinsic` before calling this function
+    /// @param expr The AST node of the function call
+    /// @param params value objects to pass to the function
+    /// @param ctx The current global context
+    earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+
+    earl::value::Obj *intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

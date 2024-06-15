@@ -150,7 +150,9 @@ Type Void::type(void) const {
 }
 
 Obj *Void::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("Void::binop");
+    Err::err_wtok(op);
+    ERR(Err::Type::Types, "invalid binary operation on Void types");
+    return nullptr; // unreachable
 }
 
 bool Void::boolean(void) {
