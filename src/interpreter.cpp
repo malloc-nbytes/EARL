@@ -202,7 +202,29 @@ earl::value::Obj *eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_for");
+    earl::value::Obj *result = nullptr;
+    earl::value::Obj *start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx);
+    earl::value::Obj *end_expr = Interpreter::eval_expr(stmt->m_end.get(), ctx);
+
+    earl::variable::Obj *enumerator
+        = new earl::variable::Obj(stmt->m_enumerator.get(), std::unique_ptr<earl::value::Obj>(start_expr));
+
+    assert(!ctx.variable_is_registered(enumerator->id()));
+    ctx.register_variable(enumerator);
+
+    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr);
+    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr);
+
+    while (start->value() < end->value()) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+
+        start->mutate(new earl::value::Int(start->value() + 1));
+    }
+
+    return result;
 }
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {

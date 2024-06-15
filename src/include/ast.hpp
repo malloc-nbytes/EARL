@@ -280,7 +280,7 @@ struct StmtFor : public Stmt {
     /// @brief The starting expression
     std::unique_ptr<Expr> m_start;
 
-    /// @brief The starting expression
+    /// @brief The ending expression
     std::unique_ptr<Expr> m_end;
 
     /// @brief The block for the loop to execute
