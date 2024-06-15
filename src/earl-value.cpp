@@ -49,6 +49,25 @@ Obj *Int::binop(Token *op, Obj *other) {
     }
 }
 
+bool Int::boolean(void) {
+    return this->value() != 0;
+}
+
+void Int::mutate(Obj *other) {
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot mutate (fix this message)");
+    }
+
+    switch (other->type()) {
+    case Type::Int: {
+        this->fill(dynamic_cast<Int *>(other)->value());
+    } break;
+    default: {
+        assert(false && "unreachable");
+    }
+    }
+}
+
 /*** STR ***/
 
 Str::Str(std::optional<std::string> value) : m_value(std::move(value)) {}
@@ -83,6 +102,14 @@ Obj *Str::binop(Token *op, Obj *other) {
     }
 }
 
+bool Str::boolean(void) {
+    return true;
+}
+
+void Str::mutate(Obj *other) {
+    UNIMPLEMENTED("Str::mutate");
+}
+
 /*** VOID ***/
 
 Void::Void(std::optional<void *> value) : m_value(value) {}
@@ -99,6 +126,14 @@ Type Void::type(void) const {
 
 Obj *Void::binop(Token *op, Obj *other) {
     UNIMPLEMENTED("Void::binop");
+}
+
+bool Void::boolean(void) {
+    return false;
+}
+
+void Void::mutate(Obj *other) {
+    UNIMPLEMENTED("Void::mutate");
 }
 
 /*** LIST ***/
@@ -121,6 +156,14 @@ Type List::type(void) const {
 
 Obj *List::binop(Token *op, Obj *other) {
     UNIMPLEMENTED("List::binop");
+}
+
+bool List::boolean(void) {
+    return true;
+}
+
+void List::mutate(Obj *other) {
+    UNIMPLEMENTED("List::mutate");
 }
 
 /*** OTHER ***/

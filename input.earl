@@ -1,16 +1,8 @@
-@world
-def func() -> void {
-    print("in func x: ", x);
-    print("in func y: ", y);
+def func(i: int) -> void {
+    while i {
+        print(i);
+        i = i-1;
+    }
 }
 
-x: int = 10 + 20;
-y: int = x + 20;
-
-s1: str = "hello";
-s2: str = "world";
-s3: str = s1 + " " + s2;
-
-print(s3);
-
-func();
+func(10);

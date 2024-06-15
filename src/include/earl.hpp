@@ -27,6 +27,8 @@ namespace earl {
 
             virtual Type type(void) const = 0;
             virtual Obj *binop(Token *op, Obj *other) = 0;
+            virtual bool boolean(void) = 0;
+            virtual void mutate(Obj *other) = 0;
         };
 
         struct Int : public Obj {
@@ -35,6 +37,8 @@ namespace earl {
             int value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void) override;
+            void mutate(Obj *other) override;
 
         private:
             std::optional<int> m_value;
@@ -46,6 +50,8 @@ namespace earl {
             std::string &value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void) override;
+            void mutate(Obj *other) override;
 
         private:
             std::optional<std::string> m_value;
@@ -56,6 +62,8 @@ namespace earl {
             void *value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void) override;
+            void mutate(Obj *other) override;
 
         private:
             std::optional<void *> m_value;
@@ -67,6 +75,8 @@ namespace earl {
             std::vector<Obj> &value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void) override;
+            void mutate(Obj *other) override;
 
         private:
             std::optional<std::vector<Obj>> m_value;
