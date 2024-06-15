@@ -60,7 +60,16 @@ namespace Intrinsics {
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
+    /// @brief Assert several expressions
+    /// @param expr The AST node of the function call
+    /// @param params value objects to pass to the function
+    /// @param ctx The current global context
     earl::value::Obj *intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    /// @brief Print several expressions
+    /// @param expr The AST node of the function call
+    /// @param params value objects to pass to the function
+    /// @param ctx The current global context
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 };
 
