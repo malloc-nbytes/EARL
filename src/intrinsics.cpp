@@ -53,6 +53,33 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
             earl::value::Str *strparam = dynamic_cast<earl::value::Str *>(param);
             std::cout << strparam->value();
         } break;
+        case earl::value::Type::List: {
+            earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
+            std::cout << '[';
+            std::vector<earl::value::Obj *> &list = listparam->value();
+            for (size_t j = 0; j < list.size(); ++j) {
+                earl::value::Obj *listitem = list.at(j);
+                switch (listitem->type()) {
+                case earl::value::Type::Int: {
+                    earl::value::Int *intitem = dynamic_cast<earl::value::Int *>(listitem);
+                    std::cout << intitem->value();
+                } break;
+                case earl::value::Type::Str: {
+                    earl::value::Str *stritem = dynamic_cast<earl::value::Str *>(listitem);
+                    std::cout << stritem->value();
+                } break;
+                default: {
+                    Err::err_wtok(expr->m_id.get());
+                    ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown list item type %d", static_cast<int>(listitem->type()));
+                } break;
+                }
+                if (j != list.size() - 1) {
+                    std::cout << ", ";
+                }
+            }
+
+            std::cout << ']';
+        } break;
         default: {
             Err::err_wtok(expr->m_id.get());
             ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));

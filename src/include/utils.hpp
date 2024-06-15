@@ -51,21 +51,27 @@
 // some return value that is not yet returning anything.
 // It prints `msg` and returns `retttype`
 #define UNIMPLEMENTED_WITH(msg, rettype)                \
-    fprintf(stderr, "UNIMPLEMENTED: " msg "\n");        \
+    fprintf(stderr, "[EARL UNIMPLEMENTED]: " msg "\n");        \
     return rettype
 
+#define TODO(msg) fprintf(stderr, "[EARL TODO]: " msg "\n")
+
+[[deprecated]]
 #define CPL(ty, x) ((void *)&(ty){(x)})
 
 // A malloc wrapper that checks if
 // malloc failed. Allocates `bytes` number of bytes.
+[[deprecated]]
 void *utils_safe_malloc(size_t bytes);
 
 // A wrapper for strcmp that checks if the
 // strings are equal. Returns 1 on success,
 // and 0 on failure.
+[[deprecated]]
 int utils_streq(const char *s1, const char *s2);
 
 // Fill an array from 0..len with values 0..len.
+[[deprecated]]
 void utils_iota_array(int *arr, size_t len);
 
 #endif // UTILS_H

@@ -169,13 +169,13 @@ Obj *Void::copy(void) {
 
 /*** LIST ***/
 
-List::List(std::optional<std::vector<Obj>> value) : m_value(std::move(value)) {}
+List::List(std::optional<std::vector<Obj *>> value) : m_value(std::move(value)) {}
 
-void List::fill(std::vector<Obj> value) {
+void List::fill(std::vector<Obj *> value) {
     m_value = std::move(value);
 }
 
-std::vector<Obj> &List::value(void) {
+std::vector<Obj *> &List::value(void) {
     if (!m_value.has_value())
         ERR(Err::Type::Fatal, "tried to unwrap None value");
     return m_value.value();
@@ -186,7 +186,24 @@ Type List::type(void) const {
 }
 
 Obj *List::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("List::binop");
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    switch (op->type()) {
+    case TokenType::Plus: {
+        auto list = new List();
+        list->fill(this->value());
+        list->value().insert(list->value().end(), dynamic_cast<List *>(other)->value().begin(), dynamic_cast<List *>(other)->value().end());
+        return list;
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    }
+    }
+
+    return nullptr; // unreachable
 }
 
 bool List::boolean(void) {
@@ -198,7 +215,9 @@ void List::mutate(Obj *other) {
 }
 
 Obj *List::copy(void) {
-    UNIMPLEMENTED("List::copy");
+    auto list = new List();
+    list->fill(this->value());
+    return list;
 }
 
 /*** OTHER ***/
@@ -220,7 +239,9 @@ static Obj *parse_list_type(const std::string &s) {
 
 Obj *earl::value::of_str(const std::string &s) {
     if (s[0] == '[') {
-        return parse_list_type(s);
+        TODO("earl::value::of_str: List type parsing");
+        return new List();
+        // return parse_list_type(s);
     } else {
         auto it = str_to_type_map.find(s);
         if (it == str_to_type_map.end())
@@ -242,19 +263,19 @@ bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
 
     // They are lists, make sure the lists hold the same types.
     if (obj1->type() == Type::List && obj2->type() == Type::List) {
-        List *const list1 = dynamic_cast<List *const>(obj1);
-        List *const list2 = dynamic_cast<List *const>(obj2);
+        // List *const list1 = dynamic_cast<List *const>(obj1);
+        // List *const list2 = dynamic_cast<List *const>(obj2);
 
-        if (list1->value().size() != list2->value().size()) {
-            return false;
-        }
+        // if (list1->value().size() != list2->value().size()) {
+        //     return false;
+        // }
 
-        for (size_t i = 0; i < list1->value().size(); ++i) {
-            if (!type_is_compatable(&list1->value()[i], &list2->value()[i])) {
-                return false;
-            }
-        }
-
+        // for (size_t i = 0; i < list1->value().size(); ++i) {
+        //     if (!type_is_compatable(list1->value()[i], list2->value()[i])) {
+        //         return false;
+        //     }
+        // }
+        TODO("earl::value::type_is_compatable: List type compatibility");
         return true;
     }
 

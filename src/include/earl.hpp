@@ -73,9 +73,9 @@ namespace earl {
         };
 
         struct List : public Obj {
-            List(std::optional<std::vector<Obj>> value = {});
-            void fill(std::vector<Obj> value);
-            std::vector<Obj> &value(void);
+            List(std::optional<std::vector<Obj *>> value = {});
+            void fill(std::vector<Obj *> value);
+            std::vector<Obj *> &value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
             bool boolean(void) override;
@@ -83,7 +83,7 @@ namespace earl {
             Obj *copy(void) override;
 
         private:
-            std::optional<std::vector<Obj>> m_value;
+            std::optional<std::vector<Obj *>> m_value;
         };
 
         Obj *of_str(const std::string &s);

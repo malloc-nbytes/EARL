@@ -62,6 +62,14 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     return eval_user_defined_function(func, params, ctx);
 }
 
+earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
+    std::vector<earl::value::Obj *> list;
+    for (size_t i = 0; i < expr->m_elems.size(); ++i) {
+        list.push_back(Interpreter::eval_expr(expr->m_elems.at(i).get(), ctx));
+    }
+    return new earl::value::List(std::move(list));
+}
+
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -79,6 +87,9 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     } break;
     case ExprTermType::Func_Call: {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+    } break;
+    case ExprTermType::List_Literal: {
+        return eval_expr_list_literal(dynamic_cast<ExprListLit *>(expr), ctx);
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
@@ -124,16 +135,10 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
         ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
     }
 
-    if (!earl::value::type_is_compatable(binding_type, rhs_result)) {
-        Err::err_wtok(stmt->m_id.get());
-        ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
-    }
-
     earl::variable::Obj *created_variable =
         new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result));
 
     ctx.register_variable(created_variable);
-
     return new earl::value::Void();
 }
 
