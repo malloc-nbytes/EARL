@@ -48,7 +48,6 @@ struct Ctx {
     void pop_scope(void);
 
     void register_variable(earl::variable::Obj *var);
-    void unregister_variable(earl::variable::Obj *var);
     void unregister_variable(const std::string &id);
 
     void register_function(earl::function::Obj *func);

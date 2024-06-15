@@ -224,6 +224,11 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
         start->mutate(new earl::value::Int(start->value() + 1));
     }
 
+    ctx.unregister_variable(enumerator->id());
+
+    delete start_expr;
+    delete end_expr;
+
     return result;
 }
 

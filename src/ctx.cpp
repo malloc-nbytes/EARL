@@ -81,6 +81,16 @@ bool Ctx::variable_is_registered(const std::string &id) {
     return m_globalvars.contains(id);
 }
 
+void Ctx::unregister_variable(const std::string &id) {
+    if (in_function()) {
+        get_curfunc()->m_local.back().remove(id);
+    }
+    else {
+        m_globalvars.remove(id);
+    }
+
+}
+
 bool Ctx::function_is_registered(const std::string &id) {
     return m_globalfuncs.contains(id);
 }
