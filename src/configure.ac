@@ -18,11 +18,6 @@ if test "x$DOXYGEN" = "xno"; then
   AC_MSG_WARN([Doxygen is required to build the documentation. Please install it.])
 fi
 
-AC_CHECK_PROG([LATEX], [latex], [latex], [no])
-if test "x$LATEX" = "xno"; then
-  AC_MSG_WARN([Latex is required to build the latex version of the documentation. Please install it.])
-fi
-
 # Tells automake to create Makefiles in specified directories
 AC_CONFIG_FILES([Makefile
                 test/Makefile])

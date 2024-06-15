@@ -37,7 +37,7 @@ void Ctx::register_variable(earl::variable::Obj *var) {
     const std::string &id = var->id();
 
     if (in_function()) {
-        UNIMPLEMENTED("register_variable: in_function");
+        get_curfunc()->m_local.back().add(id, var);
     }
     else {
         m_globalvars.add(id, var);
