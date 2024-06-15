@@ -1,6 +1,7 @@
+#include "earl.hpp"
+#include "token.hpp"
 #include "common.hpp"
 #include "err.hpp"
-#include "earl.hpp"
 #include "utils.hpp"
 
 using namespace earl::value;
@@ -23,6 +24,10 @@ Type Int::type(void) const {
     return Type::Int;
 }
 
+void Int::binop(Token *op, Obj &other) {
+    UNIMPLEMENTED("Int::binop");
+}
+
 /*** STR ***/
 
 Str::Str(std::optional<std::string> value) : m_value(std::move(value)) {}
@@ -41,6 +46,10 @@ Type Str::type(void) const {
     return Type::Str;
 }
 
+void Str::binop(Token *op, Obj &other) {
+    UNIMPLEMENTED("Str::binop");
+}
+
 /*** VOID ***/
 
 Void::Void(std::optional<void *> value) : m_value(value) {}
@@ -53,6 +62,10 @@ void *Void::value(void) {
 
 Type Void::type(void) const {
     return Type::Void;
+}
+
+void Void::binop(Token *op, Obj &other) {
+    UNIMPLEMENTED("Void::binop");
 }
 
 /*** LIST ***/
@@ -71,6 +84,10 @@ std::vector<Obj> &List::value(void) {
 
 Type List::type(void) const {
     return Type::List;
+}
+
+void List::binop(Token *op, Obj &other) {
+    UNIMPLEMENTED("List::binop");
 }
 
 /*** OTHER ***/

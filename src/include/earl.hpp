@@ -26,6 +26,7 @@ namespace earl {
             ~Obj() = default;
 
             virtual Type type(void) const = 0;
+            virtual void binop(Token *op, Obj &other) = 0;
         };
 
         struct Int : public Obj {
@@ -33,6 +34,7 @@ namespace earl {
             void fill(int value);
             int value(void);
             Type type(void) const override;
+            void binop(Token *op, Obj &other) override;
 
         private:
             std::optional<int> m_value;
@@ -43,6 +45,7 @@ namespace earl {
             void fill(std::string value);
             std::string &value(void);
             Type type(void) const override;
+            void binop(Token *op, Obj &other) override;
 
         private:
             std::optional<std::string> m_value;
@@ -52,6 +55,7 @@ namespace earl {
             Void(std::optional<void *> value = {});
             void *value(void);
             Type type(void) const override;
+            void binop(Token *op, Obj &other) override;
 
         private:
             std::optional<void *> m_value;
@@ -62,6 +66,7 @@ namespace earl {
             void fill(std::vector<Obj> value);
             std::vector<Obj> &value(void);
             Type type(void) const override;
+            void binop(Token *op, Obj &other) override;
 
         private:
             std::optional<std::vector<Obj>> m_value;
