@@ -171,11 +171,23 @@ earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_if");
+    earl::value::Obj *expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    earl::value::Obj *result = nullptr;
+
+    if (expr_result->boolean()) {
+        result = eval_stmt_block(stmt->m_block.get(), ctx);
+    }
+    else if (stmt->m_else.has_value()) {
+        result = eval_stmt_block(stmt->m_else.value().get(), ctx);
+    }
+
+    delete expr_result;
+
+    return result;
 }
 
 earl::value::Obj *eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_return");
+    return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
 earl::value::Obj *eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
