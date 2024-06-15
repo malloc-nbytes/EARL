@@ -117,7 +117,18 @@ bool Str::boolean(void) {
 }
 
 void Str::mutate(Obj *other) {
-    UNIMPLEMENTED("Str::mutate");
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot mutate (fix this message)");
+    }
+
+    switch (other->type()) {
+    case Type::Str: {
+        this->fill(dynamic_cast<Str *>(other)->value());
+    } break;
+    default: {
+        assert(false && "unreachable");
+    }
+    }
 }
 
 Obj *Str::copy(void) {
