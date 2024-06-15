@@ -171,6 +171,26 @@ static bool try_comment(char *src, std::string &comment) {
     return false;
 }
 
+static size_t try_parse_list_type(char *src) {
+    int stack = 0;
+
+    for (size_t i = 0; src[i]; ++i) {
+        if (src[i] == '[') {
+            ++stack;
+        }
+        else if (src[i] == ']') {
+            --stack;
+        }
+        else if (!isalpha(src[i]) && src[i] != ' ') {
+            return 0;
+        }
+        if (stack == 0)
+            return i+1; // +1 for the last ']'
+    }
+
+    return 0;
+}
+
 Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
     std::string src = read_file(filepath);
 
@@ -311,6 +331,24 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
 
         // Symbols
         else {
+
+            // Parsing list types
+            if (c == '[') {
+                size_t list_type_end = 0;
+                if ((list_type_end = try_parse_list_type(lexeme)) != 0) {
+                    Token *tok = token_alloc(lexer, lexeme, list_type_end, TokenType::TypeList, row, col, filepath);
+                    lexer.append(tok);
+                    i += list_type_end;
+                    col += list_type_end;
+
+                    // We have a TypeList. Do not do the `Regular Symbols` lexing below.
+                    continue;
+                }
+
+                // We did not parse a TypeList, just parse as a `Regular Symbol` below.
+            }
+
+            // Regular Symbols
             std::string buf;
             for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) {
                 if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') {
@@ -318,6 +356,8 @@ Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::ve
                 }
             }
 
+            // Pop off the buffer until we have a multichar symbol (or if we get down
+            // to one element, a single char symbol).
             while (!buf.empty()) {
                 auto it = ht.find(buf);
                 if (it != ht.end()) {

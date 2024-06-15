@@ -1,150 +1,121 @@
 #include <cassert>
-#include <any>
 #include <iostream>
-#include <vector>
-#include <unordered_map>
 
-#include "earlty.hpp"
-#include "earlvar.hpp"
-#include "err.hpp"
 #include "ctx.hpp"
+#include "utils.hpp"
+#include "err.hpp"
 
-Ctx::Ctx() {
-    m_cur_earlfunc = nullptr;
+Ctx::Ctx() : m_curfunc(nullptr) {}
+
+void Ctx::set_function(earl::function::Obj *func) {
+    m_curfunc = func;
 }
 
-void Ctx::set_current_earlfunc(EarlFunc::Func *func) {
-    if (in_earlfunc()) {
-        m_cur_earlfunc->new_scope_context();
-    }
-    else {
-        m_cur_earlfunc = func;
-    }
+void Ctx::unset_function(void) {
+    assert(m_curfunc);
+    m_curfunc = nullptr;
 }
 
-void Ctx::unset_current_earlfunc(void) {
-    if (in_earlfunc() && m_cur_earlfunc->context_size() != 1) {
-        m_cur_earlfunc->drop_scope_context();
+void Ctx::push_scope(void) {
+    if (in_function()) {
+        m_curfunc->push_scope();
     }
     else {
-        m_cur_earlfunc = nullptr;
+        m_globalvars.push();
+        m_globalfuncs.push();
     }
 }
 
 void Ctx::pop_scope(void) {
-    if (in_earlfunc()) {
-        m_cur_earlfunc->pop_scope();
+    if (in_function()) {
+        m_curfunc->pop_scope();
     }
     else {
-        m_global_earlvars.pop();
-        m_global_earlfuncs.pop();
+        m_globalvars.pop();
+        m_globalfuncs.pop();
     }
 }
 
-void Ctx::push_scope(void) {
-    if (in_earlfunc()) {
-        m_cur_earlfunc->push_scope();
-    }
-    else {
-        m_global_earlvars.push();
-        m_global_earlfuncs.push();
-    }
+earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
+    earl::variable::Obj **var = nullptr;
 
-}
-
-void Ctx::register_earlvar(EarlVar *var) {
-    std::string &id = var->m_id->lexeme();
-
-    if (in_earlfunc()) {
-        auto *func = get_cur_earlfunc();
-        func->add_local_earlvar(var);
-    }
-    else {
-        m_global_earlvars.add(id, var);
-    }
-}
-
-void Ctx::deregister_earlvar(EarlVar *var) {
-    std::string &id = var->m_id->lexeme();
-
-    if (in_earlfunc()) {
-        auto *func = get_cur_earlfunc();
-        func->add_local_earlvar(var);
-    }
-    else {
-        m_global_earlvars.add(id, var);
-    }
-}
-
-void Ctx::register_earlfunc(EarlFunc::Func *func) {
-    std::string &id = func->m_id->lexeme();
-    m_global_earlfuncs.add(id, func);
-}
-
-void Ctx::deregister_earlfunc(EarlFunc::Func *func) {
-    (void)func;
-    assert(false && "unimplemented");
-}
-
-bool Ctx::is_registered_earlvar(const std::string &id) {
-    if (in_earlfunc()) {
-        return m_cur_earlfunc->contains_local_earlvar(id);
-    }
-    return m_global_earlvars.contains(id);
-}
-
-bool Ctx::is_registered_earlfunc(const std::string &id) {
-    return m_global_earlfuncs.contains(id);
-}
-
-EarlVar *Ctx::get_registered_earlvar(const std::string &id) {
-    EarlVar **var = nullptr;
-
-    if (in_earlfunc() && get_cur_earlfunc()->is_world()) { // The function is a @world function
-        var = m_global_earlvars.get(id); // Check in global scope
-        if (!var || !*var) { // Not in global, check local
-            var = get_cur_earlfunc()->m_local_scope.back().get(id);
+    if (in_function() && get_curfunc()->is_world()) {
+        var = m_globalvars.get(id); // Check in global scope
+        if (!var) { // Not in global, check local
+            var = get_curfunc()->m_local.back().get(id);
         }
-        else if (get_cur_earlfunc()->contains_local_earlvar(id)) { // Is in global, make sure its not in local
+        else if (get_curfunc()->has_local(id)) { // Is in global, make sure its not in local
             ERR_WARGS(Err::Type::Redeclaration, "duplicate variable `%s`", id.c_str());
         }
     }
-    else if (in_earlfunc()) {
-        auto *func = get_cur_earlfunc();
-        var = func->m_local_scope.back().get(id);
+    else if (in_function()) {
+        auto *func = get_curfunc();
+        var = func->m_local.back().get(id);
     }
     else {
-        var = m_global_earlvars.get(id);
+        var = m_globalvars.get(id);
     }
 
-    if (!var || !*var) {
+    if (!var) {
         ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in scope", id.c_str());
     }
 
     return *var;
 }
 
-EarlFunc::Func *Ctx::get_registered_earlfunc(const std::string &id) {
-    EarlFunc::Func **func = m_global_earlfuncs.get(id);
-    if (!*func) {
-        ERR_WARGS(Err::Type::Fatal, "function `%s` is not in scope", id.c_str());
+void Ctx::register_variable(earl::variable::Obj *var) {
+    const std::string &id = var->id();
+
+    if (in_function()) {
+        get_curfunc()->m_local.back().add(id, var);
+    }
+    else {
+        m_globalvars.add(id, var);
+    }
+}
+
+bool Ctx::variable_is_registered(const std::string &id) {
+    if (in_function()) {
+        return get_curfunc()->has_local(id);
+    }
+    return m_globalvars.contains(id);
+}
+
+void Ctx::unregister_variable(const std::string &id) {
+    if (in_function()) {
+        get_curfunc()->m_local.back().remove(id);
+    }
+    else {
+        m_globalvars.remove(id);
+    }
+
+}
+
+bool Ctx::function_is_registered(const std::string &id) {
+    return m_globalfuncs.contains(id);
+}
+
+void Ctx::register_function(earl::function::Obj *func) {
+    const std::string &id = func->id();
+    m_globalfuncs.add(id, func);
+}
+
+earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
+    earl::function::Obj **func = nullptr;
+    func = m_globalfuncs.get(id);
+    if (!func) {
+        ERR_WARGS(Err::Type::Fatal,
+                  "function `%s` is not in global scope",
+                  id.c_str());
     }
     return *func;
 }
 
-EarlVar *Ctx::get_registered_global_earlvar(const std::string &id) {
-    assert(!in_earlfunc() || get_cur_earlfunc()->context_size() == 1);
-    EarlVar **var = m_global_earlvars.get(id);
-    if (!*var) {
-        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in global scope", id.c_str());
-    }
-    return *var;
+earl::function::Obj *Ctx::get_curfunc(void) {
+    assert(m_curfunc);
+    return m_curfunc;
 }
 
-EarlFunc::Func *Ctx::get_cur_earlfunc(void) {
-    return m_cur_earlfunc;
-}
-
-bool Ctx::in_earlfunc(void) {
-    return m_cur_earlfunc != nullptr;
+bool Ctx::in_function(void) const {
+    return m_curfunc != nullptr;
 }

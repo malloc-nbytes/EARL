@@ -61,6 +61,17 @@ ExprTermType ExprIntLit::get_term_type() const {
     return ExprTermType::Int_Literal;
 }
 
+ExprListLit::ExprListLit(std::vector<std::unique_ptr<Expr>> elems)
+    : m_elems(std::move(elems)) {}
+
+ExprType ExprListLit::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprListLit::get_term_type() const {
+    return ExprTermType::List_Literal;
+}
+
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIdent::get_type() const {

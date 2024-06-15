@@ -25,6 +25,7 @@
 #ifndef SCOPE_H
 #define SCOPE_H
 
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 
@@ -57,8 +58,9 @@ template <typename K, typename V> struct Scope {
     /// @returns True if present, false if otherwise
     inline bool contains(const K key) {
        for (auto &map : m_map) {
-            if (map.find(key) != map.end())
+            if (map.find(key) != map.end()) {
                 return true;
+            }
         }
         return false;
     }

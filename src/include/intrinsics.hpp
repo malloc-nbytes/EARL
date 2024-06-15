@@ -36,48 +36,18 @@
 #include "interpreter.hpp"
 #include "ctx.hpp"
 #include "ast.hpp"
+#include "earl.hpp"
 
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {
-    /// @brief Checks whether or not the string `id` is an intrinsic function
-    /// in the `intrinsic_functions` map.
-    /// @param id The identifier of the function
-    /// @returns True if it is intrinsic, false if otherwise
-    bool is_intrinsic_function(const std::string &id);
+    bool is_intrinsic(const std::string &id);
 
-    /// @brief Runs the intrinsic function. It takes the context `ctx` and the function
-    /// call expression `expr`.
-    /// @note: it is expected to run `is_intrinsic_function` before calling this function.
-    /// @param expr The function call expression to evaluate
-    /// @param params The evaluated parameters that is given to the function
-    /// @param ctx The current context of runtime
-    /// @returns An expression evaluation result
-    Interpreter::ExprEvalResult run_intrinsic_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
+    earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
-    /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+    earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
-    /// @brief Given the context `ctx` and the function call expression `expr`
-    /// will print the values separated by a space, with the last one
-    /// not having that extra space. It is ended with a newline. It does
-    /// not flush the output.
-    /// @param expr The function call expression to evaluate
-    /// @param params The evaluated parameters that is given to the function
-    /// @param ctx The current context of runtime
-    /// @returns An expression evaluation result
-    Interpreter::ExprEvalResult intrinsic_print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
+    using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>&, Ctx&);
 
-    /// @brief A basic assertion function for EARL. Strings are always true.
-    /// @param expr The function call expression to evaluate
-    /// @param params The evaluated parameters that is given to the function
-    /// @param ctx The current context of runtime
-    /// @return An expression evaluation result
-    Interpreter::ExprEvalResult intrinsic_assert(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx);
-
-    /// @brief The signature of ALL intrinsic functions
-    using IntrinsicFunction = Interpreter::ExprEvalResult(*)(ExprFuncCall*, std::vector<Interpreter::ExprEvalResult>, Ctx&);
-
-    /// @brief A map of string -> function pointers. All intrinsics are expected
-    /// to have the signature of Interpreter::ExprEvalResult(*)(Ctx&, ExprFuncCall*).
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
 };
 

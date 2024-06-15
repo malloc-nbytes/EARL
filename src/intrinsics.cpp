@@ -8,58 +8,39 @@
 #include "err.hpp"
 #include "ctx.hpp"
 #include "ast.hpp"
+#include "earl.hpp"
+#include "utils.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
-    {"print", &Intrinsics::intrinsic_print},
-    {"assert", &intrinsic_assert},
+    {"print", &Intrinsics::intrinsic_print}
 };
 
-bool Intrinsics::is_intrinsic_function(const std::string &id) {
-    return intrinsic_functions.find(id) != intrinsic_functions.end();
+earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    const std::string &id = expr->m_id->lexeme();
+    return Intrinsics::intrinsic_functions.at(id)(expr, params, ctx);
 }
 
-Interpreter::ExprEvalResult Intrinsics::run_intrinsic_function(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    auto retval = Intrinsics::intrinsic_functions.at(expr->m_id->lexeme())(expr, params, ctx);
-
-    return Interpreter::ExprEvalResult{};
+bool Intrinsics::is_intrinsic(const std::string &id) {
+    return Intrinsics::intrinsic_functions.find(id) != Intrinsics::intrinsic_functions.end();
 }
 
-Interpreter::ExprEvalResult
-Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        Interpreter::ExprEvalResult param = params[i];
-
-        if (param.m_earl_type == EarlTy::Type::Int) {
-            std::cout << std::any_cast<int>(param.value());
-        }
-
-        else if (param.m_earl_type == EarlTy::Type::Str) {
-            std::cout << std::any_cast<std::string>(param.value());
-        }
-        else {
-            ERR_WARGS(Err::Type::Fatal, "no printing for earltype %d", static_cast<int>(param.m_earl_type));
+earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    for (size_t i = 0; i < params.size(); ++i) {
+        earl::value::Obj *param = params.at(i);
+        switch (param->type()) {
+        case earl::value::Type::Int: {
+            earl::value::Int *intparam = dynamic_cast<earl::value::Int *>(param);
+            std::cout << intparam->value();
+        } break;
+        case earl::value::Type::Str: {
+            earl::value::Str *strparam = dynamic_cast<earl::value::Str *>(param);
+            std::cout << strparam->value();
+        } break;
+        default: {
+            ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
+        } break;
         }
     }
     std::cout << '\n';
-    return Interpreter::ExprEvalResult{};
-}
-
-Interpreter::ExprEvalResult
-Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<Interpreter::ExprEvalResult> params, Ctx &ctx) {
-    for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        Interpreter::ExprEvalResult param = params[i];
-
-        if (param.m_earl_type == EarlTy::Type::Str)
-            break;
-        if (param.m_earl_type == EarlTy::Type::Int) {
-            if (std::any_cast<int>(param.value()) != 0) {
-                Err::err_wtok(expr->m_id.get());
-                ERR(ErrType::Fatal, "assertion failure");
-            }
-        }
-        else {
-            ERR_WARGS(Err::Type::Fatal, "no assert rules for earltype %d", static_cast<int>(param.m_earl_type));
-        }
-    }
-    return Interpreter::ExprEvalResult{};
+    return nullptr;
 }
