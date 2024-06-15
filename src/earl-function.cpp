@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "earl.hpp"
 #include "err.hpp"
 #include "common.hpp"
@@ -62,3 +64,9 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
 
     }
 }
+
+bool Obj::is_world(void) const {
+    assert(m_stmtdef);
+    return (m_stmtdef->m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
+}
+

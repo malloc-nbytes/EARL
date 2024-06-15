@@ -1,10 +1,9 @@
-def func(a: int) -> void {
-    print("in func: ", a);
+@world
+def func() -> void {
+    print("in func: ", x);
 }
 
 x: int = 99;
 y: int = x;
 
-print("x: ", x, " y: ", y);
-
-func(x);
+func();

@@ -90,6 +90,8 @@ namespace earl {
 
     namespace function {
         struct Obj {
+            std::vector<Scope<std::string, variable::Obj *>> m_local;
+
             Obj(StmtDef *stmtdef);
             ~Obj() = default;
 
@@ -111,7 +113,6 @@ namespace earl {
             size_t context_size(void);
             bool is_world(void) const;
 
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
         private:
             StmtDef *m_stmtdef;
         };

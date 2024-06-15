@@ -16,7 +16,16 @@ void Ctx::set_function(earl::function::Obj *func) {
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     earl::variable::Obj **var = nullptr;
 
-    if (in_function()) {
+    if (in_function() && get_curfunc()->is_world()) {
+        var = m_globalvars.get(id); // Check in global scope
+        if (!var) { // Not in global, check local
+            var = get_curfunc()->m_local.back().get(id);
+        }
+        else if (get_curfunc()->has_local(id)) { // Is in global, make sure its not in local
+            ERR_WARGS(Err::Type::Redeclaration, "duplicate variable `%s`", id.c_str());
+        }
+    }
+    else if (in_function()) {
         auto *func = get_curfunc();
         var = func->m_local.back().get(id);
     }
@@ -25,9 +34,7 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     }
 
     if (!var) {
-        ERR_WARGS(Err::Type::Fatal,
-                  "variable `%s` is not in scope",
-                  id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in scope", id.c_str());
     }
 
     return *var;
