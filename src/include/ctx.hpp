@@ -55,7 +55,6 @@ struct Ctx {
     void unregister_function(earl::function::Obj *func);
     void unregister_function(const std::string &id);
 
-    bool variable_is_registered(earl::variable::Obj &var);
     bool variable_is_registered(const std::string &id);
     bool function_is_registered(earl::function::Obj &func);
     bool function_is_registered(const std::string &id);

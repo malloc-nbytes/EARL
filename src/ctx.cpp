@@ -5,12 +5,35 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-Ctx::Ctx() : m_curfunc(nullptr) {
-    // earl::primitive::fill_typemap();
-}
+Ctx::Ctx() : m_curfunc(nullptr) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
     m_curfunc = func;
+}
+
+void Ctx::unset_function(void) {
+    assert(m_curfunc);
+    m_curfunc = nullptr;
+}
+
+void Ctx::push_scope(void) {
+    if (in_function()) {
+        m_curfunc->push_scope();
+    }
+    else {
+        m_globalvars.push();
+        m_globalfuncs.push();
+    }
+}
+
+void Ctx::pop_scope(void) {
+    if (in_function()) {
+        m_curfunc->pop_scope();
+    }
+    else {
+        m_globalvars.pop();
+        m_globalfuncs.pop();
+    }
 }
 
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
@@ -49,14 +72,6 @@ void Ctx::register_variable(earl::variable::Obj *var) {
     else {
         m_globalvars.add(id, var);
     }
-}
-
-bool Ctx::variable_is_registered(earl::variable::Obj &var) {
-    UNIMPLEMENTED("variable_is_registered");
-    // if (in_function()) {
-    //     return get_curfunc().has_local(var.id());
-    // }
-    // return m_globalvars.contains(var.id());
 }
 
 bool Ctx::variable_is_registered(const std::string &id) {

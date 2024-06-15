@@ -24,7 +24,6 @@ namespace earl {
 
         struct Obj {
             ~Obj() = default;
-            int x;
 
             virtual Type type(void) const = 0;
         };

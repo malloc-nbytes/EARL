@@ -43,6 +43,7 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     ctx.set_function(func);
     func->load_parameters(params);
     earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
+    ctx.unset_function();
     return result;
 }
 
@@ -136,11 +137,17 @@ earl::value::Obj *eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx) {
-    for (size_t i = 0; i < block->m_stmts.size(); ++i) {
-        eval_stmt(block->m_stmts.at(i).get(), ctx);
-    }
+    earl::value::Obj *result = nullptr;
 
-    return new earl::value::Void();
+    ctx.push_scope();
+    for (size_t i = 0; i < block->m_stmts.size(); ++i) {
+        result = eval_stmt(block->m_stmts.at(i).get(), ctx);
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+    }
+    ctx.pop_scope();
+
+    return result;
 }
 
 // When we hit a statement `def` (a function declaration),

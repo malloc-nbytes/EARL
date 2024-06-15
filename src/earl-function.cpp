@@ -22,13 +22,27 @@ bool Obj::has_local(const std::string &id) {
     return m_local.back().contains(id);
 }
 
+void earl::function::Obj::push_scope(void) {
+    m_local.back().push();
+}
+
+void earl::function::Obj::pop_scope(void) {
+    m_local.back().pop();
+}
+
+void earl::function::Obj::new_scope_context(void) {
+    m_local.emplace_back();
+}
+
+void earl::function::Obj::drop_scope_context(void) {
+    m_local.pop_back();
+}
+
 earl::variable::Obj *Obj::get_local(const std::string &id) {
     auto **var = m_local.back().get(id);
 
     if (!var) {
-        ERR_WARGS(Err::Type::Fatal,
-                  "variable `%s` is not in local scope",
-                  id.c_str());
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in local scope", id.c_str());
     }
 
     return *var;
@@ -58,10 +72,11 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
                       m_stmtdef->m_id->lexeme().c_str());
         }
 
-        earl::variable::Obj *var = new earl::variable::Obj(m_stmtdef->m_args[i].first.get(), std::unique_ptr<earl::value::Obj>(value));
+        earl::variable::Obj *var =
+            new earl::variable::Obj(m_stmtdef->m_args[i].first.get(),
+                                    std::unique_ptr<earl::value::Obj>(value));
 
         add_local(var);
-
     }
 }
 
