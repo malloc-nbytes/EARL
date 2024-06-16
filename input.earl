@@ -1,4 +1,7 @@
+let i = 0;
+let tmp = i;
 
+tmp = tmp+100;
 
-
-
+print(tmp);
+print(i);

@@ -61,23 +61,15 @@ void Obj::add_local(variable::Obj *var) {
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
     for (size_t i = 0; i < values.size(); i++) {
-        const std::string &id = m_stmtdef->m_args[i].first->lexeme();
-        const std::string &type = m_stmtdef->m_args[i].second->lexeme();
+        const std::string &id = m_stmtdef->m_args[i]->lexeme();
         earl::value::Obj *value = values[i];
-
-        if (!earl::value::type_is_compatable(value, earl::value::of_str(type))) {
-            ERR_WARGS(Err::Type::Fatal,
-                      "type mismatch in function `%s` parameter `%s`",
-                      id.c_str(),
-                      m_stmtdef->m_id->lexeme().c_str());
-        }
 
         // NOTE: To handle references, replace:
         //     std::unique_ptr<earl::value::Obj>(value->copy())
         // with:
         //     std::unique_ptr<earl::value::Obj>(value)
         earl::variable::Obj *var =
-            new earl::variable::Obj(m_stmtdef->m_args[i].first.get(),
+            new earl::variable::Obj(m_stmtdef->m_args[i].get(),
                                     std::unique_ptr<earl::value::Obj>(value->copy()));
 
         add_local(var);

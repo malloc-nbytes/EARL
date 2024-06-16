@@ -49,7 +49,6 @@ test_errno_t test_parsers_parse_stmt_def(void) {
         TEST_ASSERT_EQ(stmt->stmt_type(), StmtType::Def, true);
         StmtDef *def = dynamic_cast<StmtDef *>(stmt.get());
         TEST_ASSERT_EQ(def->m_id->lexeme(), func_names[i], true);
-        TEST_ASSERT_EQ(def->m_rettype->lexeme(), rettypes[i], true);
         ++i;
     }
 

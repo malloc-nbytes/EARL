@@ -1,6 +1,6 @@
 # File for test-conditionals/test_conditionals_basic_if
 
-x: int = 5;
+let x = 5;
 
 if x == 5 {
     return x;

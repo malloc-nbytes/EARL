@@ -2,9 +2,9 @@
 # Tests the @world attribute.
 
 @world
-def func() -> int {
+def func() {
     return i;
 }
 
-i: int = 10;
+let i = 10;
 return func();

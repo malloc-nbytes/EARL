@@ -63,30 +63,28 @@ int main(void)
         });
 
         RUN_TEST_GROUP("loops", {
-            // RUN_TEST(test_loops_basic_while());
-            // RUN_TEST(test_loops_large_while());
-            // RUN_TEST(test_loops_with_end_as_variable());
-            // RUN_TEST(test_loops_mutating_enumerator_by_5());
-            // RUN_TEST(test_loops_should_not_loop());
-            // RUN_TEST(test_loops_basic_for());
-            // RUN_TEST(test_loops_large_for());
+            RUN_TEST(test_loops_basic_while());
+            RUN_TEST(test_loops_large_while());
+            RUN_TEST(test_loops_with_end_as_variable());
+            RUN_TEST(test_loops_mutating_enumerator_by_5());
+            RUN_TEST(test_loops_should_not_loop());
+            RUN_TEST(test_loops_basic_for());
+            RUN_TEST(test_loops_large_for());
         });
 
-        // RUN_TEST_GROUP("conditionals", {
-        //     RUN_TEST(test_conditionals_basic_if());
-        //     RUN_TEST(test_conditionals_basic_if_else_if());
-        //     RUN_TEST(test_conditionals_basic_if_else_if_else());
-        // });
+        RUN_TEST_GROUP("conditionals", {
+            RUN_TEST(test_conditionals_basic_if());
+            RUN_TEST(test_conditionals_basic_if_else_if());
+            RUN_TEST(test_conditionals_basic_if_else_if_else());
+        });
 
-        // RUN_TEST_GROUP("functions", {
-        //     RUN_TEST(test_functions_basic_no_return());
-        //     RUN_TEST(test_functions_return_passed_param());
-        //     RUN_TEST(test_functions_return_summed_element());
-        //     RUN_TEST(test_functions_count_evens());
-        //     RUN_TEST(test_functions_world_attribute());
-        // });
-
-
+        RUN_TEST_GROUP("functions", {
+            RUN_TEST(test_functions_basic_no_return());
+            RUN_TEST(test_functions_return_passed_param());
+            RUN_TEST(test_functions_return_summed_element());
+            RUN_TEST(test_functions_count_evens());
+            RUN_TEST(test_functions_world_attribute());
+        });
     });
 
     return 0;

@@ -126,19 +126,17 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
                   "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    earl::value::Obj *binding_type = earl::value::of_str(stmt->m_type.get()->lexeme());
-
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
-    if (!earl::value::type_is_compatable(binding_type, rhs_result)) {
-        Err::err_wtok(stmt->m_id.get());
-        ERR(Err::Type::Fatal, "binding type does not match the evaluated expression type");
-    }
-
-    earl::variable::Obj *created_variable =
-        new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result));
+    // NOTE: If we want to take a 'reference' to `rhs_result`, instead of
+    //     (stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()))
+    // we would instead use:
+    //     (stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result))
+    earl::variable::Obj *created_variable
+        = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()));
 
     ctx.register_variable(created_variable);
+
     return new earl::value::Void();
 }
 
