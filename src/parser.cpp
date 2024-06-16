@@ -110,14 +110,23 @@ static Expr *parse_primary_expr(Lexer &lexer) {
 
     switch (tok->type()) {
     case TokenType::Ident: {
-        auto exprs = try_parse_funccall(lexer);
+        Expr *left = nullptr;
 
-        // We are parsing a function call.
-        if (exprs.has_value()) {
-            return new ExprFuncCall(std::make_unique<Token>(*tok), std::move(exprs.value()));
+        while (1) {
+            auto group = try_parse_funccall(lexer);
+            if (group.has_value()) {
+                left = new ExprFuncCall(std::make_unique<Token>(*tok), std::move(group.value()));
+            }
+            else {
+                left = new ExprIdent(std::make_unique<Token>(*tok));
+            }
+            if (lexer.peek()->type() == TokenType::Period) {
+                lexer.discard();
+                Expr *right = Parser::parse_expr(lexer);
+                return new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            }
+            return left;
         }
-
-        return new ExprIdent(std::make_unique<Token>(*tok));
     } break;
     case TokenType::Intlit: return new ExprIntLit(std::make_unique<Token>(*tok));
     case TokenType::Strlit: return new ExprStrLit(std::make_unique<Token>(*tok));
@@ -247,12 +256,9 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
 std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     Token *id = parse_expect(lexer, TokenType::Ident);
-    // (void)parse_expect(lexer, TokenType::Colon);
-    // Token *ty = parse_expect_type(lexer);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Semicolon);
-
     return std::make_unique<StmtLet>(std::make_unique<Token>(*id), std::unique_ptr<Expr>(expr));
 }
 

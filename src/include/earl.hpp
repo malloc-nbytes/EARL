@@ -76,6 +76,8 @@ namespace earl {
             List(std::vector<Obj *> value = {});
             void fill(std::vector<Obj *> value);
             std::vector<Obj *> &value(void);
+            Obj *nth(Obj *idx);
+
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
             bool boolean(void) override;

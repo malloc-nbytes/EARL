@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 #include <unordered_map>
 #include <vector>
@@ -70,6 +71,48 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
     return new earl::value::List(std::move(list));
 }
 
+earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
+    earl::value::Obj *result = nullptr;
+
+    earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
+
+    if (expr->get_type() != ExprType::Term) {
+        ERR(Err::Type::Fatal, "cannot use `get` expression on non-terminal expression");
+    }
+
+    ExprTerm *right = dynamic_cast<ExprTerm *>(expr->m_right.get());
+
+    switch (right->get_term_type()) {
+    case ExprTermType::Ident: {
+        UNIMPLEMENTED("eval_expr_get::ExprTermType::Ident");
+    } break;
+    case ExprTermType::Func_Call: {
+        ExprFuncCall *func_expr = dynamic_cast<ExprFuncCall *>(right);
+        const std::string &id = func_expr->m_id->lexeme();
+        std::vector<earl::value::Obj *> params;
+
+        std::for_each(func_expr->m_params.begin(), func_expr->m_params.end(), [&](auto &e) {
+            params.push_back(Interpreter::eval_expr(e.get(), ctx));
+        });
+
+        if (Intrinsics::is_member_intrinsic(id)) {
+            result = Intrinsics::call_member(id, left, params, ctx);
+        }
+        else {
+            UNIMPLEMENTED("eval_expr_get:ExprTermType::Func_Call:!Intrinsics::is_member_intrinsic(id)");
+        }
+
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal,
+                  "unknown `get` term type (%d)",
+                  static_cast<int>(right->get_term_type()));
+    } break;
+    }
+
+    return result;
+}
+
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -91,6 +134,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::List_Literal: {
         return eval_expr_list_literal(dynamic_cast<ExprListLit *>(expr), ctx);
     } break;
+    case ExprTermType::Get: {
+        ExprGet *get = dynamic_cast<ExprGet *>(expr);
+        return eval_expr_get(get, ctx);
+    }
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
     } break;

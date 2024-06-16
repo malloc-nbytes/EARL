@@ -1,6 +1,19 @@
-fn func(a) {
-    return a;
+let lst = [1,2,3,4,5, "hello"];
+
+for i in 0..5 {
+    print(lst.nth(i));
 }
 
-print(func(1));
+print();
+
+lst.nth(0) = 9;
+lst.nth(1) = 10;
+lst.nth(2) = 11;
+lst.nth(3) = 12;
+lst.nth(4) = 13;
+
+for i in 0..5 {
+    print(lst.nth(i));
+}
+
 

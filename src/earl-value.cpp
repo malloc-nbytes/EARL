@@ -179,6 +179,13 @@ Type List::type(void) const {
     return Type::List;
 }
 
+Obj *List::nth(Obj *idx) {
+    switch (idx->type()) {
+    case Type::Int: return this->value()[dynamic_cast<Int *>(idx)->value()];
+    default: assert(false && "ur stupid");
+    }
+}
+
 Obj *List::binop(Token *op, Obj *other) {
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot binop (fix this message)");

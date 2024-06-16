@@ -43,13 +43,19 @@ namespace Intrinsics {
 
     using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>&, Ctx&);
 
+    using IntrinsicMemberFunction = earl::value::Obj *(*)(earl::value::Obj *, std::vector<earl::value::Obj *>&, Ctx&);
+
     /// @brief A map of all intrinsic functions in EARL
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
+
+    extern const std::unordered_map<std::string, IntrinsicMemberFunction> intrinsic_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check
     /// @return true if intrinsic, false if otherwise
     bool is_intrinsic(const std::string &id);
+
+    bool is_member_intrinsic(const std::string &id);
 
     /// @brief Call an intrinsic function
     /// @note It is expected to call `is_intrinsic` before calling this function
@@ -58,7 +64,11 @@ namespace Intrinsics {
     /// @param ctx The current global context
     earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *call_member(const std::string &id, earl::value::Obj *accessor, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+
+    earl::value::Obj *intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
 
     /// @brief Assert several expressions
     /// @param expr The AST node of the function call
