@@ -16,6 +16,10 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"assert", &Intrinsics::intrinsic_assert},
 };
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
+    {"nth", &Intrinsics::intrinsic_member_nth},
+};
+
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     const std::string &id = expr->m_id->lexeme();
     return Intrinsics::intrinsic_functions.at(id)(expr, params, ctx);
@@ -23,6 +27,20 @@ earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::
 
 bool Intrinsics::is_intrinsic(const std::string &id) {
     return Intrinsics::intrinsic_functions.find(id) != Intrinsics::intrinsic_functions.end();
+}
+
+bool Intrinsics::is_member_intrinsic(const std::string &id) {
+    return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
+}
+
+earl::value::Obj *Intrinsics::call_member(earl::value::Obj *, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(false);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
+    earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
+    assert(idx.size() == 1);
+    return list->nth(idx[0]);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

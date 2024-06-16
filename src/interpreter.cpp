@@ -71,12 +71,14 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
-    // assert(ctx.variable_is_registered(expr->m_accessor->lexeme()) && "variable not registered");
-    // earl::variable::Obj *obj = ctx.get_registered_variable(expr->m_accessor->lexeme());
-    // earl::value::Obj *get = Interpreter::eval_expr(expr->m_get.get(), ctx);
+    earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
 
-    // earl::value::Obj *result = obj->accessor(get);
-    assert(false);
+    if (Intrinsics::is_member_intrinsic(expr->m_id->lexeme())) {
+        // return Intrinsics::call_member(expr, params, ctx);
+        assert(false);
+    }
+
+    UNIMPLEMENTED("");
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
@@ -101,8 +103,8 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         return eval_expr_list_literal(dynamic_cast<ExprListLit *>(expr), ctx);
     } break;
     case ExprTermType::Get: {
-        ExprGet *expr = dynamic_cast<ExprGet *>(expr);
-        return eval_expr_get(expr, ctx);
+        ExprGet *get = dynamic_cast<ExprGet *>(expr);
+        return eval_expr_get(get, ctx);
     }
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
