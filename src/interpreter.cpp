@@ -73,12 +73,27 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
 earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
     earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
 
-    if (Intrinsics::is_member_intrinsic(expr->m_id->lexeme())) {
-        // return Intrinsics::call_member(expr, params, ctx);
-        assert(false);
+    if (expr->get_type() != ExprType::Term) {
+        ERR(Err::Type::Fatal, "cannot use `get` expression on non-terminal expression");
     }
 
-    UNIMPLEMENTED("");
+    ExprTerm *right = dynamic_cast<ExprTerm *>(expr->m_right.get());
+
+    switch (right->get_term_type()) {
+    case ExprTermType::Ident: {
+        UNIMPLEMENTED("eval_expr_get::ExprTermType::Ident");
+    } break;
+    case ExprTermType::Func_Call: {
+        UNIMPLEMENTED("eval_expr_get::ExprTermType::Func_Call");
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal,
+                  "unknown `get` term type (%d)",
+                  static_cast<int>(right->get_term_type()));
+    } break;
+    }
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
