@@ -1,0 +1,71 @@
+fn test_while_loop() {
+    print("test_while_loop...");
+
+    let i = 0;
+    let tmp = 0;
+
+    while i < 10 {
+        assert(tmp == i);
+        tmp = tmp+1;
+        i = i+1;
+    }
+
+    print("ok");
+}
+
+fn test_for_loop2() {
+    print("test_for_loop2...");
+
+    let start = 0;
+    let end = 10;
+
+    let tmp = 0-1;
+    for i in start..end+10 {
+        assert(tmp == i-1);
+        tmp = tmp+1;
+    }
+
+    print("ok");
+}
+
+fn test_for_loop() {
+    print("test_for_loop...");
+
+    let tmp = 0-1;
+    for i in 0..100 {
+        assert(tmp == i-1);
+        tmp = tmp+1;
+    }
+
+    print("ok");
+}
+
+fn test_variable_mutation() {
+    print("test_variable_mutation...");
+
+    let x = 1;
+    let y = x;
+    y = y + 1;
+
+    assert(x == 1, y == 2);
+
+    print("ok");
+}
+
+fn test_variable_instantiation() {
+    print("test_variable_instantiation...");
+
+    let x = 9;
+    let y = x;
+    let z = y + 10;
+
+    assert(x == 9, y == 9, z == 19);
+
+    print("ok");
+}
+
+test_variable_instantiation();
+test_variable_mutation();
+test_for_loop();
+test_for_loop2();
+test_while_loop();

@@ -32,6 +32,13 @@ earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<e
         earl::value::Obj *param = params.at(i);
         if (!param->boolean()) {
             Err::err_wtok(expr->m_id.get());
+            Token *it = expr->m_id.get();
+            std::cout << "Culprit:\n  ";
+            while (it && it->type() != TokenType::Semicolon) {
+                std::cout << it->lexeme() << ' ';
+                it = it->m_next;
+            }
+            std::cout << std::endl;
             ERR(Err::Type::Assertion, "assertion failure");
         }
     }

@@ -10,9 +10,12 @@ SUBDIRS = test
 AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -O0 -DDEBUG
 
 .PHONY: test docs all
-test:
+test: main
 	$(MAKE) -C test test_suite
+	@echo "Running interpreter tests"
 	./test/test_suite
+	@echo "Running EARL tests"
+	./main ./test/earl-tests/main.earl
 
 docs:
 	doxygen Doxyfile

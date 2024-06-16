@@ -5,13 +5,13 @@
 let i = 1;
 let j = 2;
 
-def func() {
+fn func() {
     print(1);
 }
 
-def func(a) {}
+fn func(a) {}
 
-def func(a, b) {
+fn func(a, b) {
     print(a, b);
     print(a);
     print(b);

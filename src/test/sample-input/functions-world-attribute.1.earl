@@ -2,7 +2,7 @@
 # Tests the @world attribute.
 
 @world
-def func() {
+fn func() {
     return i;
 }
 

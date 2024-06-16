@@ -1,7 +1,7 @@
 # File for test-functionstest_functions_count_evens
 # Counts the number of even numbers in a range
 
-def count_evens(start, end) {
+fn count_evens(start, end) {
     let count = 0;
 
     for i in start..end {

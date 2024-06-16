@@ -1,11 +1,11 @@
 # File for test-parsers/test_parsers_parse_stmt_def
 # Tests to make sure the stmt defs are parsed.
 
-def func1() {}
-def func2(a) {
+fn func1() {}
+fn func2(a) {
     print(a);
 }
-def func3(a, b) {
+fn func3(a, b) {
     let s = a+b;
     print(s);
 }
