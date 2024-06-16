@@ -76,11 +76,6 @@ Obj *Int::copy(void) {
     return new Int(this->value());
 }
 
-Obj *Int::accessor(Obj *obj) {
-    (void)obj;
-    ERR(Err::Type::Fatal, "Int::accessor no accessor for Int");
-}
-
 /*** STR ***/
 
 Str::Str(std::string value) : m_value(std::move(value)) {}
@@ -136,11 +131,6 @@ Obj *Str::copy(void) {
     return new Str(this->value());
 }
 
-Obj *Str::accessor(Obj *obj) {
-    (void)obj;
-    ERR(Err::Type::Fatal, "Str::accessor no accessor for Str");
-}
-
 /*** VOID ***/
 
 Void::Void(void *value) : m_value(value) {}
@@ -171,11 +161,6 @@ void Void::mutate(Obj *other) {
 
 Obj *Void::copy(void) {
     return new Void(this->value());
-}
-
-Obj *Void::accessor(Obj *obj) {
-    (void)obj;
-    ERR(Err::Type::Fatal, "Void::accessor no accessor for Void");
 }
 
 /*** LIST ***/
@@ -226,19 +211,6 @@ void List::mutate(Obj *other) {
 Obj *List::copy(void) {
     auto list = new List(this->value());
     return list;
-}
-
-Obj *List::accessor(Obj *obj) {
-    if (obj->type() != Type::Int) {
-        ERR(Err::Type::Types, "List::accessor expects Int type");
-    }
-
-    auto index = dynamic_cast<Int *>(obj)->value();
-    if (index < 0 || index >= static_cast<int>(this->value().size())) {
-        ERR(Err::Type::Bounds, "List::accessor index out of bounds");
-    }
-
-    return this->value()[index];
 }
 
 /*** OTHER ***/
