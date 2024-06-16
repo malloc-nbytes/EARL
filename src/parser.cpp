@@ -110,11 +110,23 @@ static Expr *parse_primary_expr(Lexer &lexer) {
 
     switch (tok->type()) {
     case TokenType::Ident: {
+        // TODO: change this case to be more liberal in the
+        // parsing rather than a concrete, "if we have an ID,
+        // then do ...".
+
         auto exprs = try_parse_funccall(lexer);
 
         // We are parsing a function call.
         if (exprs.has_value()) {
             return new ExprFuncCall(std::make_unique<Token>(*tok), std::move(exprs.value()));
+        }
+
+        // Handle the `.` operator on identifiers.
+        if (lexer.peek()->type() == TokenType::Period) {
+            (void)Parser::parse_expect(lexer, TokenType::Period);
+            Token *accessor = tok;
+            Expr *get = Parser::parse_expr(lexer);
+            return new ExprGet(std::make_unique<Token>(*accessor), std::unique_ptr<Expr>(get));
         }
 
         return new ExprIdent(std::make_unique<Token>(*tok));
@@ -130,9 +142,6 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         Expr *expr = Parser::parse_expr(lexer);
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;
-    } break;
-    case TokenType::Period: {
-        UNIMPLEMENTED("TokenType::Period: parse_primary_expr");
     } break;
     default:
         assert(false && "parse_primary_expr: invalid primary expression");

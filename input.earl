@@ -1,5 +1,4 @@
 let lst = [1,2,3,4,5];
-
 let i = lst.nth(3);
 
 print(i);
