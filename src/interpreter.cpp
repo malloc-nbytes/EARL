@@ -70,6 +70,15 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
     return new earl::value::List(std::move(list));
 }
 
+earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
+    assert(ctx.variable_is_registered(expr->m_accessor->lexeme()) && "variable not registered");
+    earl::variable::Obj *obj = ctx.get_registered_variable(expr->m_accessor->lexeme());
+    earl::value::Obj *get = Interpreter::eval_expr(expr->m_get.get(), ctx);
+
+    // earl::value::Obj *result = obj->accessor(get);
+    assert(false);
+}
+
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -91,6 +100,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::List_Literal: {
         return eval_expr_list_literal(dynamic_cast<ExprListLit *>(expr), ctx);
     } break;
+    case ExprTermType::Get: {
+        ExprGet *expr = dynamic_cast<ExprGet *>(expr);
+        return eval_expr_get(expr, ctx);
+    }
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
     } break;

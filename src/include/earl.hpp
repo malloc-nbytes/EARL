@@ -29,6 +29,7 @@ namespace earl {
             virtual bool boolean(void) = 0;
             virtual void mutate(Obj *other) = 0;
             virtual Obj *copy(void) = 0;
+            virtual Obj *accessor(Obj *obj) = 0;
         };
 
         struct Int : public Obj {
@@ -40,6 +41,7 @@ namespace earl {
             bool boolean(void) override;
             void mutate(Obj *other) override;
             Obj *copy(void) override;
+            Obj *accessor(Obj *obj) override;
 
         private:
             int m_value;
@@ -54,6 +56,7 @@ namespace earl {
             bool boolean(void) override;
             void mutate(Obj *other) override;
             Obj *copy(void) override;
+            Obj *accessor(Obj *obj) override;
 
         private:
             std::string m_value;
@@ -67,6 +70,7 @@ namespace earl {
             bool boolean(void) override;
             void mutate(Obj *other) override;
             Obj *copy(void) override;
+            Obj *accessor(Obj *obj) override;
 
         private:
             void *m_value;
@@ -81,6 +85,7 @@ namespace earl {
             bool boolean(void) override;
             void mutate(Obj *other) override;
             Obj *copy(void) override;
+            Obj *accessor(Obj *obj) override;
 
         private:
             std::vector<Obj *> m_value;

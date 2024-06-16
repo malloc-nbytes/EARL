@@ -71,6 +71,8 @@ namespace Intrinsics {
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    earl::value::Obj *list_nth(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

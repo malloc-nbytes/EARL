@@ -13,7 +13,8 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
     {"print", &Intrinsics::intrinsic_print},
-    {"assert", &Intrinsics::intrinsic_assert}
+    {"assert", &Intrinsics::intrinsic_assert},
+    {"nth", &Intrinsics::list_nth},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -23,6 +24,10 @@ earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::
 
 bool Intrinsics::is_intrinsic(const std::string &id) {
     return Intrinsics::intrinsic_functions.find(id) != Intrinsics::intrinsic_functions.end();
+}
+
+earl::value::Obj *Intrinsics::list_nth(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    UNIMPLEMENTED("Intrinsics::list_nth");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
