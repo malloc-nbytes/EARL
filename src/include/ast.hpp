@@ -61,6 +61,7 @@ enum class ExprTermType {
     Str_Literal,
     Func_Call,
     List_Literal,
+    Get,
 };
 
 struct StmtBlock;
@@ -81,6 +82,14 @@ struct ExprTerm : public Expr {
     /// @brief Get the Expression Term type
     /// @returns The type of the expression term
     virtual ExprTermType get_term_type() const = 0;
+};
+
+struct ExprGet : public ExprTerm {
+    std::unique_ptr<Token> m_accessor;
+
+    ExprGet(std::unique_ptr<Token> accessor);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
 };
 
 /// @brief The Expression Identifier class

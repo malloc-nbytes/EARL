@@ -32,18 +32,14 @@ earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<e
         earl::value::Obj *param = params.at(i);
         if (!param->boolean()) {
             Err::err_wtok(expr->m_id.get());
-            Token *it = expr->m_id.get();
-            std::cout << "Culprit:\n  ";
-            while (it && it->type() != TokenType::Semicolon) {
-                std::cout << it->lexeme() << ' ';
-                it = it->m_next;
-            }
-            std::cout << std::endl;
-            ERR(Err::Type::Assertion, "assertion failure");
+            token_dump_until_eol(expr->m_id.get());
+            ERR_WARGS(Err::Type::Assertion,
+                      "assertion failure (expression=%zu) (earl::value::Type=%d)",
+                      i+1, (int)param->type());
         }
     }
 
-    return nullptr; // TODO: change from null
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -94,5 +90,5 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
         }
     }
     std::cout << '\n';
-    return nullptr; // TODO: change from null
+    return new earl::value::Void();
 }

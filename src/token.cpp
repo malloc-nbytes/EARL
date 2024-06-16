@@ -180,3 +180,20 @@ std::string &Token::lexeme(void) {
 TokenType Token::type(void) const {
     return m_type;
 }
+
+void token_dump_until_eol(Token *tok, int padding) {
+    for (int i = 0; i < padding; ++i)
+        std::cout << ' ';
+    while (tok && tok->type() != TokenType::Semicolon) {
+        std::cout << tok->lexeme();
+
+        if (tok->m_next && tok->m_next->type() != TokenType::Semicolon) {
+            std::cout << ' ';
+        }
+
+        tok = tok->m_next;
+    }
+
+    std::cout << std::endl;
+}
+

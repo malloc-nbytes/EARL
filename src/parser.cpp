@@ -131,6 +131,9 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;
     } break;
+    case TokenType::Period: {
+        UNIMPLEMENTED("TokenType::Period: parse_primary_expr");
+    } break;
     default:
         assert(false && "parse_primary_expr: invalid primary expression");
     }
@@ -247,12 +250,9 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
 std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     Token *id = parse_expect(lexer, TokenType::Ident);
-    // (void)parse_expect(lexer, TokenType::Colon);
-    // Token *ty = parse_expect_type(lexer);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Semicolon);
-
     return std::make_unique<StmtLet>(std::make_unique<Token>(*id), std::unique_ptr<Expr>(expr));
 }
 

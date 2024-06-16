@@ -1,6 +1,5 @@
-fn func(a) {
-    return a;
-}
+let lst = [1,2,3,4,5];
 
-print(func(1));
+let i = lst.nth(3);
 
+print(i);

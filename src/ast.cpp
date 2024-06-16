@@ -72,6 +72,16 @@ ExprTermType ExprListLit::get_term_type() const {
     return ExprTermType::List_Literal;
 }
 
+ExprGet::ExprGet(std::unique_ptr<Token> accessor) : m_accessor(std::move(accessor)) {}
+
+ExprType ExprGet::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprGet::get_term_type() const {
+    return ExprTermType::Get;
+}
+
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIdent::get_type() const {

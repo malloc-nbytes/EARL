@@ -141,4 +141,9 @@ Token *token_alloc(Lexer &lexer,
                    TokenType type,
                    size_t row, size_t col, std::string fp);
 
+/// @brief Prints tokens from the current token to the end of line.
+/// @param tok The token to start from
+/// @param padding The number of spaces to prepend the output
+void token_dump_until_eol(Token *tok, int padding = 2);
+
 #endif // TOKEN_H

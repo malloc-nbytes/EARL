@@ -62,7 +62,6 @@ namespace Err {
     void err_wconflict(Token *tok1, Token *tok2);
 };
 
-
 /// \brief Prints a error message of type `errtype`
 /// with the message `msg` with any arguments of VA_ARGS.
 #define ERR_WARGS(errtype, msg, ...)            \
