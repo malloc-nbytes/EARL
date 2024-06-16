@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 #include <unordered_map>
 #include <vector>
@@ -71,6 +72,8 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
+    earl::value::Obj *result = nullptr;
+
     earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
 
     if (expr->get_type() != ExprType::Term) {
@@ -84,7 +87,21 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
         UNIMPLEMENTED("eval_expr_get::ExprTermType::Ident");
     } break;
     case ExprTermType::Func_Call: {
-        UNIMPLEMENTED("eval_expr_get::ExprTermType::Func_Call");
+        ExprFuncCall                    *func_expr = dynamic_cast<ExprFuncCall *>(right);
+        const std::string               &id = func_expr->m_id->lexeme();
+        std::vector<earl::value::Obj *> params;
+
+        std::for_each(func_expr->m_params.begin(), func_expr->m_params.end(), [&](auto &e) {
+            params.push_back(Interpreter::eval_expr(e.get(), ctx));
+        });
+
+        if (Intrinsics::is_member_intrinsic(id)) {
+            result = Intrinsics::call_member(id, left, params, ctx);
+        }
+        else {
+            UNIMPLEMENTED("eval_expr_get:ExprTermType::Func_Call:!Intrinsics::is_member_intrinsic(id)");
+        }
+
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal,
@@ -93,7 +110,7 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
     } break;
     }
 
-    return new earl::value::Void();
+    return result;
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {

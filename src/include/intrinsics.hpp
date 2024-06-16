@@ -64,7 +64,7 @@ namespace Intrinsics {
     /// @param ctx The current global context
     earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
-    earl::value::Obj *call_member(earl::value::Obj *, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+    earl::value::Obj *call_member(const std::string &id, earl::value::Obj *accessor, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
