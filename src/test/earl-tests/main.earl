@@ -1,3 +1,15 @@
+fn test_list_access() {
+    print("test_list_access...");
+
+    let lst = [1,2,3,4,5];
+
+    for i in 0..5 {
+        assert(i+1 == lst.nth(i));
+    }
+
+    print("ok");
+}
+
 fn test_while_loop() {
     print("test_while_loop...");
 
@@ -69,3 +81,4 @@ test_variable_mutation();
 test_for_loop();
 test_for_loop2();
 test_while_loop();
+test_list_access();
