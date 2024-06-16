@@ -1,8 +1,8 @@
 # File for test-functionstest_functions_count_evens
 # Counts the number of even numbers in a range
 
-def count_evens(start: int, end: int) -> int {
-    count: int = 0;
+def count_evens(start, end) {
+    let count = 0;
 
     for i in start..end {
         if i % 2 == 0 {
@@ -13,6 +13,6 @@ def count_evens(start: int, end: int) -> int {
     return count;
 }
 
-start: int = 0;
-end: int = 10000000;
+let start = 0;
+let end = 10000000;
 return count_evens(start, end);

@@ -1,15 +1,15 @@
 # File for test-functions/test_functions_return_summed_element
 # Does a loop in a function summing the elements and returning it.
 
-def summation(start: int, end: int) -> int {
-    sum: int = 0;
+def summation(start, end) {
+    let sum = 0;
     for i in start..end {
         sum = sum + i;
     }
     return sum;
 }
 
-start: int = 0;
-end: int = 10;
+let start = 0;
+let end = 10;
 
 return summation(start, end);

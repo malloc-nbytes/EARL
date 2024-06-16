@@ -2,16 +2,16 @@
 # Tests to make sure the parser can differentiate between
 # different types of statements.
 
-i: int = 1;
-j: int = 2;
+let i = 1;
+let j = 2;
 
-def func() -> int {
+def func() {
     print(1);
 }
 
-def func(a: int) -> void {}
+def func(a) {}
 
-def func(a: int, b: int) -> void {
+def func(a, b) {
     print(a, b);
     print(a);
     print(b);

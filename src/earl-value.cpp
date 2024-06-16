@@ -73,7 +73,6 @@ void Int::mutate(Obj *other) {
 }
 
 Obj *Int::copy(void) {
-    std::cout << "---------" << std::endl;
     return new Int(this->value());
 }
 

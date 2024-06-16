@@ -32,7 +32,7 @@ namespace earl {
         };
 
         struct Int : public Obj {
-            Int(int value);
+            Int(int value = 0);
             void fill(int value);
             int value(void);
             Type type(void) const override;
@@ -46,7 +46,7 @@ namespace earl {
         };
 
         struct Str : public Obj {
-            Str(std::string value);
+            Str(std::string value = "");
             void fill(std::string value);
             std::string &value(void);
             Type type(void) const override;
@@ -73,7 +73,7 @@ namespace earl {
         };
 
         struct List : public Obj {
-            List(std::vector<Obj *> value);
+            List(std::vector<Obj *> value = {});
             void fill(std::vector<Obj *> value);
             std::vector<Obj *> &value(void);
             Type type(void) const override;
