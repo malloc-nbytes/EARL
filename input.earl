@@ -1,4 +1,8 @@
+let i = 0;
+let tmp = i;
 
-
-
-
+while i < 10 {
+    tmp = tmp + 1;
+    print(tmp);
+    print(i);
+}

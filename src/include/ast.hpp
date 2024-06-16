@@ -168,10 +168,8 @@ struct StmtDef : public Stmt {
     std::unique_ptr<Token> m_id;
 
     /// @brief A vector of `<Identifer, Type>` of the statement definition
-    std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> m_args;
-
-    /// @brief The token of the return type
-    std::unique_ptr<Token> m_rettype;
+    // std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> m_args;
+    std::vector<std::unique_ptr<Token>> m_args;
 
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
@@ -179,8 +177,7 @@ struct StmtDef : public Stmt {
     uint32_t m_attrs;
 
     StmtDef(std::unique_ptr<Token> id,
-            std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> args,
-            std::unique_ptr<Token> rettype,
+            std::vector<std::unique_ptr<Token>> args,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 
@@ -193,12 +190,12 @@ struct StmtLet : public Stmt {
     std::unique_ptr<Token> m_id;
 
     /// @brief The token of the Let binding
-    std::unique_ptr<Token> m_type;
+    // std::unique_ptr<Token> m_type;
 
     /// @brief The expression of the Let Statement
     std::unique_ptr<Expr> m_expr;
 
-    StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Token> type, std::unique_ptr<Expr> expr);
+    StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Expr> expr);
     StmtType stmt_type() const override;
 };
 
