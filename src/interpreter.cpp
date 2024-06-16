@@ -87,8 +87,8 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
         UNIMPLEMENTED("eval_expr_get::ExprTermType::Ident");
     } break;
     case ExprTermType::Func_Call: {
-        ExprFuncCall                    *func_expr = dynamic_cast<ExprFuncCall *>(right);
-        const std::string               &id = func_expr->m_id->lexeme();
+        ExprFuncCall *func_expr = dynamic_cast<ExprFuncCall *>(right);
+        const std::string &id = func_expr->m_id->lexeme();
         std::vector<earl::value::Obj *> params;
 
         std::for_each(func_expr->m_params.begin(), func_expr->m_params.end(), [&](auto &e) {

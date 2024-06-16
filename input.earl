@@ -1,5 +1,19 @@
-let lst = [1,2,3,4,5];
+let lst = [1,2,3,4,5, "hello"];
 
-let i = lst.nth(3);
+for i in 0..5 {
+    print(lst.nth(i));
+}
 
-print(i);
+print();
+
+lst.nth(0) = 9;
+lst.nth(1) = 10;
+lst.nth(2) = 11;
+lst.nth(3) = 12;
+lst.nth(4) = 13;
+
+for i in 0..5 {
+    print(lst.nth(i));
+}
+
+

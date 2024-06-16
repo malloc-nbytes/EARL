@@ -34,7 +34,7 @@ bool Intrinsics::is_member_intrinsic(const std::string &id) {
 }
 
 earl::value::Obj *Intrinsics::call_member(const std::string &id, earl::value::Obj *accessor, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    assert(false);
+    return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
