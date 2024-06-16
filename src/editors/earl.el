@@ -38,10 +38,10 @@
 (eval-and-compile
   (defconst earl-keywords
     '("if" "else" "while" "let" "void" "int"
-      "str" "for" "def" "return" "break"
+      "str" "for" "fn" "return" "break"
       "struct" "char" "import" "in"
       ;; intrinsic functions
-      "print"
+      "print" "assert"
       ;; function attributes
       "world" "pub"
       )))

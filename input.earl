@@ -1,7 +1,6 @@
-let i = 0;
-let tmp = i;
+fn func(a) {
+    return a;
+}
 
-tmp = tmp+100;
+print(func(1));
 
-print(tmp);
-print(i);

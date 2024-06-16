@@ -295,7 +295,7 @@ std::vector<std::unique_ptr<Token>> parse_stmt_def_args(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
-    (void)parse_expect_keyword(lexer, COMMON_EARLKW_DEF);
+    (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
     Token *id = Parser::parse_expect(lexer, TokenType::Ident);
 
@@ -368,7 +368,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_LET) {
                 return parse_stmt_let(lexer);
             }
-            if (tok->lexeme() == COMMON_EARLKW_DEF) {
+            if (tok->lexeme() == COMMON_EARLKW_FN) {
                 return parse_stmt_def(lexer, attrs);
             }
             if (tok->lexeme() == COMMON_EARLKW_IF) {
