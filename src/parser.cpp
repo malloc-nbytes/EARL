@@ -110,26 +110,23 @@ static Expr *parse_primary_expr(Lexer &lexer) {
 
     switch (tok->type()) {
     case TokenType::Ident: {
-        // TODO: change this case to be more liberal in the
-        // parsing rather than a concrete, "if we have an ID,
-        // then do ...".
+        Expr *left = nullptr;
 
-        auto exprs = try_parse_funccall(lexer);
-
-        // We are parsing a function call.
-        if (exprs.has_value()) {
-            return new ExprFuncCall(std::make_unique<Token>(*tok), std::move(exprs.value()));
+        while (1) {
+            auto group = try_parse_funccall(lexer);
+            if (group.has_value()) {
+                left = new ExprFuncCall(std::make_unique<Token>(*tok), std::move(group.value()));
+            }
+            else {
+                left = new ExprIdent(std::make_unique<Token>(*tok));
+            }
+            if (lexer.peek()->type() == TokenType::Period) {
+                lexer.discard();
+                Expr *right = Parser::parse_expr(lexer);
+                return new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            }
+            return left;
         }
-
-        // Handle the `.` operator on identifiers.
-        if (lexer.peek()->type() == TokenType::Period) {
-            (void)Parser::parse_expect(lexer, TokenType::Period);
-            Token *accessor = tok;
-            Expr *get = Parser::parse_expr(lexer);
-            return new ExprGet(std::make_unique<Token>(*accessor), std::unique_ptr<Expr>(get));
-        }
-
-        return new ExprIdent(std::make_unique<Token>(*tok));
     } break;
     case TokenType::Intlit: return new ExprIntLit(std::make_unique<Token>(*tok));
     case TokenType::Strlit: return new ExprStrLit(std::make_unique<Token>(*tok));

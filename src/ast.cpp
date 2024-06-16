@@ -72,8 +72,8 @@ ExprTermType ExprListLit::get_term_type() const {
     return ExprTermType::List_Literal;
 }
 
-ExprGet::ExprGet(std::unique_ptr<Token> accessor, std::unique_ptr<Expr> get)
-    : m_accessor(std::move(accessor)), m_get(std::move(get)) {}
+ExprGet::ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right)
+    : m_left(std::move(left)), m_right(std::move(right)) {}
 
 ExprType ExprGet::get_type() const {
     return ExprType::Term;

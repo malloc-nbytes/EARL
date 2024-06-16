@@ -71,9 +71,9 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
-    assert(ctx.variable_is_registered(expr->m_accessor->lexeme()) && "variable not registered");
-    earl::variable::Obj *obj = ctx.get_registered_variable(expr->m_accessor->lexeme());
-    earl::value::Obj *get = Interpreter::eval_expr(expr->m_get.get(), ctx);
+    // assert(ctx.variable_is_registered(expr->m_accessor->lexeme()) && "variable not registered");
+    // earl::variable::Obj *obj = ctx.get_registered_variable(expr->m_accessor->lexeme());
+    // earl::value::Obj *get = Interpreter::eval_expr(expr->m_get.get(), ctx);
 
     // earl::value::Obj *result = obj->accessor(get);
     assert(false);

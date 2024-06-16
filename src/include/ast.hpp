@@ -85,10 +85,10 @@ struct ExprTerm : public Expr {
 };
 
 struct ExprGet : public ExprTerm {
-    std::unique_ptr<Token> m_accessor;
-    std::unique_ptr<Expr> m_get;
+    std::unique_ptr<Expr> m_left;
+    std::unique_ptr<Expr> m_right;
 
-    ExprGet(std::unique_ptr<Token> accessor, std::unique_ptr<Expr> get);
+    ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
