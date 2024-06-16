@@ -32,7 +32,7 @@ namespace earl {
         };
 
         struct Int : public Obj {
-            Int(std::optional<int> value = {});
+            Int(int value);
             void fill(int value);
             int value(void);
             Type type(void) const override;
@@ -42,11 +42,11 @@ namespace earl {
             Obj *copy(void) override;
 
         private:
-            std::optional<int> m_value;
+            int m_value;
         };
 
         struct Str : public Obj {
-            Str(std::optional<std::string> value = {});
+            Str(std::string value);
             void fill(std::string value);
             std::string &value(void);
             Type type(void) const override;
@@ -56,11 +56,11 @@ namespace earl {
             Obj *copy(void) override;
 
         private:
-            std::optional<std::string> m_value;
+            std::string m_value;
         };
 
         struct Void : public Obj {
-            Void(std::optional<void *> value = {});
+            Void(void *value = nullptr);
             void *value(void);
             Type type(void) const override;
             Obj *binop(Token *op, Obj *other) override;
@@ -69,11 +69,11 @@ namespace earl {
             Obj *copy(void) override;
 
         private:
-            std::optional<void *> m_value;
+            void *m_value;
         };
 
         struct List : public Obj {
-            List(std::optional<std::vector<Obj *>> value = {});
+            List(std::vector<Obj *> value);
             void fill(std::vector<Obj *> value);
             std::vector<Obj *> &value(void);
             Type type(void) const override;
@@ -83,7 +83,7 @@ namespace earl {
             Obj *copy(void) override;
 
         private:
-            std::optional<std::vector<Obj *>> m_value;
+            std::vector<Obj *> m_value;
         };
 
         Obj *of_str(const std::string &s);

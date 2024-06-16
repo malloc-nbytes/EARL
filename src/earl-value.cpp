@@ -8,12 +8,10 @@ using namespace earl::value;
 
 /*** INT ***/
 
-Int::Int(std::optional<int> value) : m_value(value) {}
+Int::Int(int value) : m_value(value) {}
 
 int Int::value(void) {
-    if (!m_value.has_value())
-        ERR(Err::Type::Fatal, "tried to unwrap None value");
-    return m_value.value();
+    return m_value;
 }
 
 void Int::fill(int value) {
@@ -81,12 +79,10 @@ Obj *Int::copy(void) {
 
 /*** STR ***/
 
-Str::Str(std::optional<std::string> value) : m_value(std::move(value)) {}
+Str::Str(std::string value) : m_value(std::move(value)) {}
 
 std::string &Str::value(void) {
-    if (!m_value.has_value())
-        ERR(Err::Type::Fatal, "tried to unwrap None value");
-    return m_value.value();
+    return m_value;
 }
 
 void Str::fill(std::string value) {
@@ -138,12 +134,10 @@ Obj *Str::copy(void) {
 
 /*** VOID ***/
 
-Void::Void(std::optional<void *> value) : m_value(value) {}
+Void::Void(void *value) : m_value(value) {}
 
 void *Void::value(void) {
-    if (!m_value.has_value())
-        ERR(Err::Type::Fatal, "tried to unwrap None value");
-    return m_value.value();
+    return m_value;
 }
 
 Type Void::type(void) const {
@@ -151,6 +145,7 @@ Type Void::type(void) const {
 }
 
 Obj *Void::binop(Token *op, Obj *other) {
+    (void)other;
     Err::err_wtok(op);
     ERR(Err::Type::Types, "invalid binary operation on Void types");
     return nullptr; // unreachable
@@ -161,6 +156,7 @@ bool Void::boolean(void) {
 }
 
 void Void::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Void::mutate");
 }
 
@@ -170,16 +166,14 @@ Obj *Void::copy(void) {
 
 /*** LIST ***/
 
-List::List(std::optional<std::vector<Obj *>> value) : m_value(std::move(value)) {}
+List::List(std::vector<Obj *> value) : m_value(std::move(value)) {}
 
 void List::fill(std::vector<Obj *> value) {
     m_value = std::move(value);
 }
 
 std::vector<Obj *> &List::value(void) {
-    if (!m_value.has_value())
-        ERR(Err::Type::Fatal, "tried to unwrap None value");
-    return m_value.value();
+    return m_value;
 }
 
 Type List::type(void) const {
@@ -193,8 +187,7 @@ Obj *List::binop(Token *op, Obj *other) {
 
     switch (op->type()) {
     case TokenType::Plus: {
-        auto list = new List();
-        list->fill(this->value());
+        auto list = new List(this->value());
         list->value().insert(list->value().end(), dynamic_cast<List *>(other)->value().begin(), dynamic_cast<List *>(other)->value().end());
         return list;
     } break;
@@ -212,12 +205,12 @@ bool List::boolean(void) {
 }
 
 void List::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("List::mutate");
 }
 
 Obj *List::copy(void) {
-    auto list = new List();
-    list->fill(this->value());
+    auto list = new List(this->value());
     return list;
 }
 
@@ -228,37 +221,6 @@ static const std::unordered_map<std::string, earl::value::Type> str_to_type_map 
     {COMMON_EARLTY_STR, earl::value::Type::Str},
     {COMMON_EARLTY_UNIT, earl::value::Type::Void},
 };
-
-static Obj *parse_list_type(const std::string &s) {
-    if (s[0] != '[' || s[s.size() - 1] != ']')
-        ERR_WARGS(Err::Type::Fatal, "invalid list type: %s", s.c_str());
-    auto inner = s.substr(1, s.size() - 2);
-    if (inner.empty())
-        ERR_WARGS(Err::Type::Fatal, "empty list type: %s", s.c_str());
-    return earl::value::of_str(inner);
-}
-
-Obj *earl::value::of_str(const std::string &s) {
-    if (s[0] == '[') {
-        TODO("earl::value::of_str: List type parsing");
-        return new List();
-        // return parse_list_type(s);
-    } else {
-        auto it = str_to_type_map.find(s);
-        if (it == str_to_type_map.end())
-            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
-        switch (it->second) {
-        case Type::Int:
-            return new Int();
-        case Type::Str:
-            return new Str();
-        case Type::Void:
-            return new Void();
-        default:
-            ERR_WARGS(Err::Type::Fatal, "unknown type: %s", s.c_str());
-        }
-    }
-}
 
 bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
 
