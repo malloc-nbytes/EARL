@@ -25,7 +25,7 @@ test_errno_t test_parsers_parse_stmt(void) {
     };
 
     std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(lexer);
+    Program program = Parser::parse_program(*lexer.get());
 
     int i = 0;
     for (auto &stmt : program.m_stmts) {
@@ -39,7 +39,7 @@ test_errno_t test_parsers_parse_stmt(void) {
 test_errno_t test_parsers_parse_stmt_def(void) {
     std::string filepath = std::string("test/sample-input/parse-stmt-def.1.in");
     std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(lexer);
+    Program program = Parser::parse_program(*lexer.get());
 
     std::string func_names[] = {"func1","func2","func3"};
     std::string rettypes[] = {"void","int","void"};
@@ -58,7 +58,7 @@ test_errno_t test_parsers_parse_stmt_def(void) {
 test_errno_t test_parsers_parse_stmt_expr(void) {
     std::string filepath = std::string("test/sample-input/parse-stmt-expr.1.in");
     std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(lexer);
+    Program program = Parser::parse_program(*lexer.get());
 
     std::string func_names[] = {"print","func1","print","func2"};
 
