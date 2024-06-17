@@ -15,5 +15,3 @@ lst.nth(4) = 13;
 for i in 0..5 {
     print(lst.nth(i));
 }
-
-
