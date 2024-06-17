@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <algorithm>
 #include <string>
 
@@ -143,35 +144,32 @@ std::string tokentype_to_str(TokenType type)
     return nullptr;
 }
 
-Token::Token(char *start, size_t len,
-             TokenType type,
-             size_t row, size_t col, std::string &fp)
+Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, std::string &fp)
     : m_type(type), m_row(row), m_col(col), m_fp(std::move(fp)), m_next(nullptr) {
-    std::for_each(start, start+len, [&](char c) {this->m_lexeme.push_back(c);});
+    std::for_each(start, start+len, [&](char c) {
+        this->m_lexeme.push_back(c);
+    });
 }
 
-#include <iostream>
-
-Token *token_alloc(Lexer &lexer,
-                   char *start, size_t len,
-                   TokenType type,
-                   size_t row, size_t col, std::string fp)
-{
-    Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
-
-    for (size_t i = 0; i < len; ++i) {
-        tok->m_lexeme.push_back(start[i]);
-    }
-
-    // tok->m_lexeme = std::string(start, len);
-    tok->m_type = type;
-    tok->m_row = row;
-    tok->m_col = col;
-    tok->m_fp = fp;
-    tok->m_next = nullptr;
-
-    return tok;
+std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
+    return std::make_unique<Token>(start, len, type, row, col, fp);
 }
+
+// Token *token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
+//     Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
+
+//     for (size_t i = 0; i < len; ++i) {
+//         tok->m_lexeme.push_back(start[i]);
+//     }
+
+//     tok->m_type = type;
+//     tok->m_row = row;
+//     tok->m_col = col;
+//     tok->m_fp = fp;
+//     tok->m_next = nullptr;
+
+//     return tok;
+// }
 
 std::string &Token::lexeme(void) {
     return m_lexeme;
@@ -191,7 +189,7 @@ void token_dump_until_eol(Token *tok, int padding) {
             std::cout << ' ';
         }
 
-        tok = tok->m_next;
+        tok = tok->m_next.get();
     }
 
     std::cout << std::endl;

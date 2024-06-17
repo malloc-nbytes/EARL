@@ -114,11 +114,13 @@ struct Token {
     std::string m_fp;
 
     /// @brief A pointer to the next token
-    Token *m_next;
+    std::unique_ptr<Token> m_next;
 
     Token(char *start, size_t len,
           TokenType type,
           size_t row, size_t col, std::string &fp);
+
+    Token(const Token &) = delete;
 
     /// @brief Get the `lexeme` of the current token
     std::string &lexeme(void);
@@ -135,11 +137,7 @@ struct Token {
 /// @param row The row of the token
 /// @param col The column of the token
 /// @param fp The filepath of the token
-Token *token_alloc(Lexer &lexer,
-                   char *start,
-                   size_t len,
-                   TokenType type,
-                   size_t row, size_t col, std::string fp);
+std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp);
 
 /// @brief Prints tokens from the current token to the end of line.
 /// @param tok The token to start from

@@ -24,6 +24,7 @@
 #include <vector>
 #include <iostream>
 
+#include "err.hpp"
 #include "parser.hpp"
 #include "ast.hpp"
 #include "common.hpp"
@@ -38,7 +39,7 @@ const size_t VARTYPES_LEN = VARTYPES.size();
 
 void usage(char *progname) {
     (void)progname;
-    assert(false && "fixme");
+    ERR_WARGS(Err::Type::Usage, "%s <input>", progname);
 }
 
 std::vector<std::string> create_keywords(void) {
@@ -64,10 +65,9 @@ int main(int argc, char **argv) {
     std::vector<std::string> types = create_types();
     std::string comment = "#";
 
-    Lexer lexer = lex_file(filepath, keywords, types, comment);
-    Program program = Parser::parse_program(lexer);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
+    Program program = Parser::parse_program(*lexer.get());
     Interpreter::interpret(program);
-
 
     return 0;
 }
