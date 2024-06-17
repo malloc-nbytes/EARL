@@ -1,3 +1,17 @@
+fn test_accessor_bug() {
+    print("test_accessor_bug...");
+
+    let lst = [1,2,3,4,5];
+
+    let x = 1 + lst.nth(1);
+    assert(x == 3);
+
+    let y = lst.nth(1) + 1;
+    assert(y == 3);
+
+    print("ok");
+}
+
 fn test_list_access() {
     print("test_list_access...");
 
@@ -82,3 +96,4 @@ test_for_loop();
 test_for_loop2();
 test_while_loop();
 test_list_access();
+test_accessor_bug();

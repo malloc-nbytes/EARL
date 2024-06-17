@@ -79,16 +79,13 @@ static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
 
     while (1) {
         // Only needed if no arguments are provided.
-        if (lexer.peek()->type() == TokenType::Rparen) {
+        if (lexer.peek()->type() == TokenType::Rparen)
             break;
-        }
         exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
-        if (lexer.peek()->type() == TokenType::Comma) {
+        if (lexer.peek()->type() == TokenType::Comma)
             (void)Parser::parse_expect(lexer, TokenType::Comma);
-        }
-        else {
+        else
             break;
-        }
     }
 
     return exprs;
@@ -103,6 +100,9 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
     }
 
     return {};
+}
+
+static Expr *parse_identifier_or_funccall(Lexer &lexer) {
 }
 
 static Expr *parse_primary_expr(Lexer &lexer) {
@@ -144,6 +144,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         assert(false && "parse_primary_expr: invalid primary expression");
     }
     assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
 static Expr *parse_multiplicative_expr(Lexer &lexer) {
