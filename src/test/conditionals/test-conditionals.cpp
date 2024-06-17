@@ -11,7 +11,7 @@ static std::string comment = "#";
 
 test_errno_t test_conditionals_basic_if(void) {
     std::string filepath = "test/sample-input/conditionals-if.1.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -19,7 +19,7 @@ test_errno_t test_conditionals_basic_if(void) {
 
 test_errno_t test_conditionals_basic_if_else_if(void) {
     std::string filepath = "test/sample-input/conditionals-if.2.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -27,7 +27,7 @@ test_errno_t test_conditionals_basic_if_else_if(void) {
 
 test_errno_t test_conditionals_basic_if_else_if_else(void) {
     std::string filepath = "test/sample-input/conditionals-if.3.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;

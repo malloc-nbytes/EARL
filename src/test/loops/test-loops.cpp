@@ -11,7 +11,7 @@ static std::string comment = "#";
 
 test_errno_t test_loops_basic_while(void) {
     std::string filepath = "test/sample-input/loops-while.1.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -19,7 +19,7 @@ test_errno_t test_loops_basic_while(void) {
 
 test_errno_t test_loops_large_while(void) {
     std::string filepath = "test/sample-input/loops-while.2.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -27,7 +27,7 @@ test_errno_t test_loops_large_while(void) {
 
 test_errno_t test_loops_with_end_as_variable(void) {
     std::string filepath = "test/sample-input/loops-while.3.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -35,7 +35,7 @@ test_errno_t test_loops_with_end_as_variable(void) {
 
 test_errno_t test_loops_mutating_enumerator_by_5(void) {
     std::string filepath = "test/sample-input/loops-while.4.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -43,7 +43,7 @@ test_errno_t test_loops_mutating_enumerator_by_5(void) {
 
 test_errno_t test_loops_should_not_loop(void) {
     std::string filepath = "test/sample-input/loops-while.5.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -51,7 +51,7 @@ test_errno_t test_loops_should_not_loop(void) {
 
 test_errno_t test_loops_basic_for(void) {
     std::string filepath = "test/sample-input/loops-for.1.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
@@ -59,7 +59,7 @@ test_errno_t test_loops_basic_for(void) {
 
 test_errno_t test_loops_large_for(void) {
     std::string filepath = "test/sample-input/loops-for.2.earl";
-    Lexer lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
     Program program = Parser::parse_program(lexer);
 
     return TEST_OK;
