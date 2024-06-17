@@ -401,6 +401,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
         default:
+            std::cout << tok->lexeme() << std::endl;
             assert(false && "parse_stmt: invalid statement");
         }
     } while (attrs != 0);

@@ -135,11 +135,7 @@ struct Token {
 /// @param row The row of the token
 /// @param col The column of the token
 /// @param fp The filepath of the token
-Token *token_alloc(Lexer &lexer,
-                   char *start,
-                   size_t len,
-                   TokenType type,
-                   size_t row, size_t col, std::string fp);
+Token *token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp);
 
 /// @brief Prints tokens from the current token to the end of line.
 /// @param tok The token to start from
