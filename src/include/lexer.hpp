@@ -44,7 +44,7 @@ struct Lexer {
     std::unique_ptr<Token> m_hd;
 
     /// @brief Tail of the linked list
-    std::unique_ptr<Token> m_tl;
+    Token *m_tl;
 
     /// @brief The number of tokens present
     size_t m_len;

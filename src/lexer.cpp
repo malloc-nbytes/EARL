@@ -37,10 +37,10 @@ Lexer::Lexer() : m_hd(nullptr), m_tl(nullptr), m_len(0) {}
 void Lexer::append(std::unique_ptr<Token> tok) {
     if (!m_hd) {
         m_hd = std::move(tok);
-        m_tl = std::move(tok);
+        m_tl = m_hd.get();
     } else {
         m_tl->m_next = std::move(tok);
-        m_tl = std::move(tok);
+        m_tl = m_tl->m_next.get();
     }
     ++m_len;
 }
