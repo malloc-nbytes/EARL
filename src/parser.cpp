@@ -103,39 +103,57 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
 }
 
 static Expr *parse_identifier_or_funccall(Lexer &lexer) {
+    std::unique_ptr<Token> tok = lexer.next();
+    auto group = try_parse_funccall(lexer);
+    if (group.has_value()) {
+        return new ExprFuncCall(std::move(tok), std::move(group.value()));
+    }
+    else {
+        return new ExprIdent(std::move(tok));
+    }
 }
 
 static Expr *parse_primary_expr(Lexer &lexer) {
-    std::unique_ptr<Token> tok = lexer.next();
+    Token *tok = lexer.peek();
 
     switch (tok->type()) {
     case TokenType::Ident: {
         Expr *left = nullptr;
+        std::unique_ptr<Token> id = nullptr;
 
         while (1) {
-            auto group = try_parse_funccall(lexer);
+            std::optional<std::vector<std::unique_ptr<Expr>>> group = {};
+
+            if (lexer.peek(1)->type() == TokenType::Lparen) {
+                id = lexer.next();
+                group = try_parse_funccall(lexer);
+            }
+
             if (group.has_value()) {
-                left = new ExprFuncCall(std::move(tok), std::move(group.value()));
+                assert(id);
+                left = new ExprFuncCall(std::move(id), std::move(group.value()));
             }
             else {
-                left = new ExprIdent(std::move(tok));
+                left = new ExprIdent(lexer.next());
             }
             if (lexer.peek()->type() == TokenType::Period) {
                 lexer.discard();
-                Expr *right = Parser::parse_expr(lexer);
+                Expr *right = parse_identifier_or_funccall(lexer);
                 return new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
             }
             return left;
         }
     } break;
-    case TokenType::Intlit: return new ExprIntLit(std::move(tok));
-    case TokenType::Strlit: return new ExprStrLit(std::move(tok));
+    case TokenType::Intlit: return new ExprIntLit(lexer.next());
+    case TokenType::Strlit: return new ExprStrLit(lexer.next());
     case TokenType::Lbracket: {
+        lexer.discard();
         std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
         (void)Parser::parse_expect(lexer, TokenType::Rbracket);
         return new ExprListLit(std::move(lst));
     } break;
     case TokenType::Lparen: {
+        lexer.discard();
         Expr *expr = Parser::parse_expr(lexer);
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;
