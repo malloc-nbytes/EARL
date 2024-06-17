@@ -33,10 +33,10 @@
 
 Expr *parse_expr(Lexer &lexer);
 
-Token *Parser::parse_expect(Lexer &lexer, TokenType expected) {
-    Token *tok = lexer.next();
+std::unique_ptr<Token> Parser::parse_expect(Lexer &lexer, TokenType expected) {
+    std::unique_ptr<Token> tok = lexer.next();
     if (tok->type() != expected) {
-        Err::err_wtok(tok);
+        Err::err_wtok(tok.get());
         ERR_WARGS(Err::Type::Syntax,
                   "expected %s, got %s `%s`",
                   tokentype_to_str(expected).c_str(), tokentype_to_str(tok->m_type).c_str(), tok->lexeme().c_str());
@@ -44,8 +44,8 @@ Token *Parser::parse_expect(Lexer &lexer, TokenType expected) {
     return tok;
 }
 
-Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
-    Token *tok = lexer.next();
+std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
+    std::unique_ptr<Token> tok = lexer.next();
 
     if (tok->type() != TokenType::Keyword) {
         ERR_WARGS(Err::Type::Syntax,
@@ -61,8 +61,8 @@ Token *Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     return tok;
 }
 
-Token *Parser::parse_expect_type(Lexer &lexer) {
-    Token *tok = lexer.next();
+std::unique_ptr<Token> Parser::parse_expect_type(Lexer &lexer) {
+    std::unique_ptr<Token> tok = lexer.next();
 
     if (tok->type() != TokenType::Type && tok->type() != TokenType::TypeList) {
         ERR_WARGS(Err::Type::Syntax,
@@ -106,7 +106,7 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
 }
 
 static Expr *parse_primary_expr(Lexer &lexer) {
-    Token *tok = lexer.next();
+    std::unique_ptr<Token> tok = lexer.next();
 
     switch (tok->type()) {
     case TokenType::Ident: {
@@ -115,10 +115,10 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         while (1) {
             auto group = try_parse_funccall(lexer);
             if (group.has_value()) {
-                left = new ExprFuncCall(std::make_unique<Token>(*tok), std::move(group.value()));
+                left = new ExprFuncCall(std::move(tok), std::move(group.value()));
             }
             else {
-                left = new ExprIdent(std::make_unique<Token>(*tok));
+                left = new ExprIdent(std::move(tok));
             }
             if (lexer.peek()->type() == TokenType::Period) {
                 lexer.discard();
@@ -128,8 +128,8 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             return left;
         }
     } break;
-    case TokenType::Intlit: return new ExprIntLit(std::make_unique<Token>(*tok));
-    case TokenType::Strlit: return new ExprStrLit(std::make_unique<Token>(*tok));
+    case TokenType::Intlit: return new ExprIntLit(std::move(tok));
+    case TokenType::Strlit: return new ExprStrLit(std::move(tok));
     case TokenType::Lbracket: {
         std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
         (void)Parser::parse_expect(lexer, TokenType::Rbracket);
@@ -143,6 +143,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     default:
         assert(false && "parse_primary_expr: invalid primary expression");
     }
+    assert(false && "unreachable");
 }
 
 static Expr *parse_multiplicative_expr(Lexer &lexer) {
@@ -151,10 +152,10 @@ static Expr *parse_multiplicative_expr(Lexer &lexer) {
     while (cur && (cur->type() == TokenType::Asterisk
                    || cur->type() == TokenType::Forwardslash
                    || cur->type() == TokenType::Percent)) {
-        Token *op = lexer.next();
+        std::unique_ptr<Token> op = lexer.next();
         Expr *rhs = parse_primary_expr(lexer);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
-                             std::make_unique<Token>(*op),
+                             std::move(op),
                              std::unique_ptr<Expr>(rhs));
         cur = lexer.peek();
     }
@@ -166,10 +167,10 @@ static Expr *parse_additive_expr(Lexer &lexer) {
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Plus
                    || cur->type() == TokenType::Minus)) {
-        Token *op = lexer.next();
+        std::unique_ptr<Token> op = lexer.next();
         Expr *rhs = parse_multiplicative_expr(lexer);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
-                             std::make_unique<Token>(*op),
+                             std::move(op),
                              std::unique_ptr<Expr>(rhs));
         cur = lexer.peek();
     }
@@ -185,10 +186,10 @@ static Expr *parse_equalitative_expr(Lexer &lexer) {
                    || cur->type() == TokenType::Lessthan_Equals
                    || cur->type() == TokenType::Lessthan
                    || cur->type() == TokenType::Bang_Equals)) {
-        Token *op = lexer.next();
+        std::unique_ptr<Token> op = lexer.next();
         Expr *rhs = parse_additive_expr(lexer);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
-                             std::make_unique<Token>(*op),
+                             std::move(op),
                              std::unique_ptr<Expr>(rhs));
         cur = lexer.peek();
     }
@@ -200,10 +201,10 @@ static Expr *parse_logical_expr(Lexer &lexer) {
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Ampersand
                    || cur->type() == TokenType::Double_Pipe)) {
-        Token *op = lexer.next();
+        std::unique_ptr<Token> op = lexer.next();
         Expr *rhs = parse_equalitative_expr(lexer);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
-                             std::make_unique<Token>(*op),
+                             std::move(op),
                              std::unique_ptr<Expr>(rhs));
         cur = lexer.peek();
     }
@@ -255,11 +256,11 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
 
 std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
-    Token *id = parse_expect(lexer, TokenType::Ident);
+    std::unique_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::make_unique<Token>(*id), std::unique_ptr<Expr>(expr));
+    return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr));
 }
 
 std::unique_ptr<StmtExpr> Parser::parse_stmt_expr(Lexer &lexer) {
@@ -288,8 +289,8 @@ std::vector<std::unique_ptr<Token>> parse_stmt_def_args(Lexer &lexer) {
 
     (void)Parser::parse_expect(lexer, TokenType::Lparen);
     while (lexer.peek()->type() != TokenType::Rparen) {
-        Token *id = Parser::parse_expect(lexer, TokenType::Ident);
-        auto var = std::make_unique<Token>(*id);
+        std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
+        std::unique_ptr<Token> var = std::move(id);
         args.push_back(std::move(var));
 
         if (lexer.peek()->type() == TokenType::Comma)
@@ -303,12 +304,12 @@ std::vector<std::unique_ptr<Token>> parse_stmt_def_args(Lexer &lexer) {
 std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
-    Token *id = Parser::parse_expect(lexer, TokenType::Ident);
+    std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
 
     std::vector<std::unique_ptr<Token>> args = parse_stmt_def_args(lexer);
 
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
-    return std::make_unique<StmtDef>(std::make_unique<Token>(*id),
+    return std::make_unique<StmtDef>(std::move(id),
                                      std::move(args),
                                      std::move(block),
                                      attrs);
@@ -331,7 +332,7 @@ std::unique_ptr<StmtWhile> parse_stmt_while(Lexer &lexer) {
 std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
 
-    Token *enumerator = Parser::parse_expect(lexer, TokenType::Ident);
+    std::unique_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
 
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
 
@@ -341,7 +342,7 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
 
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
 
-    return std::make_unique<StmtFor>(std::make_unique<Token>(*enumerator),
+    return std::make_unique<StmtFor>(std::move(enumerator),
                                      std::unique_ptr<Expr>(start_expr),
                                      std::unique_ptr<Expr>(end_expr),
                                      std::move(block));
@@ -350,7 +351,7 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
 static FuncAttr translate_attr(Lexer &lexer) {
     (void)Parser::parse_expect(lexer, TokenType::At);
 
-    Token *attr = Parser::parse_expect(lexer, TokenType::Ident);
+    std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
     if (attr->lexeme() == COMMON_EARLATTR_PUB) {
         return FuncAttr::Pub;
     }

@@ -28,7 +28,6 @@
 #include <vector>
 #include <memory>
 
-#include "arena.hpp"
 #include "token.hpp"
 
 struct Token;
@@ -42,26 +41,24 @@ struct Token;
 /// @brief The API for lexical analysis of a document.
 struct Lexer {
     /// @brief Head of the linked list
-    Token *m_hd;
+    std::unique_ptr<Token> m_hd;
+
     /// @brief Tail of the linked list
-    Token *m_tl;
+    std::unique_ptr<Token> m_tl;
 
     /// @brief The number of tokens present
     size_t m_len;
 
-    /// @brief Memory management via an arena allocator
-    Arena m_arena;
-
     Lexer();
 
-    // No need to free the memory for the arena
-    // as it will free itself in it's destructor.
     ~Lexer() = default;
+
+    Lexer(const Lexer &other) = delete;
 
     /// @brief Get the current token, namely the one
     /// that `m_hd` is currently at. It will
     /// return that one and update the head accordingly.
-    Token *next(void);
+    std::unique_ptr<Token> next(void);
 
     /// @brief Peek `n` tokens into the lexer. This does not
     /// consume the current token, only views `n` tokens ahead.
@@ -71,7 +68,7 @@ struct Lexer {
 
     /// @brief Append a token to the lexer at the end of the tail.
     /// @param tok The token to append
-    void append(Token *tok);
+    void append(std::unique_ptr<Token> tok);
 
     /// @brief The same as `Lexer::next()` except it does not give
     /// back the token that was consumed.
@@ -91,6 +88,6 @@ struct Lexer {
 /// @param keywords A vector of strings that are the keywords of the language
 /// @param types A vector of strings that specify the types in the language
 /// @param comment What a single line comment is in the language
-Lexer lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
+std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
 
 #endif // LEXER_H
