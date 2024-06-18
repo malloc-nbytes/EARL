@@ -1,3 +1,5 @@
-let s = "hello";
+import "other.earl";
 
-print(len(s));
+mod Main;
+
+print(Other.sum(a, b));

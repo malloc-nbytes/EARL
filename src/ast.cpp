@@ -181,3 +181,18 @@ StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
 StmtType StmtFor::stmt_type() const {
     return StmtType::Stmt_For;
 }
+
+StmtImport::StmtImport(std::unique_ptr<Token> fp)
+    : m_fp(std::move(fp)) {}
+
+StmtType StmtImport::stmt_type() const {
+    return StmtType::Import;
+}
+
+StmtMod::StmtMod(std::unique_ptr<Token> id) : m_id(std::move(id)) {}
+
+StmtType StmtMod::stmt_type() const {
+    return StmtType::Mod;
+}
+
+

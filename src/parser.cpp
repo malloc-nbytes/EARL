@@ -387,6 +387,20 @@ static FuncAttr translate_attr(Lexer &lexer) {
     }
 }
 
+std::unique_ptr<Stmt> parse_stmt_import(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
+    std::unique_ptr<Token> fp = Parser::parse_expect(lexer, TokenType::Strlit);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtImport>(std::move(fp));
+}
+
+std::unique_ptr<Stmt> parse_stmt_mod(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MODULE);
+    std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtImport>(std::move(id));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
@@ -413,6 +427,12 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             }
             if (tok->lexeme() == COMMON_EARLKW_FOR) {
                 return parse_stmt_for(lexer);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_IMPORT) {
+                return parse_stmt_import(lexer);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_MODULE) {
+                return parse_stmt_mod(lexer);
             }
             assert(false && "parse_stmt: invalid keyword");
         } break;

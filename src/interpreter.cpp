@@ -323,6 +323,10 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::Stmt_For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     } break;
+    case StmtType::Import:
+    case StmtType::Mod: {
+        return new earl::value::Void();
+    } break;
     default:
         assert(false && "eval_stmt: invalid statement");
     }
