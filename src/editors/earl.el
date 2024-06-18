@@ -43,7 +43,7 @@
       ;; intrinsic functions
       "print" "assert"
       ;; member intrinsics
-      "len" "rev" "nth"
+      "len" "rev" "nth" "append"
       ;; function attributes
       "world" "pub"
       )))

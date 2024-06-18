@@ -1,7 +1,21 @@
-let lst = [[1,2,3],[4,5,6],[7,8,9]];
+fn test_list_append_intrinsic2() {
+    print("test_list_append_intrinsic2...");
 
-lst.rev();
+    let lst = [1,2,3];
+    lst.append(4, "foobar", [5,6,7]);
 
-for i in 0..len(lst) {
-    print(lst.nth(i));
+    let t = 1;
+
+    for i in 0..len(lst)-2 {
+        assert(lst.nth(i) == t);
+        t = t+1;
+    }
+
+    assert(lst.nth(4) == "foobar");
+    assert(lst.nth(5) == [5,6,7]);
+
+    print("ok");
 }
+
+
+test_list_append_intrinsic2();
