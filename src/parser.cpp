@@ -133,15 +133,17 @@ static Expr *parse_primary_expr(Lexer &lexer) {
                 assert(id);
                 left = new ExprFuncCall(std::move(id), std::move(group.value()));
             }
-            else {
+            else if (lexer.peek()->type() == TokenType::Ident) {
                 left = new ExprIdent(lexer.next());
             }
-            if (lexer.peek()->type() == TokenType::Period) {
+            else if (lexer.peek()->type() == TokenType::Period) {
                 lexer.discard();
                 Expr *right = parse_identifier_or_funccall(lexer);
-                return new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+                left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
             }
-            return left;
+            else {
+                return left;
+            }
         }
     } break;
     case TokenType::Intlit: return new ExprIntLit(lexer.next());
