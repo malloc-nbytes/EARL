@@ -167,6 +167,8 @@ namespace earl {
             /// @note `idx` MUST BE an integer value
             Obj *nth(Obj *idx);
 
+            Obj *rev(void);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "earl.hpp"
 #include "token.hpp"
 #include "common.hpp"
@@ -184,6 +186,11 @@ Obj *List::nth(Obj *idx) {
     case Type::Int: return this->value()[dynamic_cast<Int *>(idx)->value()];
     default: assert(false && "ur stupid");
     }
+}
+
+Obj *List::rev(void) {
+    std::reverse(m_value.begin(), m_value.end());
+    return new Void();
 }
 
 Obj *List::binop(Token *op, Obj *other) {

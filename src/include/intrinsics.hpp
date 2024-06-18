@@ -111,6 +111,8 @@ namespace Intrinsics {
     /// @note `idx` must be of type earl::type::Int
     /// @param ctx The current global context
     earl::value::Obj *intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H
