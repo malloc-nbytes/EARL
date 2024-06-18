@@ -114,24 +114,24 @@ static Expr *parse_identifier_or_funccall(Lexer &lexer) {
 }
 
 static Expr *parse_primary_expr(Lexer &lexer) {
-    Token *tok = lexer.peek();
+    Token *tok = nullptr;
 
-    switch (tok->type()) {
+    switch (lexer.peek()->type()) {
     case TokenType::Ident: {
         Expr *left = nullptr;
-        std::unique_ptr<Token> id = nullptr;
+        std::unique_ptr<Token> funccall_id = nullptr;
 
-        while (1) {
+        while ((tok = lexer.peek()) != nullptr) {
             std::optional<std::vector<std::unique_ptr<Expr>>> group = {};
 
-            if (lexer.peek(1)->type() == TokenType::Lparen) {
-                id = lexer.next();
+            if (tok->type() == TokenType::Ident && lexer.peek(1)->type() == TokenType::Lparen) {
+                funccall_id = lexer.next();
                 group = try_parse_funccall(lexer);
             }
 
             if (group.has_value()) {
-                assert(id);
-                left = new ExprFuncCall(std::move(id), std::move(group.value()));
+                assert(funccall_id);
+                left = new ExprFuncCall(std::move(funccall_id), std::move(group.value()));
             }
             else if (lexer.peek()->type() == TokenType::Ident) {
                 left = new ExprIdent(lexer.next());
