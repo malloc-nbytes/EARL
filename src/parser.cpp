@@ -414,7 +414,8 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             assert(false && "parse_stmt: invalid keyword");
         } break;
         case TokenType::Ident: {
-            if (lexer.peek(1)->type() == TokenType::Lparen) {
+            if (lexer.peek(1)->type() == TokenType::Lparen
+                || lexer.peek(1)->type() == TokenType::Period) {
                 return parse_stmt_expr(lexer);
             }
             return parse_stmt_mut(lexer);
