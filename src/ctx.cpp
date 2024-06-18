@@ -119,3 +119,8 @@ earl::function::Obj *Ctx::get_curfunc(void) {
 bool Ctx::in_function(void) const {
     return m_curfunc != nullptr;
 }
+
+Token *Ctx::get_module(void) {
+    return m_module;
+}
+

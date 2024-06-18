@@ -113,6 +113,8 @@ struct Ctx {
     /// to calling this function
     earl::function::Obj *get_curfunc(void);
 
+    Token *get_module(void);
+
 private:
     /// @brief The current function that is being
     /// evaluated during runtime
@@ -123,6 +125,8 @@ private:
 
     /// @brief The global scope of all EARL functions
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
+
+    Token *m_module;
 };
 
 #endif // CTX_H
