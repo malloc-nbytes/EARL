@@ -14,6 +14,7 @@
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
     {"print", &Intrinsics::intrinsic_print},
     {"assert", &Intrinsics::intrinsic_assert},
+    {"len", &Intrinsics::intrinsic_len},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -41,6 +42,12 @@ earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::v
     earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
     assert(idx.size() == 1);
     return list->nth(idx[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(params.size() == 1);
+    assert(params[0]->type() == earl::value::Type::List);
+    return new earl::value::Int(dynamic_cast<earl::value::List *>(params[0])->value().size());
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
