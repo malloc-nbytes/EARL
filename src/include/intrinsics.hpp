@@ -70,6 +70,8 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /// @brief Assert several expressions
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
