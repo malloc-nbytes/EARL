@@ -437,11 +437,7 @@ fn matrix_mult() {
     for i in 0..3 {
         for j in 0..3 {
             for k in 0..3 {
-                let rlst = result.nth(i);
-                let m1lst = mat1.nth(i);
-                let m2lst = mat2.nth(k);
-
-                rlst.nth(j) = rlst.nth(j) + (m1lst.nth(k) * m2lst.nth(j));
+                result.nth(i).nth(j) = result.nth(i).nth(j) + mat1.nth(i).nth(k) * mat2.nth(k).nth(j);
             }
         }
     }
