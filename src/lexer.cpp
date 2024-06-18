@@ -326,24 +326,6 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
 
         // Symbols
         else {
-
-            // Parsing list types
-            if (c == '[') {
-                size_t list_type_end = 0;
-                if ((list_type_end = try_parse_list_type(lexeme)) != 0) {
-                    std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme, list_type_end, TokenType::TypeList, row, col, filepath);
-                    lexer->append(std::move(tok));
-                    i += list_type_end;
-                    col += list_type_end;
-
-                    // We have a TypeList. Do not do the `Regular Symbols` lexing below.
-                    continue;
-                }
-
-                // We did not parse a TypeList, just parse as a `Regular Symbol` below.
-            }
-
-            // Regular Symbols
             std::string buf;
             for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) {
                 if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') {

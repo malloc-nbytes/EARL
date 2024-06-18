@@ -199,7 +199,13 @@ Obj *List::rev(void) {
 }
 
 Obj *List::append(std::vector<Obj *> &values) {
-    m_value.insert(m_value.end(), values.begin(), values.end());
+    // NOTE: To append a reference, use the below line
+    // m_value.insert(m_value.end(), values.begin(), values.end());
+
+    for (size_t i = 0; i < values.size(); ++i) {
+        m_value.push_back(values[i]->copy());
+    }
+
     return new Void();
 }
 

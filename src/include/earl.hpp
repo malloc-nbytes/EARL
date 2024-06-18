@@ -82,7 +82,7 @@ namespace earl {
             /// @param other The value to mutate THIS instance with
             virtual void mutate(Obj *other) = 0;
 
-            /// @Copy THIS instance
+            /// @brief Copy THIS instance
             virtual Obj *copy(void) = 0;
         };
 

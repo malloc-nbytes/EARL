@@ -64,7 +64,7 @@ std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string ex
 std::unique_ptr<Token> Parser::parse_expect_type(Lexer &lexer) {
     std::unique_ptr<Token> tok = lexer.next();
 
-    if (tok->type() != TokenType::Type && tok->type() != TokenType::TypeList) {
+    if (tok->type() != TokenType::Type) {
         ERR_WARGS(Err::Type::Syntax,
                   "%s `%s` is not a type",
                   tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
@@ -79,7 +79,9 @@ static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
 
     while (1) {
         // Only needed if no arguments are provided.
-        if (lexer.peek()->type() == TokenType::Rparen)
+        if (lexer.peek()->type() == TokenType::Rparen
+            || lexer.peek()->type() == TokenType::Rbrace
+            || lexer.peek()->type() == TokenType::Rbracket)
             break;
         exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
         if (lexer.peek()->type() == TokenType::Comma)
@@ -151,7 +153,8 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     case TokenType::Lbracket: {
         lexer.discard();
         std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
-        (void)Parser::parse_expect(lexer, TokenType::Rbracket);
+        // (void)Parser::parse_expect(lexer, TokenType::Rbracket);
+        lexer.discard();
         return new ExprListLit(std::move(lst));
     } break;
     case TokenType::Lparen: {

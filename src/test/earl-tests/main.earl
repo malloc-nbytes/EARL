@@ -1,3 +1,22 @@
+fn test_list_append_intrinsic3() {
+    print("test_list_append_intrinsic3...");
+
+    let lst = [];
+
+    for i in 0..3 {
+        lst.append(i);
+    }
+
+    let t = 0;
+
+    for i in 0..3 {
+        assert(lst.nth(i) == t);
+        t = t+1;
+    }
+
+    print("ok");
+}
+
 fn test_list_append_intrinsic2() {
     print("test_list_append_intrinsic2...");
 
@@ -233,3 +252,4 @@ test_list_rev_intrinsic1();
 test_list_rev_intrinsic2();
 test_list_append_intrinsic1();
 test_list_append_intrinsic2();
+test_list_append_intrinsic3();
