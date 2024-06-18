@@ -1,4 +1,4 @@
-fn matrix_mult() {
+fn matrix_mult1() {
     let mat1 = [
         [1,2,3],
         [4,5,6],
@@ -26,4 +26,33 @@ fn matrix_mult() {
     }
 }
 
-matrix_mult();
+fn matrix_mult2() {
+    let mat1 = [
+        [1,2,3],
+        [4,5,6],
+        [7,8,9]
+    ];
+
+    let mat2 = [
+        [10,11,12],
+        [13,14,15],
+        [16,17,18]
+    ];
+
+    let result = [[0,0,0],[0,0,0],[0,0,0]];
+
+    for i in 0..3 {
+        for j in 0..3 {
+            for k in 0..3 {
+                result.nth(i).nth(j) = result.nth(i).nth(j) + (mat1.nth(i).nth(k) * mat2.nth(k).nth(j));
+            }
+        }
+    }
+
+    for i in 0..3 {
+        print(result.nth(i));
+    }
+}
+
+matrix_mult1();
+matrix_mult2();
