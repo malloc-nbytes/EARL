@@ -416,6 +416,42 @@ fn collatz(n) {
 collatz(69420);
 #+end_example
 
+** Matrix Multiplication
+
+#+begin_example
+fn matrix_mult() {
+    let mat1 = [
+        [1,2,3],
+        [4,5,6],
+        [7,8,9]
+    ];
+
+    let mat2 = [
+        [10,11,12],
+        [13,14,15],
+        [16,17,18]
+    ];
+
+    let result = [[0,0,0],[0,0,0],[0,0,0]];
+
+    for i in 0..3 {
+        for j in 0..3 {
+            for k in 0..3 {
+                let rlst = result.nth(i);
+                let m1lst = mat1.nth(i);
+                let m2lst = mat2.nth(k);
+
+                rlst.nth(j) = rlst.nth(j) + (m1lst.nth(k) * m2lst.nth(j));
+            }
+        }
+    }
+
+    for i in 0..3 {
+        print(result.nth(i));
+    }
+}
+#+end_example
+
 ** Function Attributes
 
 Attributes are flags for functions to enable them to have more features.
