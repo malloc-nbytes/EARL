@@ -70,8 +70,14 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
     (void)expr;
     (void)ctx;
     assert(params.size() == 1);
-    assert(params[0]->type() == earl::value::Type::List);
-    return new earl::value::Int(dynamic_cast<earl::value::List *>(params[0])->value().size());
+    if (params[0]->type() == earl::value::Type::List) {
+        return new earl::value::Int(dynamic_cast<earl::value::List *>(params[0])->value().size());
+    }
+    else if (params[0]->type() == earl::value::Type::Str) {
+        return new earl::value::Int(dynamic_cast<earl::value::Str *>(params[0])->value().size());
+    }
+    ERR_WARGS(Err::Type::Fatal, "canot call `len` on unsupported type (%d)", (int)params[0]->type());
+    return nullptr;
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
