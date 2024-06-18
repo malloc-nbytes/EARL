@@ -1,3 +1,37 @@
+fn test_list_rev_intrinsic2() {
+    print("test_list_rev_intrinsic2");
+
+    let lst = [[3,2,1],[6,5,4],[9,8,7]];
+    let t = 9;
+
+    lst.rev();
+
+    for i in 0..len(lst) {
+        for j in 0..len(lst.nth(i)) {
+            assert(lst.nth(i).nth(j) == t);
+            t = t-1;
+        }
+    }
+
+    print("ok");
+}
+
+fn test_list_rev_intrinsic1() {
+    print("test_list_rev_intrinsic1...");
+
+    let lst = [1,2,3,4,5];
+    let tmp = 5;
+
+    lst.rev();
+
+    for i in 0..len(lst) {
+        assert(lst.nth(i) == tmp);
+        tmp = tmp-1;
+    }
+
+    print("ok");
+}
+
 fn test_len_intrinsic2() {
     print("test_len_intrinsic2...");
 
@@ -158,3 +192,5 @@ test_nested_lists();
 test_function_chaining();
 test_len_intrinsic1();
 test_len_intrinsic2();
+test_list_rev_intrinsic1();
+test_list_rev_intrinsic2();

@@ -42,6 +42,8 @@
       "struct" "char" "import" "in"
       ;; intrinsic functions
       "print" "assert"
+      ;; member intrinsics
+      "len" "rev" "nth"
       ;; function attributes
       "world" "pub"
       )))
