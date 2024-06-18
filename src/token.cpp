@@ -146,9 +146,7 @@ std::string tokentype_to_str(TokenType type)
 
 Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, std::string &fp)
     : m_type(type), m_row(row), m_col(col), m_fp(std::move(fp)), m_next(nullptr) {
-    std::for_each(start, start+len, [&](char c) {
-        this->m_lexeme.push_back(c);
-    });
+    std::for_each(start, start+len, [&](char c) {this->m_lexeme.push_back(c);});
 }
 
 std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {

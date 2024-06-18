@@ -1,3 +1,5 @@
+/** @file */
+
 // MIT License
 
 // Copyright (c) 2023 malloc-nbytes
@@ -20,13 +22,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// File: arena.h
-// Description:
-//   Provides an API for an arena allocator. This is
-//   helpful because we have a "pool" of memory that
-//   we can use and then free it all at once. If
-//   unfamiliar with arena allocators,
-//   https://en.wikipedia.org/wiki/Region-based_memory_management
+/**
+ * Provides an API for an arena allocator. This is
+ * helpful because we have a "pool" of memory that
+ * we can use and then free it all at once. If
+ * unfamiliar with arena allocators,
+ * https://en.wikipedia.org/wiki/Region-based_memory_management
+ */
 
 #ifndef ARENA_H
 #define ARENA_H
@@ -35,11 +37,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// An Arena allocator for easiser memory
-// management. Allocate a bunch of memory
-// up-front first, and then have other
-// heap-alloc'd objects use this pool
-// for the required memory.
+/// @brief An Arena allocator for easiser memory
+/// management. Allocate a bunch of memory
+/// up-front first, and then have other
+/// heap-alloc'd objects use this pool
+/// for the required memory.
 struct Arena {
     std::vector<uint8_t> m_mem;
     size_t m_len;
@@ -49,7 +51,8 @@ struct Arena {
     ~Arena() = default;
 };
 
-// Allocate `bytes` number of bytes in an arena.
+/// @brief Allocate `bytes` number of bytes in an arena.
+[[deprecated]]
 uint8_t *arena_alloc(Arena &arena, size_t bytes);
 
 #endif // ARENA_H

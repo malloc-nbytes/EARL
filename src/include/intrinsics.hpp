@@ -41,13 +41,16 @@
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {
 
+    /// @brief All intrinsic functions must use this function signature.
     using IntrinsicFunction = earl::value::Obj *(*)(ExprFuncCall *, std::vector<earl::value::Obj *>&, Ctx&);
 
+    /// @brief All intrinsic member functions must use this function signature.
     using IntrinsicMemberFunction = earl::value::Obj *(*)(earl::value::Obj *, std::vector<earl::value::Obj *>&, Ctx&);
 
     /// @brief A map of all intrinsic functions in EARL
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
 
+    /// @brief A map of all intrinsic member functions in EARL
     extern const std::unordered_map<std::string, IntrinsicMemberFunction> intrinsic_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
@@ -55,6 +58,9 @@ namespace Intrinsics {
     /// @return true if intrinsic, false if otherwise
     bool is_intrinsic(const std::string &id);
 
+    /// @brief Check if an identifier is the name of an intrinsic member function
+    /// @param id The identifier to check
+    /// @return true if intrinsic member, false if otherwise
     bool is_member_intrinsic(const std::string &id);
 
     /// @brief Call an intrinsic function
@@ -64,12 +70,23 @@ namespace Intrinsics {
     /// @param ctx The current global context
     earl::value::Obj *call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    /// @brief Call an intrinsic member function
+    /// @note It is expected to call `is_member_intrinsic` before calling this function
+    /// @param id The identifier of the intrinsic member function
+    /// @param accessor The object that the member function is a part of
+    /// @param params value objects to pass to the function
+    /// @note it is often expected that `params` has the size of 1 or 0
+    /// @param ctx The current global context
     earl::value::Obj *call_member(const std::string &id, earl::value::Obj *accessor, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
-    earl::value::Obj *intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
-
+    /// @brief Provides the length of a data list
+    /// @note The parameter must be of length 1
+    /// @note The parameter must be of earl::type::List
+    /// @param expr The AST node of the function call
+    /// @param params value objects to pass to the function
+    /// @param ctx The current global context
     earl::value::Obj *intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     /// @brief Assert several expressions
@@ -83,6 +100,17 @@ namespace Intrinsics {
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
+
+    /// @brief Get the `nth` value in a list
+    /// @note The parameter must be of length 1
+    /// @note The parameter must be of earl::type::List
+    /// @param obj The object that the member function is a part of
+    /// @param idx The index to retrieve the element at
+    /// @note `idx` must be of type earl::type::Int
+    /// @param ctx The current global context
+    earl::value::Obj *intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

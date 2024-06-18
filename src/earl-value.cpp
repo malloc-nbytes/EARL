@@ -160,7 +160,7 @@ void Void::mutate(Obj *other) {
 }
 
 Obj *Void::copy(void) {
-    return new Void(this->value());
+    UNIMPLEMENTED("Void::copy");
 }
 
 /*** LIST ***/

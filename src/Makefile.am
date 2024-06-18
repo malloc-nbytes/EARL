@@ -7,7 +7,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
 SUBDIRS = test
 
-AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -g -DDEBUG
+AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
 
 .PHONY: test docs all
 test: main

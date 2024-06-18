@@ -25,8 +25,10 @@
 #include "arena.hpp"
 #include "utils.hpp"
 
+[[deprecated]]
 Arena::Arena(size_t bytes) : m_mem(bytes), m_len(0), m_cap(bytes) {}
 
+[[deprecated]]
 uint8_t *arena_alloc(Arena &arena, size_t bytes) {
     if (arena.m_len + bytes > arena.m_cap) {
         arena.m_cap *= 2;
