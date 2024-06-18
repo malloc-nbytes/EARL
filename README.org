@@ -13,6 +13,9 @@
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
 
+*NOTE*: To see current functionality, see the *EARL Syntax* portion of this document
+or take a look at =EARL/src/test/earl-tests/main.earl=.
+
 [[./imgs/earl-logo-resized.jpg]]
 
 * Introduction
@@ -373,6 +376,26 @@ let end = 10;
 for i in 0..end {
     print("i: ", i);
 }
+#+end_example
+
+** Intrinsic Object Methods
+
+#+begin_example
+let lst = [];
+
+for i in 0..3 {
+    lst.append(i);
+}
+
+lst.append([3,4,5], "hello world");
+
+for i in 0..len(lst)-2 {
+    assert(lst.nth(i) == i);
+}
+
+assert(lst.nth(3).nth(0) == 3);
+assert(lst.nth(3) == [3,4,5]);
+assert(lst.nth(4) == "hello world");
 #+end_example
 
 ** FizzBuzz

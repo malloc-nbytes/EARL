@@ -4,4 +4,12 @@ for i in 0..3 {
     lst.append(i);
 }
 
-print(lst);
+lst.append([3,4,5], "hello world");
+
+for i in 0..len(lst)-2 {
+    assert(lst.nth(i) == i);
+}
+
+assert(lst.nth(3).nth(0) == 3);
+assert(lst.nth(3) == [3,4,5]);
+assert(lst.nth(4) == "hello world");
