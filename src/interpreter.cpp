@@ -332,14 +332,14 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     }
 }
 
-earl::value::Obj *Interpreter::interpret(Program &program) {
-    Ctx ctx;
+Ctx *Interpreter::interpret(Program &program) {
+    Ctx *ctx = new Ctx();
     earl::value::Obj *meta;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        meta = eval_stmt(program.m_stmts.at(i).get(), ctx);
+        meta = eval_stmt(program.m_stmts.at(i).get(), *ctx);
         delete meta;
     }
 
-    return new earl::value::Void();
+    return std::move(ctx);
 }

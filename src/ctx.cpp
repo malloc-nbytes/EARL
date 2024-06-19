@@ -5,7 +5,7 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-Ctx::Ctx() : m_curfunc(nullptr) {}
+Ctx::Ctx() : m_curfunc(nullptr), m_module(nullptr) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
     m_curfunc = func;

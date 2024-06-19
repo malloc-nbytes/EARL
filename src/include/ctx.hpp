@@ -126,6 +126,8 @@ private:
     /// @brief The global scope of all EARL functions
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
 
+    std::vector<Ctx *> m_children_contexts;
+
     Token *m_module;
 };
 
