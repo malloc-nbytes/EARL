@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
     std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
     Program program = Parser::parse_program(*lexer.get());
-    Interpreter::interpret(program);
+    Interpreter::interpret(program, std::move(lexer));
 
     return 0;
 }

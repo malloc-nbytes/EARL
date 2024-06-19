@@ -34,6 +34,9 @@
 #include "scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
+// #include "ctx.hpp"
+
+struct Ctx;
 
 /**
  * All values associated with EARL during runtime.
@@ -180,6 +183,20 @@ namespace earl {
 
         private:
             std::vector<Obj *> m_value;
+        };
+
+        struct Module : public Obj {
+            Module(Ctx *ctx);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            Ctx *m_value;
         };
 
         /// @brief Get an empty EARL value from a type

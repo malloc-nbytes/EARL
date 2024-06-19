@@ -278,6 +278,30 @@ Obj *List::copy(void) {
     return list;
 }
 
+/*** MODULE ***/
+
+Module::Module(Ctx *ctx) : m_value(ctx) {}
+
+Type Module::type(void) const {
+    UNIMPLEMENTED("Module::type");
+}
+
+Obj *Module::binop(Token *op, Obj *other) {
+    UNIMPLEMENTED("Module::binop");
+}
+
+bool Module::boolean(void) {
+    UNIMPLEMENTED("Module::boolean");
+}
+
+void Module::mutate(Obj *other) {
+    UNIMPLEMENTED("Module::mutate");
+}
+
+Obj *Module::copy(void) {
+    UNIMPLEMENTED("Module::copy");
+}
+
 /*** OTHER ***/
 
 static const std::unordered_map<std::string, earl::value::Type> str_to_type_map = {
@@ -312,3 +336,4 @@ bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
     }
     return false;
 }
+

@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
 cd src
-make -j7
+make -j12
 cd ..
 ./src/main ./input.earl

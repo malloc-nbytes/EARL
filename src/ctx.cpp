@@ -5,7 +5,8 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-Ctx::Ctx() : m_curfunc(nullptr), m_module(nullptr) {}
+Ctx::Ctx(std::unique_ptr<Lexer> lexer) :
+    m_curfunc(nullptr), m_module(nullptr), m_lexer(std::move(lexer)) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
     m_curfunc = func;
@@ -34,6 +35,17 @@ void Ctx::pop_scope(void) {
         m_globalvars.pop();
         m_globalfuncs.pop();
     }
+}
+
+earl::value::Module *Ctx::get_registered_module(const std::string &id) {
+    for (size_t i = 0; i < m_children_contexts.size(); ++i) {
+        Ctx *child = m_children_contexts[i].get();
+
+        if (child->get_module() && child->get_module()->lexeme() == id) {
+            return new earl::value::Module(child);
+        }
+    }
+    return nullptr;
 }
 
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
@@ -121,16 +133,16 @@ bool Ctx::in_function(void) const {
 }
 
 Token *Ctx::get_module(void) {
-    return m_module;
+    return m_module.get();
 }
 
-void Ctx::set_module(Token *id) {
+void Ctx::set_module(std::unique_ptr<Token> id) {
     if (m_module != nullptr) {
         ERR(Err::Type::Fatal, "Files are only limited to one module");
     }
-    m_module = id;
+    m_module = std::move(id);
 }
 
-void Ctx::push_child_context(Ctx *child) {
-    m_children_contexts.push_back(child);
+void Ctx::push_child_context(std::unique_ptr<Ctx> child) {
+    m_children_contexts.push_back(std::move(child));
 }

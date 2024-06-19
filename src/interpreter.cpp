@@ -118,7 +118,15 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
+
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+
+        // Check for a module
+        earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
+        if (mod)
+            return mod;
+
+        // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
         return stored->value();
     } break;
@@ -327,7 +335,7 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Mod: {
         StmtMod *mod = dynamic_cast<StmtMod *>(stmt);
-        ctx.set_module(mod->m_id.get());
+        ctx.set_module(std::move(mod->m_id));
         return new earl::value::Void();
     } break;
     case StmtType::Import: {
@@ -339,9 +347,9 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
 
         std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
         Program program = Parser::parse_program(*lexer.get());
-        Ctx *child_ctx = Interpreter::interpret(program);
+        Ctx *child_ctx = Interpreter::interpret(program, std::move(lexer));
 
-        ctx.push_child_context(child_ctx);
+        ctx.push_child_context(std::unique_ptr<Ctx>(std::move(child_ctx)));
 
         return new earl::value::Void();
     } break;
@@ -350,8 +358,8 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     }
 }
 
-Ctx *Interpreter::interpret(Program &program) {
-    Ctx *ctx = new Ctx();
+Ctx *Interpreter::interpret(Program &program, std::unique_ptr<Lexer> lexer) {
+    Ctx *ctx = new Ctx(std::move(lexer));
     earl::value::Obj *meta;
 
     for (size_t i = 0; i < program.m_stmts.size(); ++i) {
