@@ -124,6 +124,13 @@ Token *Ctx::get_module(void) {
     return m_module;
 }
 
+void Ctx::set_module(Token *id) {
+    if (m_module != nullptr) {
+        ERR(Err::Type::Fatal, "Files are only limited to one module");
+    }
+    m_module = id;
+}
+
 void Ctx::push_child_context(Ctx *child) {
     m_children_contexts.push_back(child);
 }

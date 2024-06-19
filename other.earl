@@ -1,5 +1,6 @@
 mod Other;
 
+@pub
 fn sum(a, b) {
     let s = a+b;
     return s;

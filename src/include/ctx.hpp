@@ -115,6 +115,8 @@ struct Ctx {
 
     Token *get_module(void);
 
+    void set_module(Token *id);
+
     void push_child_context(Ctx *child);
 
 private:

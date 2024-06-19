@@ -325,18 +325,25 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::Stmt_For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     } break;
+    case StmtType::Mod: {
+        StmtMod *mod = dynamic_cast<StmtMod *>(stmt);
+        ctx.set_module(mod->m_id.get());
+        return new earl::value::Void();
+    } break;
     case StmtType::Import: {
         StmtImport *im = dynamic_cast<StmtImport *>(stmt);
-        std::vector<std::string> t1;
-        std::vector<std::string> t2;
-        std::string t3 = "#";
-        std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), t1, t2, t3);
+
+        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+        std::string comment = COMMON_EARL_COMMENT;
+
+        std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
         Program program = Parser::parse_program(*lexer.get());
         Ctx *child_ctx = Interpreter::interpret(program);
-        abort();
-    } break;
-    case StmtType::Mod: {
-        UNIMPLEMENTED("StmtType::Mod");
+
+        ctx.push_child_context(child_ctx);
+
+        return new earl::value::Void();
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");

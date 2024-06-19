@@ -398,7 +398,7 @@ std::unique_ptr<Stmt> parse_stmt_mod(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MODULE);
     std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtImport>(std::move(id));
+    return std::make_unique<StmtMod>(std::move(id));
 }
 
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
