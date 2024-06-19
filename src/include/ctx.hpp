@@ -115,6 +115,8 @@ struct Ctx {
 
     Token *get_module(void);
 
+    void push_child_context(Ctx *child);
+
 private:
     /// @brief The current function that is being
     /// evaluated during runtime

@@ -124,3 +124,6 @@ Token *Ctx::get_module(void) {
     return m_module;
 }
 
+void Ctx::push_child_context(Ctx *child) {
+    m_children_contexts.push_back(child);
+}

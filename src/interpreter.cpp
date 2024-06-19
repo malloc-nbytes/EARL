@@ -27,6 +27,7 @@
 #include <iostream>
 #include <memory>
 
+#include "parser.hpp"
 #include "utils.hpp"
 #include "interpreter.hpp"
 #include "intrinsics.hpp"
@@ -36,6 +37,7 @@
 #include "ctx.hpp"
 #include "common.hpp"
 #include "earl.hpp"
+#include "lexer.hpp"
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
@@ -323,9 +325,18 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::Stmt_For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     } break;
-    case StmtType::Import:
+    case StmtType::Import: {
+        StmtImport *im = dynamic_cast<StmtImport *>(stmt);
+        std::vector<std::string> t1;
+        std::vector<std::string> t2;
+        std::string t3 = "#";
+        std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), t1, t2, t3);
+        Program program = Parser::parse_program(*lexer.get());
+        Ctx *child_ctx = Interpreter::interpret(program);
+        abort();
+    } break;
     case StmtType::Mod: {
-        return new earl::value::Void();
+        UNIMPLEMENTED("StmtType::Mod");
     } break;
     default:
         assert(false && "eval_stmt: invalid statement");
