@@ -60,6 +60,7 @@ namespace earl {
             Void,
             /** EARL list type (holds any value including a mix of datatypes) */
             List,
+            Module,
         };
 
         /// @brief The base abstract class that all
@@ -187,6 +188,8 @@ namespace earl {
 
         struct Module : public Obj {
             Module(Ctx *ctx);
+
+            Ctx *value(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

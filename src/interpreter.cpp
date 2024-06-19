@@ -97,10 +97,15 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
 
-        if (Intrinsics::is_member_intrinsic(id)) {
+        if (left->type() == earl::value::Type::Module) {
+            auto mod = dynamic_cast<earl::value::Module *>(left);
+            return eval_expr_funccall(func_expr, *mod->value());
+        }
+        else if (Intrinsics::is_member_intrinsic(id)) {
             result = Intrinsics::call_member(id, left, params, ctx);
         }
         else {
+            std::cout << "id: " << id << std::endl;
             UNIMPLEMENTED("eval_expr_get:ExprTermType::Func_Call:!Intrinsics::is_member_intrinsic(id)");
         }
 

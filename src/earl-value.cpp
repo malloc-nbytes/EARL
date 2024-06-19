@@ -282,8 +282,13 @@ Obj *List::copy(void) {
 
 Module::Module(Ctx *ctx) : m_value(ctx) {}
 
+Ctx *Module::value(void) {
+    assert(m_value);
+    return m_value;
+}
+
 Type Module::type(void) const {
-    UNIMPLEMENTED("Module::type");
+    return Type::Module;
 }
 
 Obj *Module::binop(Token *op, Obj *other) {
