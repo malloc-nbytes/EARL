@@ -61,6 +61,8 @@ void Obj::add_local(variable::Obj *var) {
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
     for (size_t i = 0; i < values.size(); i++) {
+        assert(m_stmtdef->m_args[i]);
+
         const std::string &id = m_stmtdef->m_args[i]->lexeme();
         earl::value::Obj *value = values[i];
 
