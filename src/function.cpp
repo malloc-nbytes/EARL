@@ -6,7 +6,7 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef) : m_stmtdef(stmtdef) {
+Obj::Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {
     m_local.emplace_back();
 }
 
@@ -61,18 +61,16 @@ void Obj::add_local(variable::Obj *var) {
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
     for (size_t i = 0; i < values.size(); i++) {
-        assert(m_stmtdef->m_args[i]);
-
-        const std::string &id = m_stmtdef->m_args[i]->lexeme();
         earl::value::Obj *value = values[i];
 
         // NOTE: To handle references, replace:
         //     std::unique_ptr<earl::value::Obj>(value->copy())
         // with:
         //     std::unique_ptr<earl::value::Obj>(value)
-        earl::variable::Obj *var =
-            new earl::variable::Obj(m_stmtdef->m_args[i].get(),
-                                    std::unique_ptr<earl::value::Obj>(value->copy()));
+        // earl::variable::Obj *var =
+        //     new earl::variable::Obj(m_stmtdef->m_args[i].get(),
+        //                             std::unique_ptr<earl::value::Obj>(value->copy()));
+        earl::variable::Obj *var = new earl::variable::Obj(m_params[i].get(), std::unique_ptr<earl::value::Obj>(value->copy()));
 
         add_local(var);
     }
