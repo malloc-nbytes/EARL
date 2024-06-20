@@ -50,6 +50,17 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     return result;
 }
 
+earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, Ctx &mod_ctx) {
+    std::vector<earl::value::Obj *> params;
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), main_ctx));
+    }
+
+    earl::function::Obj *func = mod_ctx.get_registered_function(expr->m_id->lexeme());
+
+    return eval_user_defined_function(func, params, mod_ctx);
+}
+
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     std::vector<earl::value::Obj *> params;
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
@@ -99,13 +110,13 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 
         if (left->type() == earl::value::Type::Module) {
             auto mod = dynamic_cast<earl::value::Module *>(left);
-            return eval_expr_funccall(func_expr, *mod->value());
+            // return eval_expr_funccall(func_expr, *mod->value());
+            return eval_expr_module_funccall(func_expr, ctx, *mod->value());
         }
         else if (Intrinsics::is_member_intrinsic(id)) {
             result = Intrinsics::call_member(id, left, params, ctx);
         }
         else {
-            std::cout << "id: " << id << std::endl;
             UNIMPLEMENTED("eval_expr_get:ExprTermType::Func_Call:!Intrinsics::is_member_intrinsic(id)");
         }
 

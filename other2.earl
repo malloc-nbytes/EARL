@@ -1,0 +1,5 @@
+mod Other2;
+
+fn other2_func(x) {
+    print("in other2_func()");
+}

@@ -1,7 +1,15 @@
+import "other2.earl";
+
 mod Other;
+
+fn helper(x) {
+    print("in helper()");
+    return x*2;
+}
 
 @pub
 fn mklst(a, b) {
-    print("in mklst");
-    return [a, b];
+    print("in mklst()");
+    # Other2.other2_func(1);
+    return [a, helper(b)];
 }

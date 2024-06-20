@@ -21,7 +21,7 @@ size_t Ctx::stmts_len(void) const {
 }
 
 void Ctx::unset_function(void) {
-    assert(m_curfunc);
+    // assert(m_curfunc);
     m_curfunc = nullptr;
 }
 
