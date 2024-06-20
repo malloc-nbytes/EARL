@@ -1,7 +1,7 @@
 mod Other;
 
 @pub
-fn sum(a, b) {
-    let s = a+b;
-    return s;
+fn mklst(a, b) {
+    print("in mklst");
+    return [a, b];
 }

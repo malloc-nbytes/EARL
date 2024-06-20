@@ -456,12 +456,13 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
     return nullptr;
 }
 
-Program Parser::parse_program(Lexer &lexer) {
+std::unique_ptr<Program> Parser::parse_program(Lexer &lexer) {
     std::vector<std::unique_ptr<Stmt>> stmts;
 
     while (lexer.peek()->type() != TokenType::Eof) {
         stmts.push_back(parse_stmt(lexer));
     }
 
-    return Program(std::move(stmts));
+    // return new Program(std::move(stmts));
+    return std::make_unique<Program>(std::move(stmts));
 }

@@ -5,11 +5,19 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-Ctx::Ctx(std::unique_ptr<Lexer> lexer) :
-    m_curfunc(nullptr), m_module(nullptr), m_lexer(std::move(lexer)) {}
+Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
+    m_curfunc(nullptr), m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
     m_curfunc = func;
+}
+
+Stmt *Ctx::get_stmt(size_t i) {
+    return m_program->m_stmts[i].get();
+}
+
+size_t Ctx::stmts_len(void) const {
+    return m_program->m_stmts.size();
 }
 
 void Ctx::unset_function(void) {

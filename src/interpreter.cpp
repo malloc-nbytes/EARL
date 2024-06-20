@@ -357,8 +357,8 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
         std::string comment = COMMON_EARL_COMMENT;
 
         std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
-        Program program = Parser::parse_program(*lexer.get());
-        Ctx *child_ctx = Interpreter::interpret(program, std::move(lexer));
+        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        Ctx *child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
 
         ctx.push_child_context(std::unique_ptr<Ctx>(std::move(child_ctx)));
 
@@ -369,12 +369,12 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     }
 }
 
-Ctx *Interpreter::interpret(Program &program, std::unique_ptr<Lexer> lexer) {
-    Ctx *ctx = new Ctx(std::move(lexer));
+Ctx *Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
+    Ctx *ctx = new Ctx(std::move(lexer), std::move(program));
     earl::value::Obj *meta;
 
-    for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        meta = eval_stmt(program.m_stmts.at(i).get(), *ctx);
+    for (size_t i = 0; i < ctx->stmts_len(); ++i) {
+        meta = eval_stmt(ctx->get_stmt(i), *ctx);
         delete meta;
     }
 

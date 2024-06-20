@@ -38,7 +38,7 @@
 #include "scope.hpp"
 
 struct Ctx {
-    Ctx(std::unique_ptr<Lexer> lexer);
+    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
     ~Ctx() = default;
 
     /// @brief Set the current function being evaluated
@@ -121,6 +121,10 @@ struct Ctx {
 
     earl::value::Module *get_registered_module(const std::string &id);
 
+    Stmt *get_stmt(size_t i);
+
+    size_t stmts_len(void) const;
+
 private:
     /// @brief The current function that is being
     /// evaluated during runtime
@@ -137,6 +141,8 @@ private:
     std::unique_ptr<Token> m_module;
 
     std::unique_ptr<Lexer> m_lexer;
+
+    std::unique_ptr<Program> m_program;
 };
 
 #endif // CTX_H

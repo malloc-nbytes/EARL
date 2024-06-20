@@ -49,8 +49,8 @@ int main(int argc, char **argv) {
     std::string comment = "#";
 
     std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
-    Program program = Parser::parse_program(*lexer.get());
-    Interpreter::interpret(program, std::move(lexer));
+    std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+    Interpreter::interpret(std::move(program), std::move(lexer));
 
     return 0;
 }

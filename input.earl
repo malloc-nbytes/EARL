@@ -2,4 +2,4 @@ import "other.earl";
 
 mod Main;
 
-print(Other.sum(1,2));
+print(Other.mklst(1, 2).nth(1));
