@@ -38,7 +38,7 @@
 #include "scope.hpp"
 
 struct Ctx {
-    Ctx();
+    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
     ~Ctx() = default;
 
     /// @brief Set the current function being evaluated
@@ -113,6 +113,18 @@ struct Ctx {
     /// to calling this function
     earl::function::Obj *get_curfunc(void);
 
+    Token *get_module(void);
+
+    void set_module(std::unique_ptr<Token> id);
+
+    void push_child_context(std::unique_ptr<Ctx> child);
+
+    earl::value::Module *get_registered_module(const std::string &id);
+
+    Stmt *get_stmt(size_t i);
+
+    size_t stmts_len(void) const;
+
 private:
     /// @brief The current function that is being
     /// evaluated during runtime
@@ -123,6 +135,14 @@ private:
 
     /// @brief The global scope of all EARL functions
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
+
+    std::vector<std::unique_ptr<Ctx>> m_children_contexts;
+
+    std::unique_ptr<Token> m_module;
+
+    std::unique_ptr<Lexer> m_lexer;
+
+    std::unique_ptr<Program> m_program;
 };
 
 #endif // CTX_H

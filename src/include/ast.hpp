@@ -46,6 +46,8 @@ enum class StmtType {
     Stmt_Return,
     Stmt_While,
     Stmt_For,
+    Import,
+    Mod,
 };
 
 /// The different types an expression can be.
@@ -298,6 +300,20 @@ struct StmtFor : public Stmt {
             std::unique_ptr<Expr> end,
             std::unique_ptr<StmtBlock> block);
 
+    StmtType stmt_type() const override;
+};
+
+struct StmtImport : public Stmt {
+    std::unique_ptr<Token> m_fp;
+
+    StmtImport(std::unique_ptr<Token> fp);
+    StmtType stmt_type() const override;
+};
+
+struct StmtMod : public Stmt {
+    std::unique_ptr<Token> m_id;
+
+    StmtMod(std::unique_ptr<Token> id);
     StmtType stmt_type() const override;
 };
 

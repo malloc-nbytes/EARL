@@ -39,7 +39,7 @@
   (defconst earl-keywords
     '("if" "else" "while" "let" "void" "int"
       "str" "for" "fn" "return" "break"
-      "struct" "char" "import" "in"
+      "struct" "char" "import" "in" "mod"
       ;; intrinsic functions
       "print" "assert"
       ;; member intrinsics

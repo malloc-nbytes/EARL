@@ -34,6 +34,9 @@
 #include "scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
+// #include "ctx.hpp"
+
+struct Ctx;
 
 /**
  * All values associated with EARL during runtime.
@@ -57,6 +60,7 @@ namespace earl {
             Void,
             /** EARL list type (holds any value including a mix of datatypes) */
             List,
+            Module,
         };
 
         /// @brief The base abstract class that all
@@ -182,6 +186,22 @@ namespace earl {
             std::vector<Obj *> m_value;
         };
 
+        struct Module : public Obj {
+            Module(Ctx *ctx);
+
+            Ctx *value(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            Ctx *m_value;
+        };
+
         /// @brief Get an empty EARL value from a type
         /// @param s The string type to parse
         [[deprecated]] [[nodiscard]]
@@ -230,7 +250,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef);
+            Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params);
             ~Obj() = default;
 
             /// @brief Get the identifier of this function
@@ -288,6 +308,7 @@ namespace earl {
             std::vector<Scope<std::string, variable::Obj *>> m_local;
         private:
             StmtDef *m_stmtdef;
+            std::vector<std::unique_ptr<Token>> m_params;
         };
     };
 };

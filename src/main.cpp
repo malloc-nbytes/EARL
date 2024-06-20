@@ -32,26 +32,9 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 
-std::vector<std::string> RESERVED = COMMON_EARLKW_ASCPL;
-std::vector<std::string> VARTYPES = COMMON_EARLTY_ASCPL;
-
-const size_t VARTYPES_LEN = VARTYPES.size();
-
 void usage(char *progname) {
     (void)progname;
     ERR_WARGS(Err::Type::Usage, "%s <input>", progname);
-}
-
-std::vector<std::string> create_keywords(void) {
-    std::vector<std::string> kws;
-    std::for_each(RESERVED.begin(), RESERVED.end(), [&](std::string s) {kws.push_back(s);});
-    return kws;
-}
-
-std::vector<std::string> create_types(void) {
-    std::vector<std::string> tys;
-    std::for_each(VARTYPES.begin(), VARTYPES.end(), [&](std::string s) {tys.push_back(s);});
-    return tys;
 }
 
 int main(int argc, char **argv) {
@@ -61,13 +44,13 @@ int main(int argc, char **argv) {
 
     const char *filepath = *(++argv);
 
-    std::vector<std::string> keywords = create_keywords();
-    std::vector<std::string> types = create_types();
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types = COMMON_EARLTY_ASCPL;
     std::string comment = "#";
 
     std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
-    Program program = Parser::parse_program(*lexer.get());
-    Interpreter::interpret(program);
+    std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+    Interpreter::interpret(std::move(program), std::move(lexer));
 
     return 0;
 }

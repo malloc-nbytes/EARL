@@ -27,6 +27,7 @@
 #include <iostream>
 #include <memory>
 
+#include "parser.hpp"
 #include "utils.hpp"
 #include "interpreter.hpp"
 #include "intrinsics.hpp"
@@ -36,6 +37,7 @@
 #include "ctx.hpp"
 #include "common.hpp"
 #include "earl.hpp"
+#include "lexer.hpp"
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
@@ -46,6 +48,17 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
     ctx.unset_function();
     return result;
+}
+
+earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, Ctx &mod_ctx) {
+    std::vector<earl::value::Obj *> params;
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), main_ctx));
+    }
+
+    earl::function::Obj *func = mod_ctx.get_registered_function(expr->m_id->lexeme());
+
+    return eval_user_defined_function(func, params, mod_ctx);
 }
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -95,7 +108,12 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
 
-        if (Intrinsics::is_member_intrinsic(id)) {
+        if (left->type() == earl::value::Type::Module) {
+            auto mod = dynamic_cast<earl::value::Module *>(left);
+            // return eval_expr_funccall(func_expr, *mod->value());
+            return eval_expr_module_funccall(func_expr, ctx, *mod->value());
+        }
+        else if (Intrinsics::is_member_intrinsic(id)) {
             result = Intrinsics::call_member(id, left, params, ctx);
         }
         else {
@@ -116,7 +134,15 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
+
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
+
+        // Check for a module
+        earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
+        if (mod)
+            return mod;
+
+        // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
         return stored->value();
     } break;
@@ -215,7 +241,13 @@ earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
         ERR_WARGS(Err::Type::Redeclared,
                   "function `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
-    earl::function::Obj *created_function = new earl::function::Obj(stmt);
+
+    // for (size_t i = 0; i < stmt->m_args.size(); ++i) {
+    //     std::unique_ptr<Token> tok = std::move(stmt->m_args[i]);
+        // params.push_back(std::move(list));
+    // }
+
+    earl::function::Obj *created_function = new earl::function::Obj(stmt, std::move(stmt->m_args));
     ctx.register_function(created_function);
     return new earl::value::Void();
 }
@@ -323,19 +355,39 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::Stmt_For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     } break;
+    case StmtType::Mod: {
+        StmtMod *mod = dynamic_cast<StmtMod *>(stmt);
+        ctx.set_module(std::move(mod->m_id));
+        return new earl::value::Void();
+    } break;
+    case StmtType::Import: {
+        StmtImport *im = dynamic_cast<StmtImport *>(stmt);
+
+        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+        std::string comment = COMMON_EARL_COMMENT;
+
+        std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
+        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        Ctx *child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+
+        ctx.push_child_context(std::unique_ptr<Ctx>(std::move(child_ctx)));
+
+        return new earl::value::Void();
+    } break;
     default:
         assert(false && "eval_stmt: invalid statement");
     }
 }
 
-earl::value::Obj *Interpreter::interpret(Program &program) {
-    Ctx ctx;
+Ctx *Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
+    Ctx *ctx = new Ctx(std::move(lexer), std::move(program));
     earl::value::Obj *meta;
 
-    for (size_t i = 0; i < program.m_stmts.size(); ++i) {
-        meta = eval_stmt(program.m_stmts.at(i).get(), ctx);
+    for (size_t i = 0; i < ctx->stmts_len(); ++i) {
+        meta = eval_stmt(ctx->get_stmt(i), *ctx);
         delete meta;
     }
 
-    return new earl::value::Void();
+    return std::move(ctx);
 }

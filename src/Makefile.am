@@ -1,13 +1,13 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = main
-main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp token.cpp utils.cpp parser.cpp ctx.cpp interpreter.cpp intrinsics.cpp err.cpp earl-function.cpp earl-variable.cpp earl-value.cpp earl-types.cpp
+main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp token.cpp utils.cpp parser.cpp ctx.cpp interpreter.cpp intrinsics.cpp err.cpp function.cpp variable.cpp types.cpp int.cpp str.cpp void.cpp list.cpp module.cpp
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
 SUBDIRS = test
 
-AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17
+AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable
 
 .PHONY: test docs all
 test: main

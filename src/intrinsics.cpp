@@ -99,7 +99,6 @@ earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<e
 
 earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
-
     for (size_t i = 0; i < params.size(); ++i) {
         earl::value::Obj *param = params.at(i);
         switch (param->type()) {

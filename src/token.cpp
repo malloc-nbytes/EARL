@@ -151,22 +151,6 @@ std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenT
     return std::make_unique<Token>(start, len, type, row, col, fp);
 }
 
-// Token *token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
-//     Token *tok = (Token *)arena_alloc(lexer.m_arena, sizeof(Token));
-
-//     for (size_t i = 0; i < len; ++i) {
-//         tok->m_lexeme.push_back(start[i]);
-//     }
-
-//     tok->m_type = type;
-//     tok->m_row = row;
-//     tok->m_col = col;
-//     tok->m_fp = fp;
-//     tok->m_next = nullptr;
-
-//     return tok;
-// }
-
 std::string &Token::lexeme(void) {
     return m_lexeme;
 }

@@ -97,6 +97,14 @@ std::string tokentype_to_str(TokenType type);
 
 /// @brief The definition of a token.
 struct Token {
+    Token(char *start, size_t len,
+          TokenType type,
+          size_t row, size_t col, std::string &fp);
+
+    Token(const Token &) = delete;
+
+    ~Token() = default;
+
     /// @brief The actual value of the `Token`
     std::string m_lexeme;
 
@@ -114,12 +122,6 @@ struct Token {
 
     /// @brief A pointer to the next token
     std::unique_ptr<Token> m_next;
-
-    Token(char *start, size_t len,
-          TokenType type,
-          size_t row, size_t col, std::string &fp);
-
-    Token(const Token &) = delete;
 
     /// @brief Get the `lexeme` of the current token
     std::string &lexeme(void);
