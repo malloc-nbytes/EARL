@@ -113,16 +113,27 @@ struct Ctx {
     /// to calling this function
     earl::function::Obj *get_curfunc(void);
 
+    /// @brief Get the current module of the context
+    /// @returns A token representing the module name
     Token *get_module(void);
 
+    /// @brief Set the module name
+    /// @param id The module to set
     void set_module(std::unique_ptr<Token> id);
 
+    /// @brief Push on a new child context
+    /// @param child The child context to push
     void push_child_context(std::unique_ptr<Ctx> child);
 
+    /// @brief Get a already registered and parsed module
+    /// @param id The identifier of the module
     earl::value::Module *get_registered_module(const std::string &id);
 
+    /// @brief Retrieve a specific statement in the parsed code
+    /// @param i The index of the statement
     Stmt *get_stmt(size_t i);
 
+    /// @brief Get the total number of statements parsed
     size_t stmts_len(void) const;
 
 private:
@@ -136,14 +147,21 @@ private:
     /// @brief The global scope of all EARL functions
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
 
+    /// @brief All children contexts from parsed imported files
     std::vector<std::unique_ptr<Ctx>> m_children_contexts;
 
+    /// @brief The name of the module as a token
     std::unique_ptr<Token> m_module;
 
+    /// @brief The lexer associated with this module. This
+    /// is needed because of ownership rules.
     std::unique_ptr<Lexer> m_lexer;
 
+    /// @brief The parsed program produced from the `Parser`.
+    /// This is needed because of ownership rules.
     std::unique_ptr<Program> m_program;
 
+    /// @brief The stacktrace of EARL function calls.
     std::vector<earl::function::Obj *> m_stacktrace;
 };
 

@@ -60,6 +60,7 @@ namespace earl {
             Void,
             /** EARL list type (holds any value including a mix of datatypes) */
             List,
+            /** EARL module type. Used for member access of a module. */
             Module,
         };
 
@@ -171,10 +172,15 @@ namespace earl {
             /// @note `idx` MUST BE an integer value
             Obj *nth(Obj *idx);
 
+            /// @brief Reverse a list
             Obj *rev(void);
 
+            /// @brief Append a list of values to a list
+            /// @param values The values to append
             Obj *append(std::vector<Obj *> &values);
 
+            /// @brief Remove an element in the list at a specific index
+            /// @param idx The index of the element to remove
             Obj *pop(Obj *idx);
 
             /*** OVERRIDES ***/
@@ -191,6 +197,7 @@ namespace earl {
         struct Module : public Obj {
             Module(Ctx *ctx);
 
+            /// @brief Get the module context
             Ctx *value(void);
 
             /*** OVERRIDES ***/
@@ -305,8 +312,10 @@ namespace earl {
             /// See `src/include/common.hpp/FuncAttrs`
             bool is_world(void) const;
 
+            /// @brief Remove all local variables in the function
             void clear_locals(void);
 
+            /// @brief Print all local variables in the function
             void debug_dump(void) const;
 
             /// @note This local scope needs to be public for the context to see
