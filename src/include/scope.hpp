@@ -42,6 +42,12 @@ template <typename K, typename V> struct Scope {
 
     ~Scope() = default;
 
+    inline void clear(void) {
+        if (!m_map.empty()) {
+            m_map.back().clear();
+        }
+    }
+
     /// @brief Pushes a new scope context
     inline void push(void) {
         m_map.emplace_back();
@@ -95,6 +101,19 @@ template <typename K, typename V> struct Scope {
                 map.erase(mapIt);
                 return;
             }
+        }
+    }
+
+    inline void debug_dump(void) const {
+        int i = 1;
+        for (const auto &map : m_map) {
+            std::cout << "Scope level: " << i << std::endl;
+            std::cout << "    ";
+            for (const auto &pair : map) {
+                std::cout << pair.first << " ";
+            }
+            std::cout << std::endl;
+            ++i;
         }
     }
 };

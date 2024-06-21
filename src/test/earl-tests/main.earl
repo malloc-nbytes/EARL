@@ -1,3 +1,18 @@
+import "other.1.earl";
+
+mod Test;
+
+fn test_basic_import() {
+    print("test_basic_import");
+    let x = 1;
+    let y = 2;
+    let s = Other1.sum(x, y);
+    assert(s == x+y);
+    assert(Other1.sum(3, 4) == 7);
+
+    print("ok");
+}
+
 fn test_list_append_intrinsic3() {
     print("test_list_append_intrinsic3...");
 
@@ -253,3 +268,4 @@ test_list_rev_intrinsic2();
 test_list_append_intrinsic1();
 test_list_append_intrinsic2();
 test_list_append_intrinsic3();
+test_basic_import();

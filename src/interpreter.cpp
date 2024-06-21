@@ -45,6 +45,9 @@ earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> params, Ctx &ctx) {
     ctx.set_function(func);
     func->load_parameters(params);
+
+    func->debug_dump();
+
     earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
     ctx.unset_function();
     return result;

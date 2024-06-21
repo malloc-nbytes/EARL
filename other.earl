@@ -8,8 +8,9 @@ fn helper(x) {
 }
 
 @pub
-fn mklst(x, b) {
-    print("in mklst()");
-    Other2.other2_func(x);
-    return [x, helper(b)];
+fn sum(x, b) {
+    print("in sum()");
+    let s = helper(b);
+    print("after helper()");
+    return b;
 }

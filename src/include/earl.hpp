@@ -253,6 +253,8 @@ namespace earl {
             Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params);
             ~Obj() = default;
 
+            void clear_variables(void);
+
             /// @brief Get the identifier of this function
             const std::string &id(void) const;
 
@@ -302,6 +304,8 @@ namespace earl {
             /// @brief Check if this function is a @world function.
             /// See `src/include/common.hpp/FuncAttrs`
             bool is_world(void) const;
+
+            void debug_dump(void) const;
 
             /// @note This local scope needs to be public for the context to see
             /// for a QAD solution.
