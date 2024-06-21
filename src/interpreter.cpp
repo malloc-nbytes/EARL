@@ -47,6 +47,9 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     func->load_parameters(params);
 
     earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
+
+    func->clear_locals();
+
     ctx.unset_function();
     return result;
 }

@@ -11,8 +11,11 @@ Obj::Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params) : m_stmtd
     m_local.emplace_back();
 }
 
-void Obj::clear_variables(void) {
+// TODO: free memory from the local variables
+// in the local scope.
+void Obj::clear_locals(void) {
     m_local.clear();
+    m_local.emplace_back();
 }
 
 const std::string &Obj::id(void) const {
