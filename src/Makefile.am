@@ -15,7 +15,18 @@ test: main
 	@echo "Running interpreter tests"
 	./test/test_suite
 	@echo "Running EARL tests"
-	./main ./test/earl-tests/main.earl
+	make
+	cd ./test/earl-tests/ && \
+	../../main ./main.earl
+
+vtest: main
+	$(MAKE) -C test test_suite
+	@echo "Running interpreter tests"
+	./test/test_suite
+	@echo "Running EARL tests"
+	make
+	cd ./test/earl-tests/ && \
+	valgrind ../../main ./main.earl
 
 docs:
 	doxygen Doxyfile

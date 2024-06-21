@@ -1,0 +1,13 @@
+import "other.2.earl";
+
+mod Other1;
+
+@pub
+fn double(x) {
+    return Other2.double(x);
+}
+
+@pub
+fn sum(a, b) {
+    return a+b;
+}

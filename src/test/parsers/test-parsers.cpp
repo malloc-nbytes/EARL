@@ -24,11 +24,11 @@ test_errno_t test_parsers_parse_stmt(void) {
         StmtType::Stmt_Expr,
     };
 
-    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(*lexer.get());
+    auto lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    auto program = Parser::parse_program(*lexer.get());
 
     int i = 0;
-    for (auto &stmt : program.m_stmts) {
+    for (auto &stmt : program->m_stmts) {
         TEST_ASSERT_EQ(stmt->stmt_type(), tys[i], true);
         ++i;
     }
@@ -38,14 +38,14 @@ test_errno_t test_parsers_parse_stmt(void) {
 
 test_errno_t test_parsers_parse_stmt_def(void) {
     std::string filepath = std::string("test/sample-input/parse-stmt-def.1.in");
-    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(*lexer.get());
+    auto lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    auto program = Parser::parse_program(*lexer.get());
 
     std::string func_names[] = {"func1","func2","func3"};
     std::string rettypes[] = {"void","int","void"};
 
     int i = 0;
-    for (auto &stmt : program.m_stmts) {
+    for (auto &stmt : program->m_stmts) {
         TEST_ASSERT_EQ(stmt->stmt_type(), StmtType::Def, true);
         StmtDef *def = dynamic_cast<StmtDef *>(stmt.get());
         TEST_ASSERT_EQ(def->m_id->lexeme(), func_names[i], true);
@@ -57,13 +57,13 @@ test_errno_t test_parsers_parse_stmt_def(void) {
 
 test_errno_t test_parsers_parse_stmt_expr(void) {
     std::string filepath = std::string("test/sample-input/parse-stmt-expr.1.in");
-    std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-    Program program = Parser::parse_program(*lexer.get());
+    auto lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    auto program = Parser::parse_program(*lexer.get());
 
     std::string func_names[] = {"print","func1","print","func2"};
 
     int i = 0;
-    for (auto &stmt : program.m_stmts) {
+    for (auto &stmt : program->m_stmts) {
         TEST_ASSERT_EQ(stmt->stmt_type(), StmtType::Stmt_Expr, true);
 
         StmtExpr *stmt_expr = dynamic_cast<StmtExpr *>(stmt.get());

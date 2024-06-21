@@ -2,7 +2,27 @@ import "other.1.earl";
 
 mod Test;
 
-fn test_basic_import() {
+fn test_basic_import2() {
+    print("test_basic_import2...");
+
+    let a = 2;
+    let b = 3;
+
+    let d1 = Other1.double(a);
+    let d2 = Other1.double(b);
+
+    let s1 = Other1.sum(d1, d2);
+
+    assert(s1 == 10);
+
+    let s2  = Other1.double(3);
+
+    assert(s2 == 6);
+
+    print("ok");
+}
+
+fn test_basic_import1() {
     print("test_basic_import");
     let x = 1;
     let y = 2;
@@ -268,4 +288,5 @@ test_list_rev_intrinsic2();
 test_list_append_intrinsic1();
 test_list_append_intrinsic2();
 test_list_append_intrinsic3();
-test_basic_import();
+test_basic_import1();
+test_basic_import2();
