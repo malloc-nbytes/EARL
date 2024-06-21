@@ -1,7 +1,0 @@
-mod Other;
-
-@pub
-fn sum(x, y) {
-    let s = x+y;
-    return s;
-}

@@ -47,13 +47,27 @@ Type List::type(void) const {
 
 Obj *List::nth(Obj *idx) {
     switch (idx->type()) {
-    case Type::Int: return this->value()[dynamic_cast<Int *>(idx)->value()];
-    default: assert(false && "ur stupid");
+    case Type::Int: {
+        auto *index = dynamic_cast<Int *>(idx);
+        if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
+                      index->value(), this->value().size());
+        }
+        return this->value()[index->value()];
+    } break;
+    default: assert(false && "invalid `nth` argument");
     }
 }
 
 Obj *List::rev(void) {
     std::reverse(m_value.begin(), m_value.end());
+    return new Void();
+}
+
+Obj *List::pop(Obj *idx) {
+    assert(idx->type() == earl::value::Type::Int);
+    earl::value::Int *index = dynamic_cast<earl::value::Int *>(idx);
+    m_value.erase(m_value.begin() + index->value());
     return new Void();
 }
 
@@ -135,3 +149,6 @@ Obj *List::copy(void) {
     auto list = new List(this->value());
     return list;
 }
+
+
+

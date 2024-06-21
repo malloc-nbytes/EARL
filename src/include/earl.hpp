@@ -175,6 +175,8 @@ namespace earl {
 
             Obj *append(std::vector<Obj *> &values);
 
+            Obj *pop(Obj *idx);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;
