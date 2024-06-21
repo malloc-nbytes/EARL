@@ -2,7 +2,5 @@ import "other.earl";
 
 mod Main;
 
-let a = 1;
-let b = 2;
-
-print(Other.sum(a, b));
+print(Other.sum(1,2));
+print(Other.sum(3,4));

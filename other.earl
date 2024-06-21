@@ -1,13 +1,7 @@
-import "other2.earl";
-
 mod Other;
-
-fn helper(a) {
-    return a*Other2.other2_func(a);
-}
 
 @pub
 fn sum(x, y) {
-    let s = helper(y);
-    return y+s+x;
+    let s = x+y;
+    return s;
 }
