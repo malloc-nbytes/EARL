@@ -2,15 +2,12 @@ import "other2.earl";
 
 mod Other;
 
-fn helper(x) {
-    print("in helper()");
-    return x*2;
+fn helper(a) {
+    return a*Other2.other2_func(a);
 }
 
 @pub
-fn sum(x, b) {
-    print("in sum()");
-    let s = helper(b);
-    print("after helper()");
-    return b;
+fn sum(x, y) {
+    let s = helper(y);
+    return y+s+x;
 }

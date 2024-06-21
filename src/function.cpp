@@ -87,7 +87,6 @@ bool Obj::is_world(void) const {
 }
 
 void Obj::debug_dump(void) const {
-    std::cout << "Function: " << id() << std::endl;
     int i = 1;
     for (auto const &v : m_local) {
         std::cout << "context level: " << i << std::endl;

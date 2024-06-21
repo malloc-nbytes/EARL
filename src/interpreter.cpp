@@ -46,8 +46,6 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     ctx.set_function(func);
     func->load_parameters(params);
 
-    func->debug_dump();
-
     earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
     ctx.unset_function();
     return result;
@@ -113,7 +111,6 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 
         if (left->type() == earl::value::Type::Module) {
             auto mod = dynamic_cast<earl::value::Module *>(left);
-            // return eval_expr_funccall(func_expr, *mod->value());
             return eval_expr_module_funccall(func_expr, ctx, *mod->value());
         }
         else if (Intrinsics::is_member_intrinsic(id)) {

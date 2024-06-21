@@ -143,6 +143,8 @@ private:
     std::unique_ptr<Lexer> m_lexer;
 
     std::unique_ptr<Program> m_program;
+
+    std::vector<earl::function::Obj *> m_stacktrace;
 };
 
 #endif // CTX_H
