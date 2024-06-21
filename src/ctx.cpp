@@ -9,6 +9,7 @@ Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
     m_curfunc(nullptr), m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
+    m_stacktrace.push_back(func);
     m_curfunc = func;
 }
 
@@ -21,8 +22,12 @@ size_t Ctx::stmts_len(void) const {
 }
 
 void Ctx::unset_function(void) {
-    // assert(m_curfunc);
-    m_curfunc = nullptr;
+    assert(m_stacktrace.size() >= 1);
+    m_stacktrace.pop_back();
+
+    m_curfunc = m_stacktrace.empty()
+        ? nullptr
+        : m_stacktrace.back();
 }
 
 void Ctx::push_scope(void) {

@@ -2,14 +2,12 @@ import "other2.earl";
 
 mod Other;
 
-fn helper(x) {
-    print("in helper()");
-    return x*2;
+fn helper(a) {
+    return a*Other2.other2_func(a);
 }
 
 @pub
-fn mklst(x, b) {
-    print("in mklst()");
-    Other2.other2_func(x);
-    return [x, helper(b)];
+fn sum(x, y) {
+    let s = helper(y);
+    return y+s+x;
 }

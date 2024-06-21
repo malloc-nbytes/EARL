@@ -4,4 +4,5 @@ mod Main;
 
 let a = 1;
 let b = 2;
-print(Other.mklst(a, b).nth(1));
+
+print(Other.sum(a, b));

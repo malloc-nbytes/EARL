@@ -3,11 +3,16 @@
 #include "earl.hpp"
 #include "err.hpp"
 #include "common.hpp"
+#include "utils.hpp"
 
 using namespace earl::function;
 
 Obj::Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {
     m_local.emplace_back();
+}
+
+void Obj::clear_variables(void) {
+    m_local.clear();
 }
 
 const std::string &Obj::id(void) const {
@@ -79,5 +84,14 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
 bool Obj::is_world(void) const {
     assert(m_stmtdef);
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
+}
+
+void Obj::debug_dump(void) const {
+    int i = 1;
+    for (auto const &v : m_local) {
+        std::cout << "context level: " << i << std::endl;
+        std::cout << "  ";
+        v.debug_dump();
+    }
 }
 
