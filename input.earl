@@ -1,6 +1,8 @@
-import "other.earl";
-
 mod Main;
 
-print(Other.sum(1,2));
-print(Other.sum(3,4));
+let lst = [1,2,3,4,5];
+
+lst.pop();
+
+print(lst.nth(10));
+

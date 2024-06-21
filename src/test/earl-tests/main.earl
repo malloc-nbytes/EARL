@@ -2,6 +2,14 @@ import "other.1.earl";
 
 mod Test;
 
+fn test_member_intrinsic_pop1() {
+    print("test_member_intrinsic_pop1...");
+    let lst = [1,2,3,4,5];
+    lst.pop(2);
+    assert(lst == [1,2,4,5]);
+    print("ok");
+}
+
 fn test_basic_import2() {
     print("test_basic_import2...");
 
@@ -290,3 +298,4 @@ test_list_append_intrinsic2();
 test_list_append_intrinsic3();
 test_basic_import1();
 test_basic_import2();
+test_member_intrinsic_pop1();

@@ -115,6 +115,8 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 
     earl::value::Obj *intrinsic_member_append(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

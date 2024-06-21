@@ -45,6 +45,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"nth", &Intrinsics::intrinsic_member_nth},
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
+    {"pop", &Intrinsics::intrinsic_member_pop},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -86,8 +87,15 @@ earl::value::Obj *Intrinsics::intrinsic_member_append(earl::value::Obj *obj, std
     (void)ctx;
     assert(obj->type() == earl::value::Type::List);
     auto *lst = dynamic_cast<earl::value::List *>(obj);
-    lst->append(values);
-    return new earl::value::Void();
+    return lst->append(values);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
+    (void)ctx;
+    assert(values.size() == 1);
+    assert(obj->type() == earl::value::Type::List);
+    auto *lst = dynamic_cast<earl::value::List *>(obj);
+    return lst->pop(values[0]);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
