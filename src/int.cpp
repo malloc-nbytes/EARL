@@ -63,10 +63,22 @@ Obj *Int::binop(Token *op, Obj *other) {
     } break;
     case TokenType::Lessthan: {
         return new Int(static_cast<int>(this->value() < dynamic_cast<Int *>(other)->value()));
-    }
+    } break;
+    case TokenType::Greaterthan: {
+        return new Int(static_cast<int>(this->value() > dynamic_cast<Int *>(other)->value()));
+    } break;
     case TokenType::Double_Equals: {
         return new Int(static_cast<int>(this->value() == dynamic_cast<Int *>(other)->value()));
-    };
+    } break;
+    case TokenType::Greaterthan_Equals: {
+        return new Int(static_cast<int>(this->value() >= dynamic_cast<Int *>(other)->value()));
+    } break;
+    case TokenType::Lessthan_Equals: {
+        return new Int(static_cast<int>(this->value() <= dynamic_cast<Int *>(other)->value()));
+    } break;
+    case TokenType::Bang_Equals: {
+        return new Int(static_cast<int>(this->value() != dynamic_cast<Int *>(other)->value()));
+    } break;
     default: {
         Err::err_wtok(op);
         ERR(Err::Type::Fatal, "invalid binary operator");

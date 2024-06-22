@@ -1,0 +1,8 @@
+import "other2.earl";
+
+mod Other;
+
+fn empty_list(lst) {
+    print("in empty_list()");
+    Other2.func();
+}

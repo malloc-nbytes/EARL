@@ -8,5 +8,10 @@
 
 set -xe
 
+if [ "$#" -eq 0 ]; then
+    echo "Usage: ./debug <files...>"
+    exit 1
+fi
+
 g++ -Iinclude/ -O0 -DDEBUG -std=c++17 -g -o main *.cpp include/scope.hpp
 gdb --args ./main "$@"
