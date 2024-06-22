@@ -38,8 +38,13 @@ Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_
 // TODO: free memory from the local variables
 // in the local scope.
 void Obj::clear_locals(void) {
-    m_local.clear();
-    m_local.emplace_back();
+    // if (this->context_size() == 1) {
+    //     m_local.clear();
+    //     m_local.emplace_back();
+    // }
+    // else {
+    m_local.back().clear();
+    // }
 }
 
 const std::string &Obj::id(void) const {

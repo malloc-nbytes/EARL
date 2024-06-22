@@ -16,7 +16,7 @@ fn fib(n) {
     return fib(n-1) + fib(n-2);
 }
 
-fn helper(a) { return a*2; }
+fn helper(a) { return a*2 + a+1; }
 
 fn test(i) {
     return helper(i) + helper(i);
