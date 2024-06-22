@@ -58,7 +58,7 @@ namespace Parser {
     /// @brief Parses a statement of type 'let'.
     /// @note ex: let x: int = 3;
     /// @param lexer The lexer with the linked list of tokens
-    std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer);
+    std::unique_ptr<StmtLet> parse_stmt_let(Lexer &lexer, uint32_t attrs);
 
     /// @brief Parses a statement of type mutate.
     /// @note ex: x = 3 + a * 4 / 2;

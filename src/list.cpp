@@ -146,9 +146,7 @@ void List::mutate(Obj *other) {
 }
 
 Obj *List::copy(void) {
-    auto list = new List(this->value());
+    auto list = new List();
+    list->append(this->value());
     return list;
 }
-
-
-

@@ -45,7 +45,7 @@
       ;; member intrinsics
       "len" "rev" "nth" "append" "pop"
       ;; function attributes
-      "world" "pub"
+      "world" "pub" "ref"
       )))
 
 (defconst earl-highlights

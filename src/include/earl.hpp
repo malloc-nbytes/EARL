@@ -230,7 +230,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL variables
         struct Obj {
-            Obj(Token *id, std::unique_ptr<value::Obj> value);
+            Obj(Token *id, std::unique_ptr<value::Obj> value, uint32_t attrs = 0);
             ~Obj() = default;
 
             /// @brief Get the identifier of this variable
@@ -246,9 +246,12 @@ namespace earl {
             /// @brief Get the type of this variable
             value::Type type(void) const;
 
+            bool is_ref(void) const;
+
         private:
             Token *m_id;
             std::unique_ptr<value::Obj> m_value;
+            uint32_t m_attrs;
         };
     };
 
