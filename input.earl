@@ -11,3 +11,14 @@ ptr[0] = 99;
 
 print(lst);
 print(ptr);
+
+let i = 1;
+
+@ref
+let ptr2 = i;
+
+ptr2 = 8;
+
+print("i: ", i);
+print("ptr2: ", ptr2);
+
