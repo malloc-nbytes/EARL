@@ -2,5 +2,3 @@ import "src/std/std.earl"
 
 mod Main
 
-print(Std.is_even(2));
-

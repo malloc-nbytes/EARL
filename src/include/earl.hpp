@@ -312,6 +312,8 @@ namespace earl {
             /// See `src/include/common.hpp/FuncAttrs`
             bool is_world(void) const;
 
+            bool is_pub(void) const;
+
             /// @brief Remove all local variables in the function
             void clear_locals(void);
 

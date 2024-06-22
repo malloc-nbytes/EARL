@@ -275,6 +275,16 @@ fn test_for_loop() {
     print("ok");
 }
 
+@world
+fn test_world_attr() {
+    print("test_world_attr...");
+    assert(__world_var_int == 99);
+    assert(__world_var_str == "world");
+    assert(__world_var_lst == [1,2,3,4,5]);
+    assert(__world_var_lst[2] == 3);
+    print("ok");
+}
+
 fn test_variable_mutation() {
     print("test_variable_mutation...");
 
@@ -299,24 +309,33 @@ fn test_variable_instantiation() {
     print("ok");
 }
 
-test_variable_instantiation();
-test_variable_mutation();
-test_for_loop();
-test_for_loop2();
-test_while_loop();
-test_list_access();
-test_accessor_bug();
-test_nested_lists();
-test_function_chaining();
-test_len_intrinsic1();
-test_len_intrinsic2();
-test_list_rev_intrinsic1();
-test_list_rev_intrinsic2();
-test_list_append_intrinsic1();
-test_list_append_intrinsic2();
-test_list_append_intrinsic3();
-test_basic_import1();
-test_basic_import2();
-test_member_intrinsic_pop1();
-test_list_access1();
-test_list_access2();
+fn main() {
+    test_variable_instantiation();
+    test_variable_mutation();
+    test_world_attr();
+    test_for_loop();
+    test_for_loop2();
+    test_while_loop();
+    test_list_access();
+    test_accessor_bug();
+    test_nested_lists();
+    test_function_chaining();
+    test_len_intrinsic1();
+    test_len_intrinsic2();
+    test_list_rev_intrinsic1();
+    test_list_rev_intrinsic2();
+    test_list_append_intrinsic1();
+    test_list_append_intrinsic2();
+    test_list_append_intrinsic3();
+    test_basic_import1();
+    test_basic_import2();
+    test_member_intrinsic_pop1();
+    test_list_access1();
+    test_list_access2();
+}
+
+let __world_var_int = 99;
+let __world_var_str = "world";
+let __world_var_lst = [1,2,3,4,5];
+
+main();
