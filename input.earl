@@ -2,3 +2,12 @@ import "src/std/std.earl"
 
 mod Main
 
+fn func(@ref i) {
+    i = 9;
+}
+
+let i = 1;
+
+func(i);
+
+print(i);

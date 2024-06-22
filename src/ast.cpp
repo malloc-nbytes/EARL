@@ -121,7 +121,7 @@ ExprTermType ExprFuncCall::get_term_type() const {
 /*** STATEMENTS ***/
 
 StmtDef::StmtDef(std::unique_ptr<Token> id,
-                 std::vector<std::unique_ptr<Token>> args,
+                 std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args,
                  std::unique_ptr<StmtBlock> block,
                  uint32_t attrs) :
     m_id(std::move(id)), m_args(std::move(args)),

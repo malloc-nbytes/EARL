@@ -74,6 +74,24 @@ std::unique_ptr<Token> Parser::parse_expect_type(Lexer &lexer) {
     return tok;
 }
 
+static Attr translate_attr(Lexer &lexer) {
+    (void)Parser::parse_expect(lexer, TokenType::At);
+
+    std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
+    if (attr->lexeme() == COMMON_EARLATTR_PUB) {
+        return Attr::Pub;
+    }
+    if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
+        return Attr::World;
+    }
+    if (attr->lexeme() == COMMON_EARLATTR_REF) {
+        return Attr::Ref;
+    }
+    else {
+        ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
+    }
+}
+
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
 // This makes this function more reusable.
 static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
@@ -316,14 +334,20 @@ std::unique_ptr<StmtBlock> Parser::parse_stmt_block(Lexer &lexer) {
     return std::make_unique<StmtBlock>(std::move(stmts));
 }
 
-std::vector<std::unique_ptr<Token>> parse_stmt_def_args(Lexer &lexer) {
-    std::vector<std::unique_ptr<Token>> args;
+std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lexer &lexer) {
+    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args;
 
     (void)Parser::parse_expect(lexer, TokenType::Lparen);
     while (lexer.peek()->type() != TokenType::Rparen) {
+        uint32_t attr = 0;
+
+        while (lexer.peek()->type() == TokenType::At) {
+            attr |= static_cast<uint32_t>(translate_attr(lexer));
+        }
+
         std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
         std::unique_ptr<Token> var = std::move(id);
-        args.push_back(std::move(var));
+        args.push_back(std::make_pair(std::move(var), attr));
 
         if (lexer.peek()->type() == TokenType::Comma)
             lexer.discard();
@@ -338,7 +362,7 @@ std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
 
     std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
 
-    std::vector<std::unique_ptr<Token>> args = parse_stmt_def_args(lexer);
+    auto args = parse_stmt_def_args(lexer);
 
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
     return std::make_unique<StmtDef>(std::move(id),
@@ -378,24 +402,6 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
                                      std::unique_ptr<Expr>(start_expr),
                                      std::unique_ptr<Expr>(end_expr),
                                      std::move(block));
-}
-
-static Attr translate_attr(Lexer &lexer) {
-    (void)Parser::parse_expect(lexer, TokenType::At);
-
-    std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
-    if (attr->lexeme() == COMMON_EARLATTR_PUB) {
-        return Attr::Pub;
-    }
-    if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
-        return Attr::World;
-    }
-    if (attr->lexeme() == COMMON_EARLATTR_REF) {
-        return Attr::Ref;
-    }
-    else {
-        ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
-    }
 }
 
 std::unique_ptr<Stmt> parse_stmt_import(Lexer &lexer) {
