@@ -1,6 +1,6 @@
-import "other.2.earl";
+import "other.2.earl"
 
-mod Other1;
+mod Other1
 
 @pub
 fn two_dim_arr() {
