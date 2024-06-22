@@ -63,6 +63,10 @@ earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, C
     }
 
     earl::function::Obj *func = mod_ctx.get_registered_function(expr->m_id->lexeme());
+    if (!func->is_pub()) {
+        ERR_WARGS(Err::Type::Fatal, "function %s does not contain the @pub attribute",
+                  func->id().c_str());
+    }
 
     return eval_user_defined_function(func, params, mod_ctx);
 }

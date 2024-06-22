@@ -1,4 +1,4 @@
-mod Main;
+import "src/std/std.earl"
 
-
+mod Main
 

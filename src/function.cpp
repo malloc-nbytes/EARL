@@ -113,6 +113,11 @@ bool Obj::is_world(void) const {
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(FuncAttr::World)) != 0;
 }
 
+bool Obj::is_pub(void) const {
+    assert(m_stmtdef);
+    return (m_stmtdef->m_attrs & static_cast<uint32_t>(FuncAttr::Pub)) != 0;
+}
+
 void Obj::debug_dump(void) const {
     int i = 1;
     for (auto const &v : m_local) {
