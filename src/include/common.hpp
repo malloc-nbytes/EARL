@@ -33,11 +33,13 @@
  */
 
 #define COMMON_EARLATTR_WORLD "world"
-#define COMMON_EARLATTR_PUB "pub"
+#define COMMON_EARLATTR_PUB   "pub"
+#define COMMON_EARLATTR_REF   "ref"
 
-enum class FuncAttr {
+enum class Attr {
     World = 1 << 0,
     Pub = 1 << 1,
+    Ref = 1 << 2,
 };
 
 // Keywords

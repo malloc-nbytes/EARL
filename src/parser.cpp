@@ -286,13 +286,13 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
                                     std::move(else_));
 }
 
-std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer) {
+std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     std::unique_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr));
+    return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr), attrs);
 }
 
 std::unique_ptr<StmtExpr> Parser::parse_stmt_expr(Lexer &lexer) {
@@ -380,15 +380,15 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
                                      std::move(block));
 }
 
-static FuncAttr translate_attr(Lexer &lexer) {
+static Attr translate_attr(Lexer &lexer) {
     (void)Parser::parse_expect(lexer, TokenType::At);
 
     std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
     if (attr->lexeme() == COMMON_EARLATTR_PUB) {
-        return FuncAttr::Pub;
+        return Attr::Pub;
     }
     if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
-        return FuncAttr::World;
+        return Attr::World;
     }
     else {
         ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
@@ -417,7 +417,7 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         switch (tok->type()) {
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_LET) {
-                return parse_stmt_let(lexer);
+                return parse_stmt_let(lexer, attrs);
             }
             if (tok->lexeme() == COMMON_EARLKW_FN) {
                 return parse_stmt_def(lexer, attrs);

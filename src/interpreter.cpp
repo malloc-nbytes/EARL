@@ -241,7 +241,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     // we would instead use:
     //     (stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result))
     earl::variable::Obj *created_variable
-        = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()));
+        = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()), stmt->m_attrs);
 
     ctx.register_variable(created_variable);
 
