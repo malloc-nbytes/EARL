@@ -1,5 +1,4 @@
-import "other.earl";
-
 mod Main;
 
-Other.empty_list([]);
+
+
