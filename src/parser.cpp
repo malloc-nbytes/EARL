@@ -261,7 +261,7 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
     Token *tok2 = lexer.peek(1);
 
     bool tok1_else = tok1->type() == TokenType::Keyword && tok1->lexeme() == COMMON_EARLKW_ELSE;
-    bool tok2_if = tok2->type() == TokenType::Keyword && tok2->lexeme() == COMMON_EARLKW_IF;
+    bool tok2_if = tok2 && (tok2->type() == TokenType::Keyword && tok2->lexeme() == COMMON_EARLKW_IF); // failure
 
     if (tok1_else && tok2_if) {
         lexer.discard();
