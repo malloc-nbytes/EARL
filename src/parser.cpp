@@ -145,6 +145,12 @@ static Expr *parse_primary_expr(Lexer &lexer) {
                 Expr *right = parse_identifier_or_funccall(lexer);
                 left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
             }
+            else if (lexer.peek()->type() == TokenType::Lbracket) {
+                lexer.discard();
+                Expr *right = parse_identifier_or_funccall(lexer);
+                UNIMPLEMENTED("");
+                (void)Parser::parse_expect(lexer, TokenType::Rbracket);
+            }
             else {
                 return left;
             }

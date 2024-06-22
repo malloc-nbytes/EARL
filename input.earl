@@ -1,5 +1,7 @@
-import "other.earl";
-
 mod Main;
 
-Other.empty_list([]);
+let lst = [1,2,3,4,5];
+
+print(lst[2]);
+
+

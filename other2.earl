@@ -1,5 +1,0 @@
-mod Other2;
-
-fn func() {
-    print("in func()");
-}
