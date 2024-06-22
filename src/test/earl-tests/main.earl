@@ -2,6 +2,28 @@ import "other.1.earl"
 
 mod Test
 
+fn test_func_reference2() {
+    print("test_func_reference2...");
+
+    let lst = [1,2,3,4,5];
+    Other1.modify_ref_list(lst);
+
+    assert(lst == [2,3,4,5,6]);
+
+    print("ok");
+}
+
+fn test_func_reference1() {
+    print("test_func_reference1...");
+
+    let i = 1;
+    Other1.modify_ref(i);
+
+    assert(i == 2);
+
+    print("ok");
+}
+
 fn test_reference2() {
     print("test_reference2");
 
@@ -373,6 +395,8 @@ fn main() {
     test_list_access2();
     test_reference1();
     test_reference2();
+    test_func_reference1();
+    test_func_reference2();
 }
 
 let __world_var_int = 99;

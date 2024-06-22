@@ -2,6 +2,22 @@ import "other.2.earl"
 
 mod Other1
 
+fn __modify_ref_list(@ref lst) {
+    for i in 0..len(lst) {
+        lst[i] = lst[i] + 1;
+    }
+}
+
+@pub
+fn modify_ref_list(@ref lst) {
+    __modify_ref_list(lst);
+}
+
+@pub
+fn modify_ref(@ref value) {
+    value = value+1;
+}
+
 @pub
 fn two_dim_arr() {
     return [[1,2,3], [4,5,6], [7,8,9]];

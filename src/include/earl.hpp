@@ -262,7 +262,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::unique_ptr<Token>> params);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> params);
             ~Obj() = default;
 
             /// @brief Get the identifier of this function
@@ -328,7 +328,7 @@ namespace earl {
             std::vector<Scope<std::string, variable::Obj *>> m_local;
         private:
             StmtDef *m_stmtdef;
-            std::vector<std::unique_ptr<Token>> m_params;
+            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_params;
         };
     };
 };

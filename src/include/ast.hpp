@@ -189,9 +189,7 @@ struct StmtDef : public Stmt {
     /// @brief The token of the function name
     std::unique_ptr<Token> m_id;
 
-    /// @brief A vector of `<Identifer, Type>` of the statement definition
-    // std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Token>>> m_args;
-    std::vector<std::unique_ptr<Token>> m_args;
+    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_args;
 
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
@@ -199,7 +197,7 @@ struct StmtDef : public Stmt {
     uint32_t m_attrs;
 
     StmtDef(std::unique_ptr<Token> id,
-            std::vector<std::unique_ptr<Token>> args,
+            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 
