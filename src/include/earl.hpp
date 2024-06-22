@@ -309,7 +309,7 @@ namespace earl {
             variable::Obj *get_local(const std::string &id);
 
             /// @brief Get this function's current context size
-            size_t context_size(void);
+            size_t context_size(void) const;
 
             /// @brief Check if this function is a @world function.
             /// See `src/include/common.hpp/FuncAttrs`
@@ -326,6 +326,7 @@ namespace earl {
             /// @note This local scope needs to be public for the context to see
             /// for a QAD solution.
             std::vector<Scope<std::string, variable::Obj *>> m_local;
+
         private:
             StmtDef *m_stmtdef;
             std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_params;

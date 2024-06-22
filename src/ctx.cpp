@@ -30,11 +30,14 @@
 #include "err.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
-    m_curfunc(nullptr), m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
+    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
 
 void Ctx::set_function(earl::function::Obj *func) {
+    if (in_function() && func->id() == m_stacktrace.back()->id()) {
+        func->new_scope_context();
+    }
+
     m_stacktrace.push_back(func);
-    m_curfunc = func;
 }
 
 Stmt *Ctx::get_stmt(size_t i) {
@@ -47,16 +50,15 @@ size_t Ctx::stmts_len(void) const {
 
 void Ctx::unset_function(void) {
     assert(m_stacktrace.size() >= 1);
+    if (in_function() && m_stacktrace.back()->context_size() != 1) {
+        m_stacktrace.back()->drop_scope_context();
+    }
     m_stacktrace.pop_back();
-
-    m_curfunc = m_stacktrace.empty()
-        ? nullptr
-        : m_stacktrace.back();
 }
 
 void Ctx::push_scope(void) {
     if (in_function()) {
-        m_curfunc->push_scope();
+        m_stacktrace.back()->push_scope();
     }
     else {
         m_globalvars.push();
@@ -66,7 +68,7 @@ void Ctx::push_scope(void) {
 
 void Ctx::pop_scope(void) {
     if (in_function()) {
-        m_curfunc->pop_scope();
+        m_stacktrace.back()->pop_scope();
     }
     else {
         m_globalvars.pop();
@@ -161,12 +163,12 @@ earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
 }
 
 earl::function::Obj *Ctx::get_curfunc(void) {
-    assert(m_curfunc);
-    return m_curfunc;
+    assert(m_stacktrace.size() != 0);
+    return m_stacktrace.back();
 }
 
 bool Ctx::in_function(void) const {
-    return m_curfunc != nullptr;
+    return m_stacktrace.size() != 0;
 }
 
 Token *Ctx::get_module(void) {

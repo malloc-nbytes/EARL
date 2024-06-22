@@ -50,6 +50,10 @@ StmtBlock *Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
 
+size_t Obj::context_size(void) const {
+    return m_local.size();
+}
+
 bool Obj::has_local(const std::string &id) {
     return m_local.back().contains(id);
 }

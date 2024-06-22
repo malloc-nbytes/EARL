@@ -82,6 +82,9 @@ Obj *Int::binop(Token *op, Obj *other) {
     case TokenType::Bang_Equals: {
         return new Int(static_cast<int>(this->value() != dynamic_cast<Int *>(other)->value()));
     } break;
+    case TokenType::Double_Pipe: {
+        return new Int(static_cast<int>(this->value() || dynamic_cast<Int *>(other)->value()));
+    } break;
     default: {
         Err::err_wtok(op);
         ERR(Err::Type::Fatal, "invalid binary operator");
