@@ -2,3 +2,12 @@ import "src/std/std.earl"
 
 mod Main
 
+let lst = [1,2,3,4,5];
+
+@ref
+let ptr = lst;
+
+ptr[0] = 99;
+
+print(lst);
+print(ptr);

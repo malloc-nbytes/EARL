@@ -390,6 +390,9 @@ static Attr translate_attr(Lexer &lexer) {
     if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
         return Attr::World;
     }
+    if (attr->lexeme() == COMMON_EARLATTR_REF) {
+        return Attr::Ref;
+    }
     else {
         ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
     }
