@@ -1,7 +1,8 @@
 mod Main;
 
-let lst = [1,2,3,4,5];
+fn 2d_arr() {
+    return [[1,2,3], [4,5,6], [7,8,9]];
+}
 
-print(lst[2]);
-
+print(test()[1].nth(0));
 

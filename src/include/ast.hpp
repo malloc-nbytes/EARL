@@ -98,9 +98,9 @@ struct ExprGet : public ExprTerm {
 
 struct ExprArrayAccess : public ExprTerm {
     std::unique_ptr<Expr> m_left;
-    std::unique_ptr<Expr> m_right;
+    std::unique_ptr<Expr> m_expr;
 
-    ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
+    ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

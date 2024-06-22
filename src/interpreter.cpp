@@ -136,6 +136,21 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
     return result;
 }
 
+earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
+    earl::value::Obj *result = nullptr;
+
+    earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
+    earl::value::Obj *idx = Interpreter::eval_expr(expr->m_expr.get(), ctx);
+
+    if (left->type() != earl::value::Type::List) {
+        ERR(Err::Type::Fatal, "cannot use `[]` operator on non-list type");
+    }
+
+    earl::value::List *list = dynamic_cast<earl::value::List *>(left);
+
+    return list->nth(idx);
+}
+
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -169,6 +184,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         ExprGet *get = dynamic_cast<ExprGet *>(expr);
         return eval_expr_get(get, ctx);
     }
+    case ExprTermType::Array_Access: {
+        ExprArrayAccess *access = dynamic_cast<ExprArrayAccess *>(expr);
+        return eval_expr_array_access(access, ctx);
+    } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expression term type %d", static_cast<int>(expr->get_term_type()));
     } break;
