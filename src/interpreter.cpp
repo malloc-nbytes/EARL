@@ -142,13 +142,20 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
     earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
     earl::value::Obj *idx = Interpreter::eval_expr(expr->m_expr.get(), ctx);
 
-    if (left->type() != earl::value::Type::List) {
+    switch (left->type()) {
+    case earl::value::Type::List: {
+        earl::value::List *list = dynamic_cast<earl::value::List *>(left);
+        result = list->nth(idx);
+    } break;
+    case earl::value::Type::Str: {
+        UNIMPLEMENTED("eval_expr_array_access: earl::value::Type::Str");
+    } break;
+    default: {
         ERR(Err::Type::Fatal, "cannot use `[]` operator on non-list type");
+    } break;
     }
 
-    earl::value::List *list = dynamic_cast<earl::value::List *>(left);
-
-    return list->nth(idx);
+    return result;
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
