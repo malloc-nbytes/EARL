@@ -1,7 +1,5 @@
-import "std/std.earl"
-
 mod Main
 
-let lst = [5,4,3,2,1];
+let lst = range(0, 3, 1);
 
-print(Std.contains(lst, 9));
+print(contains([1,2,3], 3));

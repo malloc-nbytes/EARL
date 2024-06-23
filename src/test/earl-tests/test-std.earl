@@ -1,0 +1,37 @@
+import "../../std/list.earl"
+import "../../std/math.earl"
+import "../../std/utils.earl"
+
+mod TestStd
+
+fn test_fill() {
+    print("test_fill...");
+
+    let lst = [0,0,0,0,0];
+    List.fill(lst, 10);
+
+    for i in 0..len(lst) {
+        assert(lst[i] == 10);
+    }
+
+    print("ok");
+}
+
+fn test_range() {
+    print("test_range...");
+
+    let lst = List.range(0, 5, 1);
+
+    assert(lst == [0,1,2,3,4,5]);
+    assert(List.range(10, 15, 1)[0] == 10);
+
+    print("ok");
+}
+
+@pub
+fn test_std() {
+    print("--- testing the stdlib ---");
+    test_range();
+    test_fill();
+}
+
