@@ -5,6 +5,7 @@ mod Main
     @pub x = x;
     @pub y = y;
     @pub name = name;
+    desc = "A point class";
 
     @pub fn set_x(n) {
         x = n;

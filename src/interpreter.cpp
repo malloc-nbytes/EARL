@@ -71,10 +71,18 @@ earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, C
     return eval_user_defined_function(func, params, mod_ctx);
 }
 
+earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
+    UNIMPLEMENTED("eval_class_instantiation");
+}
+
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     std::vector<earl::value::Obj *> params;
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), ctx));
+    }
+
+    if (ctx.class_is_registered(expr->m_id->lexeme())) {
+        return eval_class_instantiation(expr, ctx);
     }
 
     if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
@@ -370,12 +378,6 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
         klass->add_member_assignee(stmt->m_constructor_args[i].get());
     }
 
-    // Add the member variables
-    // for (size_t i = 0; i < stmt->m_members.size(); ++i) {
-    //     auto *var
-    //         = new earl::variable::Obj(stmt->m_members[i]->m_id.get(), 0);
-    // }
-
     // Add the methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
         auto *method
@@ -384,6 +386,8 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
         klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
                                                                 std::move(stmt->m_methods[i]->m_args)));
     }
+
+    ctx.register_class(klass);
 
     return new earl::value::Void();
 }
@@ -429,15 +433,14 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
         StmtImport *im = dynamic_cast<StmtImport *>(stmt);
 
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
-        std::string comment = COMMON_EARL_COMMENT;
+        std::vector<std::string> types    = COMMON_EARLTY_ASCPL;
+        std::string comment               = COMMON_EARL_COMMENT;
 
-        std::unique_ptr<Lexer> lexer = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
-        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        std::unique_ptr<Lexer> lexer      = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);
+        std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
+
         Ctx *child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
-
         ctx.push_child_context(std::unique_ptr<Ctx>(std::move(child_ctx)));
-
         return new earl::value::Void();
     } break;
     default:
