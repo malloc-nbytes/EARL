@@ -1,1 +1,18 @@
+mod Main
+
+@pub class Point [x, y, name] {
+
+    @pub x = x;
+    @pub y = y;
+    @pub name = name;
+
+    @pub fn set_x(n) {
+        x = n;
+    }
+
+    @pub fn set_y(n) {
+        y = n;
+    }
+}
+
 

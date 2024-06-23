@@ -236,12 +236,6 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
-    // NOTE: If we want to take a 'reference' to `rhs_result`, instead of
-    //     (stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()))
-    // we would instead use:
-    //     (stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result))
-
-
     earl::variable::Obj *created_variable = nullptr;
 
     if ((stmt->m_attrs &= static_cast<uint32_t>(Attr::Ref)) != 0) {

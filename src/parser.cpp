@@ -416,6 +416,89 @@ std::unique_ptr<Stmt> parse_stmt_mod(Lexer &lexer) {
     return std::make_unique<StmtMod>(std::move(id));
 }
 
+static std::vector<std::unique_ptr<Token>> parse_stmt_class_constructor_arguments(Lexer &lexer) {
+    std::vector<std::unique_ptr<Token>> ids;
+
+    if (lexer.peek()->type() == TokenType::Lbracket) {
+        lexer.discard();
+
+        while (1) {
+            // Only needed if no arguments are provided.
+            if (lexer.peek()->type() == TokenType::Rbracket) {
+                lexer.discard();
+                break;
+            }
+            ids.push_back(Parser::parse_expect(lexer, TokenType::Ident));
+            if (lexer.peek()->type() == TokenType::Comma)
+                (void)Parser::parse_expect(lexer, TokenType::Comma);
+        }
+    }
+
+    return ids;
+
+}
+
+std::unique_ptr<StmtClass> parse_stmt_class(Lexer &lexer, uint32_t attrs) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
+
+    std::unique_ptr<Token> class_id = Parser::parse_expect(lexer, TokenType::Ident);
+
+    std::vector<std::unique_ptr<StmtLet>> members;
+    std::vector<std::unique_ptr<StmtDef>> methods;
+
+    auto constructor_args = parse_stmt_class_constructor_arguments(lexer);
+
+    (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+
+    uint32_t inclass_attrs = 0;
+    while (lexer.peek()->type() != TokenType::Rbrace) {
+
+        inclass_attrs = 0;
+        do {
+            if (lexer.peek()->type() == TokenType::At)
+                inclass_attrs |= static_cast<uint32_t>(translate_attr(lexer));
+            else
+                break;
+        } while (inclass_attrs != 0);
+
+        Token *tok = lexer.peek();
+        assert(tok);
+
+        switch (tok->type()) {
+        case TokenType::Ident: {
+            std::unique_ptr<Token> member_id = Parser::parse_expect(lexer, TokenType::Ident);
+            (void)Parser::parse_expect(lexer, TokenType::Equals);
+            Expr *member_expr = Parser::parse_expr(lexer);
+            (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+            members.push_back(std::make_unique<StmtLet>(std::move(member_id),
+                                                        std::unique_ptr<Expr>(member_expr),
+                                                        inclass_attrs));
+        } break;
+        case TokenType::Keyword: {
+            if (tok->lexeme() == COMMON_EARLKW_FN) {
+                methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs));
+            }
+            else {
+                Err::err_wtok(tok);
+                ERR_WARGS(Err::Type::Fatal, "invalid keyword specifier (%s) in class declaration",
+                          tok->lexeme().c_str());
+            }
+        } break;
+        default: {
+            ERR_WARGS(Err::Type::Fatal, "invalid token type (%d) in class declaration", (int)tok->type());
+        } break;
+        }
+    }
+
+    (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+
+    return std::make_unique<StmtClass>(std::move(class_id),
+                                       attrs,
+                                       std::move(constructor_args),
+                                       std::move(members),
+                                       std::move(methods));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
@@ -449,6 +532,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_MODULE) {
                 return parse_stmt_mod(lexer);
             }
+            if (tok->lexeme() == COMMON_EARLKW_CLASS) {
+                return parse_stmt_class(lexer, attrs);
+            }
             assert(false && "parse_stmt: invalid keyword");
         } break;
         case TokenType::Ident: {
@@ -478,6 +564,5 @@ std::unique_ptr<Program> Parser::parse_program(Lexer &lexer) {
         stmts.push_back(parse_stmt(lexer));
     }
 
-    // return new Program(std::move(stmts));
     return std::make_unique<Program>(std::move(stmts));
 }
