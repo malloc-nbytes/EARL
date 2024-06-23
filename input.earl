@@ -1,5 +1,1 @@
-mod Main
 
-let lst = range(0, 3, 1);
-
-print(contains([1,2,3], 3));

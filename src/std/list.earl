@@ -22,16 +22,6 @@ fn fill(@ref lst, k) {
 }
 
 @pub
-fn contains(@ref lst, @ref k) {
-    for i in 0..len(lst) {
-        if lst[i] == k {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-@pub
 fn sum(@ref lst) {
     let s = 0;
     for i in 0..len(lst) {
@@ -42,10 +32,12 @@ fn sum(@ref lst) {
 
 @pub
 fn find(@ref lst, @ref elem) {
-    for i in 0..len(lst) {
+    let i = 0;
+    while i < len(lst) {
         if elem == lst[i] {
             return i;
         }
+        i = i+1;
     }
     return 0-1;
 }

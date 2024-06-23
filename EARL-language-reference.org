@@ -1,0 +1,235 @@
+#+TITLE: EARL Lanugage Reference
+#+DESCRIPTION: The "ins" and "outs" of EARL
+#+AUTHOR: Zachary Haskins (malloc-nbytes)
+#+EMAIL: zdhdev@yahoo.com
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+
+*NOTE*:
+
+1. =This text format represents keywords=
+2. /This test format represents a type of grammar/
+3. <text> represents an identifier
+4. | represents OR
+5. [text] means list
+6. *(text) either 0 or more
+7. ?(text) means 0 or 1
+8. "text" represents a string
+
+* Variable Declarations
+=let= <id> = /expr/;
+
+* Mutation
+<id> | /expr/ = /expr/;
+
+* Conditionals
+
+=if= /expr/ *{* [stmt] *}*
+
+=else if= /expr/ *{* [stmt] *}*
+
+=else= *{* [stmt] *}*
+
+* While Loops
+=while= /expr/ *{* [stmt] *}*
+
+* For Loops
+
+#+begin_quote
+As of now, the =for= loop only enumerates by incrementing
+by 1. It takes a start ($s$) and an end ($e$) and will not end until
+$s = e$.
+
+\[
+\sum_{i = start}^{i < end} i = i + 1
+\]
+
+You can modify =i= within the body of the loop.
+
+#+end_quote
+
+
+=for= <id> =in= /expr/ .. /expr/ *{* [stmt] *}*
+
+* Function Definitions
+
+#+begin_quote
+This is how to create a function. See [[Attributes]] for a
+description on /attributes/.
+#+end_quote
+
+** Grammar
+
+*( =@= [ =pub= | =world= ])
+
+=fn= <id> *(* [ * ( =@ref= ) <id> ] *)* *{* [stmt] *}*
+
+** Examples
+
+#+begin_example
+@world @pub
+fn func1(@ref x, y, @ref z) {
+    ...
+}
+
+fn func2() {
+    ...
+}
+#+end_example
+
+* Statement Expressions
+
+#+begin_quote
+Statement expressions are statements that are only evaluated
+for their side effects such as printing, file IO, or in-place mutation
+such as =List.rev=.
+#+end_quote
+
+** Grammar
+
+<id> *( =(= /expr/ =)= | =[= /expr/ =]= | =.= <ident> ) =;=
+
+** Examples
+
+#+begin_example
+print("hello world");
+my_list.rev();
+#+end_example
+
+* Imports
+
+#+begin_quote
+EARL looks for the files relative to the directory
+that it was invoked in. During runtime, if an =import=
+statement is hit, it will immediately interpret that file.
+If there is no processing in the =@world= scope, only the
+function definitions are gathered.
+#+end_quote
+
+** Grammar
+
+=import= "filepath"
+
+** Examples
+
+#+begin_example
+import "std/list.earl"
+import "std/math.earl"
+import "std/utils.earl"
+#+end_example
+
+* Modules
+
+#+begin_quote
+/Modules/ allow other files to access resources to the
+file that has the module declared in it. If a file does
+not have it, the entire file is private. While modules
+do allow other files to access resources, only resources
+that have the =@pub= attribute.
+
+It is expected to have the module declaration near the top of the file.
+#+end_quote
+
+** Grammar
+
+=mod= <id>
+
+** Examples
+
+file: =my-math.earl=
+#+begin_example
+mod MyMath
+
+fn sum(a, b) { return a+b; }
+#+end_example
+
+file: =main.earl=
+#+begin_example
+import "my-math.earl"
+
+mod Main
+
+let s = MyMath.sum(1, 2);
+#+end_example
+
+* Attributes
+
+#+begin_quote
+Attributes embeds meta information into variables
+and functions. You can have none, one, or multiple.
+
+| Name     | Vars          | Funcs | Desc                                        |
+|----------+---------------+-------+---------------------------------------------|
+| =@pub=   | UNIMPLEMENTED | YES   | Makes the function available to other files |
+| =@world= | NO            | YES   | The function closes in the world scope      |
+| =@ref=   | YES           | NO    | Declares the var to be a reference          |
+
+*NOTE:* =@ref= can be used as a function parameter and that function will
+take a reference to the value passed to it.
+#+end_quote
+
+** Grammar
+
+=@= *(pub | world | ref)
+
+** Examples
+
+#+begin_example
+@world @pub
+fn test_world() {
+    # `i` will print since it is in the world scope.
+    # The function is also marked as public so other
+    # modules can have access to this function.
+    print(i)
+}
+
+@pub
+fn take_ref(@ref ptr) {
+    ptr = ptr + 1;
+}
+
+let i = 1;
+test_world();
+
+@ref let ptr = i;
+ptr = ptr + 1;
+
+assert(ptr == 2 && i == 2);
+
+take_ref(i);
+
+assert(i == 3);
+
+#+end_example
+
+* Intrinsics
+
+** =print=
+
+=print(arg1, arg2, ..., argN)=
+
+Will print all elements if it can. Adds a newline at the end and flushes the output.
+
+** =assert=
+
+=assert(arg1, arg2, ..., argN)=
+
+Tests each argument for =1=. If any of the conditions fails,
+the program immediately crashes.
+
+** =len=
+
+=len(arg)=
+
+Expects either a =List= or =String=. Will give the length
+as an integer.
+
+* Member Intrinsics
+
+** =List= implementes
+
+- =rev()= \rightarrow Reverses the list inplace.
+
+- =append(arg1, arg2, ..., argN)= \rightarrow Will append arg1..arg$N$ to the list
+
+- =pop(idx)= \rightarrow Will remove the element at index =idx=
+

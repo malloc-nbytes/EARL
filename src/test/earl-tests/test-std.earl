@@ -4,7 +4,31 @@ import "../../std/utils.earl"
 
 mod TestStd
 
-fn test_fill() {
+fn test_list_count() {
+    print("test_list_count...");
+    let lst = [1,1,1,5,1,4,3,1];
+    assert(List.count(lst, 1) == 5);
+    print("ok");
+}
+
+fn test_list_find() {
+    print("test_list_find...");
+    let lst = [1,2,3,4,5];
+    assert(List.find(lst, 3) == 2);
+    let idx = List.find(["hello", "world", "!"], "world");
+    assert(idx == 1);
+    print("ok");
+}
+
+fn test_list_sum() {
+    print("test_list_sum...");
+    let lst = [1,2,3,4,5];
+    assert(List.sum(lst) == 15);
+    assert(List.sum([1]) == 1);
+    print("ok");
+}
+
+fn test_list_fill() {
     print("test_fill...");
 
     let lst = [0,0,0,0,0];
@@ -17,7 +41,7 @@ fn test_fill() {
     print("ok");
 }
 
-fn test_range() {
+fn test_list_range() {
     print("test_range...");
 
     let lst = List.range(0, 5, 1);
@@ -31,7 +55,10 @@ fn test_range() {
 @pub
 fn test_std() {
     print("--- testing the stdlib ---");
-    test_range();
-    test_fill();
+    test_list_range();
+    test_list_fill();
+    test_list_sum();
+    test_list_find();
+    test_list_count();
 }
 
