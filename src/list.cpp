@@ -57,6 +57,7 @@ Obj *List::nth(Obj *idx) {
     } break;
     default: assert(false && "invalid `nth` argument");
     }
+    return nullptr; // unreachable
 }
 
 Obj *List::rev(void) {
