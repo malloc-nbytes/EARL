@@ -34,22 +34,24 @@
 #include "scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
-// #include "ctx.hpp"
 
 struct Ctx;
+
+namespace earl {
+    namespace variable {struct Obj;}
+    namespace function {struct Obj;}
+}
 
 /**
  * All values associated with EARL during runtime.
  */
 namespace earl {
-
     /**
      * The values that are returned from each
      * evaluation during runtime. They represent
      * the underlying data of EARL.
      */
     namespace value {
-
         /// @brief The intrinsic types of EARL
         enum class Type {
             /** EARL 32bit integer type */
@@ -213,11 +215,9 @@ namespace earl {
         };
 
         struct Class : public Obj {
-            Class(std::unique_ptr<Token> id,
-                  uint32_t attrs,
-                  std::vector<std::unique_ptr<Token>> constructor_args,
-                  std::vector<std::unique_ptr<StmtLet>> members,
-                  std::vector<std::unique_ptr<StmtDef>> methods);
+            Class(StmtClass *stmtclass);
+
+            const std::string &id(void) const;
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -227,11 +227,9 @@ namespace earl {
             Obj *copy(void)                   override;
 
         private:
-            std::unique_ptr<Token> m_id;
-            uint32_t m_attrs;
-            std::vector<std::unique_ptr<Token>> m_constructor_args;
-            std::vector<std::unique_ptr<StmtLet>> m_members;
-            std::vector<std::unique_ptr<StmtDef>> m_methods;
+            StmtClass *m_stmtclass;
+            std::vector<std::unique_ptr<variable::Obj>> m_members;
+            std::vector<std::unique_ptr<function::Obj>> m_methods;
         };
 
         /// @brief Get an empty EARL value from a type

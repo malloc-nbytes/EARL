@@ -76,6 +76,26 @@ void Ctx::pop_scope(void) {
     }
 }
 
+earl::value::Class *Ctx::get_registered_class(const std::string &id) {
+    auto it = m_globalclasses.find(id);
+    if (it == m_globalclasses.end()) {
+        ERR_WARGS(Err::Type::Fatal, "unknown class %s", id.c_str());
+    }
+    return it->second;
+}
+
+bool Ctx::class_is_registered(const std::string &id) {
+    return m_globalclasses.find(id) != m_globalclasses.end();
+}
+
+void Ctx::register_class(earl::value::Class *klass) {
+    const std::string &id = klass->id();
+    if (class_is_registered(id)) {
+        ERR_WARGS(Err::Type::Redeclared, "class %s is already registered", id.c_str());
+    }
+    m_globalclasses.insert({id, klass});
+}
+
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {
         Ctx *child = m_children_contexts[i].get();

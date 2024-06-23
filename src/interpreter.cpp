@@ -362,6 +362,7 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
+    earl::value::Class *klass = new earl::value::Class(stmt);
     UNIMPLEMENTED("eval_stmt_class");
 }
 

@@ -15,4 +15,6 @@ mod Main
     }
 }
 
+let p = Point(1, 2, "My Point");
 
+print("done");
