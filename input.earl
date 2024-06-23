@@ -1,13 +1,7 @@
-import "src/std/std.earl"
+import "std/std.earl"
 
 mod Main
 
-fn func(@ref i) {
-    i = 9;
-}
+let lst = [5,4,3,2,1];
 
-let i = 1;
-
-func(i);
-
-print(i);
+print(Std.contains(lst, 9));

@@ -137,10 +137,6 @@ struct Ctx {
     size_t stmts_len(void) const;
 
 private:
-    /// @brief The current function that is being
-    /// evaluated during runtime
-    earl::function::Obj *m_curfunc;
-
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
 

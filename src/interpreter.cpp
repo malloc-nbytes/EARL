@@ -288,11 +288,6 @@ earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
                   "function `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    // for (size_t i = 0; i < stmt->m_args.size(); ++i) {
-    //     std::unique_ptr<Token> tok = std::move(stmt->m_args[i]);
-        // params.push_back(std::move(list));
-    // }
-
     earl::function::Obj *created_function = new earl::function::Obj(stmt, std::move(stmt->m_args));
     ctx.register_function(created_function);
     return new earl::value::Void();
