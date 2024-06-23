@@ -6,6 +6,8 @@ test-suite
 *.pdf
 *.sty
 *.html
+!EARL-language-reference.html
+!README.html
 *.css
 *.eps
 *.aux
