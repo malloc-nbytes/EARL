@@ -361,6 +361,10 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
     return result;
 }
 
+earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
+    UNIMPLEMENTED("eval_stmt_class");
+}
+
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -371,6 +375,9 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Def: {
         return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
+    } break;
+    case StmtType::Class: {
+        return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
     } break;
     case StmtType::Block: {
         assert(false && "unimplemented");

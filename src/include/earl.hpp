@@ -62,6 +62,7 @@ namespace earl {
             List,
             /** EARL module type. Used for member access of a module. */
             Module,
+            Class,
         };
 
         /// @brief The base abstract class that all
@@ -209,6 +210,27 @@ namespace earl {
 
         private:
             Ctx *m_value;
+        };
+
+        struct Class : public Obj {
+            Class(std::unique_ptr<Token> id,
+                  uint32_t attrs,
+                  std::vector<std::unique_ptr<Token>> constructor_args,
+                  std::vector<std::unique_ptr<StmtLet>> members,
+                  std::vector<std::unique_ptr<StmtDef>> methods);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            std::unique_ptr<Token> m_id;
+            std::vector<std::unique_ptr<Token>> m_constructor_args;
+            std::vector<std::unique_ptr<StmtLet>> m_members;
+            std::vector<std::unique_ptr<StmtDef>> m_methods;
         };
 
         /// @brief Get an empty EARL value from a type
