@@ -99,7 +99,6 @@ void Ctx::register_class(earl::value::Class *klass) {
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {
         Ctx *child = m_children_contexts[i].get();
-
         if (child->get_module() && child->get_module()->lexeme() == id) {
             return new earl::value::Module(child);
         }

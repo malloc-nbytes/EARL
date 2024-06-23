@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 
 #include "earl.hpp"
@@ -34,6 +35,24 @@ Class::Class(StmtClass *stmtclass) : m_stmtclass(stmtclass) {}
 
 const std::string &Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
+}
+
+void Class::add_member_assignees(std::vector<Token *> &assignees) {
+    std::for_each(assignees.begin(), assignees.end(), [&](auto &a) {
+        m_member_assignees.push_back(a);
+    });
+}
+
+void Class::add_member_assignee(Token *assignee) {
+    m_member_assignees.push_back(assignee);
+}
+
+void Class::add_method(std::unique_ptr<function::Obj> func) {
+    m_methods.push_back(std::move(func));
+}
+
+void Class::add_member(std::unique_ptr<variable::Obj> var) {
+    UNIMPLEMENTED("Class::add_member");
 }
 
 Type Class::type(void) const {

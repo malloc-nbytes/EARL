@@ -219,6 +219,13 @@ namespace earl {
 
             const std::string &id(void) const;
 
+            void add_method(std::unique_ptr<function::Obj> func);
+            void add_member(std::unique_ptr<variable::Obj> var);
+            void add_member_assignee(Token *assignee);
+
+            [[deprecated]]
+            void add_member_assignees(std::vector<Token *> &assignees);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;
@@ -230,6 +237,8 @@ namespace earl {
             StmtClass *m_stmtclass;
             std::vector<std::unique_ptr<variable::Obj>> m_members;
             std::vector<std::unique_ptr<function::Obj>> m_methods;
+
+            std::vector<Token *> m_member_assignees;
         };
 
         /// @brief Get an empty EARL value from a type

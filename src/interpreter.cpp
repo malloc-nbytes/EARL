@@ -238,7 +238,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     earl::variable::Obj *created_variable = nullptr;
 
-    if ((stmt->m_attrs &= static_cast<uint32_t>(Attr::Ref)) != 0) {
+    if ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0) {
         created_variable
             = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
     }
@@ -363,7 +363,29 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 
 earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
     earl::value::Class *klass = new earl::value::Class(stmt);
-    UNIMPLEMENTED("eval_stmt_class");
+
+    std::vector<Token *> member_assignees;
+
+    for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
+        klass->add_member_assignee(stmt->m_constructor_args[i].get());
+    }
+
+    // Add the member variables
+    // for (size_t i = 0; i < stmt->m_members.size(); ++i) {
+    //     auto *var
+    //         = new earl::variable::Obj(stmt->m_members[i]->m_id.get(), 0);
+    // }
+
+    // Add the methods
+    for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
+        auto *method
+            = new earl::function::Obj(stmt->m_methods[i].get(),
+                                      std::move(stmt->m_methods[i]->m_args));
+        klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
+                                                                std::move(stmt->m_methods[i]->m_args)));
+    }
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
