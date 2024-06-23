@@ -213,7 +213,7 @@ StmtClass::StmtClass(std::unique_ptr<Token> id,
                      std::vector<std::unique_ptr<Token>> constructor_args,
                      std::vector<std::unique_ptr<StmtLet>> members,
                      std::vector<std::unique_ptr<StmtDef>> methods)
-    : m_id(std::move(id)), m_attrs(attrs),
+    : m_id(std::move(id)), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
       m_members(std::move(members)), m_methods(std::move(methods)) {}
 
 StmtType StmtClass::stmt_type() const {

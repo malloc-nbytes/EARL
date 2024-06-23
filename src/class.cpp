@@ -26,6 +26,7 @@
 
 #include "earl.hpp"
 #include "err.hpp"
+#include "utils.hpp"
 
 using namespace earl::value;
 

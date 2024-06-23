@@ -228,6 +228,7 @@ namespace earl {
 
         private:
             std::unique_ptr<Token> m_id;
+            uint32_t m_attrs;
             std::vector<std::unique_ptr<Token>> m_constructor_args;
             std::vector<std::unique_ptr<StmtLet>> m_members;
             std::vector<std::unique_ptr<StmtDef>> m_methods;
