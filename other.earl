@@ -1,0 +1,10 @@
+mod Other
+
+class Point [x, y] {
+    @pub x = x;
+    @pub y = y;
+
+    @pub fn print_x() {
+        print(x);
+    }
+}

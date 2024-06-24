@@ -44,7 +44,7 @@
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
-earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> params, Ctx &ctx) {
+earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     ctx.set_function(func);
     func->load_parameters(params);
 
@@ -56,8 +56,9 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     return result;
 }
 
-earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> params, earl::value::Class *klass, Ctx &ctx) {
+earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx) {
     ctx.set_function(method);
+
     method->load_parameters(params);
 
     for (size_t i = 0; i < klass->m_members.size(); ++i) {
@@ -239,7 +240,6 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
         else if (left->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(left);
             auto *method = klass->get_method(id);
-            // return eval_user_defined_function(method, params, ctx);
             return eval_user_defined_class_method(method, params, klass, ctx);
         }
         else {
@@ -464,9 +464,6 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
 
     // Add the methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-        auto *method
-            = new earl::function::Obj(stmt->m_methods[i].get(),
-                                      std::move(stmt->m_methods[i]->m_args));
         klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
                                                                 std::move(stmt->m_methods[i]->m_args)));
     }

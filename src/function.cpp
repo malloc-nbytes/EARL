@@ -100,7 +100,7 @@ void Obj::add_local(variable::Obj *var) {
     m_local.back().add(var->id(), var);
 }
 
-void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
+void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
     for (size_t i = 0; i < values.size(); i++) {
         earl::value::Obj *value = values[i];
 

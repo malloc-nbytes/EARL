@@ -310,7 +310,7 @@ namespace earl {
             /// @brief Used to load this function's parameters
             /// with the values that were passed to it
             /// @param values The values to transfer
-            void load_parameters(std::vector<value::Obj *> values);
+            void load_parameters(std::vector<value::Obj *> &values);
 
             /// @brief Push this function's local scope
             void push_scope(void);
