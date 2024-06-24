@@ -99,6 +99,8 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
     earl::value::Class *klass = ctx.get_registered_class(expr->m_id->lexeme());
     std::vector<Token *> &available_idents = klass->m_member_assignees;
 
+    // Evaluate [x, y, z,...] in class def and add each one
+    // to a temporary scope.
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         auto *value = Interpreter::eval_expr(expr->m_params[i].get(), ctx);
         auto *var = new earl::variable::Obj(available_idents[i],
@@ -106,8 +108,12 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         ctx.add_to_tmp_scope(var);
     }
 
+    // Evaluate all of the members of the class by either using
+    // their default specified values or by using what was supplied
+    // to the constructor during class instantiation.
     for (size_t i = 0; i < klass->m_stmtclass->m_members.size(); ++i) {
-        (void)eval_stmt_let(klass->m_stmtclass->m_members[i].get(), ctx);
+        StmtLet *let = klass->m_stmtclass->m_members[i].get();
+        delete eval_stmt_let(let, ctx);
     }
 
     UNIMPLEMENTED("eval_class_instantiation");

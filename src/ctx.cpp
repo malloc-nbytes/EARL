@@ -109,6 +109,11 @@ earl::value::Module *Ctx::get_registered_module(const std::string &id) {
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     earl::variable::Obj **var = nullptr;
 
+    // Check the temporary scope (used for class instantiation)
+    if (this->var_in_tmp_scope(id)) {
+        return this->get_var_from_tmp_scope(id);
+    }
+
     if (in_function() && get_curfunc()->is_world()) {
         var = m_globalvars.get(id); // Check in global scope
         if (!var) { // Not in global, check local
