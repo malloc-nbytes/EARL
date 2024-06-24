@@ -1,4 +1,4 @@
-mod PointClass
+mod Other
 
 class Point [x, y, name] {
     @pub x = x;
@@ -36,4 +36,8 @@ class Point [x, y, name] {
         return get_x() + get_y();
     }
 
+    @pub
+    fn test(n) {
+        print(n);
+    }
 }

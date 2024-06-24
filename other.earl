@@ -1,4 +1,4 @@
-mod PointClass
+mod Other
 
 class Point [x, y, name] {
     @pub x = x;
@@ -35,5 +35,4 @@ class Point [x, y, name] {
     fn get_sum() {
         return get_x() + get_y();
     }
-
 }

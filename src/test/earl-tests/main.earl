@@ -11,16 +11,29 @@ fn test_point_class_import() {
     assert(p1.get_x() == 1);
     assert(p1.get_y() == 2);
     assert(p1.get_name() == "my point 1");
+    assert(p1.get_sum() == 3);
 
     let p2 = PointClass.Point(3, 4, "my point 2");
 
     assert(p2.get_x() == 3);
     assert(p2.get_y() == 4);
     assert(p2.get_name() == "my point 2");
+    assert(p2.get_sum() == 7);
 
+    # p2.set_x(10);
+    # p2.set_y(20);
+    # assert(p2.get_x() == 10);
+    # assert(p2.get_y() == 20);
+    # assert(p2.get_name() == "my point 2");
+    # assert(p2.get_sum() == 30);
+
+    # Check to make sure that the original point
+    # is not modified. This is because of a bug
+    # that was enountered.
     assert(p1.get_x() == 1);
     assert(p1.get_y() == 2);
     assert(p1.get_name() == "my point 1");
+    assert(p1.get_sum() == 3);
 
     print("ok");
 }
