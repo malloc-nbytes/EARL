@@ -17,3 +17,7 @@ mod Main
 }
 
 let p = Point(1, 2, "My Point");
+
+p.print_x();
+p.print_y();
+
