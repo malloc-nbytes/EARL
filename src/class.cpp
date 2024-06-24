@@ -37,6 +37,34 @@ const std::string &Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
 }
 
+// void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
+//     for (size_t i = 0; i < values.size(); i++) {
+//         earl::value::Obj *value = values[i];
+//
+//         earl::variable::Obj *var = nullptr;
+//         if ((m_params[i].second & static_cast<uint32_t>(Attr::Ref)) != 0) {
+//             var
+//                 = new earl::variable::Obj(m_params[i].first.get(),
+//                                           std::unique_ptr<earl::value::Obj>(value));
+//         }
+//         else {
+//             var
+//                 = new earl::variable::Obj(m_params[i].first.get(),
+//                                           std::unique_ptr<earl::value::Obj>(value->copy()));
+//         }
+//
+//         add_local(var);
+//     }
+// }
+
+void Class::constructor(Ctx &ctx) {
+    UNIMPLEMENTED("Class::constructor");
+    // for (size_t i = 0; i < m_stmtclass->m_members.size(); ++i) {
+    //     StmtLet *let = m_stmtclass->m_members[i].get();
+    //     // auto *var = new earl::variable::Obj();
+    // }
+}
+
 void Class::add_member_assignees(std::vector<Token *> &assignees) {
     std::for_each(assignees.begin(), assignees.end(), [&](auto &a) {
         m_member_assignees.push_back(a);

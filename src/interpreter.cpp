@@ -71,8 +71,51 @@ earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, C
     return eval_user_defined_function(func, params, mod_ctx);
 }
 
+earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
+    if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
+        ERR_WARGS(Err::Type::Redeclared,
+                  "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
+    }
+
+    earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    earl::variable::Obj *created_variable = nullptr;
+
+    if ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0) {
+        created_variable
+            = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
+    }
+    else {
+        created_variable
+            = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()), stmt->m_attrs);
+    }
+
+    ctx.register_variable(created_variable);
+
+    return new earl::value::Void();
+}
+
 earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
+    earl::value::Class *klass = ctx.get_registered_class(expr->m_id->lexeme());
+    std::vector<Token *> &available_idents = klass->m_member_assignees;
+
+    for (size_t i = 0; i < expr->m_params.size(); ++i) {
+        auto *value = Interpreter::eval_expr(expr->m_params[i].get(), ctx);
+
+        auto *var = new earl::variable::Obj(available_idents[i],
+                                            std::unique_ptr<earl::value::Obj>(value));
+
+        ctx.register_variable(std::move(var));
+    }
+
+    for (size_t i = 0; i < klass->m_stmtclass->m_members.size(); ++i) {
+        (void)eval_stmt_let(klass->m_stmtclass->m_members[i].get(), ctx);
+    }
+
+    // klass->constructor(ctx);
     UNIMPLEMENTED("eval_class_instantiation");
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
@@ -81,10 +124,12 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), ctx));
     }
 
+    // Check if we are creating a new class instance
     if (ctx.class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, ctx);
     }
 
+    // Check if the funccall is intrinsic
     if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
         return Intrinsics::call(expr, params, ctx);
     }
@@ -234,31 +279,6 @@ earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
         ERR_WARGS(Err::Type::Fatal, "unknown expr type %d", static_cast<int>(expr->get_type()));
     } break;
     }
-}
-
-earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
-    if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
-        ERR_WARGS(Err::Type::Redeclared,
-                  "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
-    }
-
-    earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-
-    earl::variable::Obj *created_variable = nullptr;
-
-    if ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0) {
-        created_variable
-            = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
-    }
-    else {
-        created_variable
-            = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()), stmt->m_attrs);
-    }
-
-
-    ctx.register_variable(created_variable);
-
-    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {

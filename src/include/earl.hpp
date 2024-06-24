@@ -226,6 +226,11 @@ namespace earl {
             [[deprecated]]
             void add_member_assignees(std::vector<Token *> &assignees);
 
+            /// @brief Fill the `m_members` with what was provided in
+            /// `assignees` or if they are default.
+            /// @param ctx The context of the runtime environment
+            void constructor(Ctx &ctx);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;
@@ -233,7 +238,6 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
 
-        private:
             StmtClass *m_stmtclass;
             std::vector<std::unique_ptr<variable::Obj>> m_members;
             std::vector<std::unique_ptr<function::Obj>> m_methods;
