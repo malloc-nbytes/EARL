@@ -75,6 +75,15 @@ earl::function::Obj *Class::get_method(const std::string &id) {
     return nullptr; // unreachable
 }
 
+earl::variable::Obj *Class::get_member(const std::string &id) {
+    for (auto &mem : m_members) {
+        if (mem->id() == id) {
+            return mem.get();
+        }
+    }
+    return nullptr;
+}
+
 Type Class::type(void) const {
     return Type::Class;
 }

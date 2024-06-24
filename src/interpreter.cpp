@@ -63,6 +63,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     }
 
     ctx.set_function(method);
+    ctx.curclass = klass;
 
     method->load_parameters(params);
 
@@ -74,6 +75,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
 
     method->clear_locals();
     ctx.unset_function();
+    ctx.curclass = nullptr;
     return result;
 }
 

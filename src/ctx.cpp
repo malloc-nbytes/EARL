@@ -30,7 +30,9 @@
 #include "err.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
-    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
+    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {
+    curclass = nullptr;
+}
 
 void Ctx::set_function(earl::function::Obj *func) {
     if (in_function() && func->id() == m_stacktrace.back()->id()) {
@@ -114,6 +116,11 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
         return this->get_var_from_tmp_scope(id);
     }
 
+    if (curclass != nullptr) {
+        auto *member = curclass->get_member(id);
+        if (member) return member;
+    }
+
     if (in_function() && get_curfunc()->is_world()) {
         var = m_globalvars.get(id); // Check in global scope
         if (!var) { // Not in global, check local
@@ -180,8 +187,14 @@ void Ctx::register_function(earl::function::Obj *func) {
 }
 
 earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
-    earl::function::Obj **func = nullptr;
-    func = m_globalfuncs.get(id);
+    if (curclass != nullptr) {
+        auto *method = curclass->get_method(id);
+        if (method)
+            return method;
+    }
+
+    earl::function::Obj **func = m_globalfuncs.get(id);
+
     if (!func) {
         ERR_WARGS(Err::Type::Fatal,
                   "function `%s` is not in global scope",

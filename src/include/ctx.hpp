@@ -146,6 +146,7 @@ struct Ctx {
     void clear_tmp_scope(void);
 
     Ctx *m_parent;
+    earl::value::Class *curclass;
 
 private:
     /// @brief The global scope of all EARL variables
