@@ -143,6 +143,7 @@ struct Ctx {
     void add_to_tmp_scope(earl::variable::Obj *var);
     earl::variable::Obj *get_var_from_tmp_scope(const std::string &id);
     bool var_in_tmp_scope(const std::string &id);
+    void clear_tmp_scope(void);
 
 private:
     /// @brief The global scope of all EARL variables

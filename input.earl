@@ -7,12 +7,22 @@ mod Main
     @pub name = name;
     desc = "A point class";
 
-    @pub fn print_x(n) {
+    @pub fn print_x() {
         print(x);
     }
 
     @pub fn print_y(n) {
         print(y);
+    }
+
+    @pub fn print_desc() {
+        print(desc);
+    }
+
+    @pub fn set_x(new_x) {
+        print("setting x to: ", new_x);
+        x = new_x;
+        print("new x: ", x);
     }
 }
 
@@ -20,4 +30,7 @@ let p = Point(1, 2, "My Point");
 
 p.print_x();
 p.print_y();
+p.print_desc();
+p.set_x(9);
+
 

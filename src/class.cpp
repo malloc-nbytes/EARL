@@ -60,7 +60,7 @@ void Class::add_method(std::unique_ptr<function::Obj> func) {
 }
 
 void Class::add_member(std::unique_ptr<variable::Obj> var) {
-    UNIMPLEMENTED("Class::add_member");
+    m_members.push_back(std::move(var));
 }
 
 earl::function::Obj *Class::get_method(const std::string &id) {

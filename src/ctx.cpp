@@ -228,3 +228,8 @@ earl::variable::Obj *Ctx::get_var_from_tmp_scope(const std::string &id) {
     }
     return *m_tmp_scope.get(id);
 }
+
+void Ctx::clear_tmp_scope(void) {
+    m_tmp_scope.clear();
+}
+
