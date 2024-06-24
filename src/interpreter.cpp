@@ -186,8 +186,15 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
         else if (Intrinsics::is_member_intrinsic(id)) {
             result = Intrinsics::call_member(id, left, params, ctx);
         }
+
+        // Not intrinsic nor module, must be class
+        else if (left->type() == earl::value::Type::Class) {
+            auto *klass = dynamic_cast<earl::value::Class *>(left);
+            auto *method = klass->get_method(id);
+            return eval_user_defined_function(method, params, ctx);
+        }
         else {
-            UNIMPLEMENTED("eval_expr_get:ExprTermType::Func_Call:!Intrinsics::is_member_intrinsic(id)");
+            assert(false && "no.");
         }
 
     } break;

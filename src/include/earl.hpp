@@ -223,6 +223,8 @@ namespace earl {
             void add_member(std::unique_ptr<variable::Obj> var);
             void add_member_assignee(Token *assignee);
 
+            function::Obj *get_method(const std::string &id);
+
             [[deprecated]]
             void add_member_assignees(std::vector<Token *> &assignees);
 

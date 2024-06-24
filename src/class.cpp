@@ -63,6 +63,18 @@ void Class::add_member(std::unique_ptr<variable::Obj> var) {
     UNIMPLEMENTED("Class::add_member");
 }
 
+earl::function::Obj *Class::get_method(const std::string &id) {
+    for (size_t i = 0; i < m_methods.size(); ++i) {
+        if (id == m_methods[i]->id()) {
+            return m_methods[i].get();
+        }
+    }
+
+    ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
+              id.c_str(), this->id().c_str());
+    return nullptr; // unreachable
+}
+
 Type Class::type(void) const {
     return Type::Class;
 }
