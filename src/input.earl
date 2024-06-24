@@ -3,8 +3,5 @@ import "other.earl"
 mod Main
 
 let p1 = Other.Point(1, 2, "my point 1");
-let p2 = Other.Point(3, 4, "my point 2");
 
-p1.test(1);
-p2.test(2);
-
+print(p1.get_x());
