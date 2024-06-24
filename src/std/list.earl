@@ -1,8 +1,9 @@
 mod List
 
-# TODO: make sure stride is not zero
 @pub
 fn range(start, stop, stride) {
+    assert(stride != 0);
+
     let lst = [];
     let i = start;
 

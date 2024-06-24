@@ -1,7 +1,14 @@
-import "other.earl"
+import "std/stack.earl"
 
 mod Main
 
-let p1 = Other.Point(1, 2, "my point 1");
+let s = Stack.T([]);
 
-print(p1.get_x());
+for i in 0..100000 {
+    s.push(i);
+}
+
+while s.empty() != 1 {
+    print(s.top());
+    s.pop();
+}

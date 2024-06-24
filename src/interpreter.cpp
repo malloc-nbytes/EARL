@@ -263,18 +263,20 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
 
-        if (Intrinsics::is_member_intrinsic(id)) {
-            result = Intrinsics::call_member(id, left, params, ctx);
-        }
-
-        // Not intrinsic nor module, must be class
-        else if (left->type() == earl::value::Type::Class) {
+        // Check if class
+        if (left->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(left);
             auto *method = klass->get_method(id);
             return eval_user_defined_class_method(method, params, klass, ctx);
         }
+
+        // Not a class, it is an intrinsic
+        else if (Intrinsics::is_member_intrinsic(id)) {
+            result = Intrinsics::call_member(id, left, params, ctx);
+        }
+
         else {
-            assert(false && "no.");
+            assert(false && "invalid getter operation `.`");
         }
 
     } break;
