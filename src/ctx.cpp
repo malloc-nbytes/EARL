@@ -30,7 +30,9 @@
 #include "err.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
-    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {}
+    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {
+    curclass = nullptr;
+}
 
 void Ctx::set_function(earl::function::Obj *func) {
     if (in_function() && func->id() == m_stacktrace.back()->id()) {
@@ -76,10 +78,34 @@ void Ctx::pop_scope(void) {
     }
 }
 
+earl::value::Class *Ctx::get_registered_class(const std::string &id) {
+    auto it = m_globalclasses.find(id);
+    if (it == m_globalclasses.end()) {
+        ERR_WARGS(Err::Type::Fatal, "unknown class %s", id.c_str());
+    }
+    return it->second;
+}
+
+bool Ctx::class_is_registered(const std::string &id) {
+    for (auto &klass : available_classes) {
+        if (klass->m_id->lexeme() == id)
+            return true;
+    }
+    return false;
+    // return m_globalclasses.find(id) != m_globalclasses.end();
+}
+
+void Ctx::register_class(earl::value::Class *klass) {
+    const std::string &id = klass->id();
+    if (class_is_registered(id)) {
+        ERR_WARGS(Err::Type::Redeclared, "class %s is already registered", id.c_str());
+    }
+    m_globalclasses.insert({id, klass});
+}
+
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {
         Ctx *child = m_children_contexts[i].get();
-
         if (child->get_module() && child->get_module()->lexeme() == id) {
             return new earl::value::Module(child);
         }
@@ -89,6 +115,16 @@ earl::value::Module *Ctx::get_registered_module(const std::string &id) {
 
 earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     earl::variable::Obj **var = nullptr;
+
+    // Check the temporary scope (used for class instantiation)
+    if (this->var_in_tmp_scope(id)) {
+        return this->get_var_from_tmp_scope(id);
+    }
+
+    if (curclass != nullptr) {
+        auto *member = curclass->get_member(id);
+        if (member) return member;
+    }
 
     if (in_function() && get_curfunc()->is_world()) {
         var = m_globalvars.get(id); // Check in global scope
@@ -105,6 +141,10 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
     }
     else {
         var = m_globalvars.get(id);
+    }
+
+    if (!var && this->m_parent != nullptr) {
+        return this->m_parent->get_registered_variable(id);
     }
 
     if (!var) {
@@ -152,8 +192,14 @@ void Ctx::register_function(earl::function::Obj *func) {
 }
 
 earl::function::Obj *Ctx::get_registered_function(const std::string &id) {
-    earl::function::Obj **func = nullptr;
-    func = m_globalfuncs.get(id);
+    if (curclass != nullptr) {
+        auto *method = curclass->get_method(id);
+        if (method)
+            return method;
+    }
+
+    earl::function::Obj **func = m_globalfuncs.get(id);
+
     if (!func) {
         ERR_WARGS(Err::Type::Fatal,
                   "function `%s` is not in global scope",
@@ -185,3 +231,27 @@ void Ctx::set_module(std::unique_ptr<Token> id) {
 void Ctx::push_child_context(std::unique_ptr<Ctx> child) {
     m_children_contexts.push_back(std::move(child));
 }
+
+void Ctx::add_to_tmp_scope(earl::variable::Obj *var) {
+    const std::string &id = var->id();
+    if (var_in_tmp_scope(id)) {
+        ERR_WARGS(Err::Type::Fatal, "variable %s is already in tmp scope", id.c_str());
+    }
+    m_tmp_scope.add(id, var);
+}
+
+bool Ctx::var_in_tmp_scope(const std::string &id) {
+    return m_tmp_scope.contains(id);
+}
+
+earl::variable::Obj *Ctx::get_var_from_tmp_scope(const std::string &id) {
+    if (!var_in_tmp_scope(id)) {
+        ERR_WARGS(Err::Type::Fatal, "variable %s is not in tmp scope", id.c_str());
+    }
+    return *m_tmp_scope.get(id);
+}
+
+void Ctx::clear_tmp_scope(void) {
+    m_tmp_scope.clear();
+}
+

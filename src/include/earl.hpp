@@ -34,22 +34,24 @@
 #include "scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
-// #include "ctx.hpp"
 
 struct Ctx;
+
+namespace earl {
+    namespace variable {struct Obj;}
+    namespace function {struct Obj;}
+}
 
 /**
  * All values associated with EARL during runtime.
  */
 namespace earl {
-
     /**
      * The values that are returned from each
      * evaluation during runtime. They represent
      * the underlying data of EARL.
      */
     namespace value {
-
         /// @brief The intrinsic types of EARL
         enum class Type {
             /** EARL 32bit integer type */
@@ -62,6 +64,7 @@ namespace earl {
             List,
             /** EARL module type. Used for member access of a module. */
             Module,
+            Class,
         };
 
         /// @brief The base abstract class that all
@@ -211,6 +214,40 @@ namespace earl {
             Ctx *m_value;
         };
 
+        struct Class : public Obj {
+            Class(StmtClass *stmtclass);
+
+            const std::string &id(void) const;
+
+            void add_method(std::unique_ptr<function::Obj> func);
+            void add_member(std::unique_ptr<variable::Obj> var);
+            void add_member_assignee(Token *assignee);
+
+            function::Obj *get_method(const std::string &id);
+            earl::variable::Obj *get_member(const std::string &id);
+
+            [[deprecated]]
+            void add_member_assignees(std::vector<Token *> &assignees);
+
+            /// @brief Fill the `m_members` with what was provided in
+            /// `assignees` or if they are default.
+            /// @param ctx The context of the runtime environment
+            void constructor(Ctx &ctx);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+            StmtClass *m_stmtclass;
+            std::vector<std::unique_ptr<variable::Obj>> m_members;
+            std::vector<std::unique_ptr<function::Obj>> m_methods;
+
+            std::vector<Token *> m_member_assignees;
+        };
+
         /// @brief Get an empty EARL value from a type
         /// @param s The string type to parse
         [[deprecated]] [[nodiscard]]
@@ -262,7 +299,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> params);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *params);
             ~Obj() = default;
 
             /// @brief Get the identifier of this function
@@ -274,7 +311,7 @@ namespace earl {
             /// @brief Used to load this function's parameters
             /// with the values that were passed to it
             /// @param values The values to transfer
-            void load_parameters(std::vector<value::Obj *> values);
+            void load_parameters(std::vector<value::Obj *> &values);
 
             /// @brief Push this function's local scope
             void push_scope(void);
@@ -329,7 +366,7 @@ namespace earl {
 
         private:
             StmtDef *m_stmtdef;
-            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_params;
+            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *m_params;
         };
     };
 };

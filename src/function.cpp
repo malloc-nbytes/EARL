@@ -31,7 +31,7 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *params) : m_stmtdef(stmtdef), m_params(params) {
     m_local.emplace_back();
 }
 
@@ -100,25 +100,20 @@ void Obj::add_local(variable::Obj *var) {
     m_local.back().add(var->id(), var);
 }
 
-void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
+void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
     for (size_t i = 0; i < values.size(); i++) {
         earl::value::Obj *value = values[i];
 
-        // NOTE: To handle references, replace:
-        //     std::unique_ptr<earl::value::Obj>(value->copy())
-        // with:
-        //     std::unique_ptr<earl::value::Obj>(value)
-        // earl::variable::Obj *var =
-        //     new earl::variable::Obj(m_stmtdef->m_args[i].get(),
-        //                             std::unique_ptr<earl::value::Obj>(value->copy()));
-
         earl::variable::Obj *var = nullptr;
-
-        if ((m_params[i].second & static_cast<uint32_t>(Attr::Ref)) != 0) {
-            var = new earl::variable::Obj(m_params[i].first.get(), std::unique_ptr<earl::value::Obj>(value));
+        if ((m_params->at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
+            var
+                = new earl::variable::Obj(m_params->at(i).first.get(),
+                                          std::unique_ptr<earl::value::Obj>(value));
         }
         else {
-            var = new earl::variable::Obj(m_params[i].first.get(), std::unique_ptr<earl::value::Obj>(value->copy()));
+            var
+                = new earl::variable::Obj(m_params->at(i).first.get(),
+                                          std::unique_ptr<earl::value::Obj>(value->copy()));
         }
 
         add_local(var);

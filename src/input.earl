@@ -1,0 +1,7 @@
+import "other.earl"
+
+mod Main
+
+let p1 = Other.Point(1, 2, "my point 1");
+
+print(p1.get_x());

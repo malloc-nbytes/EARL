@@ -136,12 +136,28 @@ struct Ctx {
     /// @brief Get the total number of statements parsed
     size_t stmts_len(void) const;
 
+    earl::value::Class *get_registered_class(const std::string &id);
+    bool class_is_registered(const std::string &id);
+    void register_class(earl::value::Class *klass);
+
+    void add_to_tmp_scope(earl::variable::Obj *var);
+    earl::variable::Obj *get_var_from_tmp_scope(const std::string &id);
+    bool var_in_tmp_scope(const std::string &id);
+    void clear_tmp_scope(void);
+
+    std::vector<StmtClass *> available_classes;
+
+    Ctx *m_parent;
+    earl::value::Class *curclass;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
 
     /// @brief The global scope of all EARL functions
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
+
+    std::unordered_map<std::string, earl::value::Class *> m_globalclasses;
 
     /// @brief All children contexts from parsed imported files
     std::vector<std::unique_ptr<Ctx>> m_children_contexts;
@@ -159,6 +175,8 @@ private:
 
     /// @brief The stacktrace of EARL function calls.
     std::vector<earl::function::Obj *> m_stacktrace;
+
+    Scope<std::string, earl::variable::Obj *> m_tmp_scope;
 };
 
 #endif // CTX_H
