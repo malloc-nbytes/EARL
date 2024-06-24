@@ -131,6 +131,10 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
         var = m_globalvars.get(id);
     }
 
+    if (!var && this->m_parent != nullptr) {
+        return this->m_parent->get_registered_variable(id);
+    }
+
     if (!var) {
         ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in scope", id.c_str());
     }

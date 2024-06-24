@@ -2,4 +2,36 @@ import "other.earl"
 
 mod Main
 
-let p = Other.Point(1, 2);
+class Token [lexeme, r, c, fp] {
+    @pub lexeme = lexeme;
+    @pub r = r;
+    @pub c = c;
+    @pub fp = fp;
+
+    @pub fn set_lexeme(new_lexeme) {
+        lexeme = new_lexeme;
+    }
+
+    @pub fn dump() {
+        set_lexeme("str");
+        print("Token:");
+        print("  lexeme: ", lexeme);
+        print("  r: ", r);
+        print("  c: ", c);
+        print("  fp: ", fp);
+    }
+}
+
+let _x = 1;
+let _y = 2;
+
+let p = Other.Point(_x, _y);
+p.print_x();
+p.print_y();
+
+p.mod_x(99);
+p.print_x();
+
+let t = Token("int", 1, 2, "main.earl");
+t.set_lexeme("void");
+t.dump();

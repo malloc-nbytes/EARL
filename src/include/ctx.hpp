@@ -145,6 +145,8 @@ struct Ctx {
     bool var_in_tmp_scope(const std::string &id);
     void clear_tmp_scope(void);
 
+    Ctx *m_parent;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;

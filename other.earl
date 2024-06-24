@@ -7,4 +7,17 @@ class Point [x, y] {
     @pub fn print_x() {
         print(x);
     }
+
+    @pub fn mod_x(n) {
+        x = n;
+    }
+
+    @pub fn print_y() {
+        print(y);
+    }
+}
+
+
+@pub fn test() {
+    print("in test");
 }

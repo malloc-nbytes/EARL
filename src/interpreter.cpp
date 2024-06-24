@@ -57,6 +57,11 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
 }
 
 earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx) {
+    if (!method->is_pub()) {
+        ERR_WARGS(Err::Type::Fatal, "method `%s` in class `%s` does not contain the @pub attribute",
+                  method->id().c_str(), klass->id().c_str());
+    }
+
     ctx.set_function(method);
 
     method->load_parameters(params);
@@ -204,7 +209,7 @@ earl::value::Obj *eval_expr_list_literal(ExprListLit *expr, Ctx &ctx) {
     return new earl::value::List(std::move(list));
 }
 
-earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
+earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
     earl::value::Obj *result = nullptr;
 
     earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
@@ -228,11 +233,7 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
 
-        if (left->type() == earl::value::Type::Module) {
-            auto mod = dynamic_cast<earl::value::Module *>(left);
-            return eval_expr_module_funccall(func_expr, ctx, *mod->value());
-        }
-        else if (Intrinsics::is_member_intrinsic(id)) {
+        if (Intrinsics::is_member_intrinsic(id)) {
             result = Intrinsics::call_member(id, left, params, ctx);
         }
 
@@ -255,6 +256,24 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
     }
 
     return result;
+}
+
+earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
+    earl::value::Obj *left = Interpreter::eval_expr(expr->m_left.get(), ctx);
+
+    if (expr->get_type() != ExprType::Term) {
+        ERR(Err::Type::Fatal, "cannot use `get` expression on non-terminal expression");
+    }
+
+    if (left->type() == earl::value::Type::Module) {
+        auto *mod = dynamic_cast<earl::value::Module *>(left);
+        return Interpreter::eval_expr(expr->m_right.get(), *mod->value());
+    }
+    else {
+        return eval_expr_get2(expr, ctx);
+    }
+
+    return nullptr;
 }
 
 earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
@@ -521,6 +540,7 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
         std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
 
         Ctx *child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+        child_ctx->m_parent = &ctx;
         ctx.push_child_context(std::unique_ptr<Ctx>(std::move(child_ctx)));
         return new earl::value::Void();
     } break;
@@ -532,6 +552,8 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
 Ctx *Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     Ctx *ctx = new Ctx(std::move(lexer), std::move(program));
     earl::value::Obj *meta;
+
+    ctx->m_parent = nullptr;
 
     for (size_t i = 0; i < ctx->stmts_len(); ++i) {
         meta = eval_stmt(ctx->get_stmt(i), *ctx);
