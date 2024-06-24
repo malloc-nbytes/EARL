@@ -87,7 +87,12 @@ earl::value::Class *Ctx::get_registered_class(const std::string &id) {
 }
 
 bool Ctx::class_is_registered(const std::string &id) {
-    return m_globalclasses.find(id) != m_globalclasses.end();
+    for (auto &klass : available_classes) {
+        if (klass->m_id->lexeme() == id)
+            return true;
+    }
+    return false;
+    // return m_globalclasses.find(id) != m_globalclasses.end();
 }
 
 void Ctx::register_class(earl::value::Class *klass) {

@@ -13,13 +13,14 @@ fn test_point_class_import() {
     assert(p1.get_name() == "my point 1");
 
     let p2 = PointClass.Point(3, 4, "my point 2");
-    print(p2.get_x());
-    print(p2.get_y());
-    print(p2.get_name());
 
-    # assert(p2.get_x() == 3);
-    # assert(p2.get_y() == 4);
-    # assert(p2.get_name() == "my point 2");
+    assert(p2.get_x() == 3);
+    assert(p2.get_y() == 4);
+    assert(p2.get_name() == "my point 2");
+
+    assert(p1.get_x() == 1);
+    assert(p1.get_y() == 2);
+    assert(p1.get_name() == "my point 1");
 
     print("ok");
 }

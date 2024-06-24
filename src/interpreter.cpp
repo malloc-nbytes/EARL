@@ -156,7 +156,25 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
-    earl::value::Class *klass = ctx.get_registered_class(expr->m_id->lexeme());
+    StmtClass *stmt = nullptr;
+    for (size_t i = 0; i < ctx.available_classes.size(); ++i) {
+        if (ctx.available_classes[i]->m_id->lexeme() == expr->m_id->lexeme()) {
+            stmt = ctx.available_classes[i];
+        }
+    }
+
+    earl::value::Class *klass = new earl::value::Class(stmt);
+
+    for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
+        klass->add_member_assignee(stmt->m_constructor_args[i].get());
+    }
+
+    // Add the methods
+    for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
+        klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
+                                                                std::move(stmt->m_methods[i]->m_args)));
+    }
+
     std::vector<Token *> &available_idents = klass->m_member_assignees;
 
     // Evaluate [x, y, z,...] in class def and add each one
@@ -475,24 +493,31 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
-    earl::value::Class *klass = new earl::value::Class(stmt);
-
-    std::vector<Token *> member_assignees;
-
-    for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
-        klass->add_member_assignee(stmt->m_constructor_args[i].get());
-    }
-
-    // Add the methods
-    for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-        klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
-                                                                std::move(stmt->m_methods[i]->m_args)));
-    }
-
-    ctx.register_class(klass);
-
+    ctx.available_classes.push_back(stmt);
     return new earl::value::Void();
 }
+
+// earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
+//     ctx.available_classes.push_back(stmt);
+
+//     earl::value::Class *klass = new earl::value::Class(stmt);
+
+//     std::vector<Token *> member_assignees;
+
+//     for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
+//         klass->add_member_assignee(stmt->m_constructor_args[i].get());
+//     }
+
+//     // Add the methods
+//     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
+//         klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
+//                                                                 std::move(stmt->m_methods[i]->m_args)));
+//     }
+
+//     ctx.register_class(klass);
+
+//     return new earl::value::Void();
+// }
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
