@@ -204,3 +204,22 @@ void Ctx::set_module(std::unique_ptr<Token> id) {
 void Ctx::push_child_context(std::unique_ptr<Ctx> child) {
     m_children_contexts.push_back(std::move(child));
 }
+
+void Ctx::add_to_tmp_scope(earl::variable::Obj *var) {
+    const std::string &id = var->id();
+    if (var_in_tmp_scope(id)) {
+        ERR_WARGS(Err::Type::Fatal, "variable %s is already in tmp scope", id.c_str());
+    }
+    m_tmp_scope.add(id, var);
+}
+
+bool Ctx::var_in_tmp_scope(const std::string &id) {
+    return m_tmp_scope.contains(id);
+}
+
+earl::variable::Obj *Ctx::get_var_from_tmp_scope(const std::string &id) {
+    if (!var_in_tmp_scope(id)) {
+        ERR_WARGS(Err::Type::Fatal, "variable %s is not in tmp scope", id.c_str());
+    }
+    return *m_tmp_scope.get(id);
+}

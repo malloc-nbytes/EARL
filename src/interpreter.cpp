@@ -101,18 +101,15 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
 
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         auto *value = Interpreter::eval_expr(expr->m_params[i].get(), ctx);
-
         auto *var = new earl::variable::Obj(available_idents[i],
                                             std::unique_ptr<earl::value::Obj>(value));
-
-        ctx.register_variable(std::move(var));
+        ctx.add_to_tmp_scope(var);
     }
 
     for (size_t i = 0; i < klass->m_stmtclass->m_members.size(); ++i) {
         (void)eval_stmt_let(klass->m_stmtclass->m_members[i].get(), ctx);
     }
 
-    // klass->constructor(ctx);
     UNIMPLEMENTED("eval_class_instantiation");
 
     return new earl::value::Void();

@@ -140,6 +140,10 @@ struct Ctx {
     bool class_is_registered(const std::string &id);
     void register_class(earl::value::Class *klass);
 
+    void add_to_tmp_scope(earl::variable::Obj *var);
+    earl::variable::Obj *get_var_from_tmp_scope(const std::string &id);
+    bool var_in_tmp_scope(const std::string &id);
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
@@ -165,6 +169,8 @@ private:
 
     /// @brief The stacktrace of EARL function calls.
     std::vector<earl::function::Obj *> m_stacktrace;
+
+    Scope<std::string, earl::variable::Obj *> m_tmp_scope;
 };
 
 #endif // CTX_H
