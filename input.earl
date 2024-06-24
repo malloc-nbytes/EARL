@@ -7,15 +7,13 @@ mod Main
     @pub name = name;
     desc = "A point class";
 
-    @pub fn set_x(n) {
-        x = n;
+    @pub fn print_x(n) {
+        print(x);
     }
 
-    @pub fn set_y(n) {
-        y = n;
+    @pub fn print_y(n) {
+        print(y);
     }
 }
 
 let p = Point(1, 2, "My Point");
-
-print("done");

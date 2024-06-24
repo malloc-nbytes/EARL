@@ -37,26 +37,6 @@ const std::string &Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
 }
 
-// void Obj::load_parameters(std::vector<earl::value::Obj *> values) {
-//     for (size_t i = 0; i < values.size(); i++) {
-//         earl::value::Obj *value = values[i];
-//
-//         earl::variable::Obj *var = nullptr;
-//         if ((m_params[i].second & static_cast<uint32_t>(Attr::Ref)) != 0) {
-//             var
-//                 = new earl::variable::Obj(m_params[i].first.get(),
-//                                           std::unique_ptr<earl::value::Obj>(value));
-//         }
-//         else {
-//             var
-//                 = new earl::variable::Obj(m_params[i].first.get(),
-//                                           std::unique_ptr<earl::value::Obj>(value->copy()));
-//         }
-//
-//         add_local(var);
-//     }
-// }
-
 void Class::constructor(Ctx &ctx) {
     UNIMPLEMENTED("Class::constructor");
     // for (size_t i = 0; i < m_stmtclass->m_members.size(); ++i) {
@@ -84,7 +64,7 @@ void Class::add_member(std::unique_ptr<variable::Obj> var) {
 }
 
 Type Class::type(void) const {
-    UNIMPLEMENTED("Class::type");
+    return Type::Class;
 }
 
 Obj *Class::binop(Token *op, Obj *other) {

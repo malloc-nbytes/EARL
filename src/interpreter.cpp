@@ -81,6 +81,13 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     earl::variable::Obj *created_variable = nullptr;
 
+    if (stmt->m_expr->get_type() == ExprType::Term
+        && (dynamic_cast<ExprTerm *>(stmt->m_expr.get())->get_term_type() != ExprTermType::Ident
+            && dynamic_cast<ExprTerm *>(stmt->m_expr.get())->get_term_type() != ExprTermType::Func_Call)) {
+        created_variable = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
+        goto reg;
+    }
+
     if ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0) {
         created_variable
             = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
@@ -90,6 +97,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
             = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result->copy()), stmt->m_attrs);
     }
 
+ reg:
     ctx.register_variable(created_variable);
 
     return new earl::value::Void();
@@ -116,9 +124,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         delete eval_stmt_let(let, ctx);
     }
 
-    UNIMPLEMENTED("eval_class_instantiation");
-
-    return new earl::value::Void();
+    return klass;
 }
 
 earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
