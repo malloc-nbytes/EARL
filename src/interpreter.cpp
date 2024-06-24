@@ -156,6 +156,7 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
+    // Make sure the class exists
     StmtClass *stmt = nullptr;
     for (size_t i = 0; i < ctx.available_classes.size(); ++i) {
         if (ctx.available_classes[i]->m_id->lexeme() == expr->m_id->lexeme()) {
@@ -163,13 +164,19 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         }
     }
 
+    if (!stmt) {
+        ERR_WARGS(Err::Type::Fatal, "class `%s` does not exist", expr->m_id->lexeme().c_str());
+    }
+
+    // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt);
 
+    // Go through the constructor args and add the available variables
     for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
         klass->add_member_assignee(stmt->m_constructor_args[i].get());
     }
 
-    // Add the methods
+    // Add the class methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
         klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
                                                                 std::move(stmt->m_methods[i]->m_args)));
@@ -183,6 +190,9 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         auto *value = Interpreter::eval_expr(expr->m_params[i].get(), ctx);
         auto *var = new earl::variable::Obj(available_idents[i],
                                             std::unique_ptr<earl::value::Obj>(value));
+
+        // We do not want these variables to be always accessible.
+        // So add them to a temporary scope
         ctx.add_to_tmp_scope(var);
     }
 
@@ -192,9 +202,9 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
     for (size_t i = 0; i < klass->m_stmtclass->m_members.size(); ++i) {
         StmtLet *let = klass->m_stmtclass->m_members[i].get();
         load_class_members(let, klass, ctx);
-        // delete eval_stmt_let(let, ctx);
     }
 
+    // Clear the constructor variables
     ctx.clear_tmp_scope();
 
     return klass;
@@ -496,28 +506,6 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
     ctx.available_classes.push_back(stmt);
     return new earl::value::Void();
 }
-
-// earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
-//     ctx.available_classes.push_back(stmt);
-
-//     earl::value::Class *klass = new earl::value::Class(stmt);
-
-//     std::vector<Token *> member_assignees;
-
-//     for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
-//         klass->add_member_assignee(stmt->m_constructor_args[i].get());
-//     }
-
-//     // Add the methods
-//     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-//         klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
-//                                                                 std::move(stmt->m_methods[i]->m_args)));
-//     }
-
-//     ctx.register_class(klass);
-
-//     return new earl::value::Void();
-// }
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
