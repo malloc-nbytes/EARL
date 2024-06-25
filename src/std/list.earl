@@ -1,6 +1,15 @@
 mod List
 
 @pub
+fn init_with_cap(elem, cap) {
+    let lst = [];
+    for i in 0..cap {
+        lst.append(elem);
+    }
+    return lst;
+}
+
+@pub
 fn range(start, stop, stride) {
     assert(stride != 0);
 

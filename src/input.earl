@@ -1,14 +1,7 @@
+import "std/list.earl"
 import "std/stack.earl"
 
 mod Main
 
-let s = Stack.T([]);
-
-for i in 0..100000 {
-    s.push(i);
-}
-
-while s.empty() != 1 {
-    print(s.top());
-    s.pop();
-}
+let lst = List.init_with_cap(0, 100);
+print(lst);

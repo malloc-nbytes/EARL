@@ -34,8 +34,8 @@ docs:
 
 install-earl: main
 	@echo "installing stdlib"
-	sudo mkdir -p /usr/local/include/EARL/
-	sudo cp -r ./std/ /usr/local/include/EARL/std/
+	sudo mkdir -p /usr/local/include/EARL/std/
+	sudo cp -r ./std/* /usr/local/include/EARL/std/
 	@echo "installing EARL"
 	sudo cp ./main /usr/local/bin/earl
 
