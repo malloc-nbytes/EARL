@@ -104,8 +104,14 @@ void Ctx::register_class(earl::value::Class *klass) {
 }
 
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
-    if (m_parent && m_parent->get_module()->lexeme() == id) {
-        return new earl::value::Module(m_parent);
+    // if (m_parent && m_parent->get_module()->lexeme() == id) {
+    //    return new earl::value::Module(m_parent);
+    // }
+
+    if (m_parent) {
+        auto *mod = m_parent->get_registered_module(id);
+        if (mod) 
+            return mod;
     }
 
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {

@@ -3,4 +3,3 @@ import "std/stack.earl"
 
 mod Main
 
-let s = Stack.T(List.range(0, 10, 1));

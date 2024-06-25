@@ -337,15 +337,11 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
 
-        std::cout << "eval_expr_term: " << ident->m_tok->lexeme() << std::endl;
-
         // Check for a module
         earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
         if (mod) {
-            std::cout << "IS MODULE: " << mod->value()->get_module()->lexeme() << std::endl;
             return mod;
         }
-        std::cout << "NOT MODULE" << std::endl;
 
         // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
