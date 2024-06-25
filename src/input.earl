@@ -3,5 +3,8 @@ import "std/stack.earl"
 
 mod Main
 
-let lst = List.init_with_cap(0, 100);
-print(lst);
+# let s = Stack.T(List.range(0, 10, 1));
+
+let x = 1;
+let y = x;
+

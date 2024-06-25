@@ -333,6 +333,7 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
+        ctx.debug_dump();
 
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
 

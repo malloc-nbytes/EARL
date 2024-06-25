@@ -107,7 +107,7 @@ template <typename K, typename V> struct Scope {
     inline void debug_dump(void) const {
         int i = 1;
         for (const auto &map : m_map) {
-            std::cout << "Scope level: " << i << std::endl;
+            std::cout << "  Scope level: " << i << std::endl;
             std::cout << "    ";
             for (const auto &pair : map) {
                 std::cout << pair.first << " ";

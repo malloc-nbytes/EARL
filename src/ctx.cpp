@@ -255,3 +255,26 @@ void Ctx::clear_tmp_scope(void) {
     m_tmp_scope.clear();
 }
 
+void Ctx::debug_dump(void) {
+    std::cout << std::endl << "CTX: " << m_module->lexeme() << std::endl;
+    std::cout << "  GLOBALS" << std::endl;
+    m_globalvars.debug_dump();
+
+    std::cout << "  FUNCTIONS" << std::endl;
+    m_globalfuncs.debug_dump();
+
+    std::cout << "  CLASSES" << std::endl;
+    for (auto &klass : m_globalclasses) {
+        std::cout << klass.first << std::endl;
+    }
+
+    std::cout << "  CHILDREN CTX's" << std::endl;
+    for (auto &ctx : m_children_contexts) {
+        std::cout << "  " << ctx.get()->m_module->lexeme() << ' ';
+    }
+    std::cout << std::endl;
+
+    for (auto &ctx : m_children_contexts) {
+        ctx.get()->debug_dump();
+    }
+}
