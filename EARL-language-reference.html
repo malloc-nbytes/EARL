@@ -3,19 +3,197 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-06-22 Sat 22:30 -->
+<!-- 2024-06-24 Mon 20:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL Lanugage Reference</title>
 <meta name="author" content="Zachary Haskins (malloc-nbytes)" />
 <meta name="description" content="The &quot;ins&quot; and &quot;outs&quot; of EARL" />
 <meta name="generator" content="Org Mode" />
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
-<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
-<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
 <script>
   window.MathJax = {
     tex: {
@@ -56,51 +234,62 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org8f1d57a">1. Variable Declarations</a></li>
-<li><a href="#orgaf61017">2. Mutation</a></li>
-<li><a href="#org146bd5c">3. Conditionals</a></li>
-<li><a href="#org4274a09">4. While Loops</a></li>
-<li><a href="#org8ada043">5. For Loops</a></li>
-<li><a href="#org78567c7">6. Function Definitions</a>
+<li><a href="#org2c9e072">Variable Declarations</a></li>
+<li><a href="#org7cd9268">Mutation</a></li>
+<li><a href="#org1f706d0">Conditionals</a></li>
+<li><a href="#orga42e414">While Loops</a></li>
+<li><a href="#org5ac0ad6">For Loops</a></li>
+<li><a href="#org780f789">Function Definitions</a>
 <ul>
-<li><a href="#orgb447c04">6.1. Grammar</a></li>
-<li><a href="#org7baeae0">6.2. Examples</a></li>
+<li><a href="#org2ae3082">Grammar</a></li>
+<li><a href="#orgc89c186">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org473eea4">7. Statement Expressions</a>
+<li><a href="#orgd2c8920">Statement Expressions</a>
 <ul>
-<li><a href="#orgc487eaf">7.1. Grammar</a></li>
-<li><a href="#orgb8f81af">7.2. Examples</a></li>
+<li><a href="#orgea49319">Grammar</a></li>
+<li><a href="#org7e41dec">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org536fad5">8. Imports</a>
+<li><a href="#org5d4df3d">Imports</a>
 <ul>
-<li><a href="#orgb145a4e">8.1. Grammar</a></li>
-<li><a href="#orgfea6f37">8.2. Examples</a></li>
+<li><a href="#org4cadb08">Grammar</a></li>
+<li><a href="#org1018b50">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orga3e7c42">9. Modules</a>
+<li><a href="#org9e9a93b">Modules</a>
 <ul>
-<li><a href="#orgddf9cc7">9.1. Grammar</a></li>
-<li><a href="#org62c4d4f">9.2. Examples</a></li>
+<li><a href="#org7ea3849">Grammar</a></li>
+<li><a href="#orge9d423b">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orge919673">10. Attributes</a>
+<li><a href="#org7b37914">Attributes</a>
 <ul>
-<li><a href="#orgc7a9ddb">10.1. Grammar</a></li>
-<li><a href="#org85c515e">10.2. Examples</a></li>
+<li><a href="#org5c8cd24">Grammar</a></li>
+<li><a href="#org205f6b1">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgf99b4a8">11. Intrinsics</a>
+<li><a href="#orgfe8ec1e">Intrinsics</a>
 <ul>
-<li><a href="#orgf668655">11.1. <code>print</code></a></li>
-<li><a href="#org79246cb">11.2. <code>assert</code></a></li>
-<li><a href="#orga2fbc1a">11.3. <code>len</code></a></li>
+<li><a href="#org3f1c89f"><code>print</code></a></li>
+<li><a href="#orgcdbb824"><code>assert</code></a></li>
+<li><a href="#org4b51245"><code>len</code></a></li>
 </ul>
 </li>
-<li><a href="#org791b43b">12. Member Intrinsics</a>
+<li><a href="#org011a040">Member Intrinsics</a>
 <ul>
-<li><a href="#orga06dc66">12.1. <code>List</code> implementes</a></li>
+<li><a href="#orgc58a25b"><code>List</code> implementes</a></li>
+</ul>
+</li>
+<li><a href="#org5f09c46">StdLib</a>
+<ul>
+<li><a href="#orgf32497a">Stack</a>
+<ul>
+<li><a href="#orge3fbc62">Import</a></li>
+<li><a href="#org8f3967a">Module</a></li>
+<li><a href="#orgfaf2157">Class List</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -120,25 +309,28 @@
 <li>?(text) means 0 or 1</li>
 <li>"text" represents a string</li>
 </ol>
-<div id="outline-container-org8f1d57a" class="outline-2">
-<h2 id="org8f1d57a"><span class="section-number-2">1.</span> Variable Declarations</h2>
-<div class="outline-text-2" id="text-1">
+
+<div id="outline-container-org2c9e072" class="outline-2">
+<h2 id="org2c9e072">Variable Declarations</h2>
+<div class="outline-text-2" id="text-org2c9e072">
 <p>
 <code>let</code> &lt;id&gt; = <i>expr</i>;
 </p>
 </div>
 </div>
-<div id="outline-container-orgaf61017" class="outline-2">
-<h2 id="orgaf61017"><span class="section-number-2">2.</span> Mutation</h2>
-<div class="outline-text-2" id="text-2">
+
+<div id="outline-container-org7cd9268" class="outline-2">
+<h2 id="org7cd9268">Mutation</h2>
+<div class="outline-text-2" id="text-org7cd9268">
 <p>
 &lt;id&gt; | <i>expr</i> = <i>expr</i>;
 </p>
 </div>
 </div>
-<div id="outline-container-org146bd5c" class="outline-2">
-<h2 id="org146bd5c"><span class="section-number-2">3.</span> Conditionals</h2>
-<div class="outline-text-2" id="text-3">
+
+<div id="outline-container-org1f706d0" class="outline-2">
+<h2 id="org1f706d0">Conditionals</h2>
+<div class="outline-text-2" id="text-org1f706d0">
 <p>
 <code>if</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
 </p>
@@ -152,17 +344,19 @@
 </p>
 </div>
 </div>
-<div id="outline-container-org4274a09" class="outline-2">
-<h2 id="org4274a09"><span class="section-number-2">4.</span> While Loops</h2>
-<div class="outline-text-2" id="text-4">
+
+<div id="outline-container-orga42e414" class="outline-2">
+<h2 id="orga42e414">While Loops</h2>
+<div class="outline-text-2" id="text-orga42e414">
 <p>
 <code>while</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
 </p>
 </div>
 </div>
-<div id="outline-container-org8ada043" class="outline-2">
-<h2 id="org8ada043"><span class="section-number-2">5.</span> For Loops</h2>
-<div class="outline-text-2" id="text-5">
+
+<div id="outline-container-org5ac0ad6" class="outline-2">
+<h2 id="org5ac0ad6">For Loops</h2>
+<div class="outline-text-2" id="text-org5ac0ad6">
 <blockquote>
 <p>
 As of now, the <code>for</code> loop only enumerates by incrementing
@@ -187,19 +381,21 @@ You can modify <code>i</code> within the body of the loop.
 </p>
 </div>
 </div>
-<div id="outline-container-org78567c7" class="outline-2">
-<h2 id="org78567c7"><span class="section-number-2">6.</span> Function Definitions</h2>
-<div class="outline-text-2" id="text-6">
+
+<div id="outline-container-org780f789" class="outline-2">
+<h2 id="org780f789">Function Definitions</h2>
+<div class="outline-text-2" id="text-org780f789">
 <blockquote>
 <p>
-This is how to create a function. See <a href="#orge919673">10</a> for a
+This is how to create a function. See <a href="#org7b37914">Attributes</a> for a
 description on <i>attributes</i>.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgb447c04" class="outline-3">
-<h3 id="orgb447c04"><span class="section-number-3">6.1.</span> Grammar</h3>
-<div class="outline-text-3" id="text-6-1">
+
+<div id="outline-container-org2ae3082" class="outline-3">
+<h3 id="org2ae3082">Grammar</h3>
+<div class="outline-text-3" id="text-org2ae3082">
 <p>
 *( <code>@</code> [ <code>pub</code> | <code>world</code> ])
 </p>
@@ -209,10 +405,11 @@ description on <i>attributes</i>.
 </p>
 </div>
 </div>
-<div id="outline-container-org7baeae0" class="outline-3">
-<h3 id="org7baeae0"><span class="section-number-3">6.2.</span> Examples</h3>
-<div class="outline-text-3" id="text-6-2">
-<pre class="example" id="org9086759">
+
+<div id="outline-container-orgc89c186" class="outline-3">
+<h3 id="orgc89c186">Examples</h3>
+<div class="outline-text-3" id="text-orgc89c186">
+<pre class="example" id="org18903c5">
 @world @pub
 fn func1(@ref x, y, @ref z) {
     ...
@@ -225,9 +422,10 @@ fn func2() {
 </div>
 </div>
 </div>
-<div id="outline-container-org473eea4" class="outline-2">
-<h2 id="org473eea4"><span class="section-number-2">7.</span> Statement Expressions</h2>
-<div class="outline-text-2" id="text-7">
+
+<div id="outline-container-orgd2c8920" class="outline-2">
+<h2 id="orgd2c8920">Statement Expressions</h2>
+<div class="outline-text-2" id="text-orgd2c8920">
 <blockquote>
 <p>
 Statement expressions are statements that are only evaluated
@@ -236,27 +434,30 @@ such as <code>List.rev</code>.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgc487eaf" class="outline-3">
-<h3 id="orgc487eaf"><span class="section-number-3">7.1.</span> Grammar</h3>
-<div class="outline-text-3" id="text-7-1">
+
+<div id="outline-container-orgea49319" class="outline-3">
+<h3 id="orgea49319">Grammar</h3>
+<div class="outline-text-3" id="text-orgea49319">
 <p>
 &lt;id&gt; *( <code>(</code> <i>expr</i> <code>)</code> | <code>[</code> <i>expr</i> <code>]</code> | <code>.</code> &lt;ident&gt; ) <code>;</code>
 </p>
 </div>
 </div>
-<div id="outline-container-orgb8f81af" class="outline-3">
-<h3 id="orgb8f81af"><span class="section-number-3">7.2.</span> Examples</h3>
-<div class="outline-text-3" id="text-7-2">
-<pre class="example" id="orgba9e842">
+
+<div id="outline-container-org7e41dec" class="outline-3">
+<h3 id="org7e41dec">Examples</h3>
+<div class="outline-text-3" id="text-org7e41dec">
+<pre class="example" id="org82652a9">
 print("hello world");
 my_list.rev();
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org536fad5" class="outline-2">
-<h2 id="org536fad5"><span class="section-number-2">8.</span> Imports</h2>
-<div class="outline-text-2" id="text-8">
+
+<div id="outline-container-org5d4df3d" class="outline-2">
+<h2 id="org5d4df3d">Imports</h2>
+<div class="outline-text-2" id="text-org5d4df3d">
 <blockquote>
 <p>
 EARL looks for the files relative to the directory
@@ -267,18 +468,20 @@ function definitions are gathered.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgb145a4e" class="outline-3">
-<h3 id="orgb145a4e"><span class="section-number-3">8.1.</span> Grammar</h3>
-<div class="outline-text-3" id="text-8-1">
+
+<div id="outline-container-org4cadb08" class="outline-3">
+<h3 id="org4cadb08">Grammar</h3>
+<div class="outline-text-3" id="text-org4cadb08">
 <p>
 <code>import</code> "filepath"
 </p>
 </div>
 </div>
-<div id="outline-container-orgfea6f37" class="outline-3">
-<h3 id="orgfea6f37"><span class="section-number-3">8.2.</span> Examples</h3>
-<div class="outline-text-3" id="text-8-2">
-<pre class="example" id="org14a1e66">
+
+<div id="outline-container-org1018b50" class="outline-3">
+<h3 id="org1018b50">Examples</h3>
+<div class="outline-text-3" id="text-org1018b50">
+<pre class="example" id="orgb4fa6c7">
 import "std/list.earl"
 import "std/math.earl"
 import "std/utils.earl"
@@ -286,9 +489,10 @@ import "std/utils.earl"
 </div>
 </div>
 </div>
-<div id="outline-container-orga3e7c42" class="outline-2">
-<h2 id="orga3e7c42"><span class="section-number-2">9.</span> Modules</h2>
-<div class="outline-text-2" id="text-9">
+
+<div id="outline-container-org9e9a93b" class="outline-2">
+<h2 id="org9e9a93b">Modules</h2>
+<div class="outline-text-2" id="text-org9e9a93b">
 <blockquote>
 <p>
 <i>Modules</i> allow other files to access resources to the
@@ -303,21 +507,23 @@ It is expected to have the module declaration near the top of the file.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgddf9cc7" class="outline-3">
-<h3 id="orgddf9cc7"><span class="section-number-3">9.1.</span> Grammar</h3>
-<div class="outline-text-3" id="text-9-1">
+
+<div id="outline-container-org7ea3849" class="outline-3">
+<h3 id="org7ea3849">Grammar</h3>
+<div class="outline-text-3" id="text-org7ea3849">
 <p>
 <code>mod</code> &lt;id&gt;
 </p>
 </div>
 </div>
-<div id="outline-container-org62c4d4f" class="outline-3">
-<h3 id="org62c4d4f"><span class="section-number-3">9.2.</span> Examples</h3>
-<div class="outline-text-3" id="text-9-2">
+
+<div id="outline-container-orge9d423b" class="outline-3">
+<h3 id="orge9d423b">Examples</h3>
+<div class="outline-text-3" id="text-orge9d423b">
 <p>
 file: <code>my-math.earl</code>
 </p>
-<pre class="example" id="orgff84411">
+<pre class="example" id="org0af4d60">
 mod MyMath
 
 fn sum(a, b) { return a+b; }
@@ -326,7 +532,7 @@ fn sum(a, b) { return a+b; }
 <p>
 file: <code>main.earl</code>
 </p>
-<pre class="example" id="org0c1fade">
+<pre class="example" id="orge4f5e05">
 import "my-math.earl"
 
 mod Main
@@ -336,9 +542,10 @@ let s = MyMath.sum(1, 2);
 </div>
 </div>
 </div>
-<div id="outline-container-orge919673" class="outline-2">
-<h2 id="orge919673"><span class="section-number-2">10.</span> Attributes</h2>
-<div class="outline-text-2" id="text-10">
+
+<div id="outline-container-org7b37914" class="outline-2">
+<h2 id="org7b37914">Attributes</h2>
+<div class="outline-text-2" id="text-org7b37914">
 <blockquote>
 <p>
 Attributes embeds meta information into variables
@@ -395,18 +602,20 @@ take a reference to the value passed to it.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgc7a9ddb" class="outline-3">
-<h3 id="orgc7a9ddb"><span class="section-number-3">10.1.</span> Grammar</h3>
-<div class="outline-text-3" id="text-10-1">
+
+<div id="outline-container-org5c8cd24" class="outline-3">
+<h3 id="org5c8cd24">Grammar</h3>
+<div class="outline-text-3" id="text-org5c8cd24">
 <p>
 <code>@</code> *(pub | world | ref)
 </p>
 </div>
 </div>
-<div id="outline-container-org85c515e" class="outline-3">
-<h3 id="org85c515e"><span class="section-number-3">10.2.</span> Examples</h3>
-<div class="outline-text-3" id="text-10-2">
-<pre class="example" id="org1fda3eb">
+
+<div id="outline-container-org205f6b1" class="outline-3">
+<h3 id="org205f6b1">Examples</h3>
+<div class="outline-text-3" id="text-org205f6b1">
+<pre class="example" id="org77d9786">
 @world @pub
 fn test_world() {
     # `i` will print since it is in the world scope.
@@ -436,13 +645,14 @@ assert(i == 3);
 </div>
 </div>
 </div>
-<div id="outline-container-orgf99b4a8" class="outline-2">
-<h2 id="orgf99b4a8"><span class="section-number-2">11.</span> Intrinsics</h2>
-<div class="outline-text-2" id="text-11">
+
+<div id="outline-container-orgfe8ec1e" class="outline-2">
+<h2 id="orgfe8ec1e">Intrinsics</h2>
+<div class="outline-text-2" id="text-orgfe8ec1e">
 </div>
-<div id="outline-container-orgf668655" class="outline-3">
-<h3 id="orgf668655"><span class="section-number-3">11.1.</span> <code>print</code></h3>
-<div class="outline-text-3" id="text-11-1">
+<div id="outline-container-org3f1c89f" class="outline-3">
+<h3 id="org3f1c89f"><code>print</code></h3>
+<div class="outline-text-3" id="text-org3f1c89f">
 <p>
 <code>print(arg1, arg2, ..., argN)</code>
 </p>
@@ -452,9 +662,10 @@ Will print all elements if it can. Adds a newline at the end and flushes the out
 </p>
 </div>
 </div>
-<div id="outline-container-org79246cb" class="outline-3">
-<h3 id="org79246cb"><span class="section-number-3">11.2.</span> <code>assert</code></h3>
-<div class="outline-text-3" id="text-11-2">
+
+<div id="outline-container-orgcdbb824" class="outline-3">
+<h3 id="orgcdbb824"><code>assert</code></h3>
+<div class="outline-text-3" id="text-orgcdbb824">
 <p>
 <code>assert(arg1, arg2, ..., argN)</code>
 </p>
@@ -465,9 +676,10 @@ the program immediately crashes.
 </p>
 </div>
 </div>
-<div id="outline-container-orga2fbc1a" class="outline-3">
-<h3 id="orga2fbc1a"><span class="section-number-3">11.3.</span> <code>len</code></h3>
-<div class="outline-text-3" id="text-11-3">
+
+<div id="outline-container-org4b51245" class="outline-3">
+<h3 id="org4b51245"><code>len</code></h3>
+<div class="outline-text-3" id="text-org4b51245">
 <p>
 <code>len(arg)</code>
 </p>
@@ -479,13 +691,14 @@ as an integer.
 </div>
 </div>
 </div>
-<div id="outline-container-org791b43b" class="outline-2">
-<h2 id="org791b43b"><span class="section-number-2">12.</span> Member Intrinsics</h2>
-<div class="outline-text-2" id="text-12">
+
+<div id="outline-container-org011a040" class="outline-2">
+<h2 id="org011a040">Member Intrinsics</h2>
+<div class="outline-text-2" id="text-org011a040">
 </div>
-<div id="outline-container-orga06dc66" class="outline-3">
-<h3 id="orga06dc66"><span class="section-number-3">12.1.</span> <code>List</code> implementes</h3>
-<div class="outline-text-3" id="text-12-1">
+<div id="outline-container-orgc58a25b" class="outline-3">
+<h3 id="orgc58a25b"><code>List</code> implementes</h3>
+<div class="outline-text-3" id="text-orgc58a25b">
 <ul class="org-ul">
 <li><code>rev()</code> &rarr; Reverses the list inplace.</li>
 
@@ -496,10 +709,92 @@ as an integer.
 </div>
 </div>
 </div>
+
+<div id="outline-container-org5f09c46" class="outline-2">
+<h2 id="org5f09c46">StdLib</h2>
+<div class="outline-text-2" id="text-org5f09c46">
+<blockquote>
+<p>
+Upon installing EARL, the standard library is installed into
+<code>/usr/local/include/EARL/std</code>. The first place that EARL looks
+when evaluating an <code>import</code> statement is this <code>/usr/local/include/EARL/</code>.
+This means that all you need to do to import these files is do:
+<code>import "std/&lt;file&gt;.earl"</code>.
+</p>
+</blockquote>
+</div>
+
+<div id="outline-container-orgf32497a" class="outline-3">
+<h3 id="orgf32497a">Stack</h3>
+<div class="outline-text-3" id="text-orgf32497a">
+</div>
+<div id="outline-container-orge3fbc62" class="outline-4">
+<h4 id="orge3fbc62">Import</h4>
+<div class="outline-text-4" id="text-orge3fbc62">
+<p>
+<code>"std/stack.earl"</code>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8f3967a" class="outline-4">
+<h4 id="org8f3967a">Module</h4>
+<div class="outline-text-4" id="text-org8f3967a">
+<p>
+<code>Stack</code>
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfaf2157" class="outline-4">
+<h4 id="orgfaf2157">Class List</h4>
+<div class="outline-text-4" id="text-orgfaf2157">
+</div>
+<ul class="org-ul">
+<li><a id="orgfdeb5ca"></a>Constructor: <code>T [init: list]</code><br />
+<div class="outline-text-5" id="text-orgfdeb5ca">
+<blockquote>
+<p>
+Creates a <code>Stack</code> with the initializer list <code>init</code>.
+</p>
+</blockquote>
+</div>
+</li>
+
+<li><a id="org96e3a73"></a>Methods<br />
+<div class="outline-text-5" id="text-org96e3a73">
+<ol class="org-ol">
+<li><code>pop()</code></li>
+</ol>
+<blockquote>
+<p>
+Removes the most recently inserted element.
+</p>
+</blockquote>
+
+
+<pre class="example" id="org6d144ea">
+let s = Stack.T([]);
+
+for i in 0..10 {
+    s.push(i);
+}
+
+while s.empty() != 1 {
+    print(s.top());
+    s.pop();
+}
+</pre>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-06-22 Sat 22:30</p>
+<p class="date">Created: 2024-06-24 Mon 20:13</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

@@ -2,7 +2,9 @@
 #+DESCRIPTION: The "ins" and "outs" of EARL
 #+AUTHOR: Zachary Haskins (malloc-nbytes)
 #+EMAIL: zdhdev@yahoo.com
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: num:nil
+
 
 *NOTE*:
 
@@ -233,3 +235,48 @@ as an integer.
 
 - =pop(idx)= \rightarrow Will remove the element at index =idx=
 
+* StdLib
+
+#+begin_quote
+Upon installing EARL, the standard library is installed into
+=/usr/local/include/EARL/std=. The first place that EARL looks
+when evaluating an =import= statement is this =/usr/local/include/EARL/=.
+This means that all you need to do to import these files is do:
+=import "std/<file>.earl"=.
+#+end_quote
+
+** Stack
+
+*** Import
+="std/stack.earl"=
+
+*** Module
+=Stack=
+
+*** Class List
+
+**** Constructor: =T [init: list]=
+
+#+begin_quote
+Creates a =Stack= with the initializer list =init=.
+#+end_quote
+
+**** Methods
+1. =pop()=
+#+begin_quote
+Removes the most recently inserted element.
+#+end_quote
+
+
+#+begin_example
+let s = Stack.T([]);
+
+for i in 0..10 {
+    s.push(i);
+}
+
+while s.empty() != 1 {
+    print(s.top());
+    s.pop();
+}
+#+end_example
