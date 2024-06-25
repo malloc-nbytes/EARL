@@ -2,9 +2,8 @@
 #+DESCRIPTION: The "ins" and "outs" of EARL
 #+AUTHOR: Zachary Haskins (malloc-nbytes)
 #+EMAIL: zdhdev@yahoo.com
-# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: num:nil
-
 
 *NOTE*:
 
@@ -240,33 +239,52 @@ as an integer.
 #+begin_quote
 Upon installing EARL, the standard library is installed into
 =/usr/local/include/EARL/std=. The first place that EARL looks
-when evaluating an =import= statement is this =/usr/local/include/EARL/=.
+when evaluating an =import= statement is =/usr/local/include/EARL/=.
 This means that all you need to do to import these files is do:
 =import "std/<file>.earl"=.
 #+end_quote
 
 ** Stack
 
-*** Import
-="std/stack.earl"=
+*** Import: ="std/stack.earl"=
 
-*** Module
-=Stack=
+*** Module: =Stack=
 
-*** Class List
+*** Class List:
 
-**** Constructor: =T [init: list]=
+**** =T [init: list] -> Stack.T=
 
 #+begin_quote
-Creates a =Stack= with the initializer list =init=.
+Creates a =Stack= container with the initializer list =init=.
 #+end_quote
 
-**** Methods
-1. =pop()=
+***** *Implements*
+
+=push(elem: any) -> unit=
+
+#+begin_quote
+Inserts =elem= onto the top of the stack.
+#+end_quote
+
+=pop() -> unit=
+
 #+begin_quote
 Removes the most recently inserted element.
 #+end_quote
 
+=top() -> any=
+
+#+begin_quote
+Get the most recently added item.
+#+end_quote
+
+=empty() -> bool=
+
+#+begin_quote
+Check if the stack is empty
+#+end_quote
+
+/Example/
 
 #+begin_example
 let s = Stack.T([]);
@@ -280,3 +298,16 @@ while s.empty() != 1 {
     s.pop();
 }
 #+end_example
+
+#+begin_example
+9
+8
+7
+6
+5
+4
+3
+2
+1
+#+end_example
+
