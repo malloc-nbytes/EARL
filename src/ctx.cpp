@@ -104,6 +104,16 @@ void Ctx::register_class(earl::value::Class *klass) {
 }
 
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
+    // if (m_parent && m_parent->get_module()->lexeme() == id) {
+    //    return new earl::value::Module(m_parent);
+    // }
+
+    if (m_parent) {
+        auto *mod = m_parent->get_registered_module(id);
+        if (mod) 
+            return mod;
+    }
+
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {
         Ctx *child = m_children_contexts[i].get();
         if (child->get_module() && child->get_module()->lexeme() == id) {
@@ -255,3 +265,34 @@ void Ctx::clear_tmp_scope(void) {
     m_tmp_scope.clear();
 }
 
+void Ctx::debug_dump(void) {
+    std::cout << std::endl << "CTX: " << m_module->lexeme() << std::endl;
+    std::cout << "  GLOBALS" << std::endl;
+    m_globalvars.debug_dump();
+
+    std::cout << "  FUNCTIONS" << std::endl;
+    m_globalfuncs.debug_dump();
+
+    std::cout << "  CLASSES" << std::endl;
+    for (auto &klass : m_globalclasses) {
+        std::cout << klass.first << std::endl;
+    }
+
+    std::cout << "  CHILDREN CTX's" << std::endl;
+    for (auto &ctx : m_children_contexts) {
+        std::cout << "  " << ctx.get()->m_module->lexeme() << ' ';
+    }
+    std::cout << std::endl;
+
+    std::cout << "  PARENT CTX" << std::endl;
+    if (m_parent != nullptr) {
+        std::cout << "    " << m_parent->m_module->lexeme() << std::endl;
+    }
+    else {
+        std::cout << "  <none>" << std::endl;
+    }
+
+    for (auto &ctx : m_children_contexts) {
+        ctx.get()->debug_dump();
+    }
+}

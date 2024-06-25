@@ -331,15 +331,17 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+    // ctx.debug_dump();
+
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
-
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
 
         // Check for a module
         earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
-        if (mod)
+        if (mod) {
             return mod;
+        }
 
         // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());

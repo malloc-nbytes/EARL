@@ -3,5 +3,3 @@ import "std/stack.earl"
 
 mod Main
 
-let lst = List.init_with_cap(0, 100);
-print(lst);

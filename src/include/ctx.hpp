@@ -145,6 +145,8 @@ struct Ctx {
     bool var_in_tmp_scope(const std::string &id);
     void clear_tmp_scope(void);
 
+    void debug_dump(void);
+
     std::vector<StmtClass *> available_classes;
 
     Ctx *m_parent;
