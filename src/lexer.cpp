@@ -112,7 +112,16 @@ static size_t find_comment_end(char *s) {
 }
 
 static char *read_file(const char *filepath) {
-    FILE *f = fopen(filepath, "rb");
+    const char *search_path = "/usr/local/include/EARL/";
+
+    char full_path[256];
+    snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
+
+    FILE *f = fopen(full_path, "rb");
+
+    if (f == NULL) {
+        f = fopen(filepath, "rb");
+    }
 
     if (f == NULL || fseek(f, 0, SEEK_END)) {
         ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
@@ -121,18 +130,21 @@ static char *read_file(const char *filepath) {
     long length = ftell(f);
     rewind(f);
     if (length == -1 || (unsigned long) length >= SIZE_MAX) {
+        fclose(f);
         return NULL;
     }
 
     size_t ulength = (size_t)length;
-    char *buffer = (char *)malloc(ulength+1);
+    char *buffer = (char *)malloc(ulength + 1);
 
     if (buffer == NULL || fread(buffer, 1, ulength, f) != ulength) {
+        fclose(f);
         free(buffer);
         return NULL;
     }
     buffer[ulength] = '\0';
 
+    fclose(f);
     return buffer;
 }
 
