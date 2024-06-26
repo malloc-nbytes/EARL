@@ -46,6 +46,10 @@ __update-earl: clean
 	@echo "*-*-* updating EARL *-*-*"
 	git pull
 
+uninstall-earl:
+	sudo rm /usr/local/bin/earl
+	sudo rm -r /usr/local/include/EARL
+
 all: docs main test
 
 .DEFAULT_GOAL = main
