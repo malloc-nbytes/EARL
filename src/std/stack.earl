@@ -1,3 +1,4 @@
+import "std/list.earl"
 mod Stack
 
 class T [init] {
@@ -5,6 +6,7 @@ class T [init] {
 
     @pub
     fn push(x) {
+        let test = List.range(1, 10, 1);
         lst.append(x);
     }
 
