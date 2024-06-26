@@ -81,11 +81,6 @@ namespace Parser {
     Expr *parse_expr(Lexer &lexer);
 
     /// @brief A utility function for the parsers
-    /// to use to expect the next token to be an EARL datatype.
-    /// @param lexer The lexer with the linked list of tokens
-    std::unique_ptr<Token> parse_expect_type(Lexer &lexer);
-
-    /// @brief A utility function for the parsers
     /// to use to expect the next token to be an EARL keyword.
     /// @param lexer The lexer with the linked list of tokens
     /// @param expected The keyword to expect
