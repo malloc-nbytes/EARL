@@ -1,5 +1,18 @@
-import "std/list.earl"
-import "std/stack.earl"
-
 mod Main
 
+let t = true;
+let f = false;
+
+if t {
+    print("t is true");
+}
+else {
+    print("t is false");
+}
+
+if f {
+    print("f is true");
+}
+else {
+    print("f is false");
+}
