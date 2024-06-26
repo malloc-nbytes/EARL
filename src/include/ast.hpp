@@ -66,6 +66,7 @@ enum class ExprTermType {
     List_Literal,
     Get,
     Array_Access,
+    Bool,
 };
 
 struct StmtBlock;
@@ -132,6 +133,16 @@ struct ExprStrLit : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprStrLit(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+/// @brief The Expression Bool class
+struct ExprBool : public ExprTerm {
+    std::unique_ptr<Token> m_tok;
+    bool m_value;
+
+    ExprBool(std::unique_ptr<Token> tok, bool value);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

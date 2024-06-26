@@ -56,6 +56,8 @@ namespace earl {
         enum class Type {
             /** EARL 32bit integer type */
             Int,
+            /** EARL boolean type */
+            Bool,
             /** EARL string type */
             Str,
             /** EARL UNIT type (used when eval's don't return anything) */
@@ -114,6 +116,24 @@ namespace earl {
 
         private:
             int m_value;
+        };
+
+        /// @brief The structure that represents EARL 32bit integers
+        struct Bool : public Obj {
+            Bool(bool value = false);
+
+            /// @brief Get the underlying integer value
+            bool value(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            bool m_value;
         };
 
         /// @brief The structure that represents EARL strings

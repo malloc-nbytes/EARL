@@ -1,5 +1,8 @@
-import "std/list.earl"
-import "std/stack.earl"
-
 mod Main
 
+let x = 1;
+let y = 2;
+
+let b = (x == y);
+
+print(b);

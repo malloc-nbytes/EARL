@@ -189,6 +189,18 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;
     } break;
+    case TokenType::Keyword: {
+        std::unique_ptr<Token> kw = lexer.next();
+        if (kw->lexeme() == COMMON_EARLKW_TRUE) {
+            return new ExprBool(std::move(kw), true);
+        }
+        else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
+            return new ExprBool(std::move(kw), false);
+        }
+        else {
+            assert(false && "parse_primary_expr: invalid keyword in primary expression");
+        }
+    } break;
     default:
         assert(false && "parse_primary_expr: invalid primary expression");
     }

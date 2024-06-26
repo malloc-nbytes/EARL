@@ -53,6 +53,17 @@ ExprTermType ExprStrLit::get_term_type() const {
     return ExprTermType::Str_Literal;
 }
 
+ExprBool::ExprBool(std::unique_ptr<Token> tok, bool value)
+    : m_tok(std::move(tok)), m_value(value) {}
+
+ExprType ExprBool::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprBool::get_term_type() const {
+    return ExprTermType::Bool;
+}
+
 ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIntLit::get_type() const {
@@ -219,4 +230,3 @@ StmtClass::StmtClass(std::unique_ptr<Token> id,
 StmtType StmtClass::stmt_type() const {
     return StmtType::Class;
 }
-

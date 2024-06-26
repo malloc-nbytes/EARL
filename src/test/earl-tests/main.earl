@@ -4,6 +4,22 @@ import "other.1.earl"
 
 mod Test
 
+fn test_booleans() {
+    print("test_booleans...");
+
+    let t = true;
+    let f = false;
+
+    assert(t);
+    assert(t == true);
+    assert(f == false);
+
+    assert(t || f == true);
+    assert(f || f == false);
+
+    print("ok");
+}
+
 fn test_point_class_import() {
     print("test_point_class_import...");
 
@@ -19,13 +35,6 @@ fn test_point_class_import() {
     assert(p2.get_y() == 4);
     assert(p2.get_name() == "my point 2");
     assert(p2.get_sum() == 7);
-
-    # p2.set_x(10);
-    # p2.set_y(20);
-    # assert(p2.get_x() == 10);
-    # assert(p2.get_y() == 20);
-    # assert(p2.get_name() == "my point 2");
-    # assert(p2.get_sum() == 30);
 
     # Check to make sure that the original point
     # is not modified. This is because of a bug
@@ -434,6 +443,7 @@ fn main() {
     test_func_reference1();
     test_func_reference2();
     test_point_class_import();
+    test_booleans();
 
     TestStd.test_std();
 }

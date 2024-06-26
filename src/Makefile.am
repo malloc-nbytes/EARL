@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = main
-main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp token.cpp utils.cpp parser.cpp ctx.cpp interpreter.cpp intrinsics.cpp err.cpp function.cpp variable.cpp types.cpp int.cpp str.cpp void.cpp list.cpp module.cpp class.cpp
+main_SOURCES = main.cpp arena.cpp ast.cpp lexer.cpp token.cpp utils.cpp parser.cpp ctx.cpp interpreter.cpp intrinsics.cpp err.cpp function.cpp variable.cpp types.cpp int.cpp str.cpp void.cpp list.cpp module.cpp class.cpp bool.cpp
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/test
 
