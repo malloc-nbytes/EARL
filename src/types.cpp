@@ -34,6 +34,8 @@ using namespace earl::value;
 
 static const std::unordered_map<std::string, earl::value::Type> str_to_type_map = {
     {COMMON_EARLTY_INT32, earl::value::Type::Int},
+    {COMMON_EARLKW_TRUE, earl::value::Type::Bool},
+    {COMMON_EARLKW_FALSE, earl::value::Type::Bool},
     {COMMON_EARLTY_STR, earl::value::Type::Str},
     {COMMON_EARLTY_UNIT, earl::value::Type::Void},
 };

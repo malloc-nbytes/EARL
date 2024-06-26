@@ -331,8 +331,6 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
-    // ctx.debug_dump();
-
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
@@ -346,6 +344,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
         return stored->value();
+    } break;
+    case ExprTermType::Bool: {
+        ExprBool *boolean = dynamic_cast<ExprBool *>(expr);
+        return new earl::value::Bool(boolean->m_value);
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);

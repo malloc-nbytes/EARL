@@ -230,4 +230,3 @@ StmtClass::StmtClass(std::unique_ptr<Token> id,
 StmtType StmtClass::stmt_type() const {
     return StmtType::Class;
 }
-

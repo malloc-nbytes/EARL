@@ -138,6 +138,10 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
             earl::value::Int *intparam = dynamic_cast<earl::value::Int *>(param);
             std::cout << intparam->value();
         } break;
+        case earl::value::Type::Bool: {
+            earl::value::Bool *bool_param = dynamic_cast<earl::value::Bool *>(param);
+            std::cout << (bool_param->value() ? "true" : "false");
+        } break;
         case earl::value::Type::Str: {
             earl::value::Str *strparam = dynamic_cast<earl::value::Str *>(param);
             std::cout << strparam->value();
@@ -153,6 +157,10 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
                     earl::value::Int *intitem = dynamic_cast<earl::value::Int *>(listitem);
                     std::cout << intitem->value();
                 } break;
+                case earl::value::Type::Bool: {
+                    earl::value::Bool *bool_param = dynamic_cast<earl::value::Bool *>(param);
+                    std::cout << (bool_param->value() ? "true" : "false");
+                } break;
                 case earl::value::Type::Str: {
                     earl::value::Str *stritem = dynamic_cast<earl::value::Str *>(listitem);
                     std::cout << stritem->value();
@@ -166,7 +174,6 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
                     std::cout << ", ";
                 }
             }
-
             std::cout << ']';
         } break;
         default: {

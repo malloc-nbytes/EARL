@@ -192,10 +192,10 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     case TokenType::Keyword: {
         std::unique_ptr<Token> kw = lexer.next();
         if (kw->lexeme() == COMMON_EARLKW_TRUE) {
-            UNIMPLEMENTED("parser: true");
+            return new ExprBool(std::move(kw), true);
         }
         else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
-            UNIMPLEMENTED("parser: false");
+            return new ExprBool(std::move(kw), false);
         }
         else {
             assert(false && "parse_primary_expr: invalid keyword in primary expression");

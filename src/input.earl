@@ -1,18 +1,8 @@
 mod Main
 
-let t = true;
-let f = false;
+let x = 1;
+let y = 2;
 
-if t {
-    print("t is true");
-}
-else {
-    print("t is false");
-}
+let b = (x == y);
 
-if f {
-    print("f is true");
-}
-else {
-    print("f is false");
-}
+print(b);
