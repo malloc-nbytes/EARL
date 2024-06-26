@@ -5,6 +5,8 @@ fn sum(a, b) {
     return a + b;
 }
 
+let c = 'a';
+
 let x = 1;
 let y = 2;
 

@@ -202,6 +202,86 @@ assert(i == 3);
 
 #+end_example
 
+* Classes
+
+#+begin_quote
+While classes are available, support for inheritance is not yet implemented.
+#+end_quote
+
+** Grammar
+
+=@= *(pub | world | ref)
+
+=class= <id> ?(=[= <arg1>, <arg2>,..., <argN> =]=) ={=
+
+    =@= *(pub | world | ref) <member1> = <id> | /expr/ =;=
+
+    =@= *(pub | world | ref) <member2> = <id> | /expr/ =;=
+
+    .
+
+    .
+
+    .
+
+    <methods>
+
+=}=
+
+** Examples
+
+#+begin_example
+# This class takes no arguments for the
+# constructors and is also not public,
+# so other modules cannot use this class.
+
+class NoPassesArgs {
+    x = 1;
+    y = 2;
+
+    @pub fn print() {
+        print(x, y);
+    }
+}
+#+end_example
+
+#+begin_example
+@pub class Point [x, y, name] {
+    x = x;
+    y = y;
+    name = name;
+    @pub desc = "A point class"
+
+    @pub set_x(newx) {
+        x = newx
+    }
+
+    @pub dump() {
+        print(x);
+        print(y);
+        print(name);
+        print(desc);
+    }
+}
+#+end_example
+
+#+begin_example
+@pub class Stack [init] {
+    lst = init;
+    sz = len(lst);
+
+    @pub fn push(x) {
+        lst.append(x);
+        sz = sz+1;
+    }
+
+    @pub fn pop() {
+        lst.pop(sz-1);
+        sz = sz-1;
+    }
+}
+#+end_example
+
 * Intrinsics
 
 ** =print=
