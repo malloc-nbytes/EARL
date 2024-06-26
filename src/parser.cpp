@@ -50,11 +50,13 @@ std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string ex
     std::unique_ptr<Token> tok = lexer.next();
 
     if (tok->type() != TokenType::Keyword) {
+        Err::err_wtok(tok.get());
         ERR_WARGS(Err::Type::Syntax,
                   "%s `%s` is not a keyword",
                   tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
     }
     if (tok->lexeme() != expected) {
+        Err::err_wtok(tok.get());
         ERR_WARGS(Err::Type::Syntax,
                   "expected keyword `%s`, got %s `%s`",
                   expected.c_str(), tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
@@ -63,19 +65,8 @@ std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string ex
     return tok;
 }
 
-std::unique_ptr<Token> Parser::parse_expect_type(Lexer &lexer) {
-    std::unique_ptr<Token> tok = lexer.next();
-
-    if (tok->type() != TokenType::Type) {
-        ERR_WARGS(Err::Type::Syntax,
-                  "%s `%s` is not a type",
-                  tokentype_to_str(tok->type()).c_str(), tok->lexeme().c_str());
-    }
-    return tok;
-}
-
 static Attr translate_attr(Lexer &lexer) {
-    (void)Parser::parse_expect(lexer, TokenType::At);
+    auto errtok = Parser::parse_expect(lexer, TokenType::At);
 
     std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
     if (attr->lexeme() == COMMON_EARLATTR_PUB) {
@@ -88,6 +79,7 @@ static Attr translate_attr(Lexer &lexer) {
         return Attr::Ref;
     }
     else {
+        Err::err_wtok(errtok.get());
         ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
     }
 }
@@ -179,7 +171,6 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     case TokenType::Lbracket: {
         lexer.discard();
         std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
-        // (void)Parser::parse_expect(lexer, TokenType::Rbracket);
         lexer.discard();
         return new ExprListLit(std::move(lst));
     } break;
@@ -198,11 +189,16 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             return new ExprBool(std::move(kw), false);
         }
         else {
-            assert(false && "parse_primary_expr: invalid keyword in primary expression");
+            Err::err_wtok(kw.get());
+            ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s` while parsing primary expression",
+                      kw->lexeme().c_str());
         }
     } break;
-    default:
-        assert(false && "parse_primary_expr: invalid primary expression");
+    default: {
+        Err::err_wtok(lexer.peek());
+        ERR_WARGS(Err::Type::Fatal, "invalid token `%s` while parsing primary expression",
+                  lexer.peek()->lexeme().c_str());
+    } break;
     }
     assert(false && "unreachable");
     return nullptr; // unreachable
@@ -547,7 +543,8 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_CLASS) {
                 return parse_stmt_class(lexer, attrs);
             }
-            assert(false && "parse_stmt: invalid keyword");
+            Err::err_wtok(tok);
+            ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());
         } break;
         case TokenType::Ident: {
             if (lexer.peek(1)->type() == TokenType::Lparen
@@ -559,8 +556,10 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
         case TokenType::At: {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
-        default:
-            assert(false && "parse_stmt: invalid statement");
+        default: {
+            Err::err_wtok(tok);
+            ERR_WARGS(Err::Type::Fatal, "invalid statement `%s`", tok->lexeme().c_str());
+        }
         }
     } while (attrs != 0);
 
