@@ -104,13 +104,18 @@ void Ctx::register_class(earl::value::Class *klass) {
 }
 
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
-    // if (m_parent && m_parent->get_module()->lexeme() == id) {
-    //    return new earl::value::Module(m_parent);
-    // }
+    if (curclass) {
+        for (size_t i = 0; i < curclass->m_ctxs.size(); ++i) {
+            Ctx *child = curclass->m_ctxs[i];
+            if (child->get_module() && child->get_module()->lexeme() == id) {
+                return new earl::value::Module(child);
+            }
+        }
+    }
 
     if (m_parent) {
         auto *mod = m_parent->get_registered_module(id);
-        if (mod) 
+        if (mod)
             return mod;
     }
 

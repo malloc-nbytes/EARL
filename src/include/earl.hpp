@@ -266,6 +266,8 @@ namespace earl {
             std::vector<std::unique_ptr<function::Obj>> m_methods;
 
             std::vector<Token *> m_member_assignees;
+
+            std::vector<Ctx *> m_ctxs;
         };
 
         /// @brief Get an empty EARL value from a type
