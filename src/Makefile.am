@@ -32,19 +32,13 @@ docs:
 	doxygen Doxyfile
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
 
-install-earl: main
-	@echo "installing stdlib"
+install-earl: clean test main
+	@echo "*-*-* installing stdlib *-*-*"
 	sudo mkdir -p /usr/local/include/EARL/std/
 	sudo cp -r ./std/* /usr/local/include/EARL/std/
-	@echo "installing EARL"
+	@echo "*-*-* installing EARL *-*-*"
 	sudo cp ./main /usr/local/bin/earl
-
-update-earl: __update-earl docs main test install-earl
-	@echo "*-*-* successfully updated EARL *-*-*"
-
-__update-earl: clean
-	@echo "*-*-* updating EARL *-*-*"
-	git pull
+	@echo "*-*-* successfully installed EARL *-*-*"
 
 uninstall-earl:
 	sudo rm /usr/local/bin/earl
