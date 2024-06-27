@@ -1,3 +1,4 @@
+import "std/list.earl"
 import "std/stack.earl"
 
 mod Main

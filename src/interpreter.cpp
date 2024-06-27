@@ -171,6 +171,11 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
     // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt);
 
+    // Let the class know all imports available in the current context.
+    for (size_t i = 0; i < ctx.m_children_contexts.size(); ++i) {
+        klass->m_ctxs.push_back(ctx.m_children_contexts[i].get());
+    }
+
     // Go through the constructor args and add the available variables
     for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
         klass->add_member_assignee(stmt->m_constructor_args[i].get());
@@ -191,7 +196,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         auto *var = new earl::variable::Obj(available_idents[i],
                                             std::unique_ptr<earl::value::Obj>(value));
 
-        // We do not want these variables to be always accessible.
+        // We do not want these variables to be always accessible
         // So add them to a temporary scope
         ctx.add_to_tmp_scope(var);
     }

@@ -1,4 +1,4 @@
-import "std/list.earl"
+# import "std/list.earl"
 mod Stack
 
 class T [init] {

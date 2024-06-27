@@ -152,6 +152,9 @@ struct Ctx {
     Ctx *m_parent;
     earl::value::Class *curclass;
 
+    /// @brief All children contexts from parsed imported files
+    std::vector<std::unique_ptr<Ctx>> m_children_contexts;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
@@ -160,9 +163,6 @@ private:
     Scope<std::string, earl::function::Obj *> m_globalfuncs;
 
     std::unordered_map<std::string, earl::value::Class *> m_globalclasses;
-
-    /// @brief All children contexts from parsed imported files
-    std::vector<std::unique_ptr<Ctx>> m_children_contexts;
 
     /// @brief The name of the module as a token
     std::unique_ptr<Token> m_module;
