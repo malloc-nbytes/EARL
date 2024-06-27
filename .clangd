@@ -1,4 +1,6 @@
 CompileFlags: # Tweak the parse settings, example directory given to show format
   Add:
     - "-I/home/zdh/dev/EARL/src/include/"
+    # For Mac OS
+    - "-I/Users/zdh/dev/EARL/src/include"
     - "-std=c++17"
