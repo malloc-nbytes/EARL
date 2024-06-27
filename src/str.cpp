@@ -22,21 +22,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 
 #include "earl.hpp"
 #include "err.hpp"
+#include "utils.hpp"
 
 using namespace earl::value;
 
-Str::Str(std::string value) : m_value(std::move(value)) {}
+Str::Str(std::string value) {
+    std::for_each(value.begin(), value.end(), [&](char c) {
+        m_value.push_back(new Char(std::string(1, c)));
+    });
+}
 
-std::string &Str::value(void) {
-    return m_value;
+std::string Str::value(void) {
+    std::string value = "";
+    std::for_each(m_value.begin(), m_value.end(), [&](auto &c){value += c->value();});
+    return value;
 }
 
 void Str::fill(std::string value) {
-    m_value = std::move(value);
+    UNIMPLEMENTED("Str::fill");
+    // m_value = std::move(value);
 }
 
 Obj *Str::nth(Obj *idx) {
@@ -45,7 +54,7 @@ Obj *Str::nth(Obj *idx) {
         ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
                   index->value(), this->value().size());
     }
-    return new earl::value::Char(std::string(1, m_value[index->value()]));
+    return m_value[index->value()];
 }
 
 Type Str::type(void) const {
@@ -53,6 +62,8 @@ Type Str::type(void) const {
 }
 
 Obj *Str::binop(Token *op, Obj *other) {
+    UNIMPLEMENTED("Str::binop");
+
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot binop (fix this message)");
     }
@@ -78,6 +89,8 @@ bool Str::boolean(void) {
 }
 
 void Str::mutate(Obj *other) {
+    UNIMPLEMENTED("Str::mutate");
+
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot mutate (fix this message)");
     }
@@ -93,5 +106,6 @@ void Str::mutate(Obj *other) {
 }
 
 Obj *Str::copy(void) {
+    UNIMPLEMENTED("Str::copy");
     return new Str(this->value());
 }

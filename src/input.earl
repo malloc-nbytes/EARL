@@ -3,7 +3,9 @@ mod Main
 let s = "hello";
 
 s[0] = 'a';
+s[len(s)-1] = 'z';
 
 print(s[0]);
+print(s);
 
 

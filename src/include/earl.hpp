@@ -139,30 +139,6 @@ namespace earl {
             bool m_value;
         };
 
-        /// @brief The structure that represents EARL strings
-        struct Str : public Obj {
-            Str(std::string value = "");
-
-            /// @brief Fill the underlying data with some data
-            /// @param value The value to use to fill
-            void fill(std::string value);
-
-            /// @brief Get the underlying string value
-            std::string &value(void);
-
-            Obj *nth(Obj *idx);
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-
-        private:
-            std::string m_value;
-        };
-
         struct Char : public Obj {
             Char(std::string value = "");
 
@@ -178,6 +154,30 @@ namespace earl {
 
         private:
             char m_value;
+        };
+
+        /// @brief The structure that represents EARL strings
+        struct Str : public Obj {
+            Str(std::string value = "");
+
+            /// @brief Fill the underlying data with some data
+            /// @param value The value to use to fill
+            void fill(std::string value);
+
+            /// @brief Get the underlying string value
+            std::string value(void);
+
+            Obj *nth(Obj *idx);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            std::vector<Char *> m_value;
         };
 
         /// @brief The structure that represents EARL UNITs
