@@ -43,13 +43,32 @@ std::string Str::value(void) {
     return value;
 }
 
-Obj *Str::nth(Obj *idx) {
+Char *Str::nth(Obj *idx) {
     auto *index = dynamic_cast<Int *>(idx);
     if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
         ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
                   index->value(), this->value().size());
     }
     return m_value[index->value()];
+}
+
+List *Str::split(Obj *delim) {
+    assert(delim->type() == Type::Str);
+
+    std::vector<Obj *> splits;
+    std::string delim_str = dynamic_cast<Str *>(delim)->value();
+    std::string::size_type start = 0;
+
+    auto pos = this->value().find(delim_str);
+
+    while (pos != std::string::npos) {
+        splits.push_back(new Str(this->value().substr(start, pos-start)));
+        start = pos+delim_str.length();
+        pos = this->value().find(delim_str, start);
+    }
+    splits.push_back(new Str(this->value().substr(start)));
+
+    return new List(std::move(splits));
 }
 
 Type Str::type(void) const {

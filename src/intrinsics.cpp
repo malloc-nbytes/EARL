@@ -46,6 +46,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    {"split", &Intrinsics::intrinsic_member_split},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -65,11 +66,29 @@ earl::value::Obj *Intrinsics::call_member(const std::string &id, earl::value::Ob
     return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
 }
 
+earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx) {
+    (void)ctx;
+    assert(delim.size() == 1);
+    assert(obj->type() == earl::value::Type::Str);
+    earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
+    return str->split(delim[0]);
+}
+
 earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
     (void)ctx;
-    earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
     assert(idx.size() == 1);
-    return list->nth(idx[0]);
+
+    if (obj->type() == earl::value::Type::List) {
+        earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
+        return list->nth(idx[0]);
+    }
+    else if (obj->type() == earl::value::Type::Str) {
+        earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
+        return str->nth(idx[0]);
+    }
+    else {
+        ERR(Err::Type::Fatal, "invalid use of nth() member intrinsic as it can only be applied on lists and strings");
+    }
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
