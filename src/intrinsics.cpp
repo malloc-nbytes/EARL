@@ -26,6 +26,7 @@
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
+#include <fstream>
 
 #include "intrinsics.hpp"
 #include "interpreter.hpp"
@@ -39,6 +40,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"print", &Intrinsics::intrinsic_print},
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
+    {"open", &Intrinsics::intrinsic_open},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -47,6 +49,10 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
+    {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},
+    {"dump", &Intrinsics::intrinsic_member_dump},
+    {"close", &Intrinsics::intrinsic_member_close},
+    {"read", &Intrinsics::intrinsic_member_read},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -72,6 +78,14 @@ earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std:
     assert(obj->type() == earl::value::Type::Str);
     earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
     return str->split(delim[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(obj->type() == earl::value::Type::File);
+    assert(unused.size() == 0);
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    return f->read();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
@@ -115,6 +129,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::v
     assert(obj->type() == earl::value::Type::List);
     auto *lst = dynamic_cast<earl::value::List *>(obj);
     return lst->pop(values[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(unused.size() == 0);
+    assert(obj->type() == earl::value::Type::File);
+
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    f->dump();
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -206,5 +231,54 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
         }
     }
     std::cout << '\n';
+    return new earl::value::Void();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(obj->type() == earl::value::Type::Str);
+    assert(unused.size() == 0);
+    auto *str = dynamic_cast<earl::value::Str *>(obj);
+    return str->remove_lines();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    (void)expr;
+    assert(params.size() == 2);
+    assert(params[0]->type() == earl::value::Type::Str);
+    assert(params[1]->type() == earl::value::Type::Str);
+
+    auto *fp = dynamic_cast<earl::value::Str *>(params[0]);
+    auto *mode = dynamic_cast<earl::value::Str *>(params[1]);
+    std::fstream stream;
+
+    if (mode->value() == "r") {
+        stream.open(fp->value(), std::ios::in);
+    }
+    else if (mode->value() == "w") {
+        stream.open(fp->value(), std::ios::out);
+    }
+    else {
+        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
+                  mode->value().c_str());
+    }
+
+    if (!stream) {
+        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
+    }
+
+    auto *f = new earl::value::File(fp, mode, std::move(stream));
+    f->set_open();
+
+    return f;
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(obj->type() == earl::value::Type::File);
+    assert(unused.size() == 0);
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    f->close();
     return new earl::value::Void();
 }

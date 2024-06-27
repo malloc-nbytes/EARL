@@ -28,8 +28,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <optional>
-#include <variant>
+#include <fstream>
 
 #include "scope.hpp"
 #include "ast.hpp"
@@ -70,6 +69,8 @@ namespace earl {
             Module,
             /** EARL class type */
             Class,
+            /** EARL file type */
+            File,
         };
 
         /// @brief The base abstract class that all
@@ -223,6 +224,7 @@ namespace earl {
             std::vector<Char *> &value_raw(void);
             Char *nth(Obj *idx);
             List *split(Obj *delim);
+            Str *remove_lines(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -286,6 +288,30 @@ namespace earl {
             std::vector<Token *> m_member_assignees;
 
             std::vector<Ctx *> m_ctxs;
+        };
+
+        struct File : public Obj {
+            File(Str *fp, Str *mode, std::fstream stream);
+
+            void set_open(void);
+            void set_closed(void);
+
+            void dump(void);
+            void close(void);
+            earl::value::Str *read(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            Str *m_fp;
+            Str *m_mode;
+            std::fstream m_stream;
+            bool m_open;
         };
 
         /// @brief Get an empty EARL value from a type

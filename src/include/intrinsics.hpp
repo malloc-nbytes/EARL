@@ -101,6 +101,8 @@ namespace Intrinsics {
     /// @param ctx The current global context
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     /// @brief Get the `nth` value in a list
@@ -119,6 +121,12 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx);
 
     earl::value::Obj *intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

@@ -1,0 +1,8 @@
+mod IO
+
+fn file_to_str(fp) {
+    let f = open(fp, "r");
+    let s = f.read();
+    f.close();
+    return s;
+}

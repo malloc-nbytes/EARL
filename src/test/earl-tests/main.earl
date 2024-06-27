@@ -4,6 +4,17 @@ import "other.1.earl"
 
 mod Test
 
+fn test_file_io_read_and_remove_lines_member_intrinsic() {
+    print("test_file_io_read_and_remove_lines_member_intrinsic...");
+
+    let f = open("input.1.txt", "r");
+    let lst = f.read().remove_lines().split(" ");
+
+    assert(lst == ["john", "doe", "23", "foo", "jane", "doe", "43", "bar"]);
+
+    print("ok");
+}
+
 fn test_member_intrinsic_split() {
     print("test_member_intrinsic_split");
 
@@ -518,6 +529,7 @@ fn main() {
     test_strs2();
     test_chars1();
     test_member_intrinsic_split();
+    test_file_io_read_and_remove_lines_member_intrinsic();
 
     TestStd.test_std();
 }
