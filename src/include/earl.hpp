@@ -156,27 +156,6 @@ namespace earl {
             char m_value;
         };
 
-        /// @brief The structure that represents EARL strings
-        struct Str : public Obj {
-            Str(std::string value = "");
-
-            /// @brief Get the underlying string value
-            std::string value(void);
-            std::vector<Char *> &value_raw(void);
-
-            Obj *nth(Obj *idx);
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-
-        private:
-            std::vector<Char *> m_value;
-        };
-
         /// @brief The structure that represents EARL UNITs
         struct Void : public Obj {
             Void(void *value = nullptr);
@@ -234,6 +213,26 @@ namespace earl {
 
         private:
             std::vector<Obj *> m_value;
+        };
+
+        /// @brief The structure that represents EARL strings
+        struct Str : public Obj {
+            Str(std::string value = "");
+
+            std::string value(void); // NOTE: needs optimization
+            std::vector<Char *> &value_raw(void);
+            Char *nth(Obj *idx);
+            List *split(Obj *delim);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            std::vector<Char *> m_value;
         };
 
         struct Module : public Obj {

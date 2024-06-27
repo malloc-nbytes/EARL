@@ -1,7 +1,2 @@
 mod Main
 
-let s = "hello";
-
-let b = s == "hello";
-
-print(b);

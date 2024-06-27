@@ -4,6 +4,22 @@ import "other.1.earl"
 
 mod Test
 
+fn test_member_intrinsic_split() {
+    print("test_member_intrinsic_split");
+
+    let s = "hello world !!!";
+
+    assert(s.split(" ") == ["hello", "world", "!!!"]);
+
+    let lst = s.split(" ");
+
+    assert(lst[0] == "hello");
+    assert(lst[0][0] == 'h');
+    assert(lst.nth(0).nth(0) == 'h');
+
+    print("ok");
+}
+
 fn test_chars1() {
     print("test_chars1...");
 
@@ -501,6 +517,7 @@ fn main() {
     test_strs1();
     test_strs2();
     test_chars1();
+    test_member_intrinsic_split();
 
     TestStd.test_std();
 }
