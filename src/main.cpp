@@ -34,17 +34,71 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 
+uint32_t flags = 0x00;
+
 void usage(char *progname) {
     (void)progname;
     ERR_WARGS(Err::Type::Usage, "%s <input>", progname);
 }
 
+void parse_2hypharg(std::string arg) {
+    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
+        flags |= __WITHOUT_STDLIB;
+    }
+    else if (arg == COMMON_EARL2ARG_VERSION) {
+        std::cout << "EARL version " << VERSION << std::endl;
+    }
+    else {
+        ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
+    }
+}
+
+void parse_1hypharg(std::string arg) {
+    for (size_t i = 0; i < arg.size(); ++i) {
+        switch (arg[i]) {
+        case COMMON_EARL1ARG_VERSTION: {
+            std::cout << "EARL version " << VERSION << std::endl;
+        } break;
+        default: {
+            ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
+        } break;
+        }
+    }
+}
+
+void parsearg(std::string line) {
+    if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
+        parse_2hypharg(line.substr(2));
+    }
+    else if (line[0] == '-') {
+        parse_1hypharg(line.substr(1));
+    }
+    else {
+        UNIMPLEMENTED("parsearg: last case");
+    }
+}
+
+const char *handlecli(int argc, char **argv) {
+    const char *filepath = nullptr;
+
+    for (int i = 0; i < argc; ++i) {
+        const char *line = argv[i];
+        if (line[0] == '-')
+            parsearg(std::string(line));
+        else
+            filepath = line;
+    }
+
+    return filepath;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 2) {
+    if (argc == 1 || argc == 0) {
         usage(*argv);
     }
 
-    const char *filepath = *(++argv);
+    const char *filepath = handlecli(argc, argv);
+    // const char *filepath = *(++argv);
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types = COMMON_EARLTY_ASCPL;
