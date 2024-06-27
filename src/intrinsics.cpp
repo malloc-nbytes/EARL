@@ -26,6 +26,7 @@
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
+#include <fstream>
 
 #include "intrinsics.hpp"
 #include "interpreter.hpp"
@@ -39,6 +40,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"print", &Intrinsics::intrinsic_print},
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
+    {"open", &Intrinsics::intrinsic_open},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -208,3 +210,35 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
     std::cout << '\n';
     return new earl::value::Void();
 }
+
+earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    assert(params.size() == 2);
+    assert(params[0]->type() == earl::value::Type::Str);
+    assert(params[1]->type() == earl::value::Type::Str);
+
+    auto *fp = dynamic_cast<earl::value::Str *>(params[0]);
+    auto *mode = dynamic_cast<earl::value::Str *>(params[1]);
+    std::fstream stream;
+
+    if (mode->value() == "r") {
+        stream.open(fp->value(), std::ios::in);
+    }
+    else if (mode->value() == "w") {
+        stream.open(fp->value(), std::ios::out);
+    }
+    else {
+        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
+                  mode->value().c_str());
+    }
+
+    if (!stream) {
+        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
+    }
+
+    auto *f = new earl::value::File(fp, mode, std::move(stream));
+    f->set_open();
+
+    return f;
+}
+

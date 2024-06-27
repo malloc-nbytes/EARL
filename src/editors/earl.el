@@ -42,9 +42,11 @@
       "struct" "char" "import" "in" "mod"
       "class" "true" "false"
       ;; intrinsic functions
-      "print" "assert" "len"
+      "print" "assert" "len" "open"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
+      ;; str member intrinsics
+      "split"
       ;; function attributes
       "world" "pub" "ref"
       )))

@@ -1,2 +1,3 @@
 mod Main
 
+let f = open("input.earl", "r");

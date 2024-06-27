@@ -101,6 +101,8 @@ namespace Intrinsics {
     /// @param ctx The current global context
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     /// @brief Get the `nth` value in a list
