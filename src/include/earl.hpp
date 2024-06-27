@@ -160,12 +160,9 @@ namespace earl {
         struct Str : public Obj {
             Str(std::string value = "");
 
-            /// @brief Fill the underlying data with some data
-            /// @param value The value to use to fill
-            void fill(std::string value);
-
             /// @brief Get the underlying string value
             std::string value(void);
+            std::vector<Char *> &value_raw(void);
 
             Obj *nth(Obj *idx);
 

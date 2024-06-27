@@ -1,11 +1,10 @@
 mod Main
 
-let s = "hello";
+let s1 = "hello";
+let s2 = "world";
 
-s[0] = 'a';
-s[len(s)-1] = 'z';
+let ptr = s1;
+ptr[0] = 'z';
 
-print(s[0]);
-print(s);
-
-
+print(s1);
+print(ptr);

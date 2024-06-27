@@ -62,6 +62,6 @@ void Char::mutate(Obj *other) {
 }
 
 Obj *Char::copy(void) {
-    UNIMPLEMENTED("Char::copy");
+    return new Char(std::string(1, m_value));
 }
 

@@ -43,11 +43,6 @@ std::string Str::value(void) {
     return value;
 }
 
-void Str::fill(std::string value) {
-    UNIMPLEMENTED("Str::fill");
-    // m_value = std::move(value);
-}
-
 Obj *Str::nth(Obj *idx) {
     auto *index = dynamic_cast<Int *>(idx);
     if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
@@ -88,24 +83,23 @@ bool Str::boolean(void) {
     return true;
 }
 
+std::vector<Char *> &Str::value_raw(void) {
+    return m_value;
+}
+
 void Str::mutate(Obj *other) {
-    UNIMPLEMENTED("Str::mutate");
+    assert(other->type() == Type::Str);
 
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot mutate (fix this message)");
-    }
+    Str *otherstr = dynamic_cast<Str *>(other);
 
-    switch (other->type()) {
-    case Type::Str: {
-        this->fill(dynamic_cast<Str *>(other)->value());
-    } break;
-    default: {
-        assert(false && "unreachable");
-    }
-    }
+    std::for_each(m_value.begin(), m_value.end(), [](auto &this_c) {delete this_c;});
+    m_value.clear();
+
+    std::for_each(otherstr->value_raw().begin(), otherstr->value_raw().end(), [&](earl::value::Char *other_c) {
+        m_value.push_back(dynamic_cast<earl::value::Char *>(other_c->copy()));
+    });
 }
 
 Obj *Str::copy(void) {
-    UNIMPLEMENTED("Str::copy");
     return new Str(this->value());
 }
