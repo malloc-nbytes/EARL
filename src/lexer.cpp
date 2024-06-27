@@ -33,6 +33,7 @@
 #include "token.hpp"
 #include "lexer.hpp"
 #include "utils.hpp"
+#include "common.hpp"
 
 Lexer::Lexer() : m_hd(nullptr), m_tl(nullptr), m_len(0) {}
 
@@ -117,13 +118,17 @@ static char *read_file(const char *filepath) {
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
 
-    FILE *f = fopen(full_path, "rb");
+    FILE *f = nullptr;
 
-    if (f == NULL) {
+    if ((flags & __WITHOUT_STDLIB) == 0) {
+        f = fopen(full_path, "rb");
+    }
+
+    if (f == nullptr) {
         f = fopen(filepath, "rb");
     }
 
-    if (f == NULL || fseek(f, 0, SEEK_END)) {
+    if (f == nullptr || fseek(f, 0, SEEK_END)) {
         ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
     }
 
@@ -178,26 +183,6 @@ static bool try_comment(char *src, std::string &comment) {
     if (std::string(src).compare(0, comment.length(), comment) == 0)
         return find_comment_end(src);
     return false;
-}
-
-static size_t try_parse_list_type(char *src) {
-    int stack = 0;
-
-    for (size_t i = 0; src[i]; ++i) {
-        if (src[i] == '[') {
-            ++stack;
-        }
-        else if (src[i] == ']') {
-            --stack;
-        }
-        else if (!isalpha(src[i]) && src[i] != ' ') {
-            return 0;
-        }
-        if (stack == 0)
-            return i+1; // +1 for the last ']'
-    }
-
-    return 0;
 }
 
 std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {

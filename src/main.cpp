@@ -34,25 +34,99 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 
-void usage(char *progname) {
-    (void)progname;
-    ERR_WARGS(Err::Type::Usage, "%s <input>", progname);
+uint32_t flags = 0x00;
+
+void usage(void) {
+    std::cerr << "Usage: earl [options] [file]" << std::endl << std::endl;
+    std::cerr << "Options:" << std::endl;
+    std::cerr << "  -v, --version         Print version information" << std::endl;
+    std::cerr << "  -h, --help            Print this help message" << std::endl;
+    std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
+}
+
+void version() {
+    std::cout << "EARL " << VERSION << std::endl;
+}
+
+void parse_2hypharg(std::string arg) {
+    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
+        flags |= __WITHOUT_STDLIB;
+    }
+    else if (arg == COMMON_EARL2ARG_HELP) {
+        usage();
+    }
+    else if (arg == COMMON_EARL2ARG_VERSION) {
+        version();
+    }
+    else {
+        ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
+    }
+}
+
+void parse_1hypharg(std::string arg) {
+    for (size_t i = 0; i < arg.size(); ++i) {
+        switch (arg[i]) {
+        case COMMON_EARL1ARG_HELP: {
+            usage();
+        } break;
+        case COMMON_EARL1ARG_VERSTION: {
+            version();
+        } break;
+        default: {
+            ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
+        } break;
+        }
+    }
+}
+
+void parsearg(std::string line) {
+    if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
+        parse_2hypharg(line.substr(2));
+    }
+    else if (line[0] == '-') {
+        parse_1hypharg(line.substr(1));
+    }
+    else {
+        UNIMPLEMENTED("parsearg: last case");
+    }
+}
+
+const char *handlecli(int argc, char **argv) {
+    const char *filepath = nullptr;
+
+    for (int i = 0; i < argc; ++i) {
+        const char *line = argv[i];
+        if (line[0] == '-') {
+            parsearg(std::string(line));
+        }
+        else {
+            if (filepath) {
+                ERR(Err::Type::Fatal, "too many input files provided");
+            }
+            filepath = line;
+        }
+    }
+
+    return filepath;
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        usage(*argv);
+    if (argc == 1 || argc == 0) {
+        usage();
     }
 
-    const char *filepath = *(++argv);
+    ++argv; --argc;
+    const char *filepath = handlecli(argc, argv);
 
-    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-    std::vector<std::string> types = COMMON_EARLTY_ASCPL;
-    std::string comment = "#";
+    if (filepath) {
+        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+        std::string comment = "#";
 
-    std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
-    std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-    Interpreter::interpret(std::move(program), std::move(lexer));
+        std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
+        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        Interpreter::interpret(std::move(program), std::move(lexer));
+    }
 
     return 0;
 }

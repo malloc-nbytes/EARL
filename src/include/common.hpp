@@ -32,6 +32,17 @@
  * A few things that are useful throughout the entire project.
  */
 
+extern uint32_t flags;
+
+#define __WITHOUT_STDLIB 1 << 0
+
+#define COMMON_EARL2ARG_HELP           "help"
+#define COMMON_EARL2ARG_WITHOUT_STDLIB "without-stdlib"
+#define COMMON_EARL2ARG_VERSION        "version"
+
+#define COMMON_EARL1ARG_HELP     'h'
+#define COMMON_EARL1ARG_VERSTION 'v'
+
 #define COMMON_EARLATTR_WORLD "world"
 #define COMMON_EARLATTR_PUB   "pub"
 #define COMMON_EARLATTR_REF   "ref"
