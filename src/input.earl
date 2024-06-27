@@ -1,3 +1,5 @@
 mod Main
 
-let f = open("input.earl", "r");
+let f = open("main.cpp", "r");
+
+f.dump();

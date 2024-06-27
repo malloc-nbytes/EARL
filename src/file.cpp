@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
+#include <string>
 #include <fstream>
 #include <cassert>
 
@@ -31,7 +33,7 @@
 
 using namespace earl::value;
 
-File::File(Str *fp, Str *mode, std::fstream) : m_fp(fp), m_mode(mode), m_open(false) {}
+File::File(Str *fp, Str *mode, std::fstream stream) : m_fp(fp), m_mode(mode), m_open(false), m_stream(std::move(stream)) {}
 
 void File::set_open(void) {
     m_open = true;
@@ -42,11 +44,34 @@ void File::set_closed(void) {
 }
 
 void File::dump(void) const {
-    UNIMPLEMENTED("File::dump");
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+
+    if (m_mode->value() == "w") {
+        ERR(Err::Type::Fatal, "file is not open for reading");
+    }
+
+    // m_stream.clear();
+    // m_stream.seekg(0, std::ios::beg);
+
+    std::cout << m_stream.rdbuf();
 }
 
 void File::close(void) {
     UNIMPLEMENTED("File::close");
+}
+
+void File::read(void) {
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+
+    if (m_mode->value() == "w") {
+        ERR(Err::Type::Fatal, "file is not open for reading");
+    }
+
+    m_stream.rdbuf();
 }
 
 /*** OVERRIDES ***/

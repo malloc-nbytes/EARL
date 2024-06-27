@@ -297,6 +297,7 @@ namespace earl {
 
             void dump(void) const;
             void close(void);
+            void read(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -308,7 +309,7 @@ namespace earl {
         private:
             Str *m_fp;
             Str *m_mode;
-            std::fstream stream;
+            std::fstream m_stream;
             bool m_open;
         };
 

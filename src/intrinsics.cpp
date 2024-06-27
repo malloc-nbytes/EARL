@@ -49,6 +49,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
+    {"dump", &Intrinsics::intrinsic_member_dump},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -117,6 +118,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::v
     assert(obj->type() == earl::value::Type::List);
     auto *lst = dynamic_cast<earl::value::List *>(obj);
     return lst->pop(values[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(unused.size() == 0);
+    assert(obj->type() == earl::value::Type::File);
+
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    f->dump();
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -213,6 +225,7 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
 
 earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
+    (void)expr;
     assert(params.size() == 2);
     assert(params[0]->type() == earl::value::Type::Str);
     assert(params[1]->type() == earl::value::Type::Str);
