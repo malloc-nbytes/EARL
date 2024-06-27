@@ -51,7 +51,7 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 - =make all= \rightarrow do all except clean
 - =make clean= \rightarrow cleans the project
-- =make install= \rightarrow install EARL as well as the standard library
+- =make install-earl= \rightarrow install EARL as well as the standard library
 #+end_quote
 
 Now that the initial setup has been complete, you no longer have to use =autoreconf= and =configure=.
