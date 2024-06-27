@@ -10,6 +10,8 @@
 static int global_pass = 0;
 static int global_fail = 0;
 
+uint32_t flags = 0x00;
+
 // NOTE: RUN_TEST requires that two
 // integers namely `pass` & `fail` be
 // defined before calling this macro, as it

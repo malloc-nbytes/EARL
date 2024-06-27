@@ -36,17 +36,27 @@
 
 uint32_t flags = 0x00;
 
-void usage(char *progname) {
-    (void)progname;
-    ERR_WARGS(Err::Type::Usage, "%s <input>", progname);
+void usage(void) {
+    std::cerr << "Usage: earl [options] [file]" << std::endl << std::endl;
+    std::cerr << "Options:" << std::endl;
+    std::cerr << "  -v, --version         Print version information" << std::endl;
+    std::cerr << "  -h, --help            Print this help message" << std::endl;
+    std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
+}
+
+void version() {
+    std::cout << "EARL " << VERSION << std::endl;
 }
 
 void parse_2hypharg(std::string arg) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
         flags |= __WITHOUT_STDLIB;
     }
+    else if (arg == COMMON_EARL2ARG_HELP) {
+        usage();
+    }
     else if (arg == COMMON_EARL2ARG_VERSION) {
-        std::cout << "EARL version " << VERSION << std::endl;
+        version();
     }
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
@@ -56,8 +66,11 @@ void parse_2hypharg(std::string arg) {
 void parse_1hypharg(std::string arg) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
+        case COMMON_EARL1ARG_HELP: {
+            usage();
+        } break;
         case COMMON_EARL1ARG_VERSTION: {
-            std::cout << "EARL version " << VERSION << std::endl;
+            version();
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
@@ -83,10 +96,15 @@ const char *handlecli(int argc, char **argv) {
 
     for (int i = 0; i < argc; ++i) {
         const char *line = argv[i];
-        if (line[0] == '-')
+        if (line[0] == '-') {
             parsearg(std::string(line));
-        else
+        }
+        else {
+            if (filepath) {
+                ERR(Err::Type::Fatal, "too many input files provided");
+            }
             filepath = line;
+        }
     }
 
     return filepath;
@@ -94,19 +112,21 @@ const char *handlecli(int argc, char **argv) {
 
 int main(int argc, char **argv) {
     if (argc == 1 || argc == 0) {
-        usage(*argv);
+        usage();
     }
 
+    ++argv; --argc;
     const char *filepath = handlecli(argc, argv);
-    // const char *filepath = *(++argv);
 
-    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-    std::vector<std::string> types = COMMON_EARLTY_ASCPL;
-    std::string comment = "#";
+    if (filepath) {
+        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+        std::string comment = "#";
 
-    std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
-    std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-    Interpreter::interpret(std::move(program), std::move(lexer));
+        std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
+        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        Interpreter::interpret(std::move(program), std::move(lexer));
+    }
 
     return 0;
 }
