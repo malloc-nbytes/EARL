@@ -155,6 +155,8 @@ struct Ctx {
     /// @brief All children contexts from parsed imported files
     std::vector<std::unique_ptr<Ctx>> m_children_contexts;
 
+    std::vector<Ctx *> m_tmp_modules;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;

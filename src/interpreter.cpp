@@ -304,7 +304,15 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 
     if (left->type() == earl::value::Type::Module) {
         auto *mod = dynamic_cast<earl::value::Module *>(left);
-        return Interpreter::eval_expr(expr->m_right.get(), *mod->value());
+
+        for (size_t i = 0; i < ctx.m_children_contexts.size(); ++i) {
+            std::cout << ctx.m_children_contexts[i]->get_module()->lexeme() << std::endl;
+            mod->value()->m_tmp_modules.push_back(ctx.m_children_contexts[i].get());
+        }
+
+        auto *result = Interpreter::eval_expr(expr->m_right.get(), *mod->value());
+        ctx.m_tmp_modules.clear();
+        return result;
     }
     else {
         return eval_expr_get2(expr, ctx);

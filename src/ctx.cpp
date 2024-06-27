@@ -104,19 +104,32 @@ void Ctx::register_class(earl::value::Class *klass) {
 }
 
 earl::value::Module *Ctx::get_registered_module(const std::string &id) {
-    if (curclass) {
-        for (size_t i = 0; i < curclass->m_ctxs.size(); ++i) {
-            Ctx *child = curclass->m_ctxs[i];
-            if (child->get_module() && child->get_module()->lexeme() == id) {
-                return new earl::value::Module(child);
+    // if (curclass) {
+    //     for (size_t i = 0; i < curclass->m_ctxs.size(); ++i) {
+    //         Ctx *child = curclass->m_ctxs[i];
+    //         if (child->get_module() && child->get_module()->lexeme() == id) {
+    //             return new earl::value::Module(child);
+    //         }
+    //     }
+    // }
+
+    // if (m_parent) {
+    //     auto *mod = m_parent->get_registered_module(id);
+    //     if (mod)
+    //         return mod;
+    // }
+
+    for (size_t i = 0; i < m_tmp_modules.size(); ++i) {
+        auto *ctx = m_tmp_modules[i];
+        std::cout << ctx->m_children_contexts.size() << std::endl;
+        for (size_t j = 0; j < ctx->m_children_contexts.size(); ++j) {
+            if (ctx->m_children_contexts[i]->get_module()->lexeme() == id) {
+                return new earl::value::Module(ctx->m_children_contexts[i].get());
             }
         }
-    }
-
-    if (m_parent) {
-        auto *mod = m_parent->get_registered_module(id);
-        if (mod)
-            return mod;
+        // if (m_tmp_modules[i] && m_tmp_modules[i]->get_module()->lexeme() == id) {
+        //     return new earl::value::Module(m_tmp_modules[i]);
+        // }
     }
 
     for (size_t i = 0; i < m_children_contexts.size(); ++i) {
