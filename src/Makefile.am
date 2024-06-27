@@ -32,7 +32,7 @@ docs:
 	doxygen Doxyfile
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
 
-install-earl: clean test main
+install-earl: main
 	@echo "*-*-* installing stdlib *-*-*"
 	sudo mkdir -p /usr/local/include/EARL/std/
 	sudo cp -r ./std/* /usr/local/include/EARL/std/

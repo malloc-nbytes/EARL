@@ -65,7 +65,7 @@ As stated before, use the following to install EARL.
 #+begin_src bash
   cd EARL/src
   make all
-  make install
+  make install-earl
 #+end_src
 
 * Editors
