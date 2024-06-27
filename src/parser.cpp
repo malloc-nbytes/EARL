@@ -168,6 +168,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     } break;
     case TokenType::Intlit: return new ExprIntLit(lexer.next());
     case TokenType::Strlit: return new ExprStrLit(lexer.next());
+    case TokenType::Charlit: return new ExprCharLit(lexer.next());
     case TokenType::Lbracket: {
         lexer.discard();
         std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);

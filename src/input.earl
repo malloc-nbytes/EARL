@@ -1,8 +1,9 @@
-import "std/list.earl"
-import "std/stack.earl"
-
 mod Main
 
-let s = Stack.T([]);
+let s = "hello";
 
-s.push(1);
+s[0] = 'a';
+
+print(s[0]);
+
+

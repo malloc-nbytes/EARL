@@ -146,6 +146,10 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
             earl::value::Str *strparam = dynamic_cast<earl::value::Str *>(param);
             std::cout << strparam->value();
         } break;
+        case earl::value::Type::Char: {
+            earl::value::Char *strparam = dynamic_cast<earl::value::Char *>(param);
+            std::cout << strparam->value();
+        } break;
         case earl::value::Type::List: {
             earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
             std::cout << '[';

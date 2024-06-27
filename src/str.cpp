@@ -39,6 +39,15 @@ void Str::fill(std::string value) {
     m_value = std::move(value);
 }
 
+Obj *Str::nth(Obj *idx) {
+    auto *index = dynamic_cast<Int *>(idx);
+    if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+        ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
+                  index->value(), this->value().size());
+    }
+    return new earl::value::Char(std::string(1, m_value[index->value()]));
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }

@@ -62,6 +62,7 @@ enum class ExprTermType {
     Ident,
     Int_Literal,
     Str_Literal,
+    Char_Literal,
     Func_Call,
     List_Literal,
     Get,
@@ -133,6 +134,14 @@ struct ExprStrLit : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprStrLit(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprCharLit : public ExprTerm {
+    std::unique_ptr<Token> m_tok;
+
+    ExprCharLit(std::unique_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
