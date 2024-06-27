@@ -79,21 +79,6 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     return result;
 }
 
-earl::value::Obj *eval_expr_module_funccall(ExprFuncCall *expr, Ctx &main_ctx, Ctx &mod_ctx) {
-    std::vector<earl::value::Obj *> params;
-    for (size_t i = 0; i < expr->m_params.size(); ++i) {
-        params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), main_ctx));
-    }
-
-    earl::function::Obj *func = mod_ctx.get_registered_function(expr->m_id->lexeme());
-    if (!func->is_pub()) {
-        ERR_WARGS(Err::Type::Fatal, "function %s does not contain the @pub attribute",
-                  func->id().c_str());
-    }
-
-    return eval_user_defined_function(func, params, mod_ctx);
-}
-
 earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
         ERR_WARGS(Err::Type::Redeclared,
@@ -232,6 +217,12 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     }
 
     earl::function::Obj *func = ctx.get_registered_function(expr->m_id->lexeme());
+
+    if (params.size() != func->params_len()) {
+        Err::err_wtok(expr->m_id.get());
+        ERR_WARGS(Err::Type::Fatal, "function arguments for `%s` do not match (expected %zu, got %zu)",
+                  expr->m_id->lexeme().c_str(), func->params_len(), params.size());
+    }
 
     return eval_user_defined_function(func, params, ctx);
 }

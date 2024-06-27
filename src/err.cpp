@@ -26,6 +26,7 @@
 
 #include "err.hpp"
 #include "token.hpp"
+#include "utils.hpp"
 
 void Err::err_wtok(Token *tok) {
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << '\n';
@@ -39,4 +40,5 @@ void Err::err_w2tok(Token *tok1, Token *tok2) {
 void Err::err_wconflict(Token *tok1, Token *tok2) {
     (void)tok1;
     (void)tok2;
+    UNIMPLEMENTED("Err::err_wconflict");
 }

@@ -371,6 +371,8 @@ namespace earl {
             /// @brief Get the identifier of this function
             const std::string &id(void) const;
 
+            size_t params_len(void) const;
+
             /// @brief Get the Statement Definition of this function
             StmtBlock *block(void) const;
 

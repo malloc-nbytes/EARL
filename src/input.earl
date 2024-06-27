@@ -2,6 +2,4 @@ import "std/io.earl"
 
 mod Main
 
-let s = IO.file_to_str("test.csv");
-
-print(s);
+let s = IO.file_to_str("input.earl", "r");

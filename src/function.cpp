@@ -51,6 +51,10 @@ const std::string &Obj::id(void) const {
     return m_stmtdef->m_id->lexeme();
 }
 
+size_t Obj::params_len(void) const {
+    return m_params->size();
+}
+
 StmtBlock *Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
