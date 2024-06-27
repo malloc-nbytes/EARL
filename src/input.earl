@@ -1,10 +1,7 @@
 mod Main
 
-let s1 = "hello";
-let s2 = "world";
+let s = "hello";
 
-let ptr = s1;
-ptr[0] = 'z';
+let b = s == "hello";
 
-print(s1);
-print(ptr);
+print(b);

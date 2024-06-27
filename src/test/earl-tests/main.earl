@@ -4,6 +4,60 @@ import "other.1.earl"
 
 mod Test
 
+fn test_chars1() {
+    print("test_chars1...");
+
+    let c1 = 'a';
+    let c2 = 'b';
+
+    assert(c1 != c2);
+
+    c1 = 'z';
+
+    assert(c1 == 'z');
+
+    c1 = c2;
+
+    assert(c1 == c2);
+
+    print("ok");
+}
+
+fn test_strs2() {
+    print("test_strs2...");
+
+    let s1 = "hello";
+    let s2 = "world";
+
+    let s3 = s1 + " " + s2;
+
+    assert(s3 == "hello world");
+
+    s1 = s3;
+
+    assert(s1 == "hello world");
+
+    s1[0] = 'a';
+
+    assert(s1[0] == 'a');
+
+    print("ok");
+}
+
+fn test_strs1() {
+    print("test_strs1...");
+
+    let s = "hello";
+
+    assert(s == "hello");
+
+    s = "world";
+
+    assert(s == "world");
+
+    print("ok");
+}
+
 fn test_booleans() {
     print("test_booleans...");
 
@@ -444,6 +498,9 @@ fn main() {
     test_func_reference2();
     test_point_class_import();
     test_booleans();
+    test_strs1();
+    test_strs2();
+    test_chars1();
 
     TestStd.test_std();
 }

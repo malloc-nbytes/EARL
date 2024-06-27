@@ -48,7 +48,20 @@ Type Char::type(void) const {
 }
 
 Obj *Char::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("Char::binop");
+    assert(other->type() == Type::Char);
+
+    switch (op->type()) {
+    case TokenType::Double_Equals: {
+        return new Bool(static_cast<int>(this->value() == dynamic_cast<Char *>(other)->value()));
+    } break;
+    case TokenType::Bang_Equals: {
+        return new Bool(static_cast<int>(this->value() != dynamic_cast<Char *>(other)->value()));
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    } break;
+    }
 }
 
 bool Char::boolean(void) {

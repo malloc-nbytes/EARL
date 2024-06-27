@@ -57,20 +57,14 @@ Type Str::type(void) const {
 }
 
 Obj *Str::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("Str::binop");
-
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
+    assert(other->type() == Type::Str);
 
     switch (op->type()) {
     case TokenType::Plus: {
-        assert(other->type() == earl::value::Type::Str);
         return new Str(this->value() + dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        assert(other->type() == earl::value::Type::Str);
-        return new Int(static_cast<int>(this->value() == dynamic_cast<Str *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(other)->value()));
     } break;
     default: {
         Err::err_wtok(op);
