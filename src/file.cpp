@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <sstream>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -43,7 +44,7 @@ void File::set_closed(void) {
     m_open = false;
 }
 
-void File::dump(void) const {
+void File::dump(void) {
     if (!m_open) {
         ERR(Err::Type::Fatal, "file is not open");
     }
@@ -52,17 +53,20 @@ void File::dump(void) const {
         ERR(Err::Type::Fatal, "file is not open for reading");
     }
 
-    // m_stream.clear();
-    // m_stream.seekg(0, std::ios::beg);
+    m_stream.seekg(0, std::ios::beg);
 
     std::cout << m_stream.rdbuf();
 }
 
 void File::close(void) {
-    UNIMPLEMENTED("File::close");
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+    m_stream.close();
+    this->set_closed();
 }
 
-void File::read(void) {
+earl::value::Str *File::read(void) {
     if (!m_open) {
         ERR(Err::Type::Fatal, "file is not open");
     }
@@ -71,7 +75,12 @@ void File::read(void) {
         ERR(Err::Type::Fatal, "file is not open for reading");
     }
 
-    m_stream.rdbuf();
+    m_stream.seekg(0, std::ios::beg);
+
+    std::stringstream buf;
+    buf << m_stream.rdbuf();
+
+    return new earl::value::Str(buf.str());
 }
 
 /*** OVERRIDES ***/

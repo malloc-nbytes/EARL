@@ -71,6 +71,17 @@ List *Str::split(Obj *delim) {
     return new List(std::move(splits));
 }
 
+Str *Str::remove_lines(void) {
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        if (m_value[i]->value() == '\n') {
+            delete m_value[i];
+            m_value.erase(m_value.begin()+i);
+            --i;
+        }
+    }
+    return dynamic_cast<Str *>(this->copy());
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }

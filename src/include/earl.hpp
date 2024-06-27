@@ -224,6 +224,7 @@ namespace earl {
             std::vector<Char *> &value_raw(void);
             Char *nth(Obj *idx);
             List *split(Obj *delim);
+            Str *remove_lines(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -295,9 +296,9 @@ namespace earl {
             void set_open(void);
             void set_closed(void);
 
-            void dump(void) const;
+            void dump(void);
             void close(void);
-            void read(void);
+            earl::value::Str *read(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

@@ -122,7 +122,11 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+
     earl::value::Obj *intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

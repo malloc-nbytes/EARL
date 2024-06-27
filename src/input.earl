@@ -1,5 +1,7 @@
+import "std/io.earl"
+
 mod Main
 
-let f = open("main.cpp", "r");
+let s = IO.file_to_str("test.csv");
 
-f.dump();
+print(s);

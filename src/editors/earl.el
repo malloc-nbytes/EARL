@@ -46,9 +46,13 @@
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics
-      "split"
+      "split" "remove_lines"
+      ;; file member intrinsics
+      "read" "close" "dump"
       ;; function attributes
       "world" "pub" "ref"
+      ;; Stdlib Modules
+      "IO" "List" "Math" "Stack" "Utils"
       )))
 
 (defconst earl-highlights
