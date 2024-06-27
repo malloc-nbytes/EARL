@@ -52,7 +52,6 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - =make all= \rightarrow do all except clean
 - =make clean= \rightarrow cleans the project
 - =make install= \rightarrow install EARL as well as the standard library
-- =make update-earl= \rightarrow update the current =git= repository, recompile, and reinstall
 #+end_quote
 
 Now that the initial setup has been complete, you no longer have to use =autoreconf= and =configure=.
@@ -61,19 +60,12 @@ Now that the initial setup has been complete, you no longer have to use =autorec
 then do =make docs= if wanted.
 
 * Install
-As stated before, use the following to install/update EARL.
+As stated before, use the following to install EARL.
 
 #+begin_src bash
   cd EARL/src
   make all
   make install
-#+end_src
-
-or to update:
-
-#+begin_src bash
-  cd EARL/src
-  make update-earl
 #+end_src
 
 * Editors
