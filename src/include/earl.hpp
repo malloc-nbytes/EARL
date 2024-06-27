@@ -60,12 +60,15 @@ namespace earl {
             Bool,
             /** EARL string type */
             Str,
+            /** EARL char type */
+            Char,
             /** EARL UNIT type (used when eval's don't return anything) */
             Void,
             /** EARL list type (holds any value including a mix of datatypes) */
             List,
             /** EARL module type. Used for member access of a module. */
             Module,
+            /** EARL class type */
             Class,
         };
 
@@ -136,16 +139,11 @@ namespace earl {
             bool m_value;
         };
 
-        /// @brief The structure that represents EARL strings
-        struct Str : public Obj {
-            Str(std::string value = "");
-
-            /// @brief Fill the underlying data with some data
-            /// @param value The value to use to fill
-            void fill(std::string value);
+        struct Char : public Obj {
+            Char(std::string value = "");
 
             /// @brief Get the underlying string value
-            std::string &value(void);
+            char value(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -155,7 +153,28 @@ namespace earl {
             Obj *copy(void)                   override;
 
         private:
-            std::string m_value;
+            char m_value;
+        };
+
+        /// @brief The structure that represents EARL strings
+        struct Str : public Obj {
+            Str(std::string value = "");
+
+            /// @brief Get the underlying string value
+            std::string value(void);
+            std::vector<Char *> &value_raw(void);
+
+            Obj *nth(Obj *idx);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+
+        private:
+            std::vector<Char *> m_value;
         };
 
         /// @brief The structure that represents EARL UNITs

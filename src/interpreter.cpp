@@ -325,7 +325,8 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
         result = list->nth(idx);
     } break;
     case earl::value::Type::Str: {
-        UNIMPLEMENTED("eval_expr_array_access: earl::value::Type::Str");
+        earl::value::Str *str = dynamic_cast<earl::value::Str *>(left);
+        result = str->nth(idx);
     } break;
     default: {
         ERR(Err::Type::Fatal, "cannot use `[]` operator on non-list type");
@@ -361,6 +362,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Str_Literal: {
         ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
         return new earl::value::Str(strlit->m_tok->lexeme());
+    } break;
+    case ExprTermType::Char_Literal: {
+        ExprCharLit *charlit = dynamic_cast<ExprCharLit *>(expr);
+        return new earl::value::Char(charlit->m_tok->lexeme());
     } break;
     case ExprTermType::Func_Call: {
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);

@@ -37,6 +37,14 @@
 uint32_t flags = 0x00;
 
 void usage(void) {
+    std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
+    std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
+
+    std::cerr << "Documentation can be found on the Github repository:" << std::endl;
+    std::cerr << "  README                  -> basic setup" << std::endl;
+    std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
+    std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
+
     std::cerr << "Usage: earl [options] [file]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version         Print version information" << std::endl;

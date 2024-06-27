@@ -53,6 +53,16 @@ ExprTermType ExprStrLit::get_term_type() const {
     return ExprTermType::Str_Literal;
 }
 
+ExprCharLit::ExprCharLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+
+ExprType ExprCharLit::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprCharLit::get_term_type() const {
+    return ExprTermType::Char_Literal;
+}
+
 ExprBool::ExprBool(std::unique_ptr<Token> tok, bool value)
     : m_tok(std::move(tok)), m_value(value) {}
 

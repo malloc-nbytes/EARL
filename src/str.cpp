@@ -22,21 +22,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 
 #include "earl.hpp"
 #include "err.hpp"
+#include "utils.hpp"
 
 using namespace earl::value;
 
-Str::Str(std::string value) : m_value(std::move(value)) {}
-
-std::string &Str::value(void) {
-    return m_value;
+Str::Str(std::string value) {
+    std::for_each(value.begin(), value.end(), [&](char c) {
+        m_value.push_back(new Char(std::string(1, c)));
+    });
 }
 
-void Str::fill(std::string value) {
-    m_value = std::move(value);
+std::string Str::value(void) {
+    std::string value = "";
+    std::for_each(m_value.begin(), m_value.end(), [&](auto &c){value += c->value();});
+    return value;
+}
+
+Obj *Str::nth(Obj *idx) {
+    auto *index = dynamic_cast<Int *>(idx);
+    if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+        ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
+                  index->value(), this->value().size());
+    }
+    return m_value[index->value()];
 }
 
 Type Str::type(void) const {
@@ -44,18 +57,14 @@ Type Str::type(void) const {
 }
 
 Obj *Str::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
+    assert(other->type() == Type::Str);
 
     switch (op->type()) {
     case TokenType::Plus: {
-        assert(other->type() == earl::value::Type::Str);
         return new Str(this->value() + dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        assert(other->type() == earl::value::Type::Str);
-        return new Int(static_cast<int>(this->value() == dynamic_cast<Str *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(other)->value()));
     } break;
     default: {
         Err::err_wtok(op);
@@ -68,19 +77,21 @@ bool Str::boolean(void) {
     return true;
 }
 
-void Str::mutate(Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot mutate (fix this message)");
-    }
+std::vector<Char *> &Str::value_raw(void) {
+    return m_value;
+}
 
-    switch (other->type()) {
-    case Type::Str: {
-        this->fill(dynamic_cast<Str *>(other)->value());
-    } break;
-    default: {
-        assert(false && "unreachable");
-    }
-    }
+void Str::mutate(Obj *other) {
+    assert(other->type() == Type::Str);
+
+    Str *otherstr = dynamic_cast<Str *>(other);
+
+    std::for_each(m_value.begin(), m_value.end(), [](auto &this_c) {delete this_c;});
+    m_value.clear();
+
+    std::for_each(otherstr->value_raw().begin(), otherstr->value_raw().end(), [&](earl::value::Char *other_c) {
+        m_value.push_back(dynamic_cast<earl::value::Char *>(other_c->copy()));
+    });
 }
 
 Obj *Str::copy(void) {

@@ -13,5 +13,5 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o main *.cpp include/scope.hpp
+g++ -DVERSION='1.0' -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o main *.cpp include/scope.hpp
 gdb --args ./main "$@"
