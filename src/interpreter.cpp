@@ -113,7 +113,8 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
     if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
         ERR_WARGS(Err::Type::Redeclared,
-                  "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
+                  "variable `%s` is already declared in class `%s`",
+                  stmt->m_id->lexeme().c_str(), klass->id().c_str());
     }
 
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
