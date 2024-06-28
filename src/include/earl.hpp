@@ -103,7 +103,11 @@ namespace earl {
         };
 
         struct None : public Obj {
-            None() = default;
+            None();
+
+            void set_value(Obj *other);
+            Obj *value(void);
+            bool empty(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -111,6 +115,9 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+
+        private:
+            Obj *m_value;
         };
 
         /// @brief The structure that represents EARL 32bit integers

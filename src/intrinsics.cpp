@@ -185,66 +185,59 @@ earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<e
     return new earl::value::Void();
 }
 
+static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
+    switch (param->type()) {
+    case earl::value::Type::Int: {
+        auto *intparam = dynamic_cast<earl::value::Int *>(param);
+        std::cout << intparam->value();
+    } break;
+    case earl::value::Type::Bool: {
+        auto *bool_param = dynamic_cast<earl::value::Bool *>(param);
+        std::cout << (bool_param->value() ? "true" : "false");
+    } break;
+    case earl::value::Type::None: {
+        auto *none_param = dynamic_cast<earl::value::None *>(param);
+
+        if (!none_param->value())
+            std::cout << "<none>";
+        else
+            __intrinsic_print(expr, none_param->value());
+
+    } break;
+    case earl::value::Type::Str: {
+        auto *strparam = dynamic_cast<earl::value::Str *>(param);
+        std::cout << strparam->value();
+    } break;
+    case earl::value::Type::Char: {
+        auto *strparam = dynamic_cast<earl::value::Char *>(param);
+        std::cout << strparam->value();
+    } break;
+    case earl::value::Type::List: {
+        earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
+        std::cout << '[';
+        std::vector<earl::value::Obj *> &list = listparam->value();
+
+        for (size_t i = 0; i < list.size(); ++i) {
+            __intrinsic_print(expr, list[i]);
+
+            if (i != list.size()-1) {
+                std::cout << ", ";
+            }
+        }
+
+        std::cout << ']';
+    } break;
+    default: {
+        Err::err_wtok(expr->m_id.get());
+        ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
+    } break;
+    }
+}
+
 earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i) {
-        earl::value::Obj *param = params.at(i);
-        switch (param->type()) {
-        case earl::value::Type::Int: {
-            auto *intparam = dynamic_cast<earl::value::Int *>(param);
-            std::cout << intparam->value();
-        } break;
-        case earl::value::Type::Bool: {
-            auto *bool_param = dynamic_cast<earl::value::Bool *>(param);
-            std::cout << (bool_param->value() ? "true" : "false");
-        } break;
-        case earl::value::Type::None: {
-            auto *none_param = dynamic_cast<earl::value::None *>(param);
-            std::cout << "none";
-        } break;
-        case earl::value::Type::Str: {
-            auto *strparam = dynamic_cast<earl::value::Str *>(param);
-            std::cout << strparam->value();
-        } break;
-        case earl::value::Type::Char: {
-            auto *strparam = dynamic_cast<earl::value::Char *>(param);
-            std::cout << strparam->value();
-        } break;
-        case earl::value::Type::List: {
-            earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
-            std::cout << '[';
-            std::vector<earl::value::Obj *> &list = listparam->value();
-            for (size_t j = 0; j < list.size(); ++j) {
-                earl::value::Obj *listitem = list.at(j);
-                switch (listitem->type()) {
-                case earl::value::Type::Int: {
-                    earl::value::Int *intitem = dynamic_cast<earl::value::Int *>(listitem);
-                    std::cout << intitem->value();
-                } break;
-                case earl::value::Type::Bool: {
-                    earl::value::Bool *bool_param = dynamic_cast<earl::value::Bool *>(param);
-                    std::cout << (bool_param->value() ? "true" : "false");
-                } break;
-                case earl::value::Type::Str: {
-                    earl::value::Str *stritem = dynamic_cast<earl::value::Str *>(listitem);
-                    std::cout << stritem->value();
-                } break;
-                default: {
-                    Err::err_wtok(expr->m_id.get());
-                    ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown list item type %d", static_cast<int>(listitem->type()));
-                } break;
-                }
-                if (j != list.size() - 1) {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << ']';
-        } break;
-        default: {
-            Err::err_wtok(expr->m_id.get());
-            ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
-        } break;
-        }
+        __intrinsic_print(expr, params[i]);
     }
     std::cout << '\n';
     return new earl::value::Void();

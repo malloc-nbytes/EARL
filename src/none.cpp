@@ -30,9 +30,24 @@
 
 using namespace earl::value;
 
+None::None() : m_value(nullptr) {}
+
+void None::set_value(Obj *other) {
+    m_value = other;
+}
+
+Obj *None::value(void) {
+    return m_value;
+}
+
+bool None::empty(void) {
+    return this->value() == nullptr;
+}
+
 Type None::type(void) const {
     return Type::None;
 }
+
 Obj *None::binop(Token *op, Obj *other) {
     ERR(Err::Type::Fatal, "can not perform binary operations on None type");
 }
@@ -42,7 +57,7 @@ bool None::boolean(void) {
 }
 
 void None::mutate(Obj *other) {
-    UNIMPLEMENTED("None::mutate");
+    this->set_value(other);
 }
 
 Obj *None::copy(void) {
