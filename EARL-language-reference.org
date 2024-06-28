@@ -391,19 +391,19 @@ This means that all you need to do to import these files is do:
 
 ** Stack
 
-*** Import: ="std/stack.earl"=
+*** *Import*: ="std/stack.earl"=
 
-*** Module: =Stack=
+*** *Module*: =Stack=
 
-*** Class List:
+*** *Class List*:
 
-**** =T [init: list] -> Stack.T=
+*** =T [init: list] -> Stack.T=
 
 #+begin_quote
 Creates a =Stack= container with the initializer list =init=.
 #+end_quote
 
-***** *Implements*
+*** Implements
 
 =push(elem: any) -> unit=
 
@@ -429,7 +429,9 @@ Get the most recently added item.
 Check if the stack is empty
 #+end_quote
 
-/Example/
+*** *Function List*: /None/
+
+*** *Examples*
 
 #+begin_example
 let s = Stack.T([]);
@@ -438,7 +440,7 @@ for i in 0..10 {
     s.push(i);
 }
 
-while s.empty() != 1 {
+while s.empty() != true {
     print(s.top());
     s.pop();
 }
@@ -455,4 +457,119 @@ while s.empty() != 1 {
 2
 1
 #+end_example
+
+** List
+
+*** *Import*: ="std/list.earl"=
+
+*** *Module*: =List=
+
+*** *Class List*: /None/
+
+*** *Function List*:
+
+*** =preset(elem: any, cap: int) -> list=
+
+#+begin_quote
+Create a list filled with =elem= of length =cap=.
+#+end_quote
+
+*** =from_range(start: int, stop: int, stride: int) -> list[int]=
+
+#+begin_quote
+Create a list filled with the numbers from =start= to =stop= (inclusive)
+and increment the number by =stride=.
+#+end_quote
+
+*** =fill(@ref lst: list, k: any) -> unit=
+
+#+begin_quote
+Fill the list =lst= with element =k=.
+#+end_quote
+
+*** =sum(@ref lst: list[int]) -> int=
+
+#+begin_quote
+Sum up all elements of the list =lst=.
+#+end_quote
+
+*** =find(@ref lst: list, @ref elem: any) -> int=
+
+#+begin_quote
+Return the index that =elem= appears in =lst=. Returns =-1=
+if it does not exist.
+#+end_quote
+
+*** =count(@ref lst: list, @ref elem: any) -> int=
+
+#+begin_quote
+Count the number of times that =elem= appears in =lst=.
+#+end_quote
+
+** IO
+
+*** *Import*: ="std/io.earl"=
+
+*** *Module*: =IO=
+
+*** *Class List*: /None/
+
+*** *Function List*:
+
+*** =file_to_str(fp: str) -> str=
+
+#+begin_quote
+Opens the file at the filepath =fp= in read (=r=) mode. Returns
+the contents of the file as a =str= and closes the file.
+#+end_quote
+
+** Math
+
+*** *Import*: ="std/math.earl"=
+
+*** *Module*: =Math=
+
+*** *Class List*: /None/
+
+*** *Function List*:
+
+*** =max(x: int, y: int) -> int=
+
+#+begin_quote
+Returns the max between =x= and =y=.
+#+end_quote
+
+*** =min(x: int, y: int) -> int=
+
+#+begin_quote
+Returns the min between =x= and =y=.
+#+end_quote
+
+*** =abs(x: int) ->= $\mathbb{Z}^+$
+
+#+begin_quote
+Returns the absolute value of =x=.
+#+end_quote
+
+** Utils
+
+*** *Import*: ="std/utils.earl"=
+
+*** *Module*: =Utils=
+
+*** *Class List*: /None/
+
+*** *Function List*:
+
+*** =is_even(n: int) -> bool=
+
+#+begin_quote
+Returns =true= if =n= is even, =false= if odd.
+#+end_quote
+
+*** =swap(@ref x1, @ref x2) -> unit=
+
+#+begin_quote
+Swaps the values of =x1= and =x2=.
+#+end_quote
 
