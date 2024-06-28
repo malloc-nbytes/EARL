@@ -68,6 +68,7 @@ enum class ExprTermType {
     Get,
     Array_Access,
     Bool,
+    None,
 };
 
 struct StmtBlock;
@@ -152,6 +153,15 @@ struct ExprBool : public ExprTerm {
     bool m_value;
 
     ExprBool(std::unique_ptr<Token> tok, bool value);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+/// @brief The Expression None class
+struct ExprNone : public ExprTerm {
+    std::unique_ptr<Token> m_tok;
+
+    ExprNone(std::unique_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

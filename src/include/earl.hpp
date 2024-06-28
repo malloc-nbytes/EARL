@@ -71,6 +71,8 @@ namespace earl {
             Class,
             /** EARL file type */
             File,
+            /** EARL none type */
+            None,
         };
 
         /// @brief The base abstract class that all
@@ -98,6 +100,17 @@ namespace earl {
 
             /// @brief Copy THIS instance
             virtual Obj *copy(void) = 0;
+        };
+
+        struct None : public Obj {
+            None() = default;
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
         };
 
         /// @brief The structure that represents EARL 32bit integers

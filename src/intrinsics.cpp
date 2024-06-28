@@ -191,19 +191,23 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
         earl::value::Obj *param = params.at(i);
         switch (param->type()) {
         case earl::value::Type::Int: {
-            earl::value::Int *intparam = dynamic_cast<earl::value::Int *>(param);
+            auto *intparam = dynamic_cast<earl::value::Int *>(param);
             std::cout << intparam->value();
         } break;
         case earl::value::Type::Bool: {
-            earl::value::Bool *bool_param = dynamic_cast<earl::value::Bool *>(param);
+            auto *bool_param = dynamic_cast<earl::value::Bool *>(param);
             std::cout << (bool_param->value() ? "true" : "false");
         } break;
+        case earl::value::Type::None: {
+            auto *none_param = dynamic_cast<earl::value::None *>(param);
+            std::cout << "none";
+        } break;
         case earl::value::Type::Str: {
-            earl::value::Str *strparam = dynamic_cast<earl::value::Str *>(param);
+            auto *strparam = dynamic_cast<earl::value::Str *>(param);
             std::cout << strparam->value();
         } break;
         case earl::value::Type::Char: {
-            earl::value::Char *strparam = dynamic_cast<earl::value::Char *>(param);
+            auto *strparam = dynamic_cast<earl::value::Char *>(param);
             std::cout << strparam->value();
         } break;
         case earl::value::Type::List: {

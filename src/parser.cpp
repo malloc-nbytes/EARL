@@ -189,6 +189,9 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
             return new ExprBool(std::move(kw), false);
         }
+        else if (kw->lexeme() == COMMON_EARLKW_NONE) {
+            return new ExprNone(std::move(kw));
+        }
         else {
             Err::err_wtok(kw.get());
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s` while parsing primary expression",
