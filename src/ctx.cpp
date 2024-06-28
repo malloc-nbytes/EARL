@@ -181,6 +181,15 @@ void Ctx::register_variable(earl::variable::Obj *var) {
 }
 
 bool Ctx::variable_is_registered(const std::string &id) {
+    // Handle case where you are creating a new class
+    // instantiation inside of the class itself.
+    if (curclass) {
+        // if (curclass->get_member(id) != nullptr) {
+        //     return false;
+        // }
+        return false;
+    }
+
     if (in_function()) {
         return get_curfunc()->has_local(id);
     }
