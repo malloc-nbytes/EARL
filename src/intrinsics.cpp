@@ -212,6 +212,10 @@ static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
         auto *strparam = dynamic_cast<earl::value::Char *>(param);
         std::cout << strparam->value();
     } break;
+    case earl::value::Type::Class: {
+        auto *classparam = dynamic_cast<earl::value::Class *>(param);
+        std::cout << "<Class " << classparam->id() << " " << &classparam << '>';
+    } break;
     case earl::value::Type::List: {
         earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
         std::cout << '[';

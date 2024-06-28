@@ -32,38 +32,33 @@
 
 using namespace earl::value;
 
-static const std::unordered_map<std::string, earl::value::Type> str_to_type_map = {
-    {COMMON_EARLTY_INT32, earl::value::Type::Int},
-    {COMMON_EARLKW_TRUE, earl::value::Type::Bool},
-    {COMMON_EARLKW_FALSE, earl::value::Type::Bool},
-    {COMMON_EARLTY_STR, earl::value::Type::Str},
-    {COMMON_EARLTY_UNIT, earl::value::Type::Void},
+static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type>> type_map = {
+    {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::None}},
+    {earl::value::Type::Bool, {earl::value::Type::Bool}},
+    {earl::value::Type::Char, {earl::value::Type::Char}},
+    {earl::value::Type::Str, {earl::value::Type::Str}},
+    {earl::value::Type::List, {earl::value::Type::List}},
+    {earl::value::Type::Void, {earl::value::Type::Void}},
 };
 
 bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
+    earl::value::Type ty1 = obj1->type();
+    earl::value::Type ty2 = obj2->type();
 
-    // They are lists, make sure the lists hold the same types.
-    if (obj1->type() == Type::List && obj2->type() == Type::List) {
-        // List *const list1 = dynamic_cast<List *const>(obj1);
-        // List *const list2 = dynamic_cast<List *const>(obj2);
-
-        // if (list1->value().size() != list2->value().size()) {
-        //     return false;
-        // }
-
-        // for (size_t i = 0; i < list1->value().size(); ++i) {
-        //     if (!type_is_compatable(list1->value()[i], list2->value()[i])) {
-        //         return false;
-        //     }
-        // }
-        // TODO("earl::value::type_is_compatable: List type compatibility");
+    if (ty1 == ty2)
         return true;
+
+    auto it = type_map.find(ty1);
+    if (it != type_map.end()) {
+        const std::vector<earl::value::Type>& compatible_types = it->second;
+
+        for (auto compatible_type : compatible_types) {
+            if (ty2 == compatible_type) {
+                return true;
+            }
+        }
     }
 
-    // Not list type, just check the primitive type
-    if (obj1->type() == obj2->type()) {
-        return true;
-    }
     return false;
 }
 

@@ -1,10 +1,16 @@
 mod Main
 
-let n1 = none;
-n1 = 1;
+# let n1 = none;
+# n1 = 1;
 
-let n2 = none;
-n2 = 3;
+# let n2 = none;
+# n2 = 3;
+
+# print(n1 + n2);
+
+
+let n1 = 1;
+let n2 = 2;
 
 print(n1 + n2);
 

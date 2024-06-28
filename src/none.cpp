@@ -49,7 +49,32 @@ Type None::type(void) const {
 }
 
 Obj *None::binop(Token *op, Obj *other) {
-    ERR(Err::Type::Fatal, "can not perform binary operations on None type");
+    if (!this->value()) {
+        ERR(Err::Type::Fatal, "can not perform binary operations on None type");
+    }
+
+    switch (this->value()->type()) {
+    case earl::value::Type::Int: {
+        return dynamic_cast<Int *>(this->value())->binop(op, other);
+    } break;
+    case earl::value::Type::Char: {
+        return dynamic_cast<Char *>(this->value())->binop(op, other);
+    } break;
+    case earl::value::Type::Bool: {
+        return dynamic_cast<Bool *>(this->value())->binop(op, other);
+    } break;
+    case earl::value::Type::Str: {
+        return dynamic_cast<Str *>(this->value())->binop(op, other);
+    } break;
+    case earl::value::Type::List: {
+        return dynamic_cast<List *>(this->value())->binop(op, other);
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "can not perform binary operation on type `%d`", static_cast<int>(this->value()->type()));
+    }
+    }
+
+    return nullptr; // unreachable
 }
 
 bool None::boolean(void) {
