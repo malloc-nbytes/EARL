@@ -225,6 +225,7 @@ namespace earl {
             Char *nth(Obj *idx);
             List *split(Obj *delim);
             Str *remove_lines(void);
+            Str *substr(Int *idx1, Int *idx2);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

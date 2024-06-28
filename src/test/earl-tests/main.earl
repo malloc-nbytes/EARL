@@ -4,6 +4,17 @@ import "other.1.earl"
 
 mod Test
 
+fn test_substr_member_intrinsic1() {
+    print("test_substr_member_intrinsic1...");
+
+    let s = "hello world";
+
+    assert(s.substr(0, 3) == "hel");
+    assert(s.substr(6, len(s)) == "world");
+
+    print("ok");
+}
+
 fn test_file_io_read_and_remove_lines_member_intrinsic() {
     print("test_file_io_read_and_remove_lines_member_intrinsic...");
 
@@ -530,6 +541,7 @@ fn main() {
     test_chars1();
     test_member_intrinsic_split();
     test_file_io_read_and_remove_lines_member_intrinsic();
+    test_substr_member_intrinsic1();
 
     TestStd.test_std();
 }

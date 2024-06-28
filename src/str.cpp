@@ -82,6 +82,11 @@ Str *Str::remove_lines(void) {
     return dynamic_cast<Str *>(this->copy());
 }
 
+Str *Str::substr(Int *idx1, Int *idx2) {
+    std::string sub = this->value().substr(idx1->value(), idx2->value());
+    return new Str(sub);
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }
