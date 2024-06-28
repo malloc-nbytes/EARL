@@ -17,7 +17,7 @@ test: main
 	@echo "Running EARL tests"
 	make
 	cd ./test/earl-tests/ && \
-	../../main ./main.earl
+	../../main --without-stdlib ./main.earl
 
 vtest: main
 	$(MAKE) -C test test_suite
@@ -26,7 +26,7 @@ vtest: main
 	@echo "Running EARL tests"
 	make
 	cd ./test/earl-tests/ && \
-	valgrind ../../main ./main.earl
+	valgrind ../../main --without-stdlib ./main.earl
 
 docs:
 	doxygen Doxyfile

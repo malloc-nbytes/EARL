@@ -8,7 +8,7 @@ mod TestStd
 fn test_class_wmodule_bug() {
     print("test_class_wmodule_bug...");
 
-    let s = Stack.T(List.range(0, 9, 1));
+    let s = Stack.T(List.from_range(0, 9, 1));
     let t = 9;
 
     while s.empty() != false {
@@ -78,10 +78,10 @@ fn test_list_fill() {
 fn test_list_range() {
     print("test_range...");
 
-    let lst = List.range(0, 5, 1);
+    let lst = List.from_range(0, 5, 1);
 
     assert(lst == [0,1,2,3,4,5]);
-    assert(List.range(10, 15, 1)[0] == 10);
+    assert(List.from_range(10, 15, 1)[0] == 10);
 
     print("ok");
 }
@@ -95,6 +95,6 @@ fn test_std() {
     test_list_find();
     test_list_count();
     test_stack();
-    # test_class_wmodule_bug();
+    test_class_wmodule_bug();
 }
 

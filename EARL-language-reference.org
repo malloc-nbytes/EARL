@@ -284,35 +284,100 @@ class NoPassesArgs {
 
 * Intrinsics
 
+#+begin_quote
+Intrinsics are functions that are automatically built into the interpreter.
+You do not need to import anything to use these functions.
+#+end_quote
+
 ** =print=
 
-=print(arg1, arg2, ..., argN)=
+*** =print(arg1: any, arg2: any, ..., argN: any) -> unit=
 
+#+begin_quote
 Will print all elements if it can. Adds a newline at the end and flushes the output.
+#+end_quote
 
 ** =assert=
 
-=assert(arg1, arg2, ..., argN)=
+*** =assert(arg1: any, arg2: any, ..., argN: any) -> unit=
 
+#+begin_quote
 Tests each argument for =1=. If any of the conditions fails,
 the program immediately crashes.
+#+end_quote
 
 ** =len=
 
-=len(arg)=
+*** =len(arg: list|str) -> int=
 
-Expects either a =List= or =String=. Will give the length
+#+begin_quote
+Expects either a =list= or =string=. Will give the length
 as an integer.
+#+end_quote
+
+** =open=
+
+*** =open(fp: str, mode: str)=
+
+#+begin_quote
+Opens the filepath =fp= with mode =mode=. Mode must either be
+=r= for read or =w= for write.
+#+end_quote
 
 * Member Intrinsics
 
-** =List= implementes
+#+begin_quote
+Member intrinsics are the same as intrinsics, except they are
+member functions (or methods) that types have built into them.
+#+end_quote
 
-- =rev()= \rightarrow Reverses the list inplace.
+** =list= Implementes
 
-- =append(arg1, arg2, ..., argN)= \rightarrow Will append arg1..arg$N$ to the list
+*** =rev() -> unit=
 
-- =pop(idx)= \rightarrow Will remove the element at index =idx=
+#+begin_quote
+Reverses the list inplace.
+#+end_quote
+
+*** =append(arg1: any, arg2: any, ..., argN: any) -> unit=
+
+#+begin_quote
+Will append arg1..arg$N$ to the list.
+#+end_quote
+
+*** =pop(idx: int) -> unit=
+
+#+begin_quote
+Will remove the element at index =idx=.
+#+end_quote
+
+** =str= Implementes
+
+*** =split(delim: str) -> list=
+
+#+begin_quote
+Split a string by the delimiter =delim=.
+#+end_quote
+
+** =file= Implements
+
+*** =close() -> unit=
+
+#+begin_quote
+Closes an opened file.
+#+end_quote
+
+*** =read() -> str=
+
+#+begin_quote
+Get the contents of a file as a =str=.
+#+end_quote
+
+*** =dump() -> unit=
+
+#+begin_quote
+Print the contents of a file.
+#+end_quote
 
 * StdLib
 

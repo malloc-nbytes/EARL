@@ -1,7 +1,7 @@
 mod List
 
 @pub
-fn init_with_cap(elem, cap) {
+fn preset(elem, cap) {
     let lst = [];
     for i in 0..cap {
         lst.append(elem);
@@ -10,7 +10,7 @@ fn init_with_cap(elem, cap) {
 }
 
 @pub
-fn range(start, stop, stride) {
+fn from_range(start, stop, stride) {
     assert(stride != 0);
 
     let lst = [];
