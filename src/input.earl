@@ -1,11 +1,4 @@
+import "std/io.earl"
+
 mod Main
 
-fn read_csv(fp) {
-    let f = open("test.csv", "r");
-    let content = f.read().remove_lines().split(",");
-    f.close();
-    return content;
-}
-
-let csv = read_csv("input.csv");
-print(csv);

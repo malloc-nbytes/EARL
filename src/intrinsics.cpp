@@ -49,6 +49,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
+    {"substr", &Intrinsics::intrinsic_member_substr},
     {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},
@@ -78,6 +79,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std:
     assert(obj->type() == earl::value::Type::Str);
     earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
     return str->split(delim[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idxs, Ctx &ctx) {
+    (void)ctx;
+    assert(obj->type() == earl::value::Type::Str);
+    assert(idxs.size() == 2);
+    assert(idxs[0]->type() == earl::value::Type::Int);
+    assert(idxs[1]->type() == earl::value::Type::Int);
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idxs[0]);
+    auto *idx2 = dynamic_cast<earl::value::Int *>(idxs[1]);
+    return dynamic_cast<earl::value::Str *>(obj)->substr(idx1, idx2);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

@@ -503,7 +503,6 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 
     ctx.unregister_variable(enumerator->id());
 
-    delete start_expr;
     delete end_expr;
 
     return result;

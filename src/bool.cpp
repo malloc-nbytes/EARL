@@ -51,6 +51,9 @@ Obj *Bool::binop(Token *op, Obj *other) {
     case TokenType::Double_Pipe: {
         return new Bool(static_cast<int>(this->value() || dynamic_cast<Bool *>(other)->value()));
     } break;
+    case TokenType::Double_Ampersand: {
+        return new Bool(static_cast<int>(this->value() && dynamic_cast<Bool *>(other)->value()));
+    } break;
     default: {
         Err::err_wtok(op);
         ERR(Err::Type::Fatal, "invalid binary operator");
