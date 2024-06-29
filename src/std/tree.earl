@@ -1,5 +1,3 @@
-import "std/stack.earl"
-
 mod Tree
 
 class Node [value] {
@@ -38,6 +36,19 @@ class Node [value] {
         }
     }
 
+    fn __contains(@ref cur, value) {
+        if is_none(cur) == false {
+            if cur.value() == value {
+                return true;
+            }
+            else if value > cur.value() {
+                return __contains(cur.right(), value);
+            }
+            return __contains(cur.left(), value);
+        }
+        return false;
+    }
+
     fn __dump(@ref cur) {
         if is_none(cur) == false {
             __dump(cur.left());
@@ -48,6 +59,10 @@ class Node [value] {
 
     @pub fn dump() {
         __dump(root);
+    }
+
+    @pub fn contains(value) {
+        return __contains(root, value);
     }
 
     @pub fn insert(value) {

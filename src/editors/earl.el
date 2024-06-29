@@ -54,12 +54,12 @@
       "world" "pub" "ref"
       ;; Stdlib Modules
       "IO" "List" "Math" "Stack" "Utils"
-      "Str"
+      "Str" "Tree"
       )))
 
 (defconst earl-highlights
-  `((,(regexp-opt earl-keywords 'symbols) . font-lock-keyword-face)
-    (,(rx (group "#" (zero-or-more nonl))) . font-lock-comment-face)))
+  `((,(rx (group "#" (zero-or-more nonl))) . font-lock-comment-face)
+    (,(regexp-opt earl-keywords 'symbols) . font-lock-keyword-face)))
 
 ;;;###autoload
 (define-derived-mode earl-mode prog-mode "earl"

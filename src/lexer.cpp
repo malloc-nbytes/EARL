@@ -29,6 +29,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <filesystem>
+
 #include "err.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
@@ -129,6 +131,8 @@ static char *read_file(const char *filepath) {
     }
 
     if (f == nullptr || fseek(f, 0, SEEK_END)) {
+        std::filesystem::path cwd = std::filesystem::current_path();
+        std::cout << "Current working directory is: " << cwd << std::endl;
         ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
     }
 
