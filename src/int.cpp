@@ -48,42 +48,49 @@ Obj *Int::binop(Token *op, Obj *other) {
         assert(false && "cannot binop (fix this message)");
     }
 
+    Obj *tmp = other;
+    if (other->type() == Type::None) {
+        auto *none = dynamic_cast<None *>(tmp);
+        assert(none->value());
+        tmp = none->value();
+    }
+
     switch (op->type()) {
     case TokenType::Plus: {
-        return new Int(this->value() + dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() + dynamic_cast<Int *>(tmp)->value());
     } break;
     case TokenType::Minus: {
-        return new Int(this->value() - dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() - dynamic_cast<Int *>(tmp)->value());
     } break;
     case TokenType::Asterisk: {
-        return new Int(this->value() * dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() * dynamic_cast<Int *>(tmp)->value());
     } break;
     case TokenType::Forwardslash: {
-        return new Int(this->value() / dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() / dynamic_cast<Int *>(tmp)->value());
     } break;
     case TokenType::Percent: {
-        return new Int(this->value() % dynamic_cast<Int *>(other)->value());
+        return new Int(this->value() % dynamic_cast<Int *>(tmp)->value());
     } break;
     case TokenType::Lessthan: {
-        return new Bool(static_cast<int>(this->value() < dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() < dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Greaterthan: {
-        return new Bool(static_cast<int>(this->value() > dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() > dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() == dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Greaterthan_Equals: {
-        return new Bool(static_cast<int>(this->value() >= dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() >= dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Lessthan_Equals: {
-        return new Bool(static_cast<int>(this->value() <= dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() <= dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() != dynamic_cast<Int *>(tmp)->value()));
     } break;
     case TokenType::Double_Pipe: {
-        return new Bool(static_cast<int>(this->value() || dynamic_cast<Int *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() || dynamic_cast<Int *>(tmp)->value()));
     } break;
     default: {
         Err::err_wtok(op);

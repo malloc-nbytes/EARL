@@ -74,6 +74,16 @@ ExprTermType ExprBool::get_term_type() const {
     return ExprTermType::Bool;
 }
 
+ExprNone::ExprNone(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+
+ExprType ExprNone::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprNone::get_term_type() const {
+    return ExprTermType::None;
+}
+
 ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIntLit::get_type() const {

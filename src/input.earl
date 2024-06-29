@@ -1,20 +1,15 @@
-import "std/io.earl"
-
 mod Main
 
-class Node [value] {
-    value = value;
+# class Test {
+#     @pub fn test() {print("here");}
+# }
 
-    @pub fn get_value() {
-        return value;
-    }
+# let t = none;
+# t = Test();
 
-    @pub fn test() {
-        let n = Node(2);
-        print("outer value: ", value);
-        print("inner value: ", n.get_value());
-    }
-}
+# t.test();
 
-let n = Node(1);
-n.test();
+let s = none;
+s = "hello";
+
+print(s.substr(0, 3));

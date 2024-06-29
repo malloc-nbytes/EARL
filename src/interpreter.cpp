@@ -347,6 +347,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         ExprBool *boolean = dynamic_cast<ExprBool *>(expr);
         return new earl::value::Bool(boolean->m_value);
     } break;
+        case ExprTermType::None: {
+        ExprNone *boolean = dynamic_cast<ExprNone *>(expr);
+        return new earl::value::None();
+    } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
         return new earl::value::Int(std::stoi(intlit->m_tok->lexeme()));
