@@ -2,10 +2,14 @@ import "std/tree.earl"
 
 mod Main
 
-let t = Tree.Tree();
+let t = Tree.T();
 t.insert(9);
 t.insert(3);
 t.insert(7);
 t.insert(2);
 t.insert(1);
 t.dump();
+
+
+let n = Tree.Node(9);
+print(n.value());

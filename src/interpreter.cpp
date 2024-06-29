@@ -163,6 +163,11 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
         ERR_WARGS(Err::Type::Fatal, "class `%s` does not exist", expr->m_id->lexeme().c_str());
     }
 
+    if ((stmt->m_attrs & static_cast<uint32_t>(Attr::Pub)) == 0) {
+        ERR_WARGS(Err::Type::Fatal, "class `%s` does not contain the @pub attribute",
+                  stmt->m_id->lexeme().c_str());
+    }
+
     // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt, &ctx);
 
