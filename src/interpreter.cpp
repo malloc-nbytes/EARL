@@ -63,7 +63,8 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     }
 
     ctx.set_function(method);
-    ctx.curclass = klass;
+    ctx.class_chain.push_back(klass);
+    ctx.curclass = ctx.class_chain.back();
 
     method->load_parameters(params);
 
@@ -75,7 +76,15 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
 
     method->clear_locals();
     ctx.unset_function();
-    ctx.curclass = nullptr;
+
+    ctx.class_chain.pop_back();
+    if (ctx.class_chain.size() != 0) {
+        ctx.curclass = ctx.class_chain.back();
+    }
+    else {
+        ctx.curclass = nullptr;
+    }
+
     return result;
 }
 
@@ -260,16 +269,30 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
 
+        // Obj *tmp = other;
+        // if (other->type() == Type::None) {
+        //     auto *none = dynamic_cast<None *>(tmp);
+        //     assert(none->value());
+        //     tmp = none->value();
+        // }
+
+        earl::value::Obj *tmp = left;
+        if (left->type() == earl::value::Type::None) {
+            auto *none = dynamic_cast<earl::value::None *>(left);
+            assert(none->value());
+            tmp = none->value();
+        }
+
         // Check if class
-        if (left->type() == earl::value::Type::Class) {
-            auto *klass = dynamic_cast<earl::value::Class *>(left);
+        if (tmp->type() == earl::value::Type::Class) {
+            auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
             return eval_user_defined_class_method(method, params, klass, ctx);
         }
 
         // Not a class, it is an intrinsic
         else if (Intrinsics::is_member_intrinsic(id)) {
-            result = Intrinsics::call_member(id, left, params, ctx);
+            result = Intrinsics::call_member(id, tmp, params, ctx);
         }
 
         else {

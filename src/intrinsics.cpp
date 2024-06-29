@@ -156,6 +156,7 @@ earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::v
         return str->pop(values[0]);
     }
 
+    assert(false && "fix this message");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

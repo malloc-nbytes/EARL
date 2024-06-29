@@ -1,0 +1,54 @@
+mod Tree
+
+class Node [value] {
+    value = value;
+    left = none;
+    right = none;
+
+    @pub fn value() {
+        return value;
+    }
+
+    @pub fn left() {
+        return left;
+    }
+
+    @pub fn right() {
+        return right;
+    }
+}
+
+@pub class Tree {
+    root = none;
+
+    fn __insert(@ref cur, value) {
+        if is_none(cur) {
+            cur = Node(value);
+        }
+        else if value > cur.value() {
+            __insert(cur.right(), value);
+        }
+        else if value < cur.value() {
+            __insert(cur.left(), value);
+        }
+        else {
+            assert(false);
+        }
+    }
+
+    fn __dump(@ref cur) {
+        if is_none(cur) == false {
+            __dump(cur.left());
+            print(cur.value());
+            __dump(cur.right());
+        }
+    }
+
+    @pub fn dump() {
+        __dump(root);
+    }
+
+    @pub fn insert(value) {
+        __insert(root, value);
+    }
+}
