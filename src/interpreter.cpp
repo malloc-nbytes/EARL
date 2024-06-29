@@ -164,7 +164,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx) {
     }
 
     // Create new instance of the class
-    earl::value::Class *klass = new earl::value::Class(stmt);
+    earl::value::Class *klass = new earl::value::Class(stmt, &ctx);
 
     // Let the class know all imports available in the current context.
     for (size_t i = 0; i < ctx.m_children_contexts.size(); ++i) {
@@ -220,6 +220,9 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     if (ctx.class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, ctx);
     }
+    else if (ctx.curclass != nullptr && ctx.curclass->m_owner->class_is_registered(expr->m_id->lexeme())) {
+        return eval_class_instantiation(expr, *(ctx.curclass->m_owner));
+    }
 
     // Check if the funccall is intrinsic
     if (Intrinsics::is_intrinsic(expr->m_id->lexeme())) {
@@ -268,13 +271,6 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         std::for_each(func_expr->m_params.begin(), func_expr->m_params.end(), [&](auto &e) {
             params.push_back(Interpreter::eval_expr(e.get(), ctx));
         });
-
-        // Obj *tmp = other;
-        // if (other->type() == Type::None) {
-        //     auto *none = dynamic_cast<None *>(tmp);
-        //     assert(none->value());
-        //     tmp = none->value();
-        // }
 
         earl::value::Obj *tmp = left;
         if (left->type() == earl::value::Type::None) {

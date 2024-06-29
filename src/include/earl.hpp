@@ -277,7 +277,7 @@ namespace earl {
         };
 
         struct Class : public Obj {
-            Class(StmtClass *stmtclass);
+            Class(StmtClass *stmtclass, Ctx *owner);
 
             const std::string &id(void) const;
 
@@ -310,6 +310,8 @@ namespace earl {
             std::vector<Token *> m_member_assignees;
 
             std::vector<Ctx *> m_ctxs;
+
+            Ctx *m_owner;
         };
 
         struct File : public Obj {

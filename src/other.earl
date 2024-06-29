@@ -1,7 +1,7 @@
 mod Other
 
 class BugTestHelper {
-    value = 1;
+    value = 100;
 
     @pub fn value() {
         return value;
@@ -9,7 +9,7 @@ class BugTestHelper {
 }
 
 class BugTest {
-    value = 0;
+    value = 1;
 
     @pub fn set_value(n) {
         let bth = BugTestHelper();
