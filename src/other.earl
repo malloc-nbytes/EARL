@@ -1,38 +1,22 @@
 mod Other
 
-class Point [x, y, name] {
-    @pub x = x;
-    @pub y = y;
-    @pub name = name;
-    desc = "A Point Class";
+class BugTestHelper {
+    value = 100;
 
-    @pub
-    fn get_x() {
-        return x;
+    @pub fn value() {
+        return value;
+    }
+}
+
+class BugTest {
+    value = 1;
+
+    @pub fn set_value(n) {
+        let bth = BugTestHelper();
+        value = n + bth.value();
     }
 
-    @pub
-    fn get_y() {
-        return y;
-    }
-
-    @pub
-    fn get_name() {
-        return name;
-    }
-
-    @pub
-    fn set_x(new_x) {
-        x = new_x;
-    }
-
-    @pub
-    fn set_y(new_y) {
-        y = new_y;
-    }
-
-    @pub
-    fn get_sum() {
-        return get_x() + get_y();
+    @pub fn value() {
+        return value;
     }
 }

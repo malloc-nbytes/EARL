@@ -92,7 +92,6 @@ bool Ctx::class_is_registered(const std::string &id) {
             return true;
     }
     return false;
-    // return m_globalclasses.find(id) != m_globalclasses.end();
 }
 
 void Ctx::register_class(earl::value::Class *klass) {

@@ -31,7 +31,7 @@
 
 using namespace earl::value;
 
-Class::Class(StmtClass *stmtclass) : m_stmtclass(stmtclass) {}
+Class::Class(StmtClass *stmtclass, Ctx *owner) : m_stmtclass(stmtclass), m_owner(owner) {}
 
 const std::string &Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
@@ -70,8 +70,8 @@ earl::function::Obj *Class::get_method(const std::string &id) {
         }
     }
 
-    ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
-              id.c_str(), this->id().c_str());
+    // ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
+    //           id.c_str(), this->id().c_str());
     return nullptr; // unreachable
 }
 

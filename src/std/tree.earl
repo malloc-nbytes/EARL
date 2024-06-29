@@ -18,7 +18,7 @@ class Node [value] {
     }
 }
 
-@pub class Tree {
+@pub class T {
     root = none;
 
     fn __insert(@ref cur, value) {

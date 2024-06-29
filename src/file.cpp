@@ -34,7 +34,7 @@
 
 using namespace earl::value;
 
-File::File(Str *fp, Str *mode, std::fstream stream) : m_fp(fp), m_mode(mode), m_open(false), m_stream(std::move(stream)) {}
+File::File(Str *fp, Str *mode, std::fstream stream) : m_fp(fp), m_mode(mode), m_stream(std::move(stream)), m_open(false) {}
 
 void File::set_open(void) {
     m_open = true;
