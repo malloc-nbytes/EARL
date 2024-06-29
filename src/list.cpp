@@ -85,19 +85,26 @@ Obj *List::append(std::vector<Obj *> &values) {
 
 Obj *List::binop(Token *op, Obj *other) {
     if (!type_is_compatable(this, other)) {
-        return new Int(0);
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    Obj *tmp = other;
+    if (other->type() == Type::None) {
+        auto *none = dynamic_cast<None *>(tmp);
+        assert(none->value());
+        tmp = none->value();
     }
 
     switch (op->type()) {
     case TokenType::Plus: {
         auto list = new List(this->value());
         list->value().insert(list->value().end(),
-                             dynamic_cast<List *>(other)->value().begin(),
-                             dynamic_cast<List *>(other)->value().end());
+                             dynamic_cast<List *>(tmp)->value().begin(),
+                             dynamic_cast<List *>(tmp)->value().end());
         return list;
     } break;
     case TokenType::Double_Equals: {
-        auto *other_lst = dynamic_cast<List *>(other);
+        auto *other_lst = dynamic_cast<List *>(tmp);
         int res = 0;
         if (m_value.size() == other_lst->value().size()) {
             res = 1;

@@ -36,8 +36,8 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::None}},
     {earl::value::Type::Bool, {earl::value::Type::Bool}},
     {earl::value::Type::Char, {earl::value::Type::Char}},
-    {earl::value::Type::Str, {earl::value::Type::Str}},
-    {earl::value::Type::List, {earl::value::Type::List}},
+    {earl::value::Type::Str, {earl::value::Type::Str, earl::value::Type::None}},
+    {earl::value::Type::List, {earl::value::Type::List, earl::value::Type::None}},
     {earl::value::Type::Void, {earl::value::Type::Void}},
 };
 

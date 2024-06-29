@@ -55,18 +55,38 @@ Obj *None::binop(Token *op, Obj *other) {
 
     switch (this->value()->type()) {
     case earl::value::Type::Int: {
+        if (other->type() == Type::None) {
+            auto *other2 = dynamic_cast<None *>(other);
+            return dynamic_cast<Int *>(this->value())->binop(op, other2->value());
+        }
         return dynamic_cast<Int *>(this->value())->binop(op, other);
     } break;
     case earl::value::Type::Char: {
+        if (other->type() == Type::None) {
+            auto *other2 = dynamic_cast<None *>(other);
+            return dynamic_cast<Char *>(this->value())->binop(op, other2->value());
+        }
         return dynamic_cast<Char *>(this->value())->binop(op, other);
     } break;
     case earl::value::Type::Bool: {
+        if (other->type() == Type::None) {
+            auto *other2 = dynamic_cast<None *>(other);
+            return dynamic_cast<Bool *>(this->value())->binop(op, other2->value());
+        }
         return dynamic_cast<Bool *>(this->value())->binop(op, other);
     } break;
     case earl::value::Type::Str: {
+        if (other->type() == Type::None) {
+            auto *other2 = dynamic_cast<None *>(other);
+            return dynamic_cast<Str *>(this->value())->binop(op, other2->value());
+        }
         return dynamic_cast<Str *>(this->value())->binop(op, other);
     } break;
     case earl::value::Type::List: {
+        if (other->type() == Type::None) {
+            auto *other2 = dynamic_cast<None *>(other);
+            return dynamic_cast<List *>(this->value())->binop(op, other2->value());
+        }
         return dynamic_cast<List *>(this->value())->binop(op, other);
     } break;
     default: {

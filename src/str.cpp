@@ -92,14 +92,23 @@ Type Str::type(void) const {
 }
 
 Obj *Str::binop(Token *op, Obj *other) {
-    assert(other->type() == Type::Str);
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    Obj *tmp = other;
+    if (other->type() == Type::None) {
+        auto *none = dynamic_cast<None *>(tmp);
+        assert(none->value());
+        tmp = none->value();
+    }
 
     switch (op->type()) {
     case TokenType::Plus: {
-        return new Str(this->value() + dynamic_cast<Str *>(other)->value());
+        return new Str(this->value() + dynamic_cast<Str *>(tmp)->value());
     } break;
     case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(other)->value()));
+        return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(tmp)->value()));
     } break;
     default: {
         Err::err_wtok(op);
