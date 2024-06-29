@@ -427,6 +427,12 @@ Will remove the element at index =idx=.
 Split a string by the delimiter =delim=.
 #+end_quote
 
+*** =pop(idx: int) -> unit=
+
+#+begin_quote
+Will remove the element at index =idx=.
+#+end_quote
+
 ** =file= Implements
 
 *** =close() -> unit=

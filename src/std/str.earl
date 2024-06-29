@@ -1,0 +1,8 @@
+mod Str
+
+@pub
+fn rmchar(s, c) {
+    assert(false); # unimplemented
+    for i in 0..len(s) {
+    }
+}

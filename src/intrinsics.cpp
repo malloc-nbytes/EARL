@@ -145,9 +145,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_append(earl::value::Obj *obj, std
 earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
     (void)ctx;
     assert(values.size() == 1);
-    assert(obj->type() == earl::value::Type::List);
-    auto *lst = dynamic_cast<earl::value::List *>(obj);
-    return lst->pop(values[0]);
+    assert(obj->type() == earl::value::Type::List || obj->type() == earl::value::Type::Str);
+
+    if (obj->type() == earl::value::Type::List) {
+        auto *lst = dynamic_cast<earl::value::List *>(obj);
+        return lst->pop(values[0]);
+    }
+    else if (obj->type() == earl::value::Type::Str) {
+        auto *str = dynamic_cast<earl::value::Str *>(obj);
+        return str->pop(values[0]);
+    }
+
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

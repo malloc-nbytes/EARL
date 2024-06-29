@@ -87,6 +87,13 @@ Str *Str::substr(Int *idx1, Int *idx2) {
     return new Str(sub);
 }
 
+Obj *Str::pop(Obj *idx) {
+    assert(idx->type() == earl::value::Type::Int);
+    earl::value::Int *index = dynamic_cast<earl::value::Int *>(idx);
+    m_value.erase(m_value.begin() + index->value());
+    return new Void();
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }

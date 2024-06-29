@@ -246,6 +246,7 @@ namespace earl {
             List *split(Obj *delim);
             Str *remove_lines(void);
             Str *substr(Int *idx1, Int *idx2);
+            Obj *pop(Obj *idx);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

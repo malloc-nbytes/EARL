@@ -1,15 +1,7 @@
 mod Main
 
-# class Test {
-#     @pub fn test() {print("here");}
-# }
+let s = "hello world";
 
-# let t = none;
-# t = Test();
+s.pop(1);
 
-# t.test();
-
-let s = none;
-s = "hello";
-
-print(s.substr(0, 3));
+print(s);
