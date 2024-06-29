@@ -4,6 +4,49 @@ import "other.1.earl"
 
 mod Test
 
+fn test_none_values2() {
+    print("test_none_values2...");
+
+    let s1 = none;
+    let s2 = none;
+
+    assert(is_none(s1) && is_none(s2));
+
+    s1 = "hello";
+    s2 = "world";
+
+    assert((is_none(s1) || is_none(s2) == false));
+
+    assert(s1 == "hello");
+    assert(s2 == "world");
+
+    assert(s1 + " " + s2 == "hello world");
+    assert(s1 + s2 == "helloworld");
+    assert(" " + s1 + s2 == " helloworld");
+    assert(s1 + s2 + " " == "helloworld ");
+
+    print("ok");
+}
+
+fn test_none_values1() {
+    print("test_none_values1...");
+
+    let i1 = none;
+    let i2 = none;
+
+    assert(is_none(i1) && is_none(i2));
+
+    i1 = 1;
+    i2 = 2;
+
+    assert((is_none(i1) || is_none(i2) == false));
+    assert(i1 + 1 + i2 == 4);
+    assert(i1 + i2 + 1 == 4);
+    assert(1 + i1 + i2 == 4);
+
+    print("ok");
+}
+
 fn test_substr_member_intrinsic1() {
     print("test_substr_member_intrinsic1...");
 
@@ -542,6 +585,8 @@ fn main() {
     test_member_intrinsic_split();
     test_file_io_read_and_remove_lines_member_intrinsic();
     test_substr_member_intrinsic1();
+    test_none_values1();
+    test_none_values2();
 
     TestStd.test_std();
 }

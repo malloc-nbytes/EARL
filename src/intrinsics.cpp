@@ -41,6 +41,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
+    {"is_none", &Intrinsics::intrinsic_is_none},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -172,6 +173,23 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
     }
     ERR_WARGS(Err::Type::Fatal, "canot call `len` on unsupported type (%d)", (int)params[0]->type());
     return nullptr;
+}
+
+earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)expr;
+
+    bool res = true;
+
+    for (size_t i = 0; i < params.size(); ++i) {
+        assert(params[i]->type() == earl::value::Type::None);
+        auto *none = dynamic_cast<earl::value::None *>(params[i]);
+        if (none->value()) {
+            res = false;
+            break;
+        }
+    }
+
+    return new earl::value::Bool(res);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

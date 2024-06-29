@@ -40,9 +40,10 @@
     '("if" "else" "while" "let" "void" "int"
       "str" "for" "fn" "return" "break"
       "struct" "char" "import" "in" "mod"
-      "class" "true" "false"
+      "class" "true" "false" "none"
       ;; intrinsic functions
       "print" "assert" "len" "open"
+      "is_none"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics
