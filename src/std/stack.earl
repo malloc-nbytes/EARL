@@ -1,5 +1,6 @@
 mod Stack
 
+@pub
 class T [init] {
     @ref lst = init;
 
