@@ -34,7 +34,7 @@ using namespace earl::value;
 
 static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type>> type_map = {
     {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::None}},
-    {earl::value::Type::Bool, {earl::value::Type::Bool}},
+    {earl::value::Type::Bool, {earl::value::Type::Bool, earl::value::Type::None}},
     {earl::value::Type::Char, {earl::value::Type::Char}},
     {earl::value::Type::Str, {earl::value::Type::Str, earl::value::Type::None}},
     {earl::value::Type::List, {earl::value::Type::List, earl::value::Type::None}},

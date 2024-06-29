@@ -83,13 +83,19 @@ earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std:
 
 earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idxs, Ctx &ctx) {
     (void)ctx;
+
+    earl::value::Obj *tmp = obj;
+    if (obj->type() == earl::value::Type::None) {
+        return intrinsic_member_substr(dynamic_cast<earl::value::None *>(tmp)->value(), idxs, ctx);
+    }
+
     assert(obj->type() == earl::value::Type::Str);
     assert(idxs.size() == 2);
     assert(idxs[0]->type() == earl::value::Type::Int);
     assert(idxs[1]->type() == earl::value::Type::Int);
     auto *idx1 = dynamic_cast<earl::value::Int *>(idxs[0]);
     auto *idx2 = dynamic_cast<earl::value::Int *>(idxs[1]);
-    return dynamic_cast<earl::value::Str *>(obj)->substr(idx1, idx2);
+    return dynamic_cast<earl::value::Str *>(tmp)->substr(idx1, idx2);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

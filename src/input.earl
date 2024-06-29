@@ -1,9 +1,15 @@
 mod Main
 
-let s1 = none;
-let s2 = none;
+# class Test {
+#     @pub fn test() {print("here");}
+# }
 
-s1 = [1,2,3];
-s2 = [4,5,6,[7,8,9], "hello"];
+# let t = none;
+# t = Test();
 
-print(s1 + ["foo", "bar"] + s2);
+# t.test();
+
+let s = none;
+s = "hello";
+
+print(s.substr(0, 3));
