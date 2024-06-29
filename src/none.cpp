@@ -106,5 +106,7 @@ void None::mutate(Obj *other) {
 }
 
 Obj *None::copy(void) {
-    return new None();
+    auto *none = new None();
+    none->set_value(this->value()->copy());
+    return none;
 }

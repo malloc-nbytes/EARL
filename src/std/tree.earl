@@ -1,3 +1,5 @@
+import "std/stack.earl"
+
 mod Tree
 
 class Node [value] {
