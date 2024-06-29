@@ -282,6 +282,74 @@ class NoPassesArgs {
 }
 #+end_example
 
+* Datatypes
+
+#+begin_quote
+The following is a list of the currently implemented primitive types.
+#+end_quote
+
+** =int=
+
+#+begin_quote
+Your basic 32 bit integer datatype.
+
+*Note*: They *do* over/under-flow
+#+end_quote
+
+** =bool=
+
+#+begin_quote
+The boolean datatype. Can either be =true= or =false=.
+#+end_quote
+
+** =char=
+
+#+begin_quote
+A single character. They are surrounded by single quotes ='=.
+#+end_quote
+
+** =str=
+
+#+begin_quote
+A string is a list of =char='s. They are surrounded with double quotes ="=.
+#+end_quote
+
+** =list=
+
+#+begin_quote
+A list is a growable array. They can hold any datatype, and you
+can even mix multiple datatypes in a single list.
+#+end_quote
+
+** =none=
+
+#+begin_quote
+*Currently unstable*
+
+Because all variables need to be initialized when using a `let` statement,
+it may be annoying to be forced to give it some initial value. The =none= type
+allows you to set a variable to it and can be reassigned later.
+
+*Note*: A lot of the functionality of the language will break if you use =none=
+as another datatype before giving it an actual value.
+#+end_quote
+
+** =file=
+
+#+begin_quote
+The =file= type is a file handler. It handles opening, closing, reading, and writing
+to files.
+
+*Note*: It is up to the user to =close()= the file handle.
+#+end_quote
+
+** =unit=
+
+#+begin_quote
+Currently not being used in EARL, only in the interpreter. This type
+gets returned when doing things such as side effects, non-returning function calls, etc.
+#+end_quote
+
 * Intrinsics
 
 #+begin_quote
@@ -317,7 +385,7 @@ as an integer.
 
 ** =open=
 
-*** =open(fp: str, mode: str)=
+*** =open(fp: str, mode: str) -> file=
 
 #+begin_quote
 Opens the filepath =fp= with mode =mode=. Mode must either be
