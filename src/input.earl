@@ -1,7 +1,11 @@
+import "std/tree.earl"
+
 mod Main
 
-let s = "hello world";
-
-s.pop(1);
-
-print(s);
+let t = Tree.Tree();
+t.insert(9);
+t.insert(4);
+t.insert(6);
+t.insert(2);
+t.insert(1);
+t.dump();

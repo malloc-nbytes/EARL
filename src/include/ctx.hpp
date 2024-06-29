@@ -152,6 +152,8 @@ struct Ctx {
     Ctx *m_parent;
     earl::value::Class *curclass;
 
+    std::vector<earl::value::Class *> class_chain;
+
     /// @brief All children contexts from parsed imported files
     std::vector<std::unique_ptr<Ctx>> m_children_contexts;
 
