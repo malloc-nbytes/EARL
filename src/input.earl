@@ -1,24 +1,18 @@
-import "std/stack.earl"
-
 mod Main
 
-let f = open("input.earl", "r");
-
 let x = 1;
-let s = "hello world";
-let n = none;
-let c = 'a';
-let lst = [1,2,3,4,5];
-let lst_mix = [1,2,3, "hello", [4,5,6], 'a'];
-let st = Stack.T([]);
 
-print(type(x));
-print(type(s));
-print(type(n));
-print(type(c));
-print(type(lst));
-print(type(lst_mix));
-print(type(st));
-print(type(f));
-
-f.close();
+match x {
+    1 when x % 2 == 1 -> {
+        print("x is one");
+    }
+    2 -> {
+        print("x is two");
+    }
+    3 | 4 -> {
+        print("x is three");
+    }
+    _ -> {
+        print("x is something else");
+    }
+}

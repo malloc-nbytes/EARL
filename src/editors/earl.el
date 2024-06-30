@@ -40,7 +40,8 @@
     '("if" "else" "while" "let" "void" "int"
       "str" "for" "fn" "return" "break"
       "struct" "char" "import" "in" "mod"
-      "class" "true" "false" "none"
+      "class" "true" "false" "none" "match"
+      "when"
       ;; intrinsic functions
       "print" "assert" "len" "open"
       "is_none" "type"
