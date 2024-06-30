@@ -338,6 +338,8 @@ namespace earl {
             bool m_open;
         };
 
+        std::string type_to_str(Obj *);
+
         /// @brief Get an empty EARL value from a type
         /// @param s The string type to parse
         [[deprecated]] [[nodiscard]]
