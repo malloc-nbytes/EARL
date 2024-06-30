@@ -182,6 +182,9 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         return expr;
     } break;
     case TokenType::Keyword: {
+        if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
+            return nullptr;
+
         std::unique_ptr<Token> kw = lexer.next();
         if (kw->lexeme() == COMMON_EARLKW_TRUE) {
             return new ExprBool(std::move(kw), true);
@@ -198,11 +201,12 @@ static Expr *parse_primary_expr(Lexer &lexer) {
                       kw->lexeme().c_str());
         }
     } break;
-    default: {
-        Err::err_wtok(lexer.peek());
-        ERR_WARGS(Err::Type::Fatal, "invalid token `%s` while parsing primary expression",
-                  lexer.peek()->lexeme().c_str());
-    } break;
+    default: return nullptr;
+    // default: {
+    //     Err::err_wtok(lexer.peek());
+    //     ERR_WARGS(Err::Type::Fatal, "invalid token `%s` while parsing primary expression",
+    //               lexer.peek()->lexeme().c_str());
+    // } break;
     }
     assert(false && "unreachable");
     return nullptr; // unreachable
@@ -511,6 +515,55 @@ std::unique_ptr<StmtClass> parse_stmt_class(Lexer &lexer, uint32_t attrs) {
                                        std::move(methods));
 }
 
+static std::unique_ptr<StmtMatch::Branch> parse_branch(Lexer &lexer) {
+    std::vector<std::unique_ptr<Expr>> exprs = {};
+    std::optional<std::unique_ptr<Expr>> when = {};
+    std::unique_ptr<StmtBlock> block = nullptr;
+
+    while (1) {
+        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
+        if (lexer.peek()->type() == TokenType::Pipe)
+            lexer.discard();
+        else
+            break;
+    }
+
+    if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN) {
+        (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WHEN);
+        when = std::unique_ptr<Expr>(Parser::parse_expr(lexer));
+    }
+
+    (void)Parser::parse_expect(lexer, TokenType::RightArrow);
+
+    block = Parser::parse_stmt_block(lexer);
+
+    return std::make_unique<StmtMatch::Branch>(std::move(exprs), std::move(when), std::move(block));
+}
+
+static std::vector<std::unique_ptr<StmtMatch::Branch>> parse_branches(Lexer &lexer) {
+    std::vector<std::unique_ptr<StmtMatch::Branch>> branches;
+    while (lexer.peek()->type() != TokenType::Rbrace) {
+        branches.push_back(parse_branch(lexer));
+    }
+    return branches;
+}
+
+std::unique_ptr<StmtMatch> parse_stmt_match(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MATCH);
+
+    // The expression to match against
+    Expr *expr = Parser::parse_expr(lexer);
+
+    (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+
+    // The branches of the match statement
+    std::vector<std::unique_ptr<StmtMatch::Branch>> branches = parse_branches(lexer);
+
+    (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+
+    return std::make_unique<StmtMatch>(std::unique_ptr<Expr>(expr), std::move(branches));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
@@ -546,6 +599,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             }
             if (tok->lexeme() == COMMON_EARLKW_CLASS) {
                 return parse_stmt_class(lexer, attrs);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_MATCH) {
+                return parse_stmt_match(lexer);
             }
             Err::err_wtok(tok);
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());

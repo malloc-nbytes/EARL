@@ -158,3 +158,19 @@ Obj *List::copy(void) {
     list->append(this->value());
     return list;
 }
+
+bool List::eq(Obj *other) {
+    if (other->type() != Type::List)
+        return false;
+
+    auto *lst = dynamic_cast<List *>(other);
+
+    if (lst->value().size() != this->value().size())
+        return false;
+
+    for (size_t i = 0; i < lst->value().size(); ++i) {
+        if (!this->value()[i]->eq(lst->value()[i]))
+            return false;
+    }
+    return true;
+}

@@ -43,12 +43,13 @@ enum class StmtType {
     Mut,
     Stmt_Expr,
     If,
-    Stmt_Return,
-    Stmt_While,
-    Stmt_For,
+    Return,
+    While,
+    For,
     Import,
     Mod,
     Class,
+    Match,
 };
 
 /// The different types an expression can be.
@@ -369,6 +370,28 @@ struct StmtClass : public Stmt {
               std::vector<std::unique_ptr<StmtLet>> members,
               std::vector<std::unique_ptr<StmtDef>> methods);
 
+    StmtType stmt_type() const override;
+};
+
+struct StmtMatch : public Stmt {
+    struct Branch {
+        Branch(std::vector<std::unique_ptr<Expr>> expr,
+               std::optional<std::unique_ptr<Expr>> when,
+               std::unique_ptr<StmtBlock> block);
+
+        ~Branch() = default;
+
+        // m_expr is a vector to accomodate the `|`
+        // pattern as there can be multiple expressions.
+        std::vector<std::unique_ptr<Expr>> m_expr;
+        std::optional<std::unique_ptr<Expr>> m_when;
+        std::unique_ptr<StmtBlock> m_block;
+    };
+
+    std::unique_ptr<Expr> m_expr;
+    std::vector<std::unique_ptr<Branch>> m_branches;
+
+    StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Branch>> branches);
     StmtType stmt_type() const override;
 };
 

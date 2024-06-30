@@ -357,6 +357,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
 
+        if (ident->m_tok->lexeme() == "_") {
+            return new earl::value::Void();
+        }
+
         // Check for a module
         earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
         if (mod) {
@@ -542,6 +546,34 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
     return new earl::value::Void();
 }
 
+earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
+    earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    // Go through the branches
+    for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
+        StmtMatch::Branch *branch = stmt->m_branches[i].get();
+
+        // Go through the different expressions that are separated by `|`
+        for (size_t j = 0; j < branch->m_expr.size(); ++j) {
+            earl::value::Obj *potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
+            earl::value::Obj *guard = nullptr;
+
+            if (branch->m_when.has_value()) {
+                guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
+            }
+
+            if (potential_match->type() == earl::value::Type::Void
+                || (match_value->eq(potential_match) && (guard == nullptr || guard->boolean()))) {
+                delete potential_match;
+                if (guard) delete guard;
+                return eval_stmt_block(branch->m_block.get(), ctx);
+            }
+        }
+    }
+
+    return new earl::value::Void();
+}
+
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -565,14 +597,17 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::If: {
         return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_Return: {
+    case StmtType::Return: {
         return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_While: {
+    case StmtType::While: {
         return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_For: {
+    case StmtType::For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
+    } break;
+    case StmtType::Match: {
+        return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
     } break;
     case StmtType::Mod: {
         StmtMod *mod = dynamic_cast<StmtMod *>(stmt);

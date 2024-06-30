@@ -103,3 +103,7 @@ void File::mutate(Obj *other) {
 Obj *File::copy(void) {
     UNIMPLEMENTED("File::copy");
 }
+
+bool File::eq(Obj *other) {
+    UNIMPLEMENTED("File::eq");
+}

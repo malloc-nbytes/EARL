@@ -110,3 +110,7 @@ Obj *None::copy(void) {
     none->set_value(this->value()->copy());
     return none;
 }
+
+bool None::eq(Obj *other) {
+    UNIMPLEMENTED("None::eq");
+}

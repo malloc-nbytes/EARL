@@ -87,3 +87,8 @@ Obj *Char::copy(void) {
     return new Char(std::string(1, m_value));
 }
 
+bool Char::eq(Obj *other) {
+    if (other->type() != Type::Char)
+        return false;
+    return this->value() == dynamic_cast<Char *>(other)->value();
+}

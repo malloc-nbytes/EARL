@@ -148,3 +148,9 @@ void Str::mutate(Obj *other) {
 Obj *Str::copy(void) {
     return new Str(this->value());
 }
+
+bool Str::eq(Obj *other) {
+    if (other->type() != Type::Str)
+        return false;
+    return this->value() == dynamic_cast<Str *>(other)->value();
+}

@@ -26,6 +26,7 @@
 
 #include "earl.hpp"
 #include "err.hpp"
+#include "utils.hpp"
 
 using namespace earl::value;
 
@@ -120,4 +121,10 @@ void Int::mutate(Obj *other) {
 
 Obj *Int::copy(void) {
     return new Int(this->value());
+}
+
+bool Int::eq(Obj *other) {
+    if (other->type() != Type::Int)
+        return false;
+    return this->value() == dynamic_cast<Int *>(other)->value();
 }
