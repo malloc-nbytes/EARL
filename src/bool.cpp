@@ -84,3 +84,6 @@ Obj *Bool::copy(void) {
     return new Bool(m_value);
 }
 
+bool Bool::eq(Obj *other) {
+    UNIMPLEMENTED("Bool::eq");
+}

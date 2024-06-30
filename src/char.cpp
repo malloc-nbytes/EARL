@@ -87,3 +87,6 @@ Obj *Char::copy(void) {
     return new Char(std::string(1, m_value));
 }
 
+bool Char::eq(Obj *other) {
+    UNIMPLEMENTED("Char::eq");
+}

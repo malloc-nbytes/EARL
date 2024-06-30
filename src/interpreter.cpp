@@ -543,7 +543,11 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
-    UNIMPLEMENTED("eval_stmt_match");
+    earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {

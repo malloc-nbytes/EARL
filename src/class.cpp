@@ -104,4 +104,6 @@ Obj *Class::copy(void) {
     UNIMPLEMENTED("Class::copy");
 }
 
-
+bool Class::eq(Obj *other) {
+    UNIMPLEMENTED("Class::eq");
+}

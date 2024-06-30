@@ -100,6 +100,8 @@ namespace earl {
 
             /// @brief Copy THIS instance
             virtual Obj *copy(void) = 0;
+
+            virtual bool eq(Obj *other) = 0;
         };
 
         struct None : public Obj {
@@ -115,6 +117,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             Obj *m_value;
@@ -137,6 +140,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             int m_value;
@@ -155,6 +159,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             bool m_value;
@@ -172,6 +177,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             char m_value;
@@ -190,6 +196,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             void *m_value;
@@ -231,6 +238,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             std::vector<Obj *> m_value;
@@ -254,6 +262,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             std::vector<Char *> m_value;
@@ -271,6 +280,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             Ctx *m_value;
@@ -302,6 +312,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
             StmtClass *m_stmtclass;
             std::vector<std::unique_ptr<variable::Obj>> m_members;
@@ -330,6 +341,7 @@ namespace earl {
             bool boolean(void)                override;
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
 
         private:
             Str *m_fp;

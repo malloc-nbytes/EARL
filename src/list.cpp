@@ -158,3 +158,7 @@ Obj *List::copy(void) {
     list->append(this->value());
     return list;
 }
+
+bool List::eq(Obj *other) {
+    UNIMPLEMENTED("List::eq");
+}

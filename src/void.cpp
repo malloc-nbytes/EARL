@@ -58,3 +58,6 @@ Obj *Void::copy(void) {
     UNIMPLEMENTED("Void::copy");
 }
 
+bool Void::eq(Obj *other) {
+    UNIMPLEMENTED("Void::eq");
+}

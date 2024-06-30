@@ -55,3 +55,7 @@ void Module::mutate(Obj *other) {
 Obj *Module::copy(void) {
     UNIMPLEMENTED("Module::copy");
 }
+
+bool Module::eq(Obj *other) {
+    UNIMPLEMENTED("Module::eq");
+}

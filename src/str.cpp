@@ -148,3 +148,7 @@ void Str::mutate(Obj *other) {
 Obj *Str::copy(void) {
     return new Str(this->value());
 }
+
+bool Str::eq(Obj *other) {
+    UNIMPLEMENTED("Str::eq");
+}
