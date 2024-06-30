@@ -58,8 +58,8 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     return result;
 }
 
-earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx) {
-    if (!method->is_pub()) {
+earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+    if (!_this && !method->is_pub()) {
         ERR_WARGS(Err::Type::Fatal, "method `%s` in class `%s` does not contain the @pub attribute",
                   method->id().c_str(), klass->id().c_str());
     }
@@ -353,6 +353,13 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
             return eval_user_defined_class_method(method, params, klass, ctx);
+        }
+
+        else if (tmp->type() == earl::value::Type::This) {
+            assert(ctx.curclass);
+            auto *klass = ctx.curclass;
+            auto *method = klass->get_method(id);
+            return eval_user_defined_class_method(method, params, klass, ctx, true);
         }
 
         // Not a class, it is an intrinsic

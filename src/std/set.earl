@@ -20,10 +20,6 @@ class T [init] {
         }
     }
 
-    @pub fn test() {
-        print(this.root);
-    }
-
     @pub fn insert(value) {
         __insert(root, value);
     }
@@ -33,7 +29,7 @@ class T [init] {
     }
 
     @pub fn dump() {
-        __dump(root);
+        this.__dump(root);
     }
 
     fn __dump(@ref cur) {

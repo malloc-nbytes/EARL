@@ -6,15 +6,15 @@ class Node [value] {
     right = none;
 
     @pub fn value() {
-        return value;
+        return this.value;
     }
 
     @pub fn left() {
-        return left;
+        return this.left;
     }
 
     @pub fn right() {
-        return right;
+        return this.right;
     }
 }
 
@@ -58,15 +58,14 @@ class Node [value] {
     }
 
     @pub fn dump() {
-        print("here");
-        __dump(root);
+        __dump(this.root);
     }
 
     @pub fn contains(value) {
-        return __contains(root, value);
+        return __contains(this.root, value);
     }
 
     @pub fn insert(value) {
-        __insert(root, value);
+        __insert(this.root, value);
     }
 }
