@@ -203,14 +203,14 @@ StmtType StmtIf::stmt_type() const {
 StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 
 StmtType StmtReturn::stmt_type() const {
-    return StmtType::Stmt_Return;
+    return StmtType::Return;
 }
 
 StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block)
     : m_expr(std::move(expr)), m_block(std::move(block)) {}
 
 StmtType StmtWhile::stmt_type() const {
-    return StmtType::Stmt_While;
+    return StmtType::While;
 }
 
 StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
@@ -223,7 +223,7 @@ StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
       m_block(std::move(block)) {}
 
 StmtType StmtFor::stmt_type() const {
-    return StmtType::Stmt_For;
+    return StmtType::For;
 }
 
 StmtImport::StmtImport(std::unique_ptr<Token> fp)

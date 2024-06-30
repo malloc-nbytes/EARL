@@ -542,6 +542,10 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
     return new earl::value::Void();
 }
 
+earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
+    UNIMPLEMENTED("eval_stmt_match");
+}
+
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Let: {
@@ -565,14 +569,17 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::If: {
         return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_Return: {
+    case StmtType::Return: {
         return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_While: {
+    case StmtType::While: {
         return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
     } break;
-    case StmtType::Stmt_For: {
+    case StmtType::For: {
         return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
+    } break;
+    case StmtType::Match: {
+        return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
     } break;
     case StmtType::Mod: {
         StmtMod *mod = dynamic_cast<StmtMod *>(stmt);
