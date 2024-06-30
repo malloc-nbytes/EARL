@@ -58,6 +58,7 @@ class Node [value] {
     }
 
     @pub fn dump() {
+        print("here");
         __dump(root);
     }
 

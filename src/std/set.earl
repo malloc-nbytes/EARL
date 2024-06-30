@@ -22,6 +22,18 @@ class T [init] {
         }
     }
 
+    fn __dump(@ref cur) {
+        if is_none(cur) == false {
+            __dump(cur.left);
+            print(cur.value);
+            __dump(cur.right);
+        }
+    }
+
+    @pub fn dump() {
+        __dump(root);
+    }
+
     @pub fn insert(value) {
         __insert(root, value);
     }
