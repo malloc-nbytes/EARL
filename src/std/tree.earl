@@ -1,0 +1,71 @@
+mod Tree
+
+class Node [value] {
+    value = value;
+    left = none;
+    right = none;
+
+    @pub fn value() {
+        return value;
+    }
+
+    @pub fn left() {
+        return left;
+    }
+
+    @pub fn right() {
+        return right;
+    }
+}
+
+@pub class T {
+    root = none;
+
+    fn __insert(@ref cur, value) {
+        if is_none(cur) {
+            cur = Node(value);
+        }
+        else if value > cur.value() {
+            __insert(cur.right(), value);
+        }
+        else if value < cur.value() {
+            __insert(cur.left(), value);
+        }
+        else {
+            assert(false);
+        }
+    }
+
+    fn __contains(@ref cur, value) {
+        if is_none(cur) == false {
+            if cur.value() == value {
+                return true;
+            }
+            else if value > cur.value() {
+                return __contains(cur.right(), value);
+            }
+            return __contains(cur.left(), value);
+        }
+        return false;
+    }
+
+    fn __dump(@ref cur) {
+        if is_none(cur) == false {
+            __dump(cur.left());
+            print(cur.value());
+            __dump(cur.right());
+        }
+    }
+
+    @pub fn dump() {
+        __dump(root);
+    }
+
+    @pub fn contains(value) {
+        return __contains(root, value);
+    }
+
+    @pub fn insert(value) {
+        __insert(root, value);
+    }
+}

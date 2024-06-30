@@ -24,6 +24,7 @@
 
 #include "earl.hpp"
 #include "utils.hpp"
+#include "common.hpp"
 
 using namespace earl::variable;
 
@@ -41,4 +42,8 @@ earl::value::Obj *Obj::value(void) const {
 bool Obj::is_ref(void) const {
     UNIMPLEMENTED("is_ref");
     // return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
+}
+
+bool Obj::is_pub(void) const {
+    return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }

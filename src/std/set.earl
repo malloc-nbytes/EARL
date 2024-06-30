@@ -1,0 +1,16 @@
+mod Set
+
+class Node [value] {
+    @pub value = value;
+}
+
+@pub
+class T [start] {
+    @pub init = sort(start);
+    @pub other = start;
+
+    fn sort(lst) {
+        print(lst);
+        return 99;
+    }
+}

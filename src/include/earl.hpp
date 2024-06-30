@@ -389,6 +389,8 @@ namespace earl {
 
             bool is_ref(void) const;
 
+            bool is_pub(void) const;
+
         private:
             Token *m_id;
             std::unique_ptr<value::Obj> m_value;

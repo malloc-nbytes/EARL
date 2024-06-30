@@ -90,6 +90,22 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     return result;
 }
 
+earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx) {
+    earl::variable::Obj *member = klass->get_member(id);
+
+    if (!member->is_pub()) {
+        ERR_WARGS(Err::Type::Fatal, "member `%s` in class `%s` does not contain the @pub attribute",
+                  id.c_str(), klass->id().c_str());
+    }
+
+    if (!member) {
+        ERR_WARGS(Err::Type::Fatal, "class `%s` does not contain member `%s`",
+                  klass->id().c_str(), id.c_str());
+    }
+
+    return member->value();
+}
+
 earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     if (ctx.variable_is_registered(stmt->m_id->lexeme())) {
         ERR_WARGS(Err::Type::Redeclared,
@@ -128,6 +144,9 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
                   stmt->m_id->lexeme().c_str(), klass->id().c_str());
     }
 
+    ctx.class_chain.push_back(klass);
+    ctx.curclass = ctx.class_chain.back();
+
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
     earl::variable::Obj *created_variable = nullptr;
@@ -148,6 +167,14 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
     }
 
  reg:
+    ctx.class_chain.pop_back();
+    if (ctx.class_chain.size() != 0) {
+        ctx.curclass = ctx.class_chain.back();
+    }
+    else {
+        ctx.curclass = nullptr;
+    }
+
     // ctx.register_variable(created_variable);
     klass->add_member(std::unique_ptr<earl::variable::Obj>(created_variable));
 }
@@ -178,15 +205,15 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
         klass->m_ctxs.push_back(ctx.m_children_contexts[i].get());
     }
 
+    // Add the class methods
+    for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
+        auto method = std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(), &stmt->m_methods[i]->m_args);
+        klass->add_method(std::move(method));
+    }
+
     // Go through the constructor args and add the available variables
     for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
         klass->add_member_assignee(stmt->m_constructor_args[i].get());
-    }
-
-    // Add the class methods
-    for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-        klass->add_method(std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(),
-                                                                &stmt->m_methods[i]->m_args));
     }
 
     std::vector<Token *> &available_idents = klass->m_member_assignees;
@@ -195,6 +222,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     // to a temporary scope.
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         auto *value = Interpreter::eval_expr(expr->m_params[i].get(), ctx);
+
         auto *var = new earl::variable::Obj(available_idents[i],
                                             std::unique_ptr<earl::value::Obj>(value));
 
@@ -270,7 +298,19 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
 
     switch (right->get_term_type()) {
     case ExprTermType::Ident: {
-        UNIMPLEMENTED("eval_expr_get::ExprTermType::Ident");
+        ExprIdent *ident_expr = dynamic_cast<ExprIdent *>(right);
+        std::string &id = ident_expr->m_tok->lexeme();
+
+        if (left->type() == earl::value::Type::Class) {
+            auto *klass = dynamic_cast<earl::value::Class *>(left);
+            // auto *member = klass->get_member(id);
+            return get_class_member(id, klass, ctx);
+        }
+        else {
+            assert(false && "invalid getter operation `.`");
+        }
+
+        abort();
     } break;
     case ExprTermType::Func_Call: {
         ExprFuncCall *func_expr = dynamic_cast<ExprFuncCall *>(right);
