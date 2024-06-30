@@ -42,6 +42,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
     {"is_none", &Intrinsics::intrinsic_is_none},
+    {"type", &Intrinsics::intrinsic_type},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -182,6 +183,11 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
     }
     ERR_WARGS(Err::Type::Fatal, "canot call `len` on unsupported type (%d)", (int)params[0]->type());
     return nullptr;
+}
+
+earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(params.size() == 1);
+    return new earl::value::Str(earl::value::type_to_str(params[0]));
 }
 
 earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

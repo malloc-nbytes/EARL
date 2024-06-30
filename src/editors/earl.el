@@ -43,7 +43,7 @@
       "class" "true" "false" "none"
       ;; intrinsic functions
       "print" "assert" "len" "open"
-      "is_none"
+      "is_none" "type"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics

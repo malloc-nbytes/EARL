@@ -30,16 +30,35 @@
 #include "err.hpp"
 #include "utils.hpp"
 
-using namespace earl::value;
-
 static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type>> type_map = {
     {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::None}},
     {earl::value::Type::Bool, {earl::value::Type::Bool, earl::value::Type::None}},
-    {earl::value::Type::Char, {earl::value::Type::Char}},
+    {earl::value::Type::Char, {earl::value::Type::Char, earl::value::Type::None}},
     {earl::value::Type::Str, {earl::value::Type::Str, earl::value::Type::None}},
     {earl::value::Type::List, {earl::value::Type::List, earl::value::Type::None}},
     {earl::value::Type::Void, {earl::value::Type::Void}},
 };
+
+std::string earl::value::type_to_str(earl::value::Obj *obj) {
+    switch (obj->type()) {
+    case earl::value::Type::Int: return COMMON_EARLTY_INT32;
+    case earl::value::Type::Bool: return COMMON_EARLTY_BOOL;
+    case earl::value::Type::Char: return COMMON_EARLTY_CHAR;
+    case earl::value::Type::Str: return COMMON_EARLTY_STR;
+    case earl::value::Type::List: return COMMON_EARLTY_LIST;
+    case earl::value::Type::Class: return COMMON_EARLKW_CLASS;
+    case earl::value::Type::File: return COMMON_EARLTY_FILE;
+    case earl::value::Type::None: {
+        std::string res = "optional<";
+        auto *none = dynamic_cast<earl::value::None *>(obj);
+        if (none->value()) {
+            res += type_to_str(none->value());
+        }
+        return res + ">";
+    } break;
+    default: ERR_WARGS(Err::Type::Fatal, "unknown type `%d`", (int)obj->type());
+    }
+}
 
 bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
     earl::value::Type ty1 = obj1->type();
