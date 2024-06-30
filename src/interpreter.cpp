@@ -58,8 +58,8 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     return result;
 }
 
-earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx) {
-    if (!method->is_pub()) {
+earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+    if (!_this && !method->is_pub()) {
         ERR_WARGS(Err::Type::Fatal, "method `%s` in class `%s` does not contain the @pub attribute",
                   method->id().c_str(), klass->id().c_str());
     }
@@ -89,10 +89,10 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     return result;
 }
 
-earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx) {
+earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
     earl::variable::Obj *member = klass->get_member(id);
 
-    if (!member->is_pub()) {
+    if (!_this && !member->is_pub()) {
         ERR_WARGS(Err::Type::Fatal, "member `%s` in class `%s` does not contain the @pub attribute",
                   id.c_str(), klass->id().c_str());
     }
@@ -246,7 +246,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     if (constructor) {
         std::vector<earl::value::Obj *> unused = {};
-        eval_user_defined_class_method(constructor, unused, klass, ctx);
+        eval_user_defined_class_method(constructor, unused, klass, ctx, true);
     }
     // ctx.clear_tmp_scope();
     ctx.m_tmp_scope.pop_back();
@@ -321,6 +321,11 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             return get_class_member(id, klass, ctx);
         }
+        if (tmp->type() == earl::value::Type::This) {
+            assert(ctx.curclass);
+            auto *klass = ctx.curclass;
+            return get_class_member(id, klass, ctx, true);
+        }
         else {
             assert(false && "invalid getter operation `.`");
         }
@@ -348,6 +353,13 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
             return eval_user_defined_class_method(method, params, klass, ctx);
+        }
+
+        else if (tmp->type() == earl::value::Type::This) {
+            assert(ctx.curclass);
+            auto *klass = ctx.curclass;
+            auto *method = klass->get_method(id);
+            return eval_user_defined_class_method(method, params, klass, ctx, true);
         }
 
         // Not a class, it is an intrinsic
@@ -418,6 +430,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
 
         if (ident->m_tok->lexeme() == "_") {
             return new earl::value::Void();
+        }
+
+        if (ident->m_tok->lexeme() == "this") {
+            return new earl::value::This();
         }
 
         // Check for a module

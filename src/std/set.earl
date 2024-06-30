@@ -1,16 +1,20 @@
 mod Set
 
 class Node [value] {
-    @pub value = value;
+    @pub value = 0;
     @pub left = none;
     @pub right = none;
+
+    @pub fn constructor() {
+        this.value = value;
+    }
 }
 
 @pub
 class T [init] {
     root = none;
 
-    @pub fn constructor() {
+    fn constructor() {
         for i in 0..len(init) {
             insert(init[i]);
         }
@@ -22,6 +26,18 @@ class T [init] {
 
     @pub fn contains(value) {
         return __contains(root, value);
+    }
+
+    @pub fn dump() {
+        this.__dump(root);
+    }
+
+    fn __dump(@ref cur) {
+        if is_none(cur) == false {
+            __dump(cur.left);
+            print(cur.value);
+            __dump(cur.right);
+        }
     }
 
     fn __contains(@ref cur, value) {

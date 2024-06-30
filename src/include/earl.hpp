@@ -73,6 +73,8 @@ namespace earl {
             File,
             /** EARL none type */
             None,
+            /** EARL This type for getting class members */
+            This,
         };
 
         /// @brief The base abstract class that all
@@ -102,6 +104,18 @@ namespace earl {
             virtual Obj *copy(void) = 0;
 
             virtual bool eq(Obj *other) = 0;
+        };
+
+        struct This : public Obj {
+            This();
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
         };
 
         struct None : public Obj {
