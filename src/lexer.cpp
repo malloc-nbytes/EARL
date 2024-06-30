@@ -53,6 +53,8 @@ void Lexer::append(std::unique_ptr<Token> tok) {
 Token *Lexer::peek(size_t n) {
     Token *tok = m_hd.get();
     for (size_t i = 0; i < n && tok; ++i) {
+        if (!tok)
+            return nullptr;
         tok = tok->m_next.get();
     }
     return tok;

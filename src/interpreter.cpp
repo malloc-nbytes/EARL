@@ -41,6 +41,8 @@
 #include "earl.hpp"
 #include "lexer.hpp"
 
+static Ctx *parent_ctx = nullptr;
+
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
@@ -221,12 +223,15 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         params.push_back(Interpreter::eval_expr(expr->m_params.at(i).get(), ctx));
     }
 
-    // Check if we are creating a new class instance
-    if (ctx.class_is_registered(expr->m_id->lexeme())) {
-        return eval_class_instantiation(expr, ctx, true);
-    }
-    else if (ctx.curclass != nullptr && ctx.curclass->m_owner->class_is_registered(expr->m_id->lexeme())) {
+    if (ctx.curclass && ctx.curclass->m_owner->class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, *(ctx.curclass->m_owner), false);
+    }
+    else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.get_module()->lexeme() == parent_ctx->get_module()->lexeme()) {
+        return eval_class_instantiation(expr, ctx, false);
+    }
+    else if (ctx.class_is_registered(expr->m_id->lexeme())) {
+        std::cout << ctx.get_module()->lexeme() << ' ' << parent_ctx->get_module()->lexeme() << std::endl;
+        return eval_class_instantiation(expr, ctx, true);
     }
 
     // Check if the funccall is intrinsic
@@ -612,6 +617,10 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     case StmtType::Mod: {
         StmtMod *mod = dynamic_cast<StmtMod *>(stmt);
         ctx.set_module(std::move(mod->m_id));
+
+        if (!parent_ctx)
+            parent_ctx = &ctx;
+
         return new earl::value::Void();
     } break;
     case StmtType::Import: {

@@ -607,11 +607,17 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());
         } break;
         case TokenType::Ident: {
-            if (lexer.peek(1)->type() == TokenType::Lparen
-                || lexer.peek(1)->type() == TokenType::Period) {
-                return parse_stmt_expr(lexer);
+            for (size_t i = 0; lexer.peek(i) && lexer.peek(i)->type() != TokenType::Semicolon; ++i) {
+                if (lexer.peek(i)->type() == TokenType::Equals) {
+                    return parse_stmt_mut(lexer);
+                }
             }
-            return parse_stmt_mut(lexer);
+            return parse_stmt_expr(lexer);
+            // if (lexer.peek(1)->type() == TokenType::Lparen
+            //     || lexer.peek(1)->type() == TokenType::Period) {
+            //     return parse_stmt_expr(lexer);
+            // }
+            // return parse_stmt_mut(lexer);
         } break;
         case TokenType::At: {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
