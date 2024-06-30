@@ -1,3 +1,14 @@
 mod Main
 
+import "std/queue.earl"
 
+let q = Queue.T([]);
+
+for i in 0..10 {
+    q.enqueue(i);
+}
+
+while q.empty() == false {
+    print(q.peek());
+    q.dequeue();
+}

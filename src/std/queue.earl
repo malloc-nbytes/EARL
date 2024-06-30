@@ -1,0 +1,28 @@
+mod Queue
+
+@pub
+class T [init] {
+    m_lst = init;
+
+    @pub fn empty() {
+        return len(m_lst) == 0;
+    }
+
+    @pub fn enqueue(value) {
+        m_lst.append(value);
+    }
+
+    @pub fn dequeue() {
+        assert(empty() == false);
+        m_lst.pop(0);
+    }
+
+    @pub fn peek() {
+        assert(empty() == false);
+        return m_lst[0];
+    }
+
+    @pub fn size() {
+        return len(m_lst);
+    }
+}

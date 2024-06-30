@@ -230,7 +230,6 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         return eval_class_instantiation(expr, ctx, false);
     }
     else if (ctx.class_is_registered(expr->m_id->lexeme())) {
-        std::cout << ctx.get_module()->lexeme() << ' ' << parent_ctx->get_module()->lexeme() << std::endl;
         return eval_class_instantiation(expr, ctx, true);
     }
 

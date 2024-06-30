@@ -613,11 +613,6 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
                 }
             }
             return parse_stmt_expr(lexer);
-            // if (lexer.peek(1)->type() == TokenType::Lparen
-            //     || lexer.peek(1)->type() == TokenType::Period) {
-            //     return parse_stmt_expr(lexer);
-            // }
-            // return parse_stmt_mut(lexer);
         } break;
         case TokenType::At: {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
