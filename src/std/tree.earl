@@ -21,6 +21,15 @@ class Node [value] {
 @pub class T {
     root = none;
 
+    fn gen_comparison(value) {
+        match type(value) {
+            "int" -> { return value; }
+            "char" -> { return value.ascii(); }
+            "str" -> { assert(false); }
+            "list" -> { assert(false); }
+        }
+    }
+
     fn __insert(@ref cur, value) {
         if is_none(cur) {
             cur = Node(value);

@@ -56,6 +56,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
+    {"ascii", &Intrinsics::intrinsic_member_ascii},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -106,6 +107,15 @@ earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::
     assert(unused.size() == 0);
     auto *f = dynamic_cast<earl::value::File *>(obj);
     return f->read();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+    assert(obj->type() == earl::value::Type::Char);
+    assert(unused.size() == 0);
+
+    return
+        new earl::value::Int(static_cast<int>(dynamic_cast<earl::value::Char *>(obj)->value()));
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {

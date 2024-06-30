@@ -55,7 +55,7 @@
       "world" "pub" "ref"
       ;; Stdlib Modules
       "IO" "List" "Math" "Stack" "Utils"
-      "Str" "Tree"
+      "Str" "Tree" "Set"
       )))
 
 (defconst earl-highlights
