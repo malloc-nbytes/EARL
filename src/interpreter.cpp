@@ -73,7 +73,6 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     for (size_t i = 0; i < klass->m_members.size(); ++i) {
         ctx.register_variable(klass->m_members[i].get());
     }
-
     earl::value::Obj *result = eval_stmt_block(method->block(), ctx);
 
     method->clear_locals();
@@ -199,6 +198,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt, &ctx);
+    earl::function::Obj *constructor = nullptr;
 
     // Let the class know all imports available in the current context.
     for (size_t i = 0; i < ctx.m_children_contexts.size(); ++i) {
@@ -208,6 +208,9 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     // Add the class methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
         auto method = std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(), &stmt->m_methods[i]->m_args);
+        if (method->id() == "constructor") {
+            constructor = method.get();
+        }
         klass->add_method(std::move(method));
     }
 
@@ -239,7 +242,10 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
         load_class_members(let, klass, ctx);
     }
 
-    // Clear the constructor variables
+    if (constructor) {
+        std::vector<earl::value::Obj *> unused = {};
+        eval_user_defined_class_method(constructor, unused, klass, ctx);
+    }
     ctx.clear_tmp_scope();
 
     return klass;

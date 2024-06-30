@@ -2,15 +2,34 @@ mod Set
 
 class Node [value] {
     @pub value = value;
+    @pub left = none;
+    @pub right = none;
 }
 
 @pub
-class T [start] {
-    @pub init = sort(start);
-    @pub other = start;
+class T [init] {
+    root = none;
 
-    fn sort(lst) {
-        print(lst);
-        return 99;
+    fn __insert(@ref cur, value) {
+        if is_none(cur) {
+            cur = Node(value);
+        }
+        else if value > cur.value {
+            __insert(cur.right, value);
+        }
+        else if value < cur.value {
+            __insert(cur.left, value);
+        }
     }
+
+    @pub fn insert(value) {
+        __insert(root, value);
+    }
+
+    @pub fn constructor() {
+        for i in 0..len(init) {
+            insert(init[i]);
+        }
+    }
+
 }

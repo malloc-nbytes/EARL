@@ -137,7 +137,9 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
 
     if (curclass != nullptr) {
         auto *member = curclass->get_member(id);
-        if (member) return member;
+        if (member) {
+            return member;
+        }
     }
 
     if (in_function() && get_curfunc()->is_world()) {
