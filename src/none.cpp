@@ -44,6 +44,12 @@ bool None::empty(void) {
     return this->value() == nullptr;
 }
 
+Obj *None::convert(void) {
+    auto *val = m_value;
+    delete this;
+    return val;
+}
+
 Type None::type(void) const {
     return Type::None;
 }
@@ -102,7 +108,26 @@ bool None::boolean(void) {
 }
 
 void None::mutate(Obj *other) {
-    this->set_value(other);
+    Obj *tmp = other;
+    if (other->type() == Type::None) {
+        auto *none = dynamic_cast<None *>(tmp);
+        assert(none->value());
+        tmp = none->value();
+    }
+
+    if (other->type() == Type::None) {
+        auto *none = dynamic_cast<None *>(other);
+        if (none->value()) {
+            this->set_value(other);
+        }
+        else {
+            delete m_value;
+            m_value = nullptr;
+        }
+    }
+    else {
+        this->set_value(other);
+    }
 }
 
 Obj *None::copy(void) {

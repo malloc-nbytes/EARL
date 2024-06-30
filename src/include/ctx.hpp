@@ -159,6 +159,8 @@ struct Ctx {
 
     std::vector<std::unordered_map<std::string, earl::variable::Obj *>> m_tmp_scope;
 
+    Ctx *prev;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
@@ -181,8 +183,6 @@ private:
 
     /// @brief The stacktrace of EARL function calls.
     std::vector<earl::function::Obj *> m_stacktrace;
-
-    // Scope<std::string, earl::variable::Obj *> m_tmp_scope;
 };
 
 #endif // CTX_H

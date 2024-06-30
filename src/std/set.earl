@@ -1,13 +1,11 @@
+import "std/math.earl"
+
 mod Set
 
 class Node [value] {
-    @pub value = 0;
+    @pub value = value;
     @pub left = none;
     @pub right = none;
-
-    @pub fn constructor() {
-        this.value = value;
-    }
 }
 
 @pub

@@ -124,6 +124,7 @@ namespace earl {
             void set_value(Obj *other);
             Obj *value(void);
             bool empty(void);
+            Obj *convert(void);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

@@ -322,11 +322,20 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             return get_class_member(id, klass, ctx);
         }
         if (tmp->type() == earl::value::Type::This) {
-            assert(ctx.curclass);
-            auto *klass = ctx.curclass;
+            earl::value::Class *klass = nullptr;
+
+            if (!ctx.curclass && ctx.prev) {
+                assert(ctx.prev->curclass);
+                klass = ctx.prev->curclass;
+            }
+            if (!klass) {
+                klass = ctx.curclass;
+            }
+            assert(klass);
             return get_class_member(id, klass, ctx, true);
         }
         else {
+            std::cout << earl::value::type_to_str(tmp) << std::endl;
             assert(false && "invalid getter operation `.`");
         }
 
@@ -352,7 +361,9 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
-            return eval_user_defined_class_method(method, params, klass, ctx);
+            // auto *res = eval_user_defined_class_method(method, params, klass, ctx);
+            auto *res = eval_user_defined_class_method(method, params, klass, *klass->m_owner);
+            return res;
         }
 
         else if (tmp->type() == earl::value::Type::This) {
@@ -391,7 +402,10 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 
     if (left->type() == earl::value::Type::Module) {
         auto *mod = dynamic_cast<earl::value::Module *>(left);
-        return Interpreter::eval_expr(expr->m_right.get(), *mod->value());
+        mod->value()->prev = &ctx;
+        auto *res = Interpreter::eval_expr(expr->m_right.get(), *mod->value());
+        mod->value()->prev = nullptr;
+        return res;
     }
     else {
         return eval_expr_get2(expr, ctx);
