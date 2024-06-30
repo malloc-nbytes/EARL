@@ -124,5 +124,7 @@ Obj *Int::copy(void) {
 }
 
 bool Int::eq(Obj *other) {
-    UNIMPLEMENTED("Int::eq");
+    if (other->type() != Type::Int)
+        return false;
+    return this->value() == dynamic_cast<Int *>(other)->value();
 }

@@ -3,16 +3,21 @@ mod Main
 let x = 1;
 
 match x {
-    1 when x % 2 == 1 -> {
-        print("x is one");
+    1 when x % 2 == 0 -> {
+        print("x is one and it is even???");
+    }
+    1 -> {
+        print("x is one and it is odd");
     }
     2 -> {
         print("x is two");
     }
     3 | 4 -> {
-        print("x is three");
+        print("x is three or four");
     }
     _ -> {
         print("x is something else");
     }
 }
+
+print("done");

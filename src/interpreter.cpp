@@ -545,7 +545,21 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
 earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
     earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
-    
+    for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
+        StmtMatch::Branch *branch = stmt->m_branches[i].get();
+
+        for (size_t j = 0; j < branch->m_expr.size(); ++j) {
+            earl::value::Obj *potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
+            earl::value::Obj *guard = nullptr;
+            if (branch->m_when.has_value()) {
+                guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
+            }
+
+            if ((match_value->eq(potential_match) && (guard == nullptr || guard->boolean()))) {
+                return eval_stmt_block(branch->m_block.get(), ctx);
+            }
+        }
+    }
 
     return new earl::value::Void();
 }
