@@ -357,6 +357,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
 
+        if (ident->m_tok->lexeme() == "_") {
+            return new earl::value::Void();
+        }
+
         // Check for a module
         earl::value::Module *mod = ctx.get_registered_module(ident->m_tok->lexeme());
         if (mod) {
@@ -551,11 +555,15 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
         for (size_t j = 0; j < branch->m_expr.size(); ++j) {
             earl::value::Obj *potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
             earl::value::Obj *guard = nullptr;
+
             if (branch->m_when.has_value()) {
                 guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
             }
 
-            if ((match_value->eq(potential_match) && (guard == nullptr || guard->boolean()))) {
+            if (potential_match->type() == earl::value::Type::Void
+                || (match_value->eq(potential_match) && (guard == nullptr || guard->boolean()))) {
+                delete potential_match;
+                if (guard) delete guard;
                 return eval_stmt_block(branch->m_block.get(), ctx);
             }
         }
