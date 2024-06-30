@@ -2,11 +2,20 @@ mod Tree
 
 class Node [value] {
     value = value;
+    count = 1;
     left = none;
     right = none;
 
     @pub fn value() {
         return value;
+    }
+
+    @pub fn count() {
+        return count;
+    }
+
+    @pub fn incr_count() {
+        count = count+1;
     }
 
     @pub fn left() {
@@ -23,10 +32,21 @@ class Node [value] {
 
     fn gen_comparison(value) {
         match type(value) {
-            "int" -> { return value; }
-            "char" -> { return value.ascii(); }
-            "str" -> { assert(false); }
-            "list" -> { assert(false); }
+            "int" -> {
+                return value;
+            }
+            "char" -> {
+                return value.ascii();
+            }
+            "str" -> {
+                assert(false);
+            }
+            "list" -> {
+                assert(false);
+            }
+            _ -> {
+                assert(false);
+            }
         }
     }
 
@@ -41,7 +61,7 @@ class Node [value] {
             __insert(cur.left(), value);
         }
         else {
-            assert(false);
+            cur.incr_count();
         }
     }
 
@@ -61,7 +81,9 @@ class Node [value] {
     fn __dump(@ref cur) {
         if is_none(cur) == false {
             __dump(cur.left());
-            print(cur.value());
+            for i in 0..cur.count() {
+                print(cur.value());
+            }
             __dump(cur.right());
         }
     }

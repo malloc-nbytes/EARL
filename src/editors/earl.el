@@ -49,6 +49,8 @@
       "rev" "nth" "append" "pop"
       ;; str member intrinsics
       "split" "remove_lines"
+      ;; char member intrinsics
+      "ascii"
       ;; file member intrinsics
       "read" "close" "dump"
       ;; function attributes
