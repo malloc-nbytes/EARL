@@ -262,18 +262,27 @@ void Ctx::add_to_tmp_scope(earl::variable::Obj *var) {
     if (var_in_tmp_scope(id)) {
         ERR_WARGS(Err::Type::Fatal, "variable %s is already in tmp scope", id.c_str());
     }
-    m_tmp_scope.add(id, var);
+    m_tmp_scope.back().insert({id, var});
 }
 
 bool Ctx::var_in_tmp_scope(const std::string &id) {
-    return m_tmp_scope.contains(id);
+    if (m_tmp_scope.size() == 0)
+        return false;
+
+    auto it = m_tmp_scope.back().find(id);
+
+    if (it == m_tmp_scope.back().end())
+        return false;
+
+    return true;
 }
 
 earl::variable::Obj *Ctx::get_var_from_tmp_scope(const std::string &id) {
     if (!var_in_tmp_scope(id)) {
         ERR_WARGS(Err::Type::Fatal, "variable %s is not in tmp scope", id.c_str());
     }
-    return *m_tmp_scope.get(id);
+
+    return m_tmp_scope.back().at(id);
 }
 
 void Ctx::clear_tmp_scope(void) {

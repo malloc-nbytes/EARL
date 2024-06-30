@@ -221,6 +221,8 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     std::vector<Token *> &available_idents = klass->m_member_assignees;
 
+    ctx.m_tmp_scope.emplace_back();
+
     // Evaluate [x, y, z,...] in class def and add each one
     // to a temporary scope.
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
@@ -246,7 +248,8 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
         std::vector<earl::value::Obj *> unused = {};
         eval_user_defined_class_method(constructor, unused, klass, ctx);
     }
-    ctx.clear_tmp_scope();
+    // ctx.clear_tmp_scope();
+    ctx.m_tmp_scope.pop_back();
 
     return klass;
 }
@@ -307,9 +310,15 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         ExprIdent *ident_expr = dynamic_cast<ExprIdent *>(right);
         std::string &id = ident_expr->m_tok->lexeme();
 
-        if (left->type() == earl::value::Type::Class) {
-            auto *klass = dynamic_cast<earl::value::Class *>(left);
-            // auto *member = klass->get_member(id);
+        earl::value::Obj *tmp = left;
+        if (left->type() == earl::value::Type::None) {
+            auto *none = dynamic_cast<earl::value::None *>(tmp);
+            assert(none->value());
+            tmp = none->value();
+        }
+
+        if (tmp->type() == earl::value::Type::Class) {
+            auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             return get_class_member(id, klass, ctx);
         }
         else {

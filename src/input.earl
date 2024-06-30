@@ -1,6 +1,6 @@
 mod Main
 
 import "std/set.earl"
-# let s = Set.T([9,9,4,5,5,2,1,1]);
-let s = Set.T([9,3,4,2,9,9]);
 
+let s = Set.T([9,3,4,2,9,9]);
+s.dump();
