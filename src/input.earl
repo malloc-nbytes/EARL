@@ -3,4 +3,4 @@ mod Main
 import "std/set.earl"
 
 let s = Set.T([9,3,4,2,9,9]);
-s.dump();
+print(s.contains(3));

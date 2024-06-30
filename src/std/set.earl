@@ -10,6 +10,33 @@ class Node [value] {
 class T [init] {
     root = none;
 
+    @pub fn constructor() {
+        for i in 0..len(init) {
+            insert(init[i]);
+        }
+    }
+
+    @pub fn insert(value) {
+        __insert(root, value);
+    }
+
+    @pub fn contains(value) {
+        return __contains(root, value);
+    }
+
+    fn __contains(@ref cur, value) {
+        if is_none(cur) {
+            return false;
+        }
+        if value > cur.value {
+            return __contains(cur.right, value);
+        }
+        else if value < cur.value {
+            return __contains(cur.left, value);
+        }
+        return true;
+    }
+
     fn __insert(@ref cur, value) {
         if is_none(cur) {
             cur = Node(value);
@@ -21,27 +48,4 @@ class T [init] {
             __insert(cur.left, value);
         }
     }
-
-    fn __dump(@ref cur) {
-        if is_none(cur) == false {
-            __dump(cur.left);
-            print(cur.value);
-            __dump(cur.right);
-        }
-    }
-
-    @pub fn dump() {
-        __dump(root);
-    }
-
-    @pub fn insert(value) {
-        __insert(root, value);
-    }
-
-    @pub fn constructor() {
-        for i in 0..len(init) {
-            insert(init[i]);
-        }
-    }
-
 }
