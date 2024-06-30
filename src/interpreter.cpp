@@ -89,10 +89,10 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     return result;
 }
 
-earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx) {
+earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
     earl::variable::Obj *member = klass->get_member(id);
 
-    if (!member->is_pub()) {
+    if (!_this && !member->is_pub()) {
         ERR_WARGS(Err::Type::Fatal, "member `%s` in class `%s` does not contain the @pub attribute",
                   id.c_str(), klass->id().c_str());
     }
@@ -321,6 +321,11 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             return get_class_member(id, klass, ctx);
         }
+        if (tmp->type() == earl::value::Type::This) {
+            assert(ctx.curclass);
+            auto *klass = ctx.curclass;
+            return get_class_member(id, klass, ctx, true);
+        }
         else {
             assert(false && "invalid getter operation `.`");
         }
@@ -418,6 +423,10 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
 
         if (ident->m_tok->lexeme() == "_") {
             return new earl::value::Void();
+        }
+
+        if (ident->m_tok->lexeme() == "this") {
+            return new earl::value::This();
         }
 
         // Check for a module
