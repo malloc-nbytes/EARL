@@ -85,5 +85,7 @@ Obj *Bool::copy(void) {
 }
 
 bool Bool::eq(Obj *other) {
-    UNIMPLEMENTED("Bool::eq");
+    if (other->type() != Type::Bool)
+        return false;
+    return this->value() == dynamic_cast<Bool *>(other)->value();
 }

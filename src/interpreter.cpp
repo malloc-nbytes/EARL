@@ -246,7 +246,7 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     if (constructor) {
         std::vector<earl::value::Obj *> unused = {};
-        eval_user_defined_class_method(constructor, unused, klass, ctx);
+        eval_user_defined_class_method(constructor, unused, klass, ctx, true);
     }
     // ctx.clear_tmp_scope();
     ctx.m_tmp_scope.pop_back();

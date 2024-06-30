@@ -14,7 +14,7 @@ class Node [value] {
 class T [init] {
     root = none;
 
-    @pub fn constructor() {
+    fn constructor() {
         for i in 0..len(init) {
             insert(init[i]);
         }
