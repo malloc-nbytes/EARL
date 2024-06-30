@@ -150,5 +150,7 @@ Obj *Str::copy(void) {
 }
 
 bool Str::eq(Obj *other) {
-    UNIMPLEMENTED("Str::eq");
+    if (other->type() != Type::Str)
+        return false;
+    return this->value() == dynamic_cast<Str *>(other)->value();
 }

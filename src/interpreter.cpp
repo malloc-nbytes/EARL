@@ -549,9 +549,11 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
 earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
     earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
+    // Go through the branches
     for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
         StmtMatch::Branch *branch = stmt->m_branches[i].get();
 
+        // Go through the different expressions that are separated by `|`
         for (size_t j = 0; j < branch->m_expr.size(); ++j) {
             earl::value::Obj *potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
             earl::value::Obj *guard = nullptr;

@@ -88,5 +88,7 @@ Obj *Char::copy(void) {
 }
 
 bool Char::eq(Obj *other) {
-    UNIMPLEMENTED("Char::eq");
+    if (other->type() != Type::Char)
+        return false;
+    return this->value() == dynamic_cast<Char *>(other)->value();
 }

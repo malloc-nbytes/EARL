@@ -1,22 +1,19 @@
 mod Main
 
-let x = 99;
+let lst = [1,2,3,'a'];
 
-match x {
-    1 when x % 2 == 0 -> {
-        print("x is one and it is even???");
+match lst {
+    [7,8,9] -> {
+        print(1);
     }
-    1 -> {
-        print("x is one and it is odd");
+    [4,5,6] -> {
+        print(2);
     }
-    2 -> {
-        print("x is two");
-    }
-    3 | 4 -> {
-        print("x is three or four");
+    [1,2,3,'a'] -> {
+        print(3);
     }
     _ -> {
-        print("x is something else");
+        print("it is something else");
     }
 }
 
