@@ -62,12 +62,12 @@ bool Option::boolean(void) {
 }
 
 void Option::mutate(Obj *other) {
-    if (other->type() == Type::Option) {
-        m_value = dynamic_cast<Option *>(other)->value();
-        delete other;
+    if (other->type() != Type::Option) {
+        ERR(Err::Type::Fatal, "tried to assign a raw value to an option type");
     }
-    else
-        m_value = other;
+
+    m_value = dynamic_cast<Option *>(other)->value();
+    delete other;
 }
 
 Obj *Option::copy(void) {

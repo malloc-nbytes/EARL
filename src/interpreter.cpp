@@ -340,8 +340,9 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             return get_class_member(id, klass, ctx, true);
         }
         else {
-            std::cout << earl::value::type_to_str(tmp) << std::endl;
-            assert(false && "invalid getter operation `.`");
+            Err::err_wtok(ident_expr->m_tok.get());
+            ERR_WARGS(Err::Type::Fatal, "object `%s` does not contains a method/intrinsic for `%s`",
+                      earl::value::type_to_str(tmp).c_str(), ident_expr->m_tok->lexeme().c_str());
         }
 
         abort();
@@ -407,9 +408,9 @@ earl::value::Obj *eval_expr_get(ExprGet *expr, Ctx &ctx) {
 
     if (left->type() == earl::value::Type::Module) {
         auto *mod = dynamic_cast<earl::value::Module *>(left);
-        mod->value()->prev = &ctx;
+        mod->value()->prev = &ctx; // REMOVE ME
         auto *res = Interpreter::eval_expr(expr->m_right.get(), *mod->value());
-        mod->value()->prev = nullptr;
+        mod->value()->prev = nullptr; // REMOVE ME
         return res;
     }
     else {
