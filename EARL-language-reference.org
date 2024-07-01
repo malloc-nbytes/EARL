@@ -23,12 +23,53 @@
 <id> | /expr/ = /expr/;
 
 * Conditionals
-
 =if= /expr/ *{* [stmt] *}*
 
 =else if= /expr/ *{* [stmt] *}*
 
 =else= *{* [stmt] *}*
+
+* TODO Pattern Matching
+#+begin_quote
+Pattern matching allows you to match on some pattern. This is
+the case for all primitives =int=, =str=, =list= etc.
+
+A =match= consists of a two things.
+1. The pattern \rightarrow this comes right after the =match= keyword
+2. Branches \rightarrow these are all the different patterns can be
+
+Each branch can either specify one pattern or multiple patterns with the =|= (or) operator.
+The =when= keyword acts as a /guard/ for the branch. If the pattern matches, only then is the
+/guard/ evaluated. If the /guard/ is true, only then will the branch activate.
+
+And finally, the base case consists of the pattern =_=. If none of the other branches *above* this
+one happens, this one is guaranteed to happen (unless there is a guard).
+#+end_quote
+
+Grammar TODO
+
+** Example
+
+#+begin_example
+let x = 4;
+let msg = "foo";
+
+match x {
+    1 -> { print("x is 1"); }
+    2 | 3 -> { print("x is two or three"); }
+    [1,2,3] when type(x) == "list" -> { print(x is a list and is [1,2,3]") };
+    4 when msg = "bar" -> { print("x is 4 with msg = bar"); }
+    4 when msg = "foo" -> { print("x is 4 with msg = foo"); }
+    _ when msg = "hello" -> { print("base case, 4 is something else and msg = hello"); }
+    _ -> { print("base case, 4 is something else"); }
+}
+#+end_example
+
+Output:
+
+#+begin_example
+x is 4 with msg = foo
+#+end_example
 
 * While Loops
 =while= /expr/ *{* [stmt] *}*
@@ -127,7 +168,8 @@ not have it, the entire file is private. While modules
 do allow other files to access resources, only resources
 that have the =@pub= attribute.
 
-It is expected to have the module declaration near the top of the file.
+*It is expected to have the module declaration at the top of the file.
+If you do not follow this rule, undefined behavior will ocurr.*
 #+end_quote
 
 ** Grammar
@@ -145,9 +187,9 @@ fn sum(a, b) { return a+b; }
 
 file: =main.earl=
 #+begin_example
-import "my-math.earl"
-
 mod Main
+
+import "my-math.earl"
 
 let s = MyMath.sum(1, 2);
 #+end_example
@@ -218,12 +260,6 @@ While classes are available, support for inheritance is not yet implemented.
 
     =@= *(pub | world | ref) <member2> = <id> | /expr/ =;=
 
-    .
-
-    .
-
-    .
-
     <methods>
 
 =}=
@@ -240,7 +276,8 @@ class NoPassesArgs {
     y = 2;
 
     @pub fn print() {
-        print(x, y);
+        The use of `this` keyword is optional
+        print(this.x, y);
     }
 }
 #+end_example
@@ -250,34 +287,47 @@ class NoPassesArgs {
     x = x;
     y = y;
     name = name;
+
+    # Because this is public, you can access
+    # it directly from outside the class.
     @pub desc = "A point class"
 
     @pub set_x(newx) {
-        x = newx
+        this.x = newx
     }
 
     @pub dump() {
-        print(x);
-        print(y);
-        print(name);
-        print(desc);
+        print(this.x);
+        print(this.y);
+        print(this.name);
+        print(this.desc);
     }
 }
 #+end_example
 
 #+begin_example
 @pub class Stack [init] {
-    lst = init;
+    # You could just assign `init` to `lst` here,
+    # but for this example, this is done in the constructor.
+    lst = [];
     sz = len(lst);
 
+    # The constructor gets called
+    # right after class instantiation.
+    fn constructor() {
+        for i in 0..len(init) {
+            this.push(init[i]);
+        }
+    }
+
     @pub fn push(x) {
-        lst.append(x);
-        sz = sz+1;
+        this.lst.append(x);
+        this.sz = this.sz+1;
     }
 
     @pub fn pop() {
-        lst.pop(sz-1);
-        sz = sz-1;
+        this.lst.pop(this.sz-1);
+        this.sz = this.sz-1;
     }
 }
 #+end_example
@@ -321,14 +371,18 @@ A list is a growable array. They can hold any datatype, and you
 can even mix multiple datatypes in a single list.
 #+end_quote
 
-** =none=
+** =option=
 
 #+begin_quote
-*Currently unstable*
-
 Because all variables need to be initialized when using a `let` statement,
 it may be annoying to be forced to give it some initial value. The =none= type
 allows you to set a variable to it and can be reassigned later.
+
+To assign a value to a none-type, you must wrap it in =some= i.e.,
+
+=let x = none;=
+
+=x = some(9);=
 
 *Note*: A lot of the functionality of the language will break if you use =none=
 as another datatype before giving it an actual value.
@@ -383,13 +437,29 @@ Expects either a =list= or =string=. Will give the length
 as an integer.
 #+end_quote
 
-** =open=
+** =some(arg: any) -> option<any>=
 
-*** =open(fp: str, mode: str) -> file=
+#+begin_quote
+Wraps =arg= in an =option= type.
+#+end_quote
+
+** =type(arg: any) -> str=
+
+#+begin_quote
+Returns the type of =arg= as a =str=.
+#+end_quote
+
+** =open(fp: str, mode: str) -> file=
 
 #+begin_quote
 Opens the filepath =fp= with mode =mode=. Mode must either be
 =r= for read or =w= for write.
+#+end_quote
+
+** =unimplemented(arg1, arg2, ..., argN)=
+
+#+begin_quote
+Prints arg1..arg$N$ to =stderr= and exits with non-zero exit code.
 #+end_quote
 
 * Member Intrinsics
@@ -397,6 +467,11 @@ Opens the filepath =fp= with mode =mode=. Mode must either be
 #+begin_quote
 Member intrinsics are the same as intrinsics, except they are
 member functions (or methods) that types have built into them.
+You access these with the dot `.` notation i.e.,
+
+=let lst = [1,2,3];=
+
+=lst.rev();=
 #+end_quote
 
 ** =list= Implementes
@@ -419,7 +494,7 @@ Will append arg1..arg$N$ to the list.
 Will remove the element at index =idx=.
 #+end_quote
 
-** =str= Implementes
+** =str= Implements
 
 *** =split(delim: str) -> list=
 
@@ -431,6 +506,28 @@ Split a string by the delimiter =delim=.
 
 #+begin_quote
 Will remove the element at index =idx=.
+#+end_quote
+
+** =char= Implements
+
+*** =ascii() -> int=
+
+#+begin_quote
+Returns the ascii code of the character.
+#+end_quote
+
+** =option= Implements
+
+*** =is_none() -> bool=
+
+#+begin_quote
+Returns =true= if the value is =none=, =false= otherwise.
+#+end_quote
+
+*** =is_some() -> bool=
+
+#+begin_quote
+Returns =true= if the value is =some=, =false= otherwise.
 #+end_quote
 
 ** =file= Implements
@@ -531,6 +628,46 @@ while s.empty() != true {
 2
 1
 #+end_example
+
+** Set
+
+*** *Import*: ="std/set.earl"=
+
+*** *Module*: =Set=
+
+*** *Class List*:
+
+*** =T [init: list] -> Set.T=
+
+*Note:* The =set= currently only works with integers.
+
+#+begin_quote
+Creates a =Set= container with the initializer list =init=.
+#+end_quote
+
+*** Implements
+
+=insert(elem: any) -> unit=
+
+#+begin_quote
+Inserts =elem= into the =set=.
+#+end_quote
+
+=contains(elem: any) -> bool=
+
+#+begin_quote
+Check if =elem= is in the set.
+#+end_quote
+
+=dump() -> unit=
+
+#+begin_quote
+Prints the contents of the =set=.
+#+end_quote
+
+*** *Function List*: /None/
+
+*** TODO *Examples*
 
 ** List
 
@@ -646,4 +783,3 @@ Returns =true= if =n= is even, =false= if odd.
 #+begin_quote
 Swaps the values of =x1= and =x2=.
 #+end_quote
-
