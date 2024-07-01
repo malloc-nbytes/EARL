@@ -44,6 +44,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"is_none", &Intrinsics::intrinsic_is_none},
     {"type", &Intrinsics::intrinsic_type},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
+    {"some", &Intrinsics::intrinsic_some},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -58,6 +59,9 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    {"unwrap", &Intrinsics::intrinsic_member_unwrap},
+    {"is_none", &Intrinsics::intrinsic_member_is_none},
+    {"is_some", &Intrinsics::intrinsic_member_is_some},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -89,9 +93,10 @@ earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std
     (void)ctx;
 
     earl::value::Obj *tmp = obj;
-    if (obj->type() == earl::value::Type::None) {
-        return intrinsic_member_substr(dynamic_cast<earl::value::None *>(tmp)->value(), idxs, ctx);
-    }
+    // FIXME
+    // if (obj->type() == earl::value::Type::None) {
+    //     return intrinsic_member_substr(dynamic_cast<earl::value::None *>(tmp)->value(), idxs, ctx);
+    // }
 
     assert(obj->type() == earl::value::Type::Str);
     assert(idxs.size() == 2);
@@ -196,7 +201,14 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
     return nullptr;
 }
 
+earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(params.size() == 1);
+    return new earl::value::Option(params[0]);
+}
+
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)expr;
+    (void)ctx;
     assert(params.size() == 1);
     return new earl::value::Str(earl::value::type_to_str(params[0]));
 }
@@ -215,18 +227,22 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
 }
 
 earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)params;
+    (void)ctx;
     (void)expr;
 
     bool res = true;
 
-    for (size_t i = 0; i < params.size(); ++i) {
-        assert(params[i]->type() == earl::value::Type::None);
-        auto *none = dynamic_cast<earl::value::None *>(params[i]);
-        if (none->value()) {
-            res = false;
-            break;
-        }
-    }
+    UNIMPLEMENTED("Intrinsics::intrinsic_is_none");
+    // FIXME
+    // for (size_t i = 0; i < params.size(); ++i) {
+    //     assert(params[i]->type() == earl::value::Type::None);
+    //     auto *none = dynamic_cast<earl::value::None *>(params[i]);
+    //     if (none->value()) {
+    //         res = false;
+    //         break;
+    //     }
+    // }
 
     return new earl::value::Bool(res);
 }
@@ -258,13 +274,16 @@ static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
         auto *bool_param = dynamic_cast<earl::value::Bool *>(param);
         std::cout << (bool_param->value() ? "true" : "false");
     } break;
-    case earl::value::Type::None: {
-        auto *none_param = dynamic_cast<earl::value::None *>(param);
+    case earl::value::Type::Option: {
+        auto *option_param = dynamic_cast<earl::value::Option *>(param);
 
-        if (!none_param->value())
+        if (option_param->is_none())
             std::cout << "<none>";
-        else
-            __intrinsic_print(expr, none_param->value());
+        else {
+            std::cout << "some(";
+            __intrinsic_print(expr, option_param->value());
+            std::cout << ")";
+        }
 
     } break;
     case earl::value::Type::Str: {
@@ -357,4 +376,32 @@ earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std:
     auto *f = dynamic_cast<earl::value::File *>(obj);
     f->close();
     return new earl::value::Void();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(unused.size() == 0);
+    assert(obj->type() == earl::value::Type::Option);
+
+    auto *none = dynamic_cast<earl::value::Option *>(obj);
+
+    if (!none->value()) {
+        ERR(Err::Type::Fatal, "tried to unwrap none value");
+    }
+
+    return none->value();
+}
+
+
+earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(obj->type() == earl::value::Type::Option);
+    assert(unused.size() == 0);
+
+    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_none());
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_is_some(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(obj->type() == earl::value::Type::Option);
+    assert(unused.size() == 0);
+
+    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_some());
 }

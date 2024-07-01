@@ -1,2 +1,10 @@
+import "std/linked-list.earl"
+
 mod Main
 
+let ll = SinglyLL.T();
+ll.add(9);
+ll.add(4);
+ll.add(8);
+ll.add(2);
+ll.dump();

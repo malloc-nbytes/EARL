@@ -90,6 +90,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
 }
 
 earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+    (void)ctx;
     earl::variable::Obj *member = klass->get_member(id);
 
     if (!_this && !member->is_pub()) {
@@ -182,8 +183,8 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     // Make sure the class exists
     StmtClass *stmt = nullptr;
     for (size_t i = 0; i < ctx.available_classes.size(); ++i) {
-        if (ctx.available_classes[i]->m_id->lexeme() == expr->m_id->lexeme()) {
-            stmt = ctx.available_classes[i];
+        if (ctx.available_classes[i].first->m_id->lexeme() == expr->m_id->lexeme()) {
+            stmt = ctx.available_classes[i].first;
         }
     }
 
@@ -266,6 +267,9 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.get_module()->lexeme() == parent_ctx->get_module()->lexeme()) {
         return eval_class_instantiation(expr, ctx, false);
     }
+    else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.owns_class(expr->m_id->lexeme())) {
+        return eval_class_instantiation(expr, ctx, false);
+    }
     else if (ctx.class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, ctx, true);
     }
@@ -311,11 +315,12 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         std::string &id = ident_expr->m_tok->lexeme();
 
         earl::value::Obj *tmp = left;
-        if (left->type() == earl::value::Type::None) {
-            auto *none = dynamic_cast<earl::value::None *>(tmp);
-            assert(none->value());
-            tmp = none->value();
-        }
+        // FIXME
+        // if (left->type() == earl::value::Type::None) {
+        //     auto *none = dynamic_cast<earl::value::None *>(tmp);
+        //     assert(none->value());
+        //     tmp = none->value();
+        // }
 
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
@@ -351,11 +356,11 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         });
 
         earl::value::Obj *tmp = left;
-        if (left->type() == earl::value::Type::None) {
-            auto *none = dynamic_cast<earl::value::None *>(left);
-            assert(none->value());
-            tmp = none->value();
-        }
+        // if (left->type() == earl::value::Type::None) {
+        //     auto *none = dynamic_cast<earl::value::None *>(left);
+        //     assert(none->value());
+        //     tmp = none->value();
+        // }
 
         // Check if class
         if (tmp->type() == earl::value::Type::Class) {
@@ -464,9 +469,8 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         ExprBool *boolean = dynamic_cast<ExprBool *>(expr);
         return new earl::value::Bool(boolean->m_value);
     } break;
-        case ExprTermType::None: {
-        ExprNone *boolean = dynamic_cast<ExprNone *>(expr);
-        return new earl::value::None();
+    case ExprTermType::None: {
+        return new earl::value::Option();
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
@@ -631,7 +635,7 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
-    ctx.available_classes.push_back(stmt);
+    ctx.available_classes.push_back(std::make_pair(stmt, &ctx));
     return new earl::value::Void();
 }
 

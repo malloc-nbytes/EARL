@@ -88,8 +88,22 @@ earl::value::Class *Ctx::get_registered_class(const std::string &id) {
 
 bool Ctx::class_is_registered(const std::string &id) {
     for (auto &klass : available_classes) {
-        if (klass->m_id->lexeme() == id)
+        if (klass.first->m_id->lexeme() == id)
             return true;
+    }
+    return false;
+}
+
+bool Ctx::owns_class(const std::string id) {
+    for (auto &klass : available_classes) {
+        if (klass.first->m_id->lexeme() == id) {
+            if (klass.second == this) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
     }
     return false;
 }

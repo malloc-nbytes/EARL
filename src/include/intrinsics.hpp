@@ -109,6 +109,8 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic_unimplemented(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     /// @brief Get the `nth` value in a list
@@ -137,6 +139,10 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 
     earl::value::Obj *intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_is_some(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

@@ -50,11 +50,12 @@ Obj *Int::binop(Token *op, Obj *other) {
     }
 
     Obj *tmp = other;
-    if (other->type() == Type::None) {
-        auto *none = dynamic_cast<None *>(tmp);
-        assert(none->value());
-        tmp = none->value();
-    }
+    // FIXME
+    // if (other->type() == Type::None) {
+    //     auto *none = dynamic_cast<None *>(tmp);
+    //     assert(none->value());
+    //     tmp = none->value();
+    // }
 
     switch (op->type()) {
     case TokenType::Plus: {
