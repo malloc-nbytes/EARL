@@ -116,6 +116,8 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
 
     earl::variable::Obj *created_variable = nullptr;
 
+
+    // TODO: get this to work with things such as let x = this.hd.unwrap() etc.
     if (stmt->m_expr->get_type() == ExprType::Term
         && (dynamic_cast<ExprTerm *>(stmt->m_expr.get())->get_term_type() != ExprTermType::Ident)) {
         created_variable = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);

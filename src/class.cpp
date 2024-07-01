@@ -37,14 +37,6 @@ const std::string &Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
 }
 
-void Class::constructor(Ctx &ctx) {
-    UNIMPLEMENTED("Class::constructor");
-    // for (size_t i = 0; i < m_stmtclass->m_members.size(); ++i) {
-    //     StmtLet *let = m_stmtclass->m_members[i].get();
-    //     // auto *var = new earl::variable::Obj();
-    // }
-}
-
 void Class::add_member_assignees(std::vector<Token *> &assignees) {
     std::for_each(assignees.begin(), assignees.end(), [&](auto &a) {
         m_member_assignees.push_back(a);
@@ -72,7 +64,7 @@ earl::function::Obj *Class::get_method(const std::string &id) {
 
     // ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
     //           id.c_str(), this->id().c_str());
-    return nullptr; // unreachable
+    return nullptr;
 }
 
 earl::variable::Obj *Class::get_member(const std::string &id) {
