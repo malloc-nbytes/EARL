@@ -66,8 +66,15 @@ void Option::mutate(Obj *other) {
         ERR(Err::Type::Fatal, "tried to assign a raw value to an option type");
     }
 
-    m_value = dynamic_cast<Option *>(other)->value();
-    delete other;
+    auto *other2 = dynamic_cast<Option *>(other);
+
+    if (other2->is_none()) {
+        m_value = nullptr;
+    }
+    else {
+        m_value = other2->value();
+    }
+
 }
 
 Obj *Option::copy(void) {

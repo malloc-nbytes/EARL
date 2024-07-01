@@ -1,11 +1,47 @@
 mod Main
 
-let a = some(1);
+# class Node [value] {
+#     @pub value = value;
+#     @pub next = none;
+# }
 
-match a {
-    some(_) when a.unwrap() == 1 -> {
-        print("a is some one");
-    }
-}
+# class LinkedList [init] {
+#     hd = none;
 
-print("here");
+#     fn constructor() {
+#         for i in 0..len(init) {
+#             this.append(init[i]);
+#         }
+#     }
+
+#     @pub fn append(value) {
+#         let n = Node(value);
+#         if this.hd.is_none() {
+#             this.hd = some(n);
+#         }
+#         else {
+#             n.next = this.hd;
+#             this.hd = some(n);
+#         }
+#     }
+
+#     @pub fn dump() {
+#         let it = this.hd;
+#         while it.is_some() {
+#             print(it.unwrap().value);
+#             it = it.unwrap().next;
+#         }
+#     }
+# }
+
+# let l = LinkedList([]);
+# l.append(1);
+# l.append(2);
+# l.append(3);
+
+# l.dump();
+# l.dump();
+
+let x = 1;
+let y = 2;
+let z = 1+2;

@@ -159,6 +159,7 @@ fn test_point_class_import() {
     print("test_point_class_import...");
 
     let p1 = PointClass.Point(1, 2, "my point 1");
+
     assert(p1.get_x() == 1);
     assert(p1.get_y() == 2);
     assert(p1.get_name() == "my point 1");
