@@ -75,6 +75,17 @@ Obj *Option::copy(void) {
 }
 
 bool Option::eq(Obj *other) {
-    UNIMPLEMENTED("Option::eq");
+    if (other->type() != Type::Option)
+        return false;
+
+    auto *other2 = dynamic_cast<Option *>(other);
+
+    if (this->is_none() && other2->is_none())
+        return true;
+
+    if ((this->is_some() && other2->is_some()) == 0)
+        return false;
+
+    return this->value()->eq(other2->value());
 }
 

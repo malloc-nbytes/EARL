@@ -1,3 +1,11 @@
 mod Main
 
+let a = some(1);
 
+match a {
+    some(_) when a.unwrap() == 1 -> {
+        print("a is some one");
+    }
+}
+
+print("here");
