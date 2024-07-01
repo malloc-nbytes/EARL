@@ -2,7 +2,6 @@ import "../../std/list.earl"
 import "../../std/math.earl"
 import "../../std/utils.earl"
 import "../../std/stack.earl"
-import "../../std/tree.earl"
 
 mod TestStd
 
