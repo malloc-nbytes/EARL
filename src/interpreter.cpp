@@ -112,14 +112,20 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
                   "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    bool result_type = false;
+    earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx, &result_type);
 
     earl::variable::Obj *created_variable = nullptr;
 
 
-    // TODO: get this to work with things such as let x = this.hd.unwrap() etc.
-    if (stmt->m_expr->get_type() == ExprType::Term
-        && (dynamic_cast<ExprTerm *>(stmt->m_expr.get())->get_term_type() != ExprTermType::Ident)) {
+    // FIXME: get this to work with things such as let x = this.hd.unwrap() etc.
+    // if (stmt->m_expr->get_type() == ExprType::Term
+    //     && (dynamic_cast<ExprTerm *>(stmt->m_expr.get())->get_term_type() != ExprTermType::Ident)) {
+    //     created_variable = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
+    //     goto reg;
+    // }
+
+    if (stmt->m_expr->get_type() == ExprType::Term && result_type) {
         created_variable = new earl::variable::Obj(stmt->m_id.get(), std::unique_ptr<earl::value::Obj>(rhs_result), stmt->m_attrs);
         goto reg;
     }
@@ -210,7 +216,11 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     // Add the class methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-        auto method = std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(), &stmt->m_methods[i]->m_args);
+        std::vector<std::pair<Token *, uint32_t>> args;
+        for (auto &entry : stmt->m_methods[i]->m_args) {
+            args.push_back(std::make_pair(entry.first.get(), entry.second));
+        }
+        auto method = std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(), args);
         if (method->id() == "constructor") {
             constructor = method.get();
         }
@@ -445,7 +455,7 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
     return result;
 }
 
-earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
+earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx, bool *result_type = nullptr) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         ExprIdent *ident = dynamic_cast<ExprIdent *>(expr);
@@ -469,28 +479,42 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         return stored->value();
     } break;
     case ExprTermType::Bool: {
+        if (result_type)
+            *result_type = true;
         ExprBool *boolean = dynamic_cast<ExprBool *>(expr);
         return new earl::value::Bool(boolean->m_value);
     } break;
     case ExprTermType::None: {
+        if (result_type)
+            *result_type = true;
         return new earl::value::Option();
     } break;
     case ExprTermType::Int_Literal: {
+        if (result_type)
+            *result_type = true;
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);
         return new earl::value::Int(std::stoi(intlit->m_tok->lexeme()));
     } break;
     case ExprTermType::Str_Literal: {
+        if (result_type)
+            *result_type = true;
         ExprStrLit *strlit = dynamic_cast<ExprStrLit *>(expr);
         return new earl::value::Str(strlit->m_tok->lexeme());
     } break;
     case ExprTermType::Char_Literal: {
+        if (result_type)
+            *result_type = true;
         ExprCharLit *charlit = dynamic_cast<ExprCharLit *>(expr);
         return new earl::value::Char(charlit->m_tok->lexeme());
     } break;
     case ExprTermType::Func_Call: {
+        if (result_type)
+            *result_type = true;
         return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
     } break;
     case ExprTermType::List_Literal: {
+        if (result_type)
+            *result_type = true;
         return eval_expr_list_literal(dynamic_cast<ExprListLit *>(expr), ctx);
     } break;
     case ExprTermType::Get: {
@@ -507,22 +531,22 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
     }
 }
 
-earl::value::Obj *eval_expr_bin(ExprBinary *expr, Ctx &ctx) {
-    earl::value::Obj *lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
-    earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+earl::value::Obj *eval_expr_bin(ExprBinary *expr, Ctx &ctx, bool *result_type = nullptr) {
+    earl::value::Obj *lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, result_type);
+    earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, result_type);
 
     earl::value::Obj *result = lhs->binop(expr->m_op.get(), rhs);
 
     return result;
 }
 
-earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx) {
+earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx, bool *result_type) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+        return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, result_type);
     } break;
     case ExprType::Binary: {
-        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
+        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx, result_type);
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "unknown expr type %d", static_cast<int>(expr->get_type()));
@@ -559,7 +583,13 @@ earl::value::Obj *eval_stmt_def(StmtDef *stmt, Ctx &ctx) {
                   "function `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    earl::function::Obj *created_function = new earl::function::Obj(stmt, &stmt->m_args);
+    std::vector<std::pair<Token *, uint32_t>> args;
+
+    for (auto &entry : stmt->m_args) {
+        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    }
+
+    earl::function::Obj *created_function = new earl::function::Obj(stmt, args);
     ctx.register_function(created_function);
     return new earl::value::Void();
 }

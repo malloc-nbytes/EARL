@@ -31,7 +31,7 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *params) : m_stmtdef(stmtdef), m_params(params) {
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {
     m_local.emplace_back();
 }
 
@@ -52,7 +52,7 @@ const std::string &Obj::id(void) const {
 }
 
 size_t Obj::params_len(void) const {
-    return m_params->size();
+    return m_params.size();
 }
 
 StmtBlock *Obj::block(void) const {
@@ -109,14 +109,14 @@ void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
         earl::value::Obj *value = values[i];
 
         earl::variable::Obj *var = nullptr;
-        if ((m_params->at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
+        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
             var
-                = new earl::variable::Obj(m_params->at(i).first.get(),
+                = new earl::variable::Obj(m_params.at(i).first,
                                           std::unique_ptr<earl::value::Obj>(value));
         }
         else {
             var
-                = new earl::variable::Obj(m_params->at(i).first.get(),
+                = new earl::variable::Obj(m_params.at(i).first,
                                           std::unique_ptr<earl::value::Obj>(value->copy()));
         }
 
@@ -143,3 +143,6 @@ void Obj::debug_dump(void) const {
     }
 }
 
+Obj *Obj::copy(void) {
+    return new Obj(m_stmtdef, m_params);
+}

@@ -33,7 +33,7 @@
 namespace Interpreter {
 
     Ctx *interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
-    earl::value::Obj *eval_expr(Expr *expr, Ctx &ctx);
+    earl::value::Obj *eval_expr(Expr *expr, Ctx &ctx, bool *result_type = nullptr);
 };
 
 #endif // INTERPRETER_H

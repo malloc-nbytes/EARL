@@ -47,3 +47,8 @@ bool Obj::is_ref(void) const {
 bool Obj::is_pub(void) const {
     return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
+
+Obj *Obj::copy(void) {
+    return new Obj(m_id, std::unique_ptr<value::Obj>(m_value->copy()), m_attrs);
+}
+

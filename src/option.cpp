@@ -78,7 +78,10 @@ void Option::mutate(Obj *other) {
 }
 
 Obj *Option::copy(void) {
-    UNIMPLEMENTED("Option::copy");
+    if (this->is_some()) {
+        return new Option(m_value->copy());
+    }
+    return new Option();
 }
 
 bool Option::eq(Obj *other) {

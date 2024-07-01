@@ -101,7 +101,17 @@ void File::mutate(Obj *other) {
 }
 
 Obj *File::copy(void) {
-    UNIMPLEMENTED("File::copy");
+    ERR(Err::Type::Fatal, "unable to copy file handler");
+    // File *copy = new File(m_fp, m_mode, m_stream);
+
+    // if (m_open) {
+    //     copy->set_open();
+    // }
+    // else {
+    //     copy->set_closed();
+    // }
+
+    // return copy;
 }
 
 bool File::eq(Obj *other) {
