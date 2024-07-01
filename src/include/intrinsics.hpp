@@ -137,6 +137,8 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 
     earl::value::Obj *intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 };
 
 #endif // INTRINSICS_H

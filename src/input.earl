@@ -1,2 +1,19 @@
 mod Main
 
+# class Node [value] {
+#     @pub fn value = value;
+#     @pub fn next = none;
+# }
+
+# class LinkedList {
+#     hd = none;
+#
+#     @pub fn insert(value) {
+#     }
+# }
+
+let n = none;
+print(n);
+n = 1;
+
+print(n.unwrap());

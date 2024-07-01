@@ -351,11 +351,11 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         });
 
         earl::value::Obj *tmp = left;
-        if (left->type() == earl::value::Type::None) {
-            auto *none = dynamic_cast<earl::value::None *>(left);
-            assert(none->value());
-            tmp = none->value();
-        }
+        // if (left->type() == earl::value::Type::None) {
+        //     auto *none = dynamic_cast<earl::value::None *>(left);
+        //     assert(none->value());
+        //     tmp = none->value();
+        // }
 
         // Check if class
         if (tmp->type() == earl::value::Type::Class) {

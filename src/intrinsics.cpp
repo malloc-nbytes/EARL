@@ -58,6 +58,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    {"unwrap", &Intrinsics::intrinsic_member_unwrap},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -358,3 +359,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std:
     f->close();
     return new earl::value::Void();
 }
+
+earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(unused.size() == 0);
+    assert(obj->type() == earl::value::Type::None);
+
+    auto *none = dynamic_cast<earl::value::None *>(obj);
+
+    if (!none->value()) {
+        ERR(Err::Type::Fatal, "tried to unwrap none value");
+    }
+
+    return none->value();
+}
+

@@ -365,6 +365,23 @@ namespace earl {
             bool m_open;
         };
 
+        struct Option : public Obj {
+            Obj *value(void);
+            bool is_some(void) const;
+            bool is_none(void) const;
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
+
+        private:
+            Obj *m_value;
+        };
+
         std::string type_to_str(Obj *);
 
         /// @brief Get an empty EARL value from a type
