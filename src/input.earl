@@ -1,13 +1,2 @@
 mod Main
 
-import "std/set.earl"
-
-let s = Set.T([9,1,13,7,4,2]);
-
-s.dump();
-
-print();
-
-s.remove(9);
-
-# s.dump();

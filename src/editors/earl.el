@@ -44,7 +44,7 @@
       "when" "constructor" "this"
       ;; intrinsic functions
       "print" "assert" "len" "open"
-      "is_none" "type"
+      "is_none" "type" "unimplemented"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics

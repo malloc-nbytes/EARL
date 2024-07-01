@@ -26,6 +26,10 @@ class T [init] {
         return __contains(root, value);
     }
 
+    @pub fn remove(value) {
+        unimplemented("Set.T.remove");
+    }
+
     @pub fn dump() {
         this.__dump(root);
     }

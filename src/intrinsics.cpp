@@ -43,6 +43,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"open", &Intrinsics::intrinsic_open},
     {"is_none", &Intrinsics::intrinsic_is_none},
     {"type", &Intrinsics::intrinsic_type},
+    {"unimplemented", &Intrinsics::intrinsic_unimplemented},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -198,6 +199,19 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     assert(params.size() == 1);
     return new earl::value::Str(earl::value::type_to_str(params[0]));
+}
+
+earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    std::cerr << "[EARL] UNIMPLEMENTED";
+
+    if (params.size() != 0) {
+        std::cerr << ": ";
+        Intrinsics::intrinsic_print(expr, params, ctx);
+    }
+
+    exit(1);
+
+    return nullptr; // unreachable
 }
 
 earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
