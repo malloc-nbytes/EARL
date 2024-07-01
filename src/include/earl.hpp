@@ -406,6 +406,8 @@ namespace earl {
 
             bool is_pub(void) const;
 
+            Obj *copy(void);
+
         private:
             Token *m_id;
             std::unique_ptr<value::Obj> m_value;
@@ -420,7 +422,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *params);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params);
             ~Obj() = default;
 
             /// @brief Get the identifier of this function
@@ -487,9 +489,11 @@ namespace earl {
             /// for a QAD solution.
             std::vector<Scope<std::string, variable::Obj *>> m_local;
 
+            Obj *copy(void);
+
         private:
             StmtDef *m_stmtdef;
-            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> *m_params;
+            std::vector<std::pair<Token *, uint32_t>> m_params;
         };
     };
 };

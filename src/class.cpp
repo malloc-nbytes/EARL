@@ -93,7 +93,21 @@ void Class::mutate(Obj *other) {
 }
 
 Obj *Class::copy(void) {
-    UNIMPLEMENTED("Class::copy");
+    auto *copy = new Class(m_stmtclass, m_owner);
+
+    for (auto &member : m_members) {
+        copy->add_member(std::unique_ptr<variable::Obj>(member.get()->copy()));
+    }
+
+    for (auto &method : m_methods) {
+        copy->add_method(std::unique_ptr<function::Obj>(method.get()->copy()));
+    }
+
+    for (auto &ctx : m_ctxs) {
+        copy->m_ctxs.push_back(ctx);
+    }
+
+    return copy;
 }
 
 bool Class::eq(Obj *other) {
