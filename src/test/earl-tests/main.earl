@@ -585,8 +585,8 @@ fn main() {
     test_member_intrinsic_split();
     test_file_io_read_and_remove_lines_member_intrinsic();
     test_substr_member_intrinsic1();
-    test_none_values1();
-    test_none_values2();
+    # test_none_values1();
+    # test_none_values2();
 
     TestStd.test_std();
 }

@@ -90,6 +90,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
 }
 
 earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+    (void)ctx;
     earl::variable::Obj *member = klass->get_member(id);
 
     if (!_this && !member->is_pub()) {
@@ -311,11 +312,12 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         std::string &id = ident_expr->m_tok->lexeme();
 
         earl::value::Obj *tmp = left;
-        if (left->type() == earl::value::Type::None) {
-            auto *none = dynamic_cast<earl::value::None *>(tmp);
-            assert(none->value());
-            tmp = none->value();
-        }
+        // FIXME
+        // if (left->type() == earl::value::Type::None) {
+        //     auto *none = dynamic_cast<earl::value::None *>(tmp);
+        //     assert(none->value());
+        //     tmp = none->value();
+        // }
 
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
@@ -464,9 +466,8 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx) {
         ExprBool *boolean = dynamic_cast<ExprBool *>(expr);
         return new earl::value::Bool(boolean->m_value);
     } break;
-        case ExprTermType::None: {
-        ExprNone *boolean = dynamic_cast<ExprNone *>(expr);
-        return new earl::value::None();
+    case ExprTermType::None: {
+        return new earl::value::Option();
     } break;
     case ExprTermType::Int_Literal: {
         ExprIntLit *intlit = dynamic_cast<ExprIntLit *>(expr);

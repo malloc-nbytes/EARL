@@ -46,11 +46,12 @@ Obj *Bool::binop(Token *op, Obj *other) {
     }
 
     Obj *tmp = other;
-    if (other->type() == Type::None) {
-        auto *none = dynamic_cast<None *>(tmp);
-        assert(none->value());
-        tmp = none->value();
-    }
+    // FIXME
+    // if (other->type() == Type::None) {
+    //     auto *none = dynamic_cast<None *>(tmp);
+    //     assert(none->value());
+    //     tmp = none->value();
+    // }
 
     switch (op->type()) {
     case TokenType::Double_Equals: {
@@ -77,6 +78,7 @@ bool Bool::boolean(void) {
 }
 
 void Bool::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Bool::mutate");
 }
 

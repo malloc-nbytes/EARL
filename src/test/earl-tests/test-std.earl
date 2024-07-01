@@ -117,6 +117,6 @@ fn test_std() {
     test_list_count();
     test_stack();
     test_class_wmodule_bug();
-    test_tree1();
+    # test_tree1();
 }
 

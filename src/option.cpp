@@ -30,6 +30,8 @@
 
 using namespace earl::value;
 
+Option::Option(Obj *value) : m_value(value) {}
+
 Obj *Option::value(void) {
     return m_value;
 }
@@ -42,9 +44,13 @@ bool Option::is_none(void) const {
     return m_value == nullptr;
 }
 
+void Option::set_value(Obj *other) {
+    m_value = other;
+}
+
 /*** OVERRIDES ***/
 Type Option::type(void) const {
-    UNIMPLEMENTED("Option::type");
+    return Type::Option;
 }
 
 Obj *Option::binop(Token *op, Obj *other) {
@@ -56,7 +62,12 @@ bool Option::boolean(void) {
 }
 
 void Option::mutate(Obj *other) {
-    UNIMPLEMENTED("Option::mutate");
+    if (other->type() == Type::Option) {
+        m_value = dynamic_cast<Option *>(other)->value();
+        delete other;
+    }
+    else
+        m_value = other;
 }
 
 Obj *Option::copy(void) {

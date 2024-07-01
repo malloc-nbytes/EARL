@@ -45,6 +45,7 @@
       ;; intrinsic functions
       "print" "assert" "len" "open"
       "is_none" "type" "unimplemented"
+      "some"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics

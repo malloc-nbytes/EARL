@@ -31,11 +31,11 @@
 #include "utils.hpp"
 
 static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type>> type_map = {
-    {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::None}},
-    {earl::value::Type::Bool, {earl::value::Type::Bool, earl::value::Type::None}},
-    {earl::value::Type::Char, {earl::value::Type::Char, earl::value::Type::None}},
-    {earl::value::Type::Str, {earl::value::Type::Str, earl::value::Type::None}},
-    {earl::value::Type::List, {earl::value::Type::List, earl::value::Type::None}},
+    {earl::value::Type::Int, {earl::value::Type::Int}},
+    {earl::value::Type::Bool, {earl::value::Type::Bool}},
+    {earl::value::Type::Char, {earl::value::Type::Char}},
+    {earl::value::Type::Str, {earl::value::Type::Str}},
+    {earl::value::Type::List, {earl::value::Type::List}},
     {earl::value::Type::Void, {earl::value::Type::Void}},
 };
 
@@ -48,11 +48,12 @@ std::string earl::value::type_to_str(earl::value::Obj *obj) {
     case earl::value::Type::List: return COMMON_EARLTY_LIST;
     case earl::value::Type::Class: return COMMON_EARLKW_CLASS;
     case earl::value::Type::File: return COMMON_EARLTY_FILE;
-    case earl::value::Type::None: {
+    case earl::value::Type::Option: {
+        // FIXME
         std::string res = "optional<";
-        auto *none = dynamic_cast<earl::value::None *>(obj);
-        if (none->value()) {
-            res += type_to_str(none->value());
+        auto *option = dynamic_cast<earl::value::Option *>(obj);
+        if (option->value()) {
+            res += type_to_str(option->value());
         }
         return res + ">";
     } break;

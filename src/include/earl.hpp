@@ -71,8 +71,8 @@ namespace earl {
             Class,
             /** EARL file type */
             File,
-            /** EARL none type */
-            None,
+            /** EARL option type */
+            Option,
             /** EARL This type for getting class members */
             This,
         };
@@ -116,26 +116,6 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
-        };
-
-        struct None : public Obj {
-            None();
-
-            void set_value(Obj *other);
-            Obj *value(void);
-            bool empty(void);
-            Obj *convert(void);
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-
-        private:
-            Obj *m_value;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -366,9 +346,12 @@ namespace earl {
         };
 
         struct Option : public Obj {
+            Option(Obj *value = nullptr);
+
             Obj *value(void);
             bool is_some(void) const;
             bool is_none(void) const;
+            void set_value(Obj *other);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
