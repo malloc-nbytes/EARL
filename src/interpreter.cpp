@@ -71,7 +71,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     method->load_parameters(params);
 
     for (size_t i = 0; i < klass->m_members.size(); ++i) {
-        ctx.register_variable(klass->m_members[i].get());
+        ctx.register_variable(klass->m_members[i]);
     }
     earl::value::Obj *result = eval_stmt_block(method->block(), ctx);
 
@@ -175,8 +175,7 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
         ctx.curclass = nullptr;
     }
 
-    // ctx.register_variable(created_variable);
-    klass->add_member(std::unique_ptr<earl::variable::Obj>(created_variable));
+    klass->add_member(created_variable);
 }
 
 earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool from_outside) {
@@ -208,11 +207,11 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
 
     // Add the class methods
     for (size_t i = 0; i < stmt->m_methods.size(); ++i) {
-        auto method = std::make_unique<earl::function::Obj>(stmt->m_methods[i].get(), &stmt->m_methods[i]->m_args);
+        auto method = new earl::function::Obj(stmt->m_methods[i].get(), &stmt->m_methods[i]->m_args);
         if (method->id() == "constructor") {
-            constructor = method.get();
+            constructor = method;
         }
-        klass->add_method(std::move(method));
+        klass->add_method(method);
     }
 
     // Go through the constructor args and add the available variables
@@ -366,8 +365,8 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         // Check if class
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
+            std::cout << "searching for method: " << id << "in class: " << klass->id() << std::endl;
             auto *method = klass->get_method(id);
-            // auto *res = eval_user_defined_class_method(method, params, klass, ctx);
             auto *res = eval_user_defined_class_method(method, params, klass, *klass->m_owner);
             return res;
         }

@@ -286,8 +286,8 @@ namespace earl {
 
             const std::string &id(void) const;
 
-            void add_method(std::unique_ptr<function::Obj> func);
-            void add_member(std::unique_ptr<variable::Obj> var);
+            void add_method(function::Obj *func);
+            void add_member(variable::Obj *var);
             void add_member_assignee(Token *assignee);
 
             function::Obj *get_method(const std::string &id);
@@ -310,8 +310,8 @@ namespace earl {
             bool eq(Obj *other)               override;
 
             StmtClass *m_stmtclass;
-            std::vector<std::unique_ptr<variable::Obj>> m_members;
-            std::vector<std::unique_ptr<function::Obj>> m_methods;
+            std::vector<variable::Obj *> m_members;
+            std::vector<function::Obj *> m_methods;
 
             std::vector<Token *> m_member_assignees;
 

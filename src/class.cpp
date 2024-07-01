@@ -38,6 +38,7 @@ const std::string &Class::id(void) const {
 }
 
 void Class::constructor(Ctx &ctx) {
+    (void)ctx;
     UNIMPLEMENTED("Class::constructor");
     // for (size_t i = 0; i < m_stmtclass->m_members.size(); ++i) {
     //     StmtLet *let = m_stmtclass->m_members[i].get();
@@ -55,30 +56,37 @@ void Class::add_member_assignee(Token *assignee) {
     m_member_assignees.push_back(assignee);
 }
 
-void Class::add_method(std::unique_ptr<function::Obj> func) {
-    m_methods.push_back(std::move(func));
+void Class::add_method(function::Obj *func) {
+    m_methods.push_back(func);
 }
 
-void Class::add_member(std::unique_ptr<variable::Obj> var) {
-    m_members.push_back(std::move(var));
+void Class::add_member(variable::Obj *var) {
+    m_members.push_back(var);
 }
 
 earl::function::Obj *Class::get_method(const std::string &id) {
+    earl::function::Obj *res = nullptr;
+    std::cout << "  starting loop:" << std::endl;
     for (size_t i = 0; i < m_methods.size(); ++i) {
+        std::cout << "   " << m_methods[i]->id() << std::endl;
         if (id == m_methods[i]->id()) {
-            return m_methods[i].get();
+            res = m_methods[i];
+            assert(res);
+            break;
         }
     }
 
+    return res;
+
     // ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
     //           id.c_str(), this->id().c_str());
-    return nullptr; // unreachable
+    return nullptr;
 }
 
 earl::variable::Obj *Class::get_member(const std::string &id) {
     for (auto &mem : m_members) {
         if (mem->id() == id) {
-            return mem.get();
+            return mem;
         }
     }
     return nullptr;

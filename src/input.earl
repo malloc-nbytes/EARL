@@ -1,11 +1,17 @@
 mod Main
 
-let a = some(1);
+import "std/set.earl"
 
-match a {
-    some(_) when a.unwrap() == 1 -> {
-        print("a is some one");
-    }
-}
+let s = Set.T([]);
 
-print("here");
+s.insert(5);
+s.insert(3);
+s.insert(7);
+s.insert(1);
+
+s.dump();
+
+print();
+
+s.remove(5);
+s.dump();
