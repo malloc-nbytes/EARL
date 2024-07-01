@@ -44,8 +44,8 @@
       "when" "constructor" "this"
       ;; intrinsic functions
       "print" "assert" "len" "open"
-      "is_none" "type" "unimplemented"
-      "some"
+      "type" "unimplemented"
+      "some" "unwrap"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       ;; str member intrinsics
@@ -54,6 +54,8 @@
       "ascii"
       ;; file member intrinsics
       "read" "close" "dump"
+      ;; option member intrinsics
+      "is_none" "is_some"
       ;; function attributes
       "world" "pub" "ref"
       ;; Stdlib Modules

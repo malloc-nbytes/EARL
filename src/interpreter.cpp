@@ -183,8 +183,8 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     // Make sure the class exists
     StmtClass *stmt = nullptr;
     for (size_t i = 0; i < ctx.available_classes.size(); ++i) {
-        if (ctx.available_classes[i]->m_id->lexeme() == expr->m_id->lexeme()) {
-            stmt = ctx.available_classes[i];
+        if (ctx.available_classes[i].first->m_id->lexeme() == expr->m_id->lexeme()) {
+            stmt = ctx.available_classes[i].first;
         }
     }
 
@@ -265,6 +265,9 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         return eval_class_instantiation(expr, *(ctx.curclass->m_owner), false);
     }
     else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.get_module()->lexeme() == parent_ctx->get_module()->lexeme()) {
+        return eval_class_instantiation(expr, ctx, false);
+    }
+    else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.owns_class(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, ctx, false);
     }
     else if (ctx.class_is_registered(expr->m_id->lexeme())) {
@@ -632,7 +635,7 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 }
 
 earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
-    ctx.available_classes.push_back(stmt);
+    ctx.available_classes.push_back(std::make_pair(stmt, &ctx));
     return new earl::value::Void();
 }
 

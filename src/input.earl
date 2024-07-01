@@ -1,13 +1,40 @@
+import "std/stack.earl"
+
 mod Main
 
-# let n = none;
-# print(n);
-# n = 1;
-# print(n.unwrap());
+class Node [value] {
+    @pub value = value;
+    @pub next = none;
+}
 
-let n = none;
-n = some(9);
+class LinkedList {
+    hd = none;
 
+    @pub fn add(value) {
+        let n = Node(value);
+        if this.hd.is_none() {
+            this.hd = some(n);
+            let s = Stack.T([this.hd]);
+        }
+        else {
+            let tmp = this.hd.unwrap();
+            this.hd = some(n);
+            this.hd.unwrap().next = some(tmp);
+        }
+    }
 
-print(n);
-print(type(n));
+    @pub fn dump() {
+        @ref let it = this.hd;
+        while it.is_some() {
+            print(it.unwrap().value);
+            it = it.unwrap().next;
+        }
+    }
+}
+
+let ll = LinkedList();
+ll.add(9);
+ll.add(4);
+ll.add(8);
+ll.add(2);
+ll.dump();

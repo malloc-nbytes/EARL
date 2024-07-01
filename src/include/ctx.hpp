@@ -139,6 +139,7 @@ struct Ctx {
     earl::value::Class *get_registered_class(const std::string &id);
     bool class_is_registered(const std::string &id);
     void register_class(earl::value::Class *klass);
+    bool owns_class(const std::string id);
 
     void add_to_tmp_scope(earl::variable::Obj *var);
     earl::variable::Obj *get_var_from_tmp_scope(const std::string &id);
@@ -147,7 +148,7 @@ struct Ctx {
 
     void debug_dump(void);
 
-    std::vector<StmtClass *> available_classes;
+    std::vector<std::pair<StmtClass *, Ctx *>> available_classes;
 
     Ctx *m_parent;
     earl::value::Class *curclass;

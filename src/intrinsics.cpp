@@ -60,6 +60,8 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"read", &Intrinsics::intrinsic_member_read},
     {"ascii", &Intrinsics::intrinsic_member_ascii},
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
+    {"is_none", &Intrinsics::intrinsic_member_is_none},
+    {"is_some", &Intrinsics::intrinsic_member_is_some},
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -389,3 +391,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std
     return none->value();
 }
 
+
+earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(obj->type() == earl::value::Type::Option);
+    assert(unused.size() == 0);
+
+    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_none());
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_is_some(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    assert(obj->type() == earl::value::Type::Option);
+    assert(unused.size() == 0);
+
+    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_some());
+}
