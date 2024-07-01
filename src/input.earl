@@ -1,38 +1,8 @@
-import "std/stack.earl"
+import "std/linked-list.earl"
 
 mod Main
 
-class Node [value] {
-    @pub value = value;
-    @pub next = none;
-}
-
-class LinkedList {
-    hd = none;
-
-    @pub fn add(value) {
-        let n = Node(value);
-        if this.hd.is_none() {
-            this.hd = some(n);
-            let s = Stack.T([this.hd]);
-        }
-        else {
-            let tmp = this.hd.unwrap();
-            this.hd = some(n);
-            this.hd.unwrap().next = some(tmp);
-        }
-    }
-
-    @pub fn dump() {
-        @ref let it = this.hd;
-        while it.is_some() {
-            print(it.unwrap().value);
-            it = it.unwrap().next;
-        }
-    }
-}
-
-let ll = LinkedList();
+let ll = SinglyLL.T();
 ll.add(9);
 ll.add(4);
 ll.add(8);

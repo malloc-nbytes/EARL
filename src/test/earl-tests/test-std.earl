@@ -6,26 +6,6 @@ import "../../std/tree.earl"
 
 mod TestStd
 
-fn test_tree1() {
-    print("test_tree1");
-
-    let t = Tree.T();
-
-    t.insert(9);
-    t.insert(4);
-    t.insert(5);
-    t.insert(2);
-    t.insert(1);
-
-    assert(t.contains(9));
-    assert(t.contains(4));
-    assert(t.contains(5));
-    assert(t.contains(2));
-    assert(t.contains(1));
-
-    print("ok");
-}
-
 fn test_class_wmodule_bug() {
     print("test_class_wmodule_bug...");
 
@@ -117,6 +97,5 @@ fn test_std() {
     test_list_count();
     test_stack();
     test_class_wmodule_bug();
-    # test_tree1();
 }
 

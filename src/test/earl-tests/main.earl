@@ -10,20 +10,20 @@ fn test_none_values2() {
     let s1 = none;
     let s2 = none;
 
-    assert(is_none(s1) && is_none(s2));
+    assert(s1.is_none() && s2.is_none());
 
-    s1 = "hello";
-    s2 = "world";
+    s1 = some("hello");
+    s2 = some("world");
 
-    assert((is_none(s1) || is_none(s2) == false));
+    assert(s1.is_some() && s2.is_some());
 
-    assert(s1 == "hello");
-    assert(s2 == "world");
+    assert(s1.unwrap() == "hello");
+    assert(s2.unwrap() == "world");
 
-    assert(s1 + " " + s2 == "hello world");
-    assert(s1 + s2 == "helloworld");
-    assert(" " + s1 + s2 == " helloworld");
-    assert(s1 + s2 + " " == "helloworld ");
+    assert(s1.unwrap() + " " + s2.unwrap() == "hello world");
+    assert(s1.unwrap() + s2.unwrap() == "helloworld");
+    assert(" " + s1.unwrap() + s2.unwrap() == " helloworld");
+    assert(s1.unwrap() + s2.unwrap() + " " == "helloworld ");
 
     print("ok");
 }
@@ -34,15 +34,15 @@ fn test_none_values1() {
     let i1 = none;
     let i2 = none;
 
-    assert(is_none(i1) && is_none(i2));
+    assert(i1.is_none() && i2.is_none());
 
-    i1 = 1;
-    i2 = 2;
+    i1 = some(1);
+    i2 = some(2);
 
-    assert((is_none(i1) || is_none(i2) == false));
-    assert(i1 + 1 + i2 == 4);
-    assert(i1 + i2 + 1 == 4);
-    assert(1 + i1 + i2 == 4);
+    assert(i1.is_some() && i2.is_some());
+    assert(i1.unwrap() + 1 + i2.unwrap() == 4);
+    assert(i1.unwrap() + i2.unwrap() + 1 == 4);
+    assert(1 + i1.unwrap() + i2.unwrap() == 4);
 
     print("ok");
 }
@@ -585,8 +585,8 @@ fn main() {
     test_member_intrinsic_split();
     test_file_io_read_and_remove_lines_member_intrinsic();
     test_substr_member_intrinsic1();
-    # test_none_values1();
-    # test_none_values2();
+    test_none_values1();
+    test_none_values2();
 
     TestStd.test_std();
 }
