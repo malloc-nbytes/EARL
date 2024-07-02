@@ -674,6 +674,31 @@ earl::value::Obj *eval_stmt_class(StmtClass *stmt, Ctx &ctx) {
     return new earl::value::Void();
 }
 
+earl::variable::Obj *handle_match_some_branch(ExprFuncCall *expr, earl::value::Obj *inject_value, Ctx &ctx) {
+    assert(expr->m_params.size() == 1);
+
+    Expr *value = expr->m_params[0].get();
+    if (value->get_type() != ExprType::Term)
+        return nullptr;
+
+    auto *term = dynamic_cast<ExprTerm *>(value);
+    if (term->get_term_type() != ExprTermType::Ident)
+        return nullptr;
+
+    auto *ident = dynamic_cast<ExprIdent *>(term);
+
+    if (ctx.variable_is_registered(ident->m_tok->lexeme())) {
+        Err::err_wtok(ident->m_tok.get());
+        ERR_WARGS(Err::Type::Redeclared, "variable %s in match statement is already declared",
+                  ident->m_tok->lexeme().c_str());
+    }
+
+    auto *unwrapped_value = dynamic_cast<earl::value::Option *>(inject_value)->value()->copy();
+    auto *var = new earl::variable::Obj(ident->m_tok.get(), std::unique_ptr<earl::value::Obj>(unwrapped_value), 0);
+
+    return var;
+}
+
 earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
     earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
@@ -683,9 +708,35 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
 
         // Go through the different expressions that are separated by `|`
         for (size_t j = 0; j < branch->m_expr.size(); ++j) {
-            earl::value::Obj *potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
+            earl::value::Obj *potential_match = nullptr;
             earl::value::Obj *guard = nullptr;
 
+            if (branch->m_expr[j]->get_type() == ExprType::Term &&
+                (dynamic_cast<ExprTerm *>(branch->m_expr[j].get())->get_term_type() == ExprTermType::Func_Call)) {
+
+                auto *test2 = dynamic_cast<ExprFuncCall *>(branch->m_expr[j].get());
+                if (test2->m_id->lexeme() == "some" && match_value->type() == earl::value::Type::Option) {
+                    auto *tmp_var = handle_match_some_branch(test2, match_value, ctx);
+
+                    if (tmp_var) {
+                        ctx.register_variable(tmp_var);
+
+                        if (branch->m_when.has_value())
+                            guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
+
+                        if (guard == nullptr || guard->boolean()) {
+                            auto *res = eval_stmt_block(branch->m_block.get(), ctx);
+                            ctx.unregister_variable(tmp_var->id());
+                            return res;
+                        }
+                        else {
+                            ctx.unregister_variable(tmp_var->id());
+                        }
+                    }
+                }
+            }
+
+            potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
             if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
                 if (branch->m_when.has_value()) {
                     guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);

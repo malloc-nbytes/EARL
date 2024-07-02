@@ -1,4 +1,15 @@
 mod Main
 
-import "std/list.earl"
+let x = some(3);
 
+match x {
+    none -> {
+        print("x is none");
+    }
+    some(k) when k % 2 == 1 -> {
+        print("x is ", k, " and is odd");
+    }
+    _ -> {
+        print("x is something else");
+    }
+}
