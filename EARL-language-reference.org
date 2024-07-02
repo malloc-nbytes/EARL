@@ -16,6 +16,28 @@
 7. ?(text) means 0 or 1
 8. "text" represents a string
 
+* Your First Program
+
+To jump right into testing out EARL, do the following to implement a /Hello World!/ program.
+
+Create a new file called =hello.earl=
+
+#+begin_example
+print("Hello World!");
+#+end_example
+
+Then run
+
+#+begin_src bash
+  earl ./hello.earl
+#+end_src
+
+Output:
+
+#+begin_example
+Hello World!
+#+end_example
+
 * Variable Declarations
 =let= <id> = /expr/;
 
