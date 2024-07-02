@@ -1,7 +1,48 @@
 mod SinglyLL
 
-class Node [value, ptr] {
+class Node [value] {
     @pub value = value;
-    @pub next = ptr;
+    @pub next = none;
 }
 
+@pub
+class T [init] {
+    hd = none;
+
+    fn constructor() {
+        for i in 0..len(init) {
+            this.insert(init[i]);
+        }
+    }
+
+    @pub fn insert(value) {
+        let n = some(Node(value));
+
+        if this.hd.is_none() {
+            this.hd = n;
+        }
+        else {
+            n.unwrap().next = hd;
+            hd = n;
+        }
+    }
+
+    @pub fn contains(value) {
+        let it = hd;
+        while it.is_some() && it.unwrap().value != value{
+            it = it.unwrap().next;
+        }
+        if it.is_some() && it.unwrap().value == value {
+            return true;
+        }
+        return false;
+    }
+
+    @pub fn dump() {
+        let it = hd;
+        while it.is_some() {
+            print(it.unwrap().value);
+            it = it.unwrap().next;
+        }
+    }
+}

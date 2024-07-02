@@ -525,12 +525,22 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx, bool *result_type = n
 
 earl::value::Obj *eval_expr_bin(ExprBinary *expr, Ctx &ctx, bool *result_type = nullptr) {
     earl::value::Obj *lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, result_type);
-    earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, result_type);
 
+    // Short-circuit evaluation for logical AND (&&)
+    if (expr->m_op->type() == TokenType::Double_Ampersand) {
+        // If lhs is false (or zero), return lhs (no need to evaluate rhs)
+        if (!lhs->boolean())
+            return lhs;
+        earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, result_type);
+        return rhs;
+    }
+
+    earl::value::Obj *rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, result_type);
     earl::value::Obj *result = lhs->binop(expr->m_op.get(), rhs);
 
     return result;
 }
+
 
 earl::value::Obj *Interpreter::eval_expr(Expr *expr, Ctx &ctx, bool *result_type) {
     switch (expr->get_type()) {
