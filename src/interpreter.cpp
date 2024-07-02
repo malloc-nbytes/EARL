@@ -774,6 +774,10 @@ Ctx *Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Le
     ctx->m_parent = nullptr;
 
     for (size_t i = 0; i < ctx->stmts_len(); ++i) {
+        if (i == 0 && ctx->get_stmt(i)->stmt_type() != StmtType::Mod) {
+            Err::warn("File does not start with a module statement. This may lead to undefined behavior.", ctx->m_lexer->peek());
+        }
+
         meta = eval_stmt(ctx->get_stmt(i), *ctx);
         delete meta;
     }

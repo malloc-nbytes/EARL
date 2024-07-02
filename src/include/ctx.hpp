@@ -162,6 +162,10 @@ struct Ctx {
 
     Ctx *prev;
 
+    /// @brief The lexer associated with this module. This
+    /// is needed because of ownership rules.
+    std::unique_ptr<Lexer> m_lexer;
+
 private:
     /// @brief The global scope of all EARL variables
     Scope<std::string, earl::variable::Obj *> m_globalvars;
@@ -173,10 +177,6 @@ private:
 
     /// @brief The name of the module as a token
     std::unique_ptr<Token> m_module;
-
-    /// @brief The lexer associated with this module. This
-    /// is needed because of ownership rules.
-    std::unique_ptr<Lexer> m_lexer;
 
     /// @brief The parsed program produced from the `Parser`.
     /// This is needed because of ownership rules.

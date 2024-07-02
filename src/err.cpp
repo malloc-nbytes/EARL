@@ -42,3 +42,10 @@ void Err::err_wconflict(Token *tok1, Token *tok2) {
     (void)tok2;
     UNIMPLEMENTED("Err::err_wconflict");
 }
+
+void Err::warn(std::string msg, Token *tok) {
+    if (tok) {
+        err_wtok(tok);
+    }
+    std::cerr << "[WARN] " << msg << std::endl;
+}

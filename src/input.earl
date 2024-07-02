@@ -1,3 +1,6 @@
 mod Main
 
+import "std/list.earl"
+
+
 
