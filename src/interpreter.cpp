@@ -268,13 +268,13 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
     if (ctx.curclass && ctx.curclass->m_owner->class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, *(ctx.curclass->m_owner), false);
     }
-    else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.get_module()->lexeme() == parent_ctx->get_module()->lexeme()) {
+    if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.get_module()->lexeme() == parent_ctx->get_module()->lexeme()) {
         return eval_class_instantiation(expr, ctx, false);
     }
-    else if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.owns_class(expr->m_id->lexeme())) {
-        return eval_class_instantiation(expr, ctx, false);
-    }
-    else if (ctx.class_is_registered(expr->m_id->lexeme())) {
+    // if (ctx.class_is_registered(expr->m_id->lexeme()) && ctx.owns_class(expr->m_id->lexeme())) {
+    //     return eval_class_instantiation(expr, ctx, false);
+    // }
+    if (ctx.class_is_registered(expr->m_id->lexeme())) {
         return eval_class_instantiation(expr, ctx, true);
     }
 

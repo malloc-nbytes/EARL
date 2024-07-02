@@ -1,8 +1,21 @@
 mod Main
 
-import "std/set.earl"
+# import "std/set.earl"
+# let s = Set.T([]);
 
-let s = Set.T([1,2,3,4]);
+@pub class Node [value] {
+    @pub value = value;
+    @pub next = none;
+}
 
-s.dump();
+class Test {
+    @pub fn f() {
+        let n = Node();
+    }
+}
 
+let t = Test();
+t.f();
+
+let n = Node(3);
+print(n.value);
