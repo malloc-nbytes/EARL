@@ -1,32 +1,7 @@
-import "std/stack.earl"
-
 mod SinglyLL
 
-class Node [value] {
+class Node [value, ptr] {
     @pub value = value;
-    @pub next = none;
+    @pub next = ptr;
 }
 
-class T {
-    hd = none;
-
-    @pub fn add(value) {
-        let n = Node(value);
-        if this.hd.is_none() {
-            this.hd = some(n);
-        }
-        else {
-            let tmp = this.hd.unwrap();
-            this.hd = some(n);
-            this.hd.unwrap().next = some(tmp);
-        }
-    }
-
-    @pub fn dump() {
-        @ref let it = this.hd;
-        while it.is_some() {
-            print(it.unwrap().value);
-            it = it.unwrap().next;
-        }
-    }
-}

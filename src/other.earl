@@ -1,22 +1,12 @@
-mod Other
+mod LinkedList
 
-class BugTestHelper {
-    value = 100;
-
-    @pub fn value() {
-        return value;
-    }
+class Node [val, p] {
+    value = val;
+    next = p;
 }
 
-class BugTest {
-    value = 1;
+class List {
 
-    @pub fn set_value(n) {
-        let bth = BugTestHelper();
-        value = n + bth.value();
-    }
+    root = none;
 
-    @pub fn value() {
-        return value;
-    }
 }

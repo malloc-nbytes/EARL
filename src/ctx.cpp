@@ -61,6 +61,7 @@ void Ctx::unset_function(void) {
 void Ctx::push_scope(void) {
     if (in_function()) {
         m_stacktrace.back()->push_scope();
+        m_globalfuncs.push();
     }
     else {
         m_globalvars.push();
@@ -71,6 +72,7 @@ void Ctx::push_scope(void) {
 void Ctx::pop_scope(void) {
     if (in_function()) {
         m_stacktrace.back()->pop_scope();
+        m_globalfuncs.pop();
     }
     else {
         m_globalvars.pop();

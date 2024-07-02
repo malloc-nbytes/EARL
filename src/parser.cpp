@@ -325,6 +325,13 @@ std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     std::unique_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
+
+    if (!expr) {
+        Err::err_wtok(lexer.peek());
+        ERR_WARGS(Err::Type::Fatal, "invalid token `%s` while parsing primary expression",
+                  lexer.peek()->lexeme().c_str());
+    }
+
     (void)parse_expect(lexer, TokenType::Semicolon);
     return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr), attrs);
 }

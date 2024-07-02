@@ -1,40 +1,4 @@
 mod Main
 
-class Node [value] {
-    @pub value = value;
-    @pub next = none;
-}
 
-class LinkedList [init] {
-    hd = none;
 
-    fn constructor() {
-        for i in 0..len(init) {
-            this.append(init[i]);
-        }
-    }
-
-    @pub fn append(value) {
-        let n = Node(value);
-        if this.hd.is_none() {
-            this.hd = some(n);
-        }
-        else {
-            n.next = this.hd;
-            this.hd = some(n);
-        }
-    }
-
-    @pub fn dump() {
-        let it = this.hd;
-        while it.is_some() {
-            print(it.unwrap().value);
-            it = it.unwrap().next;
-        }
-    }
-}
-
-let l = LinkedList([1,2,3]);
-
-l.dump();
-l.dump();
