@@ -54,7 +54,25 @@ Type Option::type(void) const {
 }
 
 Obj *Option::binop(Token *op, Obj *other) {
-    UNIMPLEMENTED("Option::binop");
+    if (!type_is_compatable(this, other)) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    if (op->type() != TokenType::Double_Equals)
+        ERR(Err::Type::Fatal, "the only support binary operations on option types is equality `==`");
+
+    auto *other2 = dynamic_cast<Option *>(other);
+
+    if (this->is_none() && other2->is_none())
+        return new Bool(true);
+
+    if (this->is_some() && other2->is_none())
+        return new Bool(false);
+
+    if (this->is_none() && other2->is_some())
+        return new Bool(false);
+
+    return this->value()->binop(op, other2->value());
 }
 
 bool Option::boolean(void) {

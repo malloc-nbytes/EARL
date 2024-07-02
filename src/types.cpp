@@ -37,6 +37,7 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Str, {earl::value::Type::Str}},
     {earl::value::Type::List, {earl::value::Type::List}},
     {earl::value::Type::Void, {earl::value::Type::Void}},
+    {earl::value::Type::Option, {earl::value::Type::Option}},
 };
 
 std::string earl::value::type_to_str(earl::value::Obj *obj) {
