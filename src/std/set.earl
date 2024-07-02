@@ -1,5 +1,3 @@
-import "std/math.earl"
-
 mod Set
 
 class Node [value] {
@@ -19,11 +17,11 @@ class T [init] {
     }
 
     @pub fn insert(value) {
-        __insert(root, value);
+        this.__insert(this.root, value);
     }
 
     @pub fn contains(value) {
-        return __contains(root, value);
+        return this.__contains(this.root, value);
     }
 
     @pub fn remove(value) {
@@ -31,39 +29,39 @@ class T [init] {
     }
 
     @pub fn dump() {
-        this.__dump(root);
+        this.__dump(this.root);
     }
 
     fn __dump(@ref cur) {
-        if is_none(cur) == false {
-            __dump(cur.left);
-            print(cur.value);
-            __dump(cur.right);
+        if cur.is_some() {
+            __dump(cur.unwrap().left);
+            print(cur.unwrap().value);
+            __dump(cur.unwrap().right);
         }
     }
 
     fn __contains(@ref cur, value) {
-        if is_none(cur) {
+        if cur.is_none() {
             return false;
         }
-        if value > cur.value {
-            return __contains(cur.right, value);
+        if value > cur.unwrap().value {
+            return this.__contains(cur.unwrap().right, value);
         }
-        else if value < cur.value {
-            return __contains(cur.left, value);
+        else if value < cur.unwrap().value {
+            return this.__contains(cur.unwrap().left, value);
         }
         return true;
     }
 
     fn __insert(@ref cur, value) {
-        if is_none(cur) {
-            cur = Node(value);
+        if cur.is_none() {
+            cur = some(Node(value));
         }
-        else if value > cur.value {
-            __insert(cur.right, value);
+        else if value > cur.unwrap().value {
+            this.__insert(cur.unwrap().right, value);
         }
-        else if value < cur.value {
-            __insert(cur.left, value);
+        else if value < cur.unwrap().value {
+            this.__insert(cur.unwrap().left, value);
         }
     }
 }

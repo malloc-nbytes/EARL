@@ -1,4 +1,8 @@
 mod Main
 
+import "std/set.earl"
 
+let s = Set.T([1,2,3,4]);
+
+s.dump();
 
