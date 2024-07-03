@@ -1,5 +1,9 @@
 mod Main
 
-let s = "hello";
+fn test(lst) {
+    print(lst);
+}
 
-s.rev();
+let lst = [2,1,2,2,3,4,2,5,2];
+
+test(lst.filter(|_| { return true; }));

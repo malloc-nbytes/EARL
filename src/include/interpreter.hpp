@@ -31,9 +31,9 @@
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
-
     Ctx *interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
     earl::value::Obj *eval_expr(Expr *expr, Ctx &ctx, bool *result_type = nullptr);
+    earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 };
 
 #endif // INTERPRETER_H

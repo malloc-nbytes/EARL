@@ -229,6 +229,8 @@ namespace earl {
             /// @param idx The index of the element to remove
             Obj *pop(Obj *idx);
 
+            Obj *filter(Obj *closure, Ctx &ctx);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;
@@ -372,6 +374,7 @@ namespace earl {
 
             StmtBlock *block(void);
             void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
+            Obj *call(std::vector<earl::value::Obj *> &values, Ctx &ctx);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
