@@ -2,4 +2,4 @@ mod Main
 
 let s = "hello";
 
-print(s.dump());
+s.rev();

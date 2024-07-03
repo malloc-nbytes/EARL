@@ -179,7 +179,6 @@ earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::v
 
 earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(obj->type() == earl::value::Type::List);
 
     if (unused.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`rev` member intrinsic expects 0 arguments but %zu were supplied",
@@ -214,8 +213,6 @@ earl::value::Obj *Intrinsics::intrinsic_member_append(earl::value::Obj *obj, std
 
 earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
     (void)ctx;
-    assert(values.size() == 1);
-    assert(obj->type() == earl::value::Type::List || obj->type() == earl::value::Type::Str);
 
     if (values.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`pop` member intrinsic expects 1 argument but %zu were supplied",
@@ -280,8 +277,6 @@ earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl
 }
 
 earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    assert(params.size() == 1);
-
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
@@ -291,8 +286,6 @@ earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<ear
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    assert(params.size() == 1);
-
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
@@ -306,7 +299,6 @@ earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, st
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)expr;
     (void)ctx;
-    assert(params.size() == 1);
 
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`type` intrinsic expects 1 argument but %zu were supplied",
@@ -480,8 +472,6 @@ earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std:
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    assert(unused.size() == 0);
-
     if (unused.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`unwrap` member intrinsic expects 0 arguments but %zu were supplied",
                   unused.size());
