@@ -32,6 +32,8 @@
  * A few things that are useful throughout the entire project.
  */
 
+extern std::vector<std::string> earl_argv;
+
 extern uint32_t flags;
 
 #define __WITHOUT_STDLIB 1 << 0

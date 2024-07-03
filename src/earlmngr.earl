@@ -1,0 +1,6 @@
+fn main() {
+    let argv = __ARGV__;
+    let argc = len(argv);
+}
+
+main();

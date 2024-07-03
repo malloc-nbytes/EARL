@@ -34,29 +34,31 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 
+std::vector<std::string> earl_argv = {};
+
 uint32_t flags = 0x00;
 
-void usage(void) {
+static void usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
-    std::cerr << "Documentation can be found on the Github repository:" << std::endl;
-    std::cerr << "  README                  -> basic setup" << std::endl;
+    std::cerr << "Documentation can be found on the Github repository: https://github.com/malloc-nbytes/EARL/" << std::endl;
+    std::cerr << "  README                  -> compiling, installing, contributing" << std::endl;
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [options] [file]" << std::endl << std::endl;
+    std::cerr << "Usage: earl [options] [file] -- <args>" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
     std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
 }
 
-void version() {
+static void version() {
     std::cout << "EARL " << VERSION << std::endl;
 }
 
-void parse_2hypharg(std::string arg) {
+static void parse_2hypharg(std::string arg) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
         flags |= __WITHOUT_STDLIB;
     }
@@ -71,7 +73,7 @@ void parse_2hypharg(std::string arg) {
     }
 }
 
-void parse_1hypharg(std::string arg) {
+static void parse_1hypharg(std::string arg) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
         case COMMON_EARL1ARG_HELP: {
@@ -87,7 +89,7 @@ void parse_1hypharg(std::string arg) {
     }
 }
 
-void parsearg(std::string line) {
+static void parsearg(std::string line) {
     if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
         parse_2hypharg(line.substr(2));
     }
@@ -99,23 +101,37 @@ void parsearg(std::string line) {
     }
 }
 
-const char *handlecli(int argc, char **argv) {
-    const char *filepath = nullptr;
+static void parse_earl_argv(int i, int argc, char **argv) {
+    for (i = i+1; i < argc; ++i) {
+        earl_argv.push_back(std::string(argv[i]));
+    }
+}
+
+static const char *handlecli(int argc, char **argv) {
+    std::string filepath = "";
 
     for (int i = 0; i < argc; ++i) {
-        const char *line = argv[i];
+        std::string line = std::string(argv[i]);
+        if (line == "--") {
+            parse_earl_argv(i, argc, argv);
+            break;
+        }
+
         if (line[0] == '-') {
-            parsearg(std::string(line));
+            parsearg(line);
         }
         else {
-            if (filepath) {
+            if (filepath != "") {
                 ERR(Err::Type::Fatal, "too many input files provided");
             }
             filepath = line;
+            earl_argv.push_back(filepath);
         }
     }
 
-    return filepath;
+    if (filepath != "")
+        return filepath.c_str();
+    return nullptr;
 }
 
 int main(int argc, char **argv) {

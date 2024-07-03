@@ -45,7 +45,7 @@
       ;; intrinsic functions
       "print" "assert" "len" "open"
       "type" "unimplemented"
-      "some" "unwrap"
+      "some" "unwrap" "argv"
       ;; private intrinsic functions
       "__internal_move__"
       ;; list member intrinsics

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <time.h>
 
+std::vector<std::string> earl_argv = {};
+
 static int global_pass = 0;
 static int global_fail = 0;
 
