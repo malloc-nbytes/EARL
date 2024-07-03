@@ -49,6 +49,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
     {"nth", &Intrinsics::intrinsic_member_nth},
+    {"filter", &Intrinsics::intrinsic_member_filter},
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
@@ -175,6 +176,24 @@ earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::v
     else {
         ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
     }
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
+    if (closure.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`filter` member intrinsic expects 1 argument but %zu were supplied",
+                  closure.size());
+    }
+
+    if (closure[0]->type() != earl::value::Type::Closure) {
+        ERR(Err::Type::Fatal, "argument 1 in `filter` expects a `closure` value");
+    }
+
+    if (obj->type() == earl::value::Type::List) {
+        earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
+        return list->nth(idx[0]);
+    }
+
+    return dynamic_cast<earl::value::List *>(obj)->filter(closure.at(0), ctx);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

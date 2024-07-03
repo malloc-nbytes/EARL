@@ -83,6 +83,27 @@ Obj *List::append(std::vector<Obj *> &values) {
     return new Void();
 }
 
+Obj *List::filter(Obj *closure, Ctx &ctx) {
+    assert(closure->type() == Type::Closure);
+    Closure *cl = dynamic_cast<Closure *>(closure);
+
+    List *copy = new List();
+    std::vector<Obj *> keep_values;
+
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<Obj *> values = {m_value.at(i)};
+        Obj *filter_result = cl->call(values, ctx);
+        assert(filter_result->type() == Type::Bool);
+        if (dynamic_cast<Bool *>(filter_result)->boolean()) {
+            keep_values.push_back(m_value.at(i)->copy());
+        }
+    }
+
+    copy->append(keep_values);
+
+    return copy;
+}
+
 Obj *List::binop(Token *op, Obj *other) {
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot binop (fix this message)");

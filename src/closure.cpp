@@ -29,6 +29,7 @@
 #include "utils.hpp"
 #include "common.hpp"
 #include "ctx.hpp"
+#include "interpreter.hpp"
 
 using namespace earl::value;
 
@@ -57,6 +58,16 @@ void Closure::load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx)
 
         ctx.register_variable(var);
     }
+}
+
+Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
+    ctx.push_scope();
+    load_parameters(values, ctx);
+    earl::value::Obj *result = Interpreter::eval_stmt_block(this->block(), ctx);
+    ctx.pop_scope();
+
+    return result;
+
 }
 
 /*** OVERRIDES ***/

@@ -44,14 +44,13 @@
 static Ctx *parent_ctx = nullptr;
 
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
-earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
 earl::value::Obj *eval_user_defined_closure(earl::variable::Obj *var, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     auto *close = dynamic_cast<earl::value::Closure *>(var->value());
 
     ctx.push_scope();
     close->load_parameters(params, ctx);
-    earl::value::Obj *result = eval_stmt_block(close->block(), ctx);
+    earl::value::Obj *result = Interpreter::eval_stmt_block(close->block(), ctx);
     ctx.pop_scope();
 
     return result;
@@ -61,7 +60,7 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     ctx.set_function(func);
     func->load_parameters(params);
 
-    earl::value::Obj *result = eval_stmt_block(func->block(), ctx);
+    earl::value::Obj *result = Interpreter::eval_stmt_block(func->block(), ctx);
 
     func->clear_locals();
 
@@ -84,7 +83,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     for (size_t i = 0; i < klass->m_members.size(); ++i) {
         ctx.register_variable(klass->m_members[i].get());
     }
-    earl::value::Obj *result = eval_stmt_block(method->block(), ctx);
+    earl::value::Obj *result = Interpreter::eval_stmt_block(method->block(), ctx);
 
     method->clear_locals();
     ctx.unset_function();
@@ -357,8 +356,6 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             ERR_WARGS(Err::Type::Fatal, "object `%s` does not contains a method/intrinsic for `%s`",
                       earl::value::type_to_str(tmp).c_str(), ident_expr->m_tok->lexeme().c_str());
         }
-
-        abort();
     } break;
     case ExprTermType::Func_Call: {
         ExprFuncCall *func_expr = dynamic_cast<ExprFuncCall *>(right);
@@ -375,7 +372,6 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
-            // auto *res = eval_user_defined_class_method(method, params, klass, ctx);
             auto *res = eval_user_defined_class_method(method, params, klass, *klass->m_owner);
             return res;
         }
@@ -573,7 +569,7 @@ earl::value::Obj *eval_stmt_expr(StmtExpr *stmt, Ctx &ctx) {
     return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
-earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx) {
+earl::value::Obj *Interpreter::eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     earl::value::Obj *result = nullptr;
 
     ctx.push_scope();
@@ -614,10 +610,10 @@ earl::value::Obj *eval_stmt_if(StmtIf *stmt, Ctx &ctx) {
     earl::value::Obj *result = nullptr;
 
     if (expr_result->boolean()) {
-        result = eval_stmt_block(stmt->m_block.get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
     }
     else if (stmt->m_else.has_value()) {
-        result = eval_stmt_block(stmt->m_else.value().get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_else.value().get(), ctx);
     }
 
     delete expr_result;
@@ -643,7 +639,7 @@ earl::value::Obj *eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
     earl::value::Obj *result = nullptr;
 
     while ((expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx))->boolean()) {
-        result = eval_stmt_block(stmt->m_block.get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
         if (result && result->type() != earl::value::Type::Void)
             break;
         delete expr_result;
@@ -667,7 +663,7 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
     earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr);
 
     while (start->value() < end->value()) {
-        result = eval_stmt_block(stmt->m_block.get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
 
         if (result && result->type() != earl::value::Type::Void)
             break;
@@ -738,7 +734,7 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
                             guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
 
                         if (guard == nullptr || guard->boolean()) {
-                            auto *res = eval_stmt_block(branch->m_block.get(), ctx);
+                            auto *res = Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
                             ctx.unregister_variable(tmp_var->id());
                             return res;
                         }
@@ -767,7 +763,7 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
                     if (guard == nullptr || guard->boolean()) {
                         delete potential_match;
                         if (guard) delete guard;
-                        return eval_stmt_block(branch->m_block.get(), ctx);
+                        return Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
                     }
                 }
             }
