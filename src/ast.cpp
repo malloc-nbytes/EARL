@@ -84,6 +84,17 @@ ExprTermType ExprNone::get_term_type() const {
     return ExprTermType::None;
 }
 
+ExprClosure::ExprClosure(std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block)
+    : m_args(std::move(args)), m_block(std::move(block)) {}
+
+ExprType ExprClosure::get_type() const {
+    return ExprType::Term;
+}
+
+ExprTermType ExprClosure::get_term_type() const {
+    return ExprTermType::Closure;
+}
+
 ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
 ExprType ExprIntLit::get_type() const {

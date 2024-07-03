@@ -49,8 +49,8 @@ std::string earl::value::type_to_str(earl::value::Obj *obj) {
     case earl::value::Type::List: return COMMON_EARLTY_LIST;
     case earl::value::Type::Class: return COMMON_EARLKW_CLASS;
     case earl::value::Type::File: return COMMON_EARLTY_FILE;
+    case earl::value::Type::Closure: return COMMON_EARLTY_CLOSURE;
     case earl::value::Type::Option: {
-        // FIXME
         std::string res = "optional<";
         auto *option = dynamic_cast<earl::value::Option *>(obj);
         if (option->value()) {

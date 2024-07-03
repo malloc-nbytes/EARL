@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 
     if (filepath) {
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-        std::vector<std::string> types = COMMON_EARLTY_ASCPL;
+        std::vector<std::string> types = {};
         std::string comment = "#";
 
         std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);

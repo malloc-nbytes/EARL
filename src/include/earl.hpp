@@ -75,6 +75,8 @@ namespace earl {
             Option,
             /** EARL This type for getting class members */
             This,
+            /** EARL closure type */
+            Closure,
         };
 
         /// @brief The base abstract class that all
@@ -363,6 +365,25 @@ namespace earl {
 
         private:
             Obj *m_value;
+        };
+
+        struct Closure : public Obj {
+            Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params);
+
+            StmtBlock *block(void);
+            void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
+
+        private:
+            ExprClosure *m_expr_closure;
+            std::vector<std::pair<Token *, uint32_t>> m_params;
         };
 
         std::string type_to_str(Obj *);

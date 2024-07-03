@@ -70,8 +70,10 @@ enum class ExprTermType {
     Array_Access,
     Bool,
     None,
+    Closure,
 };
 
+struct StmtDef;
 struct StmtBlock;
 
 /// @brief Base class for an expression
@@ -163,6 +165,15 @@ struct ExprNone : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprNone(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprClosure : public ExprTerm {
+    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_args;
+    std::unique_ptr<StmtBlock> m_block;
+
+    ExprClosure(std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
