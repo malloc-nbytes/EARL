@@ -50,6 +50,7 @@
       "__internal_move__"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
+      "filter"
       ;; str member intrinsics
       "split" "remove_lines"
       ;; char member intrinsics

@@ -188,11 +188,6 @@ earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std
         ERR(Err::Type::Fatal, "argument 1 in `filter` expects a `closure` value");
     }
 
-    if (obj->type() == earl::value::Type::List) {
-        earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
-        return list->nth(idx[0]);
-    }
-
     return dynamic_cast<earl::value::List *>(obj)->filter(closure.at(0), ctx);
 }
 
