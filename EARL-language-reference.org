@@ -570,6 +570,17 @@ type(arg: any) -> str
 Returns the type of =arg= as a =str=.
 #+end_quote
 
+** =argv=
+
+#+begin_quote
+#+begin_example
+argv() -> list
+#+end_example
+
+Returns a list of =str= of the supplied command line arguments
+that were given by the =--= option.
+#+end_quote
+
 ** =open=
 
 #+begin_quote
