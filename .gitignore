@@ -19,6 +19,7 @@ test-suite
 *.png
 *.svg
 *.js
+*.clangd
 
 # Configure
 *.m4

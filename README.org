@@ -13,17 +13,15 @@
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
 
-*NOTE*: To see current functionality, see EARL-language-reference.org/html
-or take a look at =EARL/src/test/earl-tests/main.earl=.
-
 [[./imgs/earl-logo-resized.jpg]]
 
 * Introduction
 
 #+begin_quote
-EARL (Evaluate And Run Language) is being designed to be functionally similar to Python, except with types
-and brackets.
+EARL (Evaluate And Run Language) is being designed to be functionally similar to Python with a C style syntax.
 #+end_quote
+
+For the manual on how to use the language, see [[./EARL-language-reference.html][Click here for the EARL Language Reference]].
 
 * Compiling
 
@@ -31,8 +29,8 @@ EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makef
 1. =autoconf=
 2. =automake=
 3. =libtool=
-4. =doxygen= (for EARL source code documentation) (optional)
-5. =valgrind= (for building =vtest=) (optional)
+4. =doxygen= (optional) (for EARL source code documentation)
+5. =valgrind= (optional) (for building =vtest=)
 
 Users compiling for the first time should do
 
@@ -57,24 +55,37 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 Now that the initial setup has been complete, you no longer have to use =autoreconf= and =configure=.
 
 *NOTE:* Using the =-j= flag breaks =make all=. To use the =-j= flag, run =make -j$(nproc)= or =make test -j$(nproc)=
-then do =make docs= if wanted.
+then do one of the other =make= options if needed.
 
 * Install
 As stated before, use the following to install EARL.
 
 #+begin_src bash
   cd EARL/src
-  make all
+  make # or make test
   make install-earl
 #+end_src
 
-* Editors
+* Syntax Highlighting
+
+** Emacs
 
 Currently in =EARL/src/editors= there exists a file =earl.el=. This provides basic syntax
-highlighting and indenting for [[https://www.gnu.org/software/emacs/][Emacs]] (although comment highlighting is borked). To use this file,
-simply open it in Emacs and do: =M-x eval-buffer <RET>=. Either kill any /EARL/ buffers that are open or
+highlighting and indenting for [[https://www.gnu.org/software/emacs/][Emacs]].
+To use this file, simply open it in Emacs and do: =M-x eval-buffer <RET>=. Either kill any /EARL/ buffers that are open or
 do =M-x earl-mode <RET>= in the /EARL/ file and you will have the syntax highlighting. If you want this to
 be permanent, put the contents of =src/editors/emacs.el= into your init file =~/.emacs.d/init.el=.
+
+** Vim
+
+Inside of =EARL/src/editors=, there is a file called =earl.vim=.
+
+1. Put the file into =~/.vim/syntax/=
+2. In your =.vimrc=, put the following: =autocmd BufRead,BufNewFile *.earl set filetype=earl=
+
+** VSCode
+
+For syntax highlighting in VSCode, [[https://github.com/malloc-nbytes/EARL-language-support][click here]].
 
 * Contributing
 

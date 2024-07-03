@@ -1,10 +1,3 @@
-" Vim syntax file
-
-" Usage Instructions
-" Put this file in .vim/syntax/earl.vim
-" and add in your .vimrc file the next line:
-" autocmd BufRead,BufNewFile *.earl set filetype=earl
-
 if exists("b:current_syntax")
   finish
 endif
@@ -26,8 +19,6 @@ syntax region EARLChar start=/\v'/ skip=/\v\\./ end=/\v'/ contains=EARLEscapes
 " Escape literals \n, \r, ....
 syntax match EARLEscapes display contained "\\[nr\"']"
 
-" Type names the compiler recognizes
-" Set highlights
 highlight default link EARLKeywords Keyword
 highlight default link EARLCommentLine Comment
 highlight default link EARLString String
