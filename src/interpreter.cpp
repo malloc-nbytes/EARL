@@ -440,7 +440,7 @@ earl::value::Obj *eval_expr_array_access(ExprArrayAccess *expr, Ctx &ctx) {
         result = str->nth(idx);
     } break;
     default: {
-        ERR(Err::Type::Fatal, "cannot use `[]` operator on non-list type");
+        ERR(Err::Type::Fatal, "cannot use `[]` operator on non-list or non-str type");
     } break;
     }
 
@@ -672,8 +672,6 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
     }
 
     ctx.unregister_variable(enumerator->id());
-
-    delete end_expr;
 
     return result;
 }

@@ -1,5 +1,9 @@
 mod Main
 
-let _ = print("hello");
+import "std/list.earl"
 
+let lst = [5,4,3,2,1];
 
+List.quicksort(lst, |x, y| { return x < y; } );
+
+print(lst);

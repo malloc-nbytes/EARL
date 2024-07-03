@@ -200,7 +200,7 @@ EARL looks for the files relative to the directory
 that it was invoked in. During runtime, if an =import=
 statement is hit, it will immediately interpret that file.
 If there is no processing in the =@world= scope, only the
-function definitions are gathered.
+function definitions and classes are gathered.
 #+end_quote
 
 ** Grammar
@@ -225,7 +225,7 @@ do allow other files to access resources, only resources
 that have the =@pub= attribute.
 
 *It is expected to have the module declaration at the top of the file.
-If you do not follow this rule, undefined behavior will ocurr.*
+If you do not follow this rule, undefined behavior will occur.*
 #+end_quote
 
 ** Grammar
@@ -304,6 +304,13 @@ assert(i == 3);
 
 #+begin_quote
 While classes are available, support for inheritance is not yet implemented.
+
+When instantiating a new class, two things will occur.
+
+1. All member variable assignments will happen. If the class has bracket notation =[ ... ]=,
+   it will use these.
+2. If there is a function called =constructor= in the class, that function will immediately happen.
+
 #+end_quote
 
 ** Grammar
@@ -366,7 +373,7 @@ class NoPassesArgs {
     # You could just assign `init` to `lst` here,
     # but for this example, this is done in the constructor.
     lst = [];
-    sz = len(lst);
+    sz = 0;
 
     # The constructor gets called
     # right after class instantiation.
@@ -440,8 +447,8 @@ To assign a value to a none-type, you must wrap it in =some= i.e.,
 
 =x = some(9);=
 
-*Note*: A lot of the functionality of the language will break if you use =none=
-as another datatype before giving it an actual value.
+The underlying value (in the above example, =9=) can be extracted out
+using the =unwrap()= member intrinsic.
 #+end_quote
 
 ** =closure=
@@ -449,9 +456,6 @@ as another datatype before giving it an actual value.
 #+begin_quote
 Closures are anonymous functions that close in the outer scope. They
 can be used as functions or passed around as variables.
-#+end_quote
-
-*** Examples
 
 #+begin_example
 fn take_sum_closure(f, a, b) {
@@ -479,6 +483,8 @@ hello world
 in sum
 3
 #+end_example
+
+#+end_quote
 
 ** =file=
 
@@ -514,52 +520,74 @@ You do not need to import anything to use these functions.
 
 ** =print=
 
-*** =print(arg1: any, arg2: any, ..., argN: any) -> unit=
-
 #+begin_quote
-Will print all elements if it can. Adds a newline at the end and flushes the output.
+#+begin_example
+print(arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
+Will print all elements if it can. Adds a newline at the end.
 #+end_quote
 
 ** =assert=
 
-*** =assert(arg1: any, arg2: any, ..., argN: any) -> unit=
-
 #+begin_quote
-Tests each argument for =1=. If any of the conditions fails,
+#+begin_example
+assert(arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
+Tests each argument for =true=. If any of the conditions fails,
 the program immediately crashes.
 #+end_quote
 
 ** =len=
 
-*** =len(arg: list|str) -> int=
-
 #+begin_quote
+#+begin_example
+len(arg: list|str) -> int
+#+end_example
+
 Expects either a =list= or =string=. Will give the length
 as an integer.
 #+end_quote
 
-** =some(arg: any) -> option<any>=
+** =some=
 
 #+begin_quote
+#+begin_example
+some(arg: any) -> option<any>
+#+end_example
+
 Wraps =arg= in an =option= type.
 #+end_quote
 
-** =type(arg: any) -> str=
+** =type=
 
 #+begin_quote
+#+begin_example
+type(arg: any) -> str
+#+end_example
+
 Returns the type of =arg= as a =str=.
 #+end_quote
 
-** =open(fp: str, mode: str) -> file=
+** =open=
 
 #+begin_quote
+#+begin_example
+open(fp: str, mode: str) -> file
+#+end_example
+
 Opens the filepath =fp= with mode =mode=. Mode must either be
 =r= for read or =w= for write.
 #+end_quote
 
-** =unimplemented(arg1, arg2, ..., argN)=
+** =unimplemented=
 
 #+begin_quote
+#+begin_example
+unimplemented(arg1, arg2, ..., argN)
+#+end_example
+
 Prints arg1..arg$N$ to =stderr= and exits with non-zero exit code.
 #+end_quote
 
@@ -577,84 +605,108 @@ You access these with the dot `.` notation i.e.,
 
 ** =list= Implementes
 
-*** =rev() -> unit=
-
 #+begin_quote
+#+begin_example
+rev() -> unit
+#+end_example
+
 Reverses the list inplace.
 #+end_quote
 
-*** =append(arg1: any, arg2: any, ..., argN: any) -> unit=
-
 #+begin_quote
+#+begin_example
+append(arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
 Will append arg1..arg$N$ to the list.
 #+end_quote
 
-*** =pop(idx: int) -> unit=
-
 #+begin_quote
+#+begin_example
+pop(idx: int) -> unit
+#+end_example
+
 Will remove the element at index =idx=.
 #+end_quote
 
-*** =filter(cl: closure) -> list=
-
 #+begin_quote
+#+begin_example
+filter(cl: closure) -> list
+#+end_example
+
 Takes the closure =cl= and creates a new =list= of all the
 elements where =cl= returns =true=.
 #+end_quote
 
 ** =str= Implements
 
-*** =split(delim: str) -> list=
-
 #+begin_quote
+#+begin_example
+split(delim: str) -> list
+#+end_example
+
 Split a string by the delimiter =delim=.
 #+end_quote
 
-*** =pop(idx: int) -> unit=
-
 #+begin_quote
+#+begin_example
+pop(idx: int) -> unit
+#+end_example
+
 Will remove the element at index =idx=.
 #+end_quote
 
 ** =char= Implements
 
-*** =ascii() -> int=
-
 #+begin_quote
+#+begin_example
+ascii() -> int
+#+end_example
+
 Returns the ascii code of the character.
 #+end_quote
 
 ** =option= Implements
 
-*** =is_none() -> bool=
-
 #+begin_quote
+#+begin_example
+is_none() -> bool
+#+end_example
+
 Returns =true= if the value is =none=, =false= otherwise.
 #+end_quote
 
-*** =is_some() -> bool=
-
 #+begin_quote
+#+begin_example
+is_some() -> bool
+#+end_example
+
 Returns =true= if the value is =some=, =false= otherwise.
 #+end_quote
 
 ** =file= Implements
 
-*** =close() -> unit=
-
 #+begin_quote
+#+begin_example
+close() -> unit
+#+end_example
+
 Closes an opened file.
 #+end_quote
 
-*** =read() -> str=
-
 #+begin_quote
+#+begin_example
+read() -> str
+#+end_example
+
 Get the contents of a file as a =str=.
 #+end_quote
 
-*** =dump() -> unit=
-
 #+begin_quote
+#+begin_example
+dump() -> unit
+#+end_example
+
 Print the contents of a file.
 #+end_quote
 
@@ -676,35 +728,45 @@ This means that all you need to do to import these files is do:
 
 *** *Class List*:
 
-*** =T [init: list] -> Stack.T=
-
 #+begin_quote
+#+begin_example
+T [init: list] -> Stack.T
+#+end_example
+
 Creates a =Stack= container with the initializer list =init=.
 #+end_quote
 
 *** Implements
 
-=push(elem: any) -> unit=
-
 #+begin_quote
+#+begin_example
+push(elem: any) -> unit
+#+end_example
+
 Inserts =elem= onto the top of the stack.
 #+end_quote
 
-=pop() -> unit=
-
 #+begin_quote
+#+begin_example
+pop() -> unit
+#+end_example
+
 Removes the most recently inserted element.
 #+end_quote
 
-=top() -> any=
-
 #+begin_quote
+#+begin_example
+top() -> any
+#+end_example
+
 Get the most recently added item.
 #+end_quote
 
-=empty() -> bool=
-
 #+begin_quote
+#+begin_example
+empty() -> bool
+#+end_example
+
 Check if the stack is empty
 #+end_quote
 
@@ -739,43 +801,49 @@ while s.empty() != true {
 
 ** Set
 
+*Note:* The =set= currently only works with integers.
+
 *** *Import*: ="std/set.earl"=
 
 *** *Module*: =Set=
 
 *** *Class List*:
 
-*** =T [init: list] -> Set.T=
-
-*Note:* The =set= currently only works with integers.
-
 #+begin_quote
+#+begin_example
+T [init: list] -> Set.T
+#+end_example
+
 Creates a =Set= container with the initializer list =init=.
 #+end_quote
 
 *** Implements
 
-=insert(elem: any) -> unit=
-
 #+begin_quote
+#+begin_example
+insert(elem: any) -> unit
+#+end_example
+
 Inserts =elem= into the =set=.
 #+end_quote
 
-=contains(elem: any) -> bool=
-
 #+begin_quote
+#+begin_example
+contains(elem: any) -> bool
+#+end_example
+
 Check if =elem= is in the set.
 #+end_quote
 
-=dump() -> unit=
-
 #+begin_quote
+#+begin_example
+dump() -> unit
+#+end_example
+
 Prints the contents of the =set=.
 #+end_quote
 
 *** *Function List*: /None/
-
-*** TODO *Examples*
 
 ** List
 
@@ -787,42 +855,79 @@ Prints the contents of the =set=.
 
 *** *Function List*:
 
-*** =preset(elem: any, cap: int) -> list=
-
 #+begin_quote
+#+begin_example
+preset(elem: any, cap: int) -> list
+#+end_example
+
 Create a list filled with =elem= of length =cap=.
 #+end_quote
 
-*** =from_range(start: int, stop: int, stride: int) -> list[int]=
-
 #+begin_quote
+#+begin_example
+from_range(start: int, stop: int, stride: int) -> list[int]
+#+end_example
+
 Create a list filled with the numbers from =start= to =stop= (inclusive)
 and increment the number by =stride=.
 #+end_quote
 
-*** =fill(@ref lst: list, k: any) -> unit=
-
 #+begin_quote
+#+begin_example
+fill(@ref lst: list, k: any) -> unit
+#+end_example
+
 Fill the list =lst= with element =k=.
 #+end_quote
 
-*** =sum(@ref lst: list[int]) -> int=
-
 #+begin_quote
+#+begin_example
+sum(@ref lst: list[int]) -> int
+#+end_example
+
 Sum up all elements of the list =lst=.
 #+end_quote
 
-*** =find(@ref lst: list, @ref elem: any) -> int=
-
 #+begin_quote
+#+begin_example
+find(@ref lst: list, @ref elem: any) -> int
+#+end_example
+
 Return the index that =elem= appears in =lst=. Returns =-1=
 if it does not exist.
 #+end_quote
 
-*** =count(@ref lst: list, @ref elem: any) -> int=
+#+begin_quote
+#+begin_example
+count(@ref lst: list, @ref elem: any) -> int
+#+end_example
+
+Count the number of times that =elem= appears in =lst=.
+#+end_quote
 
 #+begin_quote
-Count the number of times that =elem= appears in =lst=.
+#+begin_example
+quicksort(@ref lst: list, compar: closure) -> unit
+#+end_example
+
+Performs the quicksort sorting algorithm on =lst= and
+sorts by the comparison closure =compar=.
+
+Example:
+
+#+begin_example
+mod Main
+
+import "std/list.earl"
+
+let lst = [5,4,3,2,1];
+
+List.quicksort(lst, |x, y| { return x < y; } );
+
+print(lst);
+#+end_example
+
+Output: =[1,2,3,4,5]=
 #+end_quote
 
 ** IO
@@ -835,9 +940,11 @@ Count the number of times that =elem= appears in =lst=.
 
 *** *Function List*:
 
-*** =file_to_str(fp: str) -> str=
-
 #+begin_quote
+#+begin_example
+file_to_str(fp: str) -> str
+#+end_example
+
 Opens the file at the filepath =fp= in read (=r=) mode. Returns
 the contents of the file as a =str= and closes the file.
 #+end_quote
@@ -852,21 +959,27 @@ the contents of the file as a =str= and closes the file.
 
 *** *Function List*:
 
-*** =max(x: int, y: int) -> int=
-
 #+begin_quote
+#+begin_example
+max(x: int, y: int) -> int
+#+end_example
+
 Returns the max between =x= and =y=.
 #+end_quote
 
-*** =min(x: int, y: int) -> int=
-
 #+begin_quote
+#+begin_example
+min(x: int, y: int) -> int
+#+end_example
+
 Returns the min between =x= and =y=.
 #+end_quote
 
-*** =abs(x: int) ->= $\mathbb{Z}^+$
-
 #+begin_quote
+#+begin_example
+abs(x: int) -> int
+#+end_example
+
 Returns the absolute value of =x=.
 #+end_quote
 
@@ -880,14 +993,18 @@ Returns the absolute value of =x=.
 
 *** *Function List*:
 
-*** =is_even(n: int) -> bool=
-
 #+begin_quote
+#+begin_example
+is_even(n: int) -> bool
+#+end_example
+
 Returns =true= if =n= is even, =false= if odd.
 #+end_quote
 
-*** =swap(@ref x1, @ref x2) -> unit=
-
 #+begin_quote
+#+begin_example
+swap(@ref x1, @ref x2) -> unit
+#+end_example
+
 Swaps the values of =x1= and =x2=.
 #+end_quote
