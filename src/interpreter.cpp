@@ -46,6 +46,17 @@ static Ctx *parent_ctx = nullptr;
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
 
+earl::value::Obj *eval_user_defined_closure(earl::variable::Obj *var, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    auto *close = dynamic_cast<earl::value::Closure *>(var->value());
+
+    ctx.push_scope();
+    close->load_parameters(params, ctx);
+    earl::value::Obj *result = eval_stmt_block(close->block(), ctx);
+    ctx.pop_scope();
+
+    return result;
+}
+
 earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     ctx.set_function(func);
     func->load_parameters(params);
@@ -283,6 +294,11 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         return Intrinsics::call(expr, params, ctx);
     }
 
+    // Check for closure
+    if (ctx.variable_is_registered(expr->m_id->lexeme())) {
+        return eval_user_defined_closure(ctx.get_registered_variable(expr->m_id->lexeme()), params, ctx);
+    }
+
     earl::function::Obj *func = ctx.get_registered_function(expr->m_id->lexeme());
 
     if (params.size() != func->params_len()) {
@@ -457,6 +473,15 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx, bool *result_type = n
         // Not a module, find the variable
         earl::variable::Obj *stored = ctx.get_registered_variable(ident->m_tok->lexeme());
         return stored->value();
+    } break;
+    case ExprTermType::Closure: {
+        if (result_type)
+            *result_type = true;
+        auto *close = dynamic_cast<ExprClosure *>(expr);
+        std::vector<std::pair<Token *, uint32_t>> args;
+        for (auto &entry : close->m_args)
+            args.push_back(std::make_pair(entry.first.get(), entry.second));
+        return new earl::value::Closure(close, std::move(args));
     } break;
     case ExprTermType::Bool: {
         if (result_type)
@@ -790,7 +815,7 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
         StmtImport *im = dynamic_cast<StmtImport *>(stmt);
 
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-        std::vector<std::string> types    = COMMON_EARLTY_ASCPL;
+        std::vector<std::string> types    = {};
         std::string comment               = COMMON_EARL_COMMENT;
 
         std::unique_ptr<Lexer> lexer      = lex_file(im->m_fp.get()->lexeme().c_str(), keywords, types, comment);

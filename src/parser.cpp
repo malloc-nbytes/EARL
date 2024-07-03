@@ -127,7 +127,7 @@ static Expr *parse_identifier_or_funccall(Lexer &lexer) {
     }
 }
 
-static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_lambda_args(Lexer &lexer) {
+static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_args(Lexer &lexer) {
     std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args;
 
     (void)Parser::parse_expect(lexer, TokenType::Pipe);
@@ -205,7 +205,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         return expr;
     } break;
     case TokenType::Pipe: {
-        std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_lambda_args(lexer);
+        std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
         auto block = Parser::parse_stmt_block(lexer);
         return new ExprClosure(std::move(args), std::move(block));
     }
@@ -230,11 +230,6 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         }
     } break;
     default: return nullptr;
-    // default: {
-    //     Err::err_wtok(lexer.peek());
-    //     ERR_WARGS(Err::Type::Fatal, "invalid token `%s` while parsing primary expression",
-    //               lexer.peek()->lexeme().c_str());
-    // } break;
     }
     assert(false && "unreachable");
     return nullptr; // unreachable
