@@ -45,6 +45,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"type", &Intrinsics::intrinsic_type},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"some", &Intrinsics::intrinsic_some},
+    {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -93,10 +94,6 @@ earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std
     (void)ctx;
 
     earl::value::Obj *tmp = obj;
-    // FIXME
-    // if (obj->type() == earl::value::Type::None) {
-    //     return intrinsic_member_substr(dynamic_cast<earl::value::None *>(tmp)->value(), idxs, ctx);
-    // }
 
     assert(obj->type() == earl::value::Type::Str);
     assert(idxs.size() == 2);
@@ -206,6 +203,13 @@ earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<ear
     return new earl::value::Option(params[0]);
 }
 
+earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(params.size() == 1);
+    auto *ret = params[0]->copy();
+    delete params[0];
+    return ret;
+}
+
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)expr;
     (void)ctx;
@@ -234,15 +238,6 @@ earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<
     bool res = true;
 
     UNIMPLEMENTED("Intrinsics::intrinsic_is_none");
-    // FIXME
-    // for (size_t i = 0; i < params.size(); ++i) {
-    //     assert(params[i]->type() == earl::value::Type::None);
-    //     auto *none = dynamic_cast<earl::value::None *>(params[i]);
-    //     if (none->value()) {
-    //         res = false;
-    //         break;
-    //     }
-    // }
 
     return new earl::value::Bool(res);
 }

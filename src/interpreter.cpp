@@ -319,13 +319,6 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         std::string &id = ident_expr->m_tok->lexeme();
 
         earl::value::Obj *tmp = left;
-        // FIXME
-        // if (left->type() == earl::value::Type::None) {
-        //     auto *none = dynamic_cast<earl::value::None *>(tmp);
-        //     assert(none->value());
-        //     tmp = none->value();
-        // }
-
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             return get_class_member(id, klass, ctx);
@@ -361,11 +354,6 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         });
 
         earl::value::Obj *tmp = left;
-        // if (left->type() == earl::value::Type::None) {
-        //     auto *none = dynamic_cast<earl::value::None *>(left);
-        //     assert(none->value());
-        //     tmp = none->value();
-        // }
 
         // Check if class
         if (tmp->type() == earl::value::Type::Class) {
