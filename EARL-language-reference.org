@@ -492,8 +492,17 @@ to files.
 ** =unit=
 
 #+begin_quote
-Currently not being used in EARL, only in the interpreter. This type
-gets returned when doing things such as side effects, non-returning function calls, etc.
+The =unit= type is used as a "throwaway". It essentially throws
+away the value that gets assigned to it. The following are all
+examples of correct usage of it:
+
+=let _ = print("hello");=
+
+=let _ = 1;=
+
+=let cl = |_| { print("hello"); };=
+
+=match x { _ -> { print("example"); } }=
 #+end_quote
 
 * Intrinsics

@@ -25,6 +25,8 @@ For the manual on how to use the language, see [[./EARL-language-reference.html]
 
 * Compiling
 
+*Note*: As of now, the only support platforms is Linux and MacOS.
+
 EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makefiles. The following are required to build the project:
 1. =autoconf=
 2. =automake=
