@@ -34,9 +34,11 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 
+std::vector<std::string> earl_argv = {};
+
 uint32_t flags = 0x00;
 
-void usage(void) {
+static void usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
@@ -52,11 +54,11 @@ void usage(void) {
     std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
 }
 
-void version() {
+static void version() {
     std::cout << "EARL " << VERSION << std::endl;
 }
 
-void parse_2hypharg(std::string arg) {
+static void parse_2hypharg(std::string arg) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
         flags |= __WITHOUT_STDLIB;
     }
@@ -71,7 +73,7 @@ void parse_2hypharg(std::string arg) {
     }
 }
 
-void parse_1hypharg(std::string arg) {
+static void parse_1hypharg(std::string arg) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
         case COMMON_EARL1ARG_HELP: {
@@ -87,7 +89,7 @@ void parse_1hypharg(std::string arg) {
     }
 }
 
-void parsearg(std::string line) {
+static void parsearg(std::string line) {
     if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
         parse_2hypharg(line.substr(2));
     }
@@ -99,19 +101,31 @@ void parsearg(std::string line) {
     }
 }
 
-const char *handlecli(int argc, char **argv) {
+static void parse_earl_argv(int i, int argc, char **argv) {
+    for (i = i+1; i < argc; ++i) {
+        std::cout << argv[i] << std::endl;
+        earl_argv.push_back(std::string(argv[i]));
+    }
+}
+
+static const char *handlecli(int argc, char **argv) {
     const char *filepath = nullptr;
 
     for (int i = 0; i < argc; ++i) {
-        const char *line = argv[i];
+        std::string line = std::string(argv[i]);
+        if (line == "--") {
+            parse_earl_argv(i, argc, argv);
+            break;
+        }
+
         if (line[0] == '-') {
-            parsearg(std::string(line));
+            parsearg(line);
         }
         else {
             if (filepath) {
                 ERR(Err::Type::Fatal, "too many input files provided");
             }
-            filepath = line;
+            filepath = line.c_str();
         }
     }
 
