@@ -33,7 +33,7 @@
 #include "common.hpp"
 #include "parser.hpp"
 
-Expr *parse_expr(Lexer &lexer);
+std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lexer &lexer);
 
 std::unique_ptr<Token> Parser::parse_expect(Lexer &lexer, TokenType expected) {
     std::unique_ptr<Token> tok = lexer.next();
@@ -127,6 +127,29 @@ static Expr *parse_identifier_or_funccall(Lexer &lexer) {
     }
 }
 
+static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_lambda_args(Lexer &lexer) {
+    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args;
+
+    (void)Parser::parse_expect(lexer, TokenType::Pipe);
+    while (lexer.peek()->type() != TokenType::Pipe) {
+        uint32_t attr = 0;
+
+        while (lexer.peek()->type() == TokenType::At) {
+            attr |= static_cast<uint32_t>(translate_attr(lexer));
+        }
+
+        std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
+        std::unique_ptr<Token> var = std::move(id);
+        args.push_back(std::make_pair(std::move(var), attr));
+
+        if (lexer.peek()->type() == TokenType::Comma)
+            lexer.discard();
+    }
+    (void)Parser::parse_expect(lexer, TokenType::Pipe);
+
+    return args;
+}
+
 static Expr *parse_primary_expr(Lexer &lexer) {
     Token *tok = nullptr;
 
@@ -181,6 +204,11 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
         return expr;
     } break;
+    case TokenType::Pipe: {
+        std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_lambda_args(lexer);
+        auto block = Parser::parse_stmt_block(lexer);
+        return new ExprClosure(std::move(args), std::move(block));
+    }
     case TokenType::Keyword: {
         if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
             return nullptr;

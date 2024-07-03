@@ -170,9 +170,10 @@ struct ExprNone : public ExprTerm {
 };
 
 struct ExprClosure : public ExprTerm {
-    std::unique_ptr<StmtDef> m_stmtdef;
+    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_args;
+    std::unique_ptr<StmtBlock> m_block;
 
-    ExprClosure(StmtDef *stmtdef);
+    ExprClosure(std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
