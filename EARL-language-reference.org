@@ -70,7 +70,7 @@ one happens, this one is guaranteed to happen (unless there is a guard).
 
 Grammar TODO
 
-** Example
+** Examples
 
 #+begin_example
 let x = 4;
@@ -91,6 +91,41 @@ Output:
 
 #+begin_example
 x is 4 with msg = foo
+#+end_example
+
+#+begin_example
+let x = some(4);
+
+match x {
+    none -> {
+        print("x is none");
+    }
+    some(3) -> {
+        print("x is some 3");
+    }
+    some(k) when k % 2 == 1 -> {
+        print("x is something and is odd");
+    }
+    some(k) -> {
+        # This branch will execute.
+        # `k` is the unwrapped value of `x`.
+        print("x is: ", k);
+        print(x.unwrap() == k);
+    }
+    some(_) -> {
+        print("x is something");
+    }
+    _ -> {
+        print("x is something else");
+    }
+}
+#+end_example
+
+Output:
+
+#+begin_example
+x is: 4
+true
 #+end_example
 
 * While Loops

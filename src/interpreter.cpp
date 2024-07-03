@@ -746,19 +746,29 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
                             ctx.unregister_variable(tmp_var->id());
                         }
                     }
+                    else {
+                        // It is `some`, but it does not have a variable
+                        goto not_some;
+                    }
+                }
+                else {
+                    // It is not `some`
+                    goto not_some;
                 }
             }
+            else {
+            not_some:
+                potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
+                if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
+                    if (branch->m_when.has_value()) {
+                        guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
+                    }
 
-            potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx);
-            if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
-                if (branch->m_when.has_value()) {
-                    guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx);
-                }
-
-                if (guard == nullptr || guard->boolean()) {
-                    delete potential_match;
-                    if (guard) delete guard;
-                    return eval_stmt_block(branch->m_block.get(), ctx);
+                    if (guard == nullptr || guard->boolean()) {
+                        delete potential_match;
+                        if (guard) delete guard;
+                        return eval_stmt_block(branch->m_block.get(), ctx);
+                    }
                 }
             }
         }
