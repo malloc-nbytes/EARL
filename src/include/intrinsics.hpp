@@ -103,8 +103,6 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
-    earl::value::Obj *intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
-
     earl::value::Obj *intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     earl::value::Obj *intrinsic_unimplemented(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);

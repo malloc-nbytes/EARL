@@ -41,7 +41,6 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
-    {"is_none", &Intrinsics::intrinsic_is_none},
     {"type", &Intrinsics::intrinsic_type},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"some", &Intrinsics::intrinsic_some},
@@ -84,8 +83,16 @@ earl::value::Obj *Intrinsics::call_member(const std::string &id, earl::value::Ob
 
 earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx) {
     (void)ctx;
-    assert(delim.size() == 1);
-    assert(obj->type() == earl::value::Type::Str);
+
+    if (delim.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`split` member intrinsic expects 1 arguments but %zu were supplied",
+                  delim.size());
+    }
+
+    if (obj->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "`split` member intrinsic is only defined for `str` types");
+    }
+
     earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
     return str->split(delim[0]);
 }
@@ -95,10 +102,23 @@ earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std
 
     earl::value::Obj *tmp = obj;
 
-    assert(obj->type() == earl::value::Type::Str);
-    assert(idxs.size() == 2);
-    assert(idxs[0]->type() == earl::value::Type::Int);
-    assert(idxs[1]->type() == earl::value::Type::Int);
+    if (idxs.size() != 2) {
+        ERR_WARGS(Err::Type::Fatal, "`substr` member intrinsic expects 2 arguments but %zu were supplied",
+                  idxs.size());
+    }
+
+    if (obj->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "`substr` member intrinsic is only defined for `str` types");
+    }
+
+    if (idxs[0]->type() != earl::value::Type::Int) {
+        ERR(Err::Type::Fatal, "argument 1 in `substr` expects an `int` value");
+    }
+
+    if (idxs[1]->type() != earl::value::Type::Int) {
+        ERR(Err::Type::Fatal, "argument 2 in `substr` expects an `int` value");
+    }
+
     auto *idx1 = dynamic_cast<earl::value::Int *>(idxs[0]);
     auto *idx2 = dynamic_cast<earl::value::Int *>(idxs[1]);
     return dynamic_cast<earl::value::Str *>(tmp)->substr(idx1, idx2);
@@ -106,16 +126,31 @@ earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std
 
 earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(obj->type() == earl::value::Type::File);
-    assert(unused.size() == 0);
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`read` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::File) {
+        ERR(Err::Type::Fatal, "`read` member intrinsic is only defined for `file` types");
+    }
+
     auto *f = dynamic_cast<earl::value::File *>(obj);
     return f->read();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(obj->type() == earl::value::Type::Char);
-    assert(unused.size() == 0);
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`ascii` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::Char) {
+        ERR(Err::Type::Fatal, "`ascii` member intrinsic is only defined for `char` types");
+    }
 
     return
         new earl::value::Int(static_cast<int>(dynamic_cast<earl::value::Char *>(obj)->value()));
@@ -123,7 +158,11 @@ earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std:
 
 earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
     (void)ctx;
-    assert(idx.size() == 1);
+
+    if (idx.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`nth` member intrinsic expects 1 argument but %zu were supplied",
+                  idx.size());
+    }
 
     if (obj->type() == earl::value::Type::List) {
         earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
@@ -134,14 +173,22 @@ earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::v
         return str->nth(idx[0]);
     }
     else {
-        ERR(Err::Type::Fatal, "invalid use of nth() member intrinsic as it can only be applied on lists and strings");
+        ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
     }
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(unused.size() == 0);
     assert(obj->type() == earl::value::Type::List);
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`rev` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::List) {
+        ERR(Err::Type::Fatal, "`rev` member intrinsic is only defined for `list` types");
+    }
 
     auto *list = dynamic_cast<earl::value::List *>(obj);
     list->rev();
@@ -151,7 +198,16 @@ earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::v
 
 earl::value::Obj *Intrinsics::intrinsic_member_append(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
     (void)ctx;
-    assert(obj->type() == earl::value::Type::List);
+
+    if (values.size() == 0) {
+        ERR_WARGS(Err::Type::Fatal, "`append` member intrinsic expects variadic arguments but %zu were supplied",
+                  values.size());
+    }
+
+    if (obj->type() != earl::value::Type::List) {
+        ERR(Err::Type::Fatal, "`append` member intrinsic is only defined for `list` types");
+    }
+
     auto *lst = dynamic_cast<earl::value::List *>(obj);
     return lst->append(values);
 }
@@ -160,6 +216,15 @@ earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::v
     (void)ctx;
     assert(values.size() == 1);
     assert(obj->type() == earl::value::Type::List || obj->type() == earl::value::Type::Str);
+
+    if (values.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`pop` member intrinsic expects 1 argument but %zu were supplied",
+                  values.size());
+    }
+
+    if (obj->type() != earl::value::Type::List && obj->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "`pop` member intrinsic is only defined for `list` and `str` types");
+    }
 
     if (obj->type() == earl::value::Type::List) {
         auto *lst = dynamic_cast<earl::value::List *>(obj);
@@ -170,13 +235,19 @@ earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::v
         return str->pop(values[0]);
     }
 
-    assert(false && "fix this message");
+    assert(false && "unreachable");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(unused.size() == 0);
-    assert(obj->type() == earl::value::Type::File);
+
+    if (unused.size() != 0) {
+        ERR(Err::Type::Fatal, "`dump` member intrinsic expects 0 arguments");
+    }
+
+    if (obj->type() != earl::value::Type::File) {
+        ERR(Err::Type::Fatal, "`dump` member intrinsic is only defined for `file` types");
+    }
 
     auto *f = dynamic_cast<earl::value::File *>(obj);
     f->dump();
@@ -187,24 +258,46 @@ earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::
 earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)expr;
     (void)ctx;
-    assert(params.size() == 1);
+
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`len` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
+    if (params[0]->type() != earl::value::Type::List && params[0]->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "`len` intrinsic is only defined for `list` and `str` types");
+    }
+
     if (params[0]->type() == earl::value::Type::List) {
         return new earl::value::Int(dynamic_cast<earl::value::List *>(params[0])->value().size());
     }
     else if (params[0]->type() == earl::value::Type::Str) {
         return new earl::value::Int(dynamic_cast<earl::value::Str *>(params[0])->value().size());
     }
+
     ERR_WARGS(Err::Type::Fatal, "canot call `len` on unsupported type (%d)", (int)params[0]->type());
     return nullptr;
 }
 
 earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     assert(params.size() == 1);
+
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
     return new earl::value::Option(params[0]);
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     assert(params.size() == 1);
+
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
     auto *ret = params[0]->copy();
     delete params[0];
     return ret;
@@ -214,6 +307,12 @@ earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<ear
     (void)expr;
     (void)ctx;
     assert(params.size() == 1);
+
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`type` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
     return new earl::value::Str(earl::value::type_to_str(params[0]));
 }
 
@@ -228,18 +327,6 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
     exit(1);
 
     return nullptr; // unreachable
-}
-
-earl::value::Obj *Intrinsics::intrinsic_is_none(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    (void)params;
-    (void)ctx;
-    (void)expr;
-
-    bool res = true;
-
-    UNIMPLEMENTED("Intrinsics::intrinsic_is_none");
-
-    return new earl::value::Bool(res);
 }
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -325,6 +412,8 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
+
     (void)ctx;
     assert(obj->type() == earl::value::Type::Str);
     assert(unused.size() == 0);
@@ -335,9 +424,18 @@ earl::value::Obj *Intrinsics::intrinsic_member_remove_lines(earl::value::Obj *ob
 earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
-    assert(params.size() == 2);
-    assert(params[0]->type() == earl::value::Type::Str);
-    assert(params[1]->type() == earl::value::Type::Str);
+
+    if (params.size() != 2) {
+        ERR_WARGS(Err::Type::Fatal, "`open` intrinsic expects 2 arguments but %zu were supplied",
+                  params.size());
+    }
+
+    if (params[0]->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "argument 1 in `open` expects a `str` value");
+    }
+    if (params[1]->type() != earl::value::Type::Str) {
+        ERR(Err::Type::Fatal, "argument 2 in `open` expects a `str` value");
+    }
 
     auto *fp = dynamic_cast<earl::value::Str *>(params[0]);
     auto *mode = dynamic_cast<earl::value::Str *>(params[1]);
@@ -366,8 +464,16 @@ earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<ear
 
 earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-    assert(obj->type() == earl::value::Type::File);
-    assert(unused.size() == 0);
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`close` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::File) {
+        ERR(Err::Type::Fatal, "`close` member intrinsic is only defined for `file` types");
+    }
+
     auto *f = dynamic_cast<earl::value::File *>(obj);
     f->close();
     return new earl::value::Void();
@@ -375,7 +481,15 @@ earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std:
 
 earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     assert(unused.size() == 0);
-    assert(obj->type() == earl::value::Type::Option);
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`unwrap` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::Option) {
+        ERR(Err::Type::Fatal, "`unwrap` member intrinsic is only defined for `option` types");
+    }
 
     auto *none = dynamic_cast<earl::value::Option *>(obj);
 
@@ -388,15 +502,27 @@ earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std
 
 
 earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    assert(obj->type() == earl::value::Type::Option);
-    assert(unused.size() == 0);
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`is_none` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::Option) {
+        ERR(Err::Type::Fatal, "`is_none` member intrinsic is only defined for `option` types");
+    }
 
     return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_none());
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_is_some(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    assert(obj->type() == earl::value::Type::Option);
-    assert(unused.size() == 0);
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`is_some` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    if (obj->type() != earl::value::Type::Option) {
+        ERR(Err::Type::Fatal, "`is_some` member intrinsic is only defined for `option` types");
+    }
 
     return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_some());
 }

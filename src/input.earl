@@ -1,12 +1,5 @@
 mod Main
 
-fn test(f) {
-    f(3);
-}
+let s = "hello";
 
-let f = |a| {
-    let x = a*2;
-    print(x);
-};
-
-test(f);
+print(s.dump());

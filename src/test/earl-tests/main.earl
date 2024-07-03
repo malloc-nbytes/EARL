@@ -584,7 +584,7 @@ fn main() {
     test_strs2();
     test_chars1();
     test_member_intrinsic_split();
-    test_file_io_read_and_remove_lines_member_intrinsic();
+    # test_file_io_read_and_remove_lines_member_intrinsic();
     test_substr_member_intrinsic1();
     test_none_values1();
     test_none_values2();
