@@ -1,8 +1,8 @@
+mod Test
+
 import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
-
-mod Test
 
 fn test_none_values2() {
     print("test_none_values2...");

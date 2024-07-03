@@ -46,8 +46,8 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 
 #+begin_quote
 - =make= \rightarrow builds the project
-- =make test= \rightarrow build the project and runs tests
-- =make vtest= \rightarrow build the project and run tests with =valgrind= (*Valgrind is required*)
+- =make test= \rightarrow build the project and runs tests (stdlib *must* be installed)
+- =make vtest= \rightarrow build the project and run tests with =valgrind= (*Valgrind is required*) (stdlib *must* be installed)
 - =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 - =make all= \rightarrow do all except clean
 - =make clean= \rightarrow cleans the project
@@ -64,8 +64,9 @@ As stated before, use the following to install EARL.
 
 #+begin_src bash
   cd EARL/src
-  make # or make test
+  make
   make install-earl
+  make test
 #+end_src
 
 * Syntax Highlighting

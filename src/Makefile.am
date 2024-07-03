@@ -11,6 +11,8 @@ AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable
 
 .PHONY: test docs all
 test: main
+	@echo "Running tests, make sure that the stdlib is installed"
+
 	$(MAKE) -C test test_suite
 	@echo "Running interpreter tests"
 	./test/test_suite

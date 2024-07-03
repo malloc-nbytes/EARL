@@ -1,6 +1,6 @@
-import "other.2.earl"
-
 mod Other1
+
+import "other.2.earl"
 
 fn __modify_ref_list(@ref lst) {
     for i in 0..len(lst) {
