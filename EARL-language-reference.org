@@ -51,7 +51,7 @@ Hello World!
 
 =else= *{* [stmt] *}*
 
-* TODO Pattern Matching
+* Pattern Matching
 #+begin_quote
 Pattern matching allows you to match on some pattern. This is
 the case for all primitives =int=, =str=, =list= etc.
@@ -152,8 +152,7 @@ You can modify =i= within the body of the loop.
 * Function Definitions
 
 #+begin_quote
-This is how to create a function. See [[Attributes]] for a
-description on /attributes/.
+This is how to create a function. The =@world=, =@pub= and =@ref= are attributes. See [[Attributes]] for a description on them.
 #+end_quote
 
 ** Grammar
@@ -444,6 +443,42 @@ To assign a value to a none-type, you must wrap it in =some= i.e.,
 *Note*: A lot of the functionality of the language will break if you use =none=
 as another datatype before giving it an actual value.
 #+end_quote
+
+** =closure=
+
+#+begin_quote
+Closures are anonymous functions that close in the outer scope. They
+can be used as functions or passed around as variables.
+#+end_quote
+
+*** Examples
+
+#+begin_example
+fn take_sum_closure(f, a, b) {
+    f(a, b);
+}
+
+let msg = "hello world";
+let hello = |_| {
+    print(msg);
+};
+
+let sum = |a, b| {
+    print("in sum");
+    return a+b;
+};
+
+hello();
+
+print(take_sum_closure(sum, 1, 2));
+#+end_example
+
+Output:
+#+begin_example
+hello world
+in sum
+3
+#+end_example
 
 ** =file=
 

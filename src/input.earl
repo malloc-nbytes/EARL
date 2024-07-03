@@ -1,4 +1,12 @@
 mod Main
 
-let x = some(3);
+import "std/stack.earl"
 
+let s = Stack.T([1,2,3]);
+
+s.push(7);
+
+while s.empty() == false {
+    print(s.top());
+    s.pop();
+}

@@ -6,21 +6,21 @@ class T [init] {
 
     @pub
     fn push(x) {
-        lst.append(x);
+        this.lst.append(x);
     }
 
     @pub
     fn pop() {
-        lst.pop(len(lst)-1);
+        this.lst.pop(len(this.lst)-1);
     }
 
     @pub
     fn empty() {
-        return len(lst) == 0;
+        return len(this.lst) == 0;
     }
 
     @pub
     fn top() {
-        return lst[len(lst)-1];
+        return this.lst[len(this.lst)-1];
     }
 }
