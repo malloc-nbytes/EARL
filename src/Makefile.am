@@ -17,7 +17,7 @@ test: main
 	@echo "Running EARL tests"
 	make
 	cd ./test/earl-tests/ && \
-	../../main --without-stdlib ./main.earl
+	../../main ./main.earl
 
 vtest: main
 	$(MAKE) -C test test_suite
