@@ -586,6 +586,13 @@ Will append arg1..arg$N$ to the list.
 Will remove the element at index =idx=.
 #+end_quote
 
+*** =filter(cl: closure) -> list=
+
+#+begin_quote
+Takes the closure =cl= and creates a new =list= of all the
+elements where =cl= returns =true=.
+#+end_quote
+
 ** =str= Implements
 
 *** =split(delim: str) -> list=

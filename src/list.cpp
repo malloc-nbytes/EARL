@@ -160,12 +160,13 @@ Obj *List::binop(Token *op, Obj *other) {
 }
 
 bool List::boolean(void) {
-    return true;
+    return m_value.size() > 0;
 }
 
 void List::mutate(Obj *other) {
-    (void)other;
-    UNIMPLEMENTED("List::mutate");
+    assert(other->type() == Type::List);
+    auto *lst = dynamic_cast<List *>(other);
+    m_value = lst->value();
 }
 
 Obj *List::copy(void) {
