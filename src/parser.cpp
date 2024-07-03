@@ -637,8 +637,15 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());
         } break;
         case TokenType::Ident: {
+            // Keeping track of parens to fix an equals sign being in a closure
+            // that is defined inside of a function call.
+            int paren = 0;
             for (size_t i = 0; lexer.peek(i) && lexer.peek(i)->type() != TokenType::Semicolon; ++i) {
-                if (lexer.peek(i)->type() == TokenType::Equals) {
+                if (lexer.peek(i)->type() == TokenType::Lparen)
+                    ++paren;
+                if (lexer.peek(i)->type() == TokenType::Rparen)
+                    --paren;
+                if (lexer.peek(i)->type() == TokenType::Equals && paren == 0) {
                     return parse_stmt_mut(lexer);
                 }
             }

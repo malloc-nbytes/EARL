@@ -1,12 +1,12 @@
 mod Main
 
-import "std/stack.earl"
-
-let s = Stack.T([1,2,3]);
-
-s.push(7);
-
-while s.empty() == false {
-    print(s.top());
-    s.pop();
+fn test(f) {
+    f(3);
 }
+
+let f = |a| {
+    let x = a*2;
+    print(x);
+};
+
+test(f);
