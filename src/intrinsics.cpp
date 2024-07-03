@@ -35,6 +35,7 @@
 #include "ast.hpp"
 #include "earl.hpp"
 #include "utils.hpp"
+#include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
     {"print", &Intrinsics::intrinsic_print},
@@ -44,6 +45,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"type", &Intrinsics::intrinsic_type},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"some", &Intrinsics::intrinsic_some},
+    {"argv", &Intrinsics::intrinsic_argv},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
 };
 
@@ -297,6 +299,19 @@ earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<ear
     }
 
     return new earl::value::Option(params[0]);
+}
+
+earl::value::Obj *Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    if (params.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`argv` intrinsic expects 0 arguments but %zu were supplied",
+                  params.size());
+    }
+
+    std::vector<earl::value::Obj *> args;
+    for (size_t i = 0; i < earl_argv.size(); ++i) {
+        args.push_back(new earl::value::Str(earl_argv.at(i)));
+    }
+    return new earl::value::List(std::move(args));
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

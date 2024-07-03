@@ -42,12 +42,12 @@ static void usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
-    std::cerr << "Documentation can be found on the Github repository:" << std::endl;
-    std::cerr << "  README                  -> basic setup" << std::endl;
+    std::cerr << "Documentation can be found on the Github repository: https://github.com/malloc-nbytes/EARL/" << std::endl;
+    std::cerr << "  README                  -> compiling, installing, contributing" << std::endl;
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [options] [file]" << std::endl << std::endl;
+    std::cerr << "Usage: earl [options] [file] -- <args>" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
@@ -103,13 +103,12 @@ static void parsearg(std::string line) {
 
 static void parse_earl_argv(int i, int argc, char **argv) {
     for (i = i+1; i < argc; ++i) {
-        std::cout << argv[i] << std::endl;
         earl_argv.push_back(std::string(argv[i]));
     }
 }
 
 static const char *handlecli(int argc, char **argv) {
-    const char *filepath = nullptr;
+    std::string filepath = "";
 
     for (int i = 0; i < argc; ++i) {
         std::string line = std::string(argv[i]);
@@ -122,14 +121,17 @@ static const char *handlecli(int argc, char **argv) {
             parsearg(line);
         }
         else {
-            if (filepath) {
+            if (filepath != "") {
                 ERR(Err::Type::Fatal, "too many input files provided");
             }
-            filepath = line.c_str();
+            filepath = line;
+            earl_argv.push_back(filepath);
         }
     }
 
-    return filepath;
+    if (filepath != "")
+        return filepath.c_str();
+    return nullptr;
 }
 
 int main(int argc, char **argv) {

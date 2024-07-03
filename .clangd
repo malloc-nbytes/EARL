@@ -1,4 +1,0 @@
-CompileFlags:
-  Add:
-    -"$(pwd)"
-    -"std=c++17"

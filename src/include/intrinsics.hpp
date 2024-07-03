@@ -109,6 +109,8 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *intrinsic_argv(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
     earl::value::Obj *intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
