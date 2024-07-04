@@ -154,8 +154,8 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
                   stmt->m_id->lexeme().c_str(), klass->id().c_str());
     }
 
-    ctx.class_chain.push_back(klass);
-    ctx.curclass = ctx.class_chain.back();
+    // ctx.class_chain.push_back(klass);
+    // ctx.curclass = ctx.class_chain.back();
 
     earl::value::Obj *rhs_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
@@ -177,13 +177,13 @@ void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
     }
 
  reg:
-    ctx.class_chain.pop_back();
-    if (ctx.class_chain.size() != 0) {
-        ctx.curclass = ctx.class_chain.back();
-    }
-    else {
-        ctx.curclass = nullptr;
-    }
+    // ctx.class_chain.pop_back();
+    // if (ctx.class_chain.size() != 0) {
+    //     ctx.curclass = ctx.class_chain.back();
+    // }
+    // else {
+    //     ctx.curclass = nullptr;
+    // }
 
     // ctx.register_variable(created_variable);
     klass->add_member(std::unique_ptr<earl::variable::Obj>(created_variable));
@@ -210,6 +210,9 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt, &ctx);
     earl::function::Obj *constructor = nullptr;
+
+    ctx.class_chain.push_back(klass);
+    ctx.curclass = ctx.class_chain.back();
 
     // Let the class know all imports available in the current context.
     for (size_t i = 0; i < ctx.m_children_contexts.size(); ++i) {
@@ -265,6 +268,14 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
     }
     // ctx.clear_tmp_scope();
     ctx.m_tmp_scope.pop_back();
+
+    ctx.class_chain.pop_back();
+    if (ctx.class_chain.size() != 0) {
+        ctx.curclass = ctx.class_chain.back();
+    }
+    else {
+        ctx.curclass = nullptr;
+    }
 
     return klass;
 }
