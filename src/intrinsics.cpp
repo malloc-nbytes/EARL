@@ -44,6 +44,8 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"open", &Intrinsics::intrinsic_open},
     {"type", &Intrinsics::intrinsic_type},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
+    {"exit", &Intrinsics::intrinsic_exit},
+    {"panic", &Intrinsics::intrinsic_panic},
     {"some", &Intrinsics::intrinsic_some},
     {"argv", &Intrinsics::intrinsic_argv},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
@@ -381,10 +383,36 @@ earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<ear
 }
 
 earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    std::cerr << "[EARL] UNIMPLEMENTED";
+    std::cout << "[EARL] UNIMPLEMENTED";
 
     if (params.size() != 0) {
-        std::cerr << ": ";
+        std::cout << ": ";
+        Intrinsics::intrinsic_print(expr, params, ctx);
+    }
+
+    exit(1);
+
+    return nullptr; // unreachable
+}
+
+earl::value::Obj *Intrinsics::intrinsic_exit(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`exit` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
+    if (params[0]->type() != earl::value::Type::Int) {
+        ERR(Err::Type::Fatal, "argument 1 in `exit` expects an `int` value");
+    }
+
+    exit(dynamic_cast<earl::value::Int *>(params[0])->value());
+}
+
+earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    std::cout << "[EARL] PANIC";
+
+    if (params.size() != 0) {
+        std::cout << ": ";
         Intrinsics::intrinsic_print(expr, params, ctx);
     }
 
