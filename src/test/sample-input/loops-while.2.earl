@@ -1,8 +1,0 @@
-# File for test-loops/test_loops_basic_while
-# Tests a larger loop by incrementing `i`.
-
-let i = 0;
-while i < 10000000 {
-    i = i + 1;
-}
-return i;

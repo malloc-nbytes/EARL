@@ -134,6 +134,8 @@ Type File::type(void) const {
 }
 
 Obj *File::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("File::binop");
 }
 
@@ -142,6 +144,7 @@ bool File::boolean(void) {
 }
 
 void File::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("File::mutate");
 }
 
@@ -160,5 +163,6 @@ Obj *File::copy(void) {
 }
 
 bool File::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("File::eq");
 }

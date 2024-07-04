@@ -33,6 +33,7 @@
 #include "utils.hpp"
 #include "lexer.hpp"
 #include "interpreter.hpp"
+#include "config.h"
 
 std::vector<std::string> earl_argv = {};
 

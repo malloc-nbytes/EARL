@@ -150,6 +150,7 @@ Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, st
 }
 
 std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
+    (void)lexer;
     return std::make_unique<Token>(start, len, type, row, col, fp);
 }
 

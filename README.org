@@ -39,35 +39,35 @@ Users compiling for the first time should do
 #+begin_src bash
   cd EARL/src/
   autoreconf --install --verbose
-  ./configure
+  ./configure --<prefix>
 #+end_src
+
+The =prefix= is the prefix to where you want EARL and the stdlib to be installed. The default
+is =/usr/local/=
 
 This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 
 #+begin_quote
 - =make= \rightarrow builds the project
 - =make test= \rightarrow build the project and runs tests (stdlib *must* be installed)
-- =make vtest= \rightarrow build the project and run tests with =valgrind= (*Valgrind is required*) (stdlib *must* be installed)
 - =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 - =make all= \rightarrow do all except clean
 - =make clean= \rightarrow cleans the project
-- =make install-earl= \rightarrow install EARL as well as the standard library
 #+end_quote
 
 Now that the initial setup has been complete, you no longer have to use =autoreconf= and =configure=.
 
-*NOTE:* Using the =-j= flag breaks =make all=. To use the =-j= flag, run =make -j$(nproc)= or =make test -j$(nproc)=
-then do one of the other =make= options if needed.
-
-* Install
+* Installation
 Once the configuration step in [[Compiling][Compiling]] is done, use the following to install EARL as well as the stdlib.
 
 #+begin_src bash
   cd EARL/src
   make
-  make install-earl
+  sudo make install
   make test
 #+end_src
+
+To uninstall, simply do =sudo make uninstall=
 
 * Syntax Highlighting
 
@@ -137,7 +137,7 @@ typedef int my_type_t;
 - *Remove unnecessary trailing whitespace*.
 - *Disable auto-formatters* (unless it conforms with the C default style of BSD).
 
-* Test Suite
+* Test Suite [DEPRECATED]
 
 *Note:* Because we have moved to C++, we have removed all tests for the relavent
 data structures that were made for this project as they are no longer needed due

@@ -1,9 +1,0 @@
-# File for test-functions/test_functions_basic_no_return
-# The bare bones test for a function.
-
-fn func() {
-}
-
-func();
-
-return 0;
