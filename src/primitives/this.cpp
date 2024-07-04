@@ -37,6 +37,8 @@ Type This::type(void) const {
 }
 
 Obj *This::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("This::binop");
 }
 
@@ -45,6 +47,7 @@ bool This::boolean(void) {
 }
 
 void This::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("This::mutate");
 }
 
@@ -53,5 +56,6 @@ Obj *This::copy(void) {
 }
 
 bool This::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("This::eq");
 }

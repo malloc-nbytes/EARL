@@ -37,6 +37,9 @@
 #include "common.hpp"
 
 earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)expr;
+    (void)ctx;
+
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
@@ -46,6 +49,8 @@ earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<ear
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+
     if (unused.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`unwrap` member intrinsic expects 0 arguments but %zu were supplied",
                   unused.size());
@@ -65,6 +70,8 @@ earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+
     if (unused.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`is_none` member intrinsic expects 0 arguments but %zu were supplied",
                   unused.size());
@@ -78,6 +85,8 @@ earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, st
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_is_some(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+
     if (unused.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`is_some` member intrinsic expects 0 arguments but %zu were supplied",
                   unused.size());

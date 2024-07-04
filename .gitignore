@@ -1,4 +1,9 @@
+earl-debug-build
+earl
 main
+config.h
+config.h.in
+stamp-h1
 *.swp
 test-suite
 .vscode

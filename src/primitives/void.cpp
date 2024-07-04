@@ -59,5 +59,6 @@ Obj *Void::copy(void) {
 }
 
 bool Void::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Void::eq");
 }

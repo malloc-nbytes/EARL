@@ -76,6 +76,8 @@ Type Closure::type(void) const {
 }
 
 Obj *Closure::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("Closure::binop");
 }
 
@@ -84,6 +86,7 @@ bool Closure::boolean(void) {
 }
 
 void Closure::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Closure::mutate");
 }
 
@@ -92,5 +95,6 @@ Obj *Closure::copy(void) {
 }
 
 bool Closure::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Closure::eq");
 }

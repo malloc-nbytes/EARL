@@ -81,6 +81,8 @@ Type Class::type(void) const {
 }
 
 Obj *Class::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("Class::binop");
 }
 
@@ -89,6 +91,7 @@ bool Class::boolean(void) {
 }
 
 void Class::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Class::mutate");
 }
 
@@ -111,5 +114,6 @@ Obj *Class::copy(void) {
 }
 
 bool Class::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Class::eq");
 }

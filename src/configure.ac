@@ -25,7 +25,6 @@ if test "x$VALGRIND" = "xno"; then
 fi
 
 # Tells automake to create Makefiles in specified directories
-AC_CONFIG_FILES([Makefile
-                test/Makefile])
+AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT

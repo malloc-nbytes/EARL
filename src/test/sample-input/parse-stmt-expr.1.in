@@ -1,8 +1,0 @@
-# File for test-parsers/test_parsers_parse_stmt_def
-# Test to make sure the parser for parsing statement
-# definitions (function declarations) works properly.
-
-print(1);
-func1();
-print(a);
-func2();

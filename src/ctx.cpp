@@ -30,7 +30,7 @@
 #include "err.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
-    m_module(nullptr), m_lexer(std::move(lexer)), m_program(std::move(program)) {
+    m_lexer(std::move(lexer)), m_module(nullptr), m_program(std::move(program)) {
     curclass = nullptr;
 }
 

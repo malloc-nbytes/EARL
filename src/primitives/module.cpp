@@ -41,6 +41,8 @@ Type Module::type(void) const {
 }
 
 Obj *Module::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("Module::binop");
 }
 
@@ -49,6 +51,7 @@ bool Module::boolean(void) {
 }
 
 void Module::mutate(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Module::mutate");
 }
 
@@ -57,5 +60,6 @@ Obj *Module::copy(void) {
 }
 
 bool Module::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Module::eq");
 }

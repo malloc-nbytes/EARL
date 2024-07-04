@@ -89,6 +89,9 @@ earl::value::Obj *Intrinsics::call_member(const std::string &id, earl::value::Ob
 }
 
 earl::value::Obj *Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    (void)expr;
+
     if (params.size() != 0) {
         ERR_WARGS(Err::Type::Fatal, "`argv` intrinsic expects 0 arguments but %zu were supplied",
                   params.size());
@@ -102,6 +105,8 @@ earl::value::Obj *Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<ear
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    (void)expr;
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
@@ -138,6 +143,8 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
 }
 
 earl::value::Obj *Intrinsics::intrinsic_exit(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    (void)expr;
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`exit` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
