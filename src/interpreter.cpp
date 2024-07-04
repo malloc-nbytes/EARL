@@ -207,6 +207,12 @@ earl::value::Obj *eval_class_instantiation(ExprFuncCall *expr, Ctx &ctx, bool fr
                   stmt->m_id->lexeme().c_str());
     }
 
+    if (stmt->m_constructor_args.size() != expr->m_params.size()) {
+        Err::err_wtok(expr->m_id.get());
+        ERR_WARGS(Err::Type::Fatal, "Incorrect number of constructor arguments for class `%s` defined in `%s`. Expected %zu but %zu were supplied.",
+                  stmt->m_id->lexeme().c_str(), stmt->m_id->m_fp.c_str(), stmt->m_constructor_args.size(), expr->m_params.size());
+    }
+
     // Create new instance of the class
     earl::value::Class *klass = new earl::value::Class(stmt, &ctx);
     earl::function::Obj *constructor = nullptr;
