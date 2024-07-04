@@ -333,6 +333,8 @@ namespace earl {
             void dump(void);
             void close(void);
             earl::value::Str *read(void);
+            void write(Obj *value);
+            void writelines(List *value);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;

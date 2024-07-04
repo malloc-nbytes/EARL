@@ -61,6 +61,8 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
+    {"write", &Intrinsics::intrinsic_member_write},
+    {"writelines", &Intrinsics::intrinsic_member_writelines},
     {"ascii", &Intrinsics::intrinsic_member_ascii},
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
@@ -141,6 +143,47 @@ earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::
 
     auto *f = dynamic_cast<earl::value::File *>(obj);
     return f->read();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_write(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx) {
+    (void)ctx;
+
+    if (param.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`write` member intrinsic expects 1 argument but %zu were supplied",
+                  param.size());
+    }
+
+    if (obj->type() != earl::value::Type::File) {
+        ERR(Err::Type::Fatal, "`write` member intrinsic is only defined for `file` types");
+    }
+
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    f->write(param[0]);
+
+    return new earl::value::Void();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_member_writelines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx) {
+    (void)ctx;
+
+    if (param.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`writelines` member intrinsic expects 1 argument but %zu were supplied",
+                  param.size());
+    }
+
+    if (param[0]->type() != earl::value::Type::List) {
+        ERR(Err::Type::Fatal, "argument 1 in `substr` expects an `int` value");
+    }
+
+    if (obj->type() != earl::value::Type::File) {
+        ERR(Err::Type::Fatal, "`writelines` member intrinsic is only defined for `file` types");
+    }
+
+    auto *f = dynamic_cast<earl::value::File *>(obj);
+    auto *lst = dynamic_cast<earl::value::List *>(param[0]);
+    f->writelines(lst);
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
