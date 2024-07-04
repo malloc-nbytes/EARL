@@ -107,7 +107,7 @@ static void parse_earl_argv(int i, int argc, char **argv) {
     }
 }
 
-static const char *handlecli(int argc, char **argv) {
+static std::string handlecli(int argc, char **argv) {
     std::string filepath = "";
 
     for (int i = 0; i < argc; ++i) {
@@ -129,9 +129,7 @@ static const char *handlecli(int argc, char **argv) {
         }
     }
 
-    if (filepath != "")
-        return filepath.c_str();
-    return nullptr;
+    return filepath;
 }
 
 int main(int argc, char **argv) {
@@ -140,14 +138,16 @@ int main(int argc, char **argv) {
     }
 
     ++argv; --argc;
-    const char *filepath = handlecli(argc, argv);
+    std::string filepath = handlecli(argc, argv);
 
-    if (filepath) {
+    if (filepath != "") {
+        std::cout << "FILEPATH: " << filepath << std::endl;
+
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
         std::vector<std::string> types = {};
         std::string comment = "#";
 
-        std::unique_ptr<Lexer> lexer = lex_file(filepath, keywords, types, comment);
+        std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
         Interpreter::interpret(std::move(program), std::move(lexer));
     }

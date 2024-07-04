@@ -1,9 +1,3 @@
 mod Main
 
-let f = open("newfile.txt", "w");
-
-let lst = ["hello", "world", 123];
-
-f.writelines(lst);
-
-f.close();
+print("hello");
