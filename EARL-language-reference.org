@@ -721,6 +721,23 @@ dump() -> unit
 Print the contents of a file.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+write(msg: str|char|int) -> unit
+#+end_example
+
+Writes =msg= to the opened file.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+writelines(msg: list) -> unit
+#+end_example
+
+Writes all elements in the list =msg= to the opened file.
+At the end of each value, a newline is added.
+#+end_quote
+
 * StdLib
 
 #+begin_quote
