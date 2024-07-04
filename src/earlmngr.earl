@@ -1,6 +1,35 @@
+mod Main
+
+let HELP_SHORT = "h";
+let HELP_LONG = "help";
+
+let VERSION_SHORT = "v";
+let VERSION_LONG = "version";
+
+let progname = "";
+
+@world
+fn usage() {
+    unimplemented("usage");
+}
+
+@world
 fn main() {
-    let argv = __ARGV__;
-    let argc = len(argv);
+    let args = argv();
+    progname = args[0];
+    args.pop(0);
+
+    for i in 0..len(args) {
+        match args[i] {
+            HELP_SHORT -> { unimplemented(HELP_SHORT); }
+            HELP_LONG -> { unimplemented(HELP_LONG); }
+            VERSION_SHORT -> { unimplemented(VERSION_SHORT); }
+            VERSION_LONG -> { unimplemented(VERSION_LONG); }
+            _ -> {
+                usage();
+            }
+        }
+    }
 }
 
 main();

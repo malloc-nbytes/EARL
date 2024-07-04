@@ -141,8 +141,6 @@ int main(int argc, char **argv) {
     std::string filepath = handlecli(argc, argv);
 
     if (filepath != "") {
-        std::cout << "FILEPATH: " << filepath << std::endl;
-
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
         std::vector<std::string> types = {};
         std::string comment = "#";
