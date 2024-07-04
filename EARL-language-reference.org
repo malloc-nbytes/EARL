@@ -525,7 +525,28 @@ You do not need to import anything to use these functions.
 print(arg1: any, arg2: any, ..., argN: any) -> unit
 #+end_example
 
+Will print all elements if it can.
+#+end_quote
+
+** =println=
+
+#+begin_quote
+#+begin_example
+println(arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
 Will print all elements if it can. Adds a newline at the end.
+#+end_quote
+
+** =input=
+
+#+begin_quote
+#+begin_example
+input(arg1: any, arg2: any, ..., argN: any) -> str
+#+end_example
+
+Will print all elements if it can. Gets input from the user
+and returns it as a =str=.
 #+end_quote
 
 ** =assert=

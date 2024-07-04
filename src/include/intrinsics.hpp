@@ -99,6 +99,8 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
+    earl::value::Obj *intrinsic_println(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     earl::value::Obj *intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     earl::value::Obj *intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
@@ -114,6 +116,8 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     earl::value::Obj *intrinsic_argv(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
+    earl::value::Obj *intrinsic_input(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 

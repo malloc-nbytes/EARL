@@ -43,8 +43,8 @@
       "class" "true" "false" "none" "match"
       "when" "constructor" "this"
       ;; intrinsic functions
-      "print" "assert" "len" "open"
-      "type" "unimplemented"
+      "print" "println" "assert" "len" "open"
+      "type" "unimplemented" "input"
       "some" "unwrap" "argv" "exit"
       "panic"
       ;; private intrinsic functions

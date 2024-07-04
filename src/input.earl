@@ -1,3 +1,5 @@
 mod Main
 
-print("hello");
+let s = input("What is your name?");
+
+println("your name is: ", s);

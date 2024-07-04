@@ -5,7 +5,7 @@ import "test-std.earl"
 import "other.1.earl"
 
 fn test_none_values2() {
-    print("test_none_values2...");
+    print("test_none_values2... ");
 
     let s1 = none;
     let s2 = none;
@@ -25,11 +25,11 @@ fn test_none_values2() {
     assert(" " + s1.unwrap() + s2.unwrap() == " helloworld");
     assert(s1.unwrap() + s2.unwrap() + " " == "helloworld ");
 
-    print("ok");
+    println("ok");
 }
 
 fn test_none_values1() {
-    print("test_none_values1...");
+    print("test_none_values1... ");
 
     let i1 = none;
     let i2 = none;
@@ -44,29 +44,29 @@ fn test_none_values1() {
     assert(i1.unwrap() + i2.unwrap() + 1 == 4);
     assert(1 + i1.unwrap() + i2.unwrap() == 4);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_substr_member_intrinsic1() {
-    print("test_substr_member_intrinsic1...");
+    print("test_substr_member_intrinsic1... ");
 
     let s = "hello world";
 
     assert(s.substr(0, 3) == "hel");
     assert(s.substr(6, len(s)) == "world");
 
-    print("ok");
+    println("ok");
 }
 
 fn test_file_io_read_and_remove_lines_member_intrinsic() {
-    print("test_file_io_read_and_remove_lines_member_intrinsic...");
+    print("test_file_io_read_and_remove_lines_member_intrinsic... ");
 
     let f = open("input.1.txt", "r");
     let lst = f.read().remove_lines().split(" ");
 
     assert(lst == ["john", "doe", "23", "foo", "jane", "doe", "43", "bar"]);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_member_intrinsic_split() {
@@ -82,11 +82,11 @@ fn test_member_intrinsic_split() {
     assert(lst[0][0] == 'h');
     assert(lst.nth(0).nth(0) == 'h');
 
-    print("ok");
+    println("ok");
 }
 
 fn test_chars1() {
-    print("test_chars1...");
+    print("test_chars1... ");
 
     let c1 = 'a';
     let c2 = 'b';
@@ -101,11 +101,11 @@ fn test_chars1() {
 
     assert(c1 == c2);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_strs2() {
-    print("test_strs2...");
+    print("test_strs2... ");
 
     let s1 = "hello";
     let s2 = "world";
@@ -122,11 +122,11 @@ fn test_strs2() {
 
     assert(s1[0] == 'a');
 
-    print("ok");
+    println("ok");
 }
 
 fn test_strs1() {
-    print("test_strs1...");
+    print("test_strs1... ");
 
     let s = "hello";
 
@@ -136,11 +136,11 @@ fn test_strs1() {
 
     assert(s == "world");
 
-    print("ok");
+    println("ok");
 }
 
 fn test_booleans() {
-    print("test_booleans...");
+    print("test_booleans... ");
 
     let t = true;
     let f = false;
@@ -152,11 +152,11 @@ fn test_booleans() {
     assert(t || f == true);
     assert(f || f == false);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_point_class_import() {
-    print("test_point_class_import...");
+    print("test_point_class_import... ");
 
     let p1 = PointClass.Point(1, 2, "my point 1");
 
@@ -180,29 +180,29 @@ fn test_point_class_import() {
     assert(p1.get_name() == "my point 1");
     assert(p1.get_sum() == 3);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_func_reference2() {
-    print("test_func_reference2...");
+    print("test_func_reference2... ");
 
     let lst = [1,2,3,4,5];
     Other1.modify_ref_list(lst);
 
     assert(lst == [2,3,4,5,6]);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_func_reference1() {
-    print("test_func_reference1...");
+    print("test_func_reference1... ");
 
     let i = 1;
     Other1.modify_ref(i);
 
     assert(i == 2);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_reference2() {
@@ -220,11 +220,11 @@ fn test_reference2() {
     assert(ptr == [2,3,4,5,6]);
     assert(lst == ptr);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_reference1() {
-    print("test_reference1");
+    print("test_reference1... ");
 
     let orig = 1;
     @ref let ptr = orig;
@@ -241,38 +241,38 @@ fn test_reference1() {
     assert(ptr == 3);
     assert(orig == ptr);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_access2() {
-    print("test_list_access2...");
+    print("test_list_access2... ");
 
     assert(Other1.two_dim_arr()[1] == [4,5,6]);
     assert(Other1.two_dim_arr()[1].nth(0) == 4);
     assert(Other1.two_dim_arr()[1][0] == 4);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_access1() {
-    print("test_list_access1...");
+    print("test_list_access1... ");
     let lst = [1,2,3,4,5];
     for i in 0..len(lst) {
         assert(lst[i] == i+1);
     }
-    print("ok");
+    println("ok");
 }
 
 fn test_member_intrinsic_pop1() {
-    print("test_member_intrinsic_pop1...");
+    print("test_member_intrinsic_pop1... ");
     let lst = [1,2,3,4,5];
     lst.pop(2);
     assert(lst == [1,2,4,5]);
-    print("ok");
+    println("ok");
 }
 
 fn test_basic_import2() {
-    print("test_basic_import2...");
+    print("test_basic_import2... ");
 
     let a = 2;
     let b = 3;
@@ -288,7 +288,7 @@ fn test_basic_import2() {
 
     assert(s2 == 6);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_basic_import1() {
@@ -299,11 +299,11 @@ fn test_basic_import1() {
     assert(s == x+y);
     assert(Other1.sum(3, 4) == 7);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_append_intrinsic3() {
-    print("test_list_append_intrinsic3...");
+    print("test_list_append_intrinsic3... ");
 
     let lst = [];
 
@@ -318,11 +318,11 @@ fn test_list_append_intrinsic3() {
         t = t+1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_append_intrinsic2() {
-    print("test_list_append_intrinsic2...");
+    print("test_list_append_intrinsic2... ");
 
     let lst = [1,2,3];
     lst.append(4, "foobar", [5,6,7]);
@@ -337,11 +337,11 @@ fn test_list_append_intrinsic2() {
     assert(lst.nth(4) == "foobar");
     assert(lst.nth(5) == [5,6,7]);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_append_intrinsic1() {
-    print("test_list_append_intrinsic1...");
+    print("test_list_append_intrinsic1... ");
 
     let lst = [1,2,3,4];
     lst.append(5);
@@ -355,11 +355,11 @@ fn test_list_append_intrinsic1() {
         t = t+1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_rev_intrinsic2() {
-    print("test_list_rev_intrinsic2...");
+    print("test_list_rev_intrinsic2... ");
 
     let lst = [[3,2,1],[6,5,4],[9,8,7]];
     let t = 9;
@@ -373,11 +373,11 @@ fn test_list_rev_intrinsic2() {
         }
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_rev_intrinsic1() {
-    print("test_list_rev_intrinsic1...");
+    print("test_list_rev_intrinsic1... ");
 
     let lst = [1,2,3,4,5];
     let tmp = 5;
@@ -389,11 +389,11 @@ fn test_list_rev_intrinsic1() {
         tmp = tmp-1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_len_intrinsic2() {
-    print("test_len_intrinsic2...");
+    print("test_len_intrinsic2... ");
 
     let lst = [[1,2,3],[4,5,6],[7,8,9]];
     let t = 1;
@@ -404,18 +404,18 @@ fn test_len_intrinsic2() {
         }
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_len_intrinsic1() {
-    print("test_len_intrinsic1...");
+    print("test_len_intrinsic1... ");
 
     let lst = [1,2,3,4,5];
     for i in 0..len(lst) {
         assert(lst.nth(i) == i+1);
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_function_chaining() {
@@ -432,7 +432,7 @@ fn test_function_chaining() {
 }
 
 fn test_nested_lists() {
-    print("test_function_chaining...");
+    print("test_function_chaining... ");
 
     let lst = [[1,2,3],[4,5,6],[7,8,9]];
 
@@ -446,11 +446,11 @@ fn test_nested_lists() {
         }
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_accessor_bug() {
-    print("test_accessor_bug...");
+    print("test_accessor_bug... ");
 
     let lst = [1,2,3,4,5];
 
@@ -460,11 +460,11 @@ fn test_accessor_bug() {
     let y = lst.nth(1) + 1;
     assert(y == 3);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_list_access() {
-    print("test_list_access...");
+    print("test_list_access... ");
 
     let lst = [1,2,3,4,5];
 
@@ -472,11 +472,11 @@ fn test_list_access() {
         assert(i+1 == lst.nth(i));
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_while_loop() {
-    print("test_while_loop...");
+    print("test_while_loop... ");
 
     let i = 0;
     let tmp = 0;
@@ -487,11 +487,11 @@ fn test_while_loop() {
         i = i+1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_for_loop2() {
-    print("test_for_loop2...");
+    print("test_for_loop2... ");
 
     let start = 0;
     let end = 10;
@@ -502,11 +502,11 @@ fn test_for_loop2() {
         tmp = tmp+1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 fn test_for_loop() {
-    print("test_for_loop...");
+    print("test_for_loop... ");
 
     let tmp = 0-1;
     for i in 0..100 {
@@ -514,21 +514,21 @@ fn test_for_loop() {
         tmp = tmp+1;
     }
 
-    print("ok");
+    println("ok");
 }
 
 @world
 fn test_world_attr() {
-    print("test_world_attr...");
+    print("test_world_attr... ");
     assert(__world_var_int == 99);
     assert(__world_var_str == "world");
     assert(__world_var_lst == [1,2,3,4,5]);
     assert(__world_var_lst[2] == 3);
-    print("ok");
+    println("ok");
 }
 
 fn test_variable_mutation() {
-    print("test_variable_mutation...");
+    print("test_variable_mutation... ");
 
     let x = 1;
     let y = x;
@@ -536,11 +536,11 @@ fn test_variable_mutation() {
 
     assert(x == 1, y == 2);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_variable_instantiation() {
-    print("test_variable_instantiation...");
+    print("test_variable_instantiation... ");
 
     let x = 9;
     let y = x;
@@ -548,7 +548,7 @@ fn test_variable_instantiation() {
 
     assert(x == 9, y == 9, z == 19);
 
-    print("ok");
+    println("ok");
 }
 
 fn main() {

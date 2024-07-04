@@ -64,12 +64,27 @@ fn handle_args(@ref args) {
     }
 }
 
+fn handle_interaction() {
+    println("Choose an option:");
+    let inp = input("New EARL Project [0]");
+
+    match inp {
+        "0" | "New EARL Project" -> {
+            unimplemented("inp");
+        }
+        _ -> {
+            panic("illegal input");
+        }
+    }
+}
+
 @world
 fn main() {
     let args = argv();
     progname = args[0];
     args.pop(0);
     handle_args(args);
+    handle_interaction();
 }
 
 main();
