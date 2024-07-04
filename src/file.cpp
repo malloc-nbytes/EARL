@@ -122,6 +122,9 @@ void File::writelines(List *value) {
 
     for (size_t i = 0; i < value->value().size(); ++i) {
         this->write(value->value().at(i));
+        auto *newline = new Char("\n");
+        this->write(newline);
+        delete newline;
     }
 }
 

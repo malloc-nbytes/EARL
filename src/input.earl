@@ -2,7 +2,7 @@ mod Main
 
 let f = open("newfile.txt", "w");
 
-let lst = ["hello", ' ', "world", ' ', 123];
+let lst = ["hello", "world", 123];
 
 f.writelines(lst);
 

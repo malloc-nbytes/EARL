@@ -57,6 +57,7 @@
       "ascii"
       ;; file member intrinsics
       "read" "close" "dump" "write"
+      "writelines"
       ;; option member intrinsics
       "is_none" "is_some"
       ;; function attributes
