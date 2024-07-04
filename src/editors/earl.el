@@ -52,7 +52,7 @@
       "rev" "nth" "append" "pop"
       "filter"
       ;; str member intrinsics
-      "split" "remove_lines"
+      "split" "remove_lines" "substr"
       ;; char member intrinsics
       "ascii"
       ;; file member intrinsics

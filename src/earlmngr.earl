@@ -1,16 +1,67 @@
 mod Main
 
-let HELP_SHORT = "h";
+let HELP_SHORT = 'h';
 let HELP_LONG = "help";
 
-let VERSION_SHORT = "v";
+let VERSION_SHORT = 'v';
 let VERSION_LONG = "version";
 
 let progname = "";
 
 @world
 fn usage() {
-    unimplemented("usage");
+    print("Usage: ", progname, " [options]");
+    print();
+    print("Options:");
+    print("  -", HELP_SHORT, ", --", HELP_LONG, "       Print this message");
+    print("  -", VERSION_SHORT, ", --", VERSION_LONG, "    Print version information");
+}
+
+fn help() {
+    usage();
+}
+
+@world
+fn handle_args(@ref args) {
+    if len(args) == 0 {
+        usage();
+    }
+
+    for i in 0..len(args) {
+        let word = args[i];
+
+        if len(word) > 1 && word[0] == '-' && word[1] == '-' {
+            match word.substr(2, len(word)) {
+                HELP_LONG -> {
+                    unimplemented(HELP_LONG);
+                }
+                VERSION_LONG -> {
+                    unimplemented(VERSION_LONG);
+                }
+                _ -> {
+                    unimplemented("unknown arg");
+                }
+            }
+        }
+        else if word[0] == '-' {
+            for j in 1..len(word) {
+                match word[j] {
+                    HELP_SHORT -> {
+                        unimplemented(HELP_SHORT);
+                    }
+                    VERSION_SHORT -> {
+                        unimplemented(VERSION_SHORT);
+                    }
+                    _ -> {
+                        unimplemented("unknown arg");
+                    }
+                }
+            }
+        }
+        else {
+            unimplemented("no hyph");
+        }
+    }
 }
 
 @world
@@ -18,21 +69,7 @@ fn main() {
     let args = argv();
     progname = args[0];
     args.pop(0);
-
-
-    for i in 0..len(args) {
-        match args[i] {
-            HELP_SHORT -> {
-                print(HELP_SHORT);
-            }
-            HELP_LONG -> { unimplemented(HELP_LONG); }
-            VERSION_SHORT -> { unimplemented(VERSION_SHORT); }
-            VERSION_LONG -> { unimplemented(VERSION_LONG); }
-            _ -> {
-                usage();
-            }
-        }
-    }
+    handle_args(args);
 }
 
 main();
