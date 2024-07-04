@@ -1,12 +1,9 @@
 mod Main
 
-import "std/set.earl"
+fn f(sum, a, b) {
+    return sum(a, b);
+}
 
-let s = Set.T([1,2,3], |x, y| {
-    if x > y { return 2; }
-    if y > x { return 1; }
-    return 0;
-});
+let sum = |a, b| { return a+b; };
 
-s.dump();
-
+println(f(sum, 1, 2));
