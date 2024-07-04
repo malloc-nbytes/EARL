@@ -95,6 +95,6 @@ Obj *Closure::copy(void) {
 }
 
 bool Closure::eq(Obj *other) {
-    (void)other;
     UNIMPLEMENTED("Closure::eq");
+    return true;
 }

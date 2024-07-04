@@ -201,9 +201,9 @@ bool Ctx::variable_is_registered(const std::string &id) {
     // Handle case where you are creating a new class
     // instantiation inside of the class itself.
     if (curclass) {
-        // if (curclass->get_member(id) != nullptr) {
-        //     return false;
-        // }
+        if (curclass->get_member(id) != nullptr) {
+            return true;
+        }
         return false;
     }
 

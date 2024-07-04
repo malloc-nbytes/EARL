@@ -36,7 +36,7 @@ class T [init, compar] {
     fn __dump(@ref cur) {
         if cur.is_some() {
             __dump(cur.unwrap().left);
-            print(cur.unwrap().value);
+            println(cur.unwrap().value);
             __dump(cur.unwrap().right);
         }
     }

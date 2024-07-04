@@ -382,15 +382,9 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             auto *method = klass->get_method(id);
 
             if (!method) {
-                if (!ctx.curclass && ctx.prev) {
-                    assert(ctx.prev->curclass);
-                    klass = ctx.prev->curclass;
-                }
-                if (!klass) {
-                    klass = ctx.curclass;
-                }
-                assert(klass);
-                return get_class_member(id, klass, ctx, true);
+                // must be a closure.
+                auto *var = ctx.get_registered_variable(id);
+                return eval_user_defined_closure(var, params, ctx);
             }
             return eval_user_defined_class_method(method, params, klass, ctx, true);
         }
@@ -523,7 +517,8 @@ earl::value::Obj *eval_expr_term(ExprTerm *expr, Ctx &ctx, bool *result_type = n
     case ExprTermType::Func_Call: {
         if (result_type)
             *result_type = true;
-        return eval_expr_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+        ExprFuncCall *func = dynamic_cast<ExprFuncCall *>(expr);
+        return eval_expr_funccall(func, ctx);
     } break;
     case ExprTermType::List_Literal: {
         if (result_type)
@@ -720,6 +715,13 @@ earl::variable::Obj *handle_match_some_branch(ExprFuncCall *expr, earl::value::O
 
 earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
     earl::value::Obj *match_value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    if (match_value->type() == earl::value::Type::Closure) {
+        auto *close = dynamic_cast<earl::value::Closure *>(match_value);
+        std::vector<earl::value::Obj *> params;
+        close->load_parameters(params, ctx);
+        match_value = close->call(params, ctx);
+    }
 
     // Go through the branches
     for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
