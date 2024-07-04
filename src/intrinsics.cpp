@@ -136,7 +136,7 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
 
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_print(expr, params, ctx);
+        Intrinsics::intrinsic_println(expr, params, ctx);
     }
 
     exit(1);
@@ -164,7 +164,7 @@ earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<ea
 
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_print(expr, params, ctx);
+        Intrinsics::intrinsic_println(expr, params, ctx);
     }
 
     exit(1);

@@ -15,6 +15,7 @@ fn usage() {
     print("Options:");
     print("  -", HELP_SHORT, ", --", HELP_LONG, "       Print this message");
     print("  -", VERSION_SHORT, ", --", VERSION_LONG, "    Print version information");
+    exit(1);
 }
 
 fn help() {
@@ -23,10 +24,6 @@ fn help() {
 
 @world
 fn handle_args(@ref args) {
-    if len(args) == 0 {
-        usage();
-    }
-
     for i in 0..len(args) {
         let word = args[i];
 
@@ -66,7 +63,7 @@ fn handle_args(@ref args) {
 
 fn handle_interaction() {
     println("Choose an option:");
-    let inp = input("New EARL Project [0]");
+    let inp = input("New EARL Project [0] ");
 
     match inp {
         "0" | "New EARL Project" -> {
