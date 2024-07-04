@@ -7,8 +7,9 @@ class Node [value] {
 }
 
 @pub
-class T [init] {
+class T [init, compar] {
     root = none;
+    compar = compar;
 
     fn constructor() {
         for i in 0..len(init) {
@@ -44,11 +45,11 @@ class T [init] {
         if cur.is_none() {
             return false;
         }
-        if value > cur.unwrap().value {
-            return this.__contains(cur.unwrap().right, value);
-        }
-        else if value < cur.unwrap().value {
-            return this.__contains(cur.unwrap().left, value);
+
+        match this.compar(cur.unwrap().value, value) {
+            2 -> { return this.__contains(cur.unwrap().right, value); }
+            1 -> { return this.__contains(cur.unwrap().left, value); }
+            0 -> { return true; }
         }
         return true;
     }
@@ -57,11 +58,10 @@ class T [init] {
         if cur.is_none() {
             cur = some(Node(value));
         }
-        else if value > cur.unwrap().value {
-            this.__insert(cur.unwrap().right, value);
-        }
-        else if value < cur.unwrap().value {
-            this.__insert(cur.unwrap().left, value);
+
+        match this.compar(value, cur.unwrap().value) {
+            2 -> { return this.__insert(cur.unwrap().right, value); }
+            1 -> { return this.__insert(cur.unwrap().left, value); }
         }
     }
 }

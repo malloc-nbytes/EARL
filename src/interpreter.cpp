@@ -359,7 +359,7 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
     } break;
     case ExprTermType::Func_Call: {
         ExprFuncCall *func_expr = dynamic_cast<ExprFuncCall *>(right);
-        const std::string &id = func_expr->m_id->lexeme();
+        std::string &id = func_expr->m_id->lexeme();
         std::vector<earl::value::Obj *> params;
 
         std::for_each(func_expr->m_params.begin(), func_expr->m_params.end(), [&](auto &e) {
@@ -380,6 +380,18 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             assert(ctx.curclass);
             auto *klass = ctx.curclass;
             auto *method = klass->get_method(id);
+
+            if (!method) {
+                if (!ctx.curclass && ctx.prev) {
+                    assert(ctx.prev->curclass);
+                    klass = ctx.prev->curclass;
+                }
+                if (!klass) {
+                    klass = ctx.curclass;
+                }
+                assert(klass);
+                return get_class_member(id, klass, ctx, true);
+            }
             return eval_user_defined_class_method(method, params, klass, ctx, true);
         }
 
