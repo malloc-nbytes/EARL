@@ -44,7 +44,7 @@
       "when" "constructor" "this"
       ;; intrinsic functions
       "print" "println" "assert" "len" "open"
-      "type" "unimplemented"
+      "type" "unimplemented" "input"
       "some" "unwrap" "argv" "exit"
       "panic"
       ;; private intrinsic functions
