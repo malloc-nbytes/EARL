@@ -39,6 +39,7 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
     {"print", &Intrinsics::intrinsic_print},
+    {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
@@ -48,6 +49,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"panic", &Intrinsics::intrinsic_panic},
     {"some", &Intrinsics::intrinsic_some},
     {"argv", &Intrinsics::intrinsic_argv},
+    {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
 };
 
@@ -134,7 +136,7 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
 
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_print(expr, params, ctx);
+        Intrinsics::intrinsic_println(expr, params, ctx);
     }
 
     exit(1);
@@ -162,7 +164,7 @@ earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<ea
 
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_print(expr, params, ctx);
+        Intrinsics::intrinsic_println(expr, params, ctx);
     }
 
     exit(1);
@@ -248,7 +250,21 @@ earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<ea
     for (size_t i = 0; i < params.size(); ++i) {
         __intrinsic_print(expr, params[i]);
     }
+    return new earl::value::Void();
+}
+
+earl::value::Obj *Intrinsics::intrinsic_println(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)ctx;
+    for (size_t i = 0; i < params.size(); ++i) {
+        __intrinsic_print(expr, params[i]);
+    }
     std::cout << '\n';
     return new earl::value::Void();
 }
 
+earl::value::Obj *Intrinsics::intrinsic_input(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    intrinsic_print(expr, params, ctx);
+    std::string in = "";
+    std::cin >> in;
+    return new earl::value::Str(in);
+}
