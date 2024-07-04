@@ -759,7 +759,6 @@ earl::value::Obj *eval_stmt_match(StmtMatch *stmt, Ctx &ctx) {
                     }
 
                     if (guard == nullptr || guard->boolean()) {
-                        delete potential_match;
                         if (guard) delete guard;
                         return Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
                     }
