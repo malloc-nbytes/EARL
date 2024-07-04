@@ -1,7 +1,9 @@
-#!/usr/local/bin/earl
-
 mod Main
 
-let argv = argv();
-let argc = len(argv);
-print(argv, ' ', argc);
+let f = open("newfile.txt", "w");
+
+let lst = ["hello", ' ', "world", ' ', 123];
+
+f.writelines(lst);
+
+f.close();

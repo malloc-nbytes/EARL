@@ -143,6 +143,8 @@ namespace Intrinsics {
     earl::value::Obj *intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
     earl::value::Obj *intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
     earl::value::Obj *intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_write(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx);
+    earl::value::Obj *intrinsic_member_writelines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx);
 
     earl::value::Obj *intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx);
 

@@ -83,6 +83,48 @@ earl::value::Str *File::read(void) {
     return new earl::value::Str(buf.str());
 }
 
+void File::write(Obj *value) {
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+
+    if (m_mode->value() == "r") {
+        ERR(Err::Type::Fatal, "file is not open for writing");
+    }
+
+    switch (value->type()) {
+    case Type::Int: {
+        auto *_int = dynamic_cast<Int *>(value);
+        m_stream << _int->value();
+    } break;
+    case Type::Char: {
+        auto *_char = dynamic_cast<Char *>(value);
+        m_stream << _char->value();
+    } break;
+    case Type::Str: {
+        auto *str = dynamic_cast<Str *>(value);
+        m_stream << str->value();
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "cannot write `%s` type to a file", type_to_str(value).c_str());
+    } break;
+    }
+}
+
+void File::writelines(List *value) {
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+
+    if (m_mode->value() == "r") {
+        ERR(Err::Type::Fatal, "file is not open for writing");
+    }
+
+    for (size_t i = 0; i < value->value().size(); ++i) {
+        this->write(value->value().at(i));
+    }
+}
+
 /*** OVERRIDES ***/
 Type File::type(void) const {
     return Type::File;

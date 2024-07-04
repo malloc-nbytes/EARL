@@ -56,7 +56,7 @@
       ;; char member intrinsics
       "ascii"
       ;; file member intrinsics
-      "read" "close" "dump"
+      "read" "close" "dump" "write"
       ;; option member intrinsics
       "is_none" "is_some"
       ;; function attributes
