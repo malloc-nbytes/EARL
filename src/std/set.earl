@@ -17,6 +17,21 @@ class T [init, compar] {
         }
     }
 
+    @pub fn extract() {
+        return this.__extract(this.root);
+    }
+
+    fn __extract(cur) {
+        let ret = [];
+        if cur.is_some() {
+            ret = ret
+            + [cur.unwrap().value]
+            + this.__extract(cur.unwrap().left)
+            + this.__extract(cur.unwrap().right);
+        }
+        return ret;
+    }
+
     @pub fn insert(value) {
         this.__insert(this.root, value);
     }

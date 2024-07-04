@@ -1,9 +1,21 @@
 mod Main
 
-fn f(sum, a, b) {
-    return sum(a, b);
-}
+import "std/list.earl"
+import "std/set.earl"
 
-let sum = |a, b| { return a+b; };
+let s = Set.T([10,2,5,22,4,33], |a, b| {
+    if a > b { return 2; }
+    if b > a { return 1; }
+    return 0;
+});
 
-println(f(sum, 1, 2));
+let lst = s.extract().filter(|a| { a % 2 == 0; });
+
+List.quicksort(lst, |a, b| {
+    return a < b;
+});
+
+println(lst);
+
+s.dump();
+

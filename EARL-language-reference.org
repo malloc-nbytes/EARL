@@ -908,6 +908,16 @@ Time complexity: $O(\log n)$ where $n = |$ =T= $|$.
 
 #+begin_quote
 #+begin_example
+extract() -> list
+#+end_example
+
+Extracts the elements of the set as a =list=.
+
+Time complexity: $O(\log n)$ where $n = |$ =T= $|$.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 dump() -> unit
 #+end_example
 
