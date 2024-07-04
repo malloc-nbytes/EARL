@@ -43,7 +43,7 @@
       "class" "true" "false" "none" "match"
       "when" "constructor" "this"
       ;; intrinsic functions
-      "print" "assert" "len" "open"
+      "print" "println" "assert" "len" "open"
       "type" "unimplemented"
       "some" "unwrap" "argv" "exit"
       "panic"
