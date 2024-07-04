@@ -17,26 +17,15 @@ install-data-local: $(include_HEADERS)
 	$(mkinstalldirs) $(DESTDIR)$(includedir)
 
 .PHONY: test docs all
-test: main
+
+test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
-	cd test/earl-tests && ../../main ./main.earl
+	cd test/earl-tests && ../../earl ./main.earl
 
 docs:
 	doxygen Doxyfile
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
 
-install-earl: main
-	@echo "*-*-* installing stdlib *-*-*"
-	sudo mkdir -p /usr/local/include/EARL/std/
-	sudo cp -r ./std/* /usr/local/include/EARL/std/
-	@echo "*-*-* installing EARL *-*-*"
-	sudo cp ./main /usr/local/bin/earl
-	@echo "*-*-* successfully installed EARL *-*-*"
-
-uninstall-earl:
-	sudo rm /usr/local/bin/earl
-	sudo rm -r /usr/local/include/EARL
-
-all: docs main test
+all: earl docs test
 
 .DEFAULT_GOAL = earl
