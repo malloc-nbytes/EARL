@@ -1,3 +1,7 @@
 mod Main
 
+println('a'.ascii());
+
+let x = none;
+println(x.is_none() == true);
 

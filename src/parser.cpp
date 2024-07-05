@@ -93,8 +93,9 @@ static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
         // Only needed if no arguments are provided.
         if (lexer.peek()->type() == TokenType::Rparen
             || lexer.peek()->type() == TokenType::Rbrace
-            || lexer.peek()->type() == TokenType::Rbracket)
+            || lexer.peek()->type() == TokenType::Rbracket) {
             break;
+        }
         exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
         if (lexer.peek()->type() == TokenType::Comma)
             (void)Parser::parse_expect(lexer, TokenType::Comma);
@@ -152,85 +153,99 @@ static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_ar
 
 static Expr *parse_primary_expr(Lexer &lexer) {
     Token *tok = nullptr;
+    Expr *left = nullptr;
 
-    switch (lexer.peek()->type()) {
-    case TokenType::Ident: {
-        Expr *left = nullptr;
-        std::unique_ptr<Token> funccall_id = nullptr;
+    while (1) {
+        switch (lexer.peek()->type()) {
+        case TokenType::Ident: {
+            std::unique_ptr<Token> funccall_id = nullptr;
 
-        while ((tok = lexer.peek()) != nullptr) {
-            std::optional<std::vector<std::unique_ptr<Expr>>> group = {};
+            while ((tok = lexer.peek()) != nullptr) {
+                std::optional<std::vector<std::unique_ptr<Expr>>> group = {};
 
-            if (tok->type() == TokenType::Ident && lexer.peek(1)->type() == TokenType::Lparen) {
-                funccall_id = lexer.next();
-                group = try_parse_funccall(lexer);
-            }
+                if (tok->type() == TokenType::Ident && lexer.peek(1)->type() == TokenType::Lparen) {
+                    funccall_id = lexer.next();
+                    group = try_parse_funccall(lexer);
+                }
 
-            if (group.has_value()) {
-                assert(funccall_id);
-                left = new ExprFuncCall(std::move(funccall_id), std::move(group.value()));
+                if (group.has_value()) {
+                    assert(funccall_id);
+                    left = new ExprFuncCall(std::move(funccall_id), std::move(group.value()));
+                }
+                else if (lexer.peek()->type() == TokenType::Ident) {
+                    left = new ExprIdent(lexer.next());
+                }
+                else if (lexer.peek()->type() == TokenType::Period) {
+                    lexer.discard();
+                    Expr *right = parse_identifier_or_funccall(lexer);
+                    left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+                }
+                else if (lexer.peek()->type() == TokenType::Lbracket) {
+                    lexer.discard();
+                    Expr *right = Parser::parse_expr(lexer);
+                    (void)Parser::parse_expect(lexer, TokenType::Rbracket);
+                    left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+                }
+                else {
+                    return left;
+                }
             }
-            else if (lexer.peek()->type() == TokenType::Ident) {
-                left = new ExprIdent(lexer.next());
+        } break;
+        case TokenType::Period: {
+            lexer.discard();
+            Expr *right = parse_identifier_or_funccall(lexer);
+            left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+        } break;
+        case TokenType::Intlit: {
+            left = new ExprIntLit(lexer.next());
+        } break;
+        case TokenType::Strlit: {
+            left = new ExprStrLit(lexer.next());
+        } break;
+        case TokenType::Charlit: {
+            left = new ExprCharLit(lexer.next());
+        } break;
+        case TokenType::Lbracket: {
+            lexer.discard();
+            std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
+            lexer.discard();
+            left = new ExprListLit(std::move(lst));
+        } break;
+        case TokenType::Lparen: {
+            lexer.discard();
+            Expr *expr = Parser::parse_expr(lexer);
+            (void)Parser::parse_expect(lexer, TokenType::Rparen);
+            left = expr;
+        } break;
+        case TokenType::Pipe: {
+            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
+            auto block = Parser::parse_stmt_block(lexer);
+            return new ExprClosure(std::move(args), std::move(block));
+        }
+        case TokenType::Keyword: {
+            if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
+                return nullptr;
+
+            std::unique_ptr<Token> kw = lexer.next();
+            if (kw->lexeme() == COMMON_EARLKW_TRUE) {
+                return new ExprBool(std::move(kw), true);
             }
-            else if (lexer.peek()->type() == TokenType::Period) {
-                lexer.discard();
-                Expr *right = parse_identifier_or_funccall(lexer);
-                left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
+                return new ExprBool(std::move(kw), false);
             }
-            else if (lexer.peek()->type() == TokenType::Lbracket) {
-                lexer.discard();
-                Expr *right = Parser::parse_expr(lexer);
-                (void)Parser::parse_expect(lexer, TokenType::Rbracket);
-                left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            else if (kw->lexeme() == COMMON_EARLKW_NONE) {
+                return new ExprNone(std::move(kw));
             }
             else {
-                return left;
+                Err::err_wtok(kw.get());
+                ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s` while parsing primary expression",
+                          kw->lexeme().c_str());
             }
+        } break;
+        default: return left;
         }
-    } break;
-    case TokenType::Intlit: return new ExprIntLit(lexer.next());
-    case TokenType::Strlit: return new ExprStrLit(lexer.next());
-    case TokenType::Charlit: return new ExprCharLit(lexer.next());
-    case TokenType::Lbracket: {
-        lexer.discard();
-        std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
-        lexer.discard();
-        return new ExprListLit(std::move(lst));
-    } break;
-    case TokenType::Lparen: {
-        lexer.discard();
-        Expr *expr = Parser::parse_expr(lexer);
-        (void)Parser::parse_expect(lexer, TokenType::Rparen);
-        return expr;
-    } break;
-    case TokenType::Pipe: {
-        std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
-        auto block = Parser::parse_stmt_block(lexer);
-        return new ExprClosure(std::move(args), std::move(block));
     }
-    case TokenType::Keyword: {
-        if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
-            return nullptr;
 
-        std::unique_ptr<Token> kw = lexer.next();
-        if (kw->lexeme() == COMMON_EARLKW_TRUE) {
-            return new ExprBool(std::move(kw), true);
-        }
-        else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
-            return new ExprBool(std::move(kw), false);
-        }
-        else if (kw->lexeme() == COMMON_EARLKW_NONE) {
-            return new ExprNone(std::move(kw));
-        }
-        else {
-            Err::err_wtok(kw.get());
-            ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s` while parsing primary expression",
-                      kw->lexeme().c_str());
-        }
-    } break;
-    default: return nullptr;
-    }
     assert(false && "unreachable");
     return nullptr; // unreachable
 }

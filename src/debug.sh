@@ -13,5 +13,5 @@ if [ "$#" -eq 0 ]; then
     exit 1
 fi
 
-g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o earl-debug-build *.cpp primitives/*.cpp member-intrinsics/*.cpp include/scope.hpp
+g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o earl-debug-build *.cpp primitives/*.cpp member-intrinsics/*.cpp grammar/*.cpp include/scope.hpp
 gdb --args ./earl-debug-build "$@"
