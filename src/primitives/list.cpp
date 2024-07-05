@@ -192,5 +192,8 @@ bool List::eq(Obj *other) {
 }
 
 std::string List::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    std::string res = "";
+    for (auto &el : m_value)
+        res += el->to_cxxstring();
+    return res;
 }

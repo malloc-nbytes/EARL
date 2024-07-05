@@ -168,5 +168,5 @@ bool File::eq(Obj *other) {
 }
 
 std::string File::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    ERR(Err::Type::Fatal, "unable to convert `file` type to a string");
 }

@@ -89,5 +89,5 @@ bool Char::eq(Obj *other) {
 }
 
 std::string Char::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    return std::to_string(m_value);
 }

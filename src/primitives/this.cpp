@@ -61,5 +61,5 @@ bool This::eq(Obj *other) {
 }
 
 std::string This::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    ERR(Err::Type::Fatal, "unable to convert `this` type to a string");
 }

@@ -125,5 +125,5 @@ bool Int::eq(Obj *other) {
 }
 
 std::string Int::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    return std::to_string(m_value);
 }

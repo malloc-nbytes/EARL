@@ -87,5 +87,5 @@ bool Bool::eq(Obj *other) {
 }
 
 std::string Bool::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    return m_value ? "true" : "false";
 }

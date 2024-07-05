@@ -64,5 +64,5 @@ bool Void::eq(Obj *other) {
 }
 
 std::string Void::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+        ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
 }

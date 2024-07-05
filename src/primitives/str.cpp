@@ -150,5 +150,5 @@ bool Str::eq(Obj *other) {
 }
 
 std::string Str::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    return this->value();
 }

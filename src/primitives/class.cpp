@@ -119,5 +119,5 @@ bool Class::eq(Obj *other) {
 }
 
 std::string Class::to_cxxstring(void) {
-    UNIMPLEMENTED("to_cxxstring");
+    ERR(Err::Type::Fatal, "unable to convert `class` type to a string");
 }
