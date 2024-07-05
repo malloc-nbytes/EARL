@@ -117,3 +117,6 @@ bool Option::eq(Obj *other) {
     return this->value()->eq(other2->value());
 }
 
+std::string Option::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

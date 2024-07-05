@@ -52,6 +52,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"argv", &Intrinsics::intrinsic_argv},
     {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
+    {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -123,10 +124,19 @@ earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, st
 earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     assert(params[0]->type() == earl::value::Type::Str);
     if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
+        ERR_WARGS(Err::Type::Fatal, "`__internal_mkdir__` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
     }
+
+    auto *obj = params[0];
+    std::string path = "";
+
+    // switch (obj->type()) {
+    // }
+
     UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

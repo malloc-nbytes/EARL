@@ -148,3 +148,7 @@ bool Str::eq(Obj *other) {
         return false;
     return this->value() == dynamic_cast<Str *>(other)->value();
 }
+
+std::string Str::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

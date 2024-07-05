@@ -59,3 +59,7 @@ bool This::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("This::eq");
 }
+
+std::string This::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

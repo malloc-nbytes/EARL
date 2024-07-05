@@ -190,3 +190,7 @@ bool List::eq(Obj *other) {
     }
     return true;
 }
+
+std::string List::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

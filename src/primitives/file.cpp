@@ -166,3 +166,7 @@ bool File::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("File::eq");
 }
+
+std::string File::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

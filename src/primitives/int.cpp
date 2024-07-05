@@ -123,3 +123,7 @@ bool Int::eq(Obj *other) {
         return false;
     return this->value() == dynamic_cast<Int *>(other)->value();
 }
+
+std::string Int::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

@@ -63,3 +63,7 @@ bool Module::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("Module::eq");
 }
+
+std::string Module::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

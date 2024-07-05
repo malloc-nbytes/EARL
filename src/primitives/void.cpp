@@ -62,3 +62,7 @@ bool Void::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("Void::eq");
 }
+
+std::string Void::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}

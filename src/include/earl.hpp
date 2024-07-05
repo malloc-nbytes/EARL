@@ -107,7 +107,14 @@ namespace earl {
             /// @brief Copy THIS instance
             virtual Obj *copy(void) = 0;
 
+            /// @brief Check the equality of two objects, not their values.
+            /// @param other The object to compare
+            /// @return true on equal, false otherwise
             virtual bool eq(Obj *other) = 0;
+
+            /// @brief Convert the value of an object to a cxx std::string
+            /// @return The stringified version of the value
+            virtual std::string to_cxxstring(void) = 0;
         };
 
         struct This : public Obj {
@@ -120,6 +127,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -140,6 +148,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             int m_value;
@@ -159,6 +168,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             bool m_value;
@@ -177,6 +187,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             char m_value;
@@ -196,6 +207,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             void *m_value;
@@ -240,6 +252,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             std::vector<Obj *> m_value;
@@ -264,6 +277,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             std::vector<Char *> m_value;
@@ -282,6 +296,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             Ctx *m_value;
@@ -314,6 +329,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
             StmtClass *m_stmtclass;
             std::vector<std::unique_ptr<variable::Obj>> m_members;
@@ -345,31 +361,13 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             Str *m_fp;
             Str *m_mode;
             std::fstream m_stream;
             bool m_open;
-        };
-
-        struct OS : public Obj {
-            OS();
-
-            bool mkdir(Obj *path);
-            bool dir_exists(Obj *path);
-            bool rmdir(Obj *path);
-
-            bool file_exists(Obj *path);
-            std::vector<Obj *> ls(Obj *path);
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
         };
 
         struct Option : public Obj {
@@ -387,6 +385,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
         private:
             Obj *m_value;
@@ -407,6 +406,7 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
 
             std::vector<Scope<std::string, variable::Obj *>> m_local;
 

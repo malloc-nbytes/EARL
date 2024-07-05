@@ -1,12 +1,4 @@
 mod Main
 
-let cl = |i| {
-    if i == 5 { println("done"); }
-    else { println("not 5"); }
-};
-
-let f = |_| { println("HERE"); };
-
-cl(0);
-
+let os = __internal_mkdir__("testdir");
 

@@ -103,3 +103,7 @@ bool Closure::eq(Obj *other) {
     UNIMPLEMENTED("Closure::eq");
     return true;
 }
+
+std::string Closure::to_cxxstring(void) {
+    UNIMPLEMENTED("to_cxxstring");
+}
