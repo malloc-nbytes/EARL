@@ -122,19 +122,19 @@ earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, st
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    assert(params[0]->type() == earl::value::Type::Str);
     if (params.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`__internal_mkdir__` intrinsic expects 1 argument but %zu were supplied",
                   params.size());
     }
 
     auto *obj = params[0];
-    std::string path = "";
+    std::string path = obj->to_cxxstring();
 
-    // switch (obj->type()) {
-    // }
-
-    UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
+    if (!std::filesystem::exists(path)) {
+        if (!std::filesystem::create_directory(path)) {
+            ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
+        }
+    }
 
     return new earl::value::Void();
 }
