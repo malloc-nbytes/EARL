@@ -104,11 +104,18 @@ Obj *Str::binop(Token *op, Obj *other) {
     }
 
     Obj *tmp = other;
+
     switch (op->type()) {
     case TokenType::Plus: {
+        if (tmp->type() == Type::Char) {
+            return new Str(this->value() + std::string(1, dynamic_cast<Char *>(tmp)->value()));
+        }
         return new Str(this->value() + dynamic_cast<Str *>(tmp)->value());
     } break;
     case TokenType::Double_Equals: {
+        if (tmp->type() == Type::Char) {
+            return new Bool(this->value() == std::string(1, dynamic_cast<Char *>(tmp)->value()));
+        }
         return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(tmp)->value()));
     } break;
     default: {

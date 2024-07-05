@@ -1,4 +1,8 @@
 mod Main
 
-let os = __internal_mkdir__("testdir");
+import "std/os.earl"
+
+let fullpath1 = "./dir1/dir2/dir3/file.txt";
+
+OS.fullpath_mkdir(fullpath2);
 
