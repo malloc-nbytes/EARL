@@ -1,19 +1,8 @@
 mod Main
 
-class Test [cl] {
-    @pub cl = cl;
+import "std/os.earl"
 
-    @pub fn test() {
-        cl();
-    }
-}
+let fullpath1 = "./dir1/dir2/dir3/file.txt";
 
-let cl = |_| {
-    let inner = |_| { println("in inner"); };
-    inner();
-};
+OS.fullpath_mkdir(fullpath2);
 
-let t = Test(cl);
-let copy = t.cl;
-
-copy();

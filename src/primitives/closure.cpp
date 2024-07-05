@@ -103,3 +103,7 @@ bool Closure::eq(Obj *other) {
     UNIMPLEMENTED("Closure::eq");
     return true;
 }
+
+std::string Closure::to_cxxstring(void) {
+    ERR(Err::Type::Fatal, "unable to convert `closure` type to a string");
+}

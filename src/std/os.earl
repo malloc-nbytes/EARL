@@ -1,0 +1,28 @@
+mod OS
+
+@pub
+fn mkdir(path) {
+    __internal_mkdir__(path);
+}
+
+# Creates a full path directory as well as a file
+# i.e., ./dir1/dir2/dir3/file.txt. The last entry
+# in the path will be used as the file to be created.
+# It is functionally equivalent to:
+#     mkdir -p <path> && touch <path>/file.txt.
+@pub
+fn fullpath_mkdir(fullpath) {
+    let parts = fullpath.split("/");
+
+    let curpath = "";
+    for i in 0..len(parts)-1 {
+        curpath = curpath + parts[i];
+        mkdir(curpath);
+        curpath = curpath + '/';
+    }
+    curpath = curpath + parts[len(parts)-1];
+
+    let f = open(curpath, "w");
+    f.write("");
+    f.close();
+}

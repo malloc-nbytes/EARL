@@ -27,6 +27,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <fstream>
+#include <filesystem>
 
 #include "intrinsics.hpp"
 #include "interpreter.hpp"
@@ -51,6 +52,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"argv", &Intrinsics::intrinsic_argv},
     {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
+    {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -117,6 +119,24 @@ earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, st
     auto *ret = params[0]->copy();
     delete params[0];
     return ret;
+}
+
+earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`__internal_mkdir__` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
+    auto *obj = params[0];
+    std::string path = obj->to_cxxstring();
+
+    if (!std::filesystem::exists(path)) {
+        if (!std::filesystem::create_directory(path)) {
+            ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
+        }
+    }
+
+    return new earl::value::Void();
 }
 
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

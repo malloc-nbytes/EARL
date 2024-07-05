@@ -190,3 +190,10 @@ bool List::eq(Obj *other) {
     }
     return true;
 }
+
+std::string List::to_cxxstring(void) {
+    std::string res = "";
+    for (auto &el : m_value)
+        res += el->to_cxxstring();
+    return res;
+}

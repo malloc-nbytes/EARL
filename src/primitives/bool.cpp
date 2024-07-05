@@ -85,3 +85,7 @@ bool Bool::eq(Obj *other) {
         return false;
     return this->value() == dynamic_cast<Bool *>(other)->value();
 }
+
+std::string Bool::to_cxxstring(void) {
+    return m_value ? "true" : "false";
+}

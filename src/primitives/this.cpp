@@ -59,3 +59,7 @@ bool This::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("This::eq");
 }
+
+std::string This::to_cxxstring(void) {
+    ERR(Err::Type::Fatal, "unable to convert `this` type to a string");
+}

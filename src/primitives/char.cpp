@@ -87,3 +87,7 @@ bool Char::eq(Obj *other) {
         return false;
     return this->value() == dynamic_cast<Char *>(other)->value();
 }
+
+std::string Char::to_cxxstring(void) {
+    return std::to_string(m_value);
+}

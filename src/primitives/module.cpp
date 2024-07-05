@@ -26,6 +26,7 @@
 
 #include "earl.hpp"
 #include "utils.hpp"
+#include "err.hpp"
 
 using namespace earl::value;
 
@@ -62,4 +63,8 @@ Obj *Module::copy(void) {
 bool Module::eq(Obj *other) {
     (void)other;
     UNIMPLEMENTED("Module::eq");
+}
+
+std::string Module::to_cxxstring(void) {
+    ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
 }

@@ -117,3 +117,8 @@ bool Option::eq(Obj *other) {
     return this->value()->eq(other2->value());
 }
 
+std::string Option::to_cxxstring(void) {
+    if (this->is_none())
+        ERR(Err::Type::Fatal, "unable to convert `none` type to a string");
+    return m_value->to_cxxstring();
+}
