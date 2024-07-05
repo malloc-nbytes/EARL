@@ -1,21 +1,19 @@
 mod Main
 
-import "std/list.earl"
-import "std/set.earl"
+class Test [cl] {
+    @pub cl = cl;
 
-let s = Set.T([10,2,5,22,4,33], |a, b| {
-    if a > b { return 2; }
-    if b > a { return 1; }
-    return 0;
-});
+    @pub fn test() {
+        cl();
+    }
+}
 
-let lst = s.extract().filter(|a| { a % 2 == 0; });
+let cl = |_| {
+    let inner = |_| { println("in inner"); };
+    inner();
+};
 
-List.quicksort(lst, |a, b| {
-    return a < b;
-});
+let t = Test(cl);
+let copy = t.cl;
 
-println(lst);
-
-s.dump();
-
+copy();

@@ -32,6 +32,7 @@
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
     m_lexer(std::move(lexer)), m_module(nullptr), m_program(std::move(program)) {
     curclass = nullptr;
+    curclosure = nullptr;
 }
 
 void Ctx::set_function(earl::function::Obj *func) {
@@ -48,6 +49,14 @@ Stmt *Ctx::get_stmt(size_t i) {
 
 size_t Ctx::stmts_len(void) const {
     return m_program->m_stmts.size();
+}
+
+void Ctx::set_closure(earl::value::Closure *closure) {
+    curclosure = closure;
+}
+
+void Ctx::unset_closure() {
+    curclosure = nullptr;
 }
 
 void Ctx::unset_function(void) {
@@ -166,10 +175,19 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
         else if (get_curfunc()->has_local(id)) { // Is in global, make sure its not in local
             ERR_WARGS(Err::Type::Redeclaration, "duplicate variable `%s`", id.c_str());
         }
+        if (!var && curclosure) {
+            var = curclosure->m_local.back().get(id);
+        }
     }
     else if (in_function()) {
         auto *func = get_curfunc();
         var = func->m_local.back().get(id);
+        if (!var && curclosure) {
+            var = curclosure->m_local.back().get(id);
+        }
+    }
+    else if (curclosure) {
+        var = curclosure->m_local.back().get(id);
     }
     else {
         var = m_globalvars.get(id);
@@ -189,7 +207,10 @@ earl::variable::Obj *Ctx::get_registered_variable(const std::string &id) {
 void Ctx::register_variable(earl::variable::Obj *var) {
     const std::string &id = var->id();
 
-    if (in_function()) {
+    if (curclosure) {
+        curclosure->m_local.back().add(id, var);
+    }
+    else if (in_function()) {
         get_curfunc()->m_local.back().add(id, var);
     }
     else {
@@ -200,11 +221,16 @@ void Ctx::register_variable(earl::variable::Obj *var) {
 bool Ctx::variable_is_registered(const std::string &id) {
     // Handle case where you are creating a new class
     // instantiation inside of the class itself.
+
     if (curclass) {
         if (curclass->get_member(id) != nullptr) {
             return true;
         }
         return false;
+    }
+
+    if (curclosure) {
+        return curclosure->has_local(id);
     }
 
     if (in_function()) {

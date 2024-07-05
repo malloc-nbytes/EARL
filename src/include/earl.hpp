@@ -377,6 +377,7 @@ namespace earl {
             StmtBlock *block(void);
             void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
             Obj *call(std::vector<earl::value::Obj *> &values, Ctx &ctx);
+            bool has_local(const std::string &id);
 
             /*** OVERRIDES ***/
             Type type(void) const             override;
@@ -385,6 +386,8 @@ namespace earl {
             void mutate(Obj *other)           override;
             Obj *copy(void)                   override;
             bool eq(Obj *other)               override;
+
+            std::vector<Scope<std::string, variable::Obj *>> m_local;
 
         private:
             ExprClosure *m_expr_closure;

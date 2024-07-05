@@ -34,7 +34,9 @@
 using namespace earl::value;
 
 Closure::Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params)
-    : m_expr_closure(expr_closure), m_params(std::move(params)) {}
+    : m_expr_closure(expr_closure), m_params(std::move(params)) {
+    m_local.emplace_back();
+}
 
 StmtBlock *Closure::block(void) {
     return m_expr_closure->m_block.get();
@@ -67,7 +69,10 @@ Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
     ctx.pop_scope();
 
     return result;
+}
 
+bool Closure::has_local(const std::string &id) {
+    return m_local.back().contains(id);
 }
 
 /*** OVERRIDES ***/
