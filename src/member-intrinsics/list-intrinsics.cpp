@@ -69,6 +69,21 @@ earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std
     return dynamic_cast<earl::value::List *>(obj)->filter(closure.at(0), ctx);
 }
 
+earl::value::Obj *Intrinsics::intrinsic_member_foreach(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
+    if (closure.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`filter` member intrinsic expects 1 argument but %zu were supplied",
+                  closure.size());
+    }
+
+    if (closure[0]->type() != earl::value::Type::Closure) {
+        ERR(Err::Type::Fatal, "argument 1 in `filter` expects a `closure` value");
+    }
+
+    dynamic_cast<earl::value::List *>(obj)->foreach(closure.at(0), ctx);
+
+    return new earl::value::Void();
+}
+
 earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
 

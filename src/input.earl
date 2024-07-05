@@ -2,7 +2,6 @@ mod Main
 
 import "std/os.earl"
 
-let fullpath1 = "./dir1/dir2/dir3/file.txt";
+# let fullpath1 = "./dir1/dir2/dir3/file.txt";
 
-OS.fullpath_mkdir(fullpath2);
-
+# OS.fullpath_mkdir(fullpath2);
