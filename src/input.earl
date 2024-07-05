@@ -1,8 +1,14 @@
 mod Main
 
 import "std/os.earl"
+import "std/set.earl"
 
-# let fullpath1 = "./dir1/dir2/dir3/file.txt";
+fn fun1() {
+    fun2();
+}
 
-# OS.fullpath_mkdir(fullpath1);
+fun1();
 
+fn fun2() {
+    print("in fun2");
+}
