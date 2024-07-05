@@ -674,6 +674,10 @@ earl::value::Obj *eval_stmt_return(StmtReturn *stmt, Ctx &ctx) {
     return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
+earl::value::Obj *eval_stmt_break(StmtBreak *stmt, Ctx &ctx) {
+    return new earl::value::Break();
+}
+
 earl::value::Obj *eval_stmt_mut(StmtMut *stmt, Ctx &ctx) {
     earl::value::Obj *left = Interpreter::eval_expr(stmt->m_left.get(), ctx);
     earl::value::Obj *right = Interpreter::eval_expr(stmt->m_right.get(), ctx);
@@ -851,6 +855,9 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx) {
     } break;
     case StmtType::Return: {
         return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
+    } break;
+    case StmtType::Break: {
+        return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
     } break;
     case StmtType::While: {
         return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);

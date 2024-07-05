@@ -1,8 +1,10 @@
 mod Main
 
-for i in 0..10 {
-    if i == 5 {
-        print("here");
-        break;
-    }
+let i = 0;
+
+while i < 10 {
+    if i == 5 { break; }
+    i = i+1;
 }
+
+println(i);
