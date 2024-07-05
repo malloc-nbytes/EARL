@@ -1,2 +1,5 @@
 mod Main
 
+let inp = input("enter text: ");
+
+println(inp);

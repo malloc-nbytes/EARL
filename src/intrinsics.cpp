@@ -287,6 +287,6 @@ earl::value::Obj *Intrinsics::intrinsic_println(ExprFuncCall *expr, std::vector<
 earl::value::Obj *Intrinsics::intrinsic_input(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     intrinsic_print(expr, params, ctx);
     std::string in = "";
-    std::cin >> in;
+    std::getline(std::cin, in);
     return new earl::value::Str(in);
 }
