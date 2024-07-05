@@ -35,7 +35,7 @@ Str::Str(std::string value) {
     bool escape = false;
     for (size_t i = 0; i < value.size(); ++i) {
         char c = value[i];
-        if (c == '\\') {
+        if (!escape && c == '\\') {
             escape = true;
             continue;
         }
@@ -44,9 +44,19 @@ Str::Str(std::string value) {
             case 'n': {
                 m_value.push_back(new Char(std::string(1, '\n')));
             } break;
+            case 't': {
+                m_value.push_back(new Char(std::string(1, '\t')));
+            } break;
+            case '"': {
+                m_value.push_back(new Char(std::string(1, '"')));
+            } break;
+            case '\\': {
+                m_value.push_back(new Char(std::string(1, '\\')));
+            } break;
             default:
                 ERR_WARGS(Err::Type::Fatal, "unkown escape sequence `%c%c`", '\\', c);
             }
+            escape = false;
         }
         else {
             m_value.push_back(new Char(std::string(1, c)));
