@@ -12,6 +12,10 @@ fn mkdir(path) {
 #     mkdir -p <path> && touch <path>/file.txt.
 @pub
 fn fullpath_mkdir(fullpath) {
+    if len(fullpath) == 0 {
+        panic("fullpath_mkdir: the path specified cannot be empty");
+    }
+
     let parts = fullpath.split("/");
 
     let curpath = "";
@@ -20,7 +24,7 @@ fn fullpath_mkdir(fullpath) {
         mkdir(curpath);
         curpath = curpath + '/';
     }
-    curpath = curpath + parts[len(parts)-1];
+    curpath = curpath + parts.back();
 
     let f = open(curpath, "w");
     f.write("");

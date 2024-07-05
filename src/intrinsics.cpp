@@ -57,6 +57,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
     {"nth", &Intrinsics::intrinsic_member_nth},
+    {"back", &Intrinsics::intrinsic_member_back},
     {"filter", &Intrinsics::intrinsic_member_filter},
     {"foreach", &Intrinsics::intrinsic_member_foreach},
     {"rev", &Intrinsics::intrinsic_member_rev},

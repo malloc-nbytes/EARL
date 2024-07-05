@@ -247,6 +247,8 @@ namespace earl {
 
             void foreach(Obj *closure, Ctx &ctx);
 
+            Obj *back(void);
+
             /*** OVERRIDES ***/
             Type type(void) const             override;
             Obj *binop(Token *op, Obj *other) override;

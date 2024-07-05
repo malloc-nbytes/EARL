@@ -56,6 +56,17 @@ earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::v
     }
 }
 
+earl::value::Obj *Intrinsics::intrinsic_member_back(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+    (void)ctx;
+
+    if (unused.size() != 0) {
+        ERR_WARGS(Err::Type::Fatal, "`back` member intrinsic expects 0 arguments but %zu were supplied",
+                  unused.size());
+    }
+
+    return dynamic_cast<earl::value::List *>(obj)->back();
+}
+
 earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
     if (closure.size() != 1) {
         ERR_WARGS(Err::Type::Fatal, "`filter` member intrinsic expects 1 argument but %zu were supplied",
@@ -71,12 +82,12 @@ earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std
 
 earl::value::Obj *Intrinsics::intrinsic_member_foreach(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
     if (closure.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`filter` member intrinsic expects 1 argument but %zu were supplied",
+        ERR_WARGS(Err::Type::Fatal, "`foreach` member intrinsic expects 1 argument but %zu were supplied",
                   closure.size());
     }
 
     if (closure[0]->type() != earl::value::Type::Closure) {
-        ERR(Err::Type::Fatal, "argument 1 in `filter` expects a `closure` value");
+        ERR(Err::Type::Fatal, "argument 1 in `foreach` expects a `closure` value");
     }
 
     dynamic_cast<earl::value::List *>(obj)->foreach(closure.at(0), ctx);

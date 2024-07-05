@@ -114,6 +114,13 @@ void List::foreach(Obj *closure, Ctx &ctx) {
     }
 }
 
+Obj *List::back(void) {
+    if (m_value.size() == 0) {
+        return new Option();
+    }
+    return m_value.back()->copy();
+}
+
 Obj *List::binop(Token *op, Obj *other) {
     if (!type_is_compatable(this, other)) {
         assert(false && "cannot binop (fix this message)");
