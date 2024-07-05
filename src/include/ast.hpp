@@ -324,7 +324,7 @@ struct StmtReturn : public Stmt {
 struct StmtBreak : public Stmt {
     std::unique_ptr<Token> m_tok;
 
-    StmtBreak(std::unique_ptr<Token>);
+    StmtBreak(std::unique_ptr<Token> tok);
     StmtType stmt_type() const override;
 };
 
