@@ -77,6 +77,8 @@ namespace earl {
             This,
             /** EARL closure type */
             Closure,
+            /** EARL OS type */
+            OS,
         };
 
         /// @brief The base abstract class that all
@@ -349,6 +351,25 @@ namespace earl {
             Str *m_mode;
             std::fstream m_stream;
             bool m_open;
+        };
+
+        struct OS : public Obj {
+            OS();
+
+            bool mkdir(Obj *path);
+            bool dir_exists(Obj *path);
+            bool rmdir(Obj *path);
+
+            bool file_exists(Obj *path);
+            std::vector<Obj *> ls(Obj *path);
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
         };
 
         struct Option : public Obj {

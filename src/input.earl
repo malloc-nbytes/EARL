@@ -1,19 +1,12 @@
 mod Main
 
-class Test [cl] {
-    @pub cl = cl;
-
-    @pub fn test() {
-        cl();
-    }
-}
-
-let cl = |_| {
-    let inner = |_| { println("in inner"); };
-    inner();
+let cl = |i| {
+    if i == 5 { println("done"); }
+    else { println("not 5"); }
 };
 
-let t = Test(cl);
-let copy = t.cl;
+let f = |_| { println("HERE"); };
 
-copy();
+cl(0);
+
+

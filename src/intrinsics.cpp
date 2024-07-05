@@ -27,6 +27,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <fstream>
+#include <filesystem>
 
 #include "intrinsics.hpp"
 #include "interpreter.hpp"
@@ -117,6 +118,15 @@ earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, st
     auto *ret = params[0]->copy();
     delete params[0];
     return ret;
+}
+
+earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    assert(params[0]->type() == earl::value::Type::Str);
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+    UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
