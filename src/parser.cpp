@@ -594,6 +594,12 @@ std::unique_ptr<StmtMatch> parse_stmt_match(Lexer &lexer) {
     return std::make_unique<StmtMatch>(std::unique_ptr<Expr>(expr), std::move(branches));
 }
 
+std::unique_ptr<StmtBreak> parse_stmt_break(Lexer &lexer) {
+    std::unique_ptr<Token> br = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_BREAK);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtBreak>(std::move(br));
+}
+
 std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
@@ -614,6 +620,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             }
             if (tok->lexeme() == COMMON_EARLKW_RETURN) {
                 return parse_stmt_return(lexer);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_BREAK) {
+                return parse_stmt_break(lexer);
             }
             if (tok->lexeme() == COMMON_EARLKW_WHILE) {
                 return parse_stmt_while(lexer);

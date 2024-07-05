@@ -1,5 +1,8 @@
 mod Main
 
-let inp = input("enter text: ");
-
-println(inp);
+for i in 0..10 {
+    if i == 5 {
+        print("here");
+        break;
+    }
+}
