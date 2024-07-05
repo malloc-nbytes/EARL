@@ -79,6 +79,8 @@ namespace earl {
             Closure,
             /** EARL OS type */
             OS,
+            /** EARL break type */
+            Break,
         };
 
         /// @brief The base abstract class that all
@@ -417,6 +419,19 @@ namespace earl {
         private:
             ExprClosure *m_expr_closure;
             std::vector<std::pair<Token *, uint32_t>> m_params;
+        };
+
+        struct Break : public Obj {
+            Break() = default;
+
+            /*** OVERRIDES ***/
+            Type type(void) const             override;
+            Obj *binop(Token *op, Obj *other) override;
+            bool boolean(void)                override;
+            void mutate(Obj *other)           override;
+            Obj *copy(void)                   override;
+            bool eq(Obj *other)               override;
+            std::string to_cxxstring(void)    override;
         };
 
         std::string type_to_str(Obj *);

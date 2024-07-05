@@ -1,5 +1,10 @@
 mod Main
 
-let inp = input("enter text: ");
+let i = 0;
 
-println(inp);
+while i < 10 {
+    if i == 5 { break; }
+    i = i+1;
+}
+
+println(i);

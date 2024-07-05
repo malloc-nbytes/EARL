@@ -44,6 +44,7 @@ enum class StmtType {
     Stmt_Expr,
     If,
     Return,
+    Break,
     While,
     For,
     Import,
@@ -316,6 +317,14 @@ struct StmtReturn : public Stmt {
     std::unique_ptr<Expr> m_expr;
 
     StmtReturn(std::unique_ptr<Expr> expr);
+    StmtType stmt_type() const override;
+};
+
+/// @brief The Statement Break class
+struct StmtBreak : public Stmt {
+    std::unique_ptr<Token> m_tok;
+
+    StmtBreak(std::unique_ptr<Token> tok);
     StmtType stmt_type() const override;
 };
 
