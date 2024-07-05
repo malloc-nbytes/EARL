@@ -89,5 +89,5 @@ bool Char::eq(Obj *other) {
 }
 
 std::string Char::to_cxxstring(void) {
-    return std::to_string(m_value);
+    return std::string(1, m_value);
 }

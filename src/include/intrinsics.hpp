@@ -125,6 +125,8 @@ namespace Intrinsics {
 
     earl::value::Obj *intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
 
+    earl::value::Obj *intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx);
+
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     /// @brief Get the `nth` value in a list
