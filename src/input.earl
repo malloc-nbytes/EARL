@@ -1,14 +1,2 @@
 mod Main
 
-import "std/os.earl"
-import "std/set.earl"
-
-fn fun1() {
-    fun2();
-}
-
-fun1();
-
-fn fun2() {
-    print("in fun2");
-}

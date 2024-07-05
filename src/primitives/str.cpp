@@ -32,9 +32,26 @@
 using namespace earl::value;
 
 Str::Str(std::string value) {
-    std::for_each(value.begin(), value.end(), [&](char c) {
-        m_value.push_back(new Char(std::string(1, c)));
-    });
+    bool escape = false;
+    for (size_t i = 0; i < value.size(); ++i) {
+        char c = value[i];
+        if (c == '\\') {
+            escape = true;
+            continue;
+        }
+        if (escape) {
+            switch (c) {
+            case 'n': {
+                m_value.push_back(new Char(std::string(1, '\n')));
+            } break;
+            default:
+                ERR_WARGS(Err::Type::Fatal, "unkown escape sequence `%c%c`", '\\', c);
+            }
+        }
+        else {
+            m_value.push_back(new Char(std::string(1, c)));
+        }
+    }
 }
 
 std::string Str::value(void) {
