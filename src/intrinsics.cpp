@@ -53,6 +53,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
+    {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
@@ -139,6 +140,32 @@ earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, s
     }
 
     return new earl::value::Void();
+}
+
+earl::value::Obj *Intrinsics::intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    if (params.size() != 1) {
+        ERR_WARGS(Err::Type::Fatal, "`__internal_ls__` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    }
+
+    auto *obj = params[0];
+    std::string path = obj->to_cxxstring();
+
+    auto *lst = new earl::value::List();
+    std::vector<earl::value::Obj *> items;
+
+    try {
+        for (const auto &entry : std::filesystem::directory_iterator(path)) {
+            items.push_back(new earl::value::Str(entry.path()));
+        }
+    } catch (const std::filesystem::filesystem_error &e) {
+        const char *err = e.what();
+        ERR_WARGS(Err::Type::Fatal, "could not list directory `%s`: %s", path.c_str(), err);
+    }
+
+    lst->append(items);
+
+    return lst;
 }
 
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {

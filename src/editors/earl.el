@@ -48,7 +48,8 @@
       "some" "unwrap" "argv" "exit"
       "panic"
       ;; private intrinsic functions
-      "__internal_move__"
+      "__internal_move__" "__internal_mkdir__"
+      "__internal_ls__"
       ;; list member intrinsics
       "rev" "nth" "append" "pop"
       "filter" "foreach" "back"
@@ -65,7 +66,7 @@
       "world" "pub" "ref"
       ;; Stdlib Modules
       "IO" "List" "Math" "Stack" "Utils"
-      "Str" "Tree" "Set" "Queue"
+      "Str" "Tree" "Set" "Queue" "OS"
       )))
 
 (defconst earl-highlights
