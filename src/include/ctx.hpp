@@ -48,6 +48,9 @@ struct Ctx {
     /// @brief Unset the current function being evaluated
     void unset_function(void);
 
+    void set_closure(earl::value::Closure *closure);
+    void unset_closure();
+
     /// @brief Push a new global scope
     /// @note If in a function, it will push that function's
     /// local scope instead.
@@ -152,6 +155,7 @@ struct Ctx {
 
     Ctx *m_parent;
     earl::value::Class *curclass;
+    earl::value::Closure *curclosure;
 
     std::vector<earl::value::Class *> class_chain;
 
@@ -165,6 +169,8 @@ struct Ctx {
     /// @brief The lexer associated with this module. This
     /// is needed because of ownership rules.
     std::unique_ptr<Lexer> m_lexer;
+
+    std::vector<earl::value::Closure *> closures;
 
 private:
     /// @brief The global scope of all EARL variables

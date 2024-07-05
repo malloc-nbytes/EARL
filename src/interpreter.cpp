@@ -47,11 +47,15 @@ earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 
 earl::value::Obj *eval_user_defined_closure(earl::variable::Obj *var, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     auto *close = dynamic_cast<earl::value::Closure *>(var->value());
+    ctx.set_closure(close);
+    ctx.closures.push_back(close);
 
     ctx.push_scope();
     close->load_parameters(params, ctx);
     earl::value::Obj *result = Interpreter::eval_stmt_block(close->block(), ctx);
     ctx.pop_scope();
+
+    ctx.unset_closure();
 
     return result;
 }
@@ -315,6 +319,13 @@ earl::value::Obj *eval_expr_funccall(ExprFuncCall *expr, Ctx &ctx) {
         return eval_user_defined_closure(ctx.get_registered_variable(expr->m_id->lexeme()), params, ctx);
     }
 
+    // Check current closures for their closures.
+    for (auto &cl : ctx.closures) {
+        if (cl->m_local.back().contains(expr->m_id->lexeme())) {
+            return eval_user_defined_closure(*cl->m_local.back().get(expr->m_id->lexeme()), params, ctx);
+        }
+    }
+
     earl::function::Obj *func = ctx.get_registered_function(expr->m_id->lexeme());
 
     if (params.size() != func->params_len()) {
@@ -389,8 +400,17 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         if (tmp->type() == earl::value::Type::Class) {
             auto *klass = dynamic_cast<earl::value::Class *>(tmp);
             auto *method = klass->get_method(id);
-            auto *res = eval_user_defined_class_method(method, params, klass, *klass->m_owner);
-            return res;
+
+            // Check for closure
+            if (ctx.variable_is_registered(id)) {
+                auto *cl = ctx.get_registered_variable(id);
+
+                if (cl)
+                    return eval_user_defined_closure(cl, params, ctx);
+            }
+
+            if (klass)
+                return eval_user_defined_class_method(method, params, klass, *klass->m_owner);
         }
 
         else if (tmp->type() == earl::value::Type::This) {
@@ -401,7 +421,10 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
             if (!method) {
                 // must be a closure.
                 auto *var = ctx.get_registered_variable(id);
-                return eval_user_defined_closure(var, params, ctx);
+                auto *res = eval_user_defined_closure(var, params, ctx);
+                if (res)
+                    return res;
+                goto bad;
             }
             return eval_user_defined_class_method(method, params, klass, ctx, true);
         }
@@ -412,7 +435,9 @@ earl::value::Obj *eval_expr_get2(ExprGet *expr, Ctx &ctx) {
         }
 
         else {
-            assert(false && "invalid getter operation `.`");
+        bad:
+            ERR_WARGS(Err::Type::Fatal, "`%s` does not have the methods/intrinsic `%s`",
+                      earl::value::type_to_str(left).c_str(), id.c_str());
         }
 
     } break;
