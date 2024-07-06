@@ -31,6 +31,15 @@ install-data-hook:
 		exit 0; \
 	fi
 
+uninstall-hook:
+	@if [ -f $(prefix)/bin/earlmngr ]; then \
+		echo "Uninstalling earlmngr..."; \
+		sudo rm -f $(prefix)/bin/earlmngr; \
+		echo "earlmngr uninstalled from $(prefix)/bin/"; \
+	else \
+		echo "earlmngr not found in $(prefix)/bin/"; \
+	fi
+
 test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
 	cd test/earl-tests && ../../earl ./main.earl
