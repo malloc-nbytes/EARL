@@ -1,5 +1,7 @@
 mod Main
 
+import "std/list.earl"
+
 fn test(x) {
     let save = 0;
 

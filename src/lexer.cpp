@@ -36,6 +36,7 @@
 #include "lexer.hpp"
 #include "utils.hpp"
 #include "common.hpp"
+#include "config.h"
 
 Lexer::Lexer() : m_hd(nullptr), m_tl(nullptr), m_len(0) {}
 
@@ -117,7 +118,7 @@ static size_t find_comment_end(char *s) {
 }
 
 static char *read_file(const char *filepath) {
-    const char *search_path = "/usr/local/include/EARL/";
+    const char *search_path = PREFIX "/include/EARL/";
 
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
