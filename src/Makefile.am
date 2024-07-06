@@ -10,13 +10,25 @@ AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable
 
 includedir = $(prefix)/include/EARL/std
 
+.PHONY: test docs all install-data-hook
+
 $(includedir):
 	mkdir -p $(includedir)
 
-install-data-local: $(include_HEADERS)
+install-data-local: $(include_HEADERS) install-data-hook
 	$(mkinstalldirs) $(DESTDIR)$(includedir)
 
-.PHONY: test docs all
+install-data-hook:
+	@echo "Do you want to install earlmngr? [y/N] " && read ans && [ $${ans:-N} = y ]
+	@if [ $$? -eq 0 ]; then \
+		echo "Installing earlmngr..."; \
+		wget https://raw.githubusercontent.com/malloc-nbytes/earlmngr/main/src/earlmngr.earl -O earlmngr; \
+		chmod +x earlmngr; \
+		sudo mv earlmngr $(prefix)/bin/; \
+		echo "earlmngr installed to $(prefix)/bin/"; \
+	else \
+		echo "earlmngr installation skipped."; \
+	fi
 
 test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
