@@ -28,6 +28,7 @@ install-data-hook:
 		echo "earlmngr installed to $(prefix)/bin/"; \
 	else \
 		echo "earlmngr installation skipped."; \
+		exit 0; \
 	fi
 
 test: earl
