@@ -1,2 +1,15 @@
 mod Main
 
+fn test(x) {
+    let save = 0;
+
+    for i in 0..100 {
+        match i {
+            5 -> { save = i; break; }
+            _ -> {}
+        }
+    }
+    println("end of function ", save);
+}
+
+test(1);

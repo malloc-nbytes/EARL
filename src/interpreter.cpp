@@ -624,11 +624,8 @@ earl::value::Obj *Interpreter::eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     ctx.push_scope();
     for (size_t i = 0; i < block->m_stmts.size(); ++i) {
         result = eval_stmt(block->m_stmts.at(i).get(), ctx);
-        if (result && result->type() == earl::value::Type::Break) {
-            result = nullptr;
-            break;
-        }
-        else if (result && result->type() != earl::value::Type::Void) {
+        if (result && result->type() != earl::value::Type::Void) {
+            // We hit either a break or return statement.
             break;
         }
     }
@@ -698,6 +695,11 @@ earl::value::Obj *eval_stmt_while(StmtWhile *stmt, Ctx &ctx) {
 
     while ((expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx))->boolean()) {
         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
         if (result && result->type() != earl::value::Type::Void)
             break;
         delete expr_result;
@@ -722,6 +724,11 @@ earl::value::Obj *eval_stmt_for(StmtFor *stmt, Ctx &ctx) {
 
     while (start->value() < end->value()) {
         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
 
         if (result && result->type() != earl::value::Type::Void)
             break;
