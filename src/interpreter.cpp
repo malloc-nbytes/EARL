@@ -624,8 +624,13 @@ earl::value::Obj *Interpreter::eval_stmt_block(StmtBlock *block, Ctx &ctx) {
     ctx.push_scope();
     for (size_t i = 0; i < block->m_stmts.size(); ++i) {
         result = eval_stmt(block->m_stmts.at(i).get(), ctx);
-        if (result && result->type() != earl::value::Type::Void)
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
             break;
+        }
+        else if (result && result->type() != earl::value::Type::Void) {
+            break;
+        }
     }
     ctx.pop_scope();
 

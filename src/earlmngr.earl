@@ -61,16 +61,35 @@ fn handle_args(@ref args) {
     }
 }
 
+fn create_new_earl_project() {
+    # unimplemented("create_new_earl_project");
+}
+
 fn handle_interaction() {
     println("Choose an option:");
-    let inp = input("New EARL Project [0] ");
 
-    match inp {
-        "0" | "New EARL Project" -> {
-            unimplemented("inp");
-        }
-        _ -> {
-            panic("illegal input");
+    let available_inputs = [
+        ["New EARL Project [", "0", "]"],
+        ["Help [", "1", "]"],
+    ];
+
+    available_inputs.foreach(|el| {
+        println(el[0], el[1], el[2]);
+    });
+
+    let inp = input();
+
+    while true {
+        match inp {
+            "0" -> {
+                break;
+            }
+            "1" -> {
+                unimplemented("help");
+            }
+            _ -> {
+                panic("illegal input");
+            }
         }
     }
 }
@@ -85,3 +104,4 @@ fn main() {
 }
 
 main();
+
