@@ -72,6 +72,7 @@ enum class ExprTermType {
     Bool,
     None,
     Closure,
+    Tuple,
 };
 
 struct StmtDef;
@@ -100,6 +101,14 @@ struct ExprGet : public ExprTerm {
     std::unique_ptr<Expr> m_right;
 
     ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprTuple : public ExprTerm {
+    std::vector<std::unique_ptr<Expr>> m_exprs;
+
+    ExprTuple(std::vector<std::unique_ptr<Expr>> exprs);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

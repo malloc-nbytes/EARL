@@ -156,15 +156,22 @@ static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_ar
 static Expr *parse_primary_expr(Lexer &lexer) {
     Token *tok = nullptr;
     Expr *left = nullptr;
+    Expr *right = nullptr;
 
     while (1) {
         switch (lexer.peek()->type()) {
         case TokenType::Ident: {
-            UNIMPLEMENTED("TokenType::Ident");
+            left = new ExprIdent(lexer.next());
+        } break;
+        case TokenType::Lparen: {
+            std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
+            UNIMPLEMENTED("tuple");
+            if (left) {
+            }
         } break;
         case TokenType::Period: {
             lexer.discard();
-            Expr *right = parse_identifier_or_funccall(lexer);
+            right = parse_identifier_or_funccall(lexer);
             left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
         } break;
         case TokenType::Intlit: {
@@ -182,12 +189,12 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             lexer.discard();
             left = new ExprListLit(std::move(lst));
         } break;
-        case TokenType::Lparen: {
-            lexer.discard();
-            Expr *expr = Parser::parse_expr(lexer);
-            (void)Parser::parse_expect(lexer, TokenType::Rparen);
-            left = expr;
-        } break;
+        // case TokenType::Lparen: {
+        //     lexer.discard();
+        //     Expr *expr = Parser::parse_expr(lexer);
+        //     (void)Parser::parse_expect(lexer, TokenType::Rparen);
+        //     left = expr;
+        // } break;
         case TokenType::Pipe: {
             std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
             auto block = Parser::parse_stmt_block(lexer);
