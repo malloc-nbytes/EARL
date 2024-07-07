@@ -177,7 +177,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         } break;
         case TokenType::Period: {
             lexer.discard();
-            right = parse_identifier_or_funccall(lexer);
+            right = parse_primary_expr(lexer);
             left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
         } break;
         case TokenType::Intlit: {
