@@ -1,0 +1,14 @@
+mod Other
+
+let answer = none;
+
+@pub @world
+fn get_math() {
+    return answer;
+}
+
+@pub @world
+fn do_math(a, b) {
+    answer = some(a+b);
+}
+
