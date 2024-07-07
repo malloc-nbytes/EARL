@@ -46,12 +46,14 @@ static Ctx *parent_ctx = nullptr;
 earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
 
 earl::value::Obj *eval_user_defined_closure(earl::variable::Obj *var, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)var;
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("eval_user_defined_closure");
 }
 
 earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+    (void)func;
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("eval_user_defined_function");

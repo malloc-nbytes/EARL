@@ -118,14 +118,16 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
 }
 
 static Expr *parse_identifier_or_funccall(Lexer &lexer) {
-    std::unique_ptr<Token> tok = lexer.next();
-    auto group = try_parse_funccall(lexer);
-    if (group.has_value()) {
-        return new ExprFuncCall(std::move(tok), std::move(group.value()));
-    }
-    else {
-        return new ExprIdent(std::move(tok));
-    }
+    (void)lexer;
+    UNIMPLEMENTED("parse_identifier_or_funccall");
+    // std::unique_ptr<Token> tok = lexer.next();
+    // auto group = try_parse_funccall(lexer);
+    // if (group.has_value()) {
+    //     return new ExprFuncCall(std::move(tok), std::move(group.value()));
+    // }
+    // else {
+    //     return new ExprIdent(std::move(tok));
+    // }
 }
 
 static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_args(Lexer &lexer) {
@@ -158,38 +160,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     while (1) {
         switch (lexer.peek()->type()) {
         case TokenType::Ident: {
-            std::unique_ptr<Token> funccall_id = nullptr;
-
-            while ((tok = lexer.peek()) != nullptr) {
-                std::optional<std::vector<std::unique_ptr<Expr>>> group = {};
-
-                if (tok->type() == TokenType::Ident && lexer.peek(1)->type() == TokenType::Lparen) {
-                    funccall_id = lexer.next();
-                    group = try_parse_funccall(lexer);
-                }
-
-                if (group.has_value()) {
-                    assert(funccall_id);
-                    left = new ExprFuncCall(std::move(funccall_id), std::move(group.value()));
-                }
-                else if (lexer.peek()->type() == TokenType::Ident) {
-                    left = new ExprIdent(lexer.next());
-                }
-                else if (lexer.peek()->type() == TokenType::Period) {
-                    lexer.discard();
-                    Expr *right = parse_identifier_or_funccall(lexer);
-                    left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
-                }
-                else if (lexer.peek()->type() == TokenType::Lbracket) {
-                    lexer.discard();
-                    Expr *right = Parser::parse_expr(lexer);
-                    (void)Parser::parse_expect(lexer, TokenType::Rbracket);
-                    left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
-                }
-                else {
-                    return left;
-                }
-            }
+            UNIMPLEMENTED("TokenType::Ident");
         } break;
         case TokenType::Period: {
             lexer.discard();

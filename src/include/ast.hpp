@@ -181,14 +181,15 @@ struct ExprClosure : public ExprTerm {
 
 /// @brief The Expression Function Call class
 struct ExprFuncCall : public ExprTerm {
-    /// @brief The token of the function call
-    std::unique_ptr<Token> m_id;
+    // Needs to be an expr to handle either
+    // ident or something like arr[0]().
+    std::unique_ptr<Expr> m_left;
 
     /// @brief A vector of expressions that is passed
     /// to the function call
     std::vector<std::unique_ptr<Expr>> m_params;
 
-    ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Expr>> params);
+    ExprFuncCall(std::unique_ptr<Expr> id, std::vector<std::unique_ptr<Expr>> params);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

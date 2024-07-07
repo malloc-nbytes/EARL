@@ -79,8 +79,10 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
 };
 
 earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    const std::string &id = expr->m_id->lexeme();
-    return Intrinsics::intrinsic_functions.at(id)(expr, params, ctx);
+    (void)expr;
+    (void)params;
+    (void)ctx;
+    UNIMPLEMENTED("Intrinsics::call");
 }
 
 bool Intrinsics::is_intrinsic(const std::string &id) {
@@ -227,8 +229,8 @@ earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<e
     for (size_t i = 0; i < params.size(); ++i) {
         earl::value::Obj *param = params.at(i);
         if (!param->boolean()) {
-            Err::err_wtok(expr->m_id.get());
-            token_dump_until_eol(expr->m_id.get());
+            // Err::err_wtok(expr->m_id.get());
+            // token_dump_until_eol(expr->m_id.get());
             ERR_WARGS(Err::Type::Assertion,
                       "assertion failure (expression=%zu) (earl::value::Type=%d)",
                       i+1, (int)param->type());
@@ -288,7 +290,7 @@ static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
         std::cout << ']';
     } break;
     default: {
-        Err::err_wtok(expr->m_id.get());
+        // Err::err_wtok(expr->m_id.get());
         ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
     } break;
     }

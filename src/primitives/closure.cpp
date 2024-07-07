@@ -41,14 +41,19 @@ StmtBlock *Closure::block(void) {
 }
 
 void Closure::load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
+    (void)values;
+    (void)ctx;
     UNIMPLEMENTED("Closure::load_parameters");
 }
 
 Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
+    (void)values;
+    (void)ctx;
     UNIMPLEMENTED("Closure::call");
 }
 
 bool Closure::has_local(const std::string &id) {
+    (void)id;
     UNIMPLEMENTED("Closure::call");
 }
 
@@ -77,6 +82,7 @@ Obj *Closure::copy(void) {
 }
 
 bool Closure::eq(Obj *other) {
+    (void)other;
     UNIMPLEMENTED("Closure::eq");
     return true;
 }
