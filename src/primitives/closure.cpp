@@ -34,45 +34,22 @@
 using namespace earl::value;
 
 Closure::Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params)
-    : m_expr_closure(expr_closure), m_params(std::move(params)) {
-    m_local.emplace_back();
-}
+    : m_expr_closure(expr_closure), m_params(std::move(params)) {}
 
 StmtBlock *Closure::block(void) {
-    return m_expr_closure->m_block.get();
+    UNIMPLEMENTED("Closure::call");
 }
 
 void Closure::load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    for (size_t i = 0; i < values.size(); i++) {
-        earl::value::Obj *value = values[i];
-
-        earl::variable::Obj *var = nullptr;
-        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value));
-        }
-        else {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value->copy()));
-        }
-
-        ctx.register_variable(var);
-    }
+    UNIMPLEMENTED("Closure::load_parameters");
 }
 
 Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    ctx.push_scope();
-    load_parameters(values, ctx);
-    earl::value::Obj *result = Interpreter::eval_stmt_block(this->block(), ctx);
-    ctx.pop_scope();
-
-    return result;
+    UNIMPLEMENTED("Closure::call");
 }
 
 bool Closure::has_local(const std::string &id) {
-    return m_local.back().contains(id);
+    UNIMPLEMENTED("Closure::call");
 }
 
 /*** OVERRIDES ***/

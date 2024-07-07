@@ -123,6 +123,8 @@ std::string tokentype_to_str(TokenType type)
         return "`RIGHTARROW`";
     case TokenType::Double_Period:
         return "`DOUBLE_PERIOD`";
+    case TokenType::Double_Colon:
+        return "`DOUBLE_COLON`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:

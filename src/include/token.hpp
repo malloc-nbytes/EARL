@@ -82,6 +82,7 @@ enum class TokenType {
     Percent_Equals,
     RightArrow,
     Double_Period,
+    Double_Colon,
 
     Eof,
     Intlit,
