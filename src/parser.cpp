@@ -165,8 +165,14 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         } break;
         case TokenType::Lparen: {
             std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
-            UNIMPLEMENTED("tuple");
             if (left) {
+                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(tuple));
+            }
+            else {
+                lexer.discard();
+                Expr *expr = Parser::parse_expr(lexer);
+                (void)Parser::parse_expect(lexer, TokenType::Rparen);
+                left = expr;
             }
         } break;
         case TokenType::Period: {
@@ -184,17 +190,11 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             left = new ExprCharLit(lexer.next());
         } break;
         case TokenType::Lbracket: {
-            lexer.discard();
-            std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
-            lexer.discard();
-            left = new ExprListLit(std::move(lst));
+            UNIMPLEMENTED("parse_primary_expr:TokenType::Lbracket");
         } break;
-        // case TokenType::Lparen: {
-        //     lexer.discard();
-        //     Expr *expr = Parser::parse_expr(lexer);
-        //     (void)Parser::parse_expect(lexer, TokenType::Rparen);
-        //     left = expr;
-        // } break;
+        case TokenType::Double_Colon: {
+            UNIMPLEMENTED("parse_primary_expr:TokenType::Double_Colon");
+        } break;
         case TokenType::Pipe: {
             std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
             auto block = Parser::parse_stmt_block(lexer);
