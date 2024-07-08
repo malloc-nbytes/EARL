@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "utils.hpp"
@@ -32,16 +33,15 @@ using namespace earl::value;
 
 Module::Module(Ctx *ctx) : m_value(ctx) {}
 
-Ctx *Module::value(void) {
-    assert(m_value);
-    return m_value;
+std::shared_ptr<Ctx> Module::value(void) {
+    UNIMPLEMENTED("Module::value");
 }
 
 Type Module::type(void) const {
     return Type::Module;
 }
 
-Obj *Module::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Module::binop(Token *op, Obj *other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Module::binop");
@@ -56,7 +56,7 @@ void Module::mutate(Obj *other) {
     UNIMPLEMENTED("Module::mutate");
 }
 
-Obj *Module::copy(void) {
+std::shared_ptr<Obj> Module::copy(void) {
     UNIMPLEMENTED("Module::copy");
 }
 

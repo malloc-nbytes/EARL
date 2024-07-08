@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -45,135 +46,43 @@ Type List::type(void) const {
     return Type::List;
 }
 
-Obj *List::nth(Obj *idx) {
-    switch (idx->type()) {
-    case Type::Int: {
-        auto *index = dynamic_cast<Int *>(idx);
-        if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
-            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
-                      index->value(), this->value().size());
-        }
-        return this->value()[index->value()];
-    } break;
-    default: assert(false && "invalid `nth` argument");
-    }
-    return nullptr; // unreachable
+std::shared_ptr<Obj> List::nth(Obj *idx) {
+    (void)idx;
+    UNIMPLEMENTED("List::nth");
 }
 
-Obj *List::rev(void) {
-    std::reverse(m_value.begin(), m_value.end());
-    return new Void();
+std::shared_ptr<Obj> List::rev(void) {
+    UNIMPLEMENTED("List::rev");
 }
 
-Obj *List::pop(Obj *idx) {
-    assert(idx->type() == earl::value::Type::Int);
-    earl::value::Int *index = dynamic_cast<earl::value::Int *>(idx);
-    m_value.erase(m_value.begin() + index->value());
-    return new Void();
+std::shared_ptr<Obj> List::pop(Obj *idx) {
+    (void)idx;
+    UNIMPLEMENTED("List::pop");
 }
 
-Obj *List::append(std::vector<Obj *> &values) {
-    // NOTE: To append a reference, use the below line
-    // m_value.insert(m_value.end(), values.begin(), values.end());
-
-    for (size_t i = 0; i < values.size(); ++i) {
-        m_value.push_back(values[i]->copy());
-    }
-
-    return new Void();
+std::shared_ptr<Obj> List::append(std::vector<Obj *> &values) {
+    (void)values;
+    UNIMPLEMENTED("List::append");
 }
 
-Obj *List::filter(Obj *closure, Ctx &ctx) {
-    assert(closure->type() == Type::Closure);
-    Closure *cl = dynamic_cast<Closure *>(closure);
-
-    List *copy = new List();
-    std::vector<Obj *> keep_values;
-
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        std::vector<Obj *> values = {m_value.at(i)};
-        Obj *filter_result = cl->call(values, ctx);
-        assert(filter_result->type() == Type::Bool);
-        if (dynamic_cast<Bool *>(filter_result)->boolean()) {
-            keep_values.push_back(m_value.at(i)->copy());
-        }
-    }
-
-    copy->append(keep_values);
-
-    return copy;
+std::shared_ptr<Obj> List::filter(Obj *closure, Ctx &ctx) {
+    (void)closure;
+    (void)ctx;
+    UNIMPLEMENTED("List::filter");
 }
 
 void List::foreach(Obj *closure, Ctx &ctx) {
-    assert(closure->type() == Type::Closure);
-    Closure *cl = dynamic_cast<Closure *>(closure);
-
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        std::vector<Obj *> values = {m_value[i]};
-        cl->call(values, ctx);
-    }
+    (void)closure;
+    (void)ctx;
+    UNIMPLEMENTED("List::foreach");
 }
 
-Obj *List::back(void) {
-    if (m_value.size() == 0) {
-        return new Option();
-    }
-    return m_value.back()->copy();
+std::shared_ptr<Obj> List::back(void) {
+    UNIMPLEMENTED("List::back");
 }
 
-Obj *List::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    Obj *tmp = other;
-    switch (op->type()) {
-    case TokenType::Plus: {
-        auto list = new List(this->value());
-        list->value().insert(list->value().end(),
-                             dynamic_cast<List *>(tmp)->value().begin(),
-                             dynamic_cast<List *>(tmp)->value().end());
-        return list;
-    } break;
-    case TokenType::Double_Equals: {
-        auto *other_lst = dynamic_cast<List *>(tmp);
-        int res = 0;
-        if (m_value.size() == other_lst->value().size()) {
-            res = 1;
-            for (size_t i = 0; i < m_value.size(); ++i) {
-                Obj *o1 = this->value()[i];
-                Obj *o2 = other_lst->value()[i];
-                if (!type_is_compatable(o1, o2)) {
-                    res = 0;
-                    break;
-                }
-                if (o1->type() == Type::Int) {
-                    if (dynamic_cast<Int *>(o1)->value() != dynamic_cast<Int *>(o2)->value()) {
-                        res = 0;
-                        break;
-                    }
-                }
-                else if (o1->type() == Type::Str) {
-                    if (dynamic_cast<Str *>(o1)->value() != dynamic_cast<Str *>(o2)->value()) {
-                        res = 0;
-                        break;
-                    }
-                }
-                else {
-                    res = 0;
-                    break;
-                }
-            }
-        }
-        return new Int(res);
-    } break;
-    default: {
-        Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
-    }
-    }
-
-    return nullptr; // unreachable
+std::shared_ptr<Obj> List::binop(Token *op, Obj *other) {
+    UNIMPLEMENTED("List::binop");
 }
 
 bool List::boolean(void) {
@@ -186,10 +95,8 @@ void List::mutate(Obj *other) {
     m_value = lst->value();
 }
 
-Obj *List::copy(void) {
-    auto list = new List();
-    list->append(this->value());
-    return list;
+std::shared_ptr<Obj> List::copy(void) {
+    UNIMPLEMENTED("List::copy");
 }
 
 bool List::eq(Obj *other) {

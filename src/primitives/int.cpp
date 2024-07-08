@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -44,55 +45,10 @@ Type Int::type(void) const {
     return Type::Int;
 }
 
-Obj *Int::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    Obj *tmp = other;
-
-    switch (op->type()) {
-    case TokenType::Plus: {
-        return new Int(this->value() + dynamic_cast<Int *>(tmp)->value());
-    } break;
-    case TokenType::Minus: {
-        return new Int(this->value() - dynamic_cast<Int *>(tmp)->value());
-    } break;
-    case TokenType::Asterisk: {
-        return new Int(this->value() * dynamic_cast<Int *>(tmp)->value());
-    } break;
-    case TokenType::Forwardslash: {
-        return new Int(this->value() / dynamic_cast<Int *>(tmp)->value());
-    } break;
-    case TokenType::Percent: {
-        return new Int(this->value() % dynamic_cast<Int *>(tmp)->value());
-    } break;
-    case TokenType::Lessthan: {
-        return new Bool(static_cast<int>(this->value() < dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Greaterthan: {
-        return new Bool(static_cast<int>(this->value() > dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Greaterthan_Equals: {
-        return new Bool(static_cast<int>(this->value() >= dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Lessthan_Equals: {
-        return new Bool(static_cast<int>(this->value() <= dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    case TokenType::Double_Pipe: {
-        return new Bool(static_cast<int>(this->value() || dynamic_cast<Int *>(tmp)->value()));
-    } break;
-    default: {
-        Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
-    }
-    }
+std::shared_ptr<Obj> Int::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
+    UNIMPLEMENTED("Int::binop");
 }
 
 bool Int::boolean(void) {
@@ -114,8 +70,8 @@ void Int::mutate(Obj *other) {
     }
 }
 
-Obj *Int::copy(void) {
-    return new Int(this->value());
+std::shared_ptr<Obj> Int::copy(void) {
+    UNIMPLEMENTED("Int::copy");
 }
 
 bool Int::eq(Obj *other) {

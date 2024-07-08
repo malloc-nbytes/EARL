@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <memory>
+
 #include "earl.hpp"
 #include "err.hpp"
 #include "utils.hpp"
@@ -30,19 +32,14 @@ using namespace earl::value;
 
 Void::Void(void *value) : m_value(value) {}
 
-void *Void::value(void) {
-    return m_value;
-}
-
 Type Void::type(void) const {
     return Type::Void;
 }
 
-Obj *Void::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Void::binop(Token *op, Obj *other) {
+    (void)op;
     (void)other;
-    Err::err_wtok(op);
-    ERR(Err::Type::Types, "invalid binary operation on Void types");
-    return nullptr; // unreachable
+    UNIMPLEMENTED("Void::binop");
 }
 
 bool Void::boolean(void) {
@@ -54,7 +51,7 @@ void Void::mutate(Obj *other) {
     UNIMPLEMENTED("Void::mutate");
 }
 
-Obj *Void::copy(void) {
+std::shared_ptr<Obj> Void::copy(void) {
     UNIMPLEMENTED("Void::copy");
 }
 
@@ -64,5 +61,5 @@ bool Void::eq(Obj *other) {
 }
 
 std::string Void::to_cxxstring(void) {
-        ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
+    ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
 }

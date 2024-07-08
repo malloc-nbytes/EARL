@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -70,111 +71,56 @@ std::string Str::value(void) {
     return value;
 }
 
-Char *Str::nth(Obj *idx) {
-    auto *index = dynamic_cast<Int *>(idx);
-    if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
-        ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
-                  index->value(), this->value().size());
-    }
-    return m_value[index->value()];
+std::shared_ptr<Char> Str::nth(Obj *idx) {
+    (void)idx;
+    UNIMPLEMENTED("Str::nth");
 }
 
-List *Str::split(Obj *delim) {
-    assert(delim->type() == Type::Str);
-
-    std::vector<Obj *> splits;
-    std::string delim_str = dynamic_cast<Str *>(delim)->value();
-    std::string::size_type start = 0;
-
-    auto pos = this->value().find(delim_str);
-
-    while (pos != std::string::npos) {
-        splits.push_back(new Str(this->value().substr(start, pos-start)));
-        start = pos+delim_str.length();
-        pos = this->value().find(delim_str, start);
-    }
-    splits.push_back(new Str(this->value().substr(start)));
-
-    return new List(std::move(splits));
+std::shared_ptr<List> Str::split(Obj *delim) {
+    (void)delim;
+    UNIMPLEMENTED("Str::split");
 }
 
-Str *Str::remove_lines(void) {
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_value[i]->value() == '\n') {
-            delete m_value[i];
-            m_value.erase(m_value.begin()+i);
-            --i;
-        }
-    }
-    return dynamic_cast<Str *>(this->copy());
+std::shared_ptr<Str> Str::remove_lines(void) {
+    UNIMPLEMENTED("Str::remove_lines");
 }
 
-Str *Str::substr(Int *idx1, Int *idx2) {
-    std::string sub = this->value().substr(idx1->value(), idx2->value());
-    return new Str(sub);
+std::shared_ptr<Str> Str::substr(Int *idx1, Int *idx2) {
+    (void)idx1;
+    (void)idx2;
+    UNIMPLEMENTED("Str::substr");
 }
 
-Obj *Str::pop(Obj *idx) {
-    assert(idx->type() == earl::value::Type::Int);
-    earl::value::Int *index = dynamic_cast<earl::value::Int *>(idx);
-    m_value.erase(m_value.begin() + index->value());
-    return new Void();
+std::shared_ptr<Obj> Str::pop(Obj *idx) {
+    (void)idx;
+    UNIMPLEMENTED("Str::pop");
 }
 
 Type Str::type(void) const {
     return Type::Str;
 }
 
-Obj *Str::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    Obj *tmp = other;
-
-    switch (op->type()) {
-    case TokenType::Plus: {
-        if (tmp->type() == Type::Char) {
-            return new Str(this->value() + std::string(1, dynamic_cast<Char *>(tmp)->value()));
-        }
-        return new Str(this->value() + dynamic_cast<Str *>(tmp)->value());
-    } break;
-    case TokenType::Double_Equals: {
-        if (tmp->type() == Type::Char) {
-            return new Bool(this->value() == std::string(1, dynamic_cast<Char *>(tmp)->value()));
-        }
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Str *>(tmp)->value()));
-    } break;
-    default: {
-        Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
-    }
-    }
+std::shared_ptr<Obj> Str::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
+    UNIMPLEMENTED("Str::binop");
 }
 
 bool Str::boolean(void) {
     return true;
 }
 
-std::vector<Char *> &Str::value_raw(void) {
-    return m_value;
+std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
+    UNIMPLEMENTED("Str::value_raw");
 }
 
 void Str::mutate(Obj *other) {
-    assert(other->type() == Type::Str);
-
-    Str *otherstr = dynamic_cast<Str *>(other);
-
-    std::for_each(m_value.begin(), m_value.end(), [](auto &this_c) {delete this_c;});
-    m_value.clear();
-
-    std::for_each(otherstr->value_raw().begin(), otherstr->value_raw().end(), [&](earl::value::Char *other_c) {
-        m_value.push_back(dynamic_cast<earl::value::Char *>(other_c->copy()));
-    });
+    (void)other;
+    UNIMPLEMENTED("Str::mutate");
 }
 
-Obj *Str::copy(void) {
-    return new Str(this->value());
+std::shared_ptr<Obj> Str::copy(void) {
+    UNIMPLEMENTED("Str::copy");
 }
 
 bool Str::eq(Obj *other) {

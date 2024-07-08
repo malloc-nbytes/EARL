@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -30,10 +31,10 @@
 
 using namespace earl::value;
 
-Option::Option(Obj *value) : m_value(value) {}
+Option::Option(std::shared_ptr<Obj> value) : m_value(value) {}
 
-Obj *Option::value(void) {
-    return m_value;
+std::shared_ptr<Obj> Option::value(void) {
+    UNIMPLEMENTED("Option::value");
 }
 
 bool Option::is_some(void) const {
@@ -45,7 +46,8 @@ bool Option::is_none(void) const {
 }
 
 void Option::set_value(Obj *other) {
-    m_value = other;
+    (void)other;
+    UNIMPLEMENTED("Option::set_value");
 }
 
 /*** OVERRIDES ***/
@@ -53,26 +55,10 @@ Type Option::type(void) const {
     return Type::Option;
 }
 
-Obj *Option::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    if (op->type() != TokenType::Double_Equals)
-        ERR(Err::Type::Fatal, "the only support binary operations on option types is equality `==`");
-
-    auto *other2 = dynamic_cast<Option *>(other);
-
-    if (this->is_none() && other2->is_none())
-        return new Bool(true);
-
-    if (this->is_some() && other2->is_none())
-        return new Bool(false);
-
-    if (this->is_none() && other2->is_some())
-        return new Bool(false);
-
-    return this->value()->binop(op, other2->value());
+std::shared_ptr<Obj> Option::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
+    UNIMPLEMENTED("Option::binop");
 }
 
 bool Option::boolean(void) {
@@ -95,26 +81,13 @@ void Option::mutate(Obj *other) {
 
 }
 
-Obj *Option::copy(void) {
-    if (this->is_some()) {
-        return new Option(m_value->copy());
-    }
-    return new Option();
+std::shared_ptr<Obj> Option::copy(void) {
+    UNIMPLEMENTED("Option::copy");
 }
 
 bool Option::eq(Obj *other) {
-    if (other->type() != Type::Option)
-        return false;
-
-    auto *other2 = dynamic_cast<Option *>(other);
-
-    if (this->is_none() && other2->is_none())
-        return true;
-
-    if ((this->is_some() && other2->is_some()) == 0)
-        return false;
-
-    return this->value()->eq(other2->value());
+    (void)other;
+    UNIMPLEMENTED("Option::eq");
 }
 
 std::string Option::to_cxxstring(void) {

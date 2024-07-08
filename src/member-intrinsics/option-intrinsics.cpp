@@ -38,35 +38,16 @@
 
 earl::value::Obj *Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)expr;
+    (void)params;
     (void)ctx;
-
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    return new earl::value::Option(params[0]);
+    UNIMPLEMENTED("Intrinsics::intrinsic_some");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_unwrap(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`unwrap` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::Option) {
-        ERR(Err::Type::Fatal, "`unwrap` member intrinsic is only defined for `option` types");
-    }
-
-    auto *none = dynamic_cast<earl::value::Option *>(obj);
-
-    if (!none->value()) {
-        ERR(Err::Type::Fatal, "tried to unwrap none value");
-    }
-
-    return none->value();
+    (void)obj;
+    (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_unwrap");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_is_none(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

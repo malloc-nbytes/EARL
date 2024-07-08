@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -55,32 +56,19 @@ void Class::add_member(std::unique_ptr<variable::Obj> var) {
     m_members.push_back(std::move(var));
 }
 
-earl::function::Obj *Class::get_method(const std::string &id) {
-    for (size_t i = 0; i < m_methods.size(); ++i) {
-        if (id == m_methods[i]->id()) {
-            return m_methods[i].get();
-        }
-    }
-
-    // ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
-    //           id.c_str(), this->id().c_str());
-    return nullptr;
+std::shared_ptr<earl::function::Obj> Class::get_method(const std::string &id) {
+    UNIMPLEMENTED("Class::get_method");
 }
 
-earl::variable::Obj *Class::get_member(const std::string &id) {
-    for (auto &mem : m_members) {
-        if (mem->id() == id) {
-            return mem.get();
-        }
-    }
-    return nullptr;
+std::shared_ptr<earl::variable::Obj> Class::get_member(const std::string &id) {
+    UNIMPLEMENTED("Class::get_member");
 }
 
 Type Class::type(void) const {
     return Type::Class;
 }
 
-Obj *Class::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Class::binop(Token *op, Obj *other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Class::binop");
@@ -95,22 +83,8 @@ void Class::mutate(Obj *other) {
     UNIMPLEMENTED("Class::mutate");
 }
 
-Obj *Class::copy(void) {
-    auto *copy = new Class(m_stmtclass, m_owner);
-
-    for (auto &member : m_members) {
-        copy->add_member(std::unique_ptr<variable::Obj>(member.get()->copy()));
-    }
-
-    for (auto &method : m_methods) {
-        copy->add_method(std::unique_ptr<function::Obj>(method.get()->copy()));
-    }
-
-    for (auto &ctx : m_ctxs) {
-        copy->m_ctxs.push_back(ctx);
-    }
-
-    return copy;
+std::shared_ptr<Obj> Class::copy(void) {
+    UNIMPLEMENTED("Class::copy");
 }
 
 bool Class::eq(Obj *other) {

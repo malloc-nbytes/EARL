@@ -35,8 +35,8 @@ const std::string &Obj::id(void) const {
     return m_id->lexeme();
 }
 
-earl::value::Obj *Obj::value(void) const {
-    return m_value.get();
+std::shared_ptr<earl::value::Obj> Obj::value(void) const {
+    UNIMPLEMENTED("Obj::value");
 }
 
 bool Obj::is_ref(void) const {
@@ -48,7 +48,7 @@ bool Obj::is_pub(void) const {
     return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
-Obj *Obj::copy(void) {
-    return new Obj(m_id, std::unique_ptr<value::Obj>(m_value->copy()), m_attrs);
+std::shared_ptr<Obj> Obj::copy(void) {
+    UNIMPLEMENTED("Obj::copy");
 }
 

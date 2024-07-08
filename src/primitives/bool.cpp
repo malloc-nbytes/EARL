@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -40,31 +41,10 @@ Type Bool::type(void) const {
     return Type::Bool;
 }
 
-Obj *Bool::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    Obj *tmp = other;
-
-    switch (op->type()) {
-    case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Bool *>(tmp)->value()));
-    } break;
-    case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Bool *>(tmp)->value()));
-    } break;
-    case TokenType::Double_Pipe: {
-        return new Bool(static_cast<int>(this->value() || dynamic_cast<Bool *>(tmp)->value()));
-    } break;
-    case TokenType::Double_Ampersand: {
-        return new Bool(static_cast<int>(this->value() && dynamic_cast<Bool *>(tmp)->value()));
-    } break;
-    default: {
-        Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
-    }
-    }
+std::shared_ptr<Obj> Bool::binop(Token *op, Obj *other) {
+    (void)op;
+    (void)other;
+    UNIMPLEMENTED("Bool::binop");
 }
 
 bool Bool::boolean(void) {
@@ -76,8 +56,8 @@ void Bool::mutate(Obj *other) {
     UNIMPLEMENTED("Bool::mutate");
 }
 
-Obj *Bool::copy(void) {
-    return new Bool(m_value);
+std::shared_ptr<Obj> Bool::copy(void) {
+    UNIMPLEMENTED("Bool::copy");
 }
 
 bool Bool::eq(Obj *other) {

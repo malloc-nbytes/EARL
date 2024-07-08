@@ -46,7 +46,7 @@ void Closure::load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx)
     UNIMPLEMENTED("Closure::load_parameters");
 }
 
-Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
+std::shared_ptr<Obj> Closure::call(std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx) {
     (void)values;
     (void)ctx;
     UNIMPLEMENTED("Closure::call");
@@ -62,7 +62,7 @@ Type Closure::type(void) const {
     return Type::Closure;
 }
 
-Obj *Closure::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Closure::binop(Token *op, Obj *other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Closure::binop");
@@ -77,8 +77,8 @@ void Closure::mutate(Obj *other) {
     UNIMPLEMENTED("Closure::mutate");
 }
 
-Obj *Closure::copy(void) {
-    return new Closure(m_expr_closure, m_params);
+std::shared_ptr<Obj> Closure::copy(void) {
+    UNIMPLEMENTED("Closure::copy");
 }
 
 bool Closure::eq(Obj *other) {

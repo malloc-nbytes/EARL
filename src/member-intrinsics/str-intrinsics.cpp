@@ -30,54 +30,22 @@
 #include "utils.hpp"
 
 earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx) {
+    (void)obj;
+    (void)delim;
     (void)ctx;
-
-    if (delim.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`split` member intrinsic expects 1 arguments but %zu were supplied",
-                  delim.size());
-    }
-
-    if (obj->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`split` member intrinsic is only defined for `str` types");
-    }
-
-    earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
-    return str->split(delim[0]);
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_split");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idxs, Ctx &ctx) {
     (void)ctx;
-
-    earl::value::Obj *tmp = obj;
-
-    if (idxs.size() != 2) {
-        ERR_WARGS(Err::Type::Fatal, "`substr` member intrinsic expects 2 arguments but %zu were supplied",
-                  idxs.size());
-    }
-
-    if (obj->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`substr` member intrinsic is only defined for `str` types");
-    }
-
-    if (idxs[0]->type() != earl::value::Type::Int) {
-        ERR(Err::Type::Fatal, "argument 1 in `substr` expects an `int` value");
-    }
-
-    if (idxs[1]->type() != earl::value::Type::Int) {
-        ERR(Err::Type::Fatal, "argument 2 in `substr` expects an `int` value");
-    }
-
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idxs[0]);
-    auto *idx2 = dynamic_cast<earl::value::Int *>(idxs[1]);
-    return dynamic_cast<earl::value::Str *>(tmp)->substr(idx1, idx2);
+    (void)obj;
+    (void)idxs;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_substr");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
-
+    (void)obj;
+    (void)unused;
     (void)ctx;
-    assert(obj->type() == earl::value::Type::Str);
-    assert(unused.size() == 0);
-    auto *str = dynamic_cast<earl::value::Str *>(obj);
-    return str->remove_lines();
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
 }

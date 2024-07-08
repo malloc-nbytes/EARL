@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -47,25 +48,10 @@ Type Char::type(void) const {
     return Type::Char;
 }
 
-Obj *Char::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot binop (fix this message)");
-    }
-
-    Obj *tmp = other;
-
-    switch (op->type()) {
-    case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Char *>(tmp)->value()));
-    } break;
-    case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Char *>(tmp)->value()));
-    } break;
-    default: {
-        Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
-    } break;
-    }
+std::shared_ptr<Obj> Char::binop(Token *op, Obj *other) {
+    (void)other;
+    (void)op;
+    UNIMPLEMENTED("Char::binop");
 }
 
 bool Char::boolean(void) {
@@ -78,8 +64,8 @@ void Char::mutate(Obj *other) {
     m_value = c->value();
 }
 
-Obj *Char::copy(void) {
-    return new Char(std::string(1, m_value));
+std::shared_ptr<Obj> Char::copy(void) {
+    UNIMPLEMENTED("Char::copy");
 }
 
 bool Char::eq(Obj *other) {

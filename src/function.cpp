@@ -105,23 +105,8 @@ void Obj::add_local(variable::Obj *var) {
 }
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
-    for (size_t i = 0; i < values.size(); i++) {
-        earl::value::Obj *value = values[i];
-
-        earl::variable::Obj *var = nullptr;
-        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value));
-        }
-        else {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value->copy()));
-        }
-
-        add_local(var);
-    }
+    (void)values;
+    UNIMPLEMENTED("Obj::load_parameters");
 }
 
 bool Obj::is_world(void) const {

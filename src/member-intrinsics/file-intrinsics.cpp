@@ -38,18 +38,9 @@
 
 earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`read` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`read` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
-    return f->read();
+    (void)obj;
+    (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_read");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_write(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx) {
@@ -113,42 +104,8 @@ earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::
 earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
-
-    if (params.size() != 2) {
-        ERR_WARGS(Err::Type::Fatal, "`open` intrinsic expects 2 arguments but %zu were supplied",
-                  params.size());
-    }
-
-    if (params[0]->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "argument 1 in `open` expects a `str` value");
-    }
-    if (params[1]->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "argument 2 in `open` expects a `str` value");
-    }
-
-    auto *fp = dynamic_cast<earl::value::Str *>(params[0]);
-    auto *mode = dynamic_cast<earl::value::Str *>(params[1]);
-    std::fstream stream;
-
-    if (mode->value() == "r") {
-        stream.open(fp->value(), std::ios::in);
-    }
-    else if (mode->value() == "w") {
-        stream.open(fp->value(), std::ios::out);
-    }
-    else {
-        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
-                  mode->value().c_str());
-    }
-
-    if (!stream) {
-        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
-    }
-
-    auto *f = new earl::value::File(fp, mode, std::move(stream));
-    f->set_open();
-
-    return f;
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_open");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {

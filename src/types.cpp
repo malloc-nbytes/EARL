@@ -41,25 +41,8 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
 };
 
 std::string earl::value::type_to_str(earl::value::Obj *obj) {
-    switch (obj->type()) {
-    case earl::value::Type::Int: return COMMON_EARLTY_INT32;
-    case earl::value::Type::Bool: return COMMON_EARLTY_BOOL;
-    case earl::value::Type::Char: return COMMON_EARLTY_CHAR;
-    case earl::value::Type::Str: return COMMON_EARLTY_STR;
-    case earl::value::Type::List: return COMMON_EARLTY_LIST;
-    case earl::value::Type::Class: return COMMON_EARLKW_CLASS;
-    case earl::value::Type::File: return COMMON_EARLTY_FILE;
-    case earl::value::Type::Closure: return COMMON_EARLTY_CLOSURE;
-    case earl::value::Type::Option: {
-        std::string res = "optional<";
-        auto *option = dynamic_cast<earl::value::Option *>(obj);
-        if (option->value()) {
-            res += type_to_str(option->value());
-        }
-        return res + ">";
-    } break;
-    default: ERR_WARGS(Err::Type::Fatal, "unknown type `%d`", (int)obj->type());
-    }
+    (void)obj;
+    UNIMPLEMENTED("earl::value::type_to_str");
 }
 
 bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {

@@ -391,7 +391,7 @@ namespace earl {
             std::string to_cxxstring(void)                    override;
 
         private:
-            Obj *m_value;
+            std::shared_ptr<Obj> m_value;
         };
 
         struct Closure : public Obj {
@@ -399,7 +399,7 @@ namespace earl {
 
             StmtBlock *block(void);
             void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
-            Obj *call(std::vector<earl::value::Obj *> &values, Ctx &ctx);
+            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
             bool has_local(const std::string &id);
 
             /*** OVERRIDES ***/
@@ -463,7 +463,7 @@ namespace earl {
             bool is_global(void) const;
 
             /// @brief Get the actual value of this variable
-            value::Obj *value(void) const;
+            std::shared_ptr<value::Obj> value(void) const;
 
             /// @brief Get the type of this variable
             value::Type type(void) const;
@@ -472,7 +472,7 @@ namespace earl {
 
             bool is_pub(void) const;
 
-            Obj *copy(void);
+            std::shared_ptr<Obj> copy(void);
 
         private:
             Token *m_id;

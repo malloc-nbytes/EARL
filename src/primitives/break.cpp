@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -34,7 +35,7 @@ Type Break::type(void) const {
     return Type::Break;
 }
 
-Obj *Break::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Break::binop(Token *op, Obj *other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Break::binop");
@@ -49,7 +50,7 @@ void Break::mutate(Obj *other) {
     UNIMPLEMENTED("Break::mutate");
 }
 
-Obj *Break::copy(void) {
+std::shared_ptr<Obj> Break::copy(void) {
     UNIMPLEMENTED("Break::copy");
 }
 

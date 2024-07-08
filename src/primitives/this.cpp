@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -36,7 +37,7 @@ Type This::type(void) const {
     return Type::This;
 }
 
-Obj *This::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> This::binop(Token *op, Obj *other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("This::binop");
@@ -51,7 +52,7 @@ void This::mutate(Obj *other) {
     UNIMPLEMENTED("This::mutate");
 }
 
-Obj *This::copy(void) {
+std::shared_ptr<Obj> This::copy(void) {
     UNIMPLEMENTED("This::copy");
 }
 

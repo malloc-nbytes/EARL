@@ -116,58 +116,22 @@ earl::value::Obj *Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<ear
 earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`__internal_move__` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    auto *ret = params[0]->copy();
-    delete params[0];
-    return ret;
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic___internal_move__");
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`__internal_mkdir__` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    auto *obj = params[0];
-    std::string path = obj->to_cxxstring();
-
-    if (!std::filesystem::exists(path)) {
-        if (!std::filesystem::create_directory(path)) {
-            ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
-        }
-    }
-
-    return new earl::value::Void();
+    (void)expr;
+    (void)params;
+    (void)ctx;
+    UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
 }
 
 earl::value::Obj *Intrinsics::intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`__internal_ls__` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    auto *obj = params[0];
-    std::string path = obj->to_cxxstring();
-
-    auto *lst = new earl::value::List();
-    std::vector<earl::value::Obj *> items;
-
-    try {
-        for (const auto &entry : std::filesystem::directory_iterator(path)) {
-            items.push_back(new earl::value::Str(entry.path()));
-        }
-    } catch (const std::filesystem::filesystem_error &e) {
-        const char *err = e.what();
-        ERR_WARGS(Err::Type::Fatal, "could not list directory `%s`: %s", path.c_str(), err);
-    }
-
-    lst->append(items);
-
-    return lst;
+    (void)expr;
+    (void)params;
+    (void)ctx;
+    UNIMPLEMENTED("Intrinsics::intrinsic___internal_ls__");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
@@ -225,75 +189,15 @@ earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<ea
 
 earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
     (void)ctx;
-
-    for (size_t i = 0; i < params.size(); ++i) {
-        earl::value::Obj *param = params.at(i);
-        if (!param->boolean()) {
-            // Err::err_wtok(expr->m_id.get());
-            // token_dump_until_eol(expr->m_id.get());
-            ERR_WARGS(Err::Type::Assertion,
-                      "assertion failure (expression=%zu) (earl::value::Type=%d)",
-                      i+1, (int)param->type());
-        }
-    }
-
-    return new earl::value::Void();
+    (void)params;
+    (void)expr;
+    UNIMPLEMENTED("Intrinsics::intrinsic_assert");
 }
 
 static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
-    switch (param->type()) {
-    case earl::value::Type::Int: {
-        auto *intparam = dynamic_cast<earl::value::Int *>(param);
-        std::cout << intparam->value();
-    } break;
-    case earl::value::Type::Bool: {
-        auto *bool_param = dynamic_cast<earl::value::Bool *>(param);
-        std::cout << (bool_param->value() ? "true" : "false");
-    } break;
-    case earl::value::Type::Option: {
-        auto *option_param = dynamic_cast<earl::value::Option *>(param);
-
-        if (option_param->is_none())
-            std::cout << "<none>";
-        else {
-            std::cout << "some(";
-            __intrinsic_print(expr, option_param->value());
-            std::cout << ")";
-        }
-
-    } break;
-    case earl::value::Type::Str: {
-        auto *strparam = dynamic_cast<earl::value::Str *>(param);
-        std::cout << strparam->value();
-    } break;
-    case earl::value::Type::Char: {
-        auto *strparam = dynamic_cast<earl::value::Char *>(param);
-        std::cout << strparam->value();
-    } break;
-    case earl::value::Type::Class: {
-        auto *classparam = dynamic_cast<earl::value::Class *>(param);
-        std::cout << "<Class " << classparam->id() << " " << &classparam << '>';
-    } break;
-    case earl::value::Type::List: {
-        earl::value::List *listparam = dynamic_cast<earl::value::List *>(param);
-        std::cout << '[';
-        std::vector<earl::value::Obj *> &list = listparam->value();
-
-        for (size_t i = 0; i < list.size(); ++i) {
-            __intrinsic_print(expr, list[i]);
-
-            if (i != list.size()-1) {
-                std::cout << ", ";
-            }
-        }
-
-        std::cout << ']';
-    } break;
-    default: {
-        // Err::err_wtok(expr->m_id.get());
-        ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
-    } break;
-    }
+    (void)expr;
+    (void)param;
+    UNIMPLEMENTED("__intrinsic_print");
 }
 
 earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
