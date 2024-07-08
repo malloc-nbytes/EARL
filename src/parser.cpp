@@ -220,7 +220,9 @@ static Expr *parse_primary_expr(Lexer &lexer) {
                           kw->lexeme().c_str());
             }
         } break;
-        default: return left;
+        default: {
+            return left;
+        } break;
         }
     }
 

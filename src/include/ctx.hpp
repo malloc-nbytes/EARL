@@ -35,16 +35,23 @@
 #include <unordered_map>
 
 #include "earl.hpp"
-#include "scope.hpp"
+#include "shared-scope.hpp"
 
 struct Ctx {
     Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
     ~Ctx() = default;
 
+    /*** Statement methods ***/
+    size_t stmts_len(void) const;
+    Stmt *get_stmt_at(size_t i);
+
 private:
-    std::unique_ptr<Lexer> m_lexer;
+    std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;
-    std::string m_module;
+    std::string              m_module;
+
+    SharedScope<std::string, earl::variable::Obj> m_global_scope;
+    SharedScope<std::string, earl::function::Obj> m_global_functions;
 };
 
 #endif // CTX_H

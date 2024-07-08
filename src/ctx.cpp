@@ -32,3 +32,13 @@
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
     m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {}
 
+/*** Statement methods ***/
+
+size_t Ctx::stmts_len(void) const {
+    return m_program->m_stmts.size();
+}
+
+Stmt *Ctx::get_stmt_at(size_t i) {
+    return m_program->m_stmts.at(i).get();
+}
+
