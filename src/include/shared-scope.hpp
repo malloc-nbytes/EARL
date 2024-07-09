@@ -61,7 +61,7 @@ template <typename K, typename V> struct SharedScope {
         m_map.back().emplace(key, value);
     }
 
-    inline bool contains(K key) {
+    inline bool contains(const K key) const {
         for (auto &map : m_map) {
             if (map.find(key) != map.end())
                 return true;

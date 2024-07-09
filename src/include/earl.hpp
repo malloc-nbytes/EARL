@@ -409,7 +409,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL variables
         struct Obj {
-            Obj(Token *id, std::unique_ptr<value::Obj> value, uint32_t attrs = 0);
+            Obj(Token *id, std::shared_ptr<value::Obj> value, uint32_t attrs = 0);
             ~Obj() = default;
 
             /// @brief Get the identifier of this variable
@@ -433,7 +433,7 @@ namespace earl {
 
         private:
             Token *m_id;
-            std::unique_ptr<value::Obj> m_value;
+            std::shared_ptr<value::Obj> m_value;
             uint32_t m_attrs;
         };
     };

@@ -28,8 +28,8 @@
 
 using namespace earl::variable;
 
-Obj::Obj(Token *id, std::unique_ptr<earl::value::Obj> value, uint32_t attrs)
-    : m_id(id), m_value(std::move(value)), m_attrs(attrs) {}
+Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
+    : m_id(id), m_value(value), m_attrs(attrs) {}
 
 const std::string &Obj::id(void) const {
     return m_id->lexeme();

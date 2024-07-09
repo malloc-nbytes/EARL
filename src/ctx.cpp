@@ -32,7 +32,7 @@
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
     m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {}
 
-/*** Statement methods ***/
+/*** Ctx methods ***/
 
 size_t Ctx::stmts_len(void) const {
     return m_program->m_stmts.size();
@@ -41,4 +41,22 @@ size_t Ctx::stmts_len(void) const {
 Stmt *Ctx::get_stmt_at(size_t i) {
     return m_program->m_stmts.at(i).get();
 }
+
+void Ctx::set_module(const std::string &id) {
+    m_module = id;
+}
+
+/*** Variables ***/
+bool Ctx::var_exists(const std::string &id) const {
+    return m_variables.contains(id);
+}
+
+std::shared_ptr<earl::variable::Obj> &Ctx::var_get(const std::string &id, bool crash_on_failure) {
+    UNIMPLEMENTED("Ctx::var_get");
+}
+
+void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
+    UNIMPLEMENTED("Ctx::var_add");
+}
+
 

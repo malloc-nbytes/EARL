@@ -47,20 +47,21 @@ struct Ctx {
     Lexer *lexer(void);
     Program *program(void);
     std::string &module_();
+    void set_module(const std::string &id);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
-    std::shared_ptr<earl::variable::Obj> &var_get(const std::string &id, bool crash_on_failure = false);
+    std::shared_ptr<earl::variable::Obj> &var_get(const std::string &id, bool crash_on_failure = true);
     void var_add(std::shared_ptr<earl::variable::Obj> var);
 
     /*** Functions ***/
     bool func_exists(const std::string &id) const;
-    std::shared_ptr<earl::function::Obj> &func_get(const std::string &id, bool crash_on_failure = false);
+    std::shared_ptr<earl::function::Obj> &func_get(const std::string &id, bool crash_on_failure = true);
     void func_add(std::shared_ptr<earl::function::Obj> func);
 
     /*** Classes ***/
     bool class_exists(const std::string &id) const;
-    std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = false);
+    std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = true);
     void class_add(std::shared_ptr<earl::Class::Obj> klass);
 
     // Check if the actual statement exists

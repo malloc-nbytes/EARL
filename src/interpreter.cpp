@@ -75,9 +75,19 @@ std::shared_ptr<earl::value::Obj> get_class_member(std::string &id, earl::Class:
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_let");
+    const std::string &id = stmt->m_id->lexeme();
+
+    if (ctx->var_exists(id)) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR_WARGS(Err::Type::Redeclaration, "variable `%s` already exists", id.c_str());
+    }
+
+    auto val = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    auto var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val, stmt->m_attrs);
+
+    ctx->var_add(var);
+
+    return nullptr;
 }
 
 void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
@@ -159,7 +169,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<C
     UNIMPLEMENTED("eval_stmt_def");
 }
 
-std::shared_ptr<earl::value::Obj> *eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
     (void)stmt;
     (void)ctx;
     UNIMPLEMENTED("eval_stmt_if");
@@ -214,10 +224,66 @@ std::shared_ptr<earl::value::Obj> eval_stmt_match(StmtMatch *stmt, std::shared_p
     UNIMPLEMENTED("eval_stmt_match");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj> eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
+    ctx->set_module(stmt->m_id->lexeme());
+    return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj> eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     (void)stmt;
     (void)ctx;
-    UNIMPLEMENTED("eval_stmt");
+    UNIMPLEMENTED("eval_stmt_import");
+}
+
+std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+    switch (stmt->stmt_type()) {
+    case StmtType::Def: {
+        return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
+    } break;
+    case StmtType::Let: {
+        return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
+    } break;
+    case StmtType::Block: {
+        return Interpreter::eval_stmt_block(dynamic_cast<StmtBlock *>(stmt), ctx);
+    } break;
+    case StmtType::Mut: {
+        return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);
+    } break;
+    case StmtType::Stmt_Expr: {
+        return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
+    } break;
+    case StmtType::If: {
+        return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
+    } break;
+    case StmtType::Return: {
+        return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
+    } break;
+    case StmtType::Break: {
+        return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
+    } break;
+    case StmtType::While: {
+        return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
+    } break;
+    case StmtType::For: {
+        return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
+    } break;
+    case StmtType::Import: {
+        return eval_stmt_import(dynamic_cast<StmtImport *>(stmt), ctx);
+    } break;
+    case StmtType::Mod: {
+        return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
+    } break;
+    case StmtType::Class: {
+        return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
+    } break;
+    case StmtType::Match: {
+        return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
+    } break;
+    default:
+        assert(false && "unreachable");
+    }
+
+    assert(false && "unreachable");
 }
 
 std::shared_ptr<Ctx> Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
