@@ -67,8 +67,6 @@ namespace earl {
             List,
             /** EARL module type. Used for member access of a module. */
             Module,
-            /** EARL class type */
-            Class,
             /** EARL file type */
             File,
             /** EARL option type */
@@ -328,46 +326,6 @@ namespace earl {
             std::shared_ptr<Ctx> m_value;
         };
 
-        struct Class : public Obj {
-            Class(StmtClass *stmtclass, Ctx *owner);
-
-            const std::string &id(void) const;
-
-            void add_method(std::unique_ptr<function::Obj> func);
-            void add_member(std::unique_ptr<variable::Obj> var);
-            void add_member_assignee(Token *assignee);
-
-            std::shared_ptr<function::Obj> get_method(const std::string &id);
-            std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);
-
-            [[deprecated]]
-            void add_member_assignees(std::vector<Token *> &assignees);
-
-            /// @brief Fill the `m_members` with what was provided in
-            /// `assignees` or if they are default.
-            /// @param ctx The context of the runtime environment
-            void constructor(Ctx &ctx);
-
-            /*** OVERRIDES ***/
-            Type type(void) const                                              override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
-            bool boolean(void)                                                 override;
-            void mutate(std::shared_ptr<Obj> &other)                           override;
-            std::shared_ptr<Obj> copy(void)                                    override;
-            bool eq(std::shared_ptr<Obj> &other)                               override;
-            std::string to_cxxstring(void)                                     override;
-
-            StmtClass *m_stmtclass;
-            std::vector<std::unique_ptr<variable::Obj>> m_members;
-            std::vector<std::unique_ptr<function::Obj>> m_methods;
-
-            std::vector<Token *> m_member_assignees;
-
-            std::vector<Ctx *> m_ctxs;
-
-            Ctx *m_owner;
-        };
-
         struct File : public Obj {
             File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
 
@@ -559,6 +517,13 @@ namespace earl {
         private:
             StmtDef *m_stmtdef;
             std::vector<std::pair<Token *, uint32_t>> m_params;
+        };
+    };
+
+    namespace Class {
+        struct Obj {
+            Obj() = default;
+            // TODO
         };
     };
 };

@@ -59,7 +59,7 @@ earl::value::Obj *eval_user_defined_function(earl::function::Obj *func, std::vec
     UNIMPLEMENTED("eval_user_defined_function");
 }
 
-earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, std::vector<earl::value::Obj *> &params, earl::Class::Obj *klass, Ctx &ctx, bool _this = false) {
     (void)method;
     (void)params;
     (void)klass;
@@ -68,7 +68,7 @@ earl::value::Obj *eval_user_defined_class_method(earl::function::Obj *method, st
     UNIMPLEMENTED("eval_user_defined_class_method");
 }
 
-earl::value::Obj *get_class_member(std::string &id, earl::value::Class *klass, Ctx &ctx, bool _this = false) {
+earl::value::Obj *get_class_member(std::string &id, earl::Class::Obj *klass, Ctx &ctx, bool _this = false) {
     (void)id;
     (void)klass;
     (void)ctx;
@@ -82,7 +82,7 @@ earl::value::Obj *eval_stmt_let(StmtLet *stmt, Ctx &ctx) {
     UNIMPLEMENTED("eval_stmt_let");
 }
 
-void load_class_members(StmtLet *stmt, earl::value::Class *klass, Ctx &ctx) {
+void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, Ctx &ctx) {
     (void)stmt;
     (void)klass;
     (void)ctx;

@@ -45,13 +45,35 @@ struct Ctx {
     size_t stmts_len(void) const;
     Stmt *get_stmt_at(size_t i);
 
+    /*** Retrieval ***/
+    Lexer *lexer(void);
+    Program *program(void);
+    std::string &module_();
+
+    /*** Variables ***/
+    bool var_exists(const std::string &id) const;
+    std::shared_ptr<earl::variable::Obj> &var_get(const std::string &id, bool crash_on_failure = false);
+    void var_add(std::shared_ptr<earl::variable::Obj> var);
+
+    /*** Functions ***/
+    bool func_exists(const std::string &id) const;
+    std::shared_ptr<earl::function::Obj> &func_get(const std::string &id, bool crash_on_failure = false);
+    void func_add(std::shared_ptr<earl::function::Obj> func);
+
+    /*** Classes ***/
+    
+
 private:
     std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;
     std::string              m_module;
 
-    SharedScope<std::string, earl::variable::Obj> m_global_scope;
-    SharedScope<std::string, earl::function::Obj> m_global_functions;
+    SharedScope<std::string, earl::variable::Obj> m_variables;
+    SharedScope<std::string, earl::function::Obj> m_functions;
+    SharedScope<std::string, earl::Class::Obj> m_classes;
+    std::vector<std::shared_ptr<Ctx>> m_children;
+
+    std::vector<std::shared_ptr<earl::value::Obj>> m_tmp_holding;
 };
 
 #endif // CTX_H
