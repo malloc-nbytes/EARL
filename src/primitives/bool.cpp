@@ -41,7 +41,7 @@ Type Bool::type(void) const {
     return Type::Bool;
 }
 
-std::shared_ptr<Obj> Bool::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Bool::binop");
@@ -51,7 +51,7 @@ bool Bool::boolean(void) {
     return m_value;
 }
 
-void Bool::mutate(Obj *other) {
+void Bool::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Bool::mutate");
 }
@@ -60,10 +60,9 @@ std::shared_ptr<Obj> Bool::copy(void) {
     UNIMPLEMENTED("Bool::copy");
 }
 
-bool Bool::eq(Obj *other) {
-    if (other->type() != Type::Bool)
-        return false;
-    return this->value() == dynamic_cast<Bool *>(other)->value();
+bool Bool::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Bool::eq");
 }
 
 std::string Bool::to_cxxstring(void) {

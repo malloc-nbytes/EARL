@@ -123,7 +123,7 @@ Type File::type(void) const {
     return Type::File;
 }
 
-std::shared_ptr<Obj> File::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> File::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("File::binop");
@@ -133,7 +133,7 @@ bool File::boolean(void) {
     UNIMPLEMENTED("File::boolean");
 }
 
-void File::mutate(Obj *other) {
+void File::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("File::mutate");
 }
@@ -142,7 +142,7 @@ std::shared_ptr<Obj> File::copy(void) {
     UNIMPLEMENTED("File::copy");
 }
 
-bool File::eq(Obj *other) {
+bool File::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("File::eq");
 }

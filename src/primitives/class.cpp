@@ -57,10 +57,12 @@ void Class::add_member(std::unique_ptr<variable::Obj> var) {
 }
 
 std::shared_ptr<earl::function::Obj> Class::get_method(const std::string &id) {
+    (void)id;
     UNIMPLEMENTED("Class::get_method");
 }
 
 std::shared_ptr<earl::variable::Obj> Class::get_member(const std::string &id) {
+    (void)id;
     UNIMPLEMENTED("Class::get_member");
 }
 
@@ -68,7 +70,7 @@ Type Class::type(void) const {
     return Type::Class;
 }
 
-std::shared_ptr<Obj> Class::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Class::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Class::binop");
@@ -78,7 +80,7 @@ bool Class::boolean(void) {
     UNIMPLEMENTED("Class::boolean");
 }
 
-void Class::mutate(Obj *other) {
+void Class::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Class::mutate");
 }
@@ -87,7 +89,7 @@ std::shared_ptr<Obj> Class::copy(void) {
     UNIMPLEMENTED("Class::copy");
 }
 
-bool Class::eq(Obj *other) {
+bool Class::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Class::eq");
 }

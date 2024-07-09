@@ -62,7 +62,7 @@ Type Closure::type(void) const {
     return Type::Closure;
 }
 
-std::shared_ptr<Obj> Closure::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Closure::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Closure::binop");
@@ -72,7 +72,7 @@ bool Closure::boolean(void) {
     UNIMPLEMENTED("Closure::boolean");
 }
 
-void Closure::mutate(Obj *other) {
+void Closure::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Closure::mutate");
 }
@@ -81,7 +81,7 @@ std::shared_ptr<Obj> Closure::copy(void) {
     UNIMPLEMENTED("Closure::copy");
 }
 
-bool Closure::eq(Obj *other) {
+bool Closure::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Closure::eq");
     return true;

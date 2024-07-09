@@ -45,7 +45,7 @@ Type Int::type(void) const {
     return Type::Int;
 }
 
-std::shared_ptr<Obj> Int::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Int::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Int::binop");
@@ -55,29 +55,18 @@ bool Int::boolean(void) {
     return this->value();
 }
 
-void Int::mutate(Obj *other) {
-    if (!type_is_compatable(this, other)) {
-        assert(false && "cannot mutate (fix this message)");
-    }
-
-    switch (other->type()) {
-    case Type::Int: {
-        this->fill(dynamic_cast<Int *>(other)->value());
-    } break;
-    default: {
-        assert(false && "unreachable");
-    }
-    }
+void Int::mutate(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Int::mutate");
 }
 
 std::shared_ptr<Obj> Int::copy(void) {
     UNIMPLEMENTED("Int::copy");
 }
 
-bool Int::eq(Obj *other) {
-    if (other->type() != Type::Int)
-        return false;
-    return this->value() == dynamic_cast<Int *>(other)->value();
+bool Int::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Int::eq");
 }
 
 std::string Int::to_cxxstring(void) {

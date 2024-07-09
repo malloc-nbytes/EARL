@@ -100,7 +100,7 @@ Type Str::type(void) const {
     return Type::Str;
 }
 
-std::shared_ptr<Obj> Str::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Str::binop");
@@ -114,7 +114,7 @@ std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
     UNIMPLEMENTED("Str::value_raw");
 }
 
-void Str::mutate(Obj *other) {
+void Str::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Str::mutate");
 }
@@ -123,10 +123,9 @@ std::shared_ptr<Obj> Str::copy(void) {
     UNIMPLEMENTED("Str::copy");
 }
 
-bool Str::eq(Obj *other) {
-    if (other->type() != Type::Str)
-        return false;
-    return this->value() == dynamic_cast<Str *>(other)->value();
+bool Str::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Str::eq");
 }
 
 std::string Str::to_cxxstring(void) {

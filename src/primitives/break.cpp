@@ -35,7 +35,7 @@ Type Break::type(void) const {
     return Type::Break;
 }
 
-std::shared_ptr<Obj> Break::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Break::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Break::binop");
@@ -45,7 +45,7 @@ bool Break::boolean(void) {
     UNIMPLEMENTED("Break::boolean");
 }
 
-void Break::mutate(Obj *other) {
+void Break::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Break::mutate");
 }
@@ -54,7 +54,7 @@ std::shared_ptr<Obj> Break::copy(void) {
     UNIMPLEMENTED("Break::copy");
 }
 
-bool Break::eq(Obj *other) {
+bool Break::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Break::eq");
 }

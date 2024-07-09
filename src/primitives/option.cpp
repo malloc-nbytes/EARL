@@ -55,7 +55,7 @@ Type Option::type(void) const {
     return Type::Option;
 }
 
-std::shared_ptr<Obj> Option::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Option::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Option::binop");
@@ -65,27 +65,16 @@ bool Option::boolean(void) {
     UNIMPLEMENTED("Option::boolean");
 }
 
-void Option::mutate(Obj *other) {
-    if (other->type() != Type::Option) {
-        ERR(Err::Type::Fatal, "tried to assign a raw value to an option type");
-    }
-
-    auto *other2 = dynamic_cast<Option *>(other);
-
-    if (other2->is_none()) {
-        m_value = nullptr;
-    }
-    else {
-        m_value = other2->value();
-    }
-
+void Option::mutate(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Option::mutate");
 }
 
 std::shared_ptr<Obj> Option::copy(void) {
     UNIMPLEMENTED("Option::copy");
 }
 
-bool Option::eq(Obj *other) {
+bool Option::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Option::eq");
 }

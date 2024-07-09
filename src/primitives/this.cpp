@@ -37,7 +37,7 @@ Type This::type(void) const {
     return Type::This;
 }
 
-std::shared_ptr<Obj> This::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> This::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("This::binop");
@@ -47,7 +47,7 @@ bool This::boolean(void) {
     UNIMPLEMENTED("This::boolean");
 }
 
-void This::mutate(Obj *other) {
+void This::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("This::mutate");
 }
@@ -56,7 +56,7 @@ std::shared_ptr<Obj> This::copy(void) {
     UNIMPLEMENTED("This::copy");
 }
 
-bool This::eq(Obj *other) {
+bool This::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("This::eq");
 }

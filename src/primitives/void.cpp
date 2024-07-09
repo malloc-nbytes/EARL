@@ -36,7 +36,7 @@ Type Void::type(void) const {
     return Type::Void;
 }
 
-std::shared_ptr<Obj> Void::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Void::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Void::binop");
@@ -46,7 +46,7 @@ bool Void::boolean(void) {
     return false;
 }
 
-void Void::mutate(Obj *other) {
+void Void::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Void::mutate");
 }
@@ -55,7 +55,7 @@ std::shared_ptr<Obj> Void::copy(void) {
     UNIMPLEMENTED("Void::copy");
 }
 
-bool Void::eq(Obj *other) {
+bool Void::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Void::eq");
 }

@@ -48,7 +48,7 @@ Type Char::type(void) const {
     return Type::Char;
 }
 
-std::shared_ptr<Obj> Char::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Char::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)other;
     (void)op;
     UNIMPLEMENTED("Char::binop");
@@ -58,20 +58,18 @@ bool Char::boolean(void) {
     UNIMPLEMENTED("Char::boolean");
 }
 
-void Char::mutate(Obj *other) {
-    assert(other->type() == Type::Char);
-    Char *c = dynamic_cast<Char *>(other);
-    m_value = c->value();
+void Char::mutate(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Char::mutate");
 }
 
 std::shared_ptr<Obj> Char::copy(void) {
     UNIMPLEMENTED("Char::copy");
 }
 
-bool Char::eq(Obj *other) {
-    if (other->type() != Type::Char)
-        return false;
-    return this->value() == dynamic_cast<Char *>(other)->value();
+bool Char::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Char::eq");
 }
 
 std::string Char::to_cxxstring(void) {

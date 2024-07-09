@@ -41,7 +41,7 @@ Type Module::type(void) const {
     return Type::Module;
 }
 
-std::shared_ptr<Obj> Module::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj> Module::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Module::binop");
@@ -51,7 +51,7 @@ bool Module::boolean(void) {
     UNIMPLEMENTED("Module::boolean");
 }
 
-void Module::mutate(Obj *other) {
+void Module::mutate(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Module::mutate");
 }
@@ -60,7 +60,7 @@ std::shared_ptr<Obj> Module::copy(void) {
     UNIMPLEMENTED("Module::copy");
 }
 
-bool Module::eq(Obj *other) {
+bool Module::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Module::eq");
 }
