@@ -136,10 +136,13 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
 std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
-        assert(false);
+        auto ident = dynamic_cast<ExprIdent *>(expr);
+        const std::string &id = ident->m_tok->lexeme();
+        std::shared_ptr<earl::variable::Obj> var = ctx->var_get(id, /*crash_on_failure =*/true);
+        return var->value();
     } break;
     case ExprTermType::Int_Literal: {
-        assert(false);
+        return std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
     } break;
     case ExprTermType::Str_Literal: {
         assert(false);

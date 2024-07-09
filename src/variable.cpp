@@ -36,7 +36,7 @@ const std::string &Obj::id(void) const {
 }
 
 std::shared_ptr<earl::value::Obj> Obj::value(void) const {
-    UNIMPLEMENTED("Obj::value");
+    return m_value;
 }
 
 bool Obj::is_ref(void) const {

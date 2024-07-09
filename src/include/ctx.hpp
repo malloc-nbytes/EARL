@@ -51,7 +51,7 @@ struct Ctx {
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
-    std::shared_ptr<earl::variable::Obj> &var_get(const std::string &id, bool crash_on_failure = true);
+    std::shared_ptr<earl::variable::Obj> var_get(const std::string &id, bool crash_on_failure = true);
     void var_add(std::shared_ptr<earl::variable::Obj> var);
 
     /*** Functions ***/

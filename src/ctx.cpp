@@ -51,12 +51,17 @@ bool Ctx::var_exists(const std::string &id) const {
     return m_variables.contains(id);
 }
 
-std::shared_ptr<earl::variable::Obj> &Ctx::var_get(const std::string &id, bool crash_on_failure) {
-    UNIMPLEMENTED("Ctx::var_get");
+std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
+    std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
+    if (!var && crash_on_failure) {
+        ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not in scope", id.c_str());
+    }
+    return var;
 }
 
 void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
-    UNIMPLEMENTED("Ctx::var_add");
+    const std::string &id = var->id();
+    m_variables.add(id, std::move(var));
 }
 
 
