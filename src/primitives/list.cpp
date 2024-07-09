@@ -39,7 +39,7 @@ void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
     UNIMPLEMENTED("List::fill");
 }
 
-std::vector<std::shared_ptr<Obj>> List::value(void) {
+std::vector<std::shared_ptr<Obj>> &List::value(void) {
     UNIMPLEMENTED("List::value");
 }
 

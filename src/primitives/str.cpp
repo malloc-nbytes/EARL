@@ -81,17 +81,13 @@ std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
     UNIMPLEMENTED("Str::split");
 }
 
-std::shared_ptr<Str> Str::remove_lines(void) {
-    UNIMPLEMENTED("Str::remove_lines");
-}
-
 std::shared_ptr<Str> Str::substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2) {
     (void)idx1;
     (void)idx2;
     UNIMPLEMENTED("Str::substr");
 }
 
-std::shared_ptr<Obj> Str::pop(std::shared_ptr<Obj> &idx) {
+void Str::pop(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("Str::pop");
 }

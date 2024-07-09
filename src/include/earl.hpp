@@ -247,7 +247,7 @@ namespace earl {
             void fill(std::vector<std::shared_ptr<Obj>> &value);
 
             /// @brief Get the underlying list value
-            std::vector<std::shared_ptr<Obj>> value(void);
+            std::vector<std::shared_ptr<Obj>> &value(void);
 
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
@@ -293,9 +293,8 @@ namespace earl {
             std::vector<std::shared_ptr<Char>> &value_raw(void);
             std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
-            std::shared_ptr<Str> remove_lines(void);
             std::shared_ptr<Str> substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2);
-            std::shared_ptr<Obj> pop(std::shared_ptr<Obj> &idx);
+            void pop(std::shared_ptr<Obj> &idx);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -311,10 +310,10 @@ namespace earl {
         };
 
         struct Module : public Obj {
-            Module(Ctx *ctx);
+            Module(std::shared_ptr<Ctx> ctx);
 
             /// @brief Get the module context
-            std::shared_ptr<Ctx> value(void);
+            std::shared_ptr<Ctx> &value(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -326,7 +325,7 @@ namespace earl {
             std::string to_cxxstring(void)                                     override;
 
         private:
-            Ctx *m_value;
+            std::shared_ptr<Ctx> m_value;
         };
 
         struct Class : public Obj {
@@ -378,8 +377,8 @@ namespace earl {
             void dump(void);
             void close(void);
             std::shared_ptr<Str> read(void);
-            void write(Obj *value);
-            void writelines(List *value);
+            void write(std::shared_ptr<Obj> &value);
+            void writelines(std::shared_ptr<List> &value);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -400,10 +399,10 @@ namespace earl {
         struct Option : public Obj {
             Option(std::shared_ptr<Obj> value = nullptr);
 
-            std::shared_ptr<Obj> value(void);
+            std::shared_ptr<Obj> &value(void);
             bool is_some(void) const;
             bool is_none(void) const;
-            void set_value(Obj *other);
+            void set_value(std::shared_ptr<Obj> other);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

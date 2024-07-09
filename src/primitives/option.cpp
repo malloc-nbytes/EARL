@@ -33,7 +33,7 @@ using namespace earl::value;
 
 Option::Option(std::shared_ptr<Obj> value) : m_value(value) {}
 
-std::shared_ptr<Obj> Option::value(void) {
+std::shared_ptr<Obj> &Option::value(void) {
     UNIMPLEMENTED("Option::value");
 }
 
@@ -45,7 +45,7 @@ bool Option::is_none(void) const {
     return m_value == nullptr;
 }
 
-void Option::set_value(Obj *other) {
+void Option::set_value(std::shared_ptr<Obj> other) {
     (void)other;
     UNIMPLEMENTED("Option::set_value");
 }

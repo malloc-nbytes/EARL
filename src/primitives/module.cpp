@@ -31,9 +31,9 @@
 
 using namespace earl::value;
 
-Module::Module(Ctx *ctx) : m_value(ctx) {}
+Module::Module(std::shared_ptr<Ctx> ctx) : m_value(ctx) {}
 
-std::shared_ptr<Ctx> Module::value(void) {
+std::shared_ptr<Ctx> &Module::value(void) {
     UNIMPLEMENTED("Module::value");
 }
 
