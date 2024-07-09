@@ -164,8 +164,10 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             left = new ExprIdent(lexer.next());
         } break;
         case TokenType::Lparen: {
+            lexer.discard();
             std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
             if (left) {
+                (void)Parser::parse_expect(lexer, TokenType::Rparen);
                 left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(tuple));
             }
             else {

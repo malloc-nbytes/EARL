@@ -2,6 +2,10 @@ mod Main
 
 let x = 1;
 let y = x;
+
+println(x);
+println(y);
+
 # let y = x+1;
 # let z = x * y + 9;
 
