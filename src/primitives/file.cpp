@@ -102,20 +102,8 @@ void File::write(Obj *value) {
 }
 
 void File::writelines(List *value) {
-    if (!m_open) {
-        ERR(Err::Type::Fatal, "file is not open");
-    }
-
-    if (m_mode->value() == "r") {
-        ERR(Err::Type::Fatal, "file is not open for writing");
-    }
-
-    for (size_t i = 0; i < value->value().size(); ++i) {
-        this->write(value->value().at(i));
-        auto *newline = new Char("\n");
-        this->write(newline);
-        delete newline;
-    }
+    (void)value;
+    UNIMPLEMENTED("File::writelines");
 }
 
 /*** OVERRIDES ***/

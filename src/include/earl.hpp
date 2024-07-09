@@ -109,7 +109,7 @@ namespace earl {
             /// @brief Copy THIS instance
             virtual std::shared_ptr<Obj> copy(void) = 0;
 
-            /// @brief Check the equality of two objects, not their values.
+            /// @brief Check the equality of two objects, not just by their values.
             /// @param other The object to compare
             /// @return true on equal, false otherwise
             virtual bool eq(std::shared_ptr<Obj> &other) = 0;
@@ -120,7 +120,7 @@ namespace earl {
         };
 
         struct This : public Obj {
-            This();
+            This() = default;
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -212,6 +212,30 @@ namespace earl {
             void *m_value;
         };
 
+        struct Closure : public Obj {
+            Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params);
+
+            StmtBlock *block(void);
+            void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
+            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
+            bool has_local(const std::string &id);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(std::shared_ptr<Obj> &other)                           override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+
+            std::vector<Scope<std::string, variable::Obj *>> m_local;
+
+        private:
+            ExprClosure *m_expr_closure;
+            std::vector<std::pair<Token *, uint32_t>> m_params;
+        };
+
         /// @brief The structure that represents EARL lists.
         /// They can hold any value in any mix of them i.e.,
         /// list = [int, str, str, int, list[int, str]]
@@ -220,31 +244,31 @@ namespace earl {
 
             /// @brief Fill the underlying data with some data
             /// @param value The value to use to fill
-            void fill(std::vector<Obj *> value);
+            void fill(std::vector<std::shared_ptr<Obj>> &value);
 
             /// @brief Get the underlying list value
-            std::vector<Obj *> &value(void);
+            std::vector<std::shared_ptr<Obj>> value(void);
 
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
             /// @param idx The object that contains the index
             /// @note `idx` MUST BE an integer value
-            std::shared_ptr<Obj> nth(Obj *idx);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
 
             /// @brief Reverse a list
             std::shared_ptr<Obj> rev(void);
 
             /// @brief Append a list of values to a list
             /// @param values The values to append
-            std::shared_ptr<Obj> append(std::vector<Obj *> &values);
+            void append(std::vector<std::shared_ptr<Obj>> &values);
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
-            std::shared_ptr<Obj> pop(Obj *idx);
+            void pop(std::shared_ptr<Obj> &idx);
 
-            std::shared_ptr<Obj> filter(Obj *closure, Ctx &ctx);
+            std::shared_ptr<List> filter(std::shared_ptr<Closure> &closure, Ctx &ctx);
 
-            void foreach(Obj *closure, Ctx &ctx);
+            void foreach(std::shared_ptr<Closure> &closure, Ctx &ctx);
 
             std::shared_ptr<Obj> back(void);
 
@@ -392,30 +416,6 @@ namespace earl {
 
         private:
             std::shared_ptr<Obj> m_value;
-        };
-
-        struct Closure : public Obj {
-            Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params);
-
-            StmtBlock *block(void);
-            void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
-            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
-            bool has_local(const std::string &id);
-
-            /*** OVERRIDES ***/
-            Type type(void) const                                              override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
-            bool boolean(void)                                                 override;
-            void mutate(std::shared_ptr<Obj> &other)                           override;
-            std::shared_ptr<Obj> copy(void)                                    override;
-            bool eq(std::shared_ptr<Obj> &other)                               override;
-            std::string to_cxxstring(void)                                     override;
-
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
-
-        private:
-            ExprClosure *m_expr_closure;
-            std::vector<std::pair<Token *, uint32_t>> m_params;
         };
 
         struct Break : public Obj {

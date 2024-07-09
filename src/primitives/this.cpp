@@ -31,8 +31,6 @@
 
 using namespace earl::value;
 
-This::This() {}
-
 Type This::type(void) const {
     return Type::This;
 }

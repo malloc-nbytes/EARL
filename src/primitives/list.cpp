@@ -34,19 +34,20 @@ using namespace earl::value;
 
 List::List(std::vector<Obj *> value) : m_value(std::move(value)) {}
 
-void List::fill(std::vector<Obj *> value) {
-    m_value = std::move(value);
+void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
+    (void)value;
+    UNIMPLEMENTED("List::fill");
 }
 
-std::vector<Obj *> &List::value(void) {
-    return m_value;
+std::vector<std::shared_ptr<Obj>> List::value(void) {
+    UNIMPLEMENTED("List::value");
 }
 
 Type List::type(void) const {
     return Type::List;
 }
 
-std::shared_ptr<Obj> List::nth(Obj *idx) {
+std::shared_ptr<Obj> List::nth(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("List::nth");
 }
@@ -55,23 +56,23 @@ std::shared_ptr<Obj> List::rev(void) {
     UNIMPLEMENTED("List::rev");
 }
 
-std::shared_ptr<Obj> List::pop(Obj *idx) {
+void List::pop(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("List::pop");
 }
 
-std::shared_ptr<Obj> List::append(std::vector<Obj *> &values) {
+void List::append(std::vector<std::shared_ptr<Obj>> &values) {
     (void)values;
     UNIMPLEMENTED("List::append");
 }
 
-std::shared_ptr<Obj> List::filter(Obj *closure, Ctx &ctx) {
+std::shared_ptr<List> List::filter(std::shared_ptr<Closure> &closure, Ctx &ctx) {
     (void)closure;
     (void)ctx;
     UNIMPLEMENTED("List::filter");
 }
 
-void List::foreach(Obj *closure, Ctx &ctx) {
+void List::foreach(std::shared_ptr<Closure> &closure, Ctx &ctx) {
     (void)closure;
     (void)ctx;
     UNIMPLEMENTED("List::foreach");
