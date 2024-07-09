@@ -38,13 +38,7 @@ Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m
 // TODO: free memory from the local variables
 // in the local scope.
 void Obj::clear_locals(void) {
-    // if (this->context_size() == 1) {
-    //     m_local.clear();
-    //     m_local.emplace_back();
-    // }
-    // else {
-    m_local.back().clear();
-    // }
+    UNIMPLEMENTED("Obj::clear_locals");
 }
 
 const std::string &Obj::id(void) const {
@@ -84,24 +78,13 @@ void earl::function::Obj::drop_scope_context(void) {
 }
 
 earl::variable::Obj *Obj::get_local(const std::string &id) {
-    auto **var = m_local.back().get(id);
-
-    if (!var) {
-        ERR_WARGS(Err::Type::Fatal, "variable `%s` is not in local scope", id.c_str());
-    }
-
-    return *var;
+    (void)id;
+    UNIMPLEMENTED("Obj::get_local");
 }
 
 void Obj::add_local(variable::Obj *var) {
-    if (has_local(var->id())) {
-        ERR_WARGS(Err::Type::Fatal,
-                  "variable `%s` already exists in function `%s`",
-                  var->id().c_str(),
-                  m_stmtdef->m_id->lexeme().c_str());
-    }
-
-    m_local.back().add(var->id(), var);
+    (void)var;
+    UNIMPLEMENTED("Obj::add_local");
 }
 
 void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
@@ -120,12 +103,7 @@ bool Obj::is_pub(void) const {
 }
 
 void Obj::debug_dump(void) const {
-    int i = 1;
-    for (auto const &v : m_local) {
-        std::cout << "context level: " << i << std::endl;
-        std::cout << "  ";
-        v.debug_dump();
-    }
+    UNIMPLEMENTED("Obj::debug_dump");
 }
 
 Obj *Obj::copy(void) {

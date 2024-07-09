@@ -30,7 +30,7 @@
 #include <vector>
 #include <fstream>
 
-#include "scope.hpp"
+#include "shared-scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
 
@@ -229,7 +229,7 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
 
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
+            std::vector<SharedScope<std::string, variable::Obj>> m_local;
 
         private:
             ExprClosure *m_expr_closure;
@@ -291,11 +291,11 @@ namespace earl {
 
             std::string value(void); // NOTE: needs optimization
             std::vector<std::shared_ptr<Char>> &value_raw(void);
-            std::shared_ptr<Char> nth(Obj *idx);
-            std::shared_ptr<List> split(Obj *delim);
+            std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
             std::shared_ptr<Str> remove_lines(void);
-            std::shared_ptr<Str> substr(Int *idx1, Int *idx2);
-            std::shared_ptr<Obj> pop(Obj *idx);
+            std::shared_ptr<Str> substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2);
+            std::shared_ptr<Obj> pop(std::shared_ptr<Obj> &idx);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -553,7 +553,7 @@ namespace earl {
 
             /// @note This local scope needs to be public for the context to see
             /// for a QAD solution.
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
+            std::vector<SharedScope<std::string, variable::Obj>> m_local;
 
             Obj *copy(void);
 

@@ -71,12 +71,12 @@ std::string Str::value(void) {
     return value;
 }
 
-std::shared_ptr<Char> Str::nth(Obj *idx) {
+std::shared_ptr<Char> Str::nth(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("Str::nth");
 }
 
-std::shared_ptr<List> Str::split(Obj *delim) {
+std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
     (void)delim;
     UNIMPLEMENTED("Str::split");
 }
@@ -85,13 +85,13 @@ std::shared_ptr<Str> Str::remove_lines(void) {
     UNIMPLEMENTED("Str::remove_lines");
 }
 
-std::shared_ptr<Str> Str::substr(Int *idx1, Int *idx2) {
+std::shared_ptr<Str> Str::substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2) {
     (void)idx1;
     (void)idx2;
     UNIMPLEMENTED("Str::substr");
 }
 
-std::shared_ptr<Obj> Str::pop(Obj *idx) {
+std::shared_ptr<Obj> Str::pop(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("Str::pop");
 }
