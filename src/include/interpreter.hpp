@@ -25,15 +25,17 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 
+#include <memory>
+
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
-    Ctx *interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
-    earl::value::Obj *eval_expr(Expr *expr, Ctx &ctx, bool *result_type = nullptr);
-    earl::value::Obj *eval_stmt_block(StmtBlock *block, Ctx &ctx);
+    std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
+    std::shared_ptr<earl::value::Obj> eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTERPRETER_H

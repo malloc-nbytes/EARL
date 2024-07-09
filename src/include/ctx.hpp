@@ -41,11 +41,9 @@ struct Ctx {
     Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
     ~Ctx() = default;
 
-    /*** Statement methods ***/
+    /*** Ctx ***/
     size_t stmts_len(void) const;
     Stmt *get_stmt_at(size_t i);
-
-    /*** Retrieval ***/
     Lexer *lexer(void);
     Program *program(void);
     std::string &module_();
@@ -61,7 +59,13 @@ struct Ctx {
     void func_add(std::shared_ptr<earl::function::Obj> func);
 
     /*** Classes ***/
-    
+    bool class_exists(const std::string &id) const;
+    std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = false);
+    void class_add(std::shared_ptr<earl::Class::Obj> klass);
+
+    // Check if the actual statement exists
+    bool class_is_defined(const std::string &id) const;
+    StmtClass *class_stmt(const std::string &id);
 
 private:
     std::unique_ptr<Lexer>   m_lexer;
@@ -70,10 +74,13 @@ private:
 
     SharedScope<std::string, earl::variable::Obj> m_variables;
     SharedScope<std::string, earl::function::Obj> m_functions;
-    SharedScope<std::string, earl::Class::Obj> m_classes;
+    SharedScope<std::string, earl::Class::Obj>    m_classes;
+
     std::vector<std::shared_ptr<Ctx>> m_children;
 
-    std::vector<std::shared_ptr<earl::value::Obj>> m_tmp_holding;
+    std::unordered_map<std::string, StmtClass *> defined_classes;
+
+    std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
 };
 
 #endif // CTX_H
