@@ -134,9 +134,49 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_expr_term");
+    switch (expr->get_term_type()) {
+    case ExprTermType::Ident: {
+        assert(false);
+    } break;
+    case ExprTermType::Int_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Str_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Char_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Func_Call: {
+        assert(false);
+    } break;
+    case ExprTermType::List_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Get: {
+        assert(false);
+    } break;
+    case ExprTermType::Array_Access: {
+        assert(false);
+    } break;
+    case ExprTermType::Bool: {
+        assert(false);
+    } break;
+    case ExprTermType::None: {
+        assert(false);
+    } break;
+    case ExprTermType::Closure: {
+        assert(false);
+    } break;
+    case ExprTermType::Tuple: {
+        assert(false);
+    } break;
+    default:
+        assert(false && "unreachable");
+    }
+
+    assert(false && "unreachable");
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
@@ -146,9 +186,16 @@ std::shared_ptr<earl::value::Obj> eval_expr_bin(ExprBinary *expr, std::shared_pt
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_expr");
+    switch (expr->get_type()) {
+    case ExprType::Term: {
+        return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+    } break;
+    case ExprType::Binary: {
+        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
+    } break;
+    default:
+        assert(false && "unreachable");
+    }
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
