@@ -52,30 +52,14 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_unwrap(std::share
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`is_none` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::Option) {
-        ERR(Err::Type::Fatal, "`is_none` member intrinsic is only defined for `option` types");
-    }
-
-    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_none());
+    (void)obj;
+    (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_is_none");
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`is_some` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::Option) {
-        ERR(Err::Type::Fatal, "`is_some` member intrinsic is only defined for `option` types");
-    }
-
-    return new earl::value::Bool(dynamic_cast<earl::value::Option *>(obj)->is_some());
+    (void)obj;
+    (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_is_some");
 }

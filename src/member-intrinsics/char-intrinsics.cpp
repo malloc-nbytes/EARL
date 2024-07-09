@@ -36,5 +36,6 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_ascii(std::shared
     (void)ctx;
     (void)obj;
     (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_ascii");
 }
 

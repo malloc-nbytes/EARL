@@ -78,7 +78,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"is_some", &Intrinsics::intrinsic_member_is_some},
 };
 
-earl::value::Obj *Intrinsics::call(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::call(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)expr;
     (void)params;
     (void)ctx;
@@ -93,60 +93,46 @@ bool Intrinsics::is_member_intrinsic(const std::string &id) {
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
-earl::value::Obj *Intrinsics::call_member(const std::string &id, earl::value::Obj *accessor, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
 }
 
-earl::value::Obj *Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
-
-    if (params.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`argv` intrinsic expects 0 arguments but %zu were supplied",
-                  params.size());
-    }
-
-    std::vector<earl::value::Obj *> args;
-    for (size_t i = 0; i < earl_argv.size(); ++i) {
-        args.push_back(new earl::value::Str(earl_argv.at(i)));
-    }
-    return new earl::value::List(std::move(args));
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_argv");
 }
 
-earl::value::Obj *Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic___internal_move__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
     (void)params;
     UNIMPLEMENTED("Intrinsics::intrinsic___internal_move__");
 }
 
-earl::value::Obj *Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)expr;
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
 }
 
-earl::value::Obj *Intrinsics::intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)expr;
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic___internal_ls__");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_type(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)expr;
     (void)ctx;
-
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`type` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    return new earl::value::Str(earl::value::type_to_str(params[0]));
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_type");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     std::cout << "[EARL] UNIMPLEMENTED";
 
     if (params.size() != 0) {
@@ -159,22 +145,14 @@ earl::value::Obj *Intrinsics::intrinsic_unimplemented(ExprFuncCall *expr, std::v
     return nullptr; // unreachable
 }
 
-earl::value::Obj *Intrinsics::intrinsic_exit(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_exit(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
     (void)expr;
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`exit` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
-
-    if (params[0]->type() != earl::value::Type::Int) {
-        ERR(Err::Type::Fatal, "argument 1 in `exit` expects an `int` value");
-    }
-
-    exit(dynamic_cast<earl::value::Int *>(params[0])->value());
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_exit");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     std::cout << "[EARL] PANIC";
 
     if (params.size() != 0) {
@@ -187,7 +165,7 @@ earl::value::Obj *Intrinsics::intrinsic_panic(ExprFuncCall *expr, std::vector<ea
     return nullptr; // unreachable
 }
 
-earl::value::Obj *Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_assert(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
     (void)params;
     (void)expr;
@@ -200,26 +178,23 @@ static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
     UNIMPLEMENTED("__intrinsic_print");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
-    for (size_t i = 0; i < params.size(); ++i) {
-        __intrinsic_print(expr, params[i]);
-    }
-    return new earl::value::Void();
+    (void)expr;
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_print");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_println(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_println(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
     (void)ctx;
-    for (size_t i = 0; i < params.size(); ++i) {
-        __intrinsic_print(expr, params[i]);
-    }
-    std::cout << '\n';
-    return new earl::value::Void();
+    (void)expr;
+    (void)params;
+    UNIMPLEMENTED("Intrinsics::intrinsic_println");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_input(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    intrinsic_print(expr, params, ctx);
-    std::string in = "";
-    std::getline(std::cin, in);
-    return new earl::value::Str(in);
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_input(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
+    (void)expr;
+    (void)params;
+    (void)ctx;
+    UNIMPLEMENTED("Intrinsics::intrinsic_input");
 }
