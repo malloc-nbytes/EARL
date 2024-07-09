@@ -32,19 +32,9 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`ascii` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::Char) {
-        ERR(Err::Type::Fatal, "`ascii` member intrinsic is only defined for `char` types");
-    }
-
-    return
-        new earl::value::Int(static_cast<int>(dynamic_cast<earl::value::Char *>(obj)->value()));
+    (void)obj;
+    (void)unused;
 }
 
