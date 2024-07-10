@@ -1,12 +1,9 @@
 mod Main
 
+@world
 fn test() {
-    let x = 1;
-    println("in test()", ' ', x);
-    println("here");
+    println(x);
 }
 
+let x = 1;
 test();
-
-println(x);
-

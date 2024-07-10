@@ -38,8 +38,9 @@ Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
 std::shared_ptr<Ctx> Ctx::new_instance() {
     auto ctx = std::make_shared<Ctx>(nullptr, nullptr);
 
-    ctx->m_functions = this->m_functions.copy();
-    ctx->m_module = this->m_module;
+    ctx->m_functions = m_functions.copy();
+    ctx->set_module(m_module);
+    ctx->set_parent(this);
 
     return ctx;
 }
@@ -66,6 +67,10 @@ void Ctx::pop_scope(void) {
     m_variables.pop();
     m_functions.pop();
     m_classes.pop();
+}
+
+void Ctx::set_parent(Ctx *parent) {
+    m_parent = parent;
 }
 
 /*** Functions ***/

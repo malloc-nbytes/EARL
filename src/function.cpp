@@ -35,12 +35,6 @@ using namespace earl::function;
 
 Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {}
 
-// TODO: free memory from the local variables
-// in the local scope.
-void Obj::clear_locals(void) {
-    UNIMPLEMENTED("Obj::clear_locals");
-}
-
 const std::string &Obj::id(void) const {
     return m_stmtdef->m_id->lexeme();
 }
@@ -53,21 +47,12 @@ StmtBlock *Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
 
-earl::variable::Obj *Obj::get_local(const std::string &id) {
-    (void)id;
-    UNIMPLEMENTED("Obj::get_local");
-}
-
-void Obj::add_local(variable::Obj *var) {
-    (void)var;
-    UNIMPLEMENTED("Obj::add_local");
-}
-
 void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
     for (size_t i = 0; i < values.size(); i++) {
         auto value = values[i];
         Token *id = m_params.at(i).first;
 
+        // TODO: check for conflicts ONLY IF WORLD
         // if (ctx->var_exists(id->lexeme())) {
         //     Err::err_wtok(id);
         //     ERR_WARGS(Err::Type::Redeclared, "variable `%s` has already been declared", id->lexeme().c_str());
@@ -92,10 +77,6 @@ bool Obj::is_world(void) const {
 bool Obj::is_pub(void) const {
     assert(m_stmtdef);
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
-}
-
-void Obj::debug_dump(void) const {
-    UNIMPLEMENTED("Obj::debug_dump");
 }
 
 Obj *Obj::copy(void) {

@@ -135,11 +135,11 @@ Interpreter::ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         std::shared_ptr<earl::variable::Obj> var = ctx->var_get(id, /*crash_on_failure =*/false);
 
-        if (var) return Interpreter::ER(var->value(), Interpreter::ERT::Value);
+        if (var)
+            return Interpreter::ER(var->value(), Interpreter::ERT::Value);
 
-        if (Intrinsics::is_intrinsic(id)) {
+        if (Intrinsics::is_intrinsic(id))
             return Interpreter::ER(nullptr, Interpreter::ERT::IntrinsicFunction);
-        }
 
         // No variable found, move on...
         return Interpreter::ER(nullptr, Interpreter::ERT::None, id);
@@ -198,7 +198,7 @@ Interpreter::ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             assert(false && "unimplemented");
         }
 
-        abort();
+        assert(false && "unimplemented");
     } break;
     case ExprTermType::List_Literal: {
         assert(false);
@@ -300,9 +300,18 @@ std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<C
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_if");
+    auto expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    auto expr_value = expr_result.value;
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    if (expr_value->boolean()) {
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+    }
+    else if (stmt->m_else.has_value()) {
+        result = Interpreter::eval_stmt_block(stmt->m_else.value().get(), ctx);
+    }
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {

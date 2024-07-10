@@ -51,6 +51,7 @@ struct Ctx {
     void set_module(const std::string &id);
     void push_scope(void);
     void pop_scope(void);
+    void set_parent(Ctx *parent);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
@@ -79,17 +80,13 @@ struct Ctx {
 
     std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;
-    std::string              m_module;
 
 private:
     std::vector<std::shared_ptr<Ctx>> m_children;
-
     std::unordered_map<std::string, StmtClass *> defined_classes;
-
     std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
-
-    // std::vector<std::shared_ptr<earl::function::Obj>> m_func_stacktrace;
-    // std::vector<std::shared_ptr<Ctx>> m_ctx_stacktrace;
+    std::string m_module;
+    Ctx *m_parent;
 };
 
 #endif // CTX_H

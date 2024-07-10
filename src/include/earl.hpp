@@ -448,52 +448,12 @@ namespace earl {
             Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params);
             ~Obj() = default;
 
-            /// @brief Get the identifier of this function
             const std::string &id(void) const;
-
             size_t params_len(void) const;
-
-            /// @brief Get the Statement Definition of this function
             StmtBlock *block(void) const;
-
-            /// @brief Used to load this function's parameters
-            /// with the values that were passed to it
-            /// @param values The values to transfer
             void load_parameters(std::vector<std::shared_ptr<value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
-
-            /// @brief Check if a variable is in the local scope
-            /// @param id The identifier of the variable
-            bool has_local(const std::string &id);
-
-            /// @brief Add a variable to this function's local scope
-            /// @param var The the variable to add
-            void add_local(variable::Obj *var);
-
-            /// @brief Remove a variable from this function's local scope
-            /// @param id The identifier of the variable to remove
-            void remove_local(const std::string &id);
-
-            /// @brief Get a variable in this funcion's local scope
-            /// @note It is expected to call `has_local()` prior
-            /// to calling this function
-            /// @param id The identifier of the variable to get
-            variable::Obj *get_local(const std::string &id);
-
-            /// @brief Get this function's current context size
-            size_t context_size(void) const;
-
-            /// @brief Check if this function is a @world function.
-            /// See `src/include/common.hpp/FuncAttrs`
             bool is_world(void) const;
-
             bool is_pub(void) const;
-
-            /// @brief Remove all local variables in the function
-            void clear_locals(void);
-
-            /// @brief Print all local variables in the function
-            void debug_dump(void) const;
-
             Obj *copy(void);
 
         private:

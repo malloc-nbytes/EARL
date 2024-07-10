@@ -116,7 +116,8 @@ void Str::mutate(std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> Str::copy(void) {
-    UNIMPLEMENTED("Str::copy");
+    auto copy = std::make_shared<Str>(this->value());
+    return copy;
 }
 
 bool Str::eq(std::shared_ptr<Obj> &other) {
