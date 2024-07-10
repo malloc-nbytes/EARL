@@ -1,14 +1,7 @@
 mod Other
 
-let answer = none;
-
-@pub @world
-fn get_math() {
-    return answer;
+@pub sum(a, b) {
+    return a+b;
 }
 
-@pub @world
-fn do_math(a, b) {
-    answer = some(a+b);
-}
 

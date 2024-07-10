@@ -68,6 +68,7 @@ enum class ExprTermType {
     Func_Call,
     List_Literal,
     Get,
+    Mod_Access,
     Array_Access,
     Bool,
     None,
@@ -128,6 +129,15 @@ struct ExprIdent : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprIdent(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprModAccess : public ExprTerm {
+    std::unique_ptr<ExprIdent> m_expr_ident;
+    std::unique_ptr<Expr> m_right;
+
+    ExprModAccess(std::unique_ptr<ExprIdent> expr_ident, std::unique_ptr<Expr> right);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

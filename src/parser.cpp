@@ -195,7 +195,20 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             UNIMPLEMENTED("parse_primary_expr:TokenType::Lbracket");
         } break;
         case TokenType::Double_Colon: {
-            UNIMPLEMENTED("parse_primary_expr:TokenType::Double_Colon");
+            assert(left);
+            lexer.discard();
+            right = parse_primary_expr(lexer);
+
+            if (left->get_type() == ExprType::Term) {
+                auto _left = dynamic_cast<ExprTerm *>(left);
+                if (_left->get_term_type() == ExprTermType::Ident)
+                    left = new ExprModAccess(std::unique_ptr<ExprIdent>(dynamic_cast<ExprIdent *>(_left)), std::unique_ptr<Expr>(right));
+                else
+                    ERR(Err::Type::Fatal, "Module getters must be of term type identifier");
+            }
+            else
+                ERR(Err::Type::Fatal, "Module getters must be of term type identifier");
+
         } break;
         case TokenType::Pipe: {
             std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
