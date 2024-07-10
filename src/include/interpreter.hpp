@@ -34,9 +34,10 @@
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
     enum ERT {
-        Value,
-        IntrinsicFunction,
-        None,
+        Literal = 1 << 0,
+        Ident = 1 << 1,
+        IntrinsicFunction = 1 << 2,
+        None = 1 << 3,
     };
 
     struct ER {
@@ -46,8 +47,12 @@ namespace Interpreter {
             this->id = id;
         }
 
-        bool is_value(void) {
-            return (this->rt & ERT::Value) != 0 && this->value;
+        bool is_literal(void) {
+            return (this->rt & ERT::Literal) != 0 && this->value;
+        }
+
+        bool is_ident(void) {
+            return (this->rt & ERT::Ident) != 0 && this->value;
         }
 
         bool is_intrinsic(void) {

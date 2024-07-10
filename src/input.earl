@@ -1,9 +1,9 @@
 mod Main
 
-@world
-fn test() {
-    println(x);
-}
-
 let x = 1;
-test();
+let y = x;
+
+y = y + 1;
+
+println("x: ", x);
+println("y: ", y);

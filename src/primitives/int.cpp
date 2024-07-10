@@ -99,8 +99,18 @@ bool Int::boolean(void) {
 }
 
 void Int::mutate(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Int::mutate");
+    if (!type_is_compatable(this, other.get())) {
+        assert(false && "cannot mutate (fix this message)");
+    }
+
+    switch (other->type()) {
+    case Type::Int: {
+        m_value = dynamic_cast<Int *>(other.get())->value();
+    } break;
+    default: {
+        assert(false && "unreachable");
+    }
+    }
 }
 
 std::shared_ptr<Obj> Int::copy(void) {
