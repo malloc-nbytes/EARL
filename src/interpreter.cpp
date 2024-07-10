@@ -174,7 +174,16 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
                 if (Intrinsics::is_intrinsic(id)) {
                     return Intrinsics::call(id, funccall, params, ctx);
                 }
+                else {
+                    assert(false && "unimplemented");
+                }
             }
+            else {
+                assert(false && "unimplemented");
+            }
+        }
+        else {
+            assert(false && "unimplemented");
         }
 
         abort();
@@ -209,9 +218,21 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_expr_bin");
+    auto lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+
+    // Short-circuit evaluation for logical AND (&&)
+    if (expr->m_op->type() == TokenType::Double_Ampersand) {
+        // If lhs is false (or zero), return lhs (no need to evaluate rhs)
+        if (!lhs->boolean())
+            return lhs;
+        auto rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+        return rhs;
+    }
+
+    auto rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+    auto result = lhs->binop(expr->m_op.get(), rhs);
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {

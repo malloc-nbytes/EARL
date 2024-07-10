@@ -46,9 +46,52 @@ Type Int::type(void) const {
 }
 
 std::shared_ptr<Obj> Int::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Int::binop");
+    if (!type_is_compatable(this, other.get())) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    switch (op->type()) {
+    case TokenType::Plus: {
+        return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Minus: {
+        return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Asterisk: {
+        return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Forwardslash: {
+        return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Percent: {
+        return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Lessthan: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() < dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Greaterthan: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() > dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Double_Equals: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() == dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Greaterthan_Equals: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() >= dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Lessthan_Equals: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() <= dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Bang_Equals: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() != dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    case TokenType::Double_Pipe: {
+        return std::make_shared<Bool>(static_cast<int>(this->value() || dynamic_cast<Int *>(other.get())->value()));
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    }
+    }
 }
 
 bool Int::boolean(void) {
