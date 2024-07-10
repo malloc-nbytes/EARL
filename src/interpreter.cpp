@@ -383,9 +383,17 @@ std::shared_ptr<earl::value::Obj> eval_stmt_mod(StmtMod *stmt, std::shared_ptr<C
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_import");
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types    = {};
+    std::string comment               = COMMON_EARL_COMMENT;
+
+    std::unique_ptr<Lexer> lexer      = lex_file(stmt->m_fp.get()->lexeme().c_str(), keywords, types, comment);
+    std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
+
+    auto child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+    child_ctx->set_parent(ctx.get());
+    ctx->push_child_context(std::move(child_ctx));
+    return std::shared_ptr<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {

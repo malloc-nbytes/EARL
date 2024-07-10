@@ -60,6 +60,7 @@ struct Ctx {
     void pop_scope(void);
     void set_parent(Ctx *parent);
     Ctx *get_parent(void);
+    void push_child_context(std::shared_ptr<Ctx> ctx);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;

@@ -80,6 +80,10 @@ Ctx *Ctx::get_parent(void) {
     return m_parent;
 }
 
+void Ctx::push_child_context(std::shared_ptr<Ctx> ctx) {
+    m_children.push_back(std::move(ctx));
+}
+
 /*** Functions ***/
 size_t Ctx::funcs_len(void) const {
     return m_functions.size();
