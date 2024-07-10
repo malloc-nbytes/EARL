@@ -36,6 +36,7 @@ namespace Interpreter {
     std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
     std::shared_ptr<earl::value::Obj> eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTERPRETER_H

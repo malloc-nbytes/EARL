@@ -23,17 +23,17 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
 #include "common.hpp"
 #include "utils.hpp"
+#include "ctx.hpp"
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {
-    m_local.emplace_back();
-}
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {}
 
 // TODO: free memory from the local variables
 // in the local scope.
@@ -53,30 +53,6 @@ StmtBlock *Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
 
-size_t Obj::context_size(void) const {
-    return m_local.size();
-}
-
-bool Obj::has_local(const std::string &id) {
-    return m_local.back().contains(id);
-}
-
-void earl::function::Obj::push_scope(void) {
-    m_local.back().push();
-}
-
-void earl::function::Obj::pop_scope(void) {
-    m_local.back().pop();
-}
-
-void earl::function::Obj::new_scope_context(void) {
-    m_local.emplace_back();
-}
-
-void earl::function::Obj::drop_scope_context(void) {
-    m_local.pop_back();
-}
-
 earl::variable::Obj *Obj::get_local(const std::string &id) {
     (void)id;
     UNIMPLEMENTED("Obj::get_local");
@@ -87,9 +63,20 @@ void Obj::add_local(variable::Obj *var) {
     UNIMPLEMENTED("Obj::add_local");
 }
 
-void Obj::load_parameters(std::vector<earl::value::Obj *> &values) {
-    (void)values;
-    UNIMPLEMENTED("Obj::load_parameters");
+void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
+    for (size_t i = 0; i < values.size(); i++) {
+        auto value = values[i];
+        Token *id = m_params.at(i).first;
+
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
+        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
+            var = std::make_shared<earl::variable::Obj>(id, value);
+        }
+        else {
+            var = std::make_shared<earl::variable::Obj>(id, value->copy());
+        }
+        ctx->var_add(std::move(var));
+    }
 }
 
 bool Obj::is_world(void) const {

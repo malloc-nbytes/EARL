@@ -1,7 +1,7 @@
 mod Main
 
-fn test() {
-    println("in test()");
+fn test(a) {
+    println("in test()", ' ', a);
 }
 
 let x = 1;
@@ -12,6 +12,5 @@ println(x, " ", y, ' ', z);
 println(y);
 println(z);
 
-# let y = x+1;
-# let z = x * y + 9;
+test(z);
 

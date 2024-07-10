@@ -459,21 +459,7 @@ namespace earl {
             /// @brief Used to load this function's parameters
             /// with the values that were passed to it
             /// @param values The values to transfer
-            void load_parameters(std::vector<value::Obj *> &values);
-
-            /// @brief Push this function's local scope
-            void push_scope(void);
-
-            /// @brief Pop this function's local scope
-            void pop_scope(void);
-
-            /// @brief Push a new scope context. This is needed
-            /// for situations such as recursion
-            void new_scope_context(void);
-
-            /// @brief Remove a scope context. This happens in
-            /// situations such as coming out of a recursive chain
-            void drop_scope_context(void);
+            void load_parameters(std::vector<std::shared_ptr<value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
 
             /// @brief Check if a variable is in the local scope
             /// @param id The identifier of the variable
@@ -507,10 +493,6 @@ namespace earl {
 
             /// @brief Print all local variables in the function
             void debug_dump(void) const;
-
-            /// @note This local scope needs to be public for the context to see
-            /// for a QAD solution.
-            std::vector<SharedScope<std::string, variable::Obj>> m_local;
 
             Obj *copy(void);
 

@@ -34,6 +34,15 @@ Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
 
 /*** Ctx methods ***/
 
+std::shared_ptr<Ctx> Ctx::new_instance() {
+    auto ctx = std::make_shared<Ctx>(nullptr, nullptr);
+
+    ctx->m_functions = this->m_functions.copy();
+    ctx->m_module = this->m_module;
+
+    return ctx;
+}
+
 size_t Ctx::stmts_len(void) const {
     return m_program->m_stmts.size();
 }
@@ -44,6 +53,36 @@ Stmt *Ctx::get_stmt_at(size_t i) {
 
 void Ctx::set_module(const std::string &id) {
     m_module = id;
+}
+
+void Ctx::push_scope(void) {
+    m_variables.push();
+    m_functions.push();
+    m_classes.push();
+}
+
+void Ctx::pop_scope(void) {
+    m_variables.pop();
+    m_functions.pop();
+    m_classes.pop();
+}
+
+/*** Functions ***/
+size_t Ctx::funcs_len(void) const {
+    return m_functions.size();
+}
+
+void Ctx::func_add(std::shared_ptr<earl::function::Obj> func) {
+    const std::string &id = func->id();
+    m_functions.add(id, std::move(func));
+}
+
+std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool crash_on_failure) {
+    std::shared_ptr<earl::function::Obj> func = m_functions.get(id);
+    if (!func && crash_on_failure) {
+        ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
+    }
+    return func;
 }
 
 /*** Variables ***/

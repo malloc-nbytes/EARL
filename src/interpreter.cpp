@@ -43,8 +43,6 @@
 
 static Ctx *parent_ctx = nullptr;
 
-earl::value::Obj *eval_stmt(Stmt *stmt, Ctx &ctx);
-
 std::shared_ptr<earl::value::Obj> eval_user_defined_closure(std::shared_ptr<earl::variable::Obj> var, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)var;
     (void)params;
@@ -53,10 +51,8 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_closure(std::shared_ptr<earl
 }
 
 std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<earl::function::Obj> func, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    (void)func;
-    (void)params;
-    (void)ctx;
-    UNIMPLEMENTED("eval_user_defined_function");
+    func->load_parameters(params, ctx);
+    return Interpreter::eval_stmt_block(func->block(), ctx);
 }
 
 std::shared_ptr<earl::value::Obj> eval_user_defined_class_method(std::shared_ptr<earl::function::Obj> method, std::vector<std::shared_ptr<earl::value::Obj>> &params, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
@@ -175,7 +171,11 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
                     return Intrinsics::call(id, funccall, params, ctx);
                 }
                 else {
-                    assert(false && "unimplemented");
+                    // The function is an identifier, but not intrinsic
+                    auto func = ctx->func_get(id, /*crash_on_failure =*/true);
+                    auto fctx = ctx->new_instance();
+
+                    return eval_user_defined_function(func, params, fctx);
                 }
             }
             else {
@@ -253,15 +253,37 @@ std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
-    (void)block;
-    (void)ctx;
-    UNIMPLEMENTED("Interpreter::eval_stmt_block");
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    ctx->push_scope();
+    for (size_t i = 0; i < block->m_stmts.size(); ++i) {
+        result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
+        if (result && result->type() != earl::value::Type::Void) {
+            // We hit either a break or return statement.
+            break;
+        }
+    }
+    ctx->pop_scope();
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_def");
+    // if (ctx.function_is_registered(stmt->m_id->lexeme())) {
+    //     ERR_WARGS(Err::Type::Redeclared,
+    //               "function `%s` is already declared", stmt->m_id->lexeme().c_str());
+    // }
+
+    std::vector<std::pair<Token *, uint32_t>> args;
+
+    for (auto &entry : stmt->m_args) {
+        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    }
+
+    auto created_function = std::make_shared<earl::function::Obj>(stmt, args);
+    ctx->func_add(std::move(created_function));
+
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
@@ -330,7 +352,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_import(StmtImport *stmt, std::shared
     UNIMPLEMENTED("eval_stmt_import");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Def: {
         return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
@@ -385,7 +407,7 @@ std::shared_ptr<Ctx> Interpreter::interpret(std::unique_ptr<Program> program, st
     std::shared_ptr<Ctx> ctx = std::make_shared<Ctx>(std::move(lexer), std::move(program));
 
     for (size_t i = 0; i < ctx->stmts_len(); ++i) {
-        auto meta = eval_stmt(ctx->get_stmt_at(i), ctx);
+        auto meta = Interpreter::eval_stmt(ctx->get_stmt_at(i), ctx);
         (void)meta;
     }
 

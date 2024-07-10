@@ -49,6 +49,27 @@ template <typename K, typename V> struct SharedScope {
     SharedScope(SharedScope&&) noexcept = default;
     SharedScope& operator=(SharedScope&&) noexcept = default;
 
+    inline SharedScope copy(void) {
+        SharedScope copy;
+        for (size_t i = 0; i < m_map.size(); ++i) {
+            auto el = m_map.at(i);
+            for (auto it = el.begin(); it != el.end(); ++it) {
+                copy.add(it->first, it->second);
+            }
+            if (i != m_map.size())
+                copy.push();
+        }
+        return copy;
+    }
+
+    inline size_t size(void) const {
+        size_t res = 0;
+        for (auto &el : m_map) {
+            res += el.size();
+        }
+        return res;
+    }
+
     inline void push(void) {
         m_map.emplace_back();
     }

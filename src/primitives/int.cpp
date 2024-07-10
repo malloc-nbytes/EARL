@@ -104,7 +104,7 @@ void Int::mutate(std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> Int::copy(void) {
-    UNIMPLEMENTED("Int::copy");
+    return std::make_shared<Int>(m_value);
 }
 
 bool Int::eq(std::shared_ptr<Obj> &other) {
