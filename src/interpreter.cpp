@@ -149,10 +149,10 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
         return std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
     } break;
     case ExprTermType::Str_Literal: {
-        assert(false);
+        return std::make_shared<earl::value::Str>(dynamic_cast<ExprStrLit *>(expr)->m_tok->lexeme());
     } break;
     case ExprTermType::Char_Literal: {
-        assert(false);
+        return std::make_shared<earl::value::Char>(dynamic_cast<ExprCharLit *>(expr)->m_tok->lexeme());
     } break;
     case ExprTermType::Func_Call: {
         auto funccall = dynamic_cast<ExprFuncCall *>(expr);

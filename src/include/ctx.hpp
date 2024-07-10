@@ -82,6 +82,9 @@ private:
     std::unordered_map<std::string, StmtClass *> defined_classes;
 
     std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
+
+    std::vector<std::shared_ptr<earl::function::Obj>> m_func_stacktrace;
+    std::vector<std::shared_ptr<Ctx>> m_ctx_stacktrace;
 };
 
 #endif // CTX_H
