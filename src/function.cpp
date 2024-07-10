@@ -68,6 +68,11 @@ void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values
         auto value = values[i];
         Token *id = m_params.at(i).first;
 
+        // if (ctx->var_exists(id->lexeme())) {
+        //     Err::err_wtok(id);
+        //     ERR_WARGS(Err::Type::Redeclared, "variable `%s` has already been declared", id->lexeme().c_str());
+        // }
+
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
             var = std::make_shared<earl::variable::Obj>(id, value);

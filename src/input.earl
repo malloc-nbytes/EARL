@@ -1,16 +1,12 @@
 mod Main
 
-fn test(a) {
-    println("in test()", ' ', a);
+fn test() {
+    let x = 1;
+    println("in test()", ' ', x);
+    println("here");
 }
 
-let x = 1;
-let y = 99;
-let z = x+y;
+test();
 
-println(x, " ", y, ' ', z);
-println(y);
-println(z);
-
-test(z);
+println(x);
 

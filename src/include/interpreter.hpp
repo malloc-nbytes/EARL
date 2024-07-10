@@ -33,8 +33,38 @@
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
+    enum ERT {
+        Value,
+        IntrinsicFunction,
+        None,
+    };
+
+    struct ER {
+        ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "") {
+            this->value = value;
+            this->rt = rt;
+            this->id = id;
+        }
+
+        bool is_value(void) {
+            return (this->rt & ERT::Value) != 0 && this->value;
+        }
+
+        bool is_intrinsic(void) {
+            return (this->rt & ERT::IntrinsicFunction) != 0;
+        }
+
+        bool is_none(void) {
+            return (this->rt & ERT::None) != 0;
+        }
+
+        std::shared_ptr<earl::value::Obj> value;
+        ERT rt;
+        std::string id;
+    };
+
     std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
-    std::shared_ptr<earl::value::Obj> eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx);
+    ER eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
 };

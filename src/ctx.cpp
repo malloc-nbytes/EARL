@@ -28,6 +28,7 @@
 #include "ctx.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "intrinsics.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
     m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {}
@@ -75,6 +76,10 @@ size_t Ctx::funcs_len(void) const {
 void Ctx::func_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();
     m_functions.add(id, std::move(func));
+}
+
+bool Ctx::func_exists(const std::string &id) const {
+    return m_functions.contains(id);
 }
 
 std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool crash_on_failure) {
