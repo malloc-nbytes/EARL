@@ -37,12 +37,19 @@
 #include "earl.hpp"
 #include "shared-scope.hpp"
 
+enum class CtxType {
+    World,
+    Function,
+    Class,
+    Closure,
+};
+
 struct Ctx {
-    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
+    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type);
     ~Ctx() = default;
 
     /*** Ctx ***/
-    std::shared_ptr<Ctx> new_instance(void);
+    std::shared_ptr<Ctx> new_instance(CtxType ctx_type);
     size_t stmts_len(void) const;
     Stmt *get_stmt_at(size_t i);
     Lexer *lexer(void);
@@ -52,6 +59,7 @@ struct Ctx {
     void push_scope(void);
     void pop_scope(void);
     void set_parent(Ctx *parent);
+    Ctx *get_parent(void);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
@@ -74,6 +82,8 @@ struct Ctx {
     bool class_is_defined(const std::string &id) const;
     StmtClass *class_stmt(const std::string &id);
 
+
+private:
     SharedScope<std::string, earl::variable::Obj> m_variables;
     SharedScope<std::string, earl::function::Obj> m_functions;
     SharedScope<std::string, earl::Class::Obj>    m_classes;
@@ -81,12 +91,14 @@ struct Ctx {
     std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;
 
-private:
-    std::vector<std::shared_ptr<Ctx>> m_children;
     std::unordered_map<std::string, StmtClass *> defined_classes;
     std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
     std::string m_module;
+
+    std::vector<std::shared_ptr<Ctx>> m_children;
     Ctx *m_parent;
+
+    uint32_t m_ctx_type;
 };
 
 #endif // CTX_H

@@ -184,7 +184,7 @@ Interpreter::ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
                 else {
                     // The function is an identifier, but not intrinsic
                     auto func = ctx->func_get(id, /*crash_on_failure =*/true);
-                    auto fctx = ctx->new_instance();
+                    auto fctx = ctx->new_instance(CtxType::Function);
 
                     auto value = eval_user_defined_function(func, params, fctx);
                     return Interpreter::ER(value, Interpreter::ERT::Value);
@@ -426,11 +426,10 @@ std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared
 }
 
 std::shared_ptr<Ctx> Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
-    std::shared_ptr<Ctx> ctx = std::make_shared<Ctx>(std::move(lexer), std::move(program));
+    std::shared_ptr<Ctx> ctx = std::make_shared<Ctx>(std::move(lexer), std::move(program), CtxType::World);
 
     for (size_t i = 0; i < ctx->stmts_len(); ++i) {
-        auto meta = Interpreter::eval_stmt(ctx->get_stmt_at(i), ctx);
-        (void)meta;
+        (void)Interpreter::eval_stmt(ctx->get_stmt_at(i), ctx);
     }
 
     return ctx;

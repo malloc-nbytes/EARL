@@ -30,13 +30,16 @@
 #include "err.hpp"
 #include "intrinsics.hpp"
 
-Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program) :
-    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {}
+Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type) :
+    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {
+    m_parent = nullptr;
+    m_ctx_type |= static_cast<uint32_t>(ctx_type);
+}
 
 /*** Ctx methods ***/
 
-std::shared_ptr<Ctx> Ctx::new_instance() {
-    auto ctx = std::make_shared<Ctx>(nullptr, nullptr);
+std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
+    auto ctx = std::make_shared<Ctx>(nullptr, nullptr, ctx_type);
 
     ctx->m_functions = m_functions.copy();
     ctx->set_module(m_module);
@@ -71,6 +74,10 @@ void Ctx::pop_scope(void) {
 
 void Ctx::set_parent(Ctx *parent) {
     m_parent = parent;
+}
+
+Ctx *Ctx::get_parent(void) {
+    return m_parent;
 }
 
 /*** Functions ***/
