@@ -35,56 +35,56 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idx, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idx, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)idx;
     (void)obj;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_nth");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_back");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)closure;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_filter");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, std::shared_ptr<Ctx> &ctx) {
     (void)obj;
     (void)closure;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_foreach");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_rev");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)values;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_append");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)values;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_pop");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)expr;
     (void)ctx;
     (void)params;

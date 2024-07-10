@@ -138,8 +138,12 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
         const std::string &id = ident->m_tok->lexeme();
-        std::shared_ptr<earl::variable::Obj> var = ctx->var_get(id, /*crash_on_failure =*/true);
-        return var->value();
+        std::shared_ptr<earl::variable::Obj> var = ctx->var_get(id, /*crash_on_failure =*/false);
+
+        if (var) return var->value();
+
+        // No variable found, move on...
+        return nullptr;
     } break;
     case ExprTermType::Int_Literal: {
         return std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
@@ -151,7 +155,29 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
         assert(false);
     } break;
     case ExprTermType::Func_Call: {
-        assert(false);
+        auto funccall = dynamic_cast<ExprFuncCall *>(expr);
+        auto left = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+
+        std::vector<std::shared_ptr<earl::value::Obj>> params;
+        std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
+            params.push_back(Interpreter::eval_expr(e.get(), ctx));
+        });
+
+        if (left) {
+            UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
+        }
+
+        if (funccall->m_left->get_type() == ExprType::Term) {
+            if (dynamic_cast<ExprTerm *>(funccall)->get_term_type() == ExprTermType::Ident) {
+                auto term = dynamic_cast<ExprIdent *>(funccall);
+                const std::string &id = term->m_tok->lexeme();
+                if (Intrinsics::is_intrinsic(id)) {
+                    return Intrinsics::call(funccall, params, ctx);
+                }
+            }
+        }
+
+        abort();
     } break;
     case ExprTermType::List_Literal: {
         assert(false);
@@ -202,9 +228,7 @@ std::shared_ptr<earl::value::Obj> Interpreter::eval_expr(Expr *expr, std::shared
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_expr");
+    return Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {

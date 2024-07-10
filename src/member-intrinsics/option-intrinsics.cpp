@@ -36,28 +36,28 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)expr;
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_some");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_unwrap");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_is_none");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;

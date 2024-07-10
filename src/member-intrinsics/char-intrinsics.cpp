@@ -32,7 +32,7 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;

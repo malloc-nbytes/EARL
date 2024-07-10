@@ -43,10 +43,10 @@
 namespace Intrinsics {
 
     /// @brief All intrinsic functions must use this function signature.
-    using IntrinsicFunction = std::shared_ptr<earl::value::Obj> (*)(ExprFuncCall *, std::vector<std::shared_ptr<earl::value::Obj>>&, Ctx&);
+    using IntrinsicFunction = std::shared_ptr<earl::value::Obj> (*)(ExprFuncCall *, std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
 
     /// @brief All intrinsic member functions must use this function signature.
-    using IntrinsicMemberFunction = std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<earl::value::Obj>, std::vector<std::shared_ptr<earl::value::Obj>>&, Ctx&);
+    using IntrinsicMemberFunction = std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<earl::value::Obj>, std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
 
     /// @brief A map of all intrinsic functions in EARL
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
@@ -69,7 +69,7 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
+    std::shared_ptr<earl::value::Obj> call(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /// @brief Call an intrinsic member function
     /// @note It is expected to call `is_member_intrinsic` before calling this function
@@ -78,50 +78,50 @@ namespace Intrinsics {
     /// @param params value objects to pass to the function
     /// @note it is often expected that `params` has the size of 1 or 0
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
+    std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
-    std::shared_ptr<earl::value::Obj> intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_assert(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_println(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_print(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_open(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_type(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_unimplemented(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_exit(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_panic(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_argv(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_input(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_assert(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_println(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_print(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_open(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_type(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_unimplemented(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_exit(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_panic(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_argv(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_input(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_move__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, Ctx &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_move__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
-    std::shared_ptr<earl::value::Obj> intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idx, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &delim, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idxs, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, Ctx &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idx, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &closure, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &delim, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &idxs, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTRINSICS_H
