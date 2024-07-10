@@ -168,11 +168,11 @@ std::shared_ptr<earl::value::Obj> eval_expr_term(ExprTerm *expr, std::shared_ptr
         }
 
         if (funccall->m_left->get_type() == ExprType::Term) {
-            if (dynamic_cast<ExprTerm *>(funccall)->get_term_type() == ExprTermType::Ident) {
-                auto term = dynamic_cast<ExprIdent *>(funccall);
+            if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
+                auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
                 const std::string &id = term->m_tok->lexeme();
                 if (Intrinsics::is_intrinsic(id)) {
-                    return Intrinsics::call(funccall, params, ctx);
+                    return Intrinsics::call(id, funccall, params, ctx);
                 }
             }
         }

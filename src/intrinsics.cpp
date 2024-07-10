@@ -78,11 +78,8 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
     {"is_some", &Intrinsics::intrinsic_member_is_some},
 };
 
-std::shared_ptr<earl::value::Obj> Intrinsics::call(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)params;
-    (void)ctx;
-    UNIMPLEMENTED("Intrinsics::call");
+std::shared_ptr<earl::value::Obj> Intrinsics::call(const std::string &id, ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+    return intrinsic_functions.at(id)(expr, params, ctx);
 }
 
 bool Intrinsics::is_intrinsic(const std::string &id) {
@@ -172,10 +169,55 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_assert(ExprFuncCall *exp
     UNIMPLEMENTED("Intrinsics::intrinsic_assert");
 }
 
-static void __intrinsic_print(ExprFuncCall *expr, earl::value::Obj *param) {
-    (void)expr;
-    (void)param;
-    UNIMPLEMENTED("__intrinsic_print");
+static void __intrinsic_print(ExprFuncCall *expr, std::shared_ptr<earl::value::Obj> param) {
+    switch (param->type()) {
+    case earl::value::Type::Int: {
+        auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
+        std::cout << intparam->value();
+    } break;
+    case earl::value::Type::Bool: {
+        auto *bool_param = dynamic_cast<earl::value::Bool *>(param.get());
+        std::cout << (bool_param->value() ? "true" : "false");
+    } break;
+    case earl::value::Type::Option: {
+        auto *option_param = dynamic_cast<earl::value::Option *>(param.get());
+
+        if (option_param->is_none())
+            std::cout << "<none>";
+        else {
+            std::cout << "some(";
+            __intrinsic_print(expr, option_param->value());
+            std::cout << ")";
+        }
+
+    } break;
+    case earl::value::Type::Str: {
+        auto *strparam = dynamic_cast<earl::value::Str *>(param.get());
+        std::cout << strparam->value();
+    } break;
+    case earl::value::Type::Char: {
+        auto *strparam = dynamic_cast<earl::value::Char *>(param.get());
+        std::cout << strparam->value();
+    } break;
+    case earl::value::Type::List: {
+        earl::value::List *listparam = dynamic_cast<earl::value::List *>(param.get());
+        std::cout << '[';
+        std::vector<std::shared_ptr<earl::value::Obj>> &list = listparam->value();
+
+        for (size_t i = 0; i < list.size(); ++i) {
+            __intrinsic_print(expr, list[i]);
+
+            if (i != list.size()-1) {
+                std::cout << ", ";
+            }
+        }
+
+        std::cout << ']';
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
+    } break;
+    }
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_print(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
@@ -187,9 +229,11 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_print(ExprFuncCall *expr
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_println(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)expr;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_println");
+    for (size_t i = 0; i < params.size(); ++i) {
+        __intrinsic_print(expr, params[i]);
+    }
+    std::cout << '\n';
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_input(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
