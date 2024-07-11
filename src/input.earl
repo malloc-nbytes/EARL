@@ -5,5 +5,8 @@ import "other.earl"
 let x = 1;
 let y = 2;
 
-println(Other::sum(x, y));
+# println(Other::sum(x, y));
 
+println('a'.ascii());
+
+let lst = [1,2,3,4,5].rev();

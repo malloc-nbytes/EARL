@@ -139,6 +139,55 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
     UNIMPLEMENTED("eval_expr_array_access");
 }
 
+static ER eval_function_call(ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx) {
+    auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+    auto left = left_result.value;
+
+    std::vector<std::shared_ptr<earl::value::Obj>> params;
+    std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
+        auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
+        if (param_result.is_none())
+            ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
+        params.push_back(param_result.value);
+    });
+
+    if (left) {
+        UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
+    }
+
+    if (funccall->m_left->get_type() == ExprType::Term) {
+        if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
+            auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
+            const std::string &id = term->m_tok->lexeme();
+            if (Intrinsics::is_intrinsic(id)) {
+                auto value = Intrinsics::call(id, funccall, params, ctx);
+                return ER(value, ERT::Literal);
+            }
+            else if (Intrinsics::is_member_intrinsic(id)) {
+                auto member_value = Intrinsics::call_member(id, left, params, ctx);
+                return ER(member_value, ERT::Literal);
+            }
+            else {
+                // The function is an identifier, but not intrinsic
+                auto func = ctx->func_get(id, /*crash_on_failure =*/true);
+                auto fctx = ctx->new_instance(CtxType::Function);
+                fctx->set_parent(ctx);
+
+                auto value = eval_user_defined_function(func, params, fctx);
+                return ER(value, ERT::Literal);
+            }
+        }
+        else {
+            assert(false && "unimplemented");
+        }
+    }
+    else {
+        assert(false && "unimplemented");
+    }
+
+    assert(false && "unimplemented");
+}
+
 ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx = false) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -173,55 +222,61 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         return ER(value, ERT::Literal);
     } break;
     case ExprTermType::Func_Call: {
-        auto funccall = dynamic_cast<ExprFuncCall *>(expr);
-        auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx);
-        auto left = left_result.value;
-
-        std::vector<std::shared_ptr<earl::value::Obj>> params;
-        std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
-            auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
-            if (param_result.is_none())
-                ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
-            params.push_back(param_result.value);
-        });
-
-        if (left) {
-            UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
-        }
-
-        if (funccall->m_left->get_type() == ExprType::Term) {
-            if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
-                auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
-                const std::string &id = term->m_tok->lexeme();
-                if (Intrinsics::is_intrinsic(id)) {
-                    auto value = Intrinsics::call(id, funccall, params, ctx);
-                    return ER(value, ERT::Literal);
-                }
-                else {
-                    // The function is an identifier, but not intrinsic
-                    auto func = ctx->func_get(id, /*crash_on_failure =*/true);
-                    auto fctx = ctx->new_instance(CtxType::Function);
-                    fctx->set_parent(ctx);
-
-                    auto value = eval_user_defined_function(func, params, fctx);
-                    return ER(value, ERT::Literal);
-                }
-            }
-            else {
-                assert(false && "unimplemented");
-            }
-        }
-        else {
-            assert(false && "unimplemented");
-        }
-
-        assert(false && "unimplemented");
+        return eval_function_call(dynamic_cast<ExprFuncCall *>(expr), ctx, search_in_prev_ctx);
     } break;
     case ExprTermType::List_Literal: {
         assert(false);
     } break;
     case ExprTermType::Get: {
-        assert(false);
+        std::shared_ptr<earl::value::Obj> result = nullptr;
+
+        auto get = dynamic_cast<ExprGet *>(expr);
+        auto left_result_ = Interpreter::eval_expr(get->m_left.get(), ctx, search_in_prev_ctx);
+        auto left_ = left_result_.value;
+        auto right = dynamic_cast<ExprTerm *>(get->m_right.get());
+
+        switch (right->get_term_type()) {
+        case ExprTermType::Ident: {
+            assert(false && "unimplemented");
+        } break;
+        case ExprTermType::Func_Call: {
+            auto funccall = dynamic_cast<ExprFuncCall *>(right);
+            auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+            auto left = left_result.value;
+
+            std::vector<std::shared_ptr<earl::value::Obj>> params;
+            std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
+                auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
+                if (param_result.is_none())
+                    ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
+                params.push_back(param_result.value);
+            });
+
+            if (left) {
+                UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
+            }
+
+
+            if (funccall->m_left->get_type() == ExprType::Term) {
+                if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
+                    auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
+                    const std::string &id = term->m_tok->lexeme();
+                    if (Intrinsics::is_member_intrinsic(id)) {
+                        auto member_value = Intrinsics::call_member(id, left_, params, ctx);
+                        return ER(member_value, ERT::Literal);
+                    }
+                }
+                else {
+                    assert(false && "unimplemented");
+                }
+            }
+
+            // return eval_function_call(dynamic_cast<ExprFuncCall *>(right), ctx, search_in_prev_ctx);
+        } break;
+        default: ERR(Err::Type::Fatal, "invalid `get` operation");
+        }
+
+        abort();
     } break;
     case ExprTermType::Array_Access: {
         assert(false);
