@@ -2,10 +2,8 @@ mod Main
 
 import "other.earl"
 
-fn sum(a, b) {
-    let s = a+b;
-    return s;
-}
+let x = 1;
+let y = 2;
 
-println(sum(1,2));
+println(Other::sum(x, y));
 

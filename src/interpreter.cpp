@@ -139,17 +139,20 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
     UNIMPLEMENTED("eval_expr_array_access");
 }
 
-ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
+ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx = false) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
         const std::string &id = ident->m_tok->lexeme();
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
 
-        std::shared_ptr<earl::variable::Obj> var = ctx->var_get(id, /*crash_on_failure =*/false);
+        if (search_in_prev_ctx)
+            var = ctx->get_parent()->var_get(id, /*crash_on_failure =*/false);
+        else
+            var = ctx->var_get(id, /*crash_on_failure =*/false);
 
-        if (var) {
+        if (var)
             return ER(var->value(), ERT::Ident);
-        }
 
         if (Intrinsics::is_intrinsic(id))
             return ER(nullptr, ERT::IntrinsicFunction);
@@ -176,7 +179,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         std::vector<std::shared_ptr<earl::value::Obj>> params;
         std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
-            auto param_result = Interpreter::eval_expr(e.get(), ctx);
+            auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
             if (param_result.is_none())
                 ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
             params.push_back(param_result.value);
@@ -239,7 +242,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         auto ma = dynamic_cast<ExprModAccess *>(expr);
         const std::string &id = ma->m_expr_ident->m_tok->lexeme();
         auto child = ctx->get_child_ctx(id);
-        return Interpreter::eval_expr(ma->m_right.get(), child);
+        return Interpreter::eval_expr(ma->m_right.get(), child, /*search_in_prev_ctx =*/true);
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -268,10 +271,10 @@ ER eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
     return ER(result, ERT::Literal);
 }
 
-ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
+ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, search_in_prev_ctx);
         return result;
     } break;
     case ExprType::Binary: {
