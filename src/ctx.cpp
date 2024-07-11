@@ -84,6 +84,18 @@ void Ctx::push_child_context(std::shared_ptr<Ctx> ctx) {
     m_children.push_back(std::move(ctx));
 }
 
+Ctx *Ctx::get_child_ctx(const std::string &id) {
+    for (auto &ctx : m_children) {
+        if (ctx->get_module() == id)
+            return ctx.get();
+    }
+    return nullptr;
+}
+
+std::string &Ctx::get_module(void) {
+    return m_module;
+}
+
 /*** Functions ***/
 size_t Ctx::funcs_len(void) const {
     return m_functions.size();

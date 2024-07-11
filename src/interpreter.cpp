@@ -234,7 +234,15 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     case ExprTermType::Tuple: {
         assert(false);
     } break;
+    case ExprTermType::Mod_Access: {
+        auto ma = dynamic_cast<ExprModAccess *>(expr);
+        const std::string &id = ma->m_expr_ident->m_tok->lexeme();
+        Ctx *child = ctx->get_child_ctx(id);
+
+        abort();
+    } break;
     default:
+        ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
         assert(false && "unreachable");
     }
 

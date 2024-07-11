@@ -54,13 +54,14 @@ struct Ctx {
     Stmt *get_stmt_at(size_t i);
     Lexer *lexer(void);
     Program *program(void);
-    std::string &module_();
+    std::string &get_module(void);
     void set_module(const std::string &id);
     void push_scope(void);
     void pop_scope(void);
     void set_parent(Ctx *parent);
     Ctx *get_parent(void);
     void push_child_context(std::shared_ptr<Ctx> ctx);
+    Ctx *get_child_ctx(const std::string &id);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
@@ -82,7 +83,6 @@ struct Ctx {
     // Check if the actual statement exists
     bool class_is_defined(const std::string &id) const;
     StmtClass *class_stmt(const std::string &id);
-
 
 private:
     SharedScope<std::string, earl::variable::Obj> m_variables;
