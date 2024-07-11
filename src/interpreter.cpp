@@ -198,6 +198,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
                     // The function is an identifier, but not intrinsic
                     auto func = ctx->func_get(id, /*crash_on_failure =*/true);
                     auto fctx = ctx->new_instance(CtxType::Function);
+                    fctx->set_parent(ctx);
 
                     auto value = eval_user_defined_function(func, params, fctx);
                     return ER(value, ERT::Literal);
@@ -237,9 +238,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     case ExprTermType::Mod_Access: {
         auto ma = dynamic_cast<ExprModAccess *>(expr);
         const std::string &id = ma->m_expr_ident->m_tok->lexeme();
-        Ctx *child = ctx->get_child_ctx(id);
-
-        abort();
+        auto child = ctx->get_child_ctx(id);
+        return Interpreter::eval_expr(ma->m_right.get(), child);
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -399,7 +399,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_import(StmtImport *stmt, std::shared
     std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
 
     auto child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
-    child_ctx->set_parent(ctx.get());
+    child_ctx->set_parent(ctx);
     ctx->push_child_context(std::move(child_ctx));
     return std::shared_ptr<earl::value::Void>();
 }

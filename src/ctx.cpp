@@ -43,7 +43,6 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
 
     ctx->m_functions = m_functions.copy();
     ctx->set_module(m_module);
-    ctx->set_parent(this);
 
     return ctx;
 }
@@ -72,11 +71,11 @@ void Ctx::pop_scope(void) {
     m_classes.pop();
 }
 
-void Ctx::set_parent(Ctx *parent) {
+void Ctx::set_parent(std::shared_ptr<Ctx> parent) {
     m_parent = parent;
 }
 
-Ctx *Ctx::get_parent(void) {
+std::shared_ptr<Ctx> Ctx::get_parent(void) {
     return m_parent;
 }
 
@@ -84,10 +83,10 @@ void Ctx::push_child_context(std::shared_ptr<Ctx> ctx) {
     m_children.push_back(std::move(ctx));
 }
 
-Ctx *Ctx::get_child_ctx(const std::string &id) {
+std::shared_ptr<Ctx> Ctx::get_child_ctx(const std::string &id) {
     for (auto &ctx : m_children) {
         if (ctx->get_module() == id)
-            return ctx.get();
+            return ctx;
     }
     return nullptr;
 }

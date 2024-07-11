@@ -58,10 +58,10 @@ struct Ctx {
     void set_module(const std::string &id);
     void push_scope(void);
     void pop_scope(void);
-    void set_parent(Ctx *parent);
-    Ctx *get_parent(void);
+    void set_parent(std::shared_ptr<Ctx> parent);
+    std::shared_ptr<Ctx> get_parent(void);
     void push_child_context(std::shared_ptr<Ctx> ctx);
-    Ctx *get_child_ctx(const std::string &id);
+    std::shared_ptr<Ctx> get_child_ctx(const std::string &id);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
@@ -97,7 +97,7 @@ private:
     std::string m_module;
 
     std::vector<std::shared_ptr<Ctx>> m_children;
-    Ctx *m_parent;
+    std::shared_ptr<Ctx> m_parent;
 
     uint32_t m_ctx_type;
 };
