@@ -206,7 +206,6 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         return ER(nullptr, ERT::None, id);
     } break;
     case ExprTermType::Int_Literal: {
-        std::cout << "INT LIT: " << dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme() << std::endl;
         auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
         return ER(value, ERT::Literal);
     } break;
@@ -430,8 +429,6 @@ std::shared_ptr<earl::value::Obj> eval_stmt_while(StmtWhile *stmt, std::shared_p
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
-    std::cout << "For statement" << std::endl;
-
     std::shared_ptr<earl::value::Obj> result     = nullptr;
     auto start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx);
     auto end_expr   = Interpreter::eval_expr(stmt->m_end.get(), ctx);
