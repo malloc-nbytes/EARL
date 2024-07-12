@@ -55,20 +55,20 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<ear
     return Interpreter::eval_stmt_block(func->block(), ctx);
 }
 
-std::shared_ptr<earl::value::Obj> eval_user_defined_class_method(std::shared_ptr<earl::function::Obj> method, std::vector<std::shared_ptr<earl::value::Obj>> &params, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-    (void)method;
-    (void)params;
-    (void)klass;
-    (void)ctx;
-    UNIMPLEMENTED("eval_user_defined_class_method");
-}
+// std::shared_ptr<earl::value::Obj> eval_user_defined_class_method(std::shared_ptr<earl::function::Obj> method, std::vector<std::shared_ptr<earl::value::Obj>> &params, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
+//     (void)method;
+//     (void)params;
+//     (void)klass;
+//     (void)ctx;
+//     UNIMPLEMENTED("eval_user_defined_class_method");
+// }
 
-std::shared_ptr<earl::value::Obj> get_class_member(std::string &id, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-    (void)id;
-    (void)klass;
-    (void)ctx;
-    UNIMPLEMENTED("get_class_member");
-}
+// std::shared_ptr<earl::value::Obj> get_class_member(std::string &id, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
+//     (void)id;
+//     (void)klass;
+//     (void)ctx;
+//     UNIMPLEMENTED("get_class_member");
+// }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     const std::string &id = stmt->m_id->lexeme();
@@ -96,12 +96,12 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
     return nullptr;
 }
 
-void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)klass;
-    (void)ctx;
-    UNIMPLEMENTED("load_class_members");
-}
+// void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
+//     (void)stmt;
+//     (void)klass;
+//     (void)ctx;
+//     UNIMPLEMENTED("load_class_members");
+// }
 
 std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
     (void)expr;
@@ -466,9 +466,8 @@ std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<C
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_class");
+    ctx->class_make_available(stmt);
+    return nullptr;
 }
 
 std::shared_ptr<earl::variable::Obj> handle_match_some_branch(ExprFuncCall *expr, std::shared_ptr<earl::value::Obj> inject_value, std::shared_ptr<Ctx> &ctx) {

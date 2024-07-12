@@ -62,13 +62,13 @@ void Ctx::set_module(const std::string &id) {
 void Ctx::push_scope(void) {
     m_variables.push();
     m_functions.push();
-    m_classes.push();
+    // m_classes.push();
 }
 
 void Ctx::pop_scope(void) {
     m_variables.pop();
     m_functions.pop();
-    m_classes.pop();
+    // m_classes.pop();
 }
 
 void Ctx::set_parent(std::shared_ptr<Ctx> parent) {
@@ -137,4 +137,22 @@ void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
 
 void Ctx::var_remove(const std::string &id) {
     m_variables.remove(id);
+}
+
+/*** Classes ***/
+// bool Ctx::class_exists(const std::string &id) const {
+//     UNIMPLEMENTED("Ctx::class_exists");
+// }
+
+// std::shared_ptr<earl::Class::Obj> &Ctx::class_get(const std::string &id, bool crash_on_failure) {
+//     UNIMPLEMENTED("Ctx::class_get");
+// }
+
+// void Ctx::class_add(std::shared_ptr<earl::Class::Obj> klass) {
+//     UNIMPLEMENTED("Ctx::class_add");
+// }
+
+void Ctx::class_make_available(StmtClass *klass) {
+    const std::string &id = klass->m_id->lexeme();
+    m_defined_classes.insert({id, klass});
 }

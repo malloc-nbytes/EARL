@@ -77,9 +77,10 @@ struct Ctx {
     size_t funcs_len(void) const;
 
     /*** Classes ***/
-    bool class_exists(const std::string &id) const;
-    std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = true);
-    void class_add(std::shared_ptr<earl::Class::Obj> klass);
+    // bool class_exists(const std::string &id) const;
+    // std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = true);
+    // void class_add(std::shared_ptr<earl::Class::Obj> klass);
+    void class_make_available(StmtClass *klass);
 
     // Check if the actual statement exists
     bool class_is_defined(const std::string &id) const;
@@ -88,12 +89,12 @@ struct Ctx {
 private:
     SharedScope<std::string, earl::variable::Obj> m_variables;
     SharedScope<std::string, earl::function::Obj> m_functions;
-    SharedScope<std::string, earl::Class::Obj>    m_classes;
+    // SharedScope<std::string, earl::Class::Obj>    m_classes;
 
     std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;
 
-    std::unordered_map<std::string, StmtClass *> defined_classes;
+    std::unordered_map<std::string, StmtClass *> m_defined_classes;
     std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
     std::string m_module;
 

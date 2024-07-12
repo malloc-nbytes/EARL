@@ -326,6 +326,37 @@ namespace earl {
             std::shared_ptr<Ctx> m_value;
         };
 
+        // struct Class : public Obj {
+        //     Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner);
+
+        //     const std::string &id(void) const;
+
+        //     void add_method(std::unique_ptr<function::Obj> func);
+        //     void add_member(std::unique_ptr<variable::Obj> var);
+        //     void add_member_assignee(Token *assignee);
+
+        //     function::Obj *get_method(const std::string &id);
+        //     earl::variable::Obj *get_member(const std::string &id);
+
+        //     /*** OVERRIDES ***/
+        //     Type type(void) const             override;
+        //     Obj *binop(Token *op, Obj *other) override;
+        //     bool boolean(void)                override;
+        //     void mutate(Obj *other)           override;
+        //     Obj *copy(void)                   override;
+        //     bool eq(Obj *other)               override;
+        //     std::string to_cxxstring(void)    override;
+
+        // private:
+        //     StmtClass *m_stmtclass;
+        //     std::shared_ptr<Ctx> m_owner;
+
+        //     std::vector<std::unique_ptr<variable::Obj>> m_members;
+        //     std::vector<std::unique_ptr<function::Obj>> m_methods;
+        //     std::vector<Token *> m_member_assignees;
+        // }
+            ;
+
         struct File : public Obj {
             File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
 
@@ -459,13 +490,6 @@ namespace earl {
         private:
             StmtDef *m_stmtdef;
             std::vector<std::pair<Token *, uint32_t>> m_params;
-        };
-    };
-
-    namespace Class {
-        struct Obj {
-            Obj() = default;
-            // TODO
         };
     };
 };
