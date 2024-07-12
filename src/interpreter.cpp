@@ -280,7 +280,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         assert(false);
     } break;
     case ExprTermType::Bool: {
-        assert(false);
+        auto boolean = dynamic_cast<ExprBool *>(expr);
+        return ER(std::make_shared<earl::value::Bool>(boolean->m_value), ERT::Literal);
     } break;
     case ExprTermType::None: {
         assert(false);
