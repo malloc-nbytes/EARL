@@ -206,6 +206,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         return ER(nullptr, ERT::None, id);
     } break;
     case ExprTermType::Int_Literal: {
+        std::cout << "INT LIT: " << dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme() << std::endl;
         auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
         return ER(value, ERT::Literal);
     } break;
@@ -429,17 +430,19 @@ std::shared_ptr<earl::value::Obj> eval_stmt_while(StmtWhile *stmt, std::shared_p
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
-    std::shared_ptr<earl::value::Obj> result     = nullptr;
-    std::shared_ptr<earl::value::Obj> start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx).value;
-    std::shared_ptr<earl::value::Obj> end_expr   = Interpreter::eval_expr(stmt->m_end.get(), ctx).value;
+    std::cout << "For statement" << std::endl;
 
-    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), std::move(start_expr));
+    std::shared_ptr<earl::value::Obj> result     = nullptr;
+    auto start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx);
+    auto end_expr   = Interpreter::eval_expr(stmt->m_end.get(), ctx);
+
+    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr.value);
 
     assert(!ctx->var_exists(enumerator->id()));
     ctx->var_add(enumerator);
 
-    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());
-    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
+    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.value.get());
+    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.value.get());
 
     assert(start);
     assert(end);
