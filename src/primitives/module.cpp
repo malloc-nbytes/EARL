@@ -51,7 +51,7 @@ bool Module::boolean(void) {
     UNIMPLEMENTED("Module::boolean");
 }
 
-void Module::mutate(std::shared_ptr<Obj> &other) {
+void Module::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Module::mutate");
 }

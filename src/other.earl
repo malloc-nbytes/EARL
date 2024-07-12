@@ -1,6 +1,7 @@
 mod Other
 
-@pub fn sum(a, b) {
+@pub
+fn sum(a, b) {
     return a+b;
 }
 

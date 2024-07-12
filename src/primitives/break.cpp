@@ -45,7 +45,7 @@ bool Break::boolean(void) {
     UNIMPLEMENTED("Break::boolean");
 }
 
-void Break::mutate(std::shared_ptr<Obj> &other) {
+void Break::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Break::mutate");
 }

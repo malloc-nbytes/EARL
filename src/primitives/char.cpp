@@ -58,7 +58,7 @@ bool Char::boolean(void) {
     UNIMPLEMENTED("Char::boolean");
 }
 
-void Char::mutate(std::shared_ptr<Obj> &other) {
+void Char::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Char::mutate");
 }

@@ -51,7 +51,7 @@ bool Bool::boolean(void) {
     return m_value;
 }
 
-void Bool::mutate(std::shared_ptr<Obj> &other) {
+void Bool::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Bool::mutate");
 }

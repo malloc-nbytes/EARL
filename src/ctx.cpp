@@ -135,4 +135,6 @@ void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
     m_variables.add(id, std::move(var));
 }
 
-
+void Ctx::var_remove(const std::string &id) {
+    m_variables.remove(id);
+}

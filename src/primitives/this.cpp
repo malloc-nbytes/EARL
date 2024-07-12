@@ -45,7 +45,7 @@ bool This::boolean(void) {
     UNIMPLEMENTED("This::boolean");
 }
 
-void This::mutate(std::shared_ptr<Obj> &other) {
+void This::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("This::mutate");
 }

@@ -110,7 +110,7 @@ std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
     UNIMPLEMENTED("Str::value_raw");
 }
 
-void Str::mutate(std::shared_ptr<Obj> &other) {
+void Str::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Str::mutate");
 }

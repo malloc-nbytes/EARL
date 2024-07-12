@@ -65,7 +65,7 @@ bool Option::boolean(void) {
     UNIMPLEMENTED("Option::boolean");
 }
 
-void Option::mutate(std::shared_ptr<Obj> &other) {
+void Option::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Option::mutate");
 }

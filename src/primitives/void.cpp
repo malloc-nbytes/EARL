@@ -46,7 +46,7 @@ bool Void::boolean(void) {
     return false;
 }
 
-void Void::mutate(std::shared_ptr<Obj> &other) {
+void Void::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Void::mutate");
 }

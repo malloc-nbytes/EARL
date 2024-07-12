@@ -98,7 +98,7 @@ bool File::boolean(void) {
     UNIMPLEMENTED("File::boolean");
 }
 
-void File::mutate(std::shared_ptr<Obj> &other) {
+void File::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("File::mutate");
 }

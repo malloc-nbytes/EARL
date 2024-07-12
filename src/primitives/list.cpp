@@ -92,7 +92,7 @@ bool List::boolean(void) {
     return m_value.size() > 0;
 }
 
-void List::mutate(std::shared_ptr<Obj> &other) {
+void List::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("List::mutate");
 }

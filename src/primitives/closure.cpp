@@ -72,7 +72,7 @@ bool Closure::boolean(void) {
     UNIMPLEMENTED("Closure::boolean");
 }
 
-void Closure::mutate(std::shared_ptr<Obj> &other) {
+void Closure::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Closure::mutate");
 }

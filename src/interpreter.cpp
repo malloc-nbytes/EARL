@@ -163,10 +163,6 @@ static ER eval_function_call(ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx, 
                 auto value = Intrinsics::call(id, funccall, params, ctx);
                 return ER(value, ERT::Literal);
             }
-            else if (Intrinsics::is_member_intrinsic(id)) {
-                auto member_value = Intrinsics::call_member(id, left, params, ctx);
-                return ER(member_value, ERT::Literal);
-            }
             else {
                 // The function is an identifier, but not intrinsic
                 auto func = ctx->func_get(id, /*crash_on_failure =*/true);
@@ -256,7 +252,6 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
                 UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
             }
 
-
             if (funccall->m_left->get_type() == ExprType::Term) {
                 if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
                     auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
@@ -264,6 +259,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
                     if (Intrinsics::is_member_intrinsic(id)) {
                         auto member_value = Intrinsics::call_member(id, left_, params, ctx);
                         return ER(member_value, ERT::Literal);
+                    }
+                    else {
+                        assert(false);
                     }
                 }
                 else {
@@ -413,15 +411,57 @@ std::shared_ptr<earl::value::Obj> eval_stmt_mut(StmtMut *stmt, std::shared_ptr<C
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_while");
+    std::shared_ptr<earl::value::Obj> expr_result = nullptr;
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    while ((expr_result = Interpreter::eval_expr(stmt->m_expr.get(), ctx).value)->boolean()) {
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+    }
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_for");
+    std::shared_ptr<earl::value::Obj> result     = nullptr;
+    std::shared_ptr<earl::value::Obj> start_expr = Interpreter::eval_expr(stmt->m_start.get(), ctx).value;
+    std::shared_ptr<earl::value::Obj> end_expr   = Interpreter::eval_expr(stmt->m_end.get(), ctx).value;
+
+    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), std::move(start_expr));
+
+    assert(!ctx->var_exists(enumerator->id()));
+    ctx->var_add(enumerator);
+
+    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());
+    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
+
+    assert(start);
+    assert(end);
+
+    while (start->value() < end->value()) {
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+
+        std::shared_ptr<earl::value::Int> incr = std::make_shared<earl::value::Int>(start->value() + 1);
+        start->mutate(incr);
+    }
+
+    ctx->var_remove(enumerator->id());
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {

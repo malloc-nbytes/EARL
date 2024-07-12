@@ -99,6 +99,18 @@ template <typename K, typename V> struct SharedScope {
         }
         return nullptr;
     }
+
+    inline void remove(K key) {
+        for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
+            auto &map = *it;
+            auto map_it = map.find(key);
+            if (map_it != map.end()) {
+                map.erase(map_it);
+                return;
+            }
+        }
+    }
+
 };
 
 #endif // SHARED_H

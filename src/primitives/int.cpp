@@ -98,7 +98,7 @@ bool Int::boolean(void) {
     return this->value();
 }
 
-void Int::mutate(std::shared_ptr<Obj> &other) {
+void Int::mutate(const std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot mutate (fix this message)");
     }
