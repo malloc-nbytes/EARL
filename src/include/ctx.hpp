@@ -62,6 +62,8 @@ struct Ctx {
     std::shared_ptr<Ctx> get_parent(void);
     void push_child_context(std::shared_ptr<Ctx> ctx);
     std::shared_ptr<Ctx> get_child_ctx(const std::string &id);
+    size_t children_len(void) const;
+    std::vector<std::shared_ptr<Ctx>> &get_all_children(void);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;

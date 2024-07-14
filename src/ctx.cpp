@@ -38,11 +38,25 @@ Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType
 
 /*** Ctx methods ***/
 
+size_t Ctx::children_len(void) const {
+    return m_children.size();
+}
+
+std::vector<std::shared_ptr<Ctx>> &Ctx::get_all_children(void) {
+    return m_children;
+}
+
 std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     auto ctx = std::make_shared<Ctx>(nullptr, nullptr, ctx_type);
 
     ctx->m_functions = m_functions.copy();
     ctx->set_module(m_module);
+
+    auto &children = this->get_all_children();
+
+    for (auto it = children.begin(); it != children.end(); ++it) {
+        ctx->push_child_context(*it);
+    }
 
     return ctx;
 }

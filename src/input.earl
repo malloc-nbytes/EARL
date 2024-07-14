@@ -2,21 +2,12 @@ mod Main
 
 import "other.earl"
 
-fn test() {
-    let s = Other::sum(1, 2);
+fn test(a, b) {
+    return Other::sum(a, b);
+    return 0;
 }
 
-println(test());
-
-# class Point [x, y, name] {
-#     @pub x = x;
-#     @pub y = y;
-#     @pub name = name;
-#     desc = "a point";
-# }
-
-# let x = 1;
-# let y = 2;
-
-# let p = Point(x, y, "my point");
+let x = 2;
+let y = 2;
+println(test(x, y));
 
