@@ -24,7 +24,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <unordered_map>
 #include <vector>
 #include <iostream>
 #include <memory>
@@ -237,7 +236,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         } break;
         case ExprTermType::Func_Call: {
             auto funccall = dynamic_cast<ExprFuncCall *>(right);
-            auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+            auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx, search_in_prev_ctx);
             auto left = left_result.value;
 
             std::vector<std::shared_ptr<earl::value::Obj>> params;
@@ -293,6 +292,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         assert(false);
     } break;
     case ExprTermType::Mod_Access: {
+        std::cout << "Mod_Access: current: " << ctx->get_module() << std::endl;
         auto ma = dynamic_cast<ExprModAccess *>(expr);
         const std::string &id = ma->m_expr_ident->m_tok->lexeme();
         auto child = ctx->get_child_ctx(id);

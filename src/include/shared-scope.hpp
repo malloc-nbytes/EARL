@@ -25,6 +25,7 @@
 #ifndef SHARED_SCOPE_H
 #define SHARED_SCOPE_H
 
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -108,6 +109,19 @@ template <typename K, typename V> struct SharedScope {
                 map.erase(map_it);
                 return;
             }
+        }
+    }
+
+    inline void debug_dump(void) const {
+        int i = 1;
+        for (const auto &map : m_map) {
+            std::cout << "  Scope level: " << i << std::endl;
+            std::cout << "    ";
+            for (const auto &pair : map) {
+                std::cout << pair.first << " ";
+            }
+            std::cout << std::endl;
+            ++i;
         }
     }
 

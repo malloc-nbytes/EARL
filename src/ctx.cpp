@@ -50,7 +50,7 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     auto ctx = std::make_shared<Ctx>(nullptr, nullptr, ctx_type);
 
     ctx->m_functions = m_functions.copy();
-    ctx->set_module(m_module);
+    ctx->set_module(m_module + "-new-instance");
 
     auto &children = this->get_all_children();
 
@@ -151,6 +151,12 @@ void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
 
 void Ctx::var_remove(const std::string &id) {
     m_variables.remove(id);
+}
+
+void Ctx::var_debug_dump(void) {
+    const std::string &mod = this->get_module();
+    std::cout << "mod " << mod << " vars:" << std::endl;
+    m_variables.debug_dump();
 }
 
 /*** Classes ***/

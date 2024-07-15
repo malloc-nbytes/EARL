@@ -71,6 +71,7 @@ struct Ctx {
     void var_add(std::shared_ptr<earl::variable::Obj> var);
     void var_remove(const std::string &id);
     size_t vars_len(void) const;
+    void var_debug_dump(void);
 
     /*** Functions ***/
     bool func_exists(const std::string &id) const;

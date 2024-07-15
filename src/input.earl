@@ -2,12 +2,9 @@ mod Main
 
 import "other.earl"
 
-fn test(a, b) {
-    return Other::sum(a, b);
-    return 0;
+fn test(a) {
+    println(Other::sum(a, 1));
+    println(a);
 }
 
-let x = 2;
-let y = 2;
-println(test(x, y));
-
+test(1);
