@@ -80,15 +80,19 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
     auto val = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
-    // If the result is a literal, no need to copy.
-    // If the result is not a literal, but we have a `ref` attr, no need to copy.
-    if (val.is_literal() || (val.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0))) {
+    if (val.is_ident()) {
+        if (!ctx->var_exists(val.id))
+            ERR_WARGS(Err::Type::Undeclared, "variable `%s` does not exist", val.id.c_str());
+        val.value = ctx->var_get(val.id)->value();
+    }
+
+    if (val.is_literal() || (val.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
+        // If the result is a literal, no need to copy.
+        // If the result is not a literal, but we have a `ref` attr, no need to copy.
         var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value, stmt->m_attrs);
-    }
-    // Copy the value
-    else {
+    else
+        // Copy the value
         var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value->copy(), stmt->m_attrs);
-    }
 
     ctx->var_add(var);
 
@@ -138,71 +142,14 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
     UNIMPLEMENTED("eval_expr_array_access");
 }
 
-static ER eval_function_call(ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx) {
-    auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx);
-    auto left = left_result.value;
-
-    std::vector<std::shared_ptr<earl::value::Obj>> params;
-    std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
-        auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
-        if (param_result.is_none())
-            ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
-        params.push_back(param_result.value);
-    });
-
-    if (left) {
-        UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
-    }
-
-    if (funccall->m_left->get_type() == ExprType::Term) {
-        if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
-            auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
-            const std::string &id = term->m_tok->lexeme();
-            if (Intrinsics::is_intrinsic(id)) {
-                auto value = Intrinsics::call(id, funccall, params, ctx);
-                return ER(value, ERT::Literal);
-            }
-            else {
-                // The function is an identifier, but not intrinsic
-                auto func = ctx->func_get(id, /*crash_on_failure =*/true);
-                auto fctx = ctx->new_instance(CtxType::Function);
-                fctx->set_parent(ctx);
-
-                auto value = eval_user_defined_function(func, params, fctx);
-                return ER(value, ERT::Literal);
-            }
-        }
-        else {
-            assert(false && "unimplemented");
-        }
-    }
-    else {
-        assert(false && "unimplemented");
-    }
-
-    assert(false && "unimplemented");
-}
-
-ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx = false) {
+ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
         const std::string &id = ident->m_tok->lexeme();
-        std::shared_ptr<earl::variable::Obj> var = nullptr;
-
-        if (search_in_prev_ctx)
-            var = ctx->get_parent()->var_get(id, /*crash_on_failure =*/false);
-        else
-            var = ctx->var_get(id, /*crash_on_failure =*/false);
-
-        if (var)
-            return ER(var->value(), ERT::Ident);
-
         if (Intrinsics::is_intrinsic(id))
-            return ER(nullptr, ERT::IntrinsicFunction);
-
-        // No variable found, move on...
-        return ER(nullptr, ERT::None, id);
+            return ER(nullptr, ERT::IntrinsicFunction, id);
+        return ER(nullptr, ERT::Ident, id);
     } break;
     case ExprTermType::Int_Literal: {
         auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
@@ -217,63 +164,38 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         return ER(value, ERT::Literal);
     } break;
     case ExprTermType::Func_Call: {
-        return eval_function_call(dynamic_cast<ExprFuncCall *>(expr), ctx, search_in_prev_ctx);
+        auto funccall = dynamic_cast<ExprFuncCall *>(expr);
+        ER left_er = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+
+        std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+        for (auto &param : funccall->m_params) {
+            ER param_eval = Interpreter::eval_expr(param.get(), ctx);
+            std::shared_ptr<earl::value::Obj> actual_value = nullptr;
+            if (param_eval.is_ident()) {
+                assert(ctx->var_exists(param_eval.id));
+                actual_value = ctx->var_get(param_eval.id)->value();
+            }
+            else {
+                actual_value = param_eval.value;
+            }
+            params.push_back(actual_value);
+        }
+
+        if (left_er.is_intrinsic()) {
+            return ER(Intrinsics::call(left_er.id, funccall, params, ctx), ERT::Literal);
+        }
+        else if (left_er.is_ident()) {
+            UNIMPLEMENTED("left_er.is_ident()");
+        }
+        else {
+            UNIMPLEMENTED("left_er is other");
+        }
     } break;
     case ExprTermType::List_Literal: {
         assert(false);
     } break;
     case ExprTermType::Get: {
-        std::shared_ptr<earl::value::Obj> result = nullptr;
-
-        auto get = dynamic_cast<ExprGet *>(expr);
-        auto left_result_ = Interpreter::eval_expr(get->m_left.get(), ctx, search_in_prev_ctx);
-        auto left_ = left_result_.value;
-        auto right = dynamic_cast<ExprTerm *>(get->m_right.get());
-
-        switch (right->get_term_type()) {
-        case ExprTermType::Ident: {
-            assert(false && "unimplemented");
-        } break;
-        case ExprTermType::Func_Call: {
-            auto funccall = dynamic_cast<ExprFuncCall *>(right);
-            auto left_result = Interpreter::eval_expr(funccall->m_left.get(), ctx, search_in_prev_ctx);
-            auto left = left_result.value;
-
-            std::vector<std::shared_ptr<earl::value::Obj>> params;
-            std::for_each(funccall->m_params.begin(), funccall->m_params.end(), [&](auto &e) {
-                auto param_result = Interpreter::eval_expr(e.get(), ctx, search_in_prev_ctx);
-                if (param_result.is_none())
-                    ERR_WARGS(Err::Type::Undeclared, "unkown identifier `%s`", param_result.id.c_str());
-                params.push_back(param_result.value);
-            });
-
-            if (left) {
-                UNIMPLEMENTED("eval_expr_term:ExprTermType::Func_Call: if left");
-            }
-
-            if (funccall->m_left->get_type() == ExprType::Term) {
-                if (dynamic_cast<ExprTerm *>(funccall->m_left.get())->get_term_type() == ExprTermType::Ident) {
-                    auto term = dynamic_cast<ExprIdent *>(funccall->m_left.get());
-                    const std::string &id = term->m_tok->lexeme();
-                    if (Intrinsics::is_member_intrinsic(id)) {
-                        auto member_value = Intrinsics::call_member(id, left_, params, ctx);
-                        return ER(member_value, ERT::Literal);
-                    }
-                    else {
-                        assert(false);
-                    }
-                }
-                else {
-                    assert(false && "unimplemented");
-                }
-            }
-
-            // return eval_function_call(dynamic_cast<ExprFuncCall *>(right), ctx, search_in_prev_ctx);
-        } break;
-        default: ERR(Err::Type::Fatal, "invalid `get` operation");
-        }
-
-        abort();
+        UNIMPLEMENTED("ExprTermType::Get");
     } break;
     case ExprTermType::Array_Access: {
         assert(false);
@@ -296,7 +218,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev
         auto ma = dynamic_cast<ExprModAccess *>(expr);
         const std::string &id = ma->m_expr_ident->m_tok->lexeme();
         auto child = ctx->get_child_ctx(id);
-        return Interpreter::eval_expr(ma->m_right.get(), child, /*search_in_prev_ctx =*/true);
+        return Interpreter::eval_expr(ma->m_right.get(), child);
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -325,10 +247,10 @@ ER eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
     return ER(result, ERT::Literal);
 }
 
-ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool search_in_prev_ctx) {
+ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, search_in_prev_ctx);
+        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
         return result;
     } break;
     case ExprType::Binary: {

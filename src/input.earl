@@ -1,10 +1,7 @@
 mod Main
 
-import "other.earl"
+let x = 1;
+let y = x;
 
-fn test(a) {
-    println(Other::sum(a, 1));
-    println(a);
-}
-
-test(1);
+println(x);
+println(y);
