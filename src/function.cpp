@@ -47,7 +47,7 @@ StmtBlock *Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
 
-void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
+void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx, std::shared_ptr<Ctx> &new_ctx) {
     for (size_t i = 0; i < values.size(); i++) {
         auto value = values[i];
         Token *id = m_params.at(i).first;
@@ -65,7 +65,7 @@ void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values
         else {
             var = std::make_shared<earl::variable::Obj>(id, value->copy());
         }
-        ctx->var_add(std::move(var));
+        new_ctx->var_add(std::move(var));
     }
 }
 

@@ -49,9 +49,10 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_closure(std::shared_ptr<earl
     UNIMPLEMENTED("eval_user_defined_closure");
 }
 
-std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<earl::function::Obj> func, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    func->load_parameters(params, ctx);
-    return Interpreter::eval_stmt_block(func->block(), ctx);
+std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<earl::function::Obj> func, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &from_ctx) {
+    std::shared_ptr<Ctx> new_ctx = from_ctx->new_instance(CtxType::Function);
+    func->load_parameters(params, from_ctx, new_ctx);
+    return Interpreter::eval_stmt_block(func->block(), new_ctx);
 }
 
 // std::shared_ptr<earl::value::Obj> eval_user_defined_class_method(std::shared_ptr<earl::function::Obj> method, std::vector<std::shared_ptr<earl::value::Obj>> &params, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
@@ -185,7 +186,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             return ER(Intrinsics::call(left_er.id, funccall, params, ctx), ERT::Literal);
         }
         else if (left_er.is_ident()) {
-            UNIMPLEMENTED("left_er.is_ident()");
+            assert(ctx->func_exists(left_er.id));
+            auto func = ctx->func_get(left_er.id);
+            return ER(eval_user_defined_function(func, params, ctx), ERT::Literal);
         }
         else {
             UNIMPLEMENTED("left_er is other");

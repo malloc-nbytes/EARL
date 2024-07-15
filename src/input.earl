@@ -1,7 +1,9 @@
 mod Main
 
-let x = 1;
-let y = x;
+fn test(a) {
+    println("a: ", a);
+}
 
-println(x);
-println(y);
+let x = 1;
+
+test(x);

@@ -49,13 +49,16 @@ std::vector<std::shared_ptr<Ctx>> &Ctx::get_all_children(void) {
 std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     auto ctx = std::make_shared<Ctx>(nullptr, nullptr, ctx_type);
 
-    ctx->m_functions = m_functions.copy();
-    ctx->set_module(m_module + "-new-instance");
-
-    auto &children = this->get_all_children();
-
-    for (auto it = children.begin(); it != children.end(); ++it) {
-        ctx->push_child_context(*it);
+    switch (ctx_type) {
+        case CtxType::Function: {
+            ctx->m_functions = m_functions.copy();
+            ctx->set_module(m_module + "-fc");
+            auto &children = this->get_all_children();
+            for (auto it = children.begin(); it != children.end(); ++it) {
+                ctx->push_child_context(*it);
+            }
+        } break;
+        default: assert(false && "unimplemented");
     }
 
     return ctx;
