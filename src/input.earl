@@ -1,9 +1,13 @@
 mod Main
 
+import "other.earl"
+
+
 fn test(a) {
-    println("a: ", a);
+    println(a);
 }
 
 let x = 1;
-
+let y = 2;
 test(x);
+# let s = Other::sum(x, y);

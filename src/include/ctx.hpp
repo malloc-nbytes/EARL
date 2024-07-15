@@ -40,9 +40,14 @@
 enum class CtxType {
     World,
     Function,
+    Module,
     Class,
     Closure,
 };
+
+// enum Class CtxStatus {
+//     Module,
+// };
 
 struct Ctx {
     Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type);
@@ -70,6 +75,7 @@ struct Ctx {
     std::shared_ptr<earl::variable::Obj> var_get(const std::string &id, bool crash_on_failure = true);
     void var_add(std::shared_ptr<earl::variable::Obj> var);
     void var_remove(const std::string &id);
+    SharedScope<std::string, earl::variable::Obj> &vars_get_all(void);
     size_t vars_len(void) const;
     void var_debug_dump(void);
 
@@ -98,7 +104,7 @@ private:
     std::unique_ptr<Program> m_program;
 
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
-    std::vector<std::shared_ptr<earl::value::Obj>> m_buffer;
+    SharedScope<std::string, earl::variable::Obj> *m_buffer;
     std::string m_module;
 
     std::vector<std::shared_ptr<Ctx>> m_children;

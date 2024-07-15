@@ -51,6 +51,7 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_closure(std::shared_ptr<earl
 
 std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<earl::function::Obj> func, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &from_ctx) {
     std::shared_ptr<Ctx> new_ctx = from_ctx->new_instance(CtxType::Function);
+    new_ctx->set_parent(from_ctx);
     func->load_parameters(params, from_ctx, new_ctx);
     return Interpreter::eval_stmt_block(func->block(), new_ctx);
 }
@@ -143,6 +144,31 @@ std::shared_ptr<earl::value::Obj> eval_expr_array_access(ExprArrayAccess *expr, 
     UNIMPLEMENTED("eval_expr_array_access");
 }
 
+std::shared_ptr<earl::value::Obj> eval_user_defined_function_from_identifier(ExprFuncCall *funccall, const std::string &id, std::shared_ptr<Ctx> &from_ctx) {
+    auto func = from_ctx->func_get(id);
+
+    std::shared_ptr<Ctx> new_ctx = from_ctx->new_instance(CtxType::Function);
+    new_ctx->set_parent(from_ctx);
+
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    for (auto &param : funccall->m_params) {
+        ER param_eval = Interpreter::eval_expr(param.get(), from_ctx);
+        std::shared_ptr<earl::value::Obj> actual_value = nullptr;
+        if (param_eval.is_ident()) {
+            if (!from_ctx->var_exists(param_eval.id))
+                ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
+            actual_value = from_ctx->var_get(param_eval.id)->value();
+        }
+        else {
+            actual_value = param_eval.value;
+        }
+        params.push_back(actual_value);
+    }
+
+    func->load_parameters(params, from_ctx, new_ctx);
+    return Interpreter::eval_stmt_block(func->block(), new_ctx);
+}
+
 ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -168,27 +194,34 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         auto funccall = dynamic_cast<ExprFuncCall *>(expr);
         ER left_er = Interpreter::eval_expr(funccall->m_left.get(), ctx);
 
-        std::vector<std::shared_ptr<earl::value::Obj>> params = {};
-        for (auto &param : funccall->m_params) {
-            ER param_eval = Interpreter::eval_expr(param.get(), ctx);
-            std::shared_ptr<earl::value::Obj> actual_value = nullptr;
-            if (param_eval.is_ident()) {
-                assert(ctx->var_exists(param_eval.id));
-                actual_value = ctx->var_get(param_eval.id)->value();
-            }
-            else {
-                actual_value = param_eval.value;
-            }
-            params.push_back(actual_value);
-        }
+        // std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+        // for (auto &param : funccall->m_params) {
+        //     ER param_eval = Interpreter::eval_expr(param.get(), ctx);
+        //     std::shared_ptr<earl::value::Obj> actual_value = nullptr;
+        //     if (param_eval.is_ident()) {
+        //         if (!ctx->var_exists(param_eval.id))
+        //             ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
+        //         actual_value = ctx->var_get(param_eval.id)->value();
+        //     }
+        //     else {
+        //         actual_value = param_eval.value;
+        //     }
+        //     params.push_back(actual_value);
+        // }
 
         if (left_er.is_intrinsic()) {
-            return ER(Intrinsics::call(left_er.id, funccall, params, ctx), ERT::Literal);
+            // The function is an intrinsic function call
+            // return ER(Intrinsics::call(left_er.id, funccall, params, ctx), ERT::Literal);
+            assert(false && "unimplemented");
         }
         else if (left_er.is_ident()) {
-            assert(ctx->func_exists(left_er.id));
-            auto func = ctx->func_get(left_er.id);
-            return ER(eval_user_defined_function(func, params, ctx), ERT::Literal);
+            // The function is a user defined function
+            if (!ctx->func_exists(left_er.id))
+                return ER(nullptr, ERT::None, left_er.id);
+
+            // auto func = ctx->func_get(left_er.id);
+            // return ER(eval_user_defined_function(func, params, ctx), ERT::Literal);
+            return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
         else {
             UNIMPLEMENTED("left_er is other");
@@ -217,11 +250,20 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         assert(false);
     } break;
     case ExprTermType::Mod_Access: {
-        std::cout << "Mod_Access: current: " << ctx->get_module() << std::endl;
-        auto ma = dynamic_cast<ExprModAccess *>(expr);
-        const std::string &id = ma->m_expr_ident->m_tok->lexeme();
+        auto mod = dynamic_cast<ExprModAccess *>(expr);
+        const std::string &id = mod->m_expr_ident->m_tok->lexeme();
         auto child = ctx->get_child_ctx(id);
-        return Interpreter::eval_expr(ma->m_right.get(), child);
+
+        // `res` should be none, and should have the ID of the
+        // requested identifier from the other module.
+        auto res = Interpreter::eval_expr(mod->m_right.get(), ctx);
+        if (res.is_none()) {
+            assert(false);
+        }
+        else {
+            assert(false && "unimplemented");
+        }
+        return res;
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());

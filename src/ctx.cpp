@@ -31,7 +31,7 @@
 #include "intrinsics.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type) :
-    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module("") {
+    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module(""), m_buffer(nullptr)  {
     m_parent = nullptr;
     m_ctx_type |= static_cast<uint32_t>(ctx_type);
 }
@@ -50,15 +50,18 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     auto ctx = std::make_shared<Ctx>(nullptr, nullptr, ctx_type);
 
     switch (ctx_type) {
-        case CtxType::Function: {
-            ctx->m_functions = m_functions.copy();
-            ctx->set_module(m_module + "-fc");
-            auto &children = this->get_all_children();
-            for (auto it = children.begin(); it != children.end(); ++it) {
-                ctx->push_child_context(*it);
-            }
-        } break;
-        default: assert(false && "unimplemented");
+    case CtxType::Function: {
+        ctx->m_functions = m_functions.copy();
+        ctx->set_module(m_module + "-fc");
+        auto &children = this->get_all_children();
+        for (auto it = children.begin(); it != children.end(); ++it) {
+            ctx->push_child_context(*it);
+        }
+    } break;
+    case CtxType::Module: {
+        assert(false);
+    }
+    default: assert(false && "unimplemented");
     }
 
     return ctx;
