@@ -176,6 +176,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         const std::string &id = ident->m_tok->lexeme();
         if (Intrinsics::is_intrinsic(id))
             return ER(nullptr, ERT::IntrinsicFunction, id);
+        // NOTE: it is up to the caller to deal with the
+        // identifier that is requested. This is why we are
+        // returning nullptr with ERT of type Ident as well as the id.
         return ER(nullptr, ERT::Ident, id);
     } break;
     case ExprTermType::Int_Literal: {
@@ -194,38 +197,18 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         auto funccall = dynamic_cast<ExprFuncCall *>(expr);
         ER left_er = Interpreter::eval_expr(funccall->m_left.get(), ctx);
 
-        // std::vector<std::shared_ptr<earl::value::Obj>> params = {};
-        // for (auto &param : funccall->m_params) {
-        //     ER param_eval = Interpreter::eval_expr(param.get(), ctx);
-        //     std::shared_ptr<earl::value::Obj> actual_value = nullptr;
-        //     if (param_eval.is_ident()) {
-        //         if (!ctx->var_exists(param_eval.id))
-        //             ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
-        //         actual_value = ctx->var_get(param_eval.id)->value();
-        //     }
-        //     else {
-        //         actual_value = param_eval.value;
-        //     }
-        //     params.push_back(actual_value);
-        // }
-
-        if (left_er.is_intrinsic()) {
+        if (left_er.is_intrinsic())
             // The function is an intrinsic function call
-            // return ER(Intrinsics::call(left_er.id, funccall, params, ctx), ERT::Literal);
-            assert(false && "unimplemented");
-        }
+            return ER(Intrinsics::call(left_er.id, funccall, ctx), ERT::Literal);
         else if (left_er.is_ident()) {
             // The function is a user defined function
             if (!ctx->func_exists(left_er.id))
                 return ER(nullptr, ERT::None, left_er.id);
 
-            // auto func = ctx->func_get(left_er.id);
-            // return ER(eval_user_defined_function(func, params, ctx), ERT::Literal);
             return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
-        else {
+        else
             UNIMPLEMENTED("left_er is other");
-        }
     } break;
     case ExprTermType::List_Literal: {
         assert(false);

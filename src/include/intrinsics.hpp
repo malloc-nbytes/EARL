@@ -69,7 +69,7 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call(const std::string &id, ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> call(const std::string &id, ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx);
 
     /// @brief Call an intrinsic member function
     /// @note It is expected to call `is_member_intrinsic` before calling this function

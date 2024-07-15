@@ -46,8 +46,10 @@
 
 // Macro to print `msg` and fail.
 #define UNIMPLEMENTED(msg)                              \
+    do {                                                \
     fprintf(stderr, "UNIMPLEMENTED: " msg "\n");        \
-    exit(1)
+    exit(1);                                            \
+    } while (0)                                         \
 
 // Used to silence compiler warning on a function with
 // some return value that is not yet returning anything.
