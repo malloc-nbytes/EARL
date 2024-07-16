@@ -54,13 +54,19 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
         ctx->m_functions = m_functions.copy();
         ctx->set_module(m_module + "-fc");
         auto &children = this->get_all_children();
-        for (auto it = children.begin(); it != children.end(); ++it) {
+        for (auto it = children.begin(); it != children.end(); ++it)
             ctx->push_child_context(*it);
-        }
     } break;
     case CtxType::Module: {
         assert(false);
-    }
+    } break;
+    case CtxType::Class: {
+        ctx->m_functions = m_functions.copy();
+        ctx->set_module(m_module + "-fc");
+        auto &children = this->get_all_children();
+        for (auto it = children.begin(); it != children.end(); ++it)
+            ctx->push_child_context(*it);
+    } break;
     default: assert(false && "unimplemented");
     }
 
@@ -120,6 +126,15 @@ void Ctx::fill_buffer(std::shared_ptr<Ctx> &from) {
     m_function_buffer = &from->m_functions;
 }
 
+void Ctx::fill_pipe(std::shared_ptr<earl::variable::Obj> var) {
+    const std::string &id = var->id();
+    m_pipe.insert({id, std::move(var)});
+}
+
+void Ctx::clear_pipe(void) {
+    m_pipe.clear();
+}
+
 void Ctx::clear_buffer(void) {
     m_variable_buffer = nullptr;
     m_function_buffer = nullptr;
@@ -148,15 +163,25 @@ std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool c
 }
 
 /*** Variables ***/
-bool Ctx::var_exists(const std::string &id) const {
+bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
     bool res = m_variables.contains(id);
     if (!res && m_variable_buffer)
         res = m_variable_buffer->contains(id);
+    if (!res && check_pipe)
+        res = m_pipe.find(id) != m_pipe.end();
     return res;
 }
 
 std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
     std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
+    // Check pipe scope
+    if (!var) {
+        auto it = m_pipe.find(id);
+        if (it == m_pipe.end())
+            var = nullptr;
+        var = it->second;
+    }
+    // Check buffer scope
     if (!var && m_variable_buffer)
         var = m_variable_buffer->get(id);
     if (!var && crash_on_failure)

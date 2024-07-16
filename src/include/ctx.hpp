@@ -71,9 +71,11 @@ struct Ctx {
     std::vector<std::shared_ptr<Ctx>> &get_all_children(void);
     void fill_buffer(std::shared_ptr<Ctx> &from);
     void clear_buffer(void);
+    void fill_pipe(std::shared_ptr<earl::variable::Obj> var);
+    void clear_pipe(void);
 
     /*** Variables ***/
-    bool var_exists(const std::string &id) const;
+    bool var_exists(const std::string &id, bool check_pipe = true) const;
     std::shared_ptr<earl::variable::Obj> var_get(const std::string &id, bool crash_on_failure = true);
     void var_add(std::shared_ptr<earl::variable::Obj> var);
     void var_remove(const std::string &id);
@@ -105,8 +107,14 @@ private:
 
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
     std::string m_module;
+
+    // Used as a temporary holding place for variables and functions
     SharedScope<std::string, earl::variable::Obj> *m_variable_buffer;
     SharedScope<std::string, earl::function::Obj> *m_function_buffer;
+
+    // Only used as a temporary holding place for variables for
+    // class instantiation.
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> m_pipe;
 
     std::vector<std::shared_ptr<Ctx>> m_children;
     std::shared_ptr<Ctx> m_parent;

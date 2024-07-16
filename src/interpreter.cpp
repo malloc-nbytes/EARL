@@ -42,6 +42,9 @@
 
 using namespace Interpreter;
 
+std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
+std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
+
 std::shared_ptr<earl::value::Obj> eval_user_defined_closure(std::shared_ptr<earl::variable::Obj> var, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)var;
     (void)params;
@@ -95,15 +98,22 @@ std::shared_ptr<earl::value::Obj> eval_class_instantiation(const std::string &id
     // Begin class construction
     auto klass = std::make_shared<earl::value::Class>(class_stmt, ctx);
 
-    std::shared_ptr<earl::function::Obj> constructor = nullptr;
-
-    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i) {
-
+    // Get all temporary constructor variables
+    for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
+        auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].get(), params[i]);
+        klass->ctx()->fill_pipe(var);
     }
 
+    // Eval memeber variables
+    for (auto &member : class_stmt->m_members)
+        eval_stmt_let(member.get(), klass->ctx());
 
+    // Eval methods
+    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i)
+        eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx());
 
-    assert(false);
+    // assert(false);
+    klass->ctx()->clear_pipe();
     return klass;
 }
 
@@ -111,12 +121,6 @@ std::shared_ptr<earl::value::Obj> eval_expr_list_literal(ExprListLit *expr, std:
     (void)expr;
     (void)ctx;
     UNIMPLEMENTED("eval_expr_list_literal");
-}
-
-std::shared_ptr<earl::value::Obj> eval_expr_get2(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_expr_get2");
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
@@ -304,7 +308,7 @@ ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     const std::string &id = stmt->m_id->lexeme();
 
-    if (ctx->var_exists(id)) {
+    if (ctx->var_exists(id, /*check_pipe =*/false)) {
         Err::err_wtok(stmt->m_id.get());
         ERR_WARGS(Err::Type::Redeclaration, "variable `%s` already exists", id.c_str());
     }

@@ -336,12 +336,14 @@ namespace earl {
 
             void load_class_members(std::vector<std::shared_ptr<Obj>> &args);
 
-            // void add_method(std::shared_ptr<function::Obj> func);
-            // void add_member(std::shared_ptr<variable::Obj> var);
-            // void add_member_assignee(Token *assignee);
+            void add_method(std::shared_ptr<function::Obj> func);
+            void add_member(std::shared_ptr<variable::Obj> var);
+            void add_member_assignee(Token *assignee);
 
             std::shared_ptr<function::Obj> get_method(const std::string &id);
             std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);
+
+            std::shared_ptr<Ctx> &ctx(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -354,13 +356,12 @@ namespace earl {
 
         private:
             StmtClass *m_stmtclass;
-            std::shared_ptr<Ctx> m_owner;
+            std::shared_ptr<Ctx> m_ctx;
 
             std::vector<std::shared_ptr<variable::Obj>> m_members;
             std::vector<std::shared_ptr<function::Obj>> m_methods;
             std::vector<Token *> m_member_assignees;
-        }
-            ;
+        };
 
         struct File : public Obj {
             File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
