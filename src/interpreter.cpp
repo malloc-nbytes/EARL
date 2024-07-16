@@ -82,6 +82,9 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
     auto val = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
+    if (val.is_none())
+        ERR_WARGS(Err::Type::Undeclared, "identifier `%s` has not been declared", val.id.c_str());
+
     if (val.is_ident()) {
         if (!ctx->var_exists(val.id))
             ERR_WARGS(Err::Type::Undeclared, "variable `%s` does not exist", val.id.c_str());
@@ -112,12 +115,6 @@ std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *expr, s
     (void)expr;
     (void)ctx;
     UNIMPLEMENTED("eval_class_instantiation");
-}
-
-std::shared_ptr<earl::value::Obj> eval_expr_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_expr_funccall");
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_list_literal(ExprListLit *expr, std::shared_ptr<Ctx> &ctx) {
@@ -197,14 +194,22 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         auto funccall = dynamic_cast<ExprFuncCall *>(expr);
         ER left_er = Interpreter::eval_expr(funccall->m_left.get(), ctx);
 
+        // The function is an intrinsic function call
         if (left_er.is_intrinsic())
-            // The function is an intrinsic function call
             return ER(Intrinsics::call(left_er.id, funccall, ctx), ERT::Literal);
+
+        // The function is a user defined function
         else if (left_er.is_ident()) {
-            // The function is a user defined function
-            if (!ctx->func_exists(left_er.id)) {
-                return ER(nullptr, ERT::None, /*id =*/left_er.id, (void *)funccall);
-            }
+            if (ctx->class_exists(left_er.id))
+                return ER(eval_class_instantiation(funccall, ctx), ERT::Literal, /*id =*/left_er.id);
+
+            if (!ctx->func_exists(left_er.id))
+                // NOTE: it is up to the caller to deal with the
+                // identifier that is requested since it was not
+                // found in the current context. This means that
+                // it may be in a different context. This is why
+                // we don't want to crash here.
+                return ER(nullptr, ERT::None, /*id =*/left_er.id, /*extra =*/dynamic_cast<void *>(funccall));
 
             return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
@@ -248,9 +253,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             child->clear_buffer();
             return ER(res, ERT::Literal);
         }
-        else {
+        else
             assert(false && "unimplemented");
-        }
         return function_from_module;
     } break;
     default:
@@ -334,9 +338,8 @@ std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<C
 
     std::vector<std::pair<Token *, uint32_t>> args;
 
-    for (auto &entry : stmt->m_args) {
+    for (auto &entry : stmt->m_args)
         args.push_back(std::make_pair(entry.first.get(), entry.second));
-    }
 
     auto created_function = std::make_shared<earl::function::Obj>(stmt, args);
     ctx->func_add(std::move(created_function));
@@ -349,12 +352,10 @@ std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx
     auto expr_value = expr_result.value;
     std::shared_ptr<earl::value::Obj> result = nullptr;
 
-    if (expr_value->boolean()) {
+    if (expr_value->boolean())
         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-    }
-    else if (stmt->m_else.has_value()) {
+    else if (stmt->m_else.has_value())
         result = Interpreter::eval_stmt_block(stmt->m_else.value().get(), ctx);
-    }
 
     return result;
 }
@@ -379,17 +380,15 @@ std::shared_ptr<earl::value::Obj> eval_stmt_mut(StmtMut *stmt, std::shared_ptr<C
         assert(ctx->var_exists(left.id));
         l = ctx->var_get(left.id)->value();
     }
-    else {
+    else
         l = left.value;
-    }
 
     if (right.is_ident()) {
         assert(ctx->var_exists(right.id));
         r = ctx->var_get(right.id)->value();
     }
-    else {
+    else
         r = right.value;
-    }
 
     l->mutate(r);
 

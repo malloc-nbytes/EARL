@@ -88,7 +88,7 @@ struct Ctx {
     size_t funcs_len(void) const;
 
     /*** Classes ***/
-    // bool class_exists(const std::string &id) const;
+    bool class_exists(const std::string &id) const;
     // std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = true);
     // void class_add(std::shared_ptr<earl::Class::Obj> klass);
     void class_make_available(StmtClass *klass);

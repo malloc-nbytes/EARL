@@ -180,9 +180,9 @@ void Ctx::var_debug_dump(void) {
 }
 
 /*** Classes ***/
-// bool Ctx::class_exists(const std::string &id) const {
-//     UNIMPLEMENTED("Ctx::class_exists");
-// }
+bool Ctx::class_exists(const std::string &id) const {
+    return m_defined_classes.find(id) != m_defined_classes.end();
+}
 
 // std::shared_ptr<earl::Class::Obj> &Ctx::class_get(const std::string &id, bool crash_on_failure) {
 //     UNIMPLEMENTED("Ctx::class_get");

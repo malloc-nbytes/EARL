@@ -1,12 +1,14 @@
 mod Main
 
-import "other.earl"
+class Point [x, y, name] {
+    @pub x = x;
+    @pub y = y;
+    @pub name = name;
+    desc = "a point class";
 
-fn test(a, b) {
-    println("a: ", a);
-    println("s: ", Other::sum(a, b));
+    @pub fn get_desc() {
+        return desc;
+    }
 }
 
-let x = 1;
-let y = 2;
-test(x, y);
+let p = Point(1, 2, "my point");
