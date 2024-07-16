@@ -80,6 +80,8 @@ namespace earl {
             OS,
             /** EARL break type */
             Break,
+            /** EARL class type */
+            Class,
         };
 
         /// @brief The base abstract class that all
@@ -327,35 +329,35 @@ namespace earl {
             std::shared_ptr<Ctx> m_value;
         };
 
-        // struct Class : public Obj {
-        //     Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner);
+        struct Class : public Obj {
+            Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner);
 
-        //     const std::string &id(void) const;
+            const std::string &id(void) const;
 
-        //     void add_method(std::unique_ptr<function::Obj> func);
-        //     void add_member(std::unique_ptr<variable::Obj> var);
-        //     void add_member_assignee(Token *assignee);
+            void add_method(std::shared_ptr<function::Obj> func);
+            void add_member(std::shared_ptr<variable::Obj> var);
+            void add_member_assignee(Token *assignee);
 
-        //     function::Obj *get_method(const std::string &id);
-        //     earl::variable::Obj *get_member(const std::string &id);
+            std::shared_ptr<function::Obj> get_method(const std::string &id);
+            std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);
 
-        //     /*** OVERRIDES ***/
-        //     Type type(void) const             override;
-        //     Obj *binop(Token *op, Obj *other) override;
-        //     bool boolean(void)                override;
-        //     void mutate(Obj *other)           override;
-        //     Obj *copy(void)                   override;
-        //     bool eq(Obj *other)               override;
-        //     std::string to_cxxstring(void)    override;
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
-        // private:
-        //     StmtClass *m_stmtclass;
-        //     std::shared_ptr<Ctx> m_owner;
+        private:
+            StmtClass *m_stmtclass;
+            std::shared_ptr<Ctx> m_owner;
 
-        //     std::vector<std::unique_ptr<variable::Obj>> m_members;
-        //     std::vector<std::unique_ptr<function::Obj>> m_methods;
-        //     std::vector<Token *> m_member_assignees;
-        // }
+            std::vector<std::shared_ptr<variable::Obj>> m_members;
+            std::vector<std::shared_ptr<function::Obj>> m_methods;
+            std::vector<Token *> m_member_assignees;
+        }
             ;
 
         struct File : public Obj {

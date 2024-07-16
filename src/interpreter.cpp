@@ -71,39 +71,6 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<ear
 //     UNIMPLEMENTED("get_class_member");
 // }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
-    const std::string &id = stmt->m_id->lexeme();
-
-    if (ctx->var_exists(id)) {
-        Err::err_wtok(stmt->m_id.get());
-        ERR_WARGS(Err::Type::Redeclaration, "variable `%s` already exists", id.c_str());
-    }
-
-    auto val = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    std::shared_ptr<earl::variable::Obj> var = nullptr;
-
-    if (val.is_none())
-        ERR_WARGS(Err::Type::Undeclared, "identifier `%s` has not been declared", val.id.c_str());
-
-    if (val.is_ident()) {
-        if (!ctx->var_exists(val.id))
-            ERR_WARGS(Err::Type::Undeclared, "variable `%s` does not exist", val.id.c_str());
-        val.value = ctx->var_get(val.id)->value();
-    }
-
-    if (val.is_literal() || (val.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
-        // If the result is a literal, no need to copy.
-        // If the result is not a literal, but we have a `ref` attr, no need to copy.
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value, stmt->m_attrs);
-    else
-        // Copy the value
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value->copy(), stmt->m_attrs);
-
-    ctx->var_add(var);
-
-    return nullptr;
-}
-
 // void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
 //     (void)stmt;
 //     (void)klass;
@@ -111,10 +78,27 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
 //     UNIMPLEMENTED("load_class_members");
 // }
 
-std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
-    (void)ctx;
-    UNIMPLEMENTED("eval_class_instantiation");
+std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
+    std::shared_ptr<earl::value::Obj> res = nullptr;
+
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    for (auto &param : funccall->m_params) {
+        ER param_eval = Interpreter::eval_expr(param.get(), ctx);
+        std::shared_ptr<earl::value::Obj> actual_value = nullptr;
+        if (param_eval.is_ident()) {
+            if (!ctx->var_exists(param_eval.id))
+                ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
+            actual_value = ctx->var_get(param_eval.id)->value();
+        }
+        else {
+            actual_value = param_eval.value;
+        }
+        params.push_back(actual_value);
+    }
+
+    assert(false);
+
+    return res;
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_list_literal(ExprListLit *expr, std::shared_ptr<Ctx> &ctx) {
@@ -308,6 +292,39 @@ ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
     default:
         assert(false && "unreachable");
     }
+}
+
+std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
+    const std::string &id = stmt->m_id->lexeme();
+
+    if (ctx->var_exists(id)) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR_WARGS(Err::Type::Redeclaration, "variable `%s` already exists", id.c_str());
+    }
+
+    auto val = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    std::shared_ptr<earl::variable::Obj> var = nullptr;
+
+    if (val.is_none())
+        ERR_WARGS(Err::Type::Undeclared, "identifier `%s` has not been declared", val.id.c_str());
+
+    if (val.is_ident()) {
+        if (!ctx->var_exists(val.id))
+            ERR_WARGS(Err::Type::Undeclared, "variable `%s` does not exist", val.id.c_str());
+        val.value = ctx->var_get(val.id)->value();
+    }
+
+    if (val.is_literal() || (val.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
+        // If the result is a literal, no need to copy.
+        // If the result is not a literal, but we have a `ref` attr, no need to copy.
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value, stmt->m_attrs);
+    else
+        // Copy the value
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), val.value->copy(), stmt->m_attrs);
+
+    ctx->var_add(var);
+
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {

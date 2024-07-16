@@ -29,5 +29,36 @@
 #include "common.hpp"
 #include "utils.hpp"
 
-using namespace earl::function;
+using namespace earl::value;
 
+Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner)
+    : m_stmtclass(stmtclass), m_owner(owner) {}
+
+/*** OVERRIDES ***/
+Type Class::type(void) const {
+    return Type::Class;
+}
+
+std::shared_ptr<Obj> Class::binop(Token *op, std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Class::binop");
+}
+
+bool Class::boolean(void) {
+    UNIMPLEMENTED("Class::boolean");
+}
+
+void Class::mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Class::mutate");
+}
+
+std::shared_ptr<Obj> Class::copy(void) {
+    UNIMPLEMENTED("Class::copy");
+}
+
+bool Class::eq(std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Class::eq");
+}
+
+std::string Class::to_cxxstring(void) {
+    UNIMPLEMENTED("Class::to_cxxstring");
+}
