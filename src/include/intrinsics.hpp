@@ -78,7 +78,9 @@ namespace Intrinsics {
     /// @param params value objects to pass to the function
     /// @note it is often expected that `params` has the size of 1 or 0
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    // std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+
+   std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 

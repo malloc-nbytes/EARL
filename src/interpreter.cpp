@@ -167,6 +167,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         if (Intrinsics::is_intrinsic(id))
             return ER(nullptr, ERT::IntrinsicFunction, id);
+        if (Intrinsics::is_member_intrinsic(id))
+            return ER(nullptr, ERT::IntrinsicMemberFunction, id);
 
         // NOTE: it is up to the caller to deal with the
         // identifier that is requested. This is why we are
@@ -193,10 +195,17 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         if (left_er.is_intrinsic())
             return ER(Intrinsics::call(left_er.id, funccall, ctx), ERT::Literal);
 
+        if (left_er.is_member_intrinsic()) {
+            // We need to not evaluate the function call as we do not know
+            // what the left side of the `.` (get) operation is. This is
+            // dealt with in eval_expr_term: case ExprTermType::Get.
+            return ER(nullptr, ERT::IntrinsicMemberFunction, /*id=*/left_er.id, /*extra=*/dynamic_cast<void *>(funccall));
+        }
+
         // The function is a user defined function
         else if (left_er.is_ident()) {
             if (ctx->class_stmt_exists(left_er.id))
-                return ER(eval_class_instantiation(left_er.id, funccall, ctx), ERT::Literal, /*id =*/left_er.id);
+                return ER(eval_class_instantiation(left_er.id, funccall, ctx), ERT::Literal, /*id=*/left_er.id);
 
             if (!ctx->func_exists(left_er.id))
                 // NOTE: it is up to the caller to deal with the
@@ -204,7 +213,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
                 // found in the current context. This means that
                 // it may be in a different context. This is why
                 // we don't want to crash here.
-                return ER(nullptr, ERT::None, /*id =*/left_er.id, /*extra =*/dynamic_cast<void *>(funccall));
+                return ER(nullptr, ERT::Ident, /*id=*/left_er.id, /*extra=*/(void*)funccall);
 
             return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
@@ -215,7 +224,20 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         assert(false);
     } break;
     case ExprTermType::Get: {
-        UNIMPLEMENTED("ExprTermType::Get");
+        auto get = dynamic_cast<ExprGet *>(expr);
+        ER left_er = Interpreter::eval_expr(get->m_left.get(), ctx);
+        ER right_er = Interpreter::eval_expr(get->m_right.get(), ctx);
+
+        if (right_er.is_ident())
+            assert(false && "unimplemented");
+
+        if (right_er.is_member_intrinsic())
+            return ER(Intrinsics::call_member(right_er.id, left_er.value, static_cast<ExprFuncCall*>(right_er.extra), ctx), ERT::Literal);
+
+        std::cout << right_er.rt << std::endl;
+        std::cout << (int)(right_er.value->type()) << std::endl;
+
+        assert(false);
     } break;
     case ExprTermType::Array_Access: {
         assert(false);

@@ -11,6 +11,5 @@ class Point [x, y, name] {
     }
 }
 
-let p = Point(1, 2, "my point");
-
-println(p.get_desc());
+let p = Point(1, 2, "test");
+p.get_desc();

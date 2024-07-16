@@ -104,8 +104,27 @@ bool Intrinsics::is_member_intrinsic(const std::string &id) {
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
+// std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+//     return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
+// }
+
+std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    for (auto &param : funccall->m_params) {
+        Interpreter::ER param_eval = Interpreter::eval_expr(param.get(), ctx);
+        std::shared_ptr<earl::value::Obj> actual_value = nullptr;
+        if (param_eval.is_ident()) {
+            if (!ctx->var_exists(param_eval.id))
+                ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
+            actual_value = ctx->var_get(param_eval.id)->value();
+        }
+        else {
+            actual_value = param_eval.value;
+        }
+        params.push_back(actual_value);
+    }
+
+    return intrinsic_member_functions.at(id)(accessor, params, ctx);
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_argv(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
