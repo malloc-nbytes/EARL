@@ -180,19 +180,18 @@ void Ctx::var_debug_dump(void) {
 }
 
 /*** Classes ***/
-bool Ctx::class_exists(const std::string &id) const {
+bool Ctx::class_stmt_exists(const std::string &id) const {
     return m_defined_classes.find(id) != m_defined_classes.end();
 }
 
-// std::shared_ptr<earl::Class::Obj> &Ctx::class_get(const std::string &id, bool crash_on_failure) {
-//     UNIMPLEMENTED("Ctx::class_get");
-// }
+StmtClass *Ctx::class_stmt_get(const std::string &id, bool crash_on_failure) {
+    auto it = m_defined_classes.find(id);
+    if (it == m_defined_classes.end() && crash_on_failure)
+        ERR_WARGS(Err::Type::Undeclared, "class `%s` has not been defined", id.c_str());
+    return it->second;
+}
 
-// void Ctx::class_add(std::shared_ptr<earl::Class::Obj> klass) {
-//     UNIMPLEMENTED("Ctx::class_add");
-// }
-
-void Ctx::class_make_available(StmtClass *klass) {
+void Ctx::class_stmt_make_available(StmtClass *klass) {
     const std::string &id = klass->m_id->lexeme();
     m_defined_classes.insert({id, klass});
 }

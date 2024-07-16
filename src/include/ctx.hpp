@@ -88,10 +88,9 @@ struct Ctx {
     size_t funcs_len(void) const;
 
     /*** Classes ***/
-    bool class_exists(const std::string &id) const;
-    // std::shared_ptr<earl::Class::Obj> &class_get(const std::string &id, bool crash_on_failure = true);
-    // void class_add(std::shared_ptr<earl::Class::Obj> klass);
-    void class_make_available(StmtClass *klass);
+    bool class_stmt_exists(const std::string &id) const;
+    StmtClass *class_stmt_get(const std::string &id, bool crash_on_failure = true);
+    void class_stmt_make_available(StmtClass *klass);
 
     // Check if the actual statement exists
     bool class_is_defined(const std::string &id) const;
@@ -100,7 +99,6 @@ struct Ctx {
 private:
     SharedScope<std::string, earl::variable::Obj> m_variables;
     SharedScope<std::string, earl::function::Obj> m_functions;
-    // SharedScope<std::string, earl::Class::Obj>    m_classes;
 
     std::unique_ptr<Lexer>   m_lexer;
     std::unique_ptr<Program> m_program;

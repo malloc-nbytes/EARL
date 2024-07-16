@@ -334,9 +334,11 @@ namespace earl {
 
             const std::string &id(void) const;
 
-            void add_method(std::shared_ptr<function::Obj> func);
-            void add_member(std::shared_ptr<variable::Obj> var);
-            void add_member_assignee(Token *assignee);
+            void load_class_members(std::vector<std::shared_ptr<Obj>> &args);
+
+            // void add_method(std::shared_ptr<function::Obj> func);
+            // void add_member(std::shared_ptr<variable::Obj> var);
+            // void add_member_assignee(Token *assignee);
 
             std::shared_ptr<function::Obj> get_method(const std::string &id);
             std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);

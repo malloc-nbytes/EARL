@@ -34,6 +34,10 @@ using namespace earl::value;
 Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner)
     : m_stmtclass(stmtclass), m_owner(owner) {}
 
+void Class::load_class_members(std::vector<std::shared_ptr<Obj>> &args) {
+    assert(false);
+}
+
 /*** OVERRIDES ***/
 Type Class::type(void) const {
     return Type::Class;

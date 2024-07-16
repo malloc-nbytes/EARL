@@ -71,15 +71,12 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<ear
 //     UNIMPLEMENTED("get_class_member");
 // }
 
-// void load_class_members(StmtLet *stmt, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-//     (void)stmt;
-//     (void)klass;
-//     (void)ctx;
-//     UNIMPLEMENTED("load_class_members");
-// }
+std::shared_ptr<earl::value::Obj> eval_class_instantiation(const std::string &id, ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
+    StmtClass *class_stmt = ctx->class_stmt_get(id);
 
-std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
-    std::shared_ptr<earl::value::Obj> res = nullptr;
+    if (funccall->m_params.size() != class_stmt->m_constructor_args.size())
+        ERR_WARGS(Err::Type::Fatal, "The constructor for class `%s` expects %zu arguments but got %zu",
+                  id.c_str(), class_stmt->m_constructor_args.size(), funccall->m_params.size());
 
     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
     for (auto &param : funccall->m_params) {
@@ -90,15 +87,24 @@ std::shared_ptr<earl::value::Obj> eval_class_instantiation(ExprFuncCall *funccal
                 ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
             actual_value = ctx->var_get(param_eval.id)->value();
         }
-        else {
+        else
             actual_value = param_eval.value;
-        }
         params.push_back(actual_value);
     }
 
-    assert(false);
+    // Begin class construction
+    auto klass = std::make_shared<earl::value::Class>(class_stmt, ctx);
 
-    return res;
+    std::shared_ptr<earl::function::Obj> constructor = nullptr;
+
+    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i) {
+
+    }
+
+
+
+    assert(false);
+    return klass;
 }
 
 std::shared_ptr<earl::value::Obj> eval_expr_list_literal(ExprListLit *expr, std::shared_ptr<Ctx> &ctx) {
@@ -140,9 +146,8 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_function_from_identifier(Exp
                 ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not defined", param_eval.id.c_str());
             actual_value = from_ctx->var_get(param_eval.id)->value();
         }
-        else {
+        else
             actual_value = param_eval.value;
-        }
         params.push_back(actual_value);
     }
 
@@ -155,8 +160,10 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
         const std::string &id = ident->m_tok->lexeme();
+
         if (Intrinsics::is_intrinsic(id))
             return ER(nullptr, ERT::IntrinsicFunction, id);
+
         // NOTE: it is up to the caller to deal with the
         // identifier that is requested. This is why we are
         // returning nullptr with ERT of type Ident as well as the id.
@@ -184,8 +191,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         // The function is a user defined function
         else if (left_er.is_ident()) {
-            if (ctx->class_exists(left_er.id))
-                return ER(eval_class_instantiation(funccall, ctx), ERT::Literal, /*id =*/left_er.id);
+            if (ctx->class_stmt_exists(left_er.id))
+                return ER(eval_class_instantiation(left_er.id, funccall, ctx), ERT::Literal, /*id =*/left_er.id);
 
             if (!ctx->func_exists(left_er.id))
                 // NOTE: it is up to the caller to deal with the
@@ -467,7 +474,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<C
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
-    ctx->class_make_available(stmt);
+    ctx->class_stmt_make_available(stmt);
     return nullptr;
 }
 
