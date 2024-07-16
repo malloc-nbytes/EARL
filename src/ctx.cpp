@@ -31,7 +31,7 @@
 #include "intrinsics.hpp"
 
 Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type) :
-    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module(""), m_buffer(nullptr)  {
+    m_lexer(std::move(lexer)), m_program(std::move(program)), m_module(""), m_variable_buffer(nullptr), m_function_buffer(nullptr)  {
     m_parent = nullptr;
     m_ctx_type |= static_cast<uint32_t>(ctx_type);
 }
@@ -115,6 +115,16 @@ std::string &Ctx::get_module(void) {
     return m_module;
 }
 
+void Ctx::fill_buffer(std::shared_ptr<Ctx> &from) {
+    m_variable_buffer = &from->m_variables;
+    m_function_buffer = &from->m_functions;
+}
+
+void Ctx::clear_buffer(void) {
+    m_variable_buffer = nullptr;
+    m_function_buffer = nullptr;
+}
+
 /*** Functions ***/
 size_t Ctx::funcs_len(void) const {
     return m_functions.size();
@@ -139,14 +149,18 @@ std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool c
 
 /*** Variables ***/
 bool Ctx::var_exists(const std::string &id) const {
-    return m_variables.contains(id);
+    bool res = m_variables.contains(id);
+    if (!res && m_variable_buffer)
+        res = m_variable_buffer->contains(id);
+    return res;
 }
 
 std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
     std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
-    if (!var && crash_on_failure) {
-        ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not in scope", id.c_str());
-    }
+    if (!var && m_variable_buffer)
+        var = m_variable_buffer->get(id);
+    if (!var && crash_on_failure)
+        ERR_WARGS(Err::Type::Undeclared, "variable `%s` is not declared", id.c_str());
     return var;
 }
 

@@ -202,8 +202,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             return ER(Intrinsics::call(left_er.id, funccall, ctx), ERT::Literal);
         else if (left_er.is_ident()) {
             // The function is a user defined function
-            if (!ctx->func_exists(left_er.id))
-                return ER(nullptr, ERT::None, left_er.id);
+            if (!ctx->func_exists(left_er.id)) {
+                return ER(nullptr, ERT::None, /*id =*/left_er.id, (void *)funccall);
+            }
 
             return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
@@ -239,14 +240,18 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         // `res` should be none, and should have the ID of the
         // requested identifier from the other module.
-        auto res = Interpreter::eval_expr(mod->m_right.get(), ctx);
-        if (res.is_none()) {
-            assert(false);
+        auto function_from_module = Interpreter::eval_expr(mod->m_right.get(), ctx);
+        if (function_from_module.is_none()) {
+            assert(child->func_get(function_from_module.id));
+            child->fill_buffer(ctx);
+            auto res = eval_user_defined_function_from_identifier(static_cast<ExprFuncCall*>(function_from_module.extra), function_from_module.id, child);
+            child->clear_buffer();
+            return ER(res, ERT::Literal);
         }
         else {
             assert(false && "unimplemented");
         }
-        return res;
+        return function_from_module;
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -258,7 +263,13 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
-    auto lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+    ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+    // auto lhs_value = lhs.value;
+
+    if (lhs.is_ident()) {
+        assert(ctx->var_exists(lhs.id));
+        lhs.value = ctx->var_get(lhs.id)->value();
+    }
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
@@ -270,6 +281,12 @@ ER eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
     }
 
     auto rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+
+    if (rhs.is_ident()) {
+        assert(ctx->var_exists(rhs.id));
+        rhs.value = ctx->var_get(rhs.id)->value();
+    }
+
     auto result = lhs.value->binop(expr->m_op.get(), rhs.value);
 
     return ER(result, ERT::Literal);
@@ -356,7 +373,25 @@ std::shared_ptr<earl::value::Obj> eval_stmt_mut(StmtMut *stmt, std::shared_ptr<C
     auto left = Interpreter::eval_expr(stmt->m_left.get(), ctx);
     auto right = Interpreter::eval_expr(stmt->m_right.get(), ctx);
 
-    left.value->mutate(right.value);
+    std::shared_ptr<earl::value::Obj> l, r;
+
+    if (left.is_ident()) {
+        assert(ctx->var_exists(left.id));
+        l = ctx->var_get(left.id)->value();
+    }
+    else {
+        l = left.value;
+    }
+
+    if (right.is_ident()) {
+        assert(ctx->var_exists(right.id));
+        r = ctx->var_get(right.id)->value();
+    }
+    else {
+        r = right.value;
+    }
+
+    l->mutate(r);
 
     return std::make_shared<earl::value::Void>();
 }

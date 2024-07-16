@@ -69,6 +69,8 @@ struct Ctx {
     std::shared_ptr<Ctx> get_child_ctx(const std::string &id);
     size_t children_len(void) const;
     std::vector<std::shared_ptr<Ctx>> &get_all_children(void);
+    void fill_buffer(std::shared_ptr<Ctx> &from);
+    void clear_buffer(void);
 
     /*** Variables ***/
     bool var_exists(const std::string &id) const;
@@ -104,8 +106,9 @@ private:
     std::unique_ptr<Program> m_program;
 
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
-    SharedScope<std::string, earl::variable::Obj> *m_buffer;
     std::string m_module;
+    SharedScope<std::string, earl::variable::Obj> *m_variable_buffer;
+    SharedScope<std::string, earl::function::Obj> *m_function_buffer;
 
     std::vector<std::shared_ptr<Ctx>> m_children;
     std::shared_ptr<Ctx> m_parent;

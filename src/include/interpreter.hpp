@@ -41,10 +41,11 @@ namespace Interpreter {
     };
 
     struct ER {
-        ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "") {
+        ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "", void *extra = nullptr) {
             this->value = value;
             this->rt = rt;
             this->id = id;
+            this->extra = extra;
         }
 
         bool is_literal(void) {
@@ -66,6 +67,7 @@ namespace Interpreter {
         std::shared_ptr<earl::value::Obj> value;
         ERT rt;
         std::string id;
+        void *extra;
     };
 
     std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
