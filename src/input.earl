@@ -6,10 +6,15 @@ class Point [x, y, name] {
     @pub name = name;
     desc = "a point class";
 
+    @pub fn test(inp) {
+        println("inp: ", inp);
+        return "hello";
+    }
+
     @pub fn get_desc() {
-        return desc;
+        return 9;
     }
 }
 
 let p = Point(1, 2, "test");
-p.get_desc();
+println(p.get_desc());

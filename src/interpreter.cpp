@@ -213,7 +213,7 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
                 // found in the current context. This means that
                 // it may be in a different context. This is why
                 // we don't want to crash here.
-                return ER(nullptr, ERT::Ident, /*id=*/left_er.id, /*extra=*/(void*)funccall);
+                return ER(nullptr, ERT::FuncIdent, /*id=*/left_er.id, /*extra=*/(void*)funccall);
 
             return ER(eval_user_defined_function_from_identifier(funccall, left_er.id, ctx), ERT::Literal);
         }
@@ -228,14 +228,29 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         ER left_er = Interpreter::eval_expr(get->m_left.get(), ctx);
         ER right_er = Interpreter::eval_expr(get->m_right.get(), ctx);
 
-        if (right_er.is_ident())
+        if (!left_er.is_ident()) {
             assert(false && "unimplemented");
+        }
+
+        if (right_er.is_func_ident()) {
+            assert(ctx->var_exists(left_er.id));
+            auto var = ctx->var_get(left_er.id);
+            assert(var->value()->type() == earl::value::Type::Class);
+
+            auto klass = dynamic_cast<earl::value::Class *>(var->value().get());
+            assert(klass->ctx()->func_exists(right_er.id));
+
+            auto func = klass->ctx()->func_get(right_er.id);
+            auto res = eval_user_defined_function_from_identifier(static_cast<ExprFuncCall *>(right_er.extra), right_er.id, klass->ctx());
+            return ER(res, ERT::Literal);
+        }
+
+        if (right_er.is_ident()) {
+            assert(false && "unimplemented");
+        }
 
         if (right_er.is_member_intrinsic())
             return ER(Intrinsics::call_member(right_er.id, left_er.value, static_cast<ExprFuncCall*>(right_er.extra), ctx), ERT::Literal);
-
-        std::cout << right_er.rt << std::endl;
-        std::cout << (int)(right_er.value->type()) << std::endl;
 
         assert(false);
     } break;

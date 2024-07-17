@@ -38,7 +38,8 @@ namespace Interpreter {
         Ident = 1 << 1,
         IntrinsicFunction = 1 << 2,
         IntrinsicMemberFunction = 1 << 3,
-        None = 1 << 4,
+        FuncIdent = 1 << 4,
+        None = 1 << 5,
     };
 
     struct ER {
@@ -59,6 +60,10 @@ namespace Interpreter {
 
         bool is_intrinsic(void) {
             return (this->rt & ERT::IntrinsicFunction) != 0;
+        }
+
+        bool is_func_ident(void) {
+            return (this->rt & ERT::FuncIdent) != 0;
         }
 
         bool is_member_intrinsic(void) {
