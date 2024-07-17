@@ -73,6 +73,7 @@ struct Ctx {
     void clear_buffer(void);
     void fill_pipe(std::shared_ptr<earl::variable::Obj> var);
     void clear_pipe(void);
+    CtxType type(void) const;
 
     /*** Variables ***/
     bool var_exists(const std::string &id, bool check_pipe = true) const;

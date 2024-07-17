@@ -62,7 +62,7 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     } break;
     case CtxType::Class: {
         ctx->m_functions = m_functions.copy();
-        ctx->set_module(m_module + "-fc");
+        ctx->set_module(m_module + "-class");
         auto &children = this->get_all_children();
         for (auto it = children.begin(); it != children.end(); ++it)
             ctx->push_child_context(*it);
@@ -83,6 +83,10 @@ Stmt *Ctx::get_stmt_at(size_t i) {
 
 void Ctx::set_module(const std::string &id) {
     m_module = id;
+}
+
+CtxType Ctx::type(void) const {
+    return static_cast<CtxType>(m_ctx_type);
 }
 
 void Ctx::push_scope(void) {
@@ -165,6 +169,11 @@ std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool c
 /*** Variables ***/
 bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
     bool res = m_variables.contains(id);
+
+    if (!res && m_parent && m_parent->type() == CtxType::Class) {
+        res = m_parent->var_exists(id, check_pipe);
+    }
+
     if (!res && m_variable_buffer)
         res = m_variable_buffer->contains(id);
     if (!res && check_pipe)
@@ -174,6 +183,10 @@ bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
 
 std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
     std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
+
+    if (!var && m_parent && m_parent->type() == CtxType::Class)
+        var = m_parent->var_get(id, crash_on_failure);
+
     // Check pipe scope
     if (!var) {
         auto it = m_pipe.find(id);

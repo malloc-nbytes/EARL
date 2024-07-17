@@ -426,7 +426,14 @@ std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
-    return Interpreter::eval_expr(stmt->m_expr.get(), ctx).value;
+    ER value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    if (value.is_ident()) {
+        std::cout << "ID: " << value.id << std::endl;
+        std::cout << "ctx: " << ctx->get_module() << std::endl;
+        assert(ctx->var_exists(value.id));
+        return ctx->var_get(value.id)->value();
+    }
+    return value.value;
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {

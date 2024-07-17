@@ -1,20 +1,5 @@
 mod Main
 
-class Point [x, y, name] {
-    @pub x = x;
-    @pub y = y;
-    @pub name = name;
-    desc = "a point class";
+import "other.earl"
 
-    @pub fn test(inp) {
-        println("inp: ", inp);
-        return "hello";
-    }
-
-    @pub fn get_desc() {
-        return 9;
-    }
-}
-
-let p = Point(1, 2, "test");
-println(p.get_desc());
+# let p = Other::Point(1, 2, "my point");

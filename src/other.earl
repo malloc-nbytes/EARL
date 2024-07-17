@@ -1,8 +1,18 @@
 mod Other
 
-@pub
-fn sum(a, b) {
-    return a+b;
-}
+class Point [x, y, name] {
+    @pub x = x;
+    @pub y = y;
+    @pub name = name;
+    desc = "a point class";
 
+    @pub fn test(inp) {
+        println("inp: ", inp);
+        return "hello";
+    }
+
+    @pub fn get_desc() {
+        return x;
+    }
+}
 
