@@ -248,17 +248,29 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         char *lexeme = &src[i];
         char c = src[i];
 
+        // if (c == comment[0]) {
+        //     size_t comment_len;
+        //     if ((comment_len = try_comment(lexeme, comment)) >= comment.size()) {
+        //         while (src[i++] != '\n');
+        //         col = 1;
+        //         row += 1;
+        //         continue;
+        //     }
+        // }
+        // else {
+        //     lexeme = &src[i];
+        // }
         if (c == comment[0]) {
-            size_t comment_len;
-            if ((comment_len = try_comment(lexeme, comment)) >= comment.size()) {
-                while (src[i++] != '\n');
-                col = 1;
-                row += 1;
-                continue;
+            char *lexeme = &src[i];
+
+            while (src[i] != '\n') {
+                col += 1;
+                i += 1;
             }
-        }
-        else {
-            lexeme = &src[i];
+            // i -= 1;
+            // col -= 1;
+
+            continue;
         }
 
         // Newlines

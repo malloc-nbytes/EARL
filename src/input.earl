@@ -1,5 +1,16 @@
 mod Main
 
-import "other.earl"
+class Test [x, y] {
+    @pub x = x;
+    @pub y = y;
 
-# let p = Other::Point(1, 2, "my point");
+    @pub fn getx() { return x; }
+    @pub fn gety() { return y; }
+}
+
+let a = 1;
+let b = 2;
+let t = Test(a, b);
+println(t.getx(), t.gety(), a, b);
+
+#let s = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
