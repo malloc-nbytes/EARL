@@ -416,7 +416,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_return(StmtReturn *stmt, std::shared
         if (!ctx->var_exists(value.id)) {
             ERR_WARGS(Err::Type::Undeclared, "variable `%s` is is not defined", value.id.c_str());
         }
-        return ctx->var_get(value.id)->value();
+        return ctx->var_get(value.id, /*crash_on_failure=*/true)->value();
     }
     return value.value;
 }

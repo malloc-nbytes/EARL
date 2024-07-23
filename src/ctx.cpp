@@ -36,6 +36,10 @@ Ctx::Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType
     m_ctx_type |= static_cast<uint32_t>(ctx_type);
 }
 
+static bool ctx_is_class_type(const std::shared_ptr<Ctx> &ctx) {
+    return (static_cast<uint32_t>(ctx->type()) & static_cast<uint32_t>(CtxType::Class)) != 0;
+}
+
 /*** Ctx methods ***/
 
 size_t Ctx::children_len(void) const {
@@ -170,9 +174,8 @@ std::shared_ptr<earl::function::Obj> Ctx::func_get(const std::string &id, bool c
 bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
     bool res = m_variables.contains(id);
 
-    if (!res && m_parent && m_parent->type() == CtxType::Class) {
+    if (!res && m_parent && ctx_is_class_type(m_parent))
         res = m_parent->var_exists(id, check_pipe);
-    }
 
     if (!res && m_variable_buffer)
         res = m_variable_buffer->contains(id);
@@ -184,7 +187,7 @@ bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
 std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
     std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
 
-    if (!var && m_parent && m_parent->type() == CtxType::Class)
+    if (!var && m_parent && ctx_is_class_type(m_parent))
         var = m_parent->var_get(id, crash_on_failure);
 
     // Check pipe scope
