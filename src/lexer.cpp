@@ -271,7 +271,6 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
             std::string strlit = "";
             while (src[i] != '"')
                 strlit += src[i++];
-            std::cout << "strlit: " << strlit << std::endl;
             lexer->append(strlit, TokenType::Strlit, row, col, fp);
             ++i;
             col += 1 + strlit.size() + 1;
@@ -305,25 +304,19 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         }
 
         else {
-            std::string buf;
-            for (size_t j = 0; src[i+j] && issym(src[i+j]); ++j) {
-                if (src[i+j] != ' ' && src[i+j] != '\t' && src[i+j] != '\n' && src[i+j] != '\t') {
-                    buf.push_back(src[i+j]);
-                }
-            }
-
-            // Pop off the buffer until we have a multichar symbol (or if we get down
-            // to one element, a single char symbol).
+            std::string buf = "";
+            while (!isalnum(src[i]) && src[i] != '_')
+                buf += src[i++];
             while (!buf.empty()) {
                 auto it = ht.find(buf);
                 if (it != ht.end()) {
-                    std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme, buf.size(), (*it).second, row, col, filepath);
-                    lexer->append(std::move(tok));
-                    col += buf.size()-1;
-                    i += buf.size();
+                    lexer->append(buf, (*it).second, row, col, fp);
                     break;
                 }
-                buf.pop_back();
+                else {
+                    buf.pop_back();
+                    --i;
+                }
             }
         }
     }

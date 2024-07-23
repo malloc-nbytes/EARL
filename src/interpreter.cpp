@@ -59,21 +59,6 @@ std::shared_ptr<earl::value::Obj> eval_user_defined_function(std::shared_ptr<ear
     return Interpreter::eval_stmt_block(func->block(), new_ctx);
 }
 
-// std::shared_ptr<earl::value::Obj> eval_user_defined_class_method(std::shared_ptr<earl::function::Obj> method, std::vector<std::shared_ptr<earl::value::Obj>> &params, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-//     (void)method;
-//     (void)params;
-//     (void)klass;
-//     (void)ctx;
-//     UNIMPLEMENTED("eval_user_defined_class_method");
-// }
-
-// std::shared_ptr<earl::value::Obj> get_class_member(std::string &id, earl::Class::Obj *klass, std::shared_ptr<Ctx> &ctx) {
-//     (void)id;
-//     (void)klass;
-//     (void)ctx;
-//     UNIMPLEMENTED("get_class_member");
-// }
-
 std::shared_ptr<earl::value::Obj> eval_class_instantiation(const std::string &id, ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
     StmtClass *class_stmt = ctx->class_stmt_get(id);
 
