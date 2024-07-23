@@ -245,6 +245,7 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         {"%=", TokenType::Percent_Equals},
         {"->", TokenType::RightArrow},
         {"..", TokenType::Double_Period},
+        {"::", TokenType::Double_Colon},
     };
 
     int row = 1, col = 1;

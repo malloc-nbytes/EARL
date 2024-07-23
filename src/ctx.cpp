@@ -66,7 +66,7 @@ std::shared_ptr<Ctx> Ctx::new_instance(CtxType ctx_type) {
     } break;
     case CtxType::Class: {
         ctx->m_functions = m_functions.copy();
-        ctx->set_module(m_module + "-class");
+        ctx->set_module(m_module + "-cl");
         auto &children = this->get_all_children();
         for (auto it = children.begin(); it != children.end(); ++it)
             ctx->push_child_context(*it);
@@ -187,15 +187,17 @@ bool Ctx::var_exists(const std::string &id, bool check_pipe) const {
 std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool crash_on_failure) {
     std::shared_ptr<earl::variable::Obj> var = m_variables.get(id);
 
-    if (!var && m_parent && ctx_is_class_type(m_parent))
+    if (!var && m_parent && ctx_is_class_type(m_parent)) {
         var = m_parent->var_get(id, crash_on_failure);
+    }
 
     // Check pipe scope
     if (!var) {
         auto it = m_pipe.find(id);
         if (it == m_pipe.end())
             var = nullptr;
-        var = it->second;
+        else
+            var = it->second;
     }
     // Check buffer scope
     if (!var && m_variable_buffer)

@@ -39,7 +39,8 @@ namespace Interpreter {
         IntrinsicFunction = 1 << 2,
         IntrinsicMemberFunction = 1 << 3,
         FuncIdent = 1 << 4,
-        None = 1 << 5,
+        ClassInstant = 1 << 5,
+        None = 1 << 6,
     };
 
     struct ER {
@@ -64,6 +65,10 @@ namespace Interpreter {
 
         bool is_func_ident(void) {
             return (this->rt & ERT::FuncIdent) != 0;
+        }
+
+        bool is_class_instant(void) {
+            return (this->rt & ERT::ClassInstant) != 0;
         }
 
         bool is_member_intrinsic(void) {

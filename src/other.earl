@@ -1,5 +1,8 @@
 mod Other
 
+@pub fn sum(a, b) { return a+b; }
+
+@pub
 class Point [x, y, name] {
     @pub x = x;
     @pub y = y;
@@ -12,7 +15,7 @@ class Point [x, y, name] {
     }
 
     @pub fn get_desc() {
-        return x;
+        return desc;
     }
 }
 

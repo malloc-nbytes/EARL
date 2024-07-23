@@ -270,8 +270,25 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             child->clear_buffer();
             return ER(res, ERT::Literal);
         }
-        else
+        else if (function_from_module.is_func_ident()) {
+            // Class instantiation or function from other module
+            if (child->func_exists(function_from_module.id)) {
+                auto res = eval_user_defined_function_from_identifier(static_cast<ExprFuncCall*>(function_from_module.extra), function_from_module.id, child);
+                return ER(res, ERT::Literal);
+            }
+            else if (child->class_stmt_exists(function_from_module.id)) {
+                child->fill_buffer(ctx);
+                auto res = eval_class_instantiation(function_from_module.id, static_cast<ExprFuncCall*>(function_from_module.extra), child);
+                child->clear_buffer();
+                return ER(res, ERT::Literal);
+            }
+            else
+                ERR_WARGS(Err::Type::Undeclared, "Function `%s` is not defined", function_from_module.id.c_str());
+        }
+        else {
+            std::cout << (int)function_from_module.rt << std::endl;
             assert(false && "unimplemented");
+        }
         return function_from_module;
     } break;
     default:
