@@ -407,7 +407,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<C
         args.push_back(std::make_pair(entry.first.get(), entry.second));
 
     auto created_function = std::make_shared<earl::function::Obj>(stmt, args);
-    ctx->func_add(std::move(created_function));
+    ctx->func_add(created_function);
 
     return std::make_shared<earl::value::Void>();
 }
@@ -428,7 +428,9 @@ std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx
 std::shared_ptr<earl::value::Obj> eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
     ER value = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     if (value.is_ident()) {
-        assert(ctx->var_exists(value.id));
+        if (!ctx->var_exists(value.id)) {
+            ERR_WARGS(Err::Type::Undeclared, "variable `%s` is is not defined", value.id.c_str());
+        }
         return ctx->var_get(value.id)->value();
     }
     return value.value;
@@ -552,7 +554,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_import(StmtImport *stmt, std::shared
 
     auto child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
     child_ctx->set_parent(ctx);
-    ctx->push_child_context(std::move(child_ctx));
+    ctx->push_child_context(child_ctx);
     return std::shared_ptr<earl::value::Void>();
 }
 

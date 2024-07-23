@@ -110,7 +110,7 @@ std::shared_ptr<Ctx> Ctx::get_parent(void) {
 }
 
 void Ctx::push_child_context(std::shared_ptr<Ctx> ctx) {
-    m_children.push_back(std::move(ctx));
+    m_children.push_back(ctx);
 }
 
 std::shared_ptr<Ctx> Ctx::get_child_ctx(const std::string &id) {
@@ -132,7 +132,7 @@ void Ctx::fill_buffer(std::shared_ptr<Ctx> &from) {
 
 void Ctx::fill_pipe(std::shared_ptr<earl::variable::Obj> var) {
     const std::string &id = var->id();
-    m_pipe.insert({id, std::move(var)});
+    m_pipe.insert({id, var});
 }
 
 void Ctx::clear_pipe(void) {
@@ -151,7 +151,7 @@ size_t Ctx::funcs_len(void) const {
 
 void Ctx::func_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();
-    m_functions.add(id, std::move(func));
+    m_functions.add(id, func);
 }
 
 bool Ctx::func_exists(const std::string &id) const {
@@ -204,7 +204,7 @@ std::shared_ptr<earl::variable::Obj> Ctx::var_get(const std::string &id, bool cr
 
 void Ctx::var_add(std::shared_ptr<earl::variable::Obj> var) {
     const std::string &id = var->id();
-    m_variables.add(id, std::move(var));
+    m_variables.add(id, var);
 }
 
 void Ctx::var_remove(const std::string &id) {

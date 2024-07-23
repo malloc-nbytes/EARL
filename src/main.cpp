@@ -147,7 +147,6 @@ int main(int argc, char **argv) {
         std::string comment = "#";
 
         std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-        lexer->dump();
 
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
         Interpreter::interpret(std::move(program), std::move(lexer));

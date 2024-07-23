@@ -274,7 +274,14 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         }
 
         // Newlines
-        if (c == '\r' || c == '\n') {
+        else if (c == '\r' || c == '\n') {
+            ++row;
+            col = 1;
+            ++i;
+        }
+
+        // Newlines
+        else if (c == '\r' || c == '\n') {
             ++row;
             col = 1;
             ++i;

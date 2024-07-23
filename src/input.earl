@@ -1,8 +1,8 @@
 mod Main
 
-class Test [x, y] {
-    @pub x = x;
-    @pub y = y;
+class Test [a, b] {
+    @pub x = a;
+    @pub y = b;
 
     @pub fn getx() { return x; }
     @pub fn gety() { return y; }
@@ -13,4 +13,74 @@ let b = 2;
 let t = Test(a, b);
 println(t.getx(), t.gety(), a, b);
 
-#let s = "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
