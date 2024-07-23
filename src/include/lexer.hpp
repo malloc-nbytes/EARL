@@ -30,6 +30,7 @@
 
 #include "token.hpp"
 
+enum class TokenType;
 struct Token;
 
 /**
@@ -69,6 +70,8 @@ struct Lexer {
     /// @brief Append a token to the lexer at the end of the tail.
     /// @param tok The token to append
     void append(std::unique_ptr<Token> tok);
+
+    void append(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
 
     /// @brief The same as `Lexer::next()` except it does not give
     /// back the token that was consumed.

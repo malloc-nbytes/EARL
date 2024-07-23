@@ -102,6 +102,8 @@ struct Token {
           TokenType type,
           size_t row, size_t col, std::string &fp);
 
+    Token(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
+
     Token(const Token &) = delete;
 
     ~Token() = default;
