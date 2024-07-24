@@ -40,87 +40,57 @@
 enum class CtxType {
     World,
     Function,
-    Module,
     Class,
-    Closure,
 };
 
-// enum Class CtxStatus {
-//     Module,
-// };
-
 struct Ctx {
-    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program, CtxType ctx_type);
-    ~Ctx() = default;
-
-    /*** Ctx ***/
-    std::shared_ptr<Ctx> new_instance(CtxType ctx_type);
-    size_t stmts_len(void) const;
-    Stmt *get_stmt_at(size_t i);
-    Lexer *lexer(void);
-    Program *program(void);
-    std::string &get_module(void);
-    void set_module(const std::string &id);
-    void push_scope(void);
-    void pop_scope(void);
-    void set_parent(std::shared_ptr<Ctx> parent);
-    std::shared_ptr<Ctx> get_parent(void);
-    void push_child_context(std::shared_ptr<Ctx> ctx);
-    std::shared_ptr<Ctx> get_child_ctx(const std::string &id);
-    size_t children_len(void) const;
-    std::vector<std::shared_ptr<Ctx>> &get_all_children(void);
-    void fill_buffer(std::shared_ptr<Ctx> &from);
-    void clear_buffer(void);
-    void fill_pipe(std::shared_ptr<earl::variable::Obj> var);
-    void clear_pipe(void);
-    CtxType type(void) const;
-
-    /*** Variables ***/
-    bool var_exists(const std::string &id, bool check_pipe = true) const;
-    std::shared_ptr<earl::variable::Obj> var_get(const std::string &id, bool crash_on_failure = true);
-    void var_add(std::shared_ptr<earl::variable::Obj> var);
-    void var_remove(const std::string &id);
-    SharedScope<std::string, earl::variable::Obj> &vars_get_all(void);
-    size_t vars_len(void) const;
-    void var_debug_dump(void);
-
-    /*** Functions ***/
-    bool func_exists(const std::string &id) const;
-    std::shared_ptr<earl::function::Obj> func_get(const std::string &id, bool crash_on_failure = true);
-    void func_add(std::shared_ptr<earl::function::Obj> func);
-    size_t funcs_len(void) const;
-
-    /*** Classes ***/
-    bool class_stmt_exists(const std::string &id) const;
-    StmtClass *class_stmt_get(const std::string &id, bool crash_on_failure = true);
-    void class_stmt_make_available(StmtClass *klass);
-
-    // Check if the actual statement exists
-    bool class_is_defined(const std::string &id) const;
-    StmtClass *class_stmt(const std::string &id);
+    virtual CtxType type(void) const = 0;
+    virtual void push_variable_scope(void) = 0;
+    virtual void pop_variable_scope(void) = 0;
+    virtual void add_variable(std::shared_ptr<earl::variable::Obj> var) = 0;
 
 private:
-    SharedScope<std::string, earl::variable::Obj> m_variables;
-    SharedScope<std::string, earl::function::Obj> m_functions;
+    SharedScope<std::string, earl::variable::Obj> m_scope;
+};
 
-    std::unique_ptr<Lexer>   m_lexer;
-    std::unique_ptr<Program> m_program;
+struct WorldCtx : public Ctx {
+    WorldCtx() = default;
+    ~WorldCtx() = default;
 
-    std::unordered_map<std::string, StmtClass *> m_defined_classes;
-    std::string m_module;
+    CtxType type(void) const override;
+    void push_variable_scope(void) override;
+    void pop_variable_scope(void) override;
+    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
 
-    // Used as a temporary holding place for variables and functions
-    SharedScope<std::string, earl::variable::Obj> *m_variable_buffer;
-    SharedScope<std::string, earl::function::Obj> *m_function_buffer;
+private:
+    std::string m_name;
+    std::vector<std::shared_ptr<Ctx>> m_imports;
+};
 
-    // Only used as a temporary holding place for variables for
-    // class instantiation.
-    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> m_pipe;
+struct FunctionCtx : public Ctx {
+    FunctionCtx() = default;
+    ~FunctionCtx() = default;
 
-    std::vector<std::shared_ptr<Ctx>> m_children;
-    std::shared_ptr<Ctx> m_parent;
+    CtxType type(void) const override;
+    void push_variable_scope(void) override;
+    void pop_variable_scope(void) override;
+    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
 
-    uint32_t m_ctx_type;
+private:
+    std::shared_ptr<Ctx> m_owner;
+};
+
+struct ClassCtx : public Ctx {
+    ClassCtx() = default;
+    ~ClassCtx() = default;
+
+    CtxType type(void) const override;
+    void push_variable_scope(void) override;
+    void pop_variable_scope(void) override;
+    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
+
+private:
+    std::shared_ptr<Ctx> m_owner;
 };
 
 #endif // CTX_H

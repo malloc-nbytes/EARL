@@ -23,52 +23,24 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <iostream>
 
-#include "earl.hpp"
-#include "err.hpp"
-#include "common.hpp"
-#include "utils.hpp"
 #include "ctx.hpp"
+#include "utils.hpp"
+#include "err.hpp"
 
-using namespace earl::value;
-
-Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner) : m_stmtclass(stmtclass) {
-    UNIMPLEMENTED("Class::Class");
+CtxType ClassCtx::type(void) const {
+    return CtxType::Class;
 }
 
-void Class::load_class_members(std::vector<std::shared_ptr<Obj>> &args) {
-    assert(false);
+void ClassCtx::push_variable_scope(void) {
+    UNIMPLEMENTED("ClassCtx::push_variable_scope");
 }
 
-std::shared_ptr<Ctx> &Class::ctx(void) {
-    return m_ctx;
+void ClassCtx::pop_variable_scope(void) {
+    UNIMPLEMENTED("ClassCtx::pop_variable_scope");
 }
 
-/*** OVERRIDES ***/
-Type Class::type(void) const {
-    return Type::Class;
-}
-
-std::shared_ptr<Obj> Class::binop(Token *op, std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Class::binop");
-}
-
-bool Class::boolean(void) {
-    UNIMPLEMENTED("Class::boolean");
-}
-
-void Class::mutate(const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Class::mutate");
-}
-
-std::shared_ptr<Obj> Class::copy(void) {
-    UNIMPLEMENTED("Class::copy");
-}
-
-bool Class::eq(std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Class::eq");
-}
-
-std::string Class::to_cxxstring(void) {
-    UNIMPLEMENTED("Class::to_cxxstring");
+void ClassCtx::add_variable(std::shared_ptr<earl::variable::Obj> var) {
+    UNIMPLEMENTED("ClassCtx::add_variable");
 }
