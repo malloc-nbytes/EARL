@@ -9,9 +9,8 @@ class Point [x, y, name] {
     @pub name = name;
     desc = "a point class";
 
-    @pub fn test(inp) {
-        println("inp: ", inp);
-        return "hello";
+    @pub fn test() {
+        return 'a';
     }
 
     @pub fn get_desc() {

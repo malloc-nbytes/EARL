@@ -279,8 +279,8 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
 
         else if (src[i] == '\'') {
             ++i;
-            std::string charlit(src[i], 1);
-            ++i;
+            std::string charlit(1, src[i]);
+            i += 2;
             lexer->append(charlit, TokenType::Charlit, row, col, fp);
             col += 3;
         }

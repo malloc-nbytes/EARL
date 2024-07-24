@@ -104,11 +104,9 @@ bool Intrinsics::is_member_intrinsic(const std::string &id) {
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
-// std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-//     return Intrinsics::intrinsic_member_functions.at(id)(accessor, params, ctx);
-// }
-
 std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, ExprFuncCall *funccall, std::shared_ptr<Ctx> &ctx) {
+    assert(accessor);
+
     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
     for (auto &param : funccall->m_params) {
         Interpreter::ER param_eval = Interpreter::eval_expr(param.get(), ctx);

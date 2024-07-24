@@ -33,6 +33,7 @@
 #include "common.hpp"
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
+    assert(obj);
     assert(obj->type() == earl::value::Type::Char);
     auto char_ = dynamic_cast<earl::value::Char *>(obj.get());
     int value = static_cast<int>(char_->value());

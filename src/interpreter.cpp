@@ -152,8 +152,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
         if (Intrinsics::is_intrinsic(id))
             return ER(nullptr, ERT::IntrinsicFunction, id);
-        if (Intrinsics::is_member_intrinsic(id))
+        if (Intrinsics::is_member_intrinsic(id)) {
             return ER(nullptr, ERT::IntrinsicMemberFunction, id);
+        }
 
         // NOTE: it is up to the caller to deal with the
         // identifier that is requested. This is why we are
@@ -213,9 +214,15 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         ER left_er = Interpreter::eval_expr(get->m_left.get(), ctx);
         ER right_er = Interpreter::eval_expr(get->m_right.get(), ctx);
 
-        if (!left_er.is_ident()) {
-            assert(false && "unimplemented");
+        if (left_er.is_func_ident()) {
+            left_er.value = eval_user_defined_function_from_identifier(static_cast<ExprFuncCall *>(left_er.extra), left_er.id, ctx);
+            assert(false);
         }
+
+        if (left_er.is_ident())
+            // We need to assign the value from this current context's
+            // list of variables
+            left_er.value = ctx->var_get(left_er.id, /*crash_on_failure=*/true)->value();
 
         if (right_er.is_func_ident()) {
             assert(ctx->var_exists(left_er.id));
@@ -234,8 +241,10 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
             assert(false && "unimplemented");
         }
 
-        if (right_er.is_member_intrinsic())
-            return ER(Intrinsics::call_member(right_er.id, left_er.value, static_cast<ExprFuncCall*>(right_er.extra), ctx), ERT::Literal);
+        if (right_er.is_member_intrinsic()) {
+            assert(left_er.value);
+            return ER(Intrinsics::call_member(right_er.id, left_er.value, static_cast<ExprFuncCall *>(right_er.extra), ctx), ERT::Literal);
+        }
 
         assert(false);
     } break;

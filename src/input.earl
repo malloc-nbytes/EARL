@@ -5,6 +5,5 @@ import "other.earl"
 let x = 1;
 let y = 2;
 let p = Other::Point(x, y, "my point");
-println(p.test("input"));
 
-
+println(p.test().ascii());
