@@ -177,8 +177,8 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    abort();
-    return unpack_ER(er, ctx);
+    (void)unpack_ER(er, ctx);
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {

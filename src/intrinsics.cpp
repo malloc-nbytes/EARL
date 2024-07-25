@@ -79,7 +79,7 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intri
 };
 
 std::shared_ptr<earl::value::Obj> Intrinsics::call(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("Intrinsics::call");
+    return intrinsic_functions.at(id)(params, ctx);
 }
 
 bool Intrinsics::is_intrinsic(const std::string &id) {
