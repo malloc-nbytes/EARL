@@ -43,7 +43,7 @@
 namespace Intrinsics {
 
     /// @brief All intrinsic functions must use this function signature.
-    using IntrinsicFunction = std::shared_ptr<earl::value::Obj> (*)(ExprFuncCall *, std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
+    using IntrinsicFunction = std::shared_ptr<earl::value::Obj> (*)(std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
 
     /// @brief All intrinsic member functions must use this function signature.
     using IntrinsicMemberFunction = std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<earl::value::Obj>, std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
@@ -69,7 +69,7 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call(const std::string &id, ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> call(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /// @brief Call an intrinsic member function
     /// @note It is expected to call `is_member_intrinsic` before calling this function
@@ -80,28 +80,28 @@ namespace Intrinsics {
     /// @param ctx The current global context
     // std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
-   std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx);
+   std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
-    std::shared_ptr<earl::value::Obj> intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_assert(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_println(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_print(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_open(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_type(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_unimplemented(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_exit(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_panic(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_argv(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj> intrinsic_input(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_exit(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_panic(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_move__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_mkdir__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
-    std::shared_ptr<earl::value::Obj>intrinsic___internal_ls__(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj>intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 

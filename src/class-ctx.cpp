@@ -41,6 +41,10 @@ void ClassCtx::pop_variable_scope(void) {
     UNIMPLEMENTED("ClassCtx::pop_variable_scope");
 }
 
-void ClassCtx::add_variable(std::shared_ptr<earl::variable::Obj> var) {
+void ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     UNIMPLEMENTED("ClassCtx::add_variable");
+}
+
+bool ClassCtx::variable_exists(const std::string &id) {
+    UNIMPLEMENTED("ClassCtx::variable_exists");
 }

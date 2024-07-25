@@ -36,8 +36,7 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_some(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_some");

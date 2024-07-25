@@ -64,9 +64,8 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_dump(std::shared_
     UNIMPLEMENTED("Intrinsics::intrinsic_member_dump");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)expr;
     (void)params;
     UNIMPLEMENTED("Intrinsics::intrinsic_open");
 }

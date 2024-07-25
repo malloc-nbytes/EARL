@@ -29,18 +29,38 @@
 #include "utils.hpp"
 #include "err.hpp"
 
+WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program)
+    : m_lexer(std::move(lexer)), m_program(std::move(program)) {}
+
+size_t WorldCtx::stmts_len(void) const {
+    return m_program->m_stmts.size();
+}
+
+Stmt *WorldCtx::stmt_at(size_t idx) {
+    return m_program->m_stmts.at(idx).get();
+}
+
+void WorldCtx::set_mod(std::string id) {
+    m_mod = id;
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }
 
 void WorldCtx::push_variable_scope(void) {
-    UNIMPLEMENTED("WorldCtx::push_variable_scope");
+    m_scope.push();
 }
 
 void WorldCtx::pop_variable_scope(void) {
-    UNIMPLEMENTED("WorldCtx::pop_variable_scope");
+    m_scope.pop();
 }
 
-void WorldCtx::add_variable(std::shared_ptr<earl::variable::Obj> var) {
-    UNIMPLEMENTED("WorldCtx::add_variable");
+void WorldCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
+    const std::string &id = var->id();
+    m_scope.add(id, var);
+}
+
+bool WorldCtx::variable_exists(const std::string &id) {
+    return m_scope.contains(id);
 }

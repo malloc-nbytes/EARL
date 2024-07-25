@@ -34,6 +34,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "ast.hpp"
+#include "lexer.hpp"
 #include "earl.hpp"
 #include "shared-scope.hpp"
 
@@ -47,24 +49,32 @@ struct Ctx {
     virtual CtxType type(void) const = 0;
     virtual void push_variable_scope(void) = 0;
     virtual void pop_variable_scope(void) = 0;
-    virtual void add_variable(std::shared_ptr<earl::variable::Obj> var) = 0;
+    virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
+    virtual bool variable_exists(const std::string &id) = 0;
 
-private:
     SharedScope<std::string, earl::variable::Obj> m_scope;
 };
 
 struct WorldCtx : public Ctx {
-    WorldCtx() = default;
+    WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
     ~WorldCtx() = default;
+
+    size_t stmts_len(void) const;
+    Stmt *stmt_at(size_t idx);
+    void set_mod(std::string id);
 
     CtxType type(void) const override;
     void push_variable_scope(void) override;
     void pop_variable_scope(void) override;
-    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
 
 private:
-    std::string m_name;
+    std::string m_mod;
     std::vector<std::shared_ptr<Ctx>> m_imports;
+
+    std::unique_ptr<Lexer> m_lexer;
+    std::unique_ptr<Program> m_program;
 };
 
 struct FunctionCtx : public Ctx {
@@ -74,7 +84,8 @@ struct FunctionCtx : public Ctx {
     CtxType type(void) const override;
     void push_variable_scope(void) override;
     void pop_variable_scope(void) override;
-    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -87,7 +98,8 @@ struct ClassCtx : public Ctx {
     CtxType type(void) const override;
     void push_variable_scope(void) override;
     void pop_variable_scope(void) override;
-    void add_variable(std::shared_ptr<earl::variable::Obj> var) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

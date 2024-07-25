@@ -41,6 +41,10 @@ void FunctionCtx::pop_variable_scope(void) {
     UNIMPLEMENTED("FunctionCtx::pop_variable_scope");
 }
 
-void FunctionCtx::add_variable(std::shared_ptr<earl::variable::Obj> var) {
+void FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     UNIMPLEMENTED("FunctionCtx::add_variable");
+}
+
+bool FunctionCtx::variable_exists(const std::string &id) {
+    UNIMPLEMENTED("FunctionCtx::variable_exists");
 }

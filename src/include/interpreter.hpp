@@ -34,55 +34,57 @@
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
     enum ERT {
-        Literal = 1 << 0,
-        Ident = 1 << 1,
-        IntrinsicFunction = 1 << 2,
-        IntrinsicMemberFunction = 1 << 3,
-        FuncIdent = 1 << 4,
-        ClassInstant = 1 << 5,
-        None = 1 << 6,
+        Literal = 0,
+        Ident = 1,
+        IntrinsicFunction = 2,
+        IntrinsicMemberFunction = 3,
+        FunctionIdent = 4,
+        ClassInstant = 5,
+        None = 6,
     };
 
     struct ER {
-        ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "", void *extra = nullptr) {
+        ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "", void *extra = nullptr, std::shared_ptr<Ctx> ctx = nullptr) {
             this->value = value;
             this->rt = rt;
             this->id = id;
             this->extra = extra;
+            this->ctx = ctx;
         }
 
         bool is_literal(void) {
-            return (this->rt & ERT::Literal) != 0 && this->value;
+            return this->rt == ERT::Literal;
         }
 
         bool is_ident(void) {
-            return (this->rt & ERT::Ident) != 0;
+            return this->rt == ERT::Ident;
         }
 
         bool is_intrinsic(void) {
-            return (this->rt & ERT::IntrinsicFunction) != 0;
+            return this->rt == ERT::IntrinsicFunction;
         }
 
-        bool is_func_ident(void) {
-            return (this->rt & ERT::FuncIdent) != 0;
+        bool is_function_ident(void) {
+            return this->rt == ERT::FunctionIdent;
         }
 
         bool is_class_instant(void) {
-            return (this->rt & ERT::ClassInstant) != 0;
+            return this->rt == ERT::ClassInstant;
         }
 
         bool is_member_intrinsic(void) {
-            return (this->rt & ERT::IntrinsicMemberFunction) != 0;
+            return this->rt == ERT::IntrinsicMemberFunction;
         }
 
         bool is_none(void) {
-            return (this->rt & ERT::None) != 0;
+            return this->rt == ERT::None;
         }
 
         std::shared_ptr<earl::value::Obj> value;
         ERT rt;
         std::string id;
         void *extra;
+        std::shared_ptr<Ctx> ctx;
     };
 
     std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);

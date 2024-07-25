@@ -84,8 +84,7 @@ std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_pop(std::shared_p
     UNIMPLEMENTED("Intrinsics::intrinsic_member_pop");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    (void)expr;
+std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)params;
     UNIMPLEMENTED("Intrinsics::intrinsic_len");

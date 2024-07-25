@@ -45,13 +45,20 @@ using namespace Interpreter;
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 
+static std::shared_ptr<earl::value::Obj> eval_intrinsic_function(const std::string &id, ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    return Intrinsics::call(id, params, ctx);
+}
+
 ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
-        UNIMPLEMENTED("ExprTermType::Ident");
+        auto ident = dynamic_cast<ExprIdent *>(expr);
+        return ER(nullptr, ERT::Ident, /*id=*/ident->m_tok->lexeme());
     } break;
     case ExprTermType::Int_Literal: {
-        UNIMPLEMENTED("ExprTermType::Int_Literal");
+        auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
+        return ER(value, ERT::Literal);
     } break;
     case ExprTermType::Str_Literal: {
         UNIMPLEMENTED("ExprTermType::Str_Literal");
@@ -60,7 +67,14 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         UNIMPLEMENTED("ExprTermType::Char_Literal");
     } break;
     case ExprTermType::Func_Call: {
-        UNIMPLEMENTED("ExprTermType::Func_Call");
+        auto funccall = dynamic_cast<ExprFuncCall *>(expr);
+        ER left = Interpreter::eval_expr(funccall->m_left.get(), ctx);
+        const std::string &id = left.id;
+        if (Intrinsics::is_intrinsic(id))
+            return ER(nullptr, ERT::IntrinsicFunction, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
+        if (Intrinsics::is_member_intrinsic(id))
+            return ER(nullptr, ERT::IntrinsicMemberFunction, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
+        return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
     } break;
     case ExprTermType::List_Literal: {
         assert(false);
@@ -114,11 +128,25 @@ ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_let");
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+
+    if (ctx->variable_exists(stmt->m_id->lexeme())) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
+    }
+
+    auto var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), std::move(rhs.value), stmt->m_attrs);
+    ctx->variable_add(var);
+
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_expr");
+    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    if (er.is_intrinsic())
+        return eval_intrinsic_function(er.id, static_cast<ExprFuncCall *>(er.extra), ctx);
+    assert(false);
+    return er.value;
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
@@ -158,7 +186,8 @@ std::shared_ptr<earl::value::Obj> eval_stmt_class(StmtClass *stmt, std::shared_p
 }
 
 std::shared_ptr<earl::value::Obj> eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_mod");
+    dynamic_cast<WorldCtx *>(ctx.get())->set_mod(stmt->m_id->lexeme());
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
@@ -213,7 +242,12 @@ std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared
 }
 
 std::shared_ptr<Ctx> Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
-    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
+    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
+    auto wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
-    UNIMPLEMENTED("Interpreter::interpret");
+    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+        (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+    }
+
+    return ctx;
 }
