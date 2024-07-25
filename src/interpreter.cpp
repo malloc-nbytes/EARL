@@ -44,10 +44,42 @@ using namespace Interpreter;
 
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
+static std::shared_ptr<earl::value::Obj> unpack_ER(ER er, std::shared_ptr<Ctx> ctx);
 
-static std::shared_ptr<earl::value::Obj> eval_intrinsic_function(const std::string &id, ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
-    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
-    return Intrinsics::call(id, params, ctx);
+static std::shared_ptr<earl::value::Obj> eval_user_defined_function(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+    assert(false);
+}
+
+static std::vector<std::shared_ptr<earl::value::Obj>> evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
+    std::vector<std::shared_ptr<earl::value::Obj>> res = {};
+
+    for (size_t i = 0; i < funccall->m_params.size(); ++i) {
+        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx);
+        res.push_back(unpack_ER(er, ctx));
+    }
+
+    return res;
+}
+
+static std::shared_ptr<earl::value::Obj> unpack_ER(ER er, std::shared_ptr<Ctx> ctx) {
+    if (er.is_function_ident()) {
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
+        if (er.is_intrinsic())
+            return Intrinsics::call(er.id, params, ctx);
+        else if (er.is_member_intrinsic())
+            assert(false);
+        return eval_user_defined_function(er.id, params, ctx);
+    }
+    else if (er.is_literal())
+        return er.value;
+    else if (er.is_ident()) {
+        // TODO: implement copy/reference here
+        if (!er.ctx->variable_exists(er.id))
+            ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
+        return er.ctx->variable_get(er.id)->value();
+    }
+    else
+        assert(false);
 }
 
 ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
@@ -71,9 +103,9 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         ER left = Interpreter::eval_expr(funccall->m_left.get(), ctx);
         const std::string &id = left.id;
         if (Intrinsics::is_intrinsic(id))
-            return ER(nullptr, ERT::IntrinsicFunction, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
+            return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicFunction), /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
         if (Intrinsics::is_member_intrinsic(id))
-            return ER(nullptr, ERT::IntrinsicMemberFunction, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
+            return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
         return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
     } break;
     case ExprTermType::List_Literal: {
@@ -135,7 +167,8 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
         ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    auto var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), std::move(rhs.value), stmt->m_attrs);
+    auto value = unpack_ER(rhs, ctx);
+    auto var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
 
     return std::make_shared<earl::value::Void>();
@@ -143,10 +176,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    if (er.is_intrinsic())
-        return eval_intrinsic_function(er.id, static_cast<ExprFuncCall *>(er.extra), ctx);
-    assert(false);
-    return er.value;
+    return unpack_ER(er, ctx);
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {

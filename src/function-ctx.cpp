@@ -48,3 +48,7 @@ void FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 bool FunctionCtx::variable_exists(const std::string &id) {
     UNIMPLEMENTED("FunctionCtx::variable_exists");
 }
+
+std::shared_ptr<earl::variable::Obj> FunctionCtx::variable_get(const std::string &id) {
+    return m_scope.get(id);
+}

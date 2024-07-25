@@ -48,3 +48,7 @@ void ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 bool ClassCtx::variable_exists(const std::string &id) {
     UNIMPLEMENTED("ClassCtx::variable_exists");
 }
+
+std::shared_ptr<earl::variable::Obj> ClassCtx::variable_get(const std::string &id) {
+    UNIMPLEMENTED("ClassCtx::variable_get");
+}

@@ -7,7 +7,7 @@ earl_SOURCES = main.cpp world-ctx.cpp function-ctx.cpp class-ctx.cpp arena.cpp l
 include_HEADERS = std/io.earl std/linked-list.earl std/list.earl std/math.earl std/queue.earl std/set.earl std/stack.earl std/str.earl std/utils.earl std/os.earl
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
-AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable
+AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable -O3
 
 includedir = $(prefix)/include/EARL/std
 

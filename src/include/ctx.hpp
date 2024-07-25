@@ -51,6 +51,7 @@ struct Ctx {
     virtual void pop_variable_scope(void) = 0;
     virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
     virtual bool variable_exists(const std::string &id) = 0;
+    virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
 
     SharedScope<std::string, earl::variable::Obj> m_scope;
 };
@@ -68,6 +69,7 @@ struct WorldCtx : public Ctx {
     void pop_variable_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
 
 private:
     std::string m_mod;
@@ -86,6 +88,7 @@ struct FunctionCtx : public Ctx {
     void pop_variable_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -100,6 +103,7 @@ struct ClassCtx : public Ctx {
     void pop_variable_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

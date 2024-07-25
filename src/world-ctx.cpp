@@ -64,3 +64,8 @@ void WorldCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 bool WorldCtx::variable_exists(const std::string &id) {
     return m_scope.contains(id);
 }
+
+std::shared_ptr<earl::variable::Obj> WorldCtx::variable_get(const std::string &id) {
+    return m_scope.get(id);
+}
+
