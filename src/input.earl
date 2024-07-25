@@ -2,6 +2,8 @@ mod Main
 
 let x = 1;
 let y = 2;
+let z = x;
+let s = " ";
 
-println(x, y);
+println(x, s, y);
 println(9);

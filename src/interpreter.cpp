@@ -94,7 +94,8 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         return ER(value, ERT::Literal);
     } break;
     case ExprTermType::Str_Literal: {
-        UNIMPLEMENTED("ExprTermType::Str_Literal");
+        auto value = std::make_shared<earl::value::Str>(dynamic_cast<ExprStrLit *>(expr)->m_tok->lexeme());
+        return ER(value, ERT::Literal);
     } break;
     case ExprTermType::Char_Literal: {
         UNIMPLEMENTED("ExprTermType::Char_Literal");
@@ -177,8 +178,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    (void)unpack_ER(er, ctx);
-    return std::make_shared<earl::value::Void>();
+    return unpack_ER(er, ctx);
 }
 
 std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
