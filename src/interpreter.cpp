@@ -44,7 +44,7 @@ using namespace Interpreter;
 
 std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
-static std::shared_ptr<earl::value::Obj> unpack_ER(ER er, std::shared_ptr<Ctx> ctx);
+static std::shared_ptr<earl::value::Obj> unpack_ER(ER &er, std::shared_ptr<Ctx> ctx);
 
 static std::shared_ptr<earl::value::Obj> eval_user_defined_function(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     assert(false);
@@ -61,7 +61,7 @@ static std::vector<std::shared_ptr<earl::value::Obj>> evaluate_function_paramete
     return res;
 }
 
-static std::shared_ptr<earl::value::Obj> unpack_ER(ER er, std::shared_ptr<Ctx> ctx) {
+static std::shared_ptr<earl::value::Obj> unpack_ER(ER &er, std::shared_ptr<Ctx> ctx) {
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
@@ -70,13 +70,14 @@ static std::shared_ptr<earl::value::Obj> unpack_ER(ER er, std::shared_ptr<Ctx> c
             assert(false);
         return eval_user_defined_function(er.id, params, ctx);
     }
-    else if (er.is_literal())
+    else if (er.is_literal()) {
         return er.value;
+    }
     else if (er.is_ident()) {
         // TODO: implement copy/reference here
-        if (!er.ctx->variable_exists(er.id))
+        if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
-        return er.ctx->variable_get(er.id)->value();
+        return ctx->variable_get(er.id)->value();
     }
     else
         assert(false);
@@ -176,6 +177,7 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
 
 std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    abort();
     return unpack_ER(er, ctx);
 }
 

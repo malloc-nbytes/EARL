@@ -46,37 +46,37 @@ namespace Interpreter {
     struct ER {
         ER(std::shared_ptr<earl::value::Obj> value, ERT rt, std::string id = "", void *extra = nullptr, std::shared_ptr<Ctx> ctx = nullptr) {
             this->value = value;
-            this->rt |= static_cast<uint32_t>(rt);
+            this->rt = static_cast<uint32_t>(rt);
             this->id = id;
             this->extra = extra;
             this->ctx = ctx;
         }
 
-        bool is_literal(void) const {
+        bool is_literal(void) {
             return (this->rt & ERT::Literal) != 0;
         }
 
-        bool is_ident(void) const {
+        bool is_ident(void) {
             return (this->rt & ERT::Ident) != 0;
         }
 
-        bool is_intrinsic(void) const {
+        bool is_intrinsic(void) {
             return (this->rt & ERT::IntrinsicFunction) != 0;
         }
 
-        bool is_function_ident(void) const {
+        bool is_function_ident(void) {
             return (this->rt & ERT::FunctionIdent) != 0;
         }
 
-        bool is_class_instant(void) const {
+        bool is_class_instant(void) {
             return (this->rt & ERT::ClassInstant) != 0;
         }
 
-        bool is_member_intrinsic(void) const {
+        bool is_member_intrinsic(void) {
             return (this->rt & ERT::IntrinsicMemberFunction) != 0;
         }
 
-        bool is_none(void) const {
+        bool is_none(void) {
             return (this->rt & ERT::None) != 0;
         }
 
