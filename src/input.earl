@@ -1,13 +1,4 @@
 mod Main
 
-let x = 9;
-let y = x;
-y = y+1*2;
-y = y*100;
+import "other.earl"
 
-println("x: ", x);
-println("y: ", y);
-
-# let x = 1;
-# x = 10;
-# println(x);

@@ -43,13 +43,6 @@
 
 using namespace Interpreter;
 
-struct PackedERPreliminary {
-    bool should_explicitly_copy_value;
-    std::shared_ptr<earl::value::Obj> getter_accessor;
-    PackedERPreliminary(bool should_copy = true, std::shared_ptr<earl::value::Obj> accessor = nullptr)
-        : should_explicitly_copy_value(should_copy), getter_accessor(accessor) {}
-};
-
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
@@ -57,7 +50,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, std::optional<PackedERPreliminary> perp = {});
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
@@ -83,7 +76,7 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
 }
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, std::optional<PackedERPreliminary> perp) {
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
@@ -101,12 +94,6 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, std::optional<PackedERPreliminary> 
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
         return ctx->variable_get(er.id)->value();
-        // if (perp.has_value() && perp->should_explicitly_copy_value) {
-        //     std::cout << "HERE" << std::endl;
-        //     return ctx->variable_get(er.id)->value()->copy();
-        // }
-        // else
-        //     return ctx->variable_get(er.id)->value();
     }
     else
         assert(false);
@@ -166,7 +153,6 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
-        assert(false && "unreachable");
     }
 
     assert(false && "unreachable");
@@ -329,6 +315,13 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<earl::value::Obj>
+eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
+    assert(false);
+
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Def:       return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);                  break;
@@ -341,7 +334,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Break:     return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);              break;
     case StmtType::While:     return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);              break;
     case StmtType::For:       return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);                  break;
-    case StmtType::Import:    UNIMPLEMENTED("StmtType::Import");                                         break;
+    case StmtType::Import:    return eval_stmt_import(dynamic_cast<StmtImport *>(stmt), ctx);            break;
     case StmtType::Mod:       return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);                  break;
     case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);              break;
     case StmtType::Match:     UNIMPLEMENTED("StmtType::Match");                                          break;
