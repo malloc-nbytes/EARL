@@ -27,6 +27,7 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <optional>
 
 #include "parser.hpp"
 #include "utils.hpp"
@@ -42,6 +43,13 @@
 
 using namespace Interpreter;
 
+struct PackedERPreliminary {
+    bool should_explicitly_copy_value;
+    std::shared_ptr<earl::value::Obj> getter_accessor;
+    PackedERPreliminary(bool should_copy = true, std::shared_ptr<earl::value::Obj> accessor = nullptr)
+        : should_explicitly_copy_value(should_copy), getter_accessor(accessor) {}
+};
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
@@ -49,7 +57,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx);
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, std::optional<PackedERPreliminary> perp = {});
 
 static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
@@ -75,7 +83,7 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
 }
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, std::optional<PackedERPreliminary> perp) {
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
@@ -91,7 +99,14 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
         // TODO: implement copy/reference here
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
+        auto var = ctx->variable_get(er.id);
         return ctx->variable_get(er.id)->value();
+        // if (perp.has_value() && perp->should_explicitly_copy_value) {
+        //     std::cout << "HERE" << std::endl;
+        //     return ctx->variable_get(er.id)->value()->copy();
+        // }
+        // else
+        //     return ctx->variable_get(er.id)->value();
     }
     else
         assert(false);
@@ -203,7 +218,16 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     auto value = unpack_ER(rhs, ctx);
-    auto var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+    std::shared_ptr<earl::variable::Obj> var = nullptr;
+
+    if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
+        // If the result is a literal, no need to copy.
+        // If the result is not a literal, but we have a `ref` attr, no need to copy.
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+    else
+        // Copy the value
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value->copy(), stmt->m_attrs);
+
     ctx->variable_add(var);
 
     return std::make_shared<earl::value::Void>();
@@ -273,12 +297,12 @@ eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER
-        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx),
-        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
-    std::shared_ptr<earl::value::Obj>
-        l = unpack_ER(left_er, ctx),
-        r = unpack_ER(right_er, ctx);
+    ER left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx);
+    ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
+
+    std::shared_ptr<earl::value::Obj> l = unpack_ER(left_er, ctx);
+    std::shared_ptr<earl::value::Obj> r = unpack_ER(right_er, ctx);
+
     l->mutate(r);
     return std::make_shared<earl::value::Void>();
 }

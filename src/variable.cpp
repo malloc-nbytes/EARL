@@ -40,8 +40,7 @@ std::shared_ptr<earl::value::Obj> Obj::value(void) const {
 }
 
 bool Obj::is_ref(void) const {
-    UNIMPLEMENTED("is_ref");
-    // return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
+    return (m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
 }
 
 bool Obj::is_pub(void) const {
@@ -49,6 +48,6 @@ bool Obj::is_pub(void) const {
 }
 
 std::shared_ptr<Obj> Obj::copy(void) {
-    UNIMPLEMENTED("Obj::copy");
+    return std::make_shared<Obj>(m_id, m_value->copy(), m_attrs);
 }
 
