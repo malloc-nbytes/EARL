@@ -35,32 +35,49 @@ using namespace earl::function;
 
 Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {}
 
-const std::string &Obj::id(void) const {
+const std::string &
+Obj::id(void) const {
     return m_stmtdef->m_id->lexeme();
 }
 
-size_t Obj::params_len(void) const {
+size_t
+Obj::params_len(void) const {
     return m_params.size();
 }
 
-StmtBlock *Obj::block(void) const {
+StmtBlock *
+Obj::block(void) const {
     return m_stmtdef->m_block.get();
 }
 
-void Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx, std::shared_ptr<Ctx> &new_ctx) {
-    UNIMPLEMENTED("Obj::load_parameters");
+void
+Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
+                     std::shared_ptr<FunctionCtx> &new_ctx) {
+    for (size_t i = 0; i < values.size(); ++i) {
+        auto value = values[i];
+        Token *id = m_params.at(i).first;
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
+        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)
+            var = std::make_shared<earl::variable::Obj>(id, value);
+        else
+            var = std::make_shared<earl::variable::Obj>(id, value->copy());
+        new_ctx->variable_add(var);
+    }
 }
 
-bool Obj::is_world(void) const {
+bool
+Obj::is_world(void) const {
     assert(m_stmtdef);
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::World)) != 0;
 }
 
-bool Obj::is_pub(void) const {
+bool
+Obj::is_pub(void) const {
     assert(m_stmtdef);
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
-Obj *Obj::copy(void) {
-    return new Obj(m_stmtdef, m_params);
+Obj *
+Obj::copy(void) {
+    UNIMPLEMENTED("Obj::copy (function)");
 }

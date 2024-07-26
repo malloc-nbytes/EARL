@@ -79,5 +79,5 @@ bool WorldCtx::function_exists(const std::string &id) {
 }
 
 std::shared_ptr<earl::function::Obj> WorldCtx::function_get(const std::string &id) {
-    UNIMPLEMENTED("WorldCtx::function_get");
+    return m_funcs.get(id);
 }

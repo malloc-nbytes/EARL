@@ -42,26 +42,40 @@
 
 using namespace Interpreter;
 
-std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
-std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
-static std::shared_ptr<earl::value::Obj> unpack_ER(ER &er, std::shared_ptr<Ctx> ctx);
+std::shared_ptr<earl::value::Obj>
+eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
-static std::shared_ptr<earl::value::Obj> eval_user_defined_function(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    assert(false);
+std::shared_ptr<earl::value::Obj>
+eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
+
+static std::shared_ptr<earl::value::Obj>
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx);
+
+static std::shared_ptr<earl::value::Obj>
+eval_user_defined_function(const std::string &id,
+                           std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    if (!ctx->function_exists(id))
+        ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
+    auto func = ctx->function_get(id);
+    auto fctx = std::make_shared<FunctionCtx>();
+    func->load_parameters(params, fctx);
+    std::shared_ptr<Ctx> mask = fctx;
+    return Interpreter::eval_stmt_block(func->block(), mask);
 }
 
-static std::vector<std::shared_ptr<earl::value::Obj>> evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
+static std::vector<std::shared_ptr<earl::value::Obj>>
+evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
     std::vector<std::shared_ptr<earl::value::Obj>> res = {};
-
     for (size_t i = 0; i < funccall->m_params.size(); ++i) {
         ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx);
         res.push_back(unpack_ER(er, ctx));
     }
-
     return res;
 }
 
-static std::shared_ptr<earl::value::Obj> unpack_ER(ER &er, std::shared_ptr<Ctx> ctx) {
+static std::shared_ptr<earl::value::Obj>
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
@@ -83,7 +97,8 @@ static std::shared_ptr<earl::value::Obj> unpack_ER(ER &er, std::shared_ptr<Ctx> 
         assert(false);
 }
 
-ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
+ER
+eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
@@ -143,11 +158,13 @@ ER eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     return ER(nullptr, ERT::None);
 }
 
-ER eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
+ER
+eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_expr_bin");
 }
 
-ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
+ER
+Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_type()) {
     case ExprType::Term: {
         auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
@@ -161,7 +178,8 @@ ER Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
     }
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
 
     if (ctx->variable_exists(stmt->m_id->lexeme())) {
@@ -176,53 +194,77 @@ std::shared_ptr<earl::value::Obj> eval_stmt_let(StmtLet *stmt, std::shared_ptr<C
     return std::make_shared<earl::value::Void>();
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     return unpack_ER(er, ctx);
 }
 
-std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_block");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_def");
+std::shared_ptr<earl::value::Obj>
+eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
+    const std::string &id = stmt->m_id->lexeme();
+    if (ctx->function_exists(id)) {
+        Err::err_wtok(stmt->m_id.get());
+        ERR_WARGS(Err::Type::Redeclared, "function `%s` has already been declared", id.c_str());
+    }
+
+    std::vector<std::pair<Token *, uint32_t>> args;
+    for (auto &entry : stmt->m_args)
+        args.push_back(std::make_pair(entry.first.get(), entry.second));
+
+    auto func = std::make_shared<earl::function::Obj>(stmt, args);
+    ctx->function_add(func);
+    return std::make_shared<earl::value::Void>();
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_if");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_return");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_break");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_mut");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_while");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_for");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
     UNIMPLEMENTED("eval_stmt_class");
 }
 
-std::shared_ptr<earl::value::Obj> eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
     dynamic_cast<WorldCtx *>(ctx.get())->set_mod(stmt->m_id->lexeme());
     return std::make_shared<earl::value::Void>();
 }
 
-std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Def: {
         return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
@@ -273,7 +315,8 @@ std::shared_ptr<earl::value::Obj> Interpreter::eval_stmt(Stmt *stmt, std::shared
     assert(false && "unreachable");
 }
 
-std::shared_ptr<Ctx> Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
+std::shared_ptr<Ctx>
+Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     auto wctx = dynamic_cast<WorldCtx *>(ctx.get());
 

@@ -36,6 +36,7 @@
 #include "token.hpp"
 
 struct Ctx;
+struct FunctionCtx;
 
 namespace earl {
     namespace variable {struct Obj;}
@@ -488,7 +489,7 @@ namespace earl {
             const std::string &id(void) const;
             size_t params_len(void) const;
             StmtBlock *block(void) const;
-            void load_parameters(std::vector<std::shared_ptr<value::Obj>> &values, std::shared_ptr<Ctx> &from_ctx, std::shared_ptr<Ctx> &new_ctx);
+            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<FunctionCtx> &new_ctx);
             bool is_world(void) const;
             bool is_pub(void) const;
             Obj *copy(void);
