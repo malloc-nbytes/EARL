@@ -265,7 +265,8 @@ eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_return");
+    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    return unpack_ER(er, ctx);
 }
 
 std::shared_ptr<earl::value::Obj>

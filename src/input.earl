@@ -1,16 +1,7 @@
 mod Main
 
 fn test(inp) {
-    println("inp: ", inp);
-
-    if inp == 5 {
-        println("done");
-    }
-    else {
-        test(inp+1);
-    }
+    return inp*2;
 }
 
-let x = 0;
-test(x);
-println(x);
+println(test(10));
