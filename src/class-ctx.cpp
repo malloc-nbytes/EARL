@@ -29,39 +29,48 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-CtxType ClassCtx::type(void) const {
+CtxType
+ClassCtx::type(void) const {
     return CtxType::Class;
 }
 
-void ClassCtx::push_scope(void) {
+void
+ClassCtx::push_scope(void) {
     UNIMPLEMENTED("ClassCtx::push_variable_scope");
 }
 
-void ClassCtx::pop_scope(void) {
+void
+ClassCtx::pop_scope(void) {
     UNIMPLEMENTED("ClassCtx::pop_variable_scope");
 }
 
-void ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
+void
+ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     UNIMPLEMENTED("ClassCtx::add_variable");
 }
 
-bool ClassCtx::variable_exists(const std::string &id) {
+bool
+ClassCtx::variable_exists(const std::string &id) {
     UNIMPLEMENTED("ClassCtx::variable_exists");
 }
 
-std::shared_ptr<earl::variable::Obj> ClassCtx::variable_get(const std::string &id) {
+std::shared_ptr<earl::variable::Obj>
+ClassCtx::variable_get(const std::string &id) {
     UNIMPLEMENTED("ClassCtx::variable_get");
 }
 
-void ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
+void
+ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();
     m_funcs.add(id, func);
 }
 
-bool ClassCtx::function_exists(const std::string &id) {
+bool
+ClassCtx::function_exists(const std::string &id) {
     return m_funcs.contains(id);
 }
 
-std::shared_ptr<earl::function::Obj> ClassCtx::function_get(const std::string &id) {
+std::shared_ptr<earl::function::Obj>
+ClassCtx::function_get(const std::string &id) {
     UNIMPLEMENTED("ClassCtx::function_get");
 }

@@ -29,11 +29,13 @@
 
 ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
-ExprType ExprIdent::get_type() const {
+ExprType
+ExprIdent::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprIdent::get_term_type() const {
+ExprTermType
+ExprIdent::get_term_type() const {
     return ExprTermType::Ident;
 }
 

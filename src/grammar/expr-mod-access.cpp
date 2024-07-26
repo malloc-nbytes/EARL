@@ -30,10 +30,12 @@
 ExprModAccess::ExprModAccess(std::unique_ptr<ExprIdent> expr_ident, std::unique_ptr<Expr> right)
     : m_expr_ident(std::move(expr_ident)), m_right(std::move(right)) {}
 
-ExprType ExprModAccess::get_type() const {
+ExprType
+ExprModAccess::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprModAccess::get_term_type() const {
+ExprTermType
+ExprModAccess::get_term_type() const {
     return ExprTermType::Mod_Access;
 }

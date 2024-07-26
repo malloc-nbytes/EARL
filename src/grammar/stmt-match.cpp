@@ -35,6 +35,7 @@ StmtMatch::Branch::Branch(std::vector<std::unique_ptr<Expr>> expr,
 StmtMatch::StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<StmtMatch::Branch>> branches)
     : m_expr(std::move(expr)), m_branches(std::move(branches)) {}
 
-StmtType StmtMatch::stmt_type() const {
+StmtType
+StmtMatch::stmt_type() const {
     return StmtType::Match;
 }

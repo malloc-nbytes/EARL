@@ -22,15 +22,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cassert>
 #include <memory>
 
-#include "ast.hpp"
+#include "interpreter.hpp"
+#include "ctx.hpp"
+#include "earl.hpp"
 
-ExprBinary::ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs)
-    : m_lhs(std::move(lhs)), m_op(std::move(op)), m_rhs(std::move(rhs)) {}
-
-ExprType
-ExprBinary::get_type() const {
-    return ExprType::Binary;
+Interpreter::ER::ER(std::shared_ptr<earl::value::Obj> value,
+                    ERT rt,
+                    std::string id,
+                    void *extra,
+                    std::shared_ptr<Ctx> ctx) {
+    this->value = value;
+    this->rt = static_cast<uint32_t>(rt);
+    this->id = id;
+    this->extra = extra;
+    this->ctx = ctx;
 }
+
+bool Interpreter::ER::is_literal(void) {
+    return (this->rt & ERT::Literal) != 0;
+}
+
+bool Interpreter::ER::is_ident(void) {
+    return (this->rt & ERT::Ident) != 0;
+}
+
+bool Interpreter::ER::is_intrinsic(void) {
+    return (this->rt & ERT::IntrinsicFunction) != 0;
+}
+
+bool Interpreter::ER::is_function_ident(void) {
+    return (this->rt & ERT::FunctionIdent) != 0;
+}
+
+bool Interpreter::ER::is_class_instant(void) {
+    return (this->rt & ERT::ClassInstant) != 0;
+}
+
+bool Interpreter::ER::is_member_intrinsic(void) {
+    return (this->rt & ERT::IntrinsicMemberFunction) != 0;
+}
+
+bool Interpreter::ER::is_none(void) {
+    return (this->rt & ERT::None) != 0;
+}
+

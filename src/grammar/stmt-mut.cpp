@@ -31,7 +31,8 @@ StmtMut::StmtMut(std::unique_ptr<Expr> left,
                  std::unique_ptr<Expr> right)
     : m_left(std::move(left)), m_right(std::move(right)) {}
 
-StmtType StmtMut::stmt_type() const {
+StmtType
+StmtMut::stmt_type() const {
     return StmtType::Mut;
 }
 

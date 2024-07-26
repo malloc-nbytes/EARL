@@ -33,7 +33,8 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params) : m_stmtdef(stmtdef), m_params(std::move(params)) {}
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params)
+    : m_stmtdef(stmtdef), m_params(std::move(params)) {}
 
 const std::string &
 Obj::id(void) const {

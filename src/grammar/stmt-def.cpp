@@ -35,6 +35,7 @@ StmtDef::StmtDef(std::unique_ptr<Token> id,
     m_block(std::move(block)),
     m_attrs(attrs) {}
 
-StmtType StmtDef::stmt_type() const {
+StmtType
+StmtDef::stmt_type() const {
     return StmtType::Def;
 }

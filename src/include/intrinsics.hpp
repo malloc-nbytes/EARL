@@ -43,10 +43,14 @@
 namespace Intrinsics {
 
     /// @brief All intrinsic functions must use this function signature.
-    using IntrinsicFunction = std::shared_ptr<earl::value::Obj> (*)(std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
+    using IntrinsicFunction =
+        std::shared_ptr<earl::value::Obj> (*)(std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
 
     /// @brief All intrinsic member functions must use this function signature.
-    using IntrinsicMemberFunction = std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<earl::value::Obj>, std::vector<std::shared_ptr<earl::value::Obj>>&, std::shared_ptr<Ctx>&);
+    using IntrinsicMemberFunction =
+        std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<earl::value::Obj>,
+                                              std::vector<std::shared_ptr<earl::value::Obj>>&,
+                                              std::shared_ptr<Ctx>&);
 
     /// @brief A map of all intrinsic functions in EARL
     extern const std::unordered_map<std::string, IntrinsicFunction> intrinsic_functions;
@@ -69,7 +73,9 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
-    std::shared_ptr<earl::value::Obj> call(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+    std::shared_ptr<earl::value::Obj> call(const std::string &id,
+                                           std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                           std::shared_ptr<Ctx> &ctx);
 
     /// @brief Call an intrinsic member function
     /// @note It is expected to call `is_member_intrinsic` before calling this function
@@ -80,7 +86,10 @@ namespace Intrinsics {
     /// @param ctx The current global context
     // std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
 
-   std::shared_ptr<earl::value::Obj> call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx);
+   std::shared_ptr<earl::value::Obj> call_member(const std::string &id,
+                                                 std::shared_ptr<earl::value::Obj> accessor,
+                                                 std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                                 std::shared_ptr<Ctx> &ctx);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 

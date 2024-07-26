@@ -29,7 +29,8 @@
 
 StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
 
-StmtType StmtBlock::stmt_type() const {
+StmtType
+StmtBlock::stmt_type() const {
     return StmtType::Block;
 }
 

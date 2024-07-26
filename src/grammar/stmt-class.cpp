@@ -35,6 +35,7 @@ StmtClass::StmtClass(std::unique_ptr<Token> id,
     : m_id(std::move(id)), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
       m_members(std::move(members)), m_methods(std::move(methods)) {}
 
-StmtType StmtClass::stmt_type() const {
+StmtType
+StmtClass::stmt_type() const {
     return StmtType::Class;
 }

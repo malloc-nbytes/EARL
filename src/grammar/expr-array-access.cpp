@@ -30,10 +30,12 @@
 ExprArrayAccess::ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr)
     : m_left(std::move(left)), m_expr(std::move(expr)) {}
 
-ExprType ExprArrayAccess::get_type() const {
+ExprType
+ExprArrayAccess::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprArrayAccess::get_term_type() const {
+ExprTermType
+ExprArrayAccess::get_term_type() const {
     return ExprTermType::Array_Access;
 }

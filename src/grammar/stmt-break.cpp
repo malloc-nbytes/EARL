@@ -29,6 +29,7 @@
 
 StmtBreak::StmtBreak(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
-StmtType StmtBreak::stmt_type() const {
+StmtType
+StmtBreak::stmt_type() const {
     return StmtType::Break;
 }

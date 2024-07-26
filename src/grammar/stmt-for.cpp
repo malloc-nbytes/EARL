@@ -36,7 +36,8 @@ StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
       m_end(std::move(end)),
       m_block(std::move(block)) {}
 
-StmtType StmtFor::stmt_type() const {
+StmtType
+StmtFor::stmt_type() const {
     return StmtType::For;
 }
 

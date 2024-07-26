@@ -29,10 +29,12 @@
 
 ExprTuple::ExprTuple(std::vector<std::unique_ptr<Expr>> exprs) : m_exprs(std::move(exprs)) {}
 
-ExprType ExprTuple::get_type() const {
+ExprType
+ExprTuple::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprTuple::get_term_type() const {
+ExprTermType
+ExprTuple::get_term_type() const {
     return ExprTermType::Tuple;
 }

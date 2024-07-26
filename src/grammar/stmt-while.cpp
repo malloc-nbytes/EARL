@@ -30,6 +30,7 @@
 StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block)
     : m_expr(std::move(expr)), m_block(std::move(block)) {}
 
-StmtType StmtWhile::stmt_type() const {
+StmtType
+StmtWhile::stmt_type() const {
     return StmtType::While;
 }
