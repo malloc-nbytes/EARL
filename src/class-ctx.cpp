@@ -33,11 +33,11 @@ CtxType ClassCtx::type(void) const {
     return CtxType::Class;
 }
 
-void ClassCtx::push_variable_scope(void) {
+void ClassCtx::push_scope(void) {
     UNIMPLEMENTED("ClassCtx::push_variable_scope");
 }
 
-void ClassCtx::pop_variable_scope(void) {
+void ClassCtx::pop_scope(void) {
     UNIMPLEMENTED("ClassCtx::pop_variable_scope");
 }
 

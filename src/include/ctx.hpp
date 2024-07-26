@@ -47,8 +47,8 @@ enum class CtxType {
 
 struct Ctx {
     virtual CtxType type(void) const = 0;
-    virtual void push_variable_scope(void) = 0;
-    virtual void pop_variable_scope(void) = 0;
+    virtual void push_scope(void) = 0;
+    virtual void pop_scope(void) = 0;
 
     virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
     virtual bool variable_exists(const std::string &id) = 0;
@@ -71,8 +71,8 @@ struct WorldCtx : public Ctx {
     void set_mod(std::string id);
 
     CtxType type(void) const override;
-    void push_variable_scope(void) override;
-    void pop_variable_scope(void) override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
@@ -93,8 +93,8 @@ struct FunctionCtx : public Ctx {
     ~FunctionCtx() = default;
 
     CtxType type(void) const override;
-    void push_variable_scope(void) override;
-    void pop_variable_scope(void) override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
@@ -111,8 +111,8 @@ struct ClassCtx : public Ctx {
     ~ClassCtx() = default;
 
     CtxType type(void) const override;
-    void push_variable_scope(void) override;
-    void pop_variable_scope(void) override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;

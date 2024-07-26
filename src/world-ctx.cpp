@@ -48,11 +48,11 @@ CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }
 
-void WorldCtx::push_variable_scope(void) {
+void WorldCtx::push_scope(void) {
     m_scope.push();
 }
 
-void WorldCtx::pop_variable_scope(void) {
+void WorldCtx::pop_scope(void) {
     m_scope.pop();
 }
 

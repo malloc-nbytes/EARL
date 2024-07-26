@@ -33,20 +33,23 @@ CtxType FunctionCtx::type(void) const {
     return CtxType::Function;
 }
 
-void FunctionCtx::push_variable_scope(void) {
-    UNIMPLEMENTED("FunctionCtx::push_variable_scope");
+void FunctionCtx::push_scope(void) {
+    m_scope.push();
+    m_funcs.push();
 }
 
-void FunctionCtx::pop_variable_scope(void) {
-    UNIMPLEMENTED("FunctionCtx::pop_variable_scope");
+void FunctionCtx::pop_scope(void) {
+    m_scope.pop();
+    m_funcs.pop();
 }
 
 void FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
-    UNIMPLEMENTED("FunctionCtx::add_variable");
+    const std::string &id = var->id();
+    m_scope.add(id, var);
 }
 
 bool FunctionCtx::variable_exists(const std::string &id) {
-    UNIMPLEMENTED("FunctionCtx::variable_exists");
+    return m_scope.contains(id);
 }
 
 std::shared_ptr<earl::variable::Obj> FunctionCtx::variable_get(const std::string &id) {

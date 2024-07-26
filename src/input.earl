@@ -1,7 +1,10 @@
 mod Main
 
-fn test() {
-    println("in test()");
+fn test(inp) {
+    let x = 1;
+    println("in test(): ", x, " ", inp);
 }
 
-test();
+let x = 8;
+test(x);
+println(x);

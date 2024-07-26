@@ -202,7 +202,19 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_block");
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    ctx->push_scope();
+    for (size_t i = 0; i < block->m_stmts.size(); ++i) {
+        result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
+        if (result && result->type() != earl::value::Type::Void) {
+            // We hit either a break or return statement.
+            break;
+        }
+    }
+    ctx->pop_scope();
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj>
