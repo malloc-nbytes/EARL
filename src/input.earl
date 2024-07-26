@@ -1,7 +1,8 @@
 mod Main
 
-fn test(inp) {
-    return inp*2;
-}
+let x = 1;
+let y = x;
+y = y+1;
 
-println(test(10));
+println("x: ", x);
+println("y: ", y);

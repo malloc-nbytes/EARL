@@ -131,6 +131,9 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     case ExprTermType::Get: {
         assert(false);
     } break;
+    case ExprTermType::Mod_Access: {
+        UNIMPLEMENTED("ExprTermType::Mod_Access");
+    } break;
     case ExprTermType::Array_Access: {
         assert(false);
     } break;
@@ -145,9 +148,6 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     } break;
     case ExprTermType::Tuple: {
         UNIMPLEMENTED("ExprTermType::Tuple");
-    } break;
-    case ExprTermType::Mod_Access: {
-        UNIMPLEMENTED("ExprTermType::Mod_Access");
     } break;
     default:
         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -218,17 +218,14 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<earl::value::Obj> result = nullptr;
-
     ctx->push_scope();
     for (size_t i = 0; i < block->m_stmts.size(); ++i) {
         result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
-        if (result && result->type() != earl::value::Type::Void) {
+        if (result && result->type() != earl::value::Type::Void)
             // We hit either a break or return statement.
             break;
-        }
     }
     ctx->pop_scope();
-
     return result;
 }
 
@@ -276,7 +273,14 @@ eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_mut");
+    ER
+        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx),
+        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
+    std::shared_ptr<earl::value::Obj>
+        l = unpack_ER(left_er, ctx),
+        r = unpack_ER(right_er, ctx);
+    l->mutate(r);
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -303,53 +307,25 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
-    case StmtType::Def: {
-        return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
-    } break;
-    case StmtType::Let: {
-        return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
-    } break;
-    case StmtType::Block: {
-        return Interpreter::eval_stmt_block(dynamic_cast<StmtBlock *>(stmt), ctx);
-    } break;
-    case StmtType::Mut: {
-        return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);
-    } break;
-    case StmtType::Stmt_Expr: {
-        return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
-    } break;
-    case StmtType::If: {
-        return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
-    } break;
-    case StmtType::Return: {
-        return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
-    } break;
-    case StmtType::Break: {
-        return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
-    } break;
-    case StmtType::While: {
-        return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
-    } break;
-    case StmtType::For: {
-        return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
-    } break;
-    case StmtType::Import: {
-        UNIMPLEMENTED("StmtType::Import");
-    } break;
-    case StmtType::Mod: {
-        return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
-    } break;
-    case StmtType::Class: {
-        return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
-    } break;
-    case StmtType::Match: {
-        UNIMPLEMENTED("StmtType::Match");
-    } break;
-    default:
-        assert(false && "unreachable");
+    case StmtType::Def:       return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);                  break;
+    case StmtType::Let:       return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);                  break;
+    case StmtType::Block:     return Interpreter::eval_stmt_block(dynamic_cast<StmtBlock *>(stmt), ctx); break;
+    case StmtType::Mut:       return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);                  break;
+    case StmtType::Stmt_Expr: return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);                break;
+    case StmtType::If:        return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);                    break;
+    case StmtType::Return:    return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);            break;
+    case StmtType::Break:     return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);              break;
+    case StmtType::While:     return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);              break;
+    case StmtType::For:       return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);                  break;
+    case StmtType::Import:    UNIMPLEMENTED("StmtType::Import");                                         break;
+    case StmtType::Mod:       return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);                  break;
+    case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);              break;
+    case StmtType::Match:     UNIMPLEMENTED("StmtType::Match");                                          break;
+    default: assert(false && "unreachable");
     }
-
-    assert(false && "unreachable");
+    ERR(Err::Type::Internal,
+        "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
+    return nullptr;
 }
 
 std::shared_ptr<Ctx>
