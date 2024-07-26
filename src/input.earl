@@ -1,10 +1,16 @@
 mod Main
 
 fn test(inp) {
-    let x = 1;
-    println("in test(): ", x, " ", inp);
+    println("inp: ", inp);
+
+    if inp == 5 {
+        println("done");
+    }
+    else {
+        test(inp+1);
+    }
 }
 
-let x = 8;
+let x = 0;
 test(x);
 println(x);

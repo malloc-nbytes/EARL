@@ -160,7 +160,22 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 
 ER
 eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_expr_bin");
+    ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
+    auto lhs_value = unpack_ER(lhs, ctx);
+
+    // Short-circuit evaluation for logical AND (&&)
+    if (expr->m_op->type() == TokenType::Double_Ampersand) {
+        // If lhs is false (or zero), return lhs (no need to evaluate rhs)
+        if (!lhs_value->boolean())
+            return lhs;
+        ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+        return ER(unpack_ER(rhs, ctx), ERT::Literal);
+    }
+
+    ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
+    auto rhs_value = unpack_ER(rhs, ctx);
+    auto result = lhs_value->binop(expr->m_op.get(), rhs_value);
+    return ER(result, ERT::Literal);
 }
 
 ER
@@ -236,7 +251,16 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_if");
+    auto er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    auto condition = unpack_ER(er, ctx);
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    if (condition->boolean())
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+    else if (stmt->m_else.has_value())
+        result = Interpreter::eval_stmt_block(stmt->m_else.value().get(), ctx);
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj>
