@@ -49,11 +49,17 @@ struct Ctx {
     virtual CtxType type(void) const = 0;
     virtual void push_variable_scope(void) = 0;
     virtual void pop_variable_scope(void) = 0;
+
     virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
     virtual bool variable_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
 
+    virtual void function_add(std::shared_ptr<earl::function::Obj> func) = 0;
+    virtual bool function_exists(const std::string &id) = 0;
+    virtual std::shared_ptr<earl::function::Obj> function_get(const std::string &id) = 0;
+
     SharedScope<std::string, earl::variable::Obj> m_scope;
+    SharedScope<std::string, earl::function::Obj> m_funcs;
 };
 
 struct WorldCtx : public Ctx {
@@ -70,6 +76,9 @@ struct WorldCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
 private:
     std::string m_mod;
@@ -89,6 +98,9 @@ struct FunctionCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -104,6 +116,9 @@ struct ClassCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

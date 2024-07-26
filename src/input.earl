@@ -1,9 +1,7 @@
 mod Main
 
-let x = 1;
-let y = 2;
-let z = x;
-let s = " ";
+fn test() {
+    println("in test()");
+}
 
-println(x, s, y);
-println(9);
+test();

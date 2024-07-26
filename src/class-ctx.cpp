@@ -52,3 +52,16 @@ bool ClassCtx::variable_exists(const std::string &id) {
 std::shared_ptr<earl::variable::Obj> ClassCtx::variable_get(const std::string &id) {
     UNIMPLEMENTED("ClassCtx::variable_get");
 }
+
+void ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
+    const std::string &id = func->id();
+    m_funcs.add(id, func);
+}
+
+bool ClassCtx::function_exists(const std::string &id) {
+    return m_funcs.contains(id);
+}
+
+std::shared_ptr<earl::function::Obj> ClassCtx::function_get(const std::string &id) {
+    UNIMPLEMENTED("ClassCtx::function_get");
+}

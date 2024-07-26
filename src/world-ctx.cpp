@@ -69,3 +69,15 @@ std::shared_ptr<earl::variable::Obj> WorldCtx::variable_get(const std::string &i
     return m_scope.get(id);
 }
 
+void WorldCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
+    const std::string &id = func->id();
+    m_funcs.add(id, func);
+}
+
+bool WorldCtx::function_exists(const std::string &id) {
+    return m_funcs.contains(id);
+}
+
+std::shared_ptr<earl::function::Obj> WorldCtx::function_get(const std::string &id) {
+    UNIMPLEMENTED("WorldCtx::function_get");
+}
