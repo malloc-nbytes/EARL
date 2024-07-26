@@ -89,7 +89,7 @@ private:
 };
 
 struct FunctionCtx : public Ctx {
-    FunctionCtx() = default;
+    FunctionCtx(std::shared_ptr<Ctx> owner);
     ~FunctionCtx() = default;
 
     CtxType type(void) const override;

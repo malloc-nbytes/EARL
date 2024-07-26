@@ -29,42 +29,68 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-CtxType FunctionCtx::type(void) const {
+FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner) {
+    // TODO: check if function is @world, copy variables
+    // from @world scope to this function's scope.
+    std::shared_ptr<Ctx> it = owner;
+    while (1) {
+        switch (it->type()) {
+        case CtxType::World:
+        case CtxType::Class: {
+            m_owner = it;
+            break;
+        } break;
+        case CtxType::Function: it = dynamic_cast<FunctionCtx *>(it.get())->m_owner;
+        default: assert(false && "unreachable");
+        }
+    }
+}
+
+CtxType
+FunctionCtx::type(void) const {
     return CtxType::Function;
 }
 
-void FunctionCtx::push_scope(void) {
+void
+FunctionCtx::push_scope(void) {
     m_scope.push();
     m_funcs.push();
 }
 
-void FunctionCtx::pop_scope(void) {
+void
+FunctionCtx::pop_scope(void) {
     m_scope.pop();
     m_funcs.pop();
 }
 
-void FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
+void
+FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     const std::string &id = var->id();
     m_scope.add(id, var);
 }
 
-bool FunctionCtx::variable_exists(const std::string &id) {
+bool
+FunctionCtx::variable_exists(const std::string &id) {
     return m_scope.contains(id);
 }
 
-std::shared_ptr<earl::variable::Obj> FunctionCtx::variable_get(const std::string &id) {
+std::shared_ptr<earl::variable::Obj>
+FunctionCtx::variable_get(const std::string &id) {
     return m_scope.get(id);
 }
 
-void FunctionCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
+void
+FunctionCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();
     m_funcs.add(id, func);
 }
 
-bool FunctionCtx::function_exists(const std::string &id) {
+bool
+FunctionCtx::function_exists(const std::string &id) {
     return m_funcs.contains(id);
 }
 
-std::shared_ptr<earl::function::Obj> FunctionCtx::function_get(const std::string &id) {
+std::shared_ptr<earl::function::Obj>
+FunctionCtx::function_get(const std::string &id) {
     UNIMPLEMENTED("FunctionCtx::function_get");
 }

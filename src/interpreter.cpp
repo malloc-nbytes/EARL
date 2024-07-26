@@ -58,7 +58,7 @@ eval_user_defined_function(const std::string &id,
     if (!ctx->function_exists(id))
         ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
     auto func = ctx->function_get(id);
-    auto fctx = std::make_shared<FunctionCtx>();
+    auto fctx = std::make_shared<FunctionCtx>(ctx);
     func->load_parameters(params, fctx);
     std::shared_ptr<Ctx> mask = fctx;
     return Interpreter::eval_stmt_block(func->block(), mask);
