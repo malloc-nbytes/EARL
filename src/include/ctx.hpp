@@ -69,6 +69,7 @@ struct WorldCtx : public Ctx {
     size_t stmts_len(void) const;
     Stmt *stmt_at(size_t idx);
     void set_mod(std::string id);
+    void add_import(std::shared_ptr<Ctx> ctx);
 
     CtxType type(void) const override;
     void push_scope(void) override;

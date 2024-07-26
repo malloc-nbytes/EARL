@@ -44,6 +44,10 @@ void WorldCtx::set_mod(std::string id) {
     m_mod = id;
 }
 
+void WorldCtx::add_import(std::shared_ptr<Ctx> ctx) {
+    m_imports.push_back(std::move(ctx));
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }

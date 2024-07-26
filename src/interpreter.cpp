@@ -134,7 +134,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         assert(false);
     } break;
     case ExprTermType::Mod_Access: {
-        UNIMPLEMENTED("ExprTermType::Mod_Access");
+        assert(false);
     } break;
     case ExprTermType::Array_Access: {
         assert(false);
@@ -316,7 +316,17 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
-    assert(false);
+    assert(ctx->type() == CtxType::World);
+
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types    = {};
+    std::string comment               = COMMON_EARL_COMMENT;
+
+    std::unique_ptr<Lexer> lexer      = lex_file(stmt->m_fp.get()->lexeme().c_str(), keywords, types, comment);
+    std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
+
+    std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+    dynamic_cast<WorldCtx *>(ctx.get())->add_import(std::move(child_ctx));
 
     return std::make_shared<earl::value::Void>();
 }

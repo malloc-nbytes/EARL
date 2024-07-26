@@ -1,20 +1,6 @@
 mod Other
 
-@pub fn sum(a, b) { return a+b; }
-
-@pub
-class Point [x, y, name] {
-    @pub x = x;
-    @pub y = y;
-    @pub name = name;
-    desc = "a point class";
-
-    @pub fn test() {
-        return 'a';
-    }
-
-    @pub fn get_desc() {
-        return desc;
-    }
+fn sum(a, b) {
+    return a+b;
 }
 

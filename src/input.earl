@@ -2,3 +2,7 @@ mod Main
 
 import "other.earl"
 
+let x = 1;
+let s = Other::sum(x, 2);
+
+println(s);
