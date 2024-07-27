@@ -43,6 +43,12 @@
 
 using namespace Interpreter;
 
+struct PackedERPreliminary {
+    std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr)
+        : lhs_getter_accessor(lhs_get) {}
+};
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
@@ -50,7 +56,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx);
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp = nullptr);
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wcustom_buffer(StmtLet *stmt,
@@ -133,7 +139,7 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
 }
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx);
         auto class_instantiation = eval_class_instantiation(er.id, params, ctx);
@@ -143,8 +149,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
-        else if (er.is_member_intrinsic())
-            assert(false);
+        else if (er.is_member_intrinsic()) {
+            assert(perp && perp->lhs_getter_accessor);
+            return Intrinsics::call_member(er.id, perp->lhs_getter_accessor, params, ctx);
+        }
         return eval_user_defined_function(er.id, params, ctx);
     }
     else if (er.is_literal()) {
@@ -220,39 +228,48 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
+eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
+    ER
+        left_er = Interpreter::eval_expr(expr->m_left.get(), ctx),
+        right_er = Interpreter::eval_expr(expr->m_right.get(), ctx);
+
+    auto left_value = unpack_ER(left_er, ctx);
+    PackedERPreliminary perp(left_value);
+
+    auto value = unpack_ER(right_er, ctx, &perp);
+    return ER(value, ERT::Literal);
+
+    // if (right_er.is_function_ident()) {
+    //     assert(left_value->type() == earl::value::Type::Class);
+    //     abort();
+    // }
+
+    assert(false);
+}
+
+ER
+eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
+    auto value = std::make_shared<earl::value::Char>(expr->m_tok->lexeme());
+    return ER(value, ERT::Literal);
+}
+
+ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
-    case ExprTermType::Ident:       return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx);
-    case ExprTermType::Int_Literal: return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
-    case ExprTermType::Str_Literal: return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
-    case ExprTermType::Char_Literal: {
-        UNIMPLEMENTED("ExprTermType::Char_Literal");
-    } break;
-    case ExprTermType::Func_Call: return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
-    case ExprTermType::List_Literal: {
-        assert(false);
-    } break;
-    case ExprTermType::Get: {
-        assert(false);
-    } break;
-    case ExprTermType::Mod_Access: return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx);
-    case ExprTermType::Array_Access: {
-        assert(false);
-    } break;
-    case ExprTermType::Bool: {
-        UNIMPLEMENTED("ExprTermType::Bool");
-    } break;
-    case ExprTermType::None: {
-        UNIMPLEMENTED("ExprTermType::None");
-    } break;
-    case ExprTermType::Closure: {
-        UNIMPLEMENTED("ExprTermType::Closure");
-    } break;
-    case ExprTermType::Tuple: {
-        UNIMPLEMENTED("ExprTermType::Tuple");
-    } break;
-    default:
-        ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
+    case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx);
+    case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
+    case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
+    case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr), ctx);
+    case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+    case ExprTermType::List_Literal: assert(false);
+    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx);
+    case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx);
+    case ExprTermType::Array_Access: assert(false);
+    case ExprTermType::Bool:         UNIMPLEMENTED("ExprTermType::Bool");
+    case ExprTermType::None:         UNIMPLEMENTED("ExprTermType::None");
+    case ExprTermType::Closure:      UNIMPLEMENTED("ExprTermType::Closure");
+    case ExprTermType::Tuple:        UNIMPLEMENTED("ExprTermType::Tuple");
+    default:                         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
     }
 
     assert(false && "unreachable");

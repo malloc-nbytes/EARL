@@ -91,7 +91,7 @@ bool Intrinsics::is_member_intrinsic(const std::string &id) {
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::call_member(const std::string &id, std::shared_ptr<earl::value::Obj> accessor, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("Intrinsics::call_member");
+    return intrinsic_member_functions.at(id)(accessor, params, ctx);
 }
 
 std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
