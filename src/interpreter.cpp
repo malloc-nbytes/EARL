@@ -315,12 +315,12 @@ eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx);
-    ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
-
-    std::shared_ptr<earl::value::Obj> l = unpack_ER(left_er, ctx);
-    std::shared_ptr<earl::value::Obj> r = unpack_ER(right_er, ctx);
-
+    ER
+        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx),
+        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
+    std::shared_ptr<earl::value::Obj>
+        l = unpack_ER(left_er, ctx),
+        r = unpack_ER(right_er, ctx);
     l->mutate(r);
     return std::make_shared<earl::value::Void>();
 }
@@ -337,7 +337,8 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_class");
+    dynamic_cast<WorldCtx *>(ctx.get())->define_class(stmt);
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

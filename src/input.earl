@@ -2,7 +2,31 @@ mod Main
 
 import "other.earl"
 
-let x = 1;
-let s = Other::sum(x, 2);
+class Test [x, y] {
+    x = x;
+    y = y;
+    desc = "a description";
 
-println(s);
+    fn get_x() {
+        return x;
+    }
+
+    fn set_x(dx) {
+        x = dx;
+    }
+
+    fn get_y() {
+        return y;
+    }
+
+    fn set_y(dy) {
+        y = dy;
+    }
+
+    fn get_desc() {
+        return desc;
+    }
+}
+
+let a = 1;
+let t = Test(a, 2);

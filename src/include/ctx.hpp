@@ -72,6 +72,7 @@ struct WorldCtx : public Ctx {
     const std::string &get_mod(void) const;
     void add_import(std::shared_ptr<Ctx> ctx);
     std::shared_ptr<Ctx> &get_import(const std::string &id);
+    void define_class(StmtClass *klass);
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -89,6 +90,8 @@ private:
 
     std::unique_ptr<Lexer> m_lexer;
     std::unique_ptr<Program> m_program;
+
+    std::unordered_map<std::string, StmtClass *> m_defined_classes;
 };
 
 struct FunctionCtx : public Ctx {

@@ -7,7 +7,7 @@ earl_SOURCES = main.cpp interpreter-evaluation-result.cpp world-ctx.cpp function
 include_HEADERS = std/io.earl std/linked-list.earl std/list.earl std/math.earl std/queue.earl std/set.earl std/stack.earl std/str.earl std/utils.earl std/os.earl
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
-AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable -O3
+AM_CXXFLAGS = -Wall -Wextra -pedantic -std=c++17 -Wno-unused-variable
 
 includedir = $(prefix)/include/EARL/std
 

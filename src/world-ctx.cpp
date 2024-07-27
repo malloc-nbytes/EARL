@@ -60,6 +60,11 @@ std::shared_ptr<Ctx> &WorldCtx::get_import(const std::string &id) {
     ERR_WARGS(Err::Type::Undeclared, "module `%s` does not exist", id.c_str());
 }
 
+void WorldCtx::define_class(StmtClass *klass) {
+    const std::string &id = klass->m_id->lexeme();
+    m_defined_classes.insert({id, klass});
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }
