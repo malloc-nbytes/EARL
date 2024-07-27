@@ -100,58 +100,74 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
+eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx) {
+    const std::string &id = expr->m_tok->lexeme();
+    return ER(nullptr, ERT::Ident, /*id=*/id);
+}
+
+// RETURNS ACTUAL EVALUATED VALUE IN ER
+ER
+eval_expr_term_intlit(ExprIntLit *expr, std::shared_ptr<Ctx> &ctx) {
+    auto value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme()));
+    return ER(value, ERT::Literal);
+}
+
+// RETURNS ACTUAL EVALUATED VALUE IN ER
+ER
+eval_expr_term_strlit(ExprStrLit *expr, std::shared_ptr<Ctx> &ctx) {
+    auto value = std::make_shared<earl::value::Str>(expr->m_tok->lexeme());
+    return ER(value, ERT::Literal);
+}
+
+ER
+eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
+    ER left = Interpreter::eval_expr(expr->m_left.get(), ctx);
+    const std::string &id = left.id;
+    if (Intrinsics::is_intrinsic(id))
+        return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+    if (Intrinsics::is_member_intrinsic(id))
+        return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+    return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+}
+
+// RETURNS ACTUAL EVALUATED VALUE IN ER
+ER
+eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
+    ExprModAccess *mod_access = expr;
+    ExprIdent     *left_ident = mod_access->m_expr_ident.get();
+    const auto    &left_id    = left_ident->m_tok->lexeme();
+    Expr          *right_expr = mod_access->m_right.get();
+
+    std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
+    ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
+
+    if (right_er.is_function_ident()) {
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
+        auto func = eval_user_defined_function(right_er.id, params, other_ctx);
+        return ER(func, ERT::Literal);
+    }
+    else {
+        assert(false && "unimplemented");
+    }
+}
+
+ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
-    case ExprTermType::Ident: {
-        auto ident = dynamic_cast<ExprIdent *>(expr);
-        const std::string &id = ident->m_tok->lexeme();
-        return ER(nullptr, ERT::Ident, /*id=*/id);
-    } break;
-    case ExprTermType::Int_Literal: {
-        auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
-        return ER(value, ERT::Literal);
-    } break;
-    case ExprTermType::Str_Literal: {
-        auto value = std::make_shared<earl::value::Str>(dynamic_cast<ExprStrLit *>(expr)->m_tok->lexeme());
-        return ER(value, ERT::Literal);
-    } break;
+    case ExprTermType::Ident:       return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx);
+    case ExprTermType::Int_Literal: return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
+    case ExprTermType::Str_Literal: return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
     case ExprTermType::Char_Literal: {
         UNIMPLEMENTED("ExprTermType::Char_Literal");
     } break;
-    case ExprTermType::Func_Call: {
-        auto funccall = dynamic_cast<ExprFuncCall *>(expr);
-        ER left = Interpreter::eval_expr(funccall->m_left.get(), ctx);
-        const std::string &id = left.id;
-        if (Intrinsics::is_intrinsic(id))
-            return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicFunction), /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
-        if (Intrinsics::is_member_intrinsic(id))
-            return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
-        return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(funccall), /*ctx=*/ctx);
-    } break;
+    case ExprTermType::Func_Call: return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
     case ExprTermType::List_Literal: {
         assert(false);
     } break;
     case ExprTermType::Get: {
         assert(false);
     } break;
-    case ExprTermType::Mod_Access: {
-        ExprModAccess *mod_access = dynamic_cast<ExprModAccess *>(expr);
-        ExprIdent     *left_ident = mod_access->m_expr_ident.get();
-        Expr          *right_expr = mod_access->m_right.get();
-
-        std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_ident->m_tok->lexeme());
-        ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
-
-        if (right_er.is_function_ident()) {
-            auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
-            auto func = eval_user_defined_function(right_er.id, params, other_ctx);
-            return ER(func, ERT::Literal);
-        }
-        else {
-            assert(false && "unimplemented");
-        }
-
-    } break;
+    case ExprTermType::Mod_Access: return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx);
     case ExprTermType::Array_Access: {
         assert(false);
     } break;
