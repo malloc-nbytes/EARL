@@ -139,11 +139,18 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         ExprIdent     *left_ident = mod_access->m_expr_ident.get();
         Expr          *right_expr = mod_access->m_right.get();
 
-        auto                      my_ctx = dynamic_cast<WorldCtx *>(ctx.get());
-        std::shared_ptr<Ctx>     &other_ctx = my_ctx->get_import(left_ident->m_tok->lexeme());
-
+        std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_ident->m_tok->lexeme());
         ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
-        abort();
+
+        if (right_er.is_function_ident()) {
+            auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
+            auto func = eval_user_defined_function(right_er.id, params, other_ctx);
+            return ER(func, ERT::Literal);
+        }
+        else {
+            assert(false && "unimplemented");
+        }
+
     } break;
     case ExprTermType::Array_Access: {
         assert(false);
