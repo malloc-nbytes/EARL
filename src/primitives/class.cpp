@@ -32,16 +32,14 @@
 
 using namespace earl::value;
 
-Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner) : m_stmtclass(stmtclass) {
-    UNIMPLEMENTED("Class::Class");
-}
+Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner) : m_stmtclass(stmtclass), m_owner(owner) {}
 
 void Class::load_class_members(std::vector<std::shared_ptr<Obj>> &args) {
     assert(false);
 }
 
 std::shared_ptr<Ctx> &Class::ctx(void) {
-    return m_ctx;
+    return m_owner;
 }
 
 /*** OVERRIDES ***/

@@ -69,6 +69,13 @@ bool WorldCtx::class_is_defined(const std::string &id) const {
     return m_defined_classes.find(id) != m_defined_classes.end();
 }
 
+StmtClass *WorldCtx::class_get(const std::string &id) {
+    auto stmt = m_defined_classes.find(id);
+    if (stmt == m_defined_classes.end())
+        return nullptr;
+    return stmt->second;
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }

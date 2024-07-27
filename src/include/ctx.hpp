@@ -77,6 +77,7 @@ struct WorldCtx : public Ctx {
 
     void define_class(StmtClass *klass);
     bool class_is_defined(const std::string &id) const;
+    StmtClass *class_get(const std::string &id);
 
     CtxType type(void) const override;
     void push_scope(void) override;

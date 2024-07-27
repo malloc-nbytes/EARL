@@ -29,5 +29,5 @@ class Test [x, y] {
 }
 
 let a = 1;
-# let t = Test(a, 2);
+let t = Test(a, 2);
 let p = Other::Point(a, 2, "my point");

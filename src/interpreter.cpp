@@ -53,6 +53,64 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
+eval_stmt_let_wcustom_buffer(StmtLet *stmt,
+                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
+                             std::shared_ptr<Ctx> &ctx) {
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+
+    if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end()) {
+        value = buffer.find(rhs.id)->second->value();
+    }
+    else {
+        value = unpack_ER(rhs, ctx);
+    }
+
+    std::shared_ptr<earl::variable::Obj> var = nullptr;
+
+    if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
+        // If the result is a literal, no need to copy.
+        // If the result is not a literal, but we have a `ref` attr, no need to copy.
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+    else
+        // Copy the value
+        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value->copy(), stmt->m_attrs);
+
+    ctx->variable_add(var);
+
+    return std::make_shared<earl::value::Void>();
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+    StmtClass *class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
+
+    if (params.size() != class_stmt->m_constructor_args.size())
+        ERR_WARGS(Err::Type::Fatal, "Class `%s` expects %zu arguments but %zu were supplied",
+                  id.c_str(), class_stmt->m_constructor_args.size(), params.size());
+
+    auto klass = std::make_shared<earl::value::Class>(class_stmt, ctx);
+
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> buffer;
+
+    // Add the constructor arguments to a temporary pushed scope
+    for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
+        auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].get(), params[i]);
+        buffer.insert({var->id(), var});
+    }
+
+    // Eval member variables
+    for (auto &member : class_stmt->m_members)
+        (void)eval_stmt_let_wcustom_buffer(member.get(), buffer, klass->ctx());
+
+    // Eval methods
+    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i)
+        eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx());
+
+    return klass;
+}
+
+static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
@@ -78,7 +136,9 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
     if (er.is_class_instant()) {
-        assert(false);
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx);
+        auto class_instantiation = eval_class_instantiation(er.id, params, ctx);
+        return class_instantiation;
     }
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
@@ -99,11 +159,6 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
     }
     else
         assert(false);
-}
-
-static std::shared_ptr<earl::value::Obj>
-eval_class_instantiation(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
-    assert(false);
 }
 
 ER
@@ -135,7 +190,7 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
     if (Intrinsics::is_member_intrinsic(id))
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
     if (ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(ctx.get())->class_is_defined(id))
-        return ER(nullptr, ERT::ClassInstant, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+        return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
     return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 }
 
@@ -152,7 +207,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 
     if (right_er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
-        auto class_instantiation = eval_class_instantiation(params, ctx);
+        auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx);
         return ER(class_instantiation, ERT::Literal);
     }
     if (right_er.is_function_ident()) {
