@@ -5,3 +5,9 @@ fn sum(a, b) {
     return s;
 }
 
+class Point [x, y, name] {
+    x = x;
+    y = y;
+    name = name;
+}
+

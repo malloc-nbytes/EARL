@@ -77,6 +77,9 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
+    if (er.is_class_instant()) {
+        assert(false);
+    }
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
@@ -89,7 +92,6 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
         return er.value;
     }
     else if (er.is_ident()) {
-        // TODO: implement copy/reference here
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
@@ -97,6 +99,11 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx) {
     }
     else
         assert(false);
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_class_instantiation(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+    assert(false);
 }
 
 ER
@@ -127,6 +134,8 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
     if (Intrinsics::is_member_intrinsic(id))
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+    if (ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(ctx.get())->class_is_defined(id))
+        return ER(nullptr, ERT::ClassInstant, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
     return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 }
 
@@ -141,6 +150,11 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
     ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
 
+    if (right_er.is_class_instant()) {
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
+        auto class_instantiation = eval_class_instantiation(params, ctx);
+        return ER(class_instantiation, ERT::Literal);
+    }
     if (right_er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
         auto func = eval_user_defined_function(right_er.id, params, other_ctx);

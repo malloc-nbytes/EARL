@@ -65,6 +65,10 @@ void WorldCtx::define_class(StmtClass *klass) {
     m_defined_classes.insert({id, klass});
 }
 
+bool WorldCtx::class_is_defined(const std::string &id) const {
+    return m_defined_classes.find(id) != m_defined_classes.end();
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }
