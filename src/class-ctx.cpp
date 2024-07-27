@@ -29,6 +29,8 @@
 #include "utils.hpp"
 #include "err.hpp"
 
+ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner) : m_owner(owner) {}
+
 CtxType
 ClassCtx::type(void) const {
     return CtxType::Class;
@@ -46,17 +48,18 @@ ClassCtx::pop_scope(void) {
 
 void
 ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
-    UNIMPLEMENTED("ClassCtx::add_variable");
+    const std::string &id = var->id();
+    m_scope.add(id, var);
 }
 
 bool
 ClassCtx::variable_exists(const std::string &id) {
-    UNIMPLEMENTED("ClassCtx::variable_exists");
+    return m_scope.contains(id);
 }
 
 std::shared_ptr<earl::variable::Obj>
 ClassCtx::variable_get(const std::string &id) {
-    UNIMPLEMENTED("ClassCtx::variable_get");
+    return m_scope.get(id);
 }
 
 void

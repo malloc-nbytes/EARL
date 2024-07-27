@@ -331,7 +331,7 @@ namespace earl {
         };
 
         struct Class : public Obj {
-            Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner);
+            Class(StmtClass *stmtclass, std::shared_ptr<Ctx> ctx);
 
             const std::string &id(void) const;
 
@@ -357,7 +357,7 @@ namespace earl {
 
         private:
             StmtClass *m_stmtclass;
-            std::shared_ptr<Ctx> m_owner;
+            std::shared_ptr<Ctx> m_ctx;
 
             std::vector<std::shared_ptr<variable::Obj>> m_members;
             std::vector<std::shared_ptr<function::Obj>> m_methods;

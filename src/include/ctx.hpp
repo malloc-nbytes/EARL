@@ -118,7 +118,7 @@ private:
 };
 
 struct ClassCtx : public Ctx {
-    ClassCtx() = default;
+    ClassCtx(std::shared_ptr<Ctx> owner);
     ~ClassCtx() = default;
 
     CtxType type(void) const override;

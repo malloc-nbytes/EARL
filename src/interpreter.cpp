@@ -59,12 +59,10 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     std::shared_ptr<earl::value::Obj> value = nullptr;
 
-    if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end()) {
+    if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end())
         value = buffer.find(rhs.id)->second->value();
-    }
-    else {
+    else
         value = unpack_ER(rhs, ctx);
-    }
 
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
@@ -84,12 +82,13 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
 static std::shared_ptr<earl::value::Obj>
 eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
     StmtClass *class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
+    auto class_ctx = std::make_shared<ClassCtx>(ctx);
 
     if (params.size() != class_stmt->m_constructor_args.size())
         ERR_WARGS(Err::Type::Fatal, "Class `%s` expects %zu arguments but %zu were supplied",
                   id.c_str(), class_stmt->m_constructor_args.size(), params.size());
 
-    auto klass = std::make_shared<earl::value::Class>(class_stmt, ctx);
+    auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
     std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> buffer;
 
