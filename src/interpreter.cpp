@@ -104,7 +104,8 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         auto ident = dynamic_cast<ExprIdent *>(expr);
-        return ER(nullptr, ERT::Ident, /*id=*/ident->m_tok->lexeme());
+        const std::string &id = ident->m_tok->lexeme();
+        return ER(nullptr, ERT::Ident, /*id=*/id);
     } break;
     case ExprTermType::Int_Literal: {
         auto value = std::make_shared<earl::value::Int>(std::stoi(dynamic_cast<ExprIntLit *>(expr)->m_tok->lexeme()));
@@ -134,7 +135,15 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
         assert(false);
     } break;
     case ExprTermType::Mod_Access: {
-        assert(false);
+        ExprModAccess *mod_access = dynamic_cast<ExprModAccess *>(expr);
+        ExprIdent     *left_ident = mod_access->m_expr_ident.get();
+        Expr          *right_expr = mod_access->m_right.get();
+
+        auto                      my_ctx = dynamic_cast<WorldCtx *>(ctx.get());
+        std::shared_ptr<Ctx>     &other_ctx = my_ctx->get_import(left_ident->m_tok->lexeme());
+
+        ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
+        abort();
     } break;
     case ExprTermType::Array_Access: {
         assert(false);

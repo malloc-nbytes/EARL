@@ -48,6 +48,18 @@ void WorldCtx::add_import(std::shared_ptr<Ctx> ctx) {
     m_imports.push_back(std::move(ctx));
 }
 
+const std::string &WorldCtx::get_mod(void) const {
+    return m_mod;
+}
+
+std::shared_ptr<Ctx> &WorldCtx::get_import(const std::string &id) {
+    for (auto &im : m_imports)
+        if (dynamic_cast<WorldCtx *>(im.get())->get_mod() == id)
+            return im;
+
+    ERR_WARGS(Err::Type::Undeclared, "module `%s` does not exist", id.c_str());
+}
+
 CtxType WorldCtx::type(void) const {
     return CtxType::World;
 }
