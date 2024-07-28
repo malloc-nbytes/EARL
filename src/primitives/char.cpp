@@ -64,7 +64,7 @@ void Char::mutate(const std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> Char::copy(void) {
-    UNIMPLEMENTED("Char::copy");
+    return std::make_shared<Char>(std::string(1, m_value));
 }
 
 bool Char::eq(std::shared_ptr<Obj> &other) {

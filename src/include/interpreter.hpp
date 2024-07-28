@@ -41,7 +41,8 @@ namespace Interpreter {
         FunctionIdent = 1 << 4,
         ClassInstant = 1 << 5,
         FromMemberAccess = 1 << 6,
-        None = 1 << 7,
+        FromIdent = 1 << 7,
+        None = 1 << 8,
     };
 
     struct ER {
@@ -57,6 +58,7 @@ namespace Interpreter {
         bool is_function_ident(void);
         bool is_class_instant(void);
         bool is_member_intrinsic(void);
+        bool is_from_ident(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;
@@ -67,7 +69,7 @@ namespace Interpreter {
     };
 
     std::shared_ptr<Ctx> interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer);
-    ER eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref = false);
+    ER eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
 };
