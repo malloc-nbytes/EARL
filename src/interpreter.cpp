@@ -149,11 +149,13 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
-        else if (er.is_member_intrinsic()) {
+        if (er.is_member_intrinsic()) {
             assert(perp && perp->lhs_getter_accessor);
             return Intrinsics::call_member(er.id, perp->lhs_getter_accessor, params, ctx);
         }
-        return eval_user_defined_function(er.id, params, ctx);
+        if (ctx->type() == CtxType::Class)
+            return eval_user_defined_function(er.id, params, ctx);
+        return eval_user_defined_function(er.id, params, er.ctx);
     }
     else if (er.is_literal()) {
         return er.value;
@@ -171,7 +173,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
 ER
 eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx) {
     const std::string &id = expr->m_tok->lexeme();
-    return ER(nullptr, ERT::Ident, /*id=*/id);
+    return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
@@ -215,7 +217,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
     if (right_er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
         auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx);
-        return ER(class_instantiation, ERT::Literal);
+        return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
@@ -229,22 +231,14 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 
 ER
 eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
-    ER
-        left_er = Interpreter::eval_expr(expr->m_left.get(), ctx),
-        right_er = Interpreter::eval_expr(expr->m_right.get(), ctx);
+    ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx);
+    ER right_er = Interpreter::eval_expr(expr->m_right.get(), ctx);
 
     auto left_value = unpack_ER(left_er, ctx);
     PackedERPreliminary perp(left_value);
 
-    auto value = unpack_ER(right_er, ctx, &perp);
+    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class*>(left_value.get())->ctx(), &perp);
     return ER(value, ERT::Literal);
-
-    // if (right_er.is_function_ident()) {
-    //     assert(left_value->type() == earl::value::Type::Class);
-    //     abort();
-    // }
-
-    assert(false);
 }
 
 ER
@@ -283,7 +277,7 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
-        // If lhs is false (or zero), return lhs (no need to evaluate rhs)
+        // If lhs is false, return lhs (no need to evaluate rhs)
         if (!lhs_value->boolean())
             return lhs;
         ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);

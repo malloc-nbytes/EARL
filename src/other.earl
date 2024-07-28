@@ -9,5 +9,11 @@ class Point [x, y, name] {
     x = x;
     y = y;
     name = name;
+
+    fn test() { return 'a'; }
+
+    fn get_x() {
+        return x;
+    }
 }
 

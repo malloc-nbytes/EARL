@@ -75,5 +75,10 @@ ClassCtx::function_exists(const std::string &id) {
 
 std::shared_ptr<earl::function::Obj>
 ClassCtx::function_get(const std::string &id) {
-    UNIMPLEMENTED("ClassCtx::function_get");
+    return m_funcs.get(id);
 }
+
+void ClassCtx::function_debug_dump(void) const {
+    m_funcs.debug_dump();
+}
+

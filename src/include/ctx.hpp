@@ -131,6 +131,8 @@ struct ClassCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
+    void function_debug_dump(void) const;
+
 private:
     std::shared_ptr<Ctx> m_owner;
 };
