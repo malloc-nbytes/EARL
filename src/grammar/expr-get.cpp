@@ -27,7 +27,8 @@
 
 #include "ast.hpp"
 
-ExprGet::ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right)
+ExprGet::ExprGet(std::unique_ptr<Expr> left,
+                 std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right)
     : m_left(std::move(left)), m_right(std::move(right)) {}
 
 ExprType

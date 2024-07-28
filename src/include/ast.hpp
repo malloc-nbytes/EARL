@@ -25,6 +25,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include <variant>
 #include <vector>
 #include <memory>
 #include <optional>
@@ -78,6 +79,7 @@ enum class ExprTermType {
 
 struct StmtDef;
 struct StmtBlock;
+struct ExprFuncCall;
 
 /// @brief Base class for an expression
 struct Expr {
@@ -95,15 +97,6 @@ struct ExprTerm : public Expr {
     /// @brief Get the Expression Term type
     /// @returns The type of the expression term
     virtual ExprTermType get_term_type() const = 0;
-};
-
-struct ExprGet : public ExprTerm {
-    std::unique_ptr<Expr> m_left;
-    std::unique_ptr<Expr> m_right;
-
-    ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
-    ExprType get_type() const override;
-    ExprTermType get_term_type() const override;
 };
 
 struct ExprTuple : public ExprTerm {
@@ -129,6 +122,16 @@ struct ExprIdent : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprIdent(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprGet : public ExprTerm {
+    std::unique_ptr<Expr> m_left;
+    std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
+
+    ExprGet(std::unique_ptr<Expr> left,
+            std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

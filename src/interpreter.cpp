@@ -232,7 +232,18 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 ER
 eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx);
-    ER right_er = Interpreter::eval_expr(expr->m_right.get(), ctx);
+    ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
+
+    std::visit([&](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
+            right_er = Interpreter::eval_expr(arg.get(), ctx);
+        else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
+            right_er = Interpreter::eval_expr(arg.get(), ctx);
+        else
+            ERR(Err::Type::Internal,
+                "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
+    }, expr->m_right);
 
     auto left_value = unpack_ER(left_er, ctx);
     PackedERPreliminary perp(left_value);

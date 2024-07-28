@@ -117,17 +117,15 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
     return {};
 }
 
-static Expr *parse_identifier_or_funccall(Lexer &lexer) {
-    (void)lexer;
-    UNIMPLEMENTED("parse_identifier_or_funccall");
-    // std::unique_ptr<Token> tok = lexer.next();
-    // auto group = try_parse_funccall(lexer);
-    // if (group.has_value()) {
-    //     return new ExprFuncCall(std::move(tok), std::move(group.value()));
-    // }
-    // else {
-    //     return new ExprIdent(std::move(tok));
-    // }
+static std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> parse_identifier_or_funccall(Lexer &lexer) {
+    auto ident = std::make_unique<ExprIdent>(lexer.next());
+    auto group = try_parse_funccall(lexer);
+
+    if (group.has_value()) {
+        return std::make_unique<ExprFuncCall>(std::move(ident), std::move(group.value()));
+    }
+
+    return ident;
 }
 
 static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_args(Lexer &lexer) {
@@ -179,8 +177,7 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         } break;
         case TokenType::Period: {
             lexer.discard();
-            right = parse_primary_expr(lexer);
-            left = new ExprGet(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer));
         } break;
         case TokenType::Intlit: {
             left = new ExprIntLit(lexer.next());
