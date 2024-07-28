@@ -40,7 +40,8 @@ namespace Interpreter {
         IntrinsicMemberFunction = 1 << 3,
         FunctionIdent = 1 << 4,
         ClassInstant = 1 << 5,
-        None = 1 << 6,
+        FromMemberAccess = 1 << 6,
+        None = 1 << 7,
     };
 
     struct ER {
@@ -56,6 +57,7 @@ namespace Interpreter {
         bool is_function_ident(void);
         bool is_class_instant(void);
         bool is_member_intrinsic(void);
+        bool from_member_access(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;

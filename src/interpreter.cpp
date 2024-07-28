@@ -157,9 +157,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
             return eval_user_defined_function(er.id, params, ctx);
         return eval_user_defined_function(er.id, params, er.ctx);
     }
-    else if (er.is_literal()) {
+    else if (er.from_member_access())
+        return er.value->copy();
+    else if (er.is_literal())
         return er.value;
-    }
     else if (er.is_ident()) {
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
@@ -234,7 +235,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx);
     ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
 
-    std::visit([&](auto&& arg) {
+    std::visit([&](auto &&arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
             right_er = Interpreter::eval_expr(arg.get(), ctx);
@@ -248,8 +249,12 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
     auto left_value = unpack_ER(left_er, ctx);
     PackedERPreliminary perp(left_value);
 
-    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class*>(left_value.get())->ctx(), &perp);
-    return ER(value, ERT::Literal);
+    // The right side (right_er) contains the actual call/identifier to be evaluated,
+    // and we need the left (left_value)'s context with the preliminary value of (perp).
+    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), &perp);
+
+    // return ER(value, ERT::FromMemberAccess);
+    return ER(value->copy(), ERT::Literal);
 }
 
 ER
@@ -318,23 +323,27 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-
     if (ctx->variable_exists(stmt->m_id->lexeme())) {
         Err::err_wtok(stmt->m_id.get());
         ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
     auto value = unpack_ER(rhs, ctx);
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
-    if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
+    // if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0))) {
+    if (rhs.is_literal() || ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)) {
         // If the result is a literal, no need to copy.
         // If the result is not a literal, but we have a `ref` attr, no need to copy.
         var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
-    else
+        std::cout << "REF: " << var->id() << std::endl;
+    }
+    else {
         // Copy the value
         var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value->copy(), stmt->m_attrs);
+        std::cout << "COPY: " << var->id() << std::endl;
+    }
 
     ctx->variable_add(var);
 
