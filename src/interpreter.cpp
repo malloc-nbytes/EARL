@@ -45,8 +45,10 @@ using namespace Interpreter;
 
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
-    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr)
-        : lhs_getter_accessor(lhs_get) {}
+    bool __is_literal;
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool islit = false)
+        : lhs_getter_accessor(lhs_get), __is_literal(islit) {}
+    bool should_copy() { return !__is_literal; }
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -157,11 +159,12 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
             return eval_user_defined_function(er.id, params, ctx);
         return eval_user_defined_function(er.id, params, er.ctx);
     }
-    else if (er.from_member_access())
-        return er.value->copy();
-    else if (er.is_literal())
+    else if (er.is_literal()) {
+        if (perp) perp->__is_literal = true;
         return er.value;
+    }
     else if (er.is_ident()) {
+        if (perp) perp->__is_literal = false;
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
@@ -231,7 +234,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx);
     ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
 
@@ -253,8 +256,8 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
     // and we need the left (left_value)'s context with the preliminary value of (perp).
     auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), &perp);
 
-    // return ER(value, ERT::FromMemberAccess);
-    return ER(value->copy(), ERT::Literal);
+    bool should_copy = (ref || perp.should_copy());
+    return ER(should_copy ? value : value->copy(), ERT::Literal);
 }
 
 ER
@@ -264,7 +267,7 @@ eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx);
     case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
@@ -272,7 +275,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
     case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr), ctx);
     case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
     case ExprTermType::List_Literal: assert(false);
-    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx);
+    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
     case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx);
     case ExprTermType::Array_Access: assert(false);
     case ExprTermType::Bool:         UNIMPLEMENTED("ExprTermType::Bool");
@@ -307,10 +310,10 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
+Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, ref);
         return result;
     } break;
     case ExprType::Binary: {
@@ -328,23 +331,15 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
     }
 
-    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+    bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, /*ref=*/ref);
     auto value = unpack_ER(rhs, ctx);
-    std::shared_ptr<earl::variable::Obj> var = nullptr;
 
-    // if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0))) {
-    if (rhs.is_literal() || ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)) {
-        // If the result is a literal, no need to copy.
-        // If the result is not a literal, but we have a `ref` attr, no need to copy.
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
-        std::cout << "REF: " << var->id() << std::endl;
-    }
-    else {
-        // Copy the value
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value->copy(), stmt->m_attrs);
-        std::cout << "COPY: " << var->id() << std::endl;
-    }
+    // For cases when `rhs` is not from a function/class
+    if (!(rhs.is_literal() || ref))
+        value = value->copy();
 
+    std::shared_ptr<earl::variable::Obj> var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
 
     return std::make_shared<earl::value::Void>();

@@ -64,10 +64,6 @@ bool Interpreter::ER::is_member_intrinsic(void) {
     return (this->rt & ERT::IntrinsicMemberFunction) != 0;
 }
 
-bool Interpreter::ER::from_member_access(void) {
-    return (this->rt & ERT::FromMemberAccess) != 0;
-}
-
 bool Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

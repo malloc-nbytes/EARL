@@ -16,10 +16,15 @@ class Test [x, y] {
     fn get_desc() {return desc;}
 }
 
-let t = Test(1, 2);
+let p = Other::Point(1, 2, "point");
 
-let copy = t.get_x();
-println("before: ", t.get_x());
+println("testing char not copy: ", p.test());
+let x = p.get_x();
+println("copy x before: ", p.get_x());
+x = 99;
+println("copy x after: ", p.get_x());
 
-copy = 99;
-println("after: ", t.get_x());
+@ref let y = p.get_y();
+println("ref y before: ", p.get_y());
+y = 99;
+println("ref y after: ", p.get_y());
