@@ -416,7 +416,31 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_while");
+    std::shared_ptr<earl::value::Obj>
+        expr_result = nullptr,
+        result = nullptr;
+
+    ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, /*ref=*/false);
+    expr_result = unpack_ER(expr_er, ctx, /*ref=*/true);
+
+    while (expr_result->boolean()) {
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+
+        expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, /*ref=*/false);
+        expr_result = unpack_ER(expr_er, ctx, /*ref=*/true);
+        if (!expr_result->boolean())
+            break;
+    }
+
+    return result;
 }
 
 std::shared_ptr<earl::value::Obj>
