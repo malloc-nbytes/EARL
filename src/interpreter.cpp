@@ -421,7 +421,40 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
-    UNIMPLEMENTED("eval_stmt_for");
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+    ER start_er = Interpreter::eval_expr(stmt->m_start.get(), ctx, false);
+    ER end_er = Interpreter::eval_expr(stmt->m_end.get(), ctx, false);
+
+    auto start_expr = unpack_ER(start_er, ctx, false);
+    auto end_expr = unpack_ER(end_er, ctx, false);
+
+    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr);
+
+    assert(!ctx->variable_exists(enumerator->id()));
+    ctx->variable_add(enumerator);
+
+    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());
+    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
+
+    while (start->value() < end->value()) {
+    //     result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+    //     if (result && result->type() == earl::value::Type::Break) {
+    //         result = nullptr;
+    //         break;
+    //     }
+
+    //     if (result && result->type() != earl::value::Type::Void)
+    //         break;
+
+    //     start->mutate(new earl::value::Int(start->value() + 1));
+    }
+
+    ctx->variable_remove(enumerator->id());
+
+    return result;
+
+    abort();
 }
 
 std::shared_ptr<earl::value::Obj>

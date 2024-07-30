@@ -62,6 +62,11 @@ ClassCtx::variable_get(const std::string &id) {
     return m_scope.get(id);
 }
 
+void ClassCtx::variable_remove(const std::string &id) {
+    assert(this->variable_exists(id));
+    m_scope.remove(id);
+}
+
 void
 ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();

@@ -53,6 +53,7 @@ struct Ctx {
     virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
     virtual bool variable_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
+    virtual void variable_remove(const std::string &id) = 0;
 
     virtual void function_add(std::shared_ptr<earl::function::Obj> func) = 0;
     virtual bool function_exists(const std::string &id) = 0;
@@ -85,6 +86,7 @@ struct WorldCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
@@ -109,6 +111,7 @@ struct FunctionCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
@@ -127,6 +130,7 @@ struct ClassCtx : public Ctx {
     void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
