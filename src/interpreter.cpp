@@ -263,14 +263,30 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
                 "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
     }, expr->m_right);
 
-    auto left_value = unpack_ER(left_er, ctx, true);
-    PackedERPreliminary perp(left_value);
+    if (left_er.id == "this") {
 
-    // The right side (right_er) contains the actual call/identifier to be evaluated,
-    // and we need the left (left_value)'s context with the preliminary value of (perp).
-    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+        if (ctx->type() != CtxType::Function)
+            ERR(Err::Type::Fatal, "Must be in a function in a class context to use the `this` keyword");
 
-    return ER(value, ERT::Literal);
+        auto fctx = dynamic_cast<FunctionCtx *>(ctx.get());
+
+        if (!fctx->in_class())
+            ERR(Err::Type::Fatal, "Must be in a class context when using the `this` keyword");
+
+        auto value = unpack_ER(right_er, fctx->get_outer_class_owner_ctx(), /*ref=*/true);
+        return ER(value, ERT::Literal);
+    }
+    else {
+        auto left_value = unpack_ER(left_er, ctx, true);
+        PackedERPreliminary perp(left_value);
+
+        // The right side (right_er) contains the actual call/identifier to be evaluated,
+        // and we need the left (left_value)'s context with the preliminary value of (perp).
+        auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+        return ER(value, ERT::Literal);
+    }
+
+    assert(false && "unreachable");
 }
 
 ER

@@ -129,3 +129,22 @@ FunctionCtx::function_get(const std::string &id) {
 
     return func;
 }
+
+bool FunctionCtx::in_class(void) const {
+    if (m_owner) {
+        if (m_owner->type() == CtxType::Class)
+            return true;
+        else if (m_owner->type() == CtxType::Function)
+            return dynamic_cast<FunctionCtx *>(m_owner.get())->in_class();
+    }
+    return false;
+}
+
+std::shared_ptr<Ctx> &FunctionCtx::get_outer_class_owner_ctx(void) {
+    if (m_owner->type() == CtxType::Class)
+        return m_owner;
+    else if (m_owner->type() == CtxType::Function)
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_class_owner_ctx();
+    ERR(Err::Type::Fatal, "Could not find outer class context for function context");
+}
+
