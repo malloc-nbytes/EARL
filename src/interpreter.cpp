@@ -49,6 +49,11 @@ struct PackedERPreliminary {
         : lhs_getter_accessor(lhs_get) {}
 };
 
+static std::shared_ptr<earl::value::Obj>
+eval_user_defined_function(const std::string &id,
+                           std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx);
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
@@ -108,9 +113,20 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
     for (auto &member : class_stmt->m_members)
         (void)eval_stmt_let_wcustom_buffer(member.get(), buffer, klass->ctx(), ref);
 
+    const std::string constructor_id = "constructor";
+    bool has_constructor = false;
+
     // Eval methods
-    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i)
-        eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx());
+    for (size_t i = 0; i < class_stmt->m_methods.size(); ++i) {
+        (void)eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx());
+        if (class_stmt->m_methods[i]->m_id->lexeme() == constructor_id)
+            has_constructor = true;
+    }
+
+    if (has_constructor) {
+        std::vector<std::shared_ptr<earl::value::Obj>> unused = {};
+        (void)eval_user_defined_function(constructor_id, unused, klass->ctx());
+    }
 
     return klass;
 }

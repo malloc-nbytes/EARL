@@ -1,10 +1,15 @@
 mod Main
 
-import "other.earl"
+class T [x, y] {
+    x = x;
+    y = y;
 
-let i = 0;
-
-while i < 10 {
-    println(i < 10);
-    i = i+1;
+    fn constructor() {
+        println(x);
+        println(y);
+    }
 }
+
+let t = T(1, 2);
+
+
