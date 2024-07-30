@@ -45,10 +45,14 @@ using namespace Interpreter;
 
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
-    bool __from_ident;
-    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool fi = false)
-        : lhs_getter_accessor(lhs_get), __from_ident(fi) {}
-    bool from_ident() { return !__from_ident; }
+    bool __is_ident;
+    bool __is_literal;
+    bool __is_class_instant;
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool ident = false, bool lit = false, bool instant = false)
+        : lhs_getter_accessor(lhs_get), __is_ident(ident), __is_literal(lit), __is_class_instant(instant) {}
+    bool is_ident(void) { return __is_ident; }
+    bool is_literal(void) { return __is_literal; }
+    bool is_class_instant(void) { return __is_class_instant; }
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -58,19 +62,19 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp = nullptr);
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wcustom_buffer(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
-                             std::shared_ptr<Ctx> &ctx) {
-    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
+                             std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
     std::shared_ptr<earl::value::Obj> value = nullptr;
 
     if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end())
         value = buffer.find(rhs.id)->second->value();
     else
-        value = unpack_ER(rhs, ctx);
+        value = unpack_ER(rhs, ctx, ref);
 
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
@@ -88,7 +92,7 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
 }
 
 static std::shared_ptr<earl::value::Obj>
-eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx, bool ref) {
     StmtClass *class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
     auto class_ctx = std::make_shared<ClassCtx>(ctx);
 
@@ -108,7 +112,7 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
 
     // Eval member variables
     for (auto &member : class_stmt->m_members)
-        (void)eval_stmt_let_wcustom_buffer(member.get(), buffer, klass->ctx());
+        (void)eval_stmt_let_wcustom_buffer(member.get(), buffer, klass->ctx(), ref);
 
     // Eval methods
     for (size_t i = 0; i < class_stmt->m_methods.size(); ++i)
@@ -131,24 +135,26 @@ eval_user_defined_function(const std::string &id,
 }
 
 static std::vector<std::shared_ptr<earl::value::Obj>>
-evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx) {
+evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, bool ref) {
     std::vector<std::shared_ptr<earl::value::Obj>> res = {};
     for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx);
-        res.push_back(unpack_ER(er, ctx));
+        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, ref);
+        res.push_back(unpack_ER(er, ctx, ref));
     }
     return res;
 }
 
 static std::shared_ptr<earl::value::Obj>
-unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
+unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
     if (er.is_class_instant()) {
-        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx);
-        auto class_instantiation = eval_class_instantiation(er.id, params, ctx);
+        if (perp) perp->__is_class_instant = true;
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
+        auto class_instantiation = eval_class_instantiation(er.id, params, ctx, ref);
         return class_instantiation;
     }
     if (er.is_function_ident()) {
-        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx);
+        if (perp) perp->__is_ident = true;
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
         if (er.is_member_intrinsic()) {
@@ -160,13 +166,19 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
         return eval_user_defined_function(er.id, params, er.ctx);
     }
     else if (er.is_literal()) {
+        if (perp) {
+            perp->__is_literal = true;
+            perp->__is_ident = false;
+        }
         return er.value;
     }
     else if (er.is_ident()) {
-        if (perp) perp->__from_ident = true;
+        if (perp) perp->__is_ident = true;
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
+        if (!ref)
+            return ctx->variable_get(er.id)->value()->copy();
         return ctx->variable_get(er.id)->value();
     }
     else
@@ -174,7 +186,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, PackedERPreliminary *perp) {
 }
 
 ER
-eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     const std::string &id = expr->m_tok->lexeme();
     return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
 }
@@ -194,8 +206,8 @@ eval_expr_term_strlit(ExprStrLit *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
-    ER left = Interpreter::eval_expr(expr->m_left.get(), ctx);
+eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER left = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     const std::string &id = left.id;
     if (Intrinsics::is_intrinsic(id))
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
@@ -208,22 +220,22 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx) {
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
 ER
-eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ExprModAccess *mod_access = expr;
     ExprIdent     *left_ident = mod_access->m_expr_ident.get();
     const auto    &left_id    = left_ident->m_tok->lexeme();
     Expr          *right_expr = mod_access->m_right.get();
 
     std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
-    ER right_er = Interpreter::eval_expr(right_expr, other_ctx);
+    ER right_er = Interpreter::eval_expr(right_expr, other_ctx, ref);
 
     if (right_er.is_class_instant()) {
-        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
-        auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx);
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
+        auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx, ref);
         return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
-        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx);
+        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
         auto func = eval_user_defined_function(right_er.id, params, other_ctx);
         return ER(func, ERT::Literal);
     }
@@ -233,29 +245,29 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx) {
-    ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx);
+eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
 
     std::visit([&](auto &&arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-            right_er = Interpreter::eval_expr(arg.get(), ctx);
+            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
         else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-            right_er = Interpreter::eval_expr(arg.get(), ctx);
+            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
         else
             ERR(Err::Type::Internal,
                 "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
     }, expr->m_right);
 
-    auto left_value = unpack_ER(left_er, ctx);
+    auto left_value = unpack_ER(left_er, ctx, true);
     PackedERPreliminary perp(left_value);
 
     // The right side (right_er) contains the actual call/identifier to be evaluated,
     // and we need the left (left_value)'s context with the preliminary value of (perp).
-    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), &perp);
+    auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
 
-    return ER(value->copy(), ERT::Literal);
+    return ER(value, ERT::Literal);
 }
 
 ER
@@ -265,16 +277,16 @@ eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
-    case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx);
+    case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
     case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
     case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
     case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr), ctx);
-    case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx);
+    case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx, ref);
     case ExprTermType::List_Literal: assert(false);
-    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx);
-    case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx);
+    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
+    case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
     case ExprTermType::Array_Access: assert(false);
     case ExprTermType::Bool:         UNIMPLEMENTED("ExprTermType::Bool");
     case ExprTermType::None:         UNIMPLEMENTED("ExprTermType::None");
@@ -288,34 +300,34 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
-eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx) {
-    ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx);
-    auto lhs_value = unpack_ER(lhs, ctx);
+eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, ref);
+    auto lhs_value = unpack_ER(lhs, ctx, ref);
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
         // If lhs is false, return lhs (no need to evaluate rhs)
         if (!lhs_value->boolean())
             return lhs;
-        ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
-        return ER(unpack_ER(rhs, ctx), ERT::Literal);
+        ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
+        return ER(unpack_ER(rhs, ctx, ref), ERT::Literal);
     }
 
-    ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx);
-    auto rhs_value = unpack_ER(rhs, ctx);
+    ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
+    auto rhs_value = unpack_ER(rhs, ctx, ref);
     auto result = lhs_value->binop(expr->m_op.get(), rhs_value);
     return ER(result, ERT::Literal);
 }
 
 ER
-Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx) {
+Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx);
+        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, ref);
         return result;
     } break;
     case ExprType::Binary: {
-        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx);
+        return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx, ref);
     } break;
     default:
         assert(false && "unreachable");
@@ -330,23 +342,26 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
-    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    auto value = unpack_ER(rhs, ctx);
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
 
-    // For cases when `rhs` is not from a function/class
-    // if (!(rhs.is_literal() || ref))
-    //     value = value->copy();
+    // std::cout << "ID: " << stmt->m_id->lexeme() << std::endl;
+    // std::cout << "is_ident: " << perp.is_ident() << std::endl;
+    // std::cout << "is_literal: " << perp.is_literal() << std::endl;
+    // std::cout << "ref: " << ref << std::endl;
 
-    std::shared_ptr<earl::variable::Obj> var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+    PackedERPreliminary perp(nullptr);
+    auto value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+
+    std::shared_ptr<earl::variable::Obj> var
+        = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
-
     return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    return unpack_ER(er, ctx);
+    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    return unpack_ER(er, ctx, false);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -382,8 +397,8 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
-    auto er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    auto condition = unpack_ER(er, ctx);
+    auto er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    auto condition = unpack_ER(er, ctx, false);
     std::shared_ptr<earl::value::Obj> result = nullptr;
 
     if (condition->boolean())
@@ -396,8 +411,8 @@ eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx);
-    return unpack_ER(er, ctx);
+    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    return unpack_ER(er, ctx, false);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -408,11 +423,11 @@ eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     ER
-        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx),
-        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx);
+        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx, false),
+        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
     std::shared_ptr<earl::value::Obj>
-        l = unpack_ER(left_er, ctx),
-        r = unpack_ER(right_er, ctx);
+        l = unpack_ER(left_er, ctx, true),
+        r = unpack_ER(right_er, ctx, false);
     l->mutate(r);
     return std::make_shared<earl::value::Void>();
 }

@@ -19,5 +19,9 @@ class Point [x, y, name] {
     fn get_y() {
         return y;
     }
+
+    fn set_y() {
+        y = 9;
+    }
 }
 
