@@ -2,21 +2,6 @@ mod Main
 
 import "other.earl"
 
-class Test [x, y] {
-    x = x;
-    y = y;
-    desc = "a description";
-
-    fn test() {println("here");}
-    fn get_char() {return 'b';}
-    fn get_x() {return x;}
-    fn set_x(dx) {x = dx;}
-    fn get_y() {return y;}
-    fn set_y(dy) {y = dy;}
-    fn get_desc() {return desc;}
+for i in 0..10 {
+    println(i);
 }
-
-let t = Test(99,2);
-
-println(t.x);
-

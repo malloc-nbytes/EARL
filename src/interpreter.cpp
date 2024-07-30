@@ -45,14 +45,8 @@ using namespace Interpreter;
 
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
-    bool __is_ident;
-    bool __is_literal;
-    bool __is_class_instant;
-    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool ident = false, bool lit = false, bool instant = false)
-        : lhs_getter_accessor(lhs_get), __is_ident(ident), __is_literal(lit), __is_class_instant(instant) {}
-    bool is_ident(void) { return __is_ident; }
-    bool is_literal(void) { return __is_literal; }
-    bool is_class_instant(void) { return __is_class_instant; }
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr)
+        : lhs_getter_accessor(lhs_get) {}
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -147,13 +141,11 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, b
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
     if (er.is_class_instant()) {
-        if (perp) perp->__is_class_instant = true;
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
         auto class_instantiation = eval_class_instantiation(er.id, params, ctx, ref);
         return class_instantiation;
     }
     if (er.is_function_ident()) {
-        if (perp) perp->__is_ident = true;
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
@@ -166,14 +158,9 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         return eval_user_defined_function(er.id, params, er.ctx);
     }
     else if (er.is_literal()) {
-        if (perp) {
-            perp->__is_literal = true;
-            perp->__is_ident = false;
-        }
         return er.value;
     }
     else if (er.is_ident()) {
-        if (perp) perp->__is_ident = true;
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
@@ -343,11 +330,6 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
-
-    // std::cout << "ID: " << stmt->m_id->lexeme() << std::endl;
-    // std::cout << "is_ident: " << perp.is_ident() << std::endl;
-    // std::cout << "is_literal: " << perp.is_literal() << std::endl;
-    // std::cout << "ref: " << ref << std::endl;
 
     PackedERPreliminary perp(nullptr);
     auto value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
