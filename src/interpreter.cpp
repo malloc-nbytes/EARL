@@ -437,17 +437,17 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
 
     while (start->value() < end->value()) {
-    //     result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
 
-    //     if (result && result->type() == earl::value::Type::Break) {
-    //         result = nullptr;
-    //         break;
-    //     }
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
 
-    //     if (result && result->type() != earl::value::Type::Void)
-    //         break;
+        if (result && result->type() != earl::value::Type::Void)
+            break;
 
-    //     start->mutate(new earl::value::Int(start->value() + 1));
+        start->mutate(std::make_shared<earl::value::Int>(start->value()+1));
     }
 
     ctx->variable_remove(enumerator->id());
