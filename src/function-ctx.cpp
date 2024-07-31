@@ -106,24 +106,44 @@ FunctionCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     m_funcs.add(id, func);
 }
 
+// TODO: check for conflics
 bool
 FunctionCtx::function_exists(const std::string &id) {
+    std::cout << "HERE: " << id << ' ' << (int)this->type() << std::endl;
+
     bool res = false;
+
+    if (m_owner && m_owner->type() == CtxType::Class)
+        res = dynamic_cast<ClassCtx *>(m_owner.get())->function_exists(id);
+
+    // May be in recursive chain, keep going backwards until
+    // we hit the @world scope.
+    if (m_owner && m_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_owner.get())->function_exists(id);
 
     if (m_owner->type() == CtxType::World)
         res = dynamic_cast<WorldCtx *>(m_owner.get())->function_exists(id);
+
     if (!res)
         res = m_funcs.contains(id);
 
     return res;
 }
 
+// TODO: check for conflics
 std::shared_ptr<earl::function::Obj>
 FunctionCtx::function_get(const std::string &id) {
     std::shared_ptr<earl::function::Obj> func = nullptr;
 
+    if (m_owner && m_owner->type() == CtxType::Class)
+        func = dynamic_cast<ClassCtx *>(m_owner.get())->function_get(id);
+
+    if (m_owner && m_owner->type() == CtxType::Function)
+        func = dynamic_cast<FunctionCtx *>(m_owner.get())->function_get(id);
+
     if (m_owner->type() == CtxType::World)
         func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
+
     if (!func)
         func = m_funcs.get(id);
 

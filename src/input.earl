@@ -1,21 +1,26 @@
 mod Main
 
+class Node [v] {
+    _v = v;
+}
+
+fn sum(a, b) { return a+b; }
+
 class T [x, y] {
     _x = x;
     _y = y;
     _c = 'a';
 
     fn constructor() {
-        println(this._x);
-        println(this._y);
-        println(this._c);
+        let n = Node(this._x, this._y);
+        let s = sum(1,2);
+        println(s);
     }
 
-    fn set_x(dx) {
-        this._x = dx;
+    fn test() {
+        println(sum(1,2));
     }
 }
 
 let t = T(1, 2);
-t.set_x(99);
-println(t._x);
+t.test();

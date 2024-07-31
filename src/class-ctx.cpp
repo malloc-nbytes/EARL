@@ -75,12 +75,22 @@ ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
 
 bool
 ClassCtx::function_exists(const std::string &id) {
-    return m_funcs.contains(id);
+    bool res = false;
+    if (m_owner && m_owner->type() == CtxType::World)
+        res = dynamic_cast<WorldCtx *>(m_owner.get())->function_exists(id);
+    if (!res)
+        res = m_funcs.contains(id);
+    return res;
 }
 
 std::shared_ptr<earl::function::Obj>
 ClassCtx::function_get(const std::string &id) {
-    return m_funcs.get(id);
+    std::shared_ptr<earl::function::Obj> func = nullptr;
+    if (m_owner && m_owner->type() == CtxType::World)
+        func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
+    if (!func)
+        func = m_funcs.get(id);
+    return func;
 }
 
 void ClassCtx::function_debug_dump(void) const {
