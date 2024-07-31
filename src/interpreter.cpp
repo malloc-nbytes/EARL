@@ -93,7 +93,29 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
 
 static std::shared_ptr<earl::value::Obj>
 eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx, bool ref) {
-    StmtClass *class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
+    StmtClass *class_stmt = nullptr;
+
+    if (ctx->type() == CtxType::Class) {
+        auto owner_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(ctx.get())->get_owner().get());
+        assert(owner_ctx);
+        class_stmt = owner_ctx->class_get(id);
+    }
+    else if (ctx->type() == CtxType::Function) {
+        auto class_ctx = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_class_owner_ctx();
+
+        assert(class_ctx);
+        assert(class_ctx->type() == CtxType::Class);
+
+        auto world_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(class_ctx.get())->get_owner().get());
+
+        assert(world_ctx);
+        assert(world_ctx->type() == CtxType::World);
+
+        class_stmt = world_ctx->class_get(id);
+    }
+    else
+        class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
+
     auto class_ctx = std::make_shared<ClassCtx>(ctx);
 
     if (params.size() != class_stmt->m_constructor_args.size())
@@ -170,6 +192,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             assert(perp && perp->lhs_getter_accessor);
             return Intrinsics::call_member(er.id, perp->lhs_getter_accessor, params, ctx);
         }
+
         if (ctx->type() == CtxType::Class)
             return eval_user_defined_function(er.id, params, ctx);
         return eval_user_defined_function(er.id, params, er.ctx);
@@ -182,8 +205,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
         auto var = ctx->variable_get(er.id);
         if (!ref)
-            return ctx->variable_get(er.id)->value()->copy();
-        return ctx->variable_get(er.id)->value();
+            return var->value()->copy();
+        return var->value();
     }
     else
         assert(false);
@@ -212,14 +235,14 @@ eval_expr_term_strlit(ExprStrLit *expr, std::shared_ptr<Ctx> &ctx) {
 ER
 eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     std::function<std::shared_ptr<Ctx>(const std::string &, std::shared_ptr<Ctx> &ctx)> check_if_is_class
-        = [&](const std::string &id, std::shared_ptr<Ctx> &_ctx) -> std::shared_ptr<Ctx> {
-            if (_ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(_ctx.get())->class_is_defined(id))
-                return ctx;
-            if (_ctx->type() == CtxType::Class)
-                return check_if_is_class(id, dynamic_cast<ClassCtx *>(_ctx.get())->get_owner());
-            if (_ctx->type() == CtxType::Function)
-                return check_if_is_class(id, dynamic_cast<FunctionCtx *>(_ctx.get())->get_owner());
-            return nullptr;
+        = [&](const std::string &_id, std::shared_ptr<Ctx> &_ctx) -> std::shared_ptr<Ctx> {
+        if (_ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(_ctx.get())->class_is_defined(_id))
+            return _ctx;
+        if (_ctx->type() == CtxType::Class)
+            return check_if_is_class(_id, dynamic_cast<ClassCtx *>(_ctx.get())->get_owner());
+        if (_ctx->type() == CtxType::Function)
+            return check_if_is_class(_id, dynamic_cast<FunctionCtx *>(_ctx.get())->get_owner());
+        return nullptr;
     };
 
     ER left = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
@@ -231,13 +254,14 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref)
     if (Intrinsics::is_member_intrinsic(id))
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 
-    // We are in the world scope, check if a class exists with the definition
-    // if (ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(ctx.get())->class_is_defined(id))
-        // return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
-
     std::shared_ptr<Ctx> ctx_wclass = check_if_is_class(id, ctx);
-    if (ctx_wclass)
+    if (ctx_wclass) {
         return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx_wclass);
+
+        // auto params = evaluate_function_parameters(expr, ctx, ref);
+        // auto value = eval_class_instantiation(id, params, ctx_wclass, ref);
+        // return ER(value, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx_wclass);
+    }
 
     return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 }
@@ -285,7 +309,6 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }, expr->m_right);
 
     if (left_er.id == "this") {
-
         if (ctx->type() != CtxType::Function)
             ERR(Err::Type::Fatal, "Must be in a function in a class context to use the `this` keyword");
 
@@ -304,6 +327,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         // The right side (right_er) contains the actual call/identifier to be evaluated,
         // and we need the left (left_value)'s context with the preliminary value of (perp).
         auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+
         return ER(value, ERT::Literal);
     }
 
@@ -384,8 +408,16 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
 
-    PackedERPreliminary perp(nullptr);
-    auto value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+
+    if (!rhs.is_class_instant()) {
+        PackedERPreliminary perp(nullptr);
+        value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+    }
+    else {
+        // value = rhs.value;
+        value = unpack_ER(rhs, ctx, ref);
+    }
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);

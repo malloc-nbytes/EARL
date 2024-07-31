@@ -45,6 +45,11 @@ test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
 	cd test/earl-tests && ../../earl ./main.earl
 
+debug: clean
+	@echo "Building EARL in debug mode"
+	$(MAKE) CXXFLAGS='-O0 -DDEBUG -ggdb' CXX='$(CXX)'
+	mv ./earl earl-debug-build
+
 docs:
 	doxygen Doxyfile
 	@echo "--- Documentation generated in src/docs/html/index.html ---"
