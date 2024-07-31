@@ -28,6 +28,7 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <functional>
 
 #include "parser.hpp"
 #include "utils.hpp"
@@ -210,6 +211,17 @@ eval_expr_term_strlit(ExprStrLit *expr, std::shared_ptr<Ctx> &ctx) {
 
 ER
 eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::function<std::shared_ptr<Ctx>(const std::string &, std::shared_ptr<Ctx> &ctx)> check_if_is_class
+        = [&](const std::string &id, std::shared_ptr<Ctx> &_ctx) -> std::shared_ptr<Ctx> {
+            if (_ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(_ctx.get())->class_is_defined(id))
+                return ctx;
+            if (_ctx->type() == CtxType::Class)
+                return check_if_is_class(id, dynamic_cast<ClassCtx *>(_ctx.get())->get_owner());
+            if (_ctx->type() == CtxType::Function)
+                return check_if_is_class(id, dynamic_cast<FunctionCtx *>(_ctx.get())->get_owner());
+            return nullptr;
+    };
+
     ER left = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     const std::string &id = left.id;
 
@@ -220,8 +232,12 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref)
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 
     // We are in the world scope, check if a class exists with the definition
-    if (ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(ctx.get())->class_is_defined(id))
-        return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+    // if (ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(ctx.get())->class_is_defined(id))
+        // return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
+
+    std::shared_ptr<Ctx> ctx_wclass = check_if_is_class(id, ctx);
+    if (ctx_wclass)
+        return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx_wclass);
 
     return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 }

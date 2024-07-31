@@ -107,6 +107,7 @@ struct FunctionCtx : public Ctx {
 
     bool in_class(void) const;
     std::shared_ptr<Ctx> &get_outer_class_owner_ctx(void);
+    std::shared_ptr<Ctx> &get_owner(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -126,6 +127,8 @@ private:
 struct ClassCtx : public Ctx {
     ClassCtx(std::shared_ptr<Ctx> owner);
     ~ClassCtx() = default;
+
+    std::shared_ptr<Ctx> &get_owner(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;

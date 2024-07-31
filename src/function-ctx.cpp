@@ -109,8 +109,6 @@ FunctionCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
 // TODO: check for conflics
 bool
 FunctionCtx::function_exists(const std::string &id) {
-    std::cout << "HERE: " << id << ' ' << (int)this->type() << std::endl;
-
     bool res = false;
 
     if (m_owner && m_owner->type() == CtxType::Class)
@@ -168,3 +166,6 @@ std::shared_ptr<Ctx> &FunctionCtx::get_outer_class_owner_ctx(void) {
     ERR(Err::Type::Fatal, "Could not find outer class context for function context");
 }
 
+std::shared_ptr<Ctx> &FunctionCtx::get_owner(void) {
+    return m_owner;
+}
