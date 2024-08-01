@@ -2,9 +2,4 @@ mod Main
 
 import "other.earl"
 
-println(Other::two_dim_arr()[1].nth(0));
-
-# assert(Other::two_dim_arr()[1] == [4,5,6]);
-# assert(Other::two_dim_arr()[1].nth(0) == 4);
-# assert(Other::two_dim_arr()[1][0] == 4);
 
