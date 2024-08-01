@@ -100,6 +100,12 @@ void Str::pop(std::shared_ptr<Obj> &idx) {
     UNIMPLEMENTED("Str::pop");
 }
 
+std::shared_ptr<Obj> Str::back(void) {
+    if (m_value.size() == 0)
+        return std::make_shared<Option>();
+    return m_value.back()->copy();
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }

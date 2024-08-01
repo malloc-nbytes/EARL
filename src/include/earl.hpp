@@ -299,6 +299,7 @@ namespace earl {
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
             std::shared_ptr<Str> substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2);
             void pop(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> back(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

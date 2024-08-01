@@ -2,4 +2,17 @@ mod Main
 
 import "other.earl"
 
+let lst1 = [1,2,3,4,5];
+let lst2 = [1];
+let lst3 = [];
+let s1 = "hello";
+let s2 = "h";
+let s3 = "";
 
+println(lst1, ' ', lst1.back());
+println(lst2, ' ', lst2.back());
+println(lst3, ' ', lst3.back());
+
+println(s1, ' ', s1.back());
+println(s2, ' ', s2.back());
+println(s3, ' ', s3.back());

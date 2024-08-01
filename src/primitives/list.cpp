@@ -95,7 +95,9 @@ void List::foreach(std::shared_ptr<Closure> &closure, Ctx &ctx) {
 }
 
 std::shared_ptr<Obj> List::back(void) {
-    UNIMPLEMENTED("List::back");
+    if (m_value.size() == 0)
+        return std::make_shared<Option>();
+    return m_value.back()->copy();
 }
 
 std::shared_ptr<Obj> List::binop(Token *op, std::shared_ptr<Obj> &other) {
