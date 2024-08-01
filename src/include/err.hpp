@@ -83,4 +83,6 @@ namespace Err {
         std::exit(1);                           \
     } while (0)
 
+#define WARN(msg) fprintf(stderr, "warning: " msg "\n");
+
 #endif // ERR_H

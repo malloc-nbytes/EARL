@@ -683,8 +683,23 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     auto wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
+    // Collect all function definitions and class definitions first...
+    // Also check to make sure the first statement is a module declaration.
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-        (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+        Stmt *stmt = wctx->stmt_at(i);
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod)
+            WARN("A `mod` statement is expected to be the first statement. "
+                 "This may lead to undefined behavior and break functionality.");
+        if (stmt->stmt_type() == StmtType::Def
+            || stmt->stmt_type() == StmtType::Class)
+            (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+    }
+
+    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+        Stmt *stmt = wctx->stmt_at(i);
+        if (stmt->stmt_type() != StmtType::Def
+            && stmt->stmt_type() != StmtType::Class)
+            (void)Interpreter::eval_stmt(stmt, ctx);
     }
 
     return ctx;
