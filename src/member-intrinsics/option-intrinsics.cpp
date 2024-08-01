@@ -44,14 +44,6 @@ Intrinsics::intrinsic_option_member_functions = {
 };
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
-    (void)params;
-    (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic_some");
-}
-
-std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                     std::shared_ptr<Ctx> &ctx) {

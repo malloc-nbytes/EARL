@@ -125,7 +125,7 @@ Intrinsics::call_member(const std::string &id,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                           std::shared_ptr<Ctx> &ctx) {
-    __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
     __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
     auto &item = params[0];
     if (item->type() == earl::value::Type::List) {
@@ -303,4 +303,14 @@ Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &para
     (void)params;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_input");
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "some");
+    if (params.size() != 1)
+        ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
+                  params.size());
+    return std::make_shared<earl::value::Option>(params[0]);
 }

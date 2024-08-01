@@ -34,7 +34,7 @@ using namespace earl::value;
 Option::Option(std::shared_ptr<Obj> value) : m_value(value) {}
 
 std::shared_ptr<Obj> &Option::value(void) {
-    UNIMPLEMENTED("Option::value");
+    return m_value;
 }
 
 bool Option::is_some(void) const {
@@ -66,12 +66,20 @@ bool Option::boolean(void) {
 }
 
 void Option::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Option::mutate");
+    if (other->type() != Type::Option) {
+        ERR(Err::Type::Fatal, "tried to assign a raw value to an option type");
+    }
+
+    auto *other2 = dynamic_cast<Option *>(other.get());
+
+    if (other2->is_none())
+        m_value = nullptr;
+    else
+        m_value = other2->value();
 }
 
 std::shared_ptr<Obj> Option::copy(void) {
-    UNIMPLEMENTED("Option::copy");
+    return std::make_shared<Option>(m_value);
 }
 
 bool Option::eq(std::shared_ptr<Obj> &other) {

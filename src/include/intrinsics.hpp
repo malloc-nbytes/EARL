@@ -39,7 +39,7 @@
 #include "ast.hpp"
 #include "earl.hpp"
 
-#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                \
+#define __INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                \
     do {                                                                                            \
         if (args.size() != sz)                                                                      \
             ERR_WARGS(Err::Type::Fatal, "function `%s` expects %d arguments but %zu were supplied", \

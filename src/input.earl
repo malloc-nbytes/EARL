@@ -1,7 +1,2 @@
-# mod Main
+mod Main
 
-let b = true;
-
-if b == true {
-    println("HERE");
-}

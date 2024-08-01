@@ -224,20 +224,21 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
 ER
 eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    (void)ref;
     const std::string &id = expr->m_tok->lexeme();
     return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
 ER
-eval_expr_term_intlit(ExprIntLit *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_intlit(ExprIntLit *expr) {
     auto value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme()));
     return ER(value, ERT::Literal);
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
 ER
-eval_expr_term_strlit(ExprStrLit *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_strlit(ExprStrLit *expr) {
     auto value = std::make_shared<earl::value::Str>(expr->m_tok->lexeme());
     return ER(value, ERT::Literal);
 }
@@ -356,7 +357,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 static ER
-eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
+eval_expr_term_charlit(ExprCharLit *expr) {
     auto value = std::make_shared<earl::value::Char>(expr->m_tok->lexeme());
     return ER(value, ERT::Literal);
 }
@@ -388,14 +389,20 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
         return ER(str->nth(idx_value), ERT::Literal);
     }
-    else {
+    else
         ERR(Err::Type::Fatal, "cannot use `[]` on non-list or non-str type");
-    }
 }
 
 static ER
-eval_expr_term_boollit(ExprBool *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+eval_expr_term_boollit(ExprBool *expr) {
     auto value = std::make_shared<earl::value::Bool>(expr->m_value);
+    return ER(value, ERT::Literal);
+}
+
+static ER
+eval_expr_term_none(ExprNone *expr) {
+    (void)expr;
+    auto value = std::make_shared<earl::value::Option>();
     return ER(value, ERT::Literal);
 }
 
@@ -403,16 +410,16 @@ ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
-    case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr), ctx);
-    case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
-    case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr), ctx);
+    case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr));
+    case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr));
+    case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr));
     case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx, ref);
     case ExprTermType::List_Literal: return eval_expr_term_listlit(dynamic_cast<ExprListLit *>(expr), ctx, ref);
     case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
     case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
     case ExprTermType::Array_Access: return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
-    case ExprTermType::Bool:         return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr), ctx, ref);
-    case ExprTermType::None:         UNIMPLEMENTED("ExprTermType::None");
+    case ExprTermType::Bool:         return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr));
+    case ExprTermType::None:         return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
     case ExprTermType::Closure:      UNIMPLEMENTED("ExprTermType::Closure");
     case ExprTermType::Tuple:        UNIMPLEMENTED("ExprTermType::Tuple");
     default:                         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
@@ -543,6 +550,8 @@ eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
+    (void)stmt;
+    (void)ctx;
     UNIMPLEMENTED("eval_stmt_break");
 }
 
@@ -593,8 +602,8 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     ER start_er = Interpreter::eval_expr(stmt->m_start.get(), ctx, false);
     ER end_er = Interpreter::eval_expr(stmt->m_end.get(), ctx, false);
 
-    auto start_expr = unpack_ER(start_er, ctx, false);
-    auto end_expr = unpack_ER(end_er, ctx, false);
+    auto start_expr = unpack_ER(start_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
+    auto end_expr = unpack_ER(end_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
 
     auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr);
 
@@ -621,8 +630,6 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     ctx->variable_remove(enumerator->id());
 
     return result;
-
-    abort();
 }
 
 std::shared_ptr<earl::value::Obj>
