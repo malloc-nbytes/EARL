@@ -258,7 +258,7 @@ namespace earl {
             std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
 
             /// @brief Reverse a list
-            std::shared_ptr<Obj> rev(void);
+            void rev(void);
 
             /// @brief Append a list of values to a list
             /// @param values The values to append

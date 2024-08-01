@@ -98,10 +98,9 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                  std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_rev");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
+    dynamic_cast<earl::value::List *>(obj.get())->rev();
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>

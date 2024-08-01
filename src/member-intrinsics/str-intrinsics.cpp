@@ -38,16 +38,18 @@ Intrinsics::intrinsic_str_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    {"split", &Intrinsics::intrinsic_member_split},
 };
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &delim,
                                    std::shared_ptr<Ctx> &ctx) {
-    (void)obj;
-    (void)delim;
     (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_split");
+    __INTR_ARGS_MUSTBE_SIZE(delim, 1, "split");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(delim[0], earl::value::Type::Str, 1, "split");
+    auto str = dynamic_cast<earl::value::Str *>(obj.get());
+    return str->split(delim[0]);
 }
 
 std::shared_ptr<earl::value::Obj>

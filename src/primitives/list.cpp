@@ -63,8 +63,12 @@ std::shared_ptr<Obj> List::nth(std::shared_ptr<Obj> &idx) {
     return nullptr; // unreachable
 }
 
-std::shared_ptr<Obj> List::rev(void) {
-    UNIMPLEMENTED("List::rev");
+void List::rev(void) {
+    for (size_t i = 0; i < this->value().size()/2; ++i) {
+        auto copy = this->value().at(i);
+        this->value().at(i) = this->value().at(this->value().size()-i-1);
+        this->value().at(this->value().size()-i-1) = copy;
+    }
 }
 
 void List::pop(std::shared_ptr<Obj> &idx) {

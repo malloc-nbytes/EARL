@@ -85,8 +85,22 @@ std::shared_ptr<Char> Str::nth(std::shared_ptr<Obj> &idx) {
 }
 
 std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
-    (void)delim;
-    UNIMPLEMENTED("Str::split");
+    assert(delim->type() == Type::Str);
+
+    std::vector<std::shared_ptr<Obj>> splits = {};
+    std::string delim_str = dynamic_cast<Str *>(delim.get())->value();
+    std::string::size_type start = 0;
+
+    auto pos = this->value().find(delim_str);
+
+    while (pos != std::string::npos) {
+        splits.push_back(std::make_shared<Str>(this->value().substr(start, pos-start)));
+        start = pos+delim_str.length();
+        pos = this->value().find(delim_str, start);
+    }
+    splits.push_back(std::make_shared<Str>(this->value().substr(start)));
+
+    return std::make_shared<List>(std::move(splits));
 }
 
 std::shared_ptr<Str> Str::substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2) {

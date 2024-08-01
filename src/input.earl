@@ -1,5 +1,6 @@
 mod Main
 
-let x = (1+2)*3;
+let lst = [1,2,3,4,5];
+lst.rev();
 
-println(x);
+println(lst);
