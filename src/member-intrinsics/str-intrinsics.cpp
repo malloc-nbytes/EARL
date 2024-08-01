@@ -29,21 +29,30 @@
 #include "err.hpp"
 #include "utils.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj> > &delim, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &delim,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)obj;
     (void)delim;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_split");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj> > &idxs, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj,
+                                    std::vector<std::shared_ptr<earl::value::Obj>> &idxs,
+                                    std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)idxs;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_substr");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj> > &unused, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj,
+                                          std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                          std::shared_ptr<Ctx> &ctx) {
     (void)obj;
     (void)unused;
     (void)ctx;

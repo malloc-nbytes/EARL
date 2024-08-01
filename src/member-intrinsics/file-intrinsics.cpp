@@ -36,41 +36,58 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_read");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &param,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)param;
     (void)obj;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_write");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &param, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj,
+                                        std::vector<std::shared_ptr<earl::value::Obj>> &param,
+                                        std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)param;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_writelines");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_dump");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)params;
     UNIMPLEMENTED("Intrinsics::intrinsic_open");
 }
 
-std::shared_ptr<earl::value::Obj> Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj, std::vector<std::shared_ptr<earl::value::Obj>> &unused, std::shared_ptr<Ctx> &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     (void)obj;
     (void)unused;

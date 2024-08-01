@@ -38,7 +38,8 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics::intrinsic_functions = {
+const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
+Intrinsics::intrinsic_functions = {
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
@@ -56,7 +57,8 @@ const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> Intrinsics:
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
 };
 
-const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> Intrinsics::intrinsic_member_functions = {
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_member_functions = {
     {"nth", &Intrinsics::intrinsic_member_nth},
     {"back", &Intrinsics::intrinsic_member_back},
     {"filter", &Intrinsics::intrinsic_member_filter},
