@@ -53,7 +53,8 @@ struct PackedERPreliminary {
 static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx);
+                           std::shared_ptr<Ctx> &ctx,
+                           bool from_outside = false);
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
@@ -157,10 +158,15 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
 static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx, bool from_outside) {
     if (!ctx->function_exists(id))
         ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
     auto func = ctx->function_get(id);
+
+    if (from_outside && !func->is_pub()) {
+        ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
+    }
+
     auto fctx = std::make_shared<FunctionCtx>(ctx);
     func->load_parameters(params, fctx);
     std::shared_ptr<Ctx> mask = fctx;
@@ -274,7 +280,18 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     const auto    &left_id    = left_ident->m_tok->lexeme();
     Expr          *right_expr = mod_access->m_right.get();
 
-    std::shared_ptr<Ctx> &other_ctx = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
+    std::shared_ptr<Ctx> *ctx_ptr = nullptr;
+
+    if (ctx->type() == CtxType::World) {
+        ctx_ptr = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
+    }
+    else if (ctx->type() == CtxType::Function) {
+        auto world = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_world_owner();
+        ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
+    }
+
+    std::shared_ptr<Ctx> &other_ctx = *ctx_ptr;
+
     ER right_er = Interpreter::eval_expr(right_expr, other_ctx, ref);
 
     if (right_er.is_class_instant()) {
@@ -284,7 +301,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     }
     if (right_er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
-        auto func = eval_user_defined_function(right_er.id, params, other_ctx);
+        auto func = eval_user_defined_function(right_er.id, params, other_ctx, /*from_outside=*/true);
         return ER(func, ERT::Literal);
     }
     else {

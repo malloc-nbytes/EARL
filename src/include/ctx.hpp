@@ -74,7 +74,7 @@ struct WorldCtx : public Ctx {
     const std::string &get_mod(void) const;
 
     void add_import(std::shared_ptr<Ctx> ctx);
-    std::shared_ptr<Ctx> &get_import(const std::string &id);
+    std::shared_ptr<Ctx> *get_import(const std::string &id);
 
     void define_class(StmtClass *klass);
     bool class_is_defined(const std::string &id) const;
@@ -108,6 +108,7 @@ struct FunctionCtx : public Ctx {
     bool in_class(void) const;
     std::shared_ptr<Ctx> &get_outer_class_owner_ctx(void);
     std::shared_ptr<Ctx> &get_owner(void);
+    std::shared_ptr<Ctx> &get_outer_world_owner(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;

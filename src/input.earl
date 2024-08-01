@@ -2,37 +2,11 @@ mod Main
 
 import "other.earl"
 
-class Node [v] {
-    _v = v;
-
-    fn test() { println("here: ", this._v); }
-}
-
-fn sum(a, b) { return a+b; }
-
-class T [x, y] {
-    _x = x;
-    _y = y;
-    _c = 'a';
-    _n = Node(_y*2);
-
+class Test [] {
     fn constructor() {
-        let n = Node(3);
-        this._n.test();
-        let s = sum(this._x, this._y);
+        let s = Other::sum(1, 2);
         println(s);
     }
-
-    fn test() {
-        println("HERE");
-        # this._n.test();
-    }
 }
 
-let x = 1;
-let t = T(x, 9);
-t.test();
-
-let dx = 9;
-let p = Other::Point(1, dx, "test");
-p.test();
+let t = Test();

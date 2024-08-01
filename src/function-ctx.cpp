@@ -169,3 +169,17 @@ std::shared_ptr<Ctx> &FunctionCtx::get_outer_class_owner_ctx(void) {
 std::shared_ptr<Ctx> &FunctionCtx::get_owner(void) {
     return m_owner;
 }
+
+std::shared_ptr<Ctx> &FunctionCtx::get_outer_world_owner(void) {
+    if (m_owner && m_owner->type() == CtxType::Function) {
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner();
+    }
+    else if (m_owner && m_owner->type() == CtxType::Class) {
+        return dynamic_cast<ClassCtx *>(m_owner.get())->get_owner();
+    }
+
+    assert(m_owner);
+    return m_owner;
+}
+
+

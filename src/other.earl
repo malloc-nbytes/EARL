@@ -1,31 +1,6 @@
 mod Other
 
-class Node2 [v] {
-    _v = v;
-
-    fn test() { println("here: ", this._v); }
+@pub
+fn sum(a, b) {
+    return a+b;
 }
-
-class Point [x, y, name] {
-    x = x;
-    y = y;
-    n = Node2(9);
-    name = name;
-
-    fn test() {
-        this.n.test();
-    }
-
-    fn get_x() {
-        return x;
-    }
-
-    fn get_y() {
-        return y;
-    }
-
-    fn set_y() {
-        y = 9;
-    }
-}
-
