@@ -73,7 +73,7 @@ std::shared_ptr<earl::value::Str> File::read(void) {
     UNIMPLEMENTED("File::read");
 }
 
-void File::write(std::shared_ptr<Obj> &value) {
+void File::write(std::shared_ptr<Obj> value) {
     (void)value;
     UNIMPLEMENTED("File::write");
 }

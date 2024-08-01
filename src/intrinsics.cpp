@@ -323,3 +323,35 @@ Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &param
                   params.size());
     return std::make_shared<earl::value::Option>(params[0]);
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "open");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "open");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "open");
+
+    auto fp = dynamic_cast<earl::value::Str *>(params[0].get());
+    auto mode = dynamic_cast<earl::value::Str *>(params[1].get());
+    std::fstream stream;
+
+    if (mode->value() == "r")
+        stream.open(fp->value(), std::ios::in);
+    else if (mode->value() == "w")
+        stream.open(fp->value(), std::ios::out);
+    else
+        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
+                  mode->value().c_str());
+
+    if (!stream)
+        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
+
+    auto f = std::make_shared<earl::value::File>(std::dynamic_pointer_cast<earl::value::Str>(params[0]),
+                                                 std::dynamic_pointer_cast<earl::value::Str>(params[1]),
+                                                 std::move(stream));
+    f->set_open();
+    return f;
+}
+

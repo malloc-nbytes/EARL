@@ -51,7 +51,7 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &idx,
                                  std::shared_ptr<Ctx> &ctx) {
     __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
     if (obj->type() == earl::value::Type::List) {
         earl::value::List *list = dynamic_cast<earl::value::List *>(obj.get());
         return list->nth(idx[0]);
@@ -119,7 +119,7 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                  std::shared_ptr<Ctx> &ctx) {
     __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else

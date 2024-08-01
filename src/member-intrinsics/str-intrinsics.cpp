@@ -47,7 +47,7 @@ Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
                                    std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(delim, 1, "split");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(delim[0], earl::value::Type::Str, 1, "split");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(delim[0], earl::value::Type::Str, 1, "split");
     auto str = dynamic_cast<earl::value::Str *>(obj.get());
     return str->split(delim[0]);
 }

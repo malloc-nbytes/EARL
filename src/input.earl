@@ -1,6 +1,7 @@
 mod Main
 
-let lst = [1,2,3,4,5];
-lst.rev();
+let f = open("./other.earl", "r");
 
-println(lst);
+f.dump();
+
+f.close();

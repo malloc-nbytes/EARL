@@ -59,7 +59,7 @@
                       fn, sz, args.size());                                                                                  \
     } while (0)
 
-#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \
+#define __INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \
     do {                                                                                                              \
         if (!earl::value::type_is_compatable(arg->type(), ty))                                                        \
             ERR_WARGS(Err::Type::Fatal,                                                                               \

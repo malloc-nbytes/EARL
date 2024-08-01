@@ -121,19 +121,6 @@ namespace earl {
             virtual std::string to_cxxstring(void) = 0;
         };
 
-        struct This : public Obj {
-            This() = default;
-
-            /*** OVERRIDES ***/
-            Type type(void) const                                              override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
-            bool boolean(void)                                                 override;
-            void mutate(const std::shared_ptr<Obj> &other)                     override;
-            std::shared_ptr<Obj> copy(void)                                    override;
-            bool eq(std::shared_ptr<Obj> &other)                               override;
-            std::string to_cxxstring(void)                                     override;
-        };
-
         /// @brief The structure that represents EARL 32bit integers
         struct Int : public Obj {
             Int(int value = 0);
@@ -375,7 +362,7 @@ namespace earl {
             void dump(void);
             void close(void);
             std::shared_ptr<Str> read(void);
-            void write(std::shared_ptr<Obj> &value);
+            void write(std::shared_ptr<Obj> value);
             void writelines(std::shared_ptr<List> &value);
 
             /*** OVERRIDES ***/

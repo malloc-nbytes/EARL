@@ -80,17 +80,12 @@ Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_dump");
-}
 
-std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_open");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "dump");
+    auto *f = dynamic_cast<earl::value::File *>(obj.get());
+    f->dump();
+
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -98,7 +93,8 @@ Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                    std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_close");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "close");
+    auto *f = dynamic_cast<earl::value::File *>(obj.get());
+    f->close();
+    return nullptr;
 }
