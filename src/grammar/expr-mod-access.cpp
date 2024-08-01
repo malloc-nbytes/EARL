@@ -27,7 +27,8 @@
 
 #include "ast.hpp"
 
-ExprModAccess::ExprModAccess(std::unique_ptr<ExprIdent> expr_ident, std::unique_ptr<Expr> right)
+ExprModAccess::ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
+                             std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right)
     : m_expr_ident(std::move(expr_ident)), m_right(std::move(right)) {}
 
 ExprType

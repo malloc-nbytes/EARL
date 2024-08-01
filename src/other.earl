@@ -1,6 +1,11 @@
 mod Other
 
 @pub
+fn two_dim_arr() {
+    return [[1,2,3], [4,5,6], [7,8,9]];
+}
+
+@pub
 fn sum(a, b) {
     return a+b;
 }

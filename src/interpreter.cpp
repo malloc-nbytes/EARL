@@ -283,7 +283,8 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     ExprModAccess *mod_access = expr;
     ExprIdent     *left_ident = mod_access->m_expr_ident.get();
     const auto    &left_id    = left_ident->m_tok->lexeme();
-    Expr          *right_expr = mod_access->m_right.get();
+    // Expr          *right_expr = mod_access->m_right.get();
+    ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
 
     std::shared_ptr<Ctx> *ctx_ptr = nullptr;
 
@@ -297,7 +298,16 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
 
     std::shared_ptr<Ctx> &other_ctx = *ctx_ptr;
 
-    ER right_er = Interpreter::eval_expr(right_expr, other_ctx, ref);
+    std::visit([&](auto &&arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
+            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
+        else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
+            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
+        else
+            ERR(Err::Type::Internal,
+                "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
+    }, expr->m_right);
 
     if (right_er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
