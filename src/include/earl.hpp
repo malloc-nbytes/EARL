@@ -242,7 +242,7 @@ namespace earl {
         /// They can hold any value in any mix of them i.e.,
         /// list = [int, str, str, int, list[int, str]]
         struct List : public Obj {
-            List(std::vector<Obj *> value = {});
+            List(std::vector<std::shared_ptr<Obj>> value = {});
 
             /// @brief Fill the underlying data with some data
             /// @param value The value to use to fill
@@ -262,7 +262,7 @@ namespace earl {
 
             /// @brief Append a list of values to a list
             /// @param values The values to append
-            void append(std::vector<std::shared_ptr<Obj>> &values);
+            void append(std::vector<std::shared_ptr<Obj>> values);
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
@@ -284,7 +284,7 @@ namespace earl {
             std::string to_cxxstring(void)                                     override;
 
         private:
-            std::vector<Obj *> m_value;
+            std::vector<std::shared_ptr<Obj>> m_value;
         };
 
         /// @brief The structure that represents EARL strings

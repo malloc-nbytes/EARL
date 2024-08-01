@@ -32,7 +32,8 @@
 
 using namespace earl::value;
 
-List::List(std::vector<Obj *> value) : m_value(std::move(value)) {}
+List::List(std::vector<std::shared_ptr<Obj>> value)
+    : m_value(value) {}
 
 void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
     (void)value;
@@ -40,7 +41,7 @@ void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
 }
 
 std::vector<std::shared_ptr<Obj>> &List::value(void) {
-    UNIMPLEMENTED("List::value");
+    return m_value;
 }
 
 Type List::type(void) const {
@@ -61,9 +62,10 @@ void List::pop(std::shared_ptr<Obj> &idx) {
     UNIMPLEMENTED("List::pop");
 }
 
-void List::append(std::vector<std::shared_ptr<Obj>> &values) {
-    (void)values;
-    UNIMPLEMENTED("List::append");
+void List::append(std::vector<std::shared_ptr<Obj>> values) {
+    for (size_t i = 0; i < values.size(); ++i) {
+        m_value.push_back(values[i]->copy());
+    }
 }
 
 std::shared_ptr<List> List::filter(std::shared_ptr<Closure> &closure, Ctx &ctx) {
@@ -98,7 +100,9 @@ void List::mutate(const std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> List::copy(void) {
-    UNIMPLEMENTED("List::copy");
+    auto list = std::make_shared<List>();
+    list->append(this->value());
+    return list;
 }
 
 bool List::eq(std::shared_ptr<Obj> &other) {

@@ -189,7 +189,15 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             left = new ExprCharLit(lexer.next());
         } break;
         case TokenType::Lbracket: {
-            UNIMPLEMENTED("parse_primary_expr:TokenType::Lbracket");
+            if (left) {
+                UNIMPLEMENTED("TokenType::Lbracket");
+            }
+            else {
+                lexer.discard();
+                std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
+                lexer.discard();
+                left = new ExprListLit(std::move(lst));
+            }
         } break;
         case TokenType::Double_Colon: {
             assert(left);

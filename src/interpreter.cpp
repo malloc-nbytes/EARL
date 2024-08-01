@@ -358,6 +358,17 @@ eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
 }
 
 ER
+eval_expr_term_listlit(ExprListLit *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::vector<std::shared_ptr<earl::value::Obj>> list = {};
+    for (size_t i = 0; i < expr->m_elems.size(); ++i) {
+        ER er = Interpreter::eval_expr(expr->m_elems.at(i).get(), ctx, ref);
+        list.push_back(unpack_ER(er, ctx, ref));
+    }
+    auto value = std::make_shared<earl::value::List>(list);
+    return ER(value, ERT::Literal);
+}
+
+ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
@@ -365,7 +376,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr), ctx);
     case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr), ctx);
     case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx, ref);
-    case ExprTermType::List_Literal: assert(false);
+    case ExprTermType::List_Literal: return eval_expr_term_listlit(dynamic_cast<ExprListLit *>(expr), ctx, ref);
     case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
     case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
     case ExprTermType::Array_Access: assert(false);
