@@ -1,7 +1,13 @@
 mod Main
 
-import "other.earl"
+# let s = "hello";
 
-let p1 = Other::Test(1, 2, "my point 1");
+# println(s + " world");
+# s = s + " world";
+# println(s);
 
-println("here");
+# println(len(s));
+
+let s = "h";
+s = s+"e";
+println(s);
