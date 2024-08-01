@@ -1,6 +1,2 @@
 mod Main
 
-let lst = [1,2,3];
-lst[0] = 9;
-println(lst);
-
