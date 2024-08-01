@@ -68,8 +68,7 @@ namespace Err {
 /// with the message `msg` with any arguments of VA_ARGS.
 #define ERR_WARGS(errtype, msg, ...)            \
     do {                                        \
-        fprintf(stderr, "%s: ", __func__);      \
-        fprintf(stderr, msg, __VA_ARGS__);      \
+        fprintf(stderr, "[EARL] " msg, __VA_ARGS__);            \
         fprintf(stderr, "\n");                  \
         std::exit(1);                           \
     } while (0)

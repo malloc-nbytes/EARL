@@ -2,11 +2,14 @@ mod Main
 
 import "other.earl"
 
-class Test [] {
+class Test [x] {
+    x = x;
+
     fn constructor() {
-        let s = Other::sum(1, 2);
-        println(s);
+        println(x);
     }
 }
 
-let t = Test();
+let x = 1;
+let y = 2;
+let t = Test(Other::sum(x, i));
