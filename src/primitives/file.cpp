@@ -74,8 +74,31 @@ std::shared_ptr<earl::value::Str> File::read(void) {
 }
 
 void File::write(std::shared_ptr<Obj> value) {
-    (void)value;
-    UNIMPLEMENTED("File::write");
+    if (!m_open) {
+        ERR(Err::Type::Fatal, "file is not open");
+    }
+
+    if (m_mode->value() != "w") {
+        ERR(Err::Type::Fatal, "file is not open for writing");
+    }
+
+    switch (value->type()) {
+    case Type::Int: {
+        auto _int = dynamic_cast<Int *>(value.get());
+        m_stream << _int->value();
+    } break;
+    case Type::Char: {
+        auto _char = dynamic_cast<Char *>(value.get());
+        m_stream << _char->value();
+    } break;
+    case Type::Str: {
+        auto str = dynamic_cast<Str *>(value.get());
+        m_stream << str->value();
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "cannot write `%s` type to a file", type_to_str(value->type()).c_str());
+    } break;
+    }
 }
 
 void File::writelines(std::shared_ptr<List> &value) {
