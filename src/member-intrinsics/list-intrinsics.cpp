@@ -50,10 +50,18 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &idx,
                                  std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)idx;
-    (void)obj;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_nth");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
+    if (obj->type() == earl::value::Type::List) {
+        earl::value::List *list = dynamic_cast<earl::value::List *>(obj.get());
+        return list->nth(idx[0]);
+    }
+    else if (obj->type() == earl::value::Type::Str) {
+        earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj.get());
+        return str->nth(idx[0]);
+    }
+    else
+        ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
 }
 
 std::shared_ptr<earl::value::Obj>

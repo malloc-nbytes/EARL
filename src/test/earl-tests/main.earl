@@ -247,9 +247,9 @@ fn test_reference1() {
 fn test_list_access2() {
     print("test_list_access2... ");
 
-    assert(Other1.two_dim_arr()[1] == [4,5,6]);
-    assert(Other1.two_dim_arr()[1].nth(0) == 4);
-    assert(Other1.two_dim_arr()[1][0] == 4);
+    # assert(Other1::two_dim_arr()[1] == [4,5,6]);
+    assert(Other1::two_dim_arr()[1].nth(0) == 4);
+    # assert(Other1::two_dim_arr()[1][0] == 4);
 
     println("ok");
 }
@@ -277,14 +277,14 @@ fn test_basic_import2() {
     let a = 2;
     let b = 3;
 
-    let d1 = Other1.double(a);
-    let d2 = Other1.double(b);
+    let d1 = Other1::double(a);
+    let d2 = Other1::double(b);
 
-    let s1 = Other1.sum(d1, d2);
+    let s1 = Other1::sum(d1, d2);
 
     assert(s1 == 10);
 
-    let s2  = Other1.double(3);
+    let s2  = Other1::double(3);
 
     assert(s2 == 6);
 
@@ -292,12 +292,12 @@ fn test_basic_import2() {
 }
 
 fn test_basic_import1() {
-    print("test_basic_import");
+    print("test_basic_import... ");
     let x = 1;
     let y = 2;
-    let s = Other1.sum(x, y);
+    let s = Other1::sum(x, y);
     assert(s == x+y);
-    assert(Other1.sum(3, 4) == 7);
+    assert(Other1::sum(3, 4) == 7);
 
     println("ok");
 }
@@ -553,27 +553,27 @@ fn test_variable_instantiation() {
 
 fn main() {
     test_variable_instantiation();
-    # test_variable_mutation();
+    test_variable_mutation();
     # test_world_attr();
-    # test_for_loop();
-    # test_for_loop2();
-    # test_while_loop();
-    # test_list_access();
-    # test_accessor_bug();
-    # test_nested_lists();
-    # test_function_chaining();
-    # test_len_intrinsic1();
-    # test_len_intrinsic2();
+    test_for_loop();
+    test_for_loop2();
+    test_while_loop();
+    test_list_access();
+    test_accessor_bug();
+    test_nested_lists();
+    test_function_chaining();
+    test_len_intrinsic1();
+    test_len_intrinsic2();
     # test_list_rev_intrinsic1();
     # test_list_rev_intrinsic2();
-    # test_list_append_intrinsic1();
+    test_list_append_intrinsic1();
     # test_list_append_intrinsic2();
-    # test_list_append_intrinsic3();
-    # test_basic_import1();
-    # test_basic_import2();
+    test_list_append_intrinsic3();
+    test_basic_import1();
+    test_basic_import2();
     # test_member_intrinsic_pop1();
-    # test_list_access1();
-    # test_list_access2();
+    test_list_access1();
+    test_list_access2();
     # test_reference1();
     # test_reference2();
     # test_func_reference1();

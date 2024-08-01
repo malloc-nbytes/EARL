@@ -25,7 +25,7 @@ fn two_dim_arr() {
 
 @pub
 fn double(x) {
-    return Other2.double(x);
+    return Other2::double(x);
 }
 
 @pub

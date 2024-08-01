@@ -222,8 +222,15 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                              std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_assert");
+    for (size_t i = 0; i < params.size(); ++i) {
+        earl::value::Obj *param = params.at(i).get();
+        if (!param->boolean()) {
+            ERR_WARGS(Err::Type::Assertion,
+                      "assertion failure (expression=%zu) (earl::value::Type=%d)",
+                      i+1, (int)param->type());
+        }
+    }
+    return nullptr;
 }
 
 static void
@@ -282,8 +289,10 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                             std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_print");
+    for (size_t i = 0; i < params.size(); ++i) {
+        __intrinsic_print(params[i]);
+    }
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -294,7 +303,7 @@ Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &pa
         __intrinsic_print(params[i]);
     }
     std::cout << '\n';
-    return std::make_shared<earl::value::Void>();
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>

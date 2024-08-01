@@ -670,9 +670,8 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
                     ++paren;
                 if (lexer.peek(i)->type() == TokenType::Rparen)
                     --paren;
-                if (lexer.peek(i)->type() == TokenType::Equals && paren == 0) {
+                if (lexer.peek(i)->type() == TokenType::Equals && paren == 0)
                     return parse_stmt_mut(lexer);
-                }
             }
             return parse_stmt_expr(lexer);
         } break;
