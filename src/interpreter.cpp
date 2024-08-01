@@ -355,13 +355,13 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     assert(false && "unreachable");
 }
 
-ER
+static ER
 eval_expr_term_charlit(ExprCharLit *expr, std::shared_ptr<Ctx> &ctx) {
     auto value = std::make_shared<earl::value::Char>(expr->m_tok->lexeme());
     return ER(value, ERT::Literal);
 }
 
-ER
+static ER
 eval_expr_term_listlit(ExprListLit *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     std::vector<std::shared_ptr<earl::value::Obj>> list = {};
     for (size_t i = 0; i < expr->m_elems.size(); ++i) {
@@ -372,7 +372,7 @@ eval_expr_term_listlit(ExprListLit *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(value, ERT::Literal);
 }
 
-ER
+static ER
 eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     ER idx_er = Interpreter::eval_expr(expr->m_expr.get(), ctx, ref);
@@ -393,6 +393,12 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
 }
 
+static ER
+eval_expr_term_boollit(ExprBool *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    auto value = std::make_shared<earl::value::Bool>(expr->m_value);
+    return ER(value, ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -405,7 +411,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
     case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
     case ExprTermType::Array_Access: return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
-    case ExprTermType::Bool:         UNIMPLEMENTED("ExprTermType::Bool");
+    case ExprTermType::Bool:         return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr), ctx, ref);
     case ExprTermType::None:         UNIMPLEMENTED("ExprTermType::None");
     case ExprTermType::Closure:      UNIMPLEMENTED("ExprTermType::Closure");
     case ExprTermType::Tuple:        UNIMPLEMENTED("ExprTermType::Tuple");
@@ -419,7 +425,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 ER
 eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, ref);
-    auto lhs_value = unpack_ER(lhs, ctx, ref);
+    auto lhs_value = unpack_ER(lhs, ctx, true); // POSSIBLE BREAK, WAS FALSE
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
@@ -518,7 +524,7 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
     auto er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
-    auto condition = unpack_ER(er, ctx, false);
+    auto condition = unpack_ER(er, ctx, true); // POSSIBLE BREAK, WAS FALSE
     std::shared_ptr<earl::value::Obj> result = nullptr;
 
     if (condition->boolean())

@@ -1,9 +1,7 @@
 mod Main
 
-import "std/stack.earl"
+let b = true;
 
-let lst = [1,2,3];
-
-lst.append(4);
-
-
+if b == true {
+    println("HERE");
+}
