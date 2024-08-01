@@ -4,6 +4,24 @@ import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
 
+fn test_mutating_option_values() {
+    print("test_mutating_option_values... ");
+
+    let x = none;
+    assert(x == none);
+    x = some(1);
+    assert(x == some(1));
+
+    x.unwrap() = 2;
+    assert(x == some(2));
+    assert(x.unwrap() == 2);
+
+    x = some('a');
+    assert(x == some('a'));
+
+    println("ok");
+}
+
 fn test_none_values2() {
     print("test_none_values2... ");
 
@@ -588,6 +606,7 @@ fn main() {
     # test_substr_member_intrinsic1();
     test_none_values1();
     test_none_values2();
+    test_mutating_option_values();
 
     # TestStd.test_std();
 }

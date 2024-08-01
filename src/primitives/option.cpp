@@ -56,9 +56,25 @@ Type Option::type(void) const {
 }
 
 std::shared_ptr<Obj> Option::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Option::binop");
+    if (!type_is_compatable(this, other.get())) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    if (op->type() != TokenType::Double_Equals)
+        ERR(Err::Type::Fatal, "the only support binary operations on option types is equality `==`");
+
+    auto other2 = dynamic_cast<Option *>(other.get());
+
+    if (this->is_none() && other2->is_none())
+        return std::make_shared<Bool>(true);
+
+    if (this->is_some() && other2->is_none())
+        return std::make_shared<Bool>(false);
+
+    if (this->is_none() && other2->is_some())
+        return std::make_shared<Bool>(false);
+
+    return this->value()->binop(op, other2->value());
 }
 
 bool Option::boolean(void) {

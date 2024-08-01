@@ -1,13 +1,9 @@
 mod Main
 
-# let s = "hello";
+let x = none;
 
-# println(s + " world");
-# s = s + " world";
-# println(s);
+x = some(3);
 
-# println(len(s));
+x = some('a');
 
-let s = "h";
-s = s+"e";
-println(s);
+println(x.unwrap());
