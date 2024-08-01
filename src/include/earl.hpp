@@ -308,7 +308,7 @@ namespace earl {
             std::string to_cxxstring(void)                                     override;
 
         private:
-            std::vector<Char *> m_value;
+            std::vector<std::shared_ptr<Char>> m_value;
         };
 
         struct Module : public Obj {

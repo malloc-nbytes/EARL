@@ -1,2 +1,5 @@
 mod Main
 
+let lst = [1,2,3,4,5];
+
+println(len(lst));

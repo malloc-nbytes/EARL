@@ -43,16 +43,16 @@ Str::Str(std::string value) {
         if (escape) {
             switch (c) {
             case 'n': {
-                m_value.push_back(new Char(std::string(1, '\n')));
+                m_value.push_back(std::make_shared<Char>(std::string(1, '\n')));
             } break;
             case 't': {
-                m_value.push_back(new Char(std::string(1, '\t')));
+                m_value.push_back(std::make_shared<Char>(std::string(1, '\t')));
             } break;
             case '"': {
-                m_value.push_back(new Char(std::string(1, '"')));
+                m_value.push_back(std::make_shared<Char>(std::string(1, '"')));
             } break;
             case '\\': {
-                m_value.push_back(new Char(std::string(1, '\\')));
+                m_value.push_back(std::make_shared<Char>(std::string(1, '\\')));
             } break;
             default:
                 ERR_WARGS(Err::Type::Fatal, "unkown escape sequence `%c%c`", '\\', c);
@@ -60,7 +60,7 @@ Str::Str(std::string value) {
             escape = false;
         }
         else {
-            m_value.push_back(new Char(std::string(1, c)));
+            m_value.push_back(std::make_shared<Char>(std::string(1, c)));
         }
     }
 }
@@ -72,8 +72,16 @@ std::string Str::value(void) {
 }
 
 std::shared_ptr<Char> Str::nth(std::shared_ptr<Obj> &idx) {
-    (void)idx;
-    UNIMPLEMENTED("Str::nth");
+    if (idx->type() != Type::Int)
+        ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
+
+    auto index = dynamic_cast<Int *>(idx.get());
+    if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+        ERR_WARGS(Err::Type::Fatal, "index %d is out of str range of length %zu",
+                  index->value(), this->value().size());
+    }
+
+    return m_value[index->value()];
 }
 
 std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
