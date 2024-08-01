@@ -121,9 +121,8 @@ static std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> p
     auto ident = std::make_unique<ExprIdent>(lexer.next());
     auto group = try_parse_funccall(lexer);
 
-    if (group.has_value()) {
+    if (group.has_value())
         return std::make_unique<ExprFuncCall>(std::move(ident), std::move(group.value()));
-    }
 
     return ident;
 }
@@ -203,12 +202,12 @@ static Expr *parse_primary_expr(Lexer &lexer) {
         case TokenType::Double_Colon: {
             assert(left);
             lexer.discard();
-            right = parse_primary_expr(lexer);
+            // right = parse_primary_expr(lexer);
 
             if (left->get_type() == ExprType::Term) {
                 auto _left = dynamic_cast<ExprTerm *>(left);
                 if (_left->get_term_type() == ExprTermType::Ident)
-                    left = new ExprModAccess(std::unique_ptr<ExprIdent>(dynamic_cast<ExprIdent *>(_left)), std::unique_ptr<Expr>(right));
+                    left = new ExprModAccess(std::unique_ptr<ExprIdent>(dynamic_cast<ExprIdent *>(_left)), parse_identifier_or_funccall(lexer));
                 else
                     ERR(Err::Type::Fatal, "Module getters must be of term type identifier");
             }

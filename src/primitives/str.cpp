@@ -114,14 +114,37 @@ void Str::pop(std::shared_ptr<Obj> &idx) {
     UNIMPLEMENTED("Str::pop");
 }
 
+std::shared_ptr<Obj> Str::back(void) {
+    if (m_value.size() == 0)
+        return std::make_shared<Option>();
+    return m_value.back()->copy();
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }
 
 std::shared_ptr<Obj> Str::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Str::binop");
+    if (!type_is_compatable(this, other.get())) {
+        assert(false && "cannot binop (fix this message)");
+    }
+    switch (op->type()) {
+    case TokenType::Plus: {
+        if (other->type() == Type::Char) {
+            return std::make_shared<Str>(this->value() + std::string(1, dynamic_cast<Char *>(other.get())->value()));
+        }
+        return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
+    } break;
+    case TokenType::Double_Equals: {
+        if (other->type() == Type::Char)
+            return std::make_shared<Bool>(this->value() == std::string(1, dynamic_cast<Char *>(other.get())->value()));
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    }
+    }
 }
 
 bool Str::boolean(void) {
@@ -129,12 +152,18 @@ bool Str::boolean(void) {
 }
 
 std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
-    UNIMPLEMENTED("Str::value_raw");
+    return m_value;
 }
 
 void Str::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Str::mutate");
+    assert(other->type() == Type::Str);
+
+    Str *otherstr = dynamic_cast<Str *>(other.get());
+
+    m_value.clear();
+
+    for (size_t i = 0; i < otherstr->value_raw().size(); ++i)
+        m_value.push_back(otherstr->value_raw()[i]);
 }
 
 std::shared_ptr<Obj> Str::copy(void) {

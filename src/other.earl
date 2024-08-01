@@ -1,6 +1,40 @@
 mod Other
 
 @pub
-fn sum(a, b) {
-    return a+b;
+class Test [x, y, name] {
+    @pub x = x;
+    @pub y = y;
+    @pub name = name;
+    desc = "A Point Class";
+
+    @pub
+    fn get_x() {
+        return x;
+    }
+
+    @pub
+    fn get_y() {
+        return y;
+    }
+
+    @pub
+    fn get_name() {
+        return name;
+    }
+
+    @pub
+    fn set_x(new_x) {
+        x = new_x;
+    }
+
+    @pub
+    fn set_y(new_y) {
+        y = new_y;
+    }
+
+    @pub
+    fn get_sum() {
+        return get_x() + get_y();
+    }
+
 }

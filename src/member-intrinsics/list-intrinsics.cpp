@@ -68,10 +68,13 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                   std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_back");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
+    if (obj->type() == earl::value::Type::List)
+        return dynamic_cast<earl::value::List *>(obj.get())->back();
+    else if (obj->type() == earl::value::Type::Str)
+        return dynamic_cast<earl::value::Str *>(obj.get())->back();
+    assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
 std::shared_ptr<earl::value::Obj>

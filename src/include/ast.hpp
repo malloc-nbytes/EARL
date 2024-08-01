@@ -138,9 +138,10 @@ struct ExprGet : public ExprTerm {
 
 struct ExprModAccess : public ExprTerm {
     std::unique_ptr<ExprIdent> m_expr_ident;
-    std::unique_ptr<Expr> m_right;
+    std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
 
-    ExprModAccess(std::unique_ptr<ExprIdent> expr_ident, std::unique_ptr<Expr> right);
+    ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
+                  std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

@@ -49,9 +49,22 @@ Type Char::type(void) const {
 }
 
 std::shared_ptr<Obj> Char::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)other;
-    (void)op;
-    UNIMPLEMENTED("Char::binop");
+    if (!type_is_compatable(this, other.get())) {
+        assert(false && "cannot binop (fix this message)");
+    }
+
+    switch (op->type()) {
+    case TokenType::Double_Equals: {
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
+    } break;
+    case TokenType::Bang_Equals: {
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid binary operator");
+    } break;
+    }
 }
 
 bool Char::boolean(void) {
@@ -59,8 +72,9 @@ bool Char::boolean(void) {
 }
 
 void Char::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Char::mutate");
+    assert(other->type() == Type::Char);
+    auto c = dynamic_cast<Char *>(other.get());
+    m_value = c->value();
 }
 
 std::shared_ptr<Obj> Char::copy(void) {

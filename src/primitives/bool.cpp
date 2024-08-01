@@ -86,7 +86,6 @@ void Bool::mutate(const std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> Bool::copy(void) {
-    std::cout << "copying\n";
     return std::make_shared<Bool>(m_value);
 }
 

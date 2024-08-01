@@ -118,3 +118,12 @@ bool WorldCtx::function_exists(const std::string &id) {
 std::shared_ptr<earl::function::Obj> WorldCtx::function_get(const std::string &id) {
     return m_funcs.get(id);
 }
+
+void WorldCtx::debug_dump_defined_classes(void) const {
+    std::cout << "debug dumping classes for module: " << this->get_mod() << std::endl;
+
+    for (auto it = m_defined_classes.begin(); it != m_defined_classes.end(); ++it) {
+        std::cout << "  " << it->first << std::endl;
+    }
+}
+

@@ -47,28 +47,28 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                     std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_unwrap");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "unwrap");
+    auto none = dynamic_cast<earl::value::Option *>(obj.get());
+
+    if (!none->value()) {
+        ERR(Err::Type::Fatal, "tried to unwrap none value");
+    }
+
+    return none->value();
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_is_none(std::shared_ptr<earl::value::Obj> obj,
                                      std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                      std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_is_none");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "is_none");
+    return std::make_shared<earl::value::Bool>(dynamic_cast<earl::value::Option *>(obj.get())->is_none());
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj,
                                      std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                      std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_is_some");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "is_some");
+    return std::make_shared<earl::value::Bool>(dynamic_cast<earl::value::Option *>(obj.get())->is_some());
 }
