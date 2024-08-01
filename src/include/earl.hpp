@@ -264,6 +264,8 @@ namespace earl {
             /// @param values The values to append
             void append(std::vector<std::shared_ptr<Obj>> values);
 
+            void append(std::shared_ptr<Obj> value);
+
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
             void pop(std::shared_ptr<Obj> &idx);

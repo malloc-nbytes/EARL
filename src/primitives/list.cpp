@@ -68,14 +68,18 @@ std::shared_ptr<Obj> List::rev(void) {
 }
 
 void List::pop(std::shared_ptr<Obj> &idx) {
-    (void)idx;
-    UNIMPLEMENTED("List::pop");
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+    m_value.erase(m_value.begin() + idx1->value());
 }
 
 void List::append(std::vector<std::shared_ptr<Obj>> values) {
     for (size_t i = 0; i < values.size(); ++i) {
         m_value.push_back(values[i]->copy());
     }
+}
+
+void List::append(std::shared_ptr<Obj> value) {
+    m_value.push_back(value);
 }
 
 std::shared_ptr<List> List::filter(std::shared_ptr<Closure> &closure, Ctx &ctx) {

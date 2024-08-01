@@ -1,2 +1,9 @@
 mod Main
 
+import "std/stack.earl"
+
+let lst = [1,2,3];
+
+lst.append(4);
+
+

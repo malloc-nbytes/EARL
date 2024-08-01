@@ -100,36 +100,22 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                     std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)values;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_append");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append");
+    earl::value::List *lst = dynamic_cast<earl::value::List *>(obj.get());
+    for (auto &value : values)
+        lst->append(value);
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                  std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)values;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_pop");
-}
-
-std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                          std::shared_ptr<Ctx> &ctx) {
-    __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
-    auto &item = params[0];
-    if (item->type() == earl::value::Type::List) {
-        size_t sz = dynamic_cast<earl::value::List *>(item.get())->value().size();
-        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
-    }
-    else if (item->type() == earl::value::Type::Str) {
-        size_t sz = dynamic_cast<earl::value::Str *>(item.get())->value().size();
-        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
-    }
-    assert(false && "unreachable");
+    __MEMBER_INTR_ARGS_MUSTBE_SIZE(values, 1, "pop");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
+    if (obj->type() == earl::value::Type::List)
+        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
+    else
+        assert(false && "unimplemented");
     return nullptr;
 }

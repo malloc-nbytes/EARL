@@ -39,11 +39,24 @@
 #include "ast.hpp"
 #include "earl.hpp"
 
-#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                            \
-    do {                                                                                                        \
-        if (args.size() != sz)                                                                                  \
-            ERR_WARGS(Err::Type::Fatal, fn " member intrinsic `%s` expects %d arguments but %zu were supplied", \
-                      fn, sz, args.size());                                                                     \
+#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                \
+    do {                                                                                            \
+        if (args.size() != sz)                                                                      \
+            ERR_WARGS(Err::Type::Fatal, "function `%s` expects %d arguments but %zu were supplied", \
+                      fn, sz, args.size());                                                         \
+    } while (0)
+
+#define __MEMBER_INTR_ARGS_MUSTNOT_BE_0(args, fn)                                                      \
+    do {                                                                                               \
+        if (args.size() == 0)                                                                          \
+            ERR_WARGS(Err::Type::Fatal, "member intrinsic `%s` expects greater than 0 arguments", fn); \
+    } while (0)
+
+#define __MEMBER_INTR_ARGS_MUSTBE_GTSIZE(args, sz, fn)                                                                       \
+    do {                                                                                                                     \
+        if (args.size() < sz)                                                                                                \
+            ERR_WARGS(Err::Type::Fatal, "member intrinsic `%s` expects greater than %d arguments but %zu were supplied",     \
+                      fn, sz, args.size());                                                                                  \
     } while (0)
 
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \

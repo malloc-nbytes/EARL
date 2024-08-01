@@ -10,7 +10,7 @@ class T [init] {
     }
 
     @pub
-    fn pop() {
+    fn spop() {
         this.lst.pop(len(this.lst)-1);
     }
 
@@ -22,5 +22,12 @@ class T [init] {
     @pub
     fn top() {
         return this.lst[len(this.lst)-1];
+    }
+
+    @pub
+    fn sdump() {
+        for i in 0..len(lst) {
+            println(lst[i]);
+        }
     }
 }
