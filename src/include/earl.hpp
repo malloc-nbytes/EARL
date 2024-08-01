@@ -426,18 +426,22 @@ namespace earl {
             std::string to_cxxstring(void)                                     override;
         };
 
-        std::string type_to_str(Obj *);
+        std::string type_to_str(earl::value::Type ty);
+        const char *type_to_cstr(earl::value::Type ty);
 
         /// @brief Get an empty EARL value from a type
         /// @param s The string type to parse
         [[deprecated]] [[nodiscard]]
         Obj *of_str(const std::string &s);
 
+        [[nodiscard]]
+        bool type_is_compatable(Type ty1, Type ty2);
+
         /// @brief Check if two EARL values are type compatable
         /// @param obj1 The first object
         /// @param obj2 The second object
         [[nodiscard]]
-        bool type_is_compatable(Obj *const obj1, Obj *const obj2);
+        bool type_is_compatable(const Obj *const obj1, const Obj *const obj2);
     };
 
     /**

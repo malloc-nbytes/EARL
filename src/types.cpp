@@ -40,15 +40,45 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Option, {earl::value::Type::Option}},
 };
 
-std::string earl::value::type_to_str(earl::value::Obj *obj) {
-    (void)obj;
-    UNIMPLEMENTED("earl::value::type_to_str");
+std::string earl::value::type_to_str(earl::value::Type ty) {
+    switch (ty) {
+    case earl::value::Type::Int: return "int";
+    case earl::value::Type::Bool: return "bool";
+    case earl::value::Type::Char: return "char";
+    case earl::value::Type::Str: return "str";
+    case earl::value::Type::List: return "list";
+    case earl::value::Type::Void: return "void";
+    case earl::value::Type::Option: return "option";
+    default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
+    }
 }
 
-bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
+const char *earl::value::type_to_cstr(earl::value::Type ty) {
+    return type_to_str(ty).c_str();
+}
+
+bool earl::value::type_is_compatable(const earl::value::Obj *const obj1, const earl::value::Obj *const obj2) {
     earl::value::Type ty1 = obj1->type();
     earl::value::Type ty2 = obj2->type();
 
+    if (ty1 == ty2)
+        return true;
+
+    auto it = type_map.find(ty1);
+    if (it != type_map.end()) {
+        const std::vector<earl::value::Type>& compatible_types = it->second;
+
+        for (auto compatible_type : compatible_types) {
+            if (ty2 == compatible_type) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool earl::value::type_is_compatable(earl::value::Type ty1, earl::value::Type ty2) {
     if (ty1 == ty2)
         return true;
 

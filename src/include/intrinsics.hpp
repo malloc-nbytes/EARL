@@ -39,10 +39,32 @@
 #include "ast.hpp"
 #include "earl.hpp"
 
-#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, sz, fn)                                                      \
-    if (params.size() != sz)                                                                                \
-        ERR_WARGS(Err::Type::Fatal, fn " member intrinsic `%s` expects %d arguments but %zu were supplied", \
-                  fn, sz, params.size());
+#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                            \
+    do {                                                                                                        \
+        if (args.size() != sz)                                                                                  \
+            ERR_WARGS(Err::Type::Fatal, fn " member intrinsic `%s` expects %d arguments but %zu were supplied", \
+                      fn, sz, args.size());                                                                     \
+    } while (0)
+
+#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \
+    do {                                                                                                              \
+        if (!earl::value::type_is_compatable(arg->type(), ty))                                                        \
+            ERR_WARGS(Err::Type::Fatal,                                                                               \
+                      "the %d argument of function `%s` expects type `%s` but got `%s`",                              \
+                      loc, fn, earl::value::type_to_str(ty).c_str(), earl::value::type_to_str(arg->type()).c_str());  \
+    } while (0)
+
+#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn)                                               \
+    do {                                                                                                              \
+        if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) \
+            ERR_WARGS(Err::Type::Fatal,                                                                               \
+                      "the %d argument of function `%s` expects either type `%s` or `%s` but got `%s`",               \
+                      loc,                                                                                            \
+                      fn,                                                                                             \
+                      earl::value::type_to_str(ty1).c_str(),                                                          \
+                      earl::value::type_to_str(ty2).c_str(),                                                          \
+                      earl::value::type_to_str(arg->type()).c_str());                                                 \
+    } while (0)
 
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {

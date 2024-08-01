@@ -120,6 +120,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                           std::shared_ptr<Ctx> &ctx) {
     __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
     auto &item = params[0];
     if (item->type() == earl::value::Type::List) {
         size_t sz = dynamic_cast<earl::value::List *>(item.get())->value().size();
