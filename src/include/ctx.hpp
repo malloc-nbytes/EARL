@@ -43,6 +43,7 @@ enum class CtxType {
     World,
     Function,
     Class,
+    Closure,
 };
 
 struct Ctx {
@@ -131,6 +132,7 @@ struct ClassCtx : public Ctx {
     ~ClassCtx() = default;
 
     std::shared_ptr<Ctx> &get_owner(void);
+    void function_debug_dump(void) const;
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -143,7 +145,21 @@ struct ClassCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
-    void function_debug_dump(void) const;
+private:
+    std::shared_ptr<Ctx> m_owner;
+};
+
+struct ClosureCtx : public Ctx {
+    CtxType type(void) const override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

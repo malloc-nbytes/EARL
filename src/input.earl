@@ -1,7 +1,8 @@
 mod Main
 
-let f = open("./other.earl", "r");
+let f = |a, b| {
+    return a+b;
+};
 
-f.dump();
-
-f.close();
+println(f(1, 2));
+println(f(3, 4));
