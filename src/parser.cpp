@@ -162,17 +162,15 @@ static Expr *parse_primary_expr(Lexer &lexer) {
             left = new ExprIdent(lexer.next());
         } break;
         case TokenType::Lparen: {
-            lexer.discard();
-            std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
+            lexer.discard(); // (
             if (left) {
+                std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
                 (void)Parser::parse_expect(lexer, TokenType::Rparen);
                 left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(tuple));
             }
             else {
-                lexer.discard();
-                Expr *expr = Parser::parse_expr(lexer);
+                left = Parser::parse_expr(lexer);
                 (void)Parser::parse_expect(lexer, TokenType::Rparen);
-                left = expr;
             }
         } break;
         case TokenType::Period: {
