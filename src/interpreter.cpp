@@ -301,9 +301,9 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     std::visit([&](auto &&arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
+            right_er = Interpreter::eval_expr(arg.get(), *ctx_ptr, true);
         else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-            right_er = Interpreter::eval_expr(arg.get(), ctx, true);
+            right_er = Interpreter::eval_expr(arg.get(), *ctx_ptr, true);
         else
             ERR(Err::Type::Internal,
                 "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
@@ -702,21 +702,25 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
-    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-        Stmt *stmt = wctx->stmt_at(i);
-        if (i == 0 && stmt->stmt_type() != StmtType::Mod)
-            WARN("A `mod` statement is expected to be the first statement. "
-                 "This may lead to undefined behavior and break functionality.");
-        if (stmt->stmt_type() == StmtType::Def
-            || stmt->stmt_type() == StmtType::Class)
-            (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
-    }
+    // for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+    //     Stmt *stmt = wctx->stmt_at(i);
+    //     if (i == 0 && stmt->stmt_type() != StmtType::Mod)
+    //         WARN("A `mod` statement is expected to be the first statement. "
+    //              "This may lead to undefined behavior and break functionality.");
+    //     if (stmt->stmt_type() == StmtType::Def
+    //         || stmt->stmt_type() == StmtType::Class
+    //         || stmt->stmt_type() == StmtType::Mod
+    //         || stmt->stmt_type() == StmtType::Import)
+    //         (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+    // }
 
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        if (stmt->stmt_type() != StmtType::Def
-            && stmt->stmt_type() != StmtType::Class)
-            (void)Interpreter::eval_stmt(stmt, ctx);
+        // if (stmt->stmt_type() != StmtType::Def
+        //     && stmt->stmt_type() != StmtType::Class
+        //     && stmt->stmt_type() == StmtType::Mod
+        //     && stmt->stmt_type() == StmtType::Import)
+        (void)Interpreter::eval_stmt(stmt, ctx);
     }
 
     return ctx;
