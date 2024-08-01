@@ -1,5 +1,6 @@
 mod Main
 
-let lst = [1,2,3,4,5];
+let lst = [1,2,3];
+lst[0] = 9;
+println(lst);
 
-println(lst[0], " ", lst[1]);

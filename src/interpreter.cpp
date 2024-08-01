@@ -369,6 +369,27 @@ eval_expr_term_listlit(ExprListLit *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 ER
+eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
+    ER idx_er = Interpreter::eval_expr(expr->m_expr.get(), ctx, ref);
+
+    auto left_value = unpack_ER(left_er, ctx, ref);
+    auto idx_value = unpack_ER(idx_er, ctx, ref);
+
+    if (left_value->type() == earl::value::Type::List) {
+        auto list = dynamic_cast<earl::value::List *>(left_value.get());
+        return ER(list->nth(idx_value), ERT::Literal);
+    }
+    else if (left_value->type() == earl::value::Type::Str) {
+        auto str = dynamic_cast<earl::value::Str *>(left_value.get());
+        return ER(str->nth(idx_value), ERT::Literal);
+    }
+    else {
+        ERR(Err::Type::Fatal, "cannot use `[]` on non-list or non-str type");
+    }
+}
+
+ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
@@ -379,7 +400,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::List_Literal: return eval_expr_term_listlit(dynamic_cast<ExprListLit *>(expr), ctx, ref);
     case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
     case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
-    case ExprTermType::Array_Access: assert(false);
+    case ExprTermType::Array_Access: return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
     case ExprTermType::Bool:         UNIMPLEMENTED("ExprTermType::Bool");
     case ExprTermType::None:         UNIMPLEMENTED("ExprTermType::None");
     case ExprTermType::Closure:      UNIMPLEMENTED("ExprTermType::Closure");

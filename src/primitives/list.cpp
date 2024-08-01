@@ -49,8 +49,18 @@ Type List::type(void) const {
 }
 
 std::shared_ptr<Obj> List::nth(std::shared_ptr<Obj> &idx) {
-    (void)idx;
-    UNIMPLEMENTED("List::nth");
+    switch (idx->type()) {
+    case Type::Int: {
+        auto index = dynamic_cast<Int *>(idx.get());
+        if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
+                      index->value(), this->value().size());
+        }
+        return this->value().at(index->value());
+    } break;
+    default: ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
+    }
+    return nullptr; // unreachable
 }
 
 std::shared_ptr<Obj> List::rev(void) {
