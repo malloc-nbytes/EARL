@@ -32,6 +32,11 @@
 #include "utils.hpp"
 #include "common.hpp"
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_char_member_functions = {
+    {"ascii", &Intrinsics::intrinsic_member_ascii},
+};
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &unused,

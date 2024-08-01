@@ -196,7 +196,11 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return Intrinsics::call(er.id, params, ctx);
         if (er.is_member_intrinsic()) {
             assert(perp && perp->lhs_getter_accessor);
-            return Intrinsics::call_member(er.id, perp->lhs_getter_accessor, params, ctx);
+            return Intrinsics::call_member(er.id,
+                                           perp->lhs_getter_accessor->type(),
+                                           perp->lhs_getter_accessor,
+                                           params,
+                                           ctx);
         }
 
         if (ctx->type() == CtxType::Class)

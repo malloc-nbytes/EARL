@@ -99,10 +99,27 @@ Intrinsics::is_member_intrinsic(const std::string &id) {
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::call_member(const std::string &id,
+                        earl::value::Type type,
                         std::shared_ptr<earl::value::Obj> accessor,
                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
                         std::shared_ptr<Ctx> &ctx) {
-    return intrinsic_member_functions.at(id)(accessor, params, ctx);
+    switch (type) {
+    case earl::value::Type::Int:
+        assert(false);
+    case earl::value::Type::Char:
+        return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Str:
+        return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Bool:
+        assert(false);
+    case earl::value::Type::List:
+        return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Option:
+        return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::File:
+        return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
+    default: assert(false);
+    }
 }
 
 std::shared_ptr<earl::value::Obj>

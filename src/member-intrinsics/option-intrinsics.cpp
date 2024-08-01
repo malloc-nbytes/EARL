@@ -36,6 +36,13 @@
 #include "utils.hpp"
 #include "common.hpp"
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_option_member_functions = {
+    {"unwrap", &Intrinsics::intrinsic_member_unwrap},
+    {"is_none", &Intrinsics::intrinsic_member_is_none},
+    {"is_some", &Intrinsics::intrinsic_member_is_some},
+};
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {

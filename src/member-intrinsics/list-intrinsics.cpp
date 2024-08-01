@@ -35,6 +35,17 @@
 #include "utils.hpp"
 #include "common.hpp"
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_list_member_functions = {
+    {"nth", &Intrinsics::intrinsic_member_nth},
+    {"back", &Intrinsics::intrinsic_member_back},
+    {"filter", &Intrinsics::intrinsic_member_filter},
+    {"foreach", &Intrinsics::intrinsic_member_foreach},
+    {"rev", &Intrinsics::intrinsic_member_rev},
+    {"append", &Intrinsics::intrinsic_member_append},
+    {"pop", &Intrinsics::intrinsic_member_pop},
+};
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &idx,
@@ -108,7 +119,16 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                           std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_len");
+    __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
+    auto &item = params[0];
+    if (item->type() == earl::value::Type::List) {
+        size_t sz = dynamic_cast<earl::value::List *>(item.get())->value().size();
+        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
+    }
+    else if (item->type() == earl::value::Type::Str) {
+        size_t sz = dynamic_cast<earl::value::Str *>(item.get())->value().size();
+        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
+    }
+    assert(false && "unreachable");
+    return nullptr;
 }

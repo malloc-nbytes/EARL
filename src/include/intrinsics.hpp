@@ -39,6 +39,11 @@
 #include "ast.hpp"
 #include "earl.hpp"
 
+#define __MEMBER_INTR_ARGS_MUSTBE_SIZE(params, sz, fn)                                                      \
+    if (params.size() != sz)                                                                                \
+        ERR_WARGS(Err::Type::Fatal, fn " member intrinsic `%s` expects %d arguments but %zu were supplied", \
+                  fn, sz, params.size());
+
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {
 
@@ -58,6 +63,11 @@ namespace Intrinsics {
 
     /// @brief A map of all intrinsic member functions in EARL
     extern const std::unordered_map<std::string, IntrinsicMemberFunction> intrinsic_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_list_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_str_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_char_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_option_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check
@@ -86,6 +96,7 @@ namespace Intrinsics {
     /// @note it is often expected that `params` has the size of 1 or 0
     /// @param ctx The current global context
     std::shared_ptr<earl::value::Obj> call_member(const std::string &id,
+                                                  earl::value::Type type,
                                                   std::shared_ptr<earl::value::Obj> accessor,
                                                   std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                                   std::shared_ptr<Ctx> &ctx);

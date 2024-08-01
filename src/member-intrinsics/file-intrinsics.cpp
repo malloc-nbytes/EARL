@@ -36,6 +36,15 @@
 #include "utils.hpp"
 #include "common.hpp"
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_file_member_functions = {
+    {"dump", &Intrinsics::intrinsic_member_dump},
+    {"close", &Intrinsics::intrinsic_member_close},
+    {"read", &Intrinsics::intrinsic_member_read},
+    {"write", &Intrinsics::intrinsic_member_write},
+    {"writelines", &Intrinsics::intrinsic_member_writelines},
+};
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,

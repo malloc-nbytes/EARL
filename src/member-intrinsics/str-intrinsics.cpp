@@ -29,6 +29,17 @@
 #include "err.hpp"
 #include "utils.hpp"
 
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_str_member_functions = {
+    {"nth", &Intrinsics::intrinsic_member_nth},
+    {"back", &Intrinsics::intrinsic_member_back},
+    {"filter", &Intrinsics::intrinsic_member_filter},
+    {"foreach", &Intrinsics::intrinsic_member_foreach},
+    {"rev", &Intrinsics::intrinsic_member_rev},
+    {"append", &Intrinsics::intrinsic_member_append},
+    {"pop", &Intrinsics::intrinsic_member_pop},
+};
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &delim,
