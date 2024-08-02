@@ -44,7 +44,7 @@ class T [init, compar] {
         unimplemented("Set.T.remove");
     }
 
-    @pub fn dump() {
+    @pub fn sdump() {
         this.__dump(this.root);
     }
 

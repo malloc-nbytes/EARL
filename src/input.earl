@@ -1,8 +1,17 @@
 mod Main
 
-import "other.earl"
+import "std/set.earl"
 
-let i = 1;
-Other::refer(i);
+let s = Set::T([], |x, y| {
+    if x > y { return 2; }
+    if y > x { return 1; }
+    return 0;
+});
 
-println(i);
+s.insert(9);
+s.insert(3);
+s.insert(1);
+s.insert(10);
+s.insert(12);
+
+s.sdump();

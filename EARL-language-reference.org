@@ -51,7 +51,7 @@ Hello World!
 
 =else= *{* [stmt] *}*
 
-* TODO Pattern Matching
+* Pattern Matching
 
 #+begin_quote
 Pattern matching allows you to match on some pattern. This is
@@ -410,7 +410,7 @@ Your basic 32 bit integer datatype.
 *Note*: They *do* over/under-flow
 #+end_quote
 
-** TODO =bool=
+** =bool=
 
 #+begin_quote
 The boolean datatype. Can either be =true= or =false=.
@@ -428,14 +428,14 @@ A single character. They are surrounded by single quotes ='=.
 A string is a list of =char='s. They are surrounded with double quotes ="=.
 #+end_quote
 
-** TODO =list=
+** =list=
 
 #+begin_quote
 A list is a growable array. They can hold any datatype, and you
 can even mix multiple datatypes in a single list.
 #+end_quote
 
-** TODO =option=
+** =option=
 
 #+begin_quote
 Because all variables need to be initialized when using a `let` statement,
@@ -452,7 +452,7 @@ The underlying value (in the above example, =9=) can be extracted out
 using the =unwrap()= member intrinsic.
 #+end_quote
 
-** TODO =closure=
+** =closure=
 
 #+begin_quote
 Closures are anonymous functions that close in the outer scope. They
@@ -487,7 +487,7 @@ in sum
 
 #+end_quote
 
-** TODO =file=
+** =file=
 
 #+begin_quote
 The =file= type is a file handler. It handles opening, closing, reading, and writing
@@ -550,7 +550,7 @@ Will print all elements if it can. Gets input from the user
 and returns it as a =str=.
 #+end_quote
 
-** TODO =assert=
+** =assert=
 
 #+begin_quote
 #+begin_example
@@ -561,7 +561,7 @@ Tests each argument for =true=. If any of the conditions fails,
 the program immediately crashes.
 #+end_quote
 
-** TODO =len=
+** =len=
 
 #+begin_quote
 #+begin_example
@@ -572,7 +572,7 @@ Expects either a =list= or =string=. Will give the length
 as an integer.
 #+end_quote
 
-** TODO =some=
+** =some=
 
 #+begin_quote
 #+begin_example
@@ -603,7 +603,7 @@ Returns a list of =str= of the supplied command line arguments
 that were given by the =--= option.
 #+end_quote
 
-** TODO =open=
+** =open=
 
 #+begin_quote
 #+begin_example
@@ -636,7 +636,7 @@ You access these with the dot `.` notation i.e.,
 =lst.rev();=
 #+end_quote
 
-** TODO =list= Implementes
+** =list= Implementes
 
 #+begin_quote
 #+begin_example
@@ -671,7 +671,7 @@ Takes the closure =cl= and creates a new =list= of all the
 elements where =cl= returns =true=.
 #+end_quote
 
-** TODO =str= Implements
+** =str= Implements
 
 #+begin_quote
 #+begin_example
@@ -699,7 +699,7 @@ ascii() -> int
 Returns the ascii code of the character.
 #+end_quote
 
-** TODO =option= Implements
+** =option= Implements
 
 #+begin_quote
 #+begin_example
@@ -717,7 +717,7 @@ is_some() -> bool
 Returns =true= if the value is =some=, =false= otherwise.
 #+end_quote
 
-** TODO =file= Implements
+** =file= Implements
 
 #+begin_quote
 #+begin_example
@@ -760,7 +760,7 @@ Writes all elements in the list =msg= to the opened file.
 At the end of each value, a newline is added.
 #+end_quote
 
-* TODO StdLib
+* StdLib
 
 #+begin_quote
 Upon installing EARL, the standard library is installed into
