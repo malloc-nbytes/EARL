@@ -71,6 +71,11 @@ Interpreter::ER::is_member_intrinsic(void) {
 }
 
 bool
+Interpreter::ER::is_wildcard(void) {
+    return (this->rt & ERT::Wildcard) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

@@ -4,6 +4,19 @@ import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
 
+fn test_match1() {
+    print("test_match1... ");
+
+    let x = 5;
+
+    match x {
+        _ -> { assert(true); }
+        5 -> { assert(false); }
+    }
+
+    println("ok");
+}
+
 fn test_closure4() {
     print("test_closure4... ");
 
@@ -678,6 +691,7 @@ fn main() {
     test_closure2();
     test_closure3();
     test_closure4();
+    test_match1();
 
     # TestStd::test_std();
 }

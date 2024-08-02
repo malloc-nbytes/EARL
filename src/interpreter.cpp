@@ -234,6 +234,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return var->value()->copy();
         return var->value();
     }
+    else if (er.is_wildcard())
+        assert(false && "unimplemented");
     else
         assert(false);
 }
@@ -242,6 +244,8 @@ ER
 eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ref;
     const std::string &id = expr->m_tok->lexeme();
+    if (id == "_")
+        return ER(nullptr, ERT::Wildcard, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
     return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
 }
 
