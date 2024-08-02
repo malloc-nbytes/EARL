@@ -210,7 +210,7 @@ namespace earl {
             void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> ctx);
             std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
             size_t params_len(void) const;
-            bool params_at_is_ref(size_t i) const;
+            bool param_at_is_ref(size_t i) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

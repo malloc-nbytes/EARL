@@ -1,10 +1,8 @@
 mod Main
 
-fn refer(@ref i) {
-    i = 99;
-}
+import "other.earl"
 
-let i = 0;
-refer(i);
+let i = 1;
+Other::refer(i);
 
 println(i);

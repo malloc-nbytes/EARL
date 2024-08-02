@@ -1,9 +1,6 @@
 mod Other
 
 @pub
-fn sum(a, b) {
-    return a+b;
+fn refer(@ref i) {
+    i = 9;
 }
-
-let x = 1;
-

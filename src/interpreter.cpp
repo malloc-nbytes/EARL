@@ -29,6 +29,7 @@
 #include <memory>
 #include <optional>
 #include <functional>
+#include <variant>
 
 #include "parser.hpp"
 #include "utils.hpp"
@@ -93,7 +94,10 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
 }
 
 static std::shared_ptr<earl::value::Obj>
-eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl::value::Obj>> &params, std::shared_ptr<Ctx> &ctx, bool ref) {
+eval_class_instantiation(const std::string &id,
+                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                         std::shared_ptr<Ctx> &ctx,
+                         bool ref) {
     StmtClass *class_stmt = nullptr;
 
     if (ctx->type() == CtxType::Class) {
@@ -173,25 +177,54 @@ evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, b
 
 static std::vector<std::shared_ptr<earl::value::Obj>>
 evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
-                                   std::shared_ptr<earl::function::Obj> &func_proper,
+                                   std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> &func_proper,
                                    std::shared_ptr<Ctx> ctx) {
     std::vector<std::shared_ptr<earl::value::Obj>> res = {};
     std::vector<int> refs = {};
-    for (size_t i = 0; i < func_proper->params_len(); ++i) {
-        if (func_proper->param_at_is_ref(i))
-            refs.push_back(1);
-        else
-            refs.push_back(0);
-    }
 
-    assert(refs.size() == funccall->m_params.size());
-    for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
-        if (refs[i])
-            res.push_back(unpack_ER(er, ctx, true));
+    std::visit([&](auto &&fun) {
+        using T = std::decay_t<decltype(fun)>;
+        if constexpr (std::is_same_v<T, std::shared_ptr<earl::function::Obj>>) {
+
+            // Build reference table
+            for (size_t i = 0; i < fun->params_len(); ++i) {
+                if (fun->param_at_is_ref(i)) refs.push_back(1);
+                else                         refs.push_back(0);
+            }
+
+            // Evaluate the parameters based on the reference table
+            for (size_t i = 0; i < funccall->m_params.size(); ++i) {
+                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
+                if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
+                else         res.push_back(unpack_ER(er, ctx, false));
+            }
+        }
+
+        else if constexpr (std::is_same_v<T, earl::value::Closure *>) {
+
+            // Build reference table
+            for (size_t i = 0; i < fun->params_len(); ++i) {
+                if (fun->param_at_is_ref(i))
+                    refs.push_back(1);
+                else
+                    refs.push_back(0);
+            }
+
+            // Evaluate the parameters based on the reference table
+            for (size_t i = 0; i < funccall->m_params.size(); ++i) {
+                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
+                if (refs[i])
+                    res.push_back(unpack_ER(er, ctx, true));
+                else
+                    res.push_back(unpack_ER(er, ctx, false));
+            }
+        }
+
         else
-            res.push_back(unpack_ER(er, ctx, false));
-    }
+            ERR(Err::Type::Internal,
+                "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
+    }, func_proper);
+
     return res;
 }
 
@@ -203,13 +236,15 @@ eval_user_defined_function_wo_params(const std::string &id,
                                      bool from_outside = false) {
     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
     std::vector<int> refs = {};
+    std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
 
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
+        v = func;
         if (from_outside && !func->is_pub())
             ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
 
-        params = evaluate_function_parameters_wrefs(funccall, func, funccall_ctx);
+        params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
 
         auto fctx = std::make_shared<FunctionCtx>(ctx);
         func->load_parameters(params, fctx);
@@ -220,7 +255,8 @@ eval_user_defined_function_wo_params(const std::string &id,
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
         auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
-        // params = evaluate_function_parameters_wrefs(funccall, func, funccall_ctx);
+        v = clvalue;
+        params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
         clvalue->load_parameters(params, clctx);
         std::shared_ptr<Ctx> mask = clctx;
         return Interpreter::eval_stmt_block(clvalue->block(), mask);
@@ -301,7 +337,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         assert(false);
 }
 
-ER
+static ER
 eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ref;
     const std::string &id = expr->m_tok->lexeme();
@@ -311,20 +347,20 @@ eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
-ER
+static ER
 eval_expr_term_intlit(ExprIntLit *expr) {
     auto value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme()));
     return ER(value, ERT::Literal);
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
-ER
+static ER
 eval_expr_term_strlit(ExprStrLit *expr) {
     auto value = std::make_shared<earl::value::Str>(expr->m_tok->lexeme());
     return ER(value, ERT::Literal);
 }
 
-ER
+static ER
 eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
     // Checks if `_id` is a class in the @world scope.
@@ -406,13 +442,15 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
-        auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
-        auto func = eval_user_defined_function(right_er.id, params, other_ctx, /*from_outside=*/true);
+        auto func = eval_user_defined_function_wo_params(right_er.id, static_cast<ExprFuncCall *>(right_er.extra), ctx, right_er.ctx);
         return ER(func, ERT::Literal);
+
+        // auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
+        // auto func = eval_user_defined_function(right_er.id, params, other_ctx, /*from_outside=*/true);
+        // return ER(func, ERT::Literal);
     }
-    else {
+    else
         assert(false && "unimplemented");
-    }
 }
 
 ER
