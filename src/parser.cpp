@@ -227,7 +227,7 @@ static Expr *parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         }
         case TokenType::Keyword: {
             if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
-                return nullptr;
+                return left;
 
             std::unique_ptr<Token> kw = lexer.next();
             if (kw->lexeme() == COMMON_EARLKW_TRUE) {
@@ -541,18 +541,15 @@ std::unique_ptr<StmtClass> parse_stmt_class(Lexer &lexer, uint32_t attrs) {
                                                         inclass_attrs));
         } break;
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_FN) {
+            if (tok->lexeme() == COMMON_EARLKW_FN)
                 methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs));
-            }
             else {
                 Err::err_wtok(tok);
                 ERR_WARGS(Err::Type::Fatal, "invalid keyword specifier (%s) in class declaration",
                           tok->lexeme().c_str());
             }
         } break;
-        default: {
-            ERR_WARGS(Err::Type::Fatal, "invalid token type (%d) in class declaration", (int)tok->type());
-        } break;
+        default: ERR_WARGS(Err::Type::Fatal, "invalid token type (%d) in class declaration", (int)tok->type());
         }
     }
 
@@ -592,9 +589,8 @@ static std::unique_ptr<StmtMatch::Branch> parse_branch(Lexer &lexer) {
 
 static std::vector<std::unique_ptr<StmtMatch::Branch>> parse_branches(Lexer &lexer) {
     std::vector<std::unique_ptr<StmtMatch::Branch>> branches;
-    while (lexer.peek()->type() != TokenType::Rbrace) {
+    while (lexer.peek()->type() != TokenType::Rbrace)
         branches.push_back(parse_branch(lexer));
-    }
     return branches;
 }
 

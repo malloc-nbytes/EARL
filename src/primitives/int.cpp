@@ -118,8 +118,9 @@ std::shared_ptr<Obj> Int::copy(void) {
 }
 
 bool Int::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Int::eq");
+    if (other->type() != Type::Int)
+        return false;
+    return this->value() == dynamic_cast<Int *>(other.get())->value();
 }
 
 std::string Int::to_cxxstring(void) {

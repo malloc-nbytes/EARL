@@ -442,6 +442,7 @@ eval_expr_term_none(ExprNone *expr) {
 
 static ER
 eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    (void)ref;
     std::vector<std::pair<Token *, uint32_t>> args;
     for (auto &entry : expr->m_args)
         args.push_back(std::make_pair(entry.first.get(), entry.second));
@@ -701,9 +702,107 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::variable::Obj>
+handle_match_some_branch(ExprFuncCall *expr, std::shared_ptr<earl::value::Obj> inject_value, std::shared_ptr<Ctx> &ctx) {
+    assert(expr->m_params.size() == 1);
+
+    Expr *value = expr->m_params[0].get();
+    if (value->get_type() != ExprType::Term)
+        return nullptr;
+
+    auto *term = dynamic_cast<ExprTerm *>(value);
+    if (term->get_term_type() != ExprTermType::Ident)
+        return nullptr;
+
+    auto *ident = dynamic_cast<ExprIdent *>(term);
+
+    if (ctx->variable_exists(ident->m_tok->lexeme())) {
+        Err::err_wtok(ident->m_tok.get());
+        ERR_WARGS(Err::Type::Redeclared, "variable %s in match statement is already declared",
+                  ident->m_tok->lexeme().c_str());
+    }
+
+    auto unwrapped_value = dynamic_cast<earl::value::Option *>(inject_value.get())->value()->copy();
+    auto var = std::make_shared<earl::variable::Obj>(ident->m_tok.get(), unwrapped_value, 0);
+
+    return var;
+}
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
-    assert(false);
+    ER match_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, true);
+    auto match_value = unpack_ER(match_er, ctx, true);
+
+    // if (match_value->type() == earl::value::Type::Closure) {
+    //     auto close = dynamic_cast<earl::value::Closure *>(match_value.get());
+    //     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    //     close->load_parameters(params, ctx);
+    //     match_value = close->call(params, ctx);
+    // }
+
+    // Go through the branches
+    for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
+        StmtMatch::Branch *branch = stmt->m_branches[i].get();
+
+        // Go through the different expressions that are separated by `|`
+        for (size_t j = 0; j < branch->m_expr.size(); ++j) {
+            std::shared_ptr<earl::value::Obj>
+                potential_match = nullptr,
+                guard = nullptr;
+
+            if (branch->m_expr[j]->get_type() == ExprType::Term &&
+                (dynamic_cast<ExprTerm *>(branch->m_expr[j].get())->get_term_type() == ExprTermType::Func_Call)) {
+
+                auto test2 = dynamic_cast<ExprFuncCall *>(branch->m_expr[j].get());
+                ER possible_id = Interpreter::eval_expr(test2->m_left.get(), ctx, true);
+                const std::string &id = possible_id.id;
+                if (id == "some" && match_value->type() == earl::value::Type::Option) {
+                    auto tmp_var = handle_match_some_branch(test2, match_value, ctx);
+
+                    if (tmp_var) {
+                        ctx->variable_add(tmp_var);
+
+                        if (branch->m_when.has_value()) {
+                            ER _guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx, true);
+                            guard = unpack_ER(_guard, ctx, true);
+                        }
+
+                        if (guard == nullptr || guard->boolean()) {
+                            auto res = Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
+                            ctx->variable_remove(tmp_var->id());
+                            return res;
+                        }
+                        else
+                            ctx->variable_remove(tmp_var->id());
+                    }
+                    else {
+                        // It is `some`, but it does not have a variable
+                        goto not_some;
+                    }
+                }
+                else {
+                    // It is not `some`
+                    goto not_some;
+                }
+            }
+            else {
+            not_some:
+                ER _potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx, true);
+                potential_match = unpack_ER(_potential_match, ctx, true);
+                if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
+                    if (branch->m_when.has_value()) {
+                        ER _guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx, true);
+                        guard = unpack_ER(_guard, ctx, true);
+                    }
+                    if (guard == nullptr || guard->boolean()) {
+                        return Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
+                    }
+                }
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
