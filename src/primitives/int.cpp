@@ -118,6 +118,9 @@ std::shared_ptr<Obj> Int::copy(void) {
 }
 
 bool Int::eq(std::shared_ptr<Obj> &other) {
+    if (other->type() == Type::Void)
+        return true;
+
     if (other->type() != Type::Int)
         return false;
     return this->value() == dynamic_cast<Int *>(other.get())->value();

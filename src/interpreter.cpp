@@ -235,7 +235,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         return var->value();
     }
     else if (er.is_wildcard())
-        assert(false && "unimplemented");
+        return std::make_shared<earl::value::Void>();
     else
         assert(false);
 }
