@@ -876,15 +876,13 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
                         else
                             ctx->variable_remove(tmp_var->id());
                     }
-                    else {
+                    else
                         // It is `some`, but it does not have a variable
                         goto not_some;
-                    }
                 }
-                else {
+                else
                     // It is not `some`
                     goto not_some;
-                }
             }
             else {
             not_some:
