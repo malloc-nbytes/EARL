@@ -268,13 +268,21 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         }
 
         else if (src[i] == '"') {
-            ++i;
-            std::string strlit = "";
-            while (src[i] != '"')
-                strlit += src[i++];
-            lexer->append(strlit, TokenType::Strlit, row, col, fp);
-            ++i;
-            col += 1 + strlit.size() + 1;
+            size_t strlit_len = consume_until(lexeme+1, [](const char c) {
+                return c == '"';
+            });
+            std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, strlit_len, TokenType::Strlit, row, col, filepath);
+            lexer->append(std::move(tok));
+            i += 1 + strlit_len + 1;
+            col += 1 + strlit_len + 1;
+
+            // ++i;
+            // std::string strlit = "";
+            // while (src[i] != '"')
+            //     strlit += src[i++];
+            // lexer->append(strlit, TokenType::Strlit, row, col, fp);
+            // ++i;
+            // col += 1 + strlit.size() + 1;
         }
 
         else if (src[i] == '\'') {
