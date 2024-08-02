@@ -306,15 +306,22 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         auto world = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
     }
+    else if (ctx->type() == CtxType::Class) {
+        UNIMPLEMENTED("eval_expr_term_mod_access:ctx->type() == CtxType::Class");
+    }
+    else if (ctx->type() == CtxType::Closure) {
+        auto world = dynamic_cast<ClosureCtx *>(ctx.get())->get_outer_world_owner();
+        ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
+    }
 
     std::shared_ptr<Ctx> &other_ctx = *ctx_ptr;
 
     std::visit([&](auto &&arg) {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-            right_er = Interpreter::eval_expr(arg.get(), *ctx_ptr, true);
+            right_er = Interpreter::eval_expr(arg.get(), other_ctx, true);
         else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-            right_er = Interpreter::eval_expr(arg.get(), *ctx_ptr, true);
+            right_er = Interpreter::eval_expr(arg.get(), other_ctx, true);
         else
             ERR(Err::Type::Internal,
                 "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");

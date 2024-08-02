@@ -161,6 +161,7 @@ struct ClosureCtx : public Ctx {
     ~ClosureCtx() = default;
 
     std::shared_ptr<Ctx> &get_owner(void);
+    std::shared_ptr<Ctx> &get_outer_world_owner(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;

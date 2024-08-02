@@ -155,3 +155,11 @@ ClosureCtx::closure_exists(const std::string &id) {
 }
 
 
+std::shared_ptr<Ctx> &ClosureCtx::get_outer_world_owner(void) {
+    if (m_owner && m_owner->type() == CtxType::Function)
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner();
+    else if (m_owner && m_owner->type() == CtxType::Class)
+        return dynamic_cast<ClassCtx *>(m_owner.get())->get_owner();
+    assert(m_owner);
+    return m_owner;
+}

@@ -1,13 +1,6 @@
 mod Main
 
-class Test [cl] {
-    cl = cl;
+import "other.earl"
 
-    fn test(a) {
-        this.cl(a);
-    }
-}
-
-
-
-
+let cl = |a, b| { return Other::sum(a, b); };
+println(cl(1, 2));
