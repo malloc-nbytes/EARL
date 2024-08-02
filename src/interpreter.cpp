@@ -526,10 +526,13 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         value = unpack_ER(rhs, ctx, ref);
 
+    if (stmt->m_id->lexeme() == "_")
+        return nullptr;
+
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
-    return std::make_shared<earl::value::Void>();
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>

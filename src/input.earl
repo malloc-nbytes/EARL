@@ -1,12 +1,2 @@
 mod Main
 
-let x = 5;
-let y = 5;
-
-match x {
-    1 when y == 5 -> { println("it is one"); }
-    2 -> { println("it is two"); }
-    3 | 4 -> { println("it is three or four"); }
-    5 -> { println("it is five"); }
-    _ -> { println("it is something else"); }
-}
