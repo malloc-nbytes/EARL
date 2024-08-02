@@ -150,7 +150,7 @@ static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_ar
     return args;
 }
 
-static Expr *parse_primary_expr(Lexer &lexer) {
+static Expr *parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Token *tok = nullptr;
     Expr *left = nullptr;
     Expr *right = nullptr;
@@ -216,6 +216,11 @@ static Expr *parse_primary_expr(Lexer &lexer) {
 
         } break;
         case TokenType::Pipe: {
+            // Workaround for when parsing a `match` statement since
+            // the individual branches can have `|` in arm. We want to
+            // fail here and let the callees handle it.
+            if (fail_on == '|')
+                return left;
             std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args = parse_closure_args(lexer);
             auto block = Parser::parse_stmt_block(lexer);
             return new ExprClosure(std::move(args), std::move(block));
@@ -250,14 +255,14 @@ static Expr *parse_primary_expr(Lexer &lexer) {
     return nullptr; // unreachable
 }
 
-static Expr *parse_multiplicative_expr(Lexer &lexer) {
-    Expr *lhs = parse_primary_expr(lexer);
+static Expr *parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_primary_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Asterisk
                    || cur->type() == TokenType::Forwardslash
                    || cur->type() == TokenType::Percent)) {
         std::unique_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_primary_expr(lexer);
+        Expr *rhs = parse_primary_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));
@@ -266,13 +271,13 @@ static Expr *parse_multiplicative_expr(Lexer &lexer) {
     return lhs;
 }
 
-static Expr *parse_additive_expr(Lexer &lexer) {
-    Expr *lhs = parse_multiplicative_expr(lexer);
+static Expr *parse_additive_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_multiplicative_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Plus
                    || cur->type() == TokenType::Minus)) {
         std::unique_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_multiplicative_expr(lexer);
+        Expr *rhs = parse_multiplicative_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));
@@ -281,8 +286,8 @@ static Expr *parse_additive_expr(Lexer &lexer) {
     return lhs;
 }
 
-static Expr *parse_equalitative_expr(Lexer &lexer) {
-    Expr *lhs = parse_additive_expr(lexer);
+static Expr *parse_equalitative_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_additive_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Equals
                    || cur->type() == TokenType::Greaterthan_Equals
@@ -291,7 +296,7 @@ static Expr *parse_equalitative_expr(Lexer &lexer) {
                    || cur->type() == TokenType::Lessthan
                    || cur->type() == TokenType::Bang_Equals)) {
         std::unique_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_additive_expr(lexer);
+        Expr *rhs = parse_additive_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));
@@ -300,13 +305,13 @@ static Expr *parse_equalitative_expr(Lexer &lexer) {
     return lhs;
 }
 
-static Expr *parse_logical_expr(Lexer &lexer) {
-    Expr *lhs = parse_equalitative_expr(lexer);
+static Expr *parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_equalitative_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Ampersand
                    || cur->type() == TokenType::Double_Pipe)) {
         std::unique_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_equalitative_expr(lexer);
+        Expr *rhs = parse_equalitative_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));
@@ -315,8 +320,8 @@ static Expr *parse_logical_expr(Lexer &lexer) {
     return lhs;
 }
 
-Expr *Parser::parse_expr(Lexer &lexer) {
-    return parse_logical_expr(lexer);
+Expr *Parser::parse_expr(Lexer &lexer, char fail_on) {
+    return parse_logical_expr(lexer, fail_on);
 }
 
 std::unique_ptr<StmtMut> Parser::parse_stmt_mut(Lexer &lexer) {
@@ -566,7 +571,7 @@ static std::unique_ptr<StmtMatch::Branch> parse_branch(Lexer &lexer) {
     std::unique_ptr<StmtBlock> block = nullptr;
 
     while (1) {
-        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
+        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer, /*fail_on=*/'|')));
         if (lexer.peek()->type() == TokenType::Pipe)
             lexer.discard();
         else

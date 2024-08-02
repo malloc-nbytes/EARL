@@ -78,7 +78,7 @@ namespace Parser {
     /// @note The precidence is as follows:
     /// logical -> equalitative -> additive -> multiplicative -> primary.
     /// @param lexer The lexer with the linked list of tokens
-    Expr *parse_expr(Lexer &lexer);
+    Expr *parse_expr(Lexer &lexer, char fail_on = '\0');
 
     /// @brief A utility function for the parsers
     /// to use to expect the next token to be an EARL keyword.

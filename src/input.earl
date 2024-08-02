@@ -1,15 +1,11 @@
 mod Main
 
-class T [init, x] {
-    lst = init + [99];
-    x = x;
+let x = 1;
 
-    fn constructor() {
-        println(init);
-        println(lst);
-    }
+match x {
+    1 -> { println("it is one"); }
+    2 -> { println("it is two"); }
+    3 | 4 -> { println("it is three or four"); }
+    5 when x == 5 -> { println("it is five"); }
+    _ -> { println("it is something else"); }
 }
-
-let a = 3;
-let t = T([1,2,3], a);
-
