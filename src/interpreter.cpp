@@ -159,18 +159,29 @@ static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx, bool from_outside) {
-    if (!ctx->function_exists(id))
-        ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
-    auto func = ctx->function_get(id);
 
-    if (from_outside && !func->is_pub()) {
-        ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
+    if (ctx->function_exists(id)) {
+        auto func = ctx->function_get(id);
+
+        if (from_outside && !func->is_pub())
+            ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
+
+        auto fctx = std::make_shared<FunctionCtx>(ctx);
+        func->load_parameters(params, fctx);
+        std::shared_ptr<Ctx> mask = fctx;
+        return Interpreter::eval_stmt_block(func->block(), mask);
+    }
+    else if (ctx->closure_exists(id)) {
+        auto cl = ctx->variable_get(id);
+        auto clctx = std::make_shared<ClosureCtx>(ctx);
+        auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+        clvalue->load_parameters(params, clctx);
+        std::shared_ptr<Ctx> mask = clctx;
+        return Interpreter::eval_stmt_block(clvalue->block(), mask);
     }
 
-    auto fctx = std::make_shared<FunctionCtx>(ctx);
-    func->load_parameters(params, fctx);
-    std::shared_ptr<Ctx> mask = fctx;
-    return Interpreter::eval_stmt_block(func->block(), mask);
+    ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
+    return nullptr; // unreachable
 }
 
 static std::vector<std::shared_ptr<earl::value::Obj>>
@@ -207,9 +218,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return eval_user_defined_function(er.id, params, ctx);
         return eval_user_defined_function(er.id, params, er.ctx);
     }
-    else if (er.is_literal()) {
+    else if (er.is_literal())
         return er.value;
-    }
     else if (er.is_ident()) {
         if (!ctx->variable_exists(er.id))
             ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
@@ -245,7 +255,7 @@ eval_expr_term_strlit(ExprStrLit *expr) {
 
 ER
 eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
-    std::function<std::shared_ptr<Ctx>(const std::string &, std::shared_ptr<Ctx> &ctx)> check_if_is_class
+    std::function<std::shared_ptr<Ctx>(const std::string &, std::shared_ptr<Ctx> &)> check_if_is_class
         = [&](const std::string &_id, std::shared_ptr<Ctx> &_ctx) -> std::shared_ptr<Ctx> {
         if (_ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(_ctx.get())->class_is_defined(_id))
             return _ctx;
@@ -253,6 +263,8 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref)
             return check_if_is_class(_id, dynamic_cast<ClassCtx *>(_ctx.get())->get_owner());
         if (_ctx->type() == CtxType::Function)
             return check_if_is_class(_id, dynamic_cast<FunctionCtx *>(_ctx.get())->get_owner());
+        if (_ctx->type() == CtxType::Closure)
+            return check_if_is_class(_id, dynamic_cast<ClosureCtx *>(_ctx.get())->get_owner());
         return nullptr;
     };
 
@@ -283,7 +295,6 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     ExprModAccess *mod_access = expr;
     ExprIdent     *left_ident = mod_access->m_expr_ident.get();
     const auto    &left_id    = left_ident->m_tok->lexeme();
-    // Expr          *right_expr = mod_access->m_right.get();
     ER right_er(std::shared_ptr<earl::value::Obj>{}, ERT::None);
 
     std::shared_ptr<Ctx> *ctx_ptr = nullptr;
@@ -416,6 +427,15 @@ eval_expr_term_none(ExprNone *expr) {
     return ER(value, ERT::Literal);
 }
 
+static ER
+eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::vector<std::pair<Token *, uint32_t>> args;
+    for (auto &entry : expr->m_args)
+        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    auto cl = std::make_shared<earl::value::Closure>(expr, std::move(args), ctx);
+    return ER(cl, ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -430,11 +450,10 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Array_Access: return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
     case ExprTermType::Bool:         return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr));
     case ExprTermType::None:         return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
-    case ExprTermType::Closure:      UNIMPLEMENTED("ExprTermType::Closure");
+    case ExprTermType::Closure:      return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
     case ExprTermType::Tuple:        UNIMPLEMENTED("ExprTermType::Tuple");
     default:                         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
     }
-
     assert(false && "unreachable");
     return ER(nullptr, ERT::None);
 }
@@ -490,10 +509,8 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         PackedERPreliminary perp(nullptr);
         value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
     }
-    else {
-        // value = rhs.value;
+    else
         value = unpack_ER(rhs, ctx, ref);
-    }
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);

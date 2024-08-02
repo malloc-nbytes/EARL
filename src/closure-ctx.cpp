@@ -29,30 +29,43 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-CtxType ClosureCtx::type(void) const {
+ClosureCtx::ClosureCtx(std::shared_ptr<Ctx> owner) : m_owner(owner) {}
+
+CtxType
+ClosureCtx::type(void) const {
     return CtxType::Closure;
 }
 
-void ClosureCtx::push_scope(void) {
+void
+ClosureCtx::push_scope(void) {
     m_scope.push();
     m_funcs.push();
 }
 
-void ClosureCtx::pop_scope(void) {
+void
+ClosureCtx::pop_scope(void) {
     m_scope.pop();
     m_funcs.pop();
 }
 
-void ClosureCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
+void
+ClosureCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     const std::string &id = var->id();
     m_scope.add(id, var);
 }
 
-bool ClosureCtx::variable_exists(const std::string &id) {
+bool
+ClosureCtx::variable_exists(const std::string &id) {
     bool res = false;
 
     if (m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->variable_exists(id);
+
+    if (m_owner && m_owner->type() == CtxType::World)
+        res = dynamic_cast<WorldCtx *>(m_owner.get())->variable_exists(id);
+
+    if (m_owner && m_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_exists(id);
 
     if (!res)
         res = m_scope.contains(id);
@@ -60,11 +73,18 @@ bool ClosureCtx::variable_exists(const std::string &id) {
     return res;
 }
 
-std::shared_ptr<earl::variable::Obj> ClosureCtx::variable_get(const std::string &id) {
+std::shared_ptr<earl::variable::Obj>
+ClosureCtx::variable_get(const std::string &id) {
     std::shared_ptr<earl::variable::Obj> var = nullptr;
 
     if (m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
+
+    if (m_owner && m_owner->type() == CtxType::World)
+        var = dynamic_cast<WorldCtx *>(m_owner.get())->variable_get(id);
+
+    if (m_owner && m_owner->type() == CtxType::Function)
+        var = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_get(id);
 
     if (!var)
         var = m_scope.get(id);
@@ -72,17 +92,20 @@ std::shared_ptr<earl::variable::Obj> ClosureCtx::variable_get(const std::string 
     return var;
 }
 
-void ClosureCtx::variable_remove(const std::string &id) {
+void
+ClosureCtx::variable_remove(const std::string &id) {
     assert(this->variable_exists(id));
     m_scope.remove(id);
 }
 
-void ClosureCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
+void
+ClosureCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     const std::string &id = func->id();
     m_funcs.add(id, func);
 }
 
-bool ClosureCtx::function_exists(const std::string &id) {
+bool
+ClosureCtx::function_exists(const std::string &id) {
     bool res = false;
 
     if (m_owner && m_owner->type() == CtxType::Class)
@@ -102,7 +125,8 @@ bool ClosureCtx::function_exists(const std::string &id) {
     return res;
 }
 
-std::shared_ptr<earl::function::Obj> ClosureCtx::function_get(const std::string &id) {
+std::shared_ptr<earl::function::Obj>
+ClosureCtx::function_get(const std::string &id) {
     std::shared_ptr<earl::function::Obj> func = nullptr;
 
     if (m_owner && m_owner->type() == CtxType::Class)
@@ -119,4 +143,15 @@ std::shared_ptr<earl::function::Obj> ClosureCtx::function_get(const std::string 
 
     return func;
 }
+
+std::shared_ptr<Ctx> &
+ClosureCtx::get_owner(void) {
+    return m_owner;
+}
+
+bool
+ClosureCtx::closure_exists(const std::string &id) {
+    UNIMPLEMENTED("ClosureCtx::closure_exists");
+}
+
 

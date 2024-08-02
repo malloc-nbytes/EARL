@@ -93,10 +93,18 @@ ClassCtx::function_get(const std::string &id) {
     return func;
 }
 
-void ClassCtx::function_debug_dump(void) const {
+void
+ClassCtx::function_debug_dump(void) const {
     m_funcs.debug_dump();
 }
 
-std::shared_ptr<Ctx> &ClassCtx::get_owner(void) {
+std::shared_ptr<Ctx> &
+ClassCtx::get_owner(void) {
     return m_owner;
 }
+
+bool
+ClassCtx::closure_exists(const std::string &id) {
+    UNIMPLEMENTED("ClassCtx::closure_exists");
+}
+

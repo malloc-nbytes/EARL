@@ -51,3 +51,7 @@ std::shared_ptr<Obj> Obj::copy(void) {
     return std::make_shared<Obj>(m_id, m_value->copy(), m_attrs);
 }
 
+earl::value::Type Obj::type(void) const {
+    return m_value->type();
+}
+

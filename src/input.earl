@@ -1,8 +1,22 @@
 mod Main
 
-let f = |a, b| {
+# class Test [cl] {
+#     cl = cl;
+
+#     fn test(a) {
+#         this.cl(a);
+#     }
+# }
+
+# let t = Test(|x| { println(x); });
+
+# t.test();
+
+let cl = |a, b| {
     return a+b;
 };
 
-println(f(1, 2));
-println(f(3, 4));
+println(cl(cl(1, 2), cl(3, 4)));
+
+
+

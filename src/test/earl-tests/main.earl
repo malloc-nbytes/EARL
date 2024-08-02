@@ -4,6 +4,73 @@ import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
 
+fn test_closure4() {
+    print("test_closure4... ");
+
+    let other_file_cl = |a, b| { return Other1::sum(a, b); };
+    assert(other_file_cl(1, 2) == 3);
+
+    print("ok");
+}
+
+fn test_closure3() {
+    print("test_closure3... ");
+
+    let cl = |cl2, a| { return cl2(a); };
+
+    assert(cl(|x| { return x; }, 9) == 9);
+
+    println("ok");
+}
+
+fn test_closure2() {
+    print("test_closure2 ...");
+
+    fn __take_closure(cl, a, b) {
+        return cl(a, b);
+    }
+
+    let cl = |a, b| { return a+b; };
+
+    assert(__take_closure(cl, 1, 2) == 3);
+    assert(__take_closure(cl, 3, 4) == 7);
+    assert(__take_closure(|a, b| { return a == b; }, 3, 4) == false);
+    assert(__take_closure(|a, b| { return some(a+b); }, 4, 1) == some(5));
+
+    assert(cl(cl(1, 2), cl(3, 4)) == 10);
+
+    let count_evens = |lst| {
+        let res = [];
+        for i in 0..len(lst) {
+            if lst[i] % 2 == 0 {
+                res.append(some(lst[i]));
+            }
+        }
+        return res;
+    };
+
+    assert(count_evens([1,2,3,4,5]) == [some(2),some(4)]);
+
+    println("ok");
+}
+
+fn test_closure1() {
+    print("test_closure1... ");
+
+    let cl = |x| { return x; };
+
+    assert(cl(12) == 12);
+
+    let cl2 = |x, y| {
+        return x+y;
+    };
+
+    let s = cl2(1, 2);
+    assert(s == 3);
+
+    println("ok");
+}
+
 fn test_mutating_option_values() {
     print("test_mutating_option_values... ");
 
@@ -582,14 +649,14 @@ fn main() {
     test_function_chaining();
     test_len_intrinsic1();
     test_len_intrinsic2();
-    # test_list_rev_intrinsic1();
-    # test_list_rev_intrinsic2();
+    test_list_rev_intrinsic1();
+    test_list_rev_intrinsic2();
     test_list_append_intrinsic1();
-    # test_list_append_intrinsic2();
+    test_list_append_intrinsic2();
     test_list_append_intrinsic3();
     test_basic_import1();
     test_basic_import2();
-    # test_member_intrinsic_pop1();
+    test_member_intrinsic_pop1();
     test_list_access1();
     test_list_access2();
     test_reference1();
@@ -607,8 +674,12 @@ fn main() {
     test_none_values1();
     test_none_values2();
     test_mutating_option_values();
+    test_closure1();
+    test_closure2();
+    # test_closure3(); // unimplemented
+    # test_closure4(); // segfault
 
-    # TestStd.test_std();
+    # TestStd::test_std();
 }
 
 let __world_var_int = 99;

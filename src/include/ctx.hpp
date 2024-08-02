@@ -60,6 +60,8 @@ struct Ctx {
     virtual bool function_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::function::Obj> function_get(const std::string &id) = 0;
 
+    virtual bool closure_exists(const std::string &id) = 0;
+
     SharedScope<std::string, earl::variable::Obj> m_scope;
     SharedScope<std::string, earl::function::Obj> m_funcs;
 };
@@ -82,6 +84,8 @@ struct WorldCtx : public Ctx {
     StmtClass *class_get(const std::string &id);
     void debug_dump_defined_classes(void) const;
 
+    void debug_dump_variables(void) const;
+
     CtxType type(void) const override;
     void push_scope(void) override;
     void pop_scope(void) override;
@@ -92,6 +96,7 @@ struct WorldCtx : public Ctx {
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
 
 private:
     std::string m_mod;
@@ -122,6 +127,7 @@ struct FunctionCtx : public Ctx {
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -144,12 +150,18 @@ struct ClassCtx : public Ctx {
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
 };
 
 struct ClosureCtx : public Ctx {
+    ClosureCtx(std::shared_ptr<Ctx> owner);
+    ~ClosureCtx() = default;
+
+    std::shared_ptr<Ctx> &get_owner(void);
+
     CtxType type(void) const override;
     void push_scope(void) override;
     void pop_scope(void) override;
@@ -160,6 +172,7 @@ struct ClosureCtx : public Ctx {
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

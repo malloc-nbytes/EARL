@@ -182,4 +182,11 @@ std::shared_ptr<Ctx> &FunctionCtx::get_outer_world_owner(void) {
     return m_owner;
 }
 
+bool
+FunctionCtx::closure_exists(const std::string &id) {
+    auto f = m_scope.get(id);
+    if (!f)
+        return false;
+    return f->type() == earl::value::Type::Closure;
+}
 

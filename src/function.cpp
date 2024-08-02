@@ -82,3 +82,4 @@ Obj *
 Obj::copy(void) {
     UNIMPLEMENTED("Obj::copy (function)");
 }
+

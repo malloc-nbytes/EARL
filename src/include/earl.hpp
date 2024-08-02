@@ -202,12 +202,13 @@ namespace earl {
         };
 
         struct Closure : public Obj {
-            Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params);
+            Closure(ExprClosure *expr_closure,
+                    std::vector<std::pair<Token *, uint32_t>> params,
+                    std::shared_ptr<Ctx> owner);
 
             StmtBlock *block(void);
-            void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
-            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, Ctx &ctx);
-            bool has_local(const std::string &id);
+            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> ctx);
+            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -218,11 +219,10 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
 
-            std::vector<SharedScope<std::string, variable::Obj>> m_local;
-
         private:
             ExprClosure *m_expr_closure;
             std::vector<std::pair<Token *, uint32_t>> m_params;
+            std::shared_ptr<Ctx> m_owner;
         };
 
         /// @brief The structure that represents EARL lists.
