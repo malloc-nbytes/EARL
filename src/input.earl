@@ -1,8 +1,12 @@
 mod Main
 
-let x = 1;
-
-match x {
-    _ -> { println("here"); }
-    1 -> { println("should not print"); }
+fn test() {
+    fn inner(i) {
+        if i == 5 { return i; }
+        return inner(i+1);
+    }
+    inner(0);
 }
+
+println(test());
+

@@ -4,6 +4,19 @@ import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
 
+fn test_nested_func1() {
+    print("test_nested_func1... ");
+    fn test() {
+        fn inner(i) {
+            if i == 5 { return i; }
+            return inner(i+1);
+        }
+        inner(0);
+    }
+    assert(test() == 5);
+    println("ok");
+}
+
 fn test_match1() {
     print("test_match1... ");
 
@@ -692,6 +705,7 @@ fn main() {
     test_closure3();
     test_closure4();
     test_match1();
+    test_nested_func1();
 
     # TestStd::test_std();
 }

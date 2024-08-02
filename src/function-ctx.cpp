@@ -30,6 +30,8 @@
 #include "err.hpp"
 
 FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner) {
+    m_immediate_owner = owner;
+
     // TODO: check if function is @world, copy variables
     // from @world scope to this function's scope.
     std::shared_ptr<Ctx> it = owner;
@@ -111,15 +113,19 @@ bool
 FunctionCtx::function_exists(const std::string &id) {
     bool res = false;
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    // Handle recurive nested functions.
+    if (m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_exists(id);
+
+    if (!res && m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->function_exists(id);
 
     // May be in recursive chain, keep going backwards until
     // we hit the @world scope.
-    if (m_owner && m_owner->type() == CtxType::Function)
+    if (!res && m_owner && m_owner->type() == CtxType::Function)
         res = dynamic_cast<FunctionCtx *>(m_owner.get())->function_exists(id);
 
-    if (m_owner->type() == CtxType::World)
+    if (!res && m_owner->type() == CtxType::World)
         res = dynamic_cast<WorldCtx *>(m_owner.get())->function_exists(id);
 
     if (!res)
@@ -133,13 +139,16 @@ std::shared_ptr<earl::function::Obj>
 FunctionCtx::function_get(const std::string &id) {
     std::shared_ptr<earl::function::Obj> func = nullptr;
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    if (m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
+        func = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_get(id);
+
+    if (!func && m_owner && m_owner->type() == CtxType::Class)
         func = dynamic_cast<ClassCtx *>(m_owner.get())->function_get(id);
 
-    if (m_owner && m_owner->type() == CtxType::Function)
+    if (!func && m_owner && m_owner->type() == CtxType::Function)
         func = dynamic_cast<FunctionCtx *>(m_owner.get())->function_get(id);
 
-    if (m_owner->type() == CtxType::World)
+    if (!func && m_owner->type() == CtxType::World)
         func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
 
     if (!func)

@@ -130,7 +130,8 @@ struct FunctionCtx : public Ctx {
     bool closure_exists(const std::string &id) override;
 
 private:
-    std::shared_ptr<Ctx> m_owner;
+    std::shared_ptr<Ctx> m_owner; // The MAIN owner
+    std::shared_ptr<Ctx> m_immediate_owner;
 };
 
 struct ClassCtx : public Ctx {

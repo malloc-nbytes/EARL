@@ -165,13 +165,10 @@ static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx, bool from_outside) {
-
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
-
         if (from_outside && !func->is_pub())
             ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
-
         auto fctx = std::make_shared<FunctionCtx>(ctx);
         func->load_parameters(params, fctx);
         std::shared_ptr<Ctx> mask = fctx;
@@ -265,6 +262,8 @@ eval_expr_term_strlit(ExprStrLit *expr) {
 
 ER
 eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+
+    // Checks if `_id` is a class in the @world scope.
     std::function<std::shared_ptr<Ctx>(const std::string &, std::shared_ptr<Ctx> &)> check_if_is_class
         = [&](const std::string &_id, std::shared_ptr<Ctx> &_ctx) -> std::shared_ptr<Ctx> {
         if (_ctx->type() == CtxType::World && dynamic_cast<WorldCtx *>(_ctx.get())->class_is_defined(_id))
@@ -739,13 +738,6 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
     ER match_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, true);
     auto match_value = unpack_ER(match_er, ctx, true);
-
-    // if (match_value->type() == earl::value::Type::Closure) {
-    //     auto close = dynamic_cast<earl::value::Closure *>(match_value.get());
-    //     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
-    //     close->load_parameters(params, ctx);
-    //     match_value = close->call(params, ctx);
-    // }
 
     // Go through the branches
     for (size_t i = 0; i < stmt->m_branches.size(); ++i) {
