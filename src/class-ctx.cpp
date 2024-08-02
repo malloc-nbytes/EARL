@@ -105,6 +105,9 @@ ClassCtx::get_owner(void) {
 
 bool
 ClassCtx::closure_exists(const std::string &id) {
-    UNIMPLEMENTED("ClassCtx::closure_exists");
+    auto f = m_scope.get(id);
+    if (!f)
+        return false;
+    return f->type() == earl::value::Type::Closure;
 }
 
