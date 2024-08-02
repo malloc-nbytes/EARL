@@ -151,11 +151,14 @@ ClosureCtx::get_owner(void) {
 
 bool
 ClosureCtx::closure_exists(const std::string &id) {
-    UNIMPLEMENTED("ClosureCtx::closure_exists");
+    auto f = m_scope.get(id);
+    if (!f)
+        return false;
+    return f->type() == earl::value::Type::Closure;
 }
 
-
-std::shared_ptr<Ctx> &ClosureCtx::get_outer_world_owner(void) {
+std::shared_ptr<Ctx> &
+ClosureCtx::get_outer_world_owner(void) {
     if (m_owner && m_owner->type() == CtxType::Function)
         return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner();
     else if (m_owner && m_owner->type() == CtxType::Class)

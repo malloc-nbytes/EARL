@@ -10,7 +10,7 @@ fn test_closure4() {
     let other_file_cl = |a, b| { return Other1::sum(a, b); };
     assert(other_file_cl(1, 2) == 3);
 
-    print("ok");
+    println("ok");
 }
 
 fn test_closure3() {
@@ -676,8 +676,8 @@ fn main() {
     test_mutating_option_values();
     test_closure1();
     test_closure2();
-    # test_closure3(); // unimplemented
-    # test_closure4(); // segfault
+    test_closure3();
+    test_closure4();
 
     # TestStd::test_std();
 }

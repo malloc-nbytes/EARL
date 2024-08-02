@@ -1,6 +1,3 @@
 mod Main
 
-import "other.earl"
 
-let cl = |a, b| { return Other::sum(a, b); };
-println(cl(1, 2));
