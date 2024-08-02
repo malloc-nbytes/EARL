@@ -161,10 +161,80 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
     return klass;
 }
 
+static std::vector<std::shared_ptr<earl::value::Obj>>
+evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, bool ref) {
+    std::vector<std::shared_ptr<earl::value::Obj>> res = {};
+    for (size_t i = 0; i < funccall->m_params.size(); ++i) {
+        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, ref);
+        res.push_back(unpack_ER(er, ctx, ref));
+    }
+    return res;
+}
+
+static std::vector<std::shared_ptr<earl::value::Obj>>
+evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
+                                   std::shared_ptr<earl::function::Obj> &func_proper,
+                                   std::shared_ptr<Ctx> ctx) {
+    std::vector<std::shared_ptr<earl::value::Obj>> res = {};
+    std::vector<int> refs = {};
+    for (size_t i = 0; i < func_proper->params_len(); ++i) {
+        if (func_proper->param_at_is_ref(i))
+            refs.push_back(1);
+        else
+            refs.push_back(0);
+    }
+
+    assert(refs.size() == funccall->m_params.size());
+    for (size_t i = 0; i < funccall->m_params.size(); ++i) {
+        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
+        if (refs[i])
+            res.push_back(unpack_ER(er, ctx, true));
+        else
+            res.push_back(unpack_ER(er, ctx, false));
+    }
+    return res;
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_user_defined_function_wo_params(const std::string &id,
+                                     ExprFuncCall *funccall,
+                                     std::shared_ptr<Ctx> &funccall_ctx,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     bool from_outside = false) {
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    std::vector<int> refs = {};
+
+    if (ctx->function_exists(id)) {
+        auto func = ctx->function_get(id);
+        if (from_outside && !func->is_pub())
+            ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
+
+        params = evaluate_function_parameters_wrefs(funccall, func, funccall_ctx);
+
+        auto fctx = std::make_shared<FunctionCtx>(ctx);
+        func->load_parameters(params, fctx);
+        std::shared_ptr<Ctx> mask = fctx;
+        return Interpreter::eval_stmt_block(func->block(), mask);
+    }
+    else if (ctx->closure_exists(id)) {
+        auto cl = ctx->variable_get(id);
+        auto clctx = std::make_shared<ClosureCtx>(ctx);
+        auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+        // params = evaluate_function_parameters_wrefs(funccall, func, funccall_ctx);
+        clvalue->load_parameters(params, clctx);
+        std::shared_ptr<Ctx> mask = clctx;
+        return Interpreter::eval_stmt_block(clvalue->block(), mask);
+    }
+
+    ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
+    return nullptr; // unreachable
+}
+
 static std::shared_ptr<earl::value::Obj>
 eval_user_defined_function(const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx, bool from_outside) {
+                           std::shared_ptr<Ctx> &ctx,
+                           bool from_outside) {
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
         if (from_outside && !func->is_pub())
@@ -185,16 +255,6 @@ eval_user_defined_function(const std::string &id,
 
     ERR_WARGS(Err::Type::Undeclared, "function `%s` has not been defined", id.c_str());
     return nullptr; // unreachable
-}
-
-static std::vector<std::shared_ptr<earl::value::Obj>>
-evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, bool ref) {
-    std::vector<std::shared_ptr<earl::value::Obj>> res = {};
-    for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-        ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, ref);
-        res.push_back(unpack_ER(er, ctx, ref));
-    }
-    return res;
 }
 
 static std::shared_ptr<earl::value::Obj>
@@ -219,7 +279,11 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
         if (ctx->type() == CtxType::Class)
             return eval_user_defined_function(er.id, params, ctx);
-        return eval_user_defined_function(er.id, params, er.ctx);
+
+        // We need to have this function to gen the parameters so we
+        // know which ones need to be taken as a reference. NOTE: The
+        // routine above this may need this change as well.
+        return eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
     }
     else if (er.is_literal())
         return er.value;

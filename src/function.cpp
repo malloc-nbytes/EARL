@@ -83,3 +83,7 @@ Obj::copy(void) {
     UNIMPLEMENTED("Obj::copy (function)");
 }
 
+bool
+Obj::param_at_is_ref(size_t i) const {
+    return (m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0;
+}

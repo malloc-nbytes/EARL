@@ -1,12 +1,10 @@
 mod Main
 
-fn test() {
-    fn inner(i) {
-        if i == 5 { return i; }
-        return inner(i+1);
-    }
-    inner(0);
+fn refer(@ref i) {
+    i = 99;
 }
 
-println(test());
+let i = 0;
+refer(i);
 
+println(i);
