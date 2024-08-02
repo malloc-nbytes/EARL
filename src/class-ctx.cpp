@@ -54,12 +54,25 @@ ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 
 bool
 ClassCtx::variable_exists(const std::string &id) {
-    return m_scope.contains(id);
+    bool res = m_scope.contains(id);
+    if (!res)
+        res = __m_class_constructor_tmp_args.find(id)
+            != __m_class_constructor_tmp_args.end();
+    return res;
 }
 
 std::shared_ptr<earl::variable::Obj>
 ClassCtx::variable_get(const std::string &id) {
-    return m_scope.get(id);
+    auto var = m_scope.get(id);
+
+    // ONLY USED FOR THE CONSTRUCTOR IF IT NEEDS IT!
+    if (!var && __m_class_constructor_tmp_args.size() != 0) {
+        auto it = __m_class_constructor_tmp_args.find(id);
+        if (it != __m_class_constructor_tmp_args.end())
+            var = it->second;
+    }
+
+    return var;
 }
 
 void ClassCtx::variable_remove(const std::string &id) {
@@ -109,5 +122,21 @@ ClassCtx::closure_exists(const std::string &id) {
     if (!f)
         return false;
     return f->type() == earl::value::Type::Closure;
+}
+
+void
+ClassCtx::fill___m_class_constructor_tmp_args(std::shared_ptr<earl::variable::Obj> &var) {
+    const std::string &id = var->id();
+    __m_class_constructor_tmp_args.insert({var->id(), var});
+}
+
+void
+ClassCtx::clear___m_class_constructor_tmp_args(void) {
+    __m_class_constructor_tmp_args.clear();
+}
+
+std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
+ClassCtx::get___m_class_constructor_tmp_args(void) {
+    return __m_class_constructor_tmp_args;
 }
 

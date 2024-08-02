@@ -1,3 +1,15 @@
 mod Main
 
+class T [init, x] {
+    lst = init + [99];
+    x = x;
+
+    fn constructor() {
+        println(init);
+        println(lst);
+    }
+}
+
+let a = 3;
+let t = T([1,2,3], a);
 

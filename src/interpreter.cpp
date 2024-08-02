@@ -125,17 +125,20 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
 
     auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
-    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> buffer;
-
     // Add the constructor arguments to a temporary pushed scope
     for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
         auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].get(), params[i]);
-        buffer.insert({var->id(), var});
+
+        // MAKE SURE TO CLEAR AT THE END OF THIS FUNC!
+        class_ctx->fill___m_class_constructor_tmp_args(var);
     }
 
     // Eval member variables
     for (auto &member : class_stmt->m_members)
-        (void)eval_stmt_let_wcustom_buffer(member.get(), buffer, klass->ctx(), ref);
+        (void)eval_stmt_let_wcustom_buffer(member.get(),
+                                           class_ctx->get___m_class_constructor_tmp_args(),
+                                           klass->ctx(),
+                                           ref);
 
     const std::string constructor_id = "constructor";
     bool has_constructor = false;
@@ -151,6 +154,9 @@ eval_class_instantiation(const std::string &id, std::vector<std::shared_ptr<earl
         std::vector<std::shared_ptr<earl::value::Obj>> unused = {};
         (void)eval_user_defined_function(constructor_id, unused, klass->ctx());
     }
+
+    // CLEARED!
+    class_ctx->clear___m_class_constructor_tmp_args();
 
     return klass;
 }

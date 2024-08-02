@@ -139,6 +139,10 @@ struct ClassCtx : public Ctx {
 
     std::shared_ptr<Ctx> &get_owner(void);
     void function_debug_dump(void) const;
+    void fill___m_class_constructor_tmp_args(std::shared_ptr<earl::variable::Obj> &var);
+    void clear___m_class_constructor_tmp_args(void);
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
+    get___m_class_constructor_tmp_args(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -154,6 +158,12 @@ struct ClassCtx : public Ctx {
 
 private:
     std::shared_ptr<Ctx> m_owner;
+
+    // Used in the [x, y, ..., N] arguments when creating a new class.
+    // This should only be available for the duration of eval_class_instantiation()
+    // for the class members as well as providing visibility to the constructor().
+    // Then it should be cleared.
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> __m_class_constructor_tmp_args;
 };
 
 struct ClosureCtx : public Ctx {
