@@ -30,6 +30,18 @@ fn test_match1() {
     println("ok");
 }
 
+fn test_closure5() {
+    print("test_closure5... ");
+
+    let cl1 = |x| {
+        if x == 5 { return x; }
+        return cl1(x+1);
+    };
+    assert(cl1(0));
+
+    println("ok");
+}
+
 fn test_closure4() {
     print("test_closure4... ");
 
@@ -704,6 +716,7 @@ fn main() {
     test_closure2();
     test_closure3();
     test_closure4();
+    test_closure5();
     test_match1();
     test_nested_func1();
 

@@ -61,11 +61,14 @@ ClosureCtx::variable_exists(const std::string &id) {
     if (m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->variable_exists(id);
 
-    if (m_owner && m_owner->type() == CtxType::World)
+    if (!res && m_owner && m_owner->type() == CtxType::World)
         res = dynamic_cast<WorldCtx *>(m_owner.get())->variable_exists(id);
 
-    if (m_owner && m_owner->type() == CtxType::Function)
+    if (!res && m_owner && m_owner->type() == CtxType::Function)
         res = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_exists(id);
+
+    if (!res && m_owner && m_owner->type() == CtxType::Closure)
+        res = dynamic_cast<ClosureCtx *>(m_owner.get())->variable_exists(id);
 
     if (!res)
         res = m_scope.contains(id);
@@ -80,11 +83,14 @@ ClosureCtx::variable_get(const std::string &id) {
     if (m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
 
-    if (m_owner && m_owner->type() == CtxType::World)
+    if (!var && m_owner && m_owner->type() == CtxType::World)
         var = dynamic_cast<WorldCtx *>(m_owner.get())->variable_get(id);
 
-    if (m_owner && m_owner->type() == CtxType::Function)
+    if (!var && m_owner && m_owner->type() == CtxType::Function)
         var = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_get(id);
+
+    if (!var && m_owner && m_owner->type() == CtxType::Closure)
+        var = dynamic_cast<ClosureCtx *>(m_owner.get())->variable_get(id);
 
     if (!var)
         var = m_scope.get(id);
@@ -152,6 +158,24 @@ ClosureCtx::get_owner(void) {
 bool
 ClosureCtx::closure_exists(const std::string &id) {
     auto f = m_scope.get(id);
+
+    if ((!f || f->type() != earl::value::Type::Closure) && m_owner && m_owner->type() == CtxType::World) {
+        bool maybe_world = dynamic_cast<WorldCtx *>(m_owner.get())->closure_exists(id);
+        if (maybe_world)
+            return true;
+    }
+
+    if ((!f || f->type() != earl::value::Type::Closure) && m_owner && m_owner->type() == CtxType::Function) {
+        bool maybe_func = dynamic_cast<FunctionCtx *>(m_owner.get())->closure_exists(id);
+        if (maybe_func)
+            return true;
+    }
+    if ((!f || f->type() != earl::value::Type::Closure) && m_owner && m_owner->type() == CtxType::Closure) {
+        bool maybe_cl = dynamic_cast<ClosureCtx *>(m_owner.get())->closure_exists(id);
+        if (maybe_cl)
+            return true;
+    }
+
     if (!f)
         return false;
     return f->type() == earl::value::Type::Closure;
@@ -166,3 +190,19 @@ ClosureCtx::get_outer_world_owner(void) {
     assert(m_owner);
     return m_owner;
 }
+
+void
+ClosureCtx::assert_variable_does_not_exist(const std::string &id) const {
+    if (m_scope.contains(id))
+        goto bad;
+    if (m_owner && m_owner->type() == CtxType::Function)
+        if (dynamic_cast<FunctionCtx *>(m_owner.get())->variable_exists(id))
+            goto bad;
+
+    return;
+
+bad:
+    ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
+}
+
+

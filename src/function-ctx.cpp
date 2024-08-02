@@ -199,3 +199,13 @@ FunctionCtx::closure_exists(const std::string &id) {
     return f->type() == earl::value::Type::Closure;
 }
 
+void
+FunctionCtx::debug_dump_variables(void) const {
+    std::cout << "DEBUG DUMPING VARS" << std::endl;
+    m_scope.debug_dump();
+}
+
+void
+FunctionCtx::assert_variable_does_not_exist(const std::string &id) const {
+    UNIMPLEMENTED("FunctionCtx::assert_variable_does_not_exist");
+}

@@ -55,6 +55,7 @@ struct Ctx {
     virtual bool variable_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
     virtual void variable_remove(const std::string &id) = 0;
+    virtual void assert_variable_does_not_exist(const std::string &id) const = 0;
 
     virtual void function_add(std::shared_ptr<earl::function::Obj> func) = 0;
     virtual bool function_exists(const std::string &id) = 0;
@@ -93,6 +94,7 @@ struct WorldCtx : public Ctx {
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
     void variable_remove(const std::string &id) override;
+    void assert_variable_does_not_exist(const std::string &id) const override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
@@ -116,6 +118,7 @@ struct FunctionCtx : public Ctx {
     std::shared_ptr<Ctx> &get_outer_class_owner_ctx(void);
     std::shared_ptr<Ctx> &get_owner(void);
     std::shared_ptr<Ctx> &get_outer_world_owner(void);
+    void debug_dump_variables(void) const;
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -124,6 +127,7 @@ struct FunctionCtx : public Ctx {
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
     void variable_remove(const std::string &id) override;
+    void assert_variable_does_not_exist(const std::string &id) const override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
@@ -152,6 +156,7 @@ struct ClassCtx : public Ctx {
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
     void variable_remove(const std::string &id) override;
+    void assert_variable_does_not_exist(const std::string &id) const override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
@@ -181,6 +186,7 @@ struct ClosureCtx : public Ctx {
     bool variable_exists(const std::string &id) override;
     std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
     void variable_remove(const std::string &id) override;
+    void assert_variable_does_not_exist(const std::string &id) const override;
     void function_add(std::shared_ptr<earl::function::Obj> func) override;
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
