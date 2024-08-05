@@ -125,6 +125,7 @@ Intrinsics::call_member(const std::string &id,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
     __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
     auto &item = params[0];
@@ -144,8 +145,11 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_argv");
+    __INTR_ARGS_MUSTBE_SIZE(params, 0, "argv");
+    std::vector<std::shared_ptr<earl::value::Obj>> args = {};
+    for (size_t i = 0; i < earl_argv.size(); ++i)
+        args.push_back(std::make_shared<earl::value::Str>(earl_argv.at(i)));
+    return std::make_shared<earl::value::List>(args);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -176,22 +180,19 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic_type");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "type");
+    return std::make_shared<earl::value::Str>(earl::value::type_to_str(params[0]->type()));
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                     std::shared_ptr<Ctx> &ctx) {
     std::cout << "[EARL] UNIMPLEMENTED";
-
     if (params.size() != 0) {
         std::cout << ": ";
         Intrinsics::intrinsic_println(params, ctx);
     }
-
     exit(1);
-
     return nullptr; // unreachable
 }
 
