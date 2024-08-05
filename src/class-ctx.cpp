@@ -139,8 +139,3 @@ std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
 ClassCtx::get___m_class_constructor_tmp_args(void) {
     return __m_class_constructor_tmp_args;
 }
-
-void
-ClassCtx::assert_variable_does_not_exist(const std::string &id) const {
-    UNIMPLEMENTED("ClassCtx::assert_variable_does_not_exist");
-}

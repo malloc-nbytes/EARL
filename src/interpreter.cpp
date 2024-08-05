@@ -254,7 +254,10 @@ eval_user_defined_function_wo_params(const std::string &id,
     else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
-        auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+        earl::value::Closure *clvalue = nullptr;
+
+        clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+
         v = clvalue;
         params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
         clvalue->load_parameters(params, clctx);
@@ -614,12 +617,16 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
-    // if (ctx->variable_exists(stmt->m_id->lexeme())) {
-    //     Err::err_wtok(stmt->m_id.get());
-    //     ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
-    // }
+    if (ctx->type() == CtxType::Closure)
+        // Special case for when we declare a variable in a recursive closure.
+        dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(stmt->m_id->lexeme());
+    else {
+        if (ctx->variable_exists(stmt->m_id->lexeme())) {
+            Err::err_wtok(stmt->m_id.get());
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
+        }
+    }
 
-    ctx->assert_variable_does_not_exist(stmt->m_id->lexeme());
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);

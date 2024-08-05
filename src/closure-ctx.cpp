@@ -56,9 +56,9 @@ ClosureCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 
 bool
 ClosureCtx::variable_exists(const std::string &id) {
-    bool res = false;
+    bool res = m_scope.contains(id);
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    if (!res && m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->variable_exists(id);
 
     if (!res && m_owner && m_owner->type() == CtxType::World)
@@ -70,17 +70,14 @@ ClosureCtx::variable_exists(const std::string &id) {
     if (!res && m_owner && m_owner->type() == CtxType::Closure)
         res = dynamic_cast<ClosureCtx *>(m_owner.get())->variable_exists(id);
 
-    if (!res)
-        res = m_scope.contains(id);
-
     return res;
 }
 
 std::shared_ptr<earl::variable::Obj>
 ClosureCtx::variable_get(const std::string &id) {
-    std::shared_ptr<earl::variable::Obj> var = nullptr;
+    std::shared_ptr<earl::variable::Obj> var = m_scope.get(id);
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    if (!var && m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
 
     if (!var && m_owner && m_owner->type() == CtxType::World)
@@ -91,9 +88,6 @@ ClosureCtx::variable_get(const std::string &id) {
 
     if (!var && m_owner && m_owner->type() == CtxType::Closure)
         var = dynamic_cast<ClosureCtx *>(m_owner.get())->variable_get(id);
-
-    if (!var)
-        var = m_scope.get(id);
 
     return var;
 }
@@ -192,13 +186,14 @@ ClosureCtx::get_outer_world_owner(void) {
 }
 
 void
-ClosureCtx::assert_variable_does_not_exist(const std::string &id) const {
+ClosureCtx::assert_variable_does_not_exist_for_recursive_cl(const std::string &id) const {
     if (m_scope.contains(id))
         goto bad;
     if (m_owner && m_owner->type() == CtxType::Function)
         if (dynamic_cast<FunctionCtx *>(m_owner.get())->variable_exists(id))
             goto bad;
-
+    if (m_owner && m_owner->type() == CtxType::Class)
+        assert(false && "unimplemented");
     return;
 
 bad:

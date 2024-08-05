@@ -161,9 +161,3 @@ WorldCtx::debug_dump_variables(void) const {
     this->m_scope.debug_dump();
 }
 
-void
-WorldCtx::assert_variable_does_not_exist(const std::string &id) const {
-    if (m_scope.contains(id))
-        ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
-}
-
