@@ -69,28 +69,32 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wcustom_buffer(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
-                             std::shared_ptr<Ctx> &ctx, bool ref) {
-    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
+                             std::shared_ptr<Ctx> &ctx,
+                             bool ref) {
+
+    bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
 
     if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end())
         value = buffer.find(rhs.id)->second->value();
     else
         value = unpack_ER(rhs, ctx, ref);
 
-    std::shared_ptr<earl::variable::Obj> var = nullptr;
-
-    if (rhs.is_literal() || (rhs.is_ident() && ((stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0)))
-        // If the result is a literal, no need to copy.
-        // If the result is not a literal, but we have a `ref` attr, no need to copy.
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+    if (!rhs.is_class_instant()) {
+        PackedERPreliminary perp(nullptr);
+        value = unpack_ER(rhs, ctx, _ref, /*perp=*/&perp);
+    }
     else
-        // Copy the value
-        var = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value->copy(), stmt->m_attrs);
+        value = unpack_ER(rhs, ctx, _ref);
 
+    if (stmt->m_id->lexeme() == "_")
+        return nullptr;
+
+    std::shared_ptr<earl::variable::Obj> var
+        = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
-
-    return std::make_shared<earl::value::Void>();
+    return nullptr;
 }
 
 static std::shared_ptr<earl::value::Obj>
@@ -142,7 +146,7 @@ eval_class_instantiation(const std::string &id,
         (void)eval_stmt_let_wcustom_buffer(member.get(),
                                            class_ctx->get___m_class_constructor_tmp_args(),
                                            klass->ctx(),
-                                           ref);
+                                           true);
 
     const std::string constructor_id = "constructor";
     bool has_constructor = false;
@@ -315,7 +319,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
         // We need to have this function to gen the parameters so we
         // know which ones need to be taken as a reference. NOTE: The
-        // routine above this may need this change as well.
+        // routine(s) above this may need this change as well.
         return eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
     }
     else if (er.is_literal())
@@ -620,7 +624,6 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
             ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_id->lexeme().c_str());
         }
     }
-
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
@@ -938,25 +941,25 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
-    // for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-    //     Stmt *stmt = wctx->stmt_at(i);
-    //     if (i == 0 && stmt->stmt_type() != StmtType::Mod)
-    //         WARN("A `mod` statement is expected to be the first statement. "
-    //              "This may lead to undefined behavior and break functionality.");
-    //     if (stmt->stmt_type() == StmtType::Def
-    //         || stmt->stmt_type() == StmtType::Class
-    //         || stmt->stmt_type() == StmtType::Mod
-    //         || stmt->stmt_type() == StmtType::Import)
-    //         (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
-    // }
+    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+        Stmt *stmt = wctx->stmt_at(i);
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod)
+            WARN("A `mod` statement is expected to be the first statement. "
+                 "This may lead to undefined behavior and break functionality.");
+        if (stmt->stmt_type() == StmtType::Def
+            || stmt->stmt_type() == StmtType::Class
+            || stmt->stmt_type() == StmtType::Mod
+            || stmt->stmt_type() == StmtType::Import)
+            (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+    }
 
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        // if (stmt->stmt_type() != StmtType::Def
-        //     && stmt->stmt_type() != StmtType::Class
-        //     && stmt->stmt_type() == StmtType::Mod
-        //     && stmt->stmt_type() == StmtType::Import)
-        (void)Interpreter::eval_stmt(stmt, ctx);
+        if (stmt->stmt_type() != StmtType::Def
+            && stmt->stmt_type() != StmtType::Class
+            && stmt->stmt_type() != StmtType::Mod
+            && stmt->stmt_type() != StmtType::Import)
+            (void)Interpreter::eval_stmt(stmt, ctx);
     }
 
     return ctx;

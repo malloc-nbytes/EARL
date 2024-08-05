@@ -1,8 +1,2 @@
 mod Main
 
-import "std/list.earl"
-
-let lst = [5,4,3,2,1];
-List::quicksort(lst, |x, y| { return y > x; });
-println(lst);
-
