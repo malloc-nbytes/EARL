@@ -55,6 +55,7 @@ ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 bool
 ClassCtx::variable_exists(const std::string &id) {
     bool res = m_scope.contains(id);
+    // ONLY USED FOR THE CONSTRUCTOR IF IT NEEDS IT!
     if (!res)
         res = __m_class_constructor_tmp_args.find(id)
             != __m_class_constructor_tmp_args.end();

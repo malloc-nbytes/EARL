@@ -73,26 +73,20 @@ FunctionCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 
 bool
 FunctionCtx::variable_exists(const std::string &id) {
-    bool res = false;
+    bool res = m_scope.contains(id);
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    if (!res && m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->variable_exists(id);
-
-    if (!res)
-        res = m_scope.contains(id);
 
     return res;
 }
 
 std::shared_ptr<earl::variable::Obj>
 FunctionCtx::variable_get(const std::string &id) {
-    std::shared_ptr<earl::variable::Obj> var = nullptr;
+    std::shared_ptr<earl::variable::Obj> var = m_scope.get(id);
 
-    if (m_owner && m_owner->type() == CtxType::Class)
+    if (!var && m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
-
-    if (!var)
-        var = m_scope.get(id);
 
     return var;
 }

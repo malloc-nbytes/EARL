@@ -1,15 +1,8 @@
 mod Main
 
-# import "std/list.earl"
+import "std/list.earl"
 
-# let lst = [5,4,3,2,1];
-# List::quicksort(lst, |x, y| { return x > y; });
-# println(lst);
-
-let cl = |@ref x| {
-    x.append(9);
-};
-
-let lst = [1,2,3];
-cl(lst);
+let lst = [5,4,3,2,1];
+List::quicksort(lst, |x, y| { return y > x; });
 println(lst);
+
