@@ -25,6 +25,7 @@
 #ifndef AST_H
 #define AST_H
 
+#include <variant>
 #include <vector>
 #include <memory>
 #include <optional>
@@ -68,14 +69,17 @@ enum class ExprTermType {
     Func_Call,
     List_Literal,
     Get,
+    Mod_Access,
     Array_Access,
     Bool,
     None,
     Closure,
+    Tuple,
 };
 
 struct StmtDef;
 struct StmtBlock;
+struct ExprFuncCall;
 
 /// @brief Base class for an expression
 struct Expr {
@@ -95,11 +99,10 @@ struct ExprTerm : public Expr {
     virtual ExprTermType get_term_type() const = 0;
 };
 
-struct ExprGet : public ExprTerm {
-    std::unique_ptr<Expr> m_left;
-    std::unique_ptr<Expr> m_right;
+struct ExprTuple : public ExprTerm {
+    std::vector<std::unique_ptr<Expr>> m_exprs;
 
-    ExprGet(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
+    ExprTuple(std::vector<std::unique_ptr<Expr>> exprs);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -119,6 +122,26 @@ struct ExprIdent : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprIdent(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprGet : public ExprTerm {
+    std::unique_ptr<Expr> m_left;
+    std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
+
+    ExprGet(std::unique_ptr<Expr> left,
+            std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprModAccess : public ExprTerm {
+    std::unique_ptr<ExprIdent> m_expr_ident;
+    std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
+
+    ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
+                  std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -181,14 +204,15 @@ struct ExprClosure : public ExprTerm {
 
 /// @brief The Expression Function Call class
 struct ExprFuncCall : public ExprTerm {
-    /// @brief The token of the function call
-    std::unique_ptr<Token> m_id;
+    // Needs to be an expr to handle either
+    // ident or something like arr[0]().
+    std::unique_ptr<Expr> m_left;
 
     /// @brief A vector of expressions that is passed
     /// to the function call
     std::vector<std::unique_ptr<Expr>> m_params;
 
-    ExprFuncCall(std::unique_ptr<Token> id, std::vector<std::unique_ptr<Expr>> params);
+    ExprFuncCall(std::unique_ptr<Expr> id, std::vector<std::unique_ptr<Expr>> params);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

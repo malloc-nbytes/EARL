@@ -30,6 +30,7 @@
 ExprBinary::ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs)
     : m_lhs(std::move(lhs)), m_op(std::move(op)), m_rhs(std::move(rhs)) {}
 
-ExprType ExprBinary::get_type() const {
+ExprType
+ExprBinary::get_type() const {
     return ExprType::Binary;
 }

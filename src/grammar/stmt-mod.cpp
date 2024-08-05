@@ -29,7 +29,8 @@
 
 StmtMod::StmtMod(std::unique_ptr<Token> id) : m_id(std::move(id)) {}
 
-StmtType StmtMod::stmt_type() const {
+StmtType
+StmtMod::stmt_type() const {
     return StmtType::Mod;
 }
 

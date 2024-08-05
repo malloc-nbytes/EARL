@@ -29,55 +29,45 @@
 #include "err.hpp"
 #include "utils.hpp"
 
-earl::value::Obj *Intrinsics::intrinsic_member_split(earl::value::Obj *obj, std::vector<earl::value::Obj *> &delim, Ctx &ctx) {
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_str_member_functions = {
+    {"nth", &Intrinsics::intrinsic_member_nth},
+    {"back", &Intrinsics::intrinsic_member_back},
+    {"filter", &Intrinsics::intrinsic_member_filter},
+    {"foreach", &Intrinsics::intrinsic_member_foreach},
+    {"rev", &Intrinsics::intrinsic_member_rev},
+    {"append", &Intrinsics::intrinsic_member_append},
+    {"pop", &Intrinsics::intrinsic_member_pop},
+    {"split", &Intrinsics::intrinsic_member_split},
+};
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &delim,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    if (delim.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`split` member intrinsic expects 1 arguments but %zu were supplied",
-                  delim.size());
-    }
-
-    if (obj->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`split` member intrinsic is only defined for `str` types");
-    }
-
-    earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
+    __INTR_ARGS_MUSTBE_SIZE(delim, 1, "split");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(delim[0], earl::value::Type::Str, 1, "split");
+    auto str = dynamic_cast<earl::value::Str *>(obj.get());
     return str->split(delim[0]);
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_substr(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idxs, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj,
+                                    std::vector<std::shared_ptr<earl::value::Obj>> &idxs,
+                                    std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    earl::value::Obj *tmp = obj;
-
-    if (idxs.size() != 2) {
-        ERR_WARGS(Err::Type::Fatal, "`substr` member intrinsic expects 2 arguments but %zu were supplied",
-                  idxs.size());
-    }
-
-    if (obj->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`substr` member intrinsic is only defined for `str` types");
-    }
-
-    if (idxs[0]->type() != earl::value::Type::Int) {
-        ERR(Err::Type::Fatal, "argument 1 in `substr` expects an `int` value");
-    }
-
-    if (idxs[1]->type() != earl::value::Type::Int) {
-        ERR(Err::Type::Fatal, "argument 2 in `substr` expects an `int` value");
-    }
-
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idxs[0]);
-    auto *idx2 = dynamic_cast<earl::value::Int *>(idxs[1]);
-    return dynamic_cast<earl::value::Str *>(tmp)->substr(idx1, idx2);
+    (void)obj;
+    (void)idxs;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_substr");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_remove_lines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
-
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj,
+                                          std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                          std::shared_ptr<Ctx> &ctx) {
+    (void)obj;
+    (void)unused;
     (void)ctx;
-    assert(obj->type() == earl::value::Type::Str);
-    assert(unused.size() == 0);
-    auto *str = dynamic_cast<earl::value::Str *>(obj);
-    return str->remove_lines();
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
 }

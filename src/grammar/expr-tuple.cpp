@@ -25,46 +25,16 @@
 #include <cassert>
 #include <memory>
 
-#include "earl.hpp"
-#include "utils.hpp"
-#include "err.hpp"
+#include "ast.hpp"
 
-using namespace earl::value;
+ExprTuple::ExprTuple(std::vector<std::unique_ptr<Expr>> exprs) : m_exprs(std::move(exprs)) {}
 
-Module::Module(std::shared_ptr<Ctx> ctx) : m_value(ctx) {}
-
-std::shared_ptr<Ctx> &Module::value(void) {
-    UNIMPLEMENTED("Module::value");
+ExprType
+ExprTuple::get_type() const {
+    return ExprType::Term;
 }
 
-Type Module::type(void) const {
-    return Type::Module;
-}
-
-std::shared_ptr<Obj> Module::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Module::binop");
-}
-
-bool Module::boolean(void) {
-    UNIMPLEMENTED("Module::boolean");
-}
-
-void Module::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Module::mutate");
-}
-
-std::shared_ptr<Obj> Module::copy(void) {
-    UNIMPLEMENTED("Module::copy");
-}
-
-bool Module::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Module::eq");
-}
-
-std::string Module::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
+ExprTermType
+ExprTuple::get_term_type() const {
+    return ExprTermType::Tuple;
 }

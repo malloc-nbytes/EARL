@@ -1,7 +1,8 @@
+
 AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = earl
-earl_SOURCES = main.cpp arena.cpp lexer.cpp token.cpp utils.cpp parser.cpp ctx.cpp interpreter.cpp intrinsics.cpp err.cpp function.cpp variable.cpp types.cpp primitives/int.cpp primitives/str.cpp primitives/void.cpp primitives/list.cpp primitives/module.cpp primitives/class.cpp primitives/bool.cpp primitives/char.cpp primitives/file.cpp primitives/this.cpp primitives/option.cpp primitives/closure.cpp primitives/break.cpp member-intrinsics/file-intrinsics.cpp member-intrinsics/char-intrinsics.cpp member-intrinsics/option-intrinsics.cpp member-intrinsics/str-intrinsics.cpp member-intrinsics/list-intrinsics.cpp grammar/expr-array-access.cpp grammar/expr-binary.cpp grammar/expr-bool.cpp grammar/expr-charlit.cpp grammar/expr-closure.cpp grammar/expr-funccall.cpp grammar/expr-get.cpp grammar/expr-ident.cpp grammar/expr-intlit.cpp grammar/expr-listlit.cpp grammar/expr-none.cpp grammar/expr-strlit.cpp grammar/program.cpp grammar/stmt-block.cpp grammar/stmt-class.cpp grammar/stmt-def.cpp grammar/stmt-expr.cpp grammar/stmt-for.cpp grammar/stmt-if.cpp grammar/stmt-import.cpp grammar/stmt-let.cpp grammar/stmt-match.cpp grammar/stmt-mod.cpp grammar/stmt-mut.cpp grammar/stmt-return.cpp grammar/stmt-while.cpp grammar/stmt-break.cpp
+earl_SOURCES = main.cpp interpreter-evaluation-result.cpp closure-ctx.cpp world-ctx.cpp function-ctx.cpp class-ctx.cpp arena.cpp lexer.cpp token.cpp utils.cpp parser.cpp interpreter.cpp intrinsics.cpp err.cpp function.cpp variable.cpp types.cpp primitives/int.cpp primitives/str.cpp primitives/void.cpp primitives/list.cpp primitives/module.cpp primitives/bool.cpp primitives/char.cpp primitives/file.cpp primitives/option.cpp primitives/closure.cpp primitives/break.cpp primitives/class.cpp member-intrinsics/file-intrinsics.cpp member-intrinsics/char-intrinsics.cpp member-intrinsics/option-intrinsics.cpp member-intrinsics/str-intrinsics.cpp member-intrinsics/list-intrinsics.cpp grammar/expr-array-access.cpp grammar/expr-binary.cpp grammar/expr-bool.cpp grammar/expr-charlit.cpp grammar/expr-closure.cpp grammar/expr-funccall.cpp grammar/expr-get.cpp grammar/expr-ident.cpp grammar/expr-intlit.cpp grammar/expr-listlit.cpp grammar/expr-mod-access.cpp grammar/expr-none.cpp grammar/expr-strlit.cpp grammar/expr-tuple.cpp grammar/program.cpp grammar/stmt-block.cpp grammar/stmt-class.cpp grammar/stmt-def.cpp grammar/stmt-expr.cpp grammar/stmt-for.cpp grammar/stmt-if.cpp grammar/stmt-import.cpp grammar/stmt-let.cpp grammar/stmt-match.cpp grammar/stmt-mod.cpp grammar/stmt-mut.cpp grammar/stmt-return.cpp grammar/stmt-while.cpp grammar/stmt-break.cpp include/shared-scope.hpp
 
 include_HEADERS = std/io.earl std/linked-list.earl std/list.earl std/math.earl std/queue.earl std/set.earl std/stack.earl std/str.earl std/utils.earl std/os.earl
 
@@ -43,6 +44,11 @@ uninstall-hook:
 test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
 	cd test/earl-tests && ../../earl ./main.earl
+
+debug: clean
+	@echo "Building EARL in debug mode"
+	$(MAKE) CXXFLAGS='-O0 -DDEBUG -ggdb' CXX='$(CXX)'
+	mv ./earl earl-debug-build
 
 docs:
 	doxygen Doxyfile

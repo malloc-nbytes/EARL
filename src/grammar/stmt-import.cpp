@@ -30,6 +30,7 @@
 StmtImport::StmtImport(std::unique_ptr<Token> fp)
     : m_fp(std::move(fp)) {}
 
-StmtType StmtImport::stmt_type() const {
+StmtType
+StmtImport::stmt_type() const {
     return StmtType::Import;
 }

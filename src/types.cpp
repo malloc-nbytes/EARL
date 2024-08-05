@@ -40,32 +40,45 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Option, {earl::value::Type::Option}},
 };
 
-std::string earl::value::type_to_str(earl::value::Obj *obj) {
-    switch (obj->type()) {
-    case earl::value::Type::Int: return COMMON_EARLTY_INT32;
-    case earl::value::Type::Bool: return COMMON_EARLTY_BOOL;
-    case earl::value::Type::Char: return COMMON_EARLTY_CHAR;
-    case earl::value::Type::Str: return COMMON_EARLTY_STR;
-    case earl::value::Type::List: return COMMON_EARLTY_LIST;
-    case earl::value::Type::Class: return COMMON_EARLKW_CLASS;
-    case earl::value::Type::File: return COMMON_EARLTY_FILE;
-    case earl::value::Type::Closure: return COMMON_EARLTY_CLOSURE;
-    case earl::value::Type::Option: {
-        std::string res = "optional<";
-        auto *option = dynamic_cast<earl::value::Option *>(obj);
-        if (option->value()) {
-            res += type_to_str(option->value());
-        }
-        return res + ">";
-    } break;
-    default: ERR_WARGS(Err::Type::Fatal, "unknown type `%d`", (int)obj->type());
+std::string earl::value::type_to_str(earl::value::Type ty) {
+    switch (ty) {
+    case earl::value::Type::Int: return "int";
+    case earl::value::Type::Bool: return "bool";
+    case earl::value::Type::Char: return "char";
+    case earl::value::Type::Str: return "str";
+    case earl::value::Type::List: return "list";
+    case earl::value::Type::Void: return "void";
+    case earl::value::Type::Option: return "option";
+    default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
     }
 }
 
-bool earl::value::type_is_compatable(Obj *const obj1, Obj *const obj2) {
+const char *earl::value::type_to_cstr(earl::value::Type ty) {
+    return type_to_str(ty).c_str();
+}
+
+bool earl::value::type_is_compatable(const earl::value::Obj *const obj1, const earl::value::Obj *const obj2) {
     earl::value::Type ty1 = obj1->type();
     earl::value::Type ty2 = obj2->type();
 
+    if (ty1 == ty2)
+        return true;
+
+    auto it = type_map.find(ty1);
+    if (it != type_map.end()) {
+        const std::vector<earl::value::Type>& compatible_types = it->second;
+
+        for (auto compatible_type : compatible_types) {
+            if (ty2 == compatible_type) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool earl::value::type_is_compatable(earl::value::Type ty1, earl::value::Type ty2) {
     if (ty1 == ty2)
         return true;
 

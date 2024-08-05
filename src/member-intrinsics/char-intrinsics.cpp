@@ -32,19 +32,19 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-earl::value::Obj *Intrinsics::intrinsic_member_ascii(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    (void)ctx;
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_char_member_functions = {
+    {"ascii", &Intrinsics::intrinsic_member_ascii},
+};
 
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`ascii` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::Char) {
-        ERR(Err::Type::Fatal, "`ascii` member intrinsic is only defined for `char` types");
-    }
-
-    return
-        new earl::value::Int(static_cast<int>(dynamic_cast<earl::value::Char *>(obj)->value()));
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                   std::shared_ptr<Ctx> &ctx) {
+    assert(obj);
+    assert(obj->type() == earl::value::Type::Char);
+    auto char_ = dynamic_cast<earl::value::Char *>(obj.get());
+    int value = static_cast<int>(char_->value());
+    return std::make_shared<earl::value::Int>(value);
 }
 

@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -30,9 +31,9 @@
 
 using namespace earl::value;
 
-Option::Option(Obj *value) : m_value(value) {}
+Option::Option(std::shared_ptr<Obj> value) : m_value(value) {}
 
-Obj *Option::value(void) {
+std::shared_ptr<Obj> &Option::value(void) {
     return m_value;
 }
 
@@ -44,8 +45,9 @@ bool Option::is_none(void) const {
     return m_value == nullptr;
 }
 
-void Option::set_value(Obj *other) {
-    m_value = other;
+void Option::set_value(std::shared_ptr<Obj> other) {
+    (void)other;
+    UNIMPLEMENTED("Option::set_value");
 }
 
 /*** OVERRIDES ***/
@@ -53,24 +55,24 @@ Type Option::type(void) const {
     return Type::Option;
 }
 
-Obj *Option::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
+std::shared_ptr<Obj> Option::binop(Token *op, std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
 
     if (op->type() != TokenType::Double_Equals)
         ERR(Err::Type::Fatal, "the only support binary operations on option types is equality `==`");
 
-    auto *other2 = dynamic_cast<Option *>(other);
+    auto other2 = dynamic_cast<Option *>(other.get());
 
     if (this->is_none() && other2->is_none())
-        return new Bool(true);
+        return std::make_shared<Bool>(true);
 
     if (this->is_some() && other2->is_none())
-        return new Bool(false);
+        return std::make_shared<Bool>(false);
 
     if (this->is_none() && other2->is_some())
-        return new Bool(false);
+        return std::make_shared<Bool>(false);
 
     return this->value()->binop(op, other2->value());
 }
@@ -79,42 +81,26 @@ bool Option::boolean(void) {
     UNIMPLEMENTED("Option::boolean");
 }
 
-void Option::mutate(Obj *other) {
+void Option::mutate(const std::shared_ptr<Obj> &other) {
     if (other->type() != Type::Option) {
         ERR(Err::Type::Fatal, "tried to assign a raw value to an option type");
     }
 
-    auto *other2 = dynamic_cast<Option *>(other);
+    auto *other2 = dynamic_cast<Option *>(other.get());
 
-    if (other2->is_none()) {
+    if (other2->is_none())
         m_value = nullptr;
-    }
-    else {
+    else
         m_value = other2->value();
-    }
-
 }
 
-Obj *Option::copy(void) {
-    if (this->is_some()) {
-        return new Option(m_value->copy());
-    }
-    return new Option();
+std::shared_ptr<Obj> Option::copy(void) {
+    return std::make_shared<Option>(m_value);
 }
 
-bool Option::eq(Obj *other) {
-    if (other->type() != Type::Option)
-        return false;
-
-    auto *other2 = dynamic_cast<Option *>(other);
-
-    if (this->is_none() && other2->is_none())
-        return true;
-
-    if ((this->is_some() && other2->is_some()) == 0)
-        return false;
-
-    return this->value()->eq(other2->value());
+bool Option::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Option::eq");
 }
 
 std::string Option::to_cxxstring(void) {

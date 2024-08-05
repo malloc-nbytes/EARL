@@ -44,7 +44,7 @@ class T [init, compar] {
         unimplemented("Set.T.remove");
     }
 
-    @pub fn dump() {
+    @pub fn sdump() {
         this.__dump(this.root);
     }
 
@@ -69,14 +69,14 @@ class T [init, compar] {
         return true;
     }
 
-    fn __insert(@ref cur, value) {
+    fn __insert(@ref cur, v) {
         if cur.is_none() {
-            cur = some(Node(value));
+            cur = some(Node(v));
         }
 
-        match this.compar(value, cur.unwrap().value) {
-            2 -> { return this.__insert(cur.unwrap().right, value); }
-            1 -> { return this.__insert(cur.unwrap().left, value); }
+        match this.compar(cur.unwrap().value, v) {
+            2 -> { return this.__insert(cur.unwrap().right, v); }
+            1 -> { return this.__insert(cur.unwrap().left, v); }
         }
     }
 }

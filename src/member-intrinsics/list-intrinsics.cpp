@@ -35,144 +35,97 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-earl::value::Obj *Intrinsics::intrinsic_member_nth(earl::value::Obj *obj, std::vector<earl::value::Obj *> &idx, Ctx &ctx) {
-    (void)ctx;
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_list_member_functions = {
+    {"nth", &Intrinsics::intrinsic_member_nth},
+    {"back", &Intrinsics::intrinsic_member_back},
+    {"filter", &Intrinsics::intrinsic_member_filter},
+    {"foreach", &Intrinsics::intrinsic_member_foreach},
+    {"rev", &Intrinsics::intrinsic_member_rev},
+    {"append", &Intrinsics::intrinsic_member_append},
+    {"pop", &Intrinsics::intrinsic_member_pop},
+};
 
-    if (idx.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`nth` member intrinsic expects 1 argument but %zu were supplied",
-                  idx.size());
-    }
-
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
+                                 std::vector<std::shared_ptr<earl::value::Obj>> &idx,
+                                 std::shared_ptr<Ctx> &ctx) {
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
     if (obj->type() == earl::value::Type::List) {
-        earl::value::List *list = dynamic_cast<earl::value::List *>(obj);
+        earl::value::List *list = dynamic_cast<earl::value::List *>(obj.get());
         return list->nth(idx[0]);
     }
     else if (obj->type() == earl::value::Type::Str) {
-        earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj);
+        earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj.get());
         return str->nth(idx[0]);
     }
-    else {
+    else
         ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
-    }
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_back(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`back` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    return dynamic_cast<earl::value::List *>(obj)->back();
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_filter(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
-    if (closure.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`filter` member intrinsic expects 1 argument but %zu were supplied",
-                  closure.size());
-    }
-
-    if (closure[0]->type() != earl::value::Type::Closure) {
-        ERR(Err::Type::Fatal, "argument 1 in `filter` expects a `closure` value");
-    }
-
-    return dynamic_cast<earl::value::List *>(obj)->filter(closure.at(0), ctx);
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_foreach(earl::value::Obj *obj, std::vector<earl::value::Obj *> &closure, Ctx &ctx) {
-    if (closure.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`foreach` member intrinsic expects 1 argument but %zu were supplied",
-                  closure.size());
-    }
-
-    if (closure[0]->type() != earl::value::Type::Closure) {
-        ERR(Err::Type::Fatal, "argument 1 in `foreach` expects a `closure` value");
-    }
-
-    dynamic_cast<earl::value::List *>(obj)->foreach(closure.at(0), ctx);
-
-    return new earl::value::Void();
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_rev(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`rev` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::List) {
-        ERR(Err::Type::Fatal, "`rev` member intrinsic is only defined for `list` types");
-    }
-
-    auto *list = dynamic_cast<earl::value::List *>(obj);
-    list->rev();
-
-    return new earl::value::Void();
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_append(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    (void)ctx;
-
-    if (values.size() == 0) {
-        ERR_WARGS(Err::Type::Fatal, "`append` member intrinsic expects variadic arguments but %zu were supplied",
-                  values.size());
-    }
-
-    if (obj->type() != earl::value::Type::List) {
-        ERR(Err::Type::Fatal, "`append` member intrinsic is only defined for `list` types");
-    }
-
-    auto *lst = dynamic_cast<earl::value::List *>(obj);
-    return lst->append(values);
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_pop(earl::value::Obj *obj, std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    (void)ctx;
-
-    if (values.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`pop` member intrinsic expects 1 argument but %zu were supplied",
-                  values.size());
-    }
-
-    if (obj->type() != earl::value::Type::List && obj->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`pop` member intrinsic is only defined for `list` and `str` types");
-    }
-
-    if (obj->type() == earl::value::Type::List) {
-        auto *lst = dynamic_cast<earl::value::List *>(obj);
-        return lst->pop(values[0]);
-    }
-    else if (obj->type() == earl::value::Type::Str) {
-        auto *str = dynamic_cast<earl::value::Str *>(obj);
-        return str->pop(values[0]);
-    }
-
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
+    if (obj->type() == earl::value::Type::List)
+        return dynamic_cast<earl::value::List *>(obj.get())->back();
+    else if (obj->type() == earl::value::Type::Str)
+        return dynamic_cast<earl::value::Str *>(obj.get())->back();
     assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
-earl::value::Obj *Intrinsics::intrinsic_len(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
-    (void)expr;
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
+                                    std::vector<std::shared_ptr<earl::value::Obj>> &closure,
+                                    std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
+    (void)obj;
+    (void)closure;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_filter");
+}
 
-    if (params.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`len` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
-    }
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
+                                     std::vector<std::shared_ptr<earl::value::Obj>> &closure,
+                                     std::shared_ptr<Ctx> &ctx) {
+    (void)obj;
+    (void)closure;
+    (void)ctx;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_foreach");
+}
 
-    if (params[0]->type() != earl::value::Type::List && params[0]->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "`len` intrinsic is only defined for `list` and `str` types");
-    }
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
+                                 std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                 std::shared_ptr<Ctx> &ctx) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
+    dynamic_cast<earl::value::List *>(obj.get())->rev();
+    return nullptr;
+}
 
-    if (params[0]->type() == earl::value::Type::List) {
-        return new earl::value::Int(dynamic_cast<earl::value::List *>(params[0])->value().size());
-    }
-    else if (params[0]->type() == earl::value::Type::Str) {
-        return new earl::value::Int(dynamic_cast<earl::value::Str *>(params[0])->value().size());
-    }
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
+                                    std::vector<std::shared_ptr<earl::value::Obj>> &values,
+                                    std::shared_ptr<Ctx> &ctx) {
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append");
+    earl::value::List *lst = dynamic_cast<earl::value::List *>(obj.get());
+    for (auto &value : values)
+        lst->append(value);
+    return nullptr;
+}
 
-    ERR_WARGS(Err::Type::Fatal, "canot call `len` on unsupported type (%d)", (int)params[0]->type());
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
+                                 std::vector<std::shared_ptr<earl::value::Obj>> &values,
+                                 std::shared_ptr<Ctx> &ctx) {
+    __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
+    if (obj->type() == earl::value::Type::List)
+        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
+    else
+        assert(false && "unimplemented");
     return nullptr;
 }

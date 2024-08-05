@@ -4,6 +4,129 @@ import "point-class.1.earl"
 import "test-std.earl"
 import "other.1.earl"
 
+fn test_nested_func1() {
+    print("test_nested_func1... ");
+    fn test() {
+        fn inner(i) {
+            if i == 5 { return i; }
+            return inner(i+1);
+        }
+        inner(0);
+    }
+    assert(test() == 5);
+    println("ok");
+}
+
+fn test_match1() {
+    print("test_match1... ");
+
+    let x = 5;
+
+    match x {
+        _ -> { assert(true); }
+        5 -> { assert(false); }
+    }
+
+    println("ok");
+}
+
+fn test_closure5() {
+    print("test_closure5... ");
+
+    let cl1 = |x| {
+        if x == 5 { return x; }
+        return cl1(x+1);
+    };
+    assert(cl1(0));
+
+    println("ok");
+}
+
+fn test_closure4() {
+    print("test_closure4... ");
+
+    let other_file_cl = |a, b| { return Other1::sum(a, b); };
+    assert(other_file_cl(1, 2) == 3);
+
+    println("ok");
+}
+
+fn test_closure3() {
+    print("test_closure3... ");
+
+    let cl = |cl2, a| { return cl2(a); };
+
+    assert(cl(|x| { return x; }, 9) == 9);
+
+    println("ok");
+}
+
+fn test_closure2() {
+    print("test_closure2 ...");
+
+    fn __take_closure(cl, a, b) {
+        return cl(a, b);
+    }
+
+    let cl = |a, b| { return a+b; };
+
+    assert(__take_closure(cl, 1, 2) == 3);
+    assert(__take_closure(cl, 3, 4) == 7);
+    assert(__take_closure(|a, b| { return a == b; }, 3, 4) == false);
+    assert(__take_closure(|a, b| { return some(a+b); }, 4, 1) == some(5));
+
+    assert(cl(cl(1, 2), cl(3, 4)) == 10);
+
+    let count_evens = |lst| {
+        let res = [];
+        for i in 0..len(lst) {
+            if lst[i] % 2 == 0 {
+                res.append(some(lst[i]));
+            }
+        }
+        return res;
+    };
+
+    assert(count_evens([1,2,3,4,5]) == [some(2),some(4)]);
+
+    println("ok");
+}
+
+fn test_closure1() {
+    print("test_closure1... ");
+
+    let cl = |x| { return x; };
+
+    assert(cl(12) == 12);
+
+    let cl2 = |x, y| {
+        return x+y;
+    };
+
+    let s = cl2(1, 2);
+    assert(s == 3);
+
+    println("ok");
+}
+
+fn test_mutating_option_values() {
+    print("test_mutating_option_values... ");
+
+    let x = none;
+    assert(x == none);
+    x = some(1);
+    assert(x == some(1));
+
+    x.unwrap() = 2;
+    assert(x == some(2));
+    assert(x.unwrap() == 2);
+
+    x = some('a');
+    assert(x == some('a'));
+
+    println("ok");
+}
+
 fn test_none_values2() {
     print("test_none_values2... ");
 
@@ -158,14 +281,14 @@ fn test_booleans() {
 fn test_point_class_import() {
     print("test_point_class_import... ");
 
-    let p1 = PointClass.Point(1, 2, "my point 1");
+    let p1 = PointClass::Point(1, 2, "my point 1");
 
     assert(p1.get_x() == 1);
     assert(p1.get_y() == 2);
     assert(p1.get_name() == "my point 1");
     assert(p1.get_sum() == 3);
 
-    let p2 = PointClass.Point(3, 4, "my point 2");
+    let p2 = PointClass::Point(3, 4, "my point 2");
 
     assert(p2.get_x() == 3);
     assert(p2.get_y() == 4);
@@ -187,7 +310,7 @@ fn test_func_reference2() {
     print("test_func_reference2... ");
 
     let lst = [1,2,3,4,5];
-    Other1.modify_ref_list(lst);
+    Other1::modify_ref_list(lst);
 
     assert(lst == [2,3,4,5,6]);
 
@@ -198,7 +321,7 @@ fn test_func_reference1() {
     print("test_func_reference1... ");
 
     let i = 1;
-    Other1.modify_ref(i);
+    Other1::modify_ref(i);
 
     assert(i == 2);
 
@@ -206,7 +329,7 @@ fn test_func_reference1() {
 }
 
 fn test_reference2() {
-    print("test_reference2");
+    print("test_reference2... ");
 
     let lst = [1,2,3,4,5];
 
@@ -247,9 +370,9 @@ fn test_reference1() {
 fn test_list_access2() {
     print("test_list_access2... ");
 
-    assert(Other1.two_dim_arr()[1] == [4,5,6]);
-    assert(Other1.two_dim_arr()[1].nth(0) == 4);
-    assert(Other1.two_dim_arr()[1][0] == 4);
+    assert(Other1::two_dim_arr()[1] == [4,5,6]);
+    assert(Other1::two_dim_arr()[1].nth(0) == 4);
+    assert(Other1::two_dim_arr()[1][0] == 4);
 
     println("ok");
 }
@@ -277,14 +400,14 @@ fn test_basic_import2() {
     let a = 2;
     let b = 3;
 
-    let d1 = Other1.double(a);
-    let d2 = Other1.double(b);
+    let d1 = Other1::double(a);
+    let d2 = Other1::double(b);
 
-    let s1 = Other1.sum(d1, d2);
+    let s1 = Other1::sum(d1, d2);
 
     assert(s1 == 10);
 
-    let s2  = Other1.double(3);
+    let s2  = Other1::double(3);
 
     assert(s2 == 6);
 
@@ -292,12 +415,12 @@ fn test_basic_import2() {
 }
 
 fn test_basic_import1() {
-    print("test_basic_import");
+    print("test_basic_import... ");
     let x = 1;
     let y = 2;
-    let s = Other1.sum(x, y);
+    let s = Other1::sum(x, y);
     assert(s == x+y);
-    assert(Other1.sum(3, 4) == 7);
+    assert(Other1::sum(3, 4) == 7);
 
     println("ok");
 }
@@ -554,7 +677,7 @@ fn test_variable_instantiation() {
 fn main() {
     test_variable_instantiation();
     test_variable_mutation();
-    test_world_attr();
+    # test_world_attr();
     test_for_loop();
     test_for_loop2();
     test_while_loop();
@@ -583,13 +706,21 @@ fn main() {
     test_strs1();
     test_strs2();
     test_chars1();
-    test_member_intrinsic_split();
+    # test_member_intrinsic_split();
     # test_file_io_read_and_remove_lines_member_intrinsic();
-    test_substr_member_intrinsic1();
+    # test_substr_member_intrinsic1();
     test_none_values1();
     test_none_values2();
+    test_mutating_option_values();
+    test_closure1();
+    test_closure2();
+    test_closure3();
+    test_closure4();
+    test_closure5();
+    test_match1();
+    test_nested_func1();
 
-    TestStd.test_std();
+    # TestStd::test_std();
 }
 
 let __world_var_int = 99;

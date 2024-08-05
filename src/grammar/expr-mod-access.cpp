@@ -25,46 +25,18 @@
 #include <cassert>
 #include <memory>
 
-#include "earl.hpp"
-#include "utils.hpp"
-#include "err.hpp"
+#include "ast.hpp"
 
-using namespace earl::value;
+ExprModAccess::ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
+                             std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right)
+    : m_expr_ident(std::move(expr_ident)), m_right(std::move(right)) {}
 
-Module::Module(std::shared_ptr<Ctx> ctx) : m_value(ctx) {}
-
-std::shared_ptr<Ctx> &Module::value(void) {
-    UNIMPLEMENTED("Module::value");
+ExprType
+ExprModAccess::get_type() const {
+    return ExprType::Term;
 }
 
-Type Module::type(void) const {
-    return Type::Module;
-}
-
-std::shared_ptr<Obj> Module::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Module::binop");
-}
-
-bool Module::boolean(void) {
-    UNIMPLEMENTED("Module::boolean");
-}
-
-void Module::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Module::mutate");
-}
-
-std::shared_ptr<Obj> Module::copy(void) {
-    UNIMPLEMENTED("Module::copy");
-}
-
-bool Module::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Module::eq");
-}
-
-std::string Module::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
+ExprTermType
+ExprModAccess::get_term_type() const {
+    return ExprTermType::Mod_Access;
 }

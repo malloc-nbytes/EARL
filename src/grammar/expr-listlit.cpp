@@ -30,10 +30,12 @@
 ExprListLit::ExprListLit(std::vector<std::unique_ptr<Expr>> elems)
     : m_elems(std::move(elems)) {}
 
-ExprType ExprListLit::get_type() const {
+ExprType
+ExprListLit::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprListLit::get_term_type() const {
+ExprTermType
+ExprListLit::get_term_type() const {
     return ExprTermType::List_Literal;
 }

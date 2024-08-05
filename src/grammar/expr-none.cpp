@@ -29,10 +29,12 @@
 
 ExprNone::ExprNone(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
-ExprType ExprNone::get_type() const {
+ExprType
+ExprNone::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprNone::get_term_type() const {
+ExprTermType
+ExprNone::get_term_type() const {
     return ExprTermType::None;
 }

@@ -1,17 +1,21 @@
-# Use This file to run a debug build of EARL.
-# It builds with no optimizations, the DEBUG flag
-# defined, and debug symbols enabled.
-# Once it is compiled, it will launch EARL with
-# the file ../input.earl as the input file.
+# To use this file, run:
+#   bash --rcfile debug
 
-#!/bin/bash
+ARGS=""
 
-set -xe
+# source ~/.bashrc
 
-if [ "$#" -eq 0 ]; then
-    echo "Usage: ./debug <files...>"
-    exit 1
-fi
+echo -e "\033[5;41mEntering debug environment. Use \`exit\` or \`C-d\` to exit.\033[0m"
 
-g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o earl-debug-build *.cpp primitives/*.cpp member-intrinsics/*.cpp grammar/*.cpp include/scope.hpp
-gdb --args ./earl-debug-build "$@"
+# alias build='g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o earl-debug-build *.cpp primitives/*.cpp member-intrinsics/*.cpp grammar/*.cpp include/scope.hpp'
+alias b='make debug -j$(nproc)'
+alias r='gdb --args ./earl-debug-build $ARGS'
+alias done='source ~/.bashrc'
+export PS1="(DEBUG EARL) [ "
+LS_COLORS='' ; export LS_COLORS
+
+echo -e "\033[5;41mBuilding earl-debug-build\033[0m"
+b
+
+printf "\033[5;41mArguments: \033[0m"
+read ARGS

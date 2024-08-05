@@ -25,16 +25,18 @@
 #ifndef EARL_H
 #define EARL_H
 
+#include <memory>
 #include <unordered_map>
 #include <string>
 #include <vector>
 #include <fstream>
 
-#include "scope.hpp"
+#include "shared-scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
 
 struct Ctx;
+struct FunctionCtx;
 
 namespace earl {
     namespace variable {struct Obj;}
@@ -67,8 +69,6 @@ namespace earl {
             List,
             /** EARL module type. Used for member access of a module. */
             Module,
-            /** EARL class type */
-            Class,
             /** EARL file type */
             File,
             /** EARL option type */
@@ -81,6 +81,8 @@ namespace earl {
             OS,
             /** EARL break type */
             Break,
+            /** EARL class type */
+            Class,
         };
 
         /// @brief The base abstract class that all
@@ -95,7 +97,7 @@ namespace earl {
             /// value with another value
             /// @param op The binary operator
             /// @param other The object to perform the binop with
-            virtual Obj *binop(Token *op, Obj *other) = 0;
+            virtual std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) = 0;
 
             /// @brief Get the evaluation when put into
             /// a conditional to evaluate to either true or false
@@ -104,32 +106,19 @@ namespace earl {
             /// @brief Modify the underlying data of THIS value
             /// with the underlying value of another object
             /// @param other The value to mutate THIS instance with
-            virtual void mutate(Obj *other) = 0;
+            virtual void mutate(const std::shared_ptr<Obj> &other) = 0;
 
             /// @brief Copy THIS instance
-            virtual Obj *copy(void) = 0;
+            virtual std::shared_ptr<Obj> copy(void) = 0;
 
-            /// @brief Check the equality of two objects, not their values.
+            /// @brief Check the equality of two objects, not just by their values.
             /// @param other The object to compare
             /// @return true on equal, false otherwise
-            virtual bool eq(Obj *other) = 0;
+            virtual bool eq(std::shared_ptr<Obj> &other) = 0;
 
             /// @brief Convert the value of an object to a cxx std::string
             /// @return The stringified version of the value
             virtual std::string to_cxxstring(void) = 0;
-        };
-
-        struct This : public Obj {
-            This();
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -144,13 +133,13 @@ namespace earl {
             int value(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
             int m_value;
@@ -164,13 +153,13 @@ namespace earl {
             bool value(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
             bool m_value;
@@ -183,13 +172,13 @@ namespace earl {
             char value(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
             char m_value;
@@ -199,69 +188,94 @@ namespace earl {
         struct Void : public Obj {
             Void(void *value = nullptr);
 
-            [[deprecated]]
-            void *value(void);
-
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
             void *m_value;
+        };
+
+        struct Closure : public Obj {
+            Closure(ExprClosure *expr_closure,
+                    std::vector<std::pair<Token *, uint32_t>> params,
+                    std::shared_ptr<Ctx> owner);
+
+            StmtBlock *block(void);
+            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> ctx);
+            std::shared_ptr<Obj> call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx);
+            size_t params_len(void) const;
+            bool param_at_is_ref(size_t i) const;
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+
+        private:
+            ExprClosure *m_expr_closure;
+            std::vector<std::pair<Token *, uint32_t>> m_params;
+            std::shared_ptr<Ctx> m_owner;
         };
 
         /// @brief The structure that represents EARL lists.
         /// They can hold any value in any mix of them i.e.,
         /// list = [int, str, str, int, list[int, str]]
         struct List : public Obj {
-            List(std::vector<Obj *> value = {});
+            List(std::vector<std::shared_ptr<Obj>> value = {});
 
             /// @brief Fill the underlying data with some data
             /// @param value The value to use to fill
-            void fill(std::vector<Obj *> value);
+            void fill(std::vector<std::shared_ptr<Obj>> &value);
 
             /// @brief Get the underlying list value
-            std::vector<Obj *> &value(void);
+            std::vector<std::shared_ptr<Obj>> &value(void);
 
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
             /// @param idx The object that contains the index
             /// @note `idx` MUST BE an integer value
-            Obj *nth(Obj *idx);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
 
             /// @brief Reverse a list
-            Obj *rev(void);
+            void rev(void);
 
             /// @brief Append a list of values to a list
             /// @param values The values to append
-            Obj *append(std::vector<Obj *> &values);
+            void append(std::vector<std::shared_ptr<Obj>> values);
+
+            void append(std::shared_ptr<Obj> value);
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
-            Obj *pop(Obj *idx);
+            void pop(std::shared_ptr<Obj> &idx);
 
-            Obj *filter(Obj *closure, Ctx &ctx);
+            std::shared_ptr<List> filter(std::shared_ptr<Closure> &closure, Ctx &ctx);
 
-            void foreach(Obj *closure, Ctx &ctx);
+            void foreach(std::shared_ptr<Closure> &closure, Ctx &ctx);
 
-            Obj *back(void);
+            std::shared_ptr<Obj> back(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
-            std::vector<Obj *> m_value;
+            std::vector<std::shared_ptr<Obj>> m_value;
         };
 
         /// @brief The structure that represents EARL strings
@@ -269,183 +283,157 @@ namespace earl {
             Str(std::string value = "");
 
             std::string value(void); // NOTE: needs optimization
-            std::vector<Char *> &value_raw(void);
-            Char *nth(Obj *idx);
-            List *split(Obj *delim);
-            Str *remove_lines(void);
-            Str *substr(Int *idx1, Int *idx2);
-            Obj *pop(Obj *idx);
+            std::vector<std::shared_ptr<Char>> &value_raw(void);
+            std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
+            std::shared_ptr<Str> substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2);
+            void pop(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> back(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
-            std::vector<Char *> m_value;
+            std::vector<std::shared_ptr<Char>> m_value;
         };
 
         struct Module : public Obj {
-            Module(Ctx *ctx);
+            Module(std::shared_ptr<Ctx> ctx);
 
             /// @brief Get the module context
-            Ctx *value(void);
+            std::shared_ptr<Ctx> &value(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
-            Ctx *m_value;
+            std::shared_ptr<Ctx> m_value;
         };
 
         struct Class : public Obj {
-            Class(StmtClass *stmtclass, Ctx *owner);
+            Class(StmtClass *stmtclass, std::shared_ptr<Ctx> ctx);
 
             const std::string &id(void) const;
 
-            void add_method(std::unique_ptr<function::Obj> func);
-            void add_member(std::unique_ptr<variable::Obj> var);
+            void load_class_members(std::vector<std::shared_ptr<Obj>> &args);
+
+            void add_method(std::shared_ptr<function::Obj> func);
+            void add_member(std::shared_ptr<variable::Obj> var);
             void add_member_assignee(Token *assignee);
 
-            function::Obj *get_method(const std::string &id);
-            earl::variable::Obj *get_member(const std::string &id);
+            std::shared_ptr<function::Obj> get_method(const std::string &id);
+            std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);
 
-            [[deprecated]]
-            void add_member_assignees(std::vector<Token *> &assignees);
-
-            /// @brief Fill the `m_members` with what was provided in
-            /// `assignees` or if they are default.
-            /// @param ctx The context of the runtime environment
-            void constructor(Ctx &ctx);
+            std::shared_ptr<Ctx> &ctx(void);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
+        private:
             StmtClass *m_stmtclass;
-            std::vector<std::unique_ptr<variable::Obj>> m_members;
-            std::vector<std::unique_ptr<function::Obj>> m_methods;
+            std::shared_ptr<Ctx> m_ctx;
 
+            std::vector<std::shared_ptr<variable::Obj>> m_members;
+            std::vector<std::shared_ptr<function::Obj>> m_methods;
             std::vector<Token *> m_member_assignees;
-
-            std::vector<Ctx *> m_ctxs;
-
-            Ctx *m_owner;
         };
 
         struct File : public Obj {
-            File(Str *fp, Str *mode, std::fstream stream);
+            File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
 
             void set_open(void);
             void set_closed(void);
 
             void dump(void);
             void close(void);
-            earl::value::Str *read(void);
-            void write(Obj *value);
-            void writelines(List *value);
+            std::shared_ptr<Str> read(void);
+            void write(std::shared_ptr<Obj> value);
+            void writelines(std::shared_ptr<List> &value);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
-            Str *m_fp;
-            Str *m_mode;
+            std::shared_ptr<Str> m_fp;
+            std::shared_ptr<Str> m_mode;
             std::fstream m_stream;
             bool m_open;
         };
 
         struct Option : public Obj {
-            Option(Obj *value = nullptr);
+            Option(std::shared_ptr<Obj> value = nullptr);
 
-            Obj *value(void);
+            std::shared_ptr<Obj> &value(void);
             bool is_some(void) const;
             bool is_none(void) const;
-            void set_value(Obj *other);
+            void set_value(std::shared_ptr<Obj> other);
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
 
         private:
-            Obj *m_value;
-        };
-
-        struct Closure : public Obj {
-            Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params);
-
-            StmtBlock *block(void);
-            void load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx);
-            Obj *call(std::vector<earl::value::Obj *> &values, Ctx &ctx);
-            bool has_local(const std::string &id);
-
-            /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
-
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
-
-        private:
-            ExprClosure *m_expr_closure;
-            std::vector<std::pair<Token *, uint32_t>> m_params;
+            std::shared_ptr<Obj> m_value;
         };
 
         struct Break : public Obj {
             Break() = default;
 
             /*** OVERRIDES ***/
-            Type type(void) const             override;
-            Obj *binop(Token *op, Obj *other) override;
-            bool boolean(void)                override;
-            void mutate(Obj *other)           override;
-            Obj *copy(void)                   override;
-            bool eq(Obj *other)               override;
-            std::string to_cxxstring(void)    override;
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
         };
 
-        std::string type_to_str(Obj *);
+        std::string type_to_str(earl::value::Type ty);
+        const char *type_to_cstr(earl::value::Type ty);
 
         /// @brief Get an empty EARL value from a type
         /// @param s The string type to parse
         [[deprecated]] [[nodiscard]]
         Obj *of_str(const std::string &s);
 
+        [[nodiscard]]
+        bool type_is_compatable(Type ty1, Type ty2);
+
         /// @brief Check if two EARL values are type compatable
         /// @param obj1 The first object
         /// @param obj2 The second object
         [[nodiscard]]
-        bool type_is_compatable(Obj *const obj1, Obj *const obj2);
+        bool type_is_compatable(const Obj *const obj1, const Obj *const obj2);
     };
 
     /**
@@ -455,7 +443,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL variables
         struct Obj {
-            Obj(Token *id, std::unique_ptr<value::Obj> value, uint32_t attrs = 0);
+            Obj(Token *id, std::shared_ptr<value::Obj> value, uint32_t attrs = 0);
             ~Obj() = default;
 
             /// @brief Get the identifier of this variable
@@ -466,7 +454,7 @@ namespace earl {
             bool is_global(void) const;
 
             /// @brief Get the actual value of this variable
-            value::Obj *value(void) const;
+            std::shared_ptr<value::Obj> value(void) const;
 
             /// @brief Get the type of this variable
             value::Type type(void) const;
@@ -475,11 +463,11 @@ namespace earl {
 
             bool is_pub(void) const;
 
-            Obj *copy(void);
+            std::shared_ptr<Obj> copy(void);
 
         private:
             Token *m_id;
-            std::unique_ptr<value::Obj> m_value;
+            std::shared_ptr<value::Obj> m_value;
             uint32_t m_attrs;
         };
     };
@@ -494,71 +482,14 @@ namespace earl {
             Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params);
             ~Obj() = default;
 
-            /// @brief Get the identifier of this function
             const std::string &id(void) const;
-
             size_t params_len(void) const;
-
-            /// @brief Get the Statement Definition of this function
             StmtBlock *block(void) const;
-
-            /// @brief Used to load this function's parameters
-            /// with the values that were passed to it
-            /// @param values The values to transfer
-            void load_parameters(std::vector<value::Obj *> &values);
-
-            /// @brief Push this function's local scope
-            void push_scope(void);
-
-            /// @brief Pop this function's local scope
-            void pop_scope(void);
-
-            /// @brief Push a new scope context. This is needed
-            /// for situations such as recursion
-            void new_scope_context(void);
-
-            /// @brief Remove a scope context. This happens in
-            /// situations such as coming out of a recursive chain
-            void drop_scope_context(void);
-
-            /// @brief Check if a variable is in the local scope
-            /// @param id The identifier of the variable
-            bool has_local(const std::string &id);
-
-            /// @brief Add a variable to this function's local scope
-            /// @param var The the variable to add
-            void add_local(variable::Obj *var);
-
-            /// @brief Remove a variable from this function's local scope
-            /// @param id The identifier of the variable to remove
-            void remove_local(const std::string &id);
-
-            /// @brief Get a variable in this funcion's local scope
-            /// @note It is expected to call `has_local()` prior
-            /// to calling this function
-            /// @param id The identifier of the variable to get
-            variable::Obj *get_local(const std::string &id);
-
-            /// @brief Get this function's current context size
-            size_t context_size(void) const;
-
-            /// @brief Check if this function is a @world function.
-            /// See `src/include/common.hpp/FuncAttrs`
+            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<FunctionCtx> &new_ctx);
             bool is_world(void) const;
-
             bool is_pub(void) const;
-
-            /// @brief Remove all local variables in the function
-            void clear_locals(void);
-
-            /// @brief Print all local variables in the function
-            void debug_dump(void) const;
-
-            /// @note This local scope needs to be public for the context to see
-            /// for a QAD solution.
-            std::vector<Scope<std::string, variable::Obj *>> m_local;
-
             Obj *copy(void);
+            bool param_at_is_ref(size_t i) const;
 
         private:
             StmtDef *m_stmtdef;

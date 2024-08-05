@@ -82,6 +82,7 @@ enum class TokenType {
     Percent_Equals,
     RightArrow,
     Double_Period,
+    Double_Colon,
 
     Eof,
     Intlit,
@@ -100,6 +101,8 @@ struct Token {
     Token(char *start, size_t len,
           TokenType type,
           size_t row, size_t col, std::string &fp);
+
+    Token(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
 
     Token(const Token &) = delete;
 

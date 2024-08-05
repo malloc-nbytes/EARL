@@ -67,7 +67,7 @@ fn count(@ref lst, @ref elem) {
 
 @pub
 fn quicksort(@ref lst, compar) {
-    fn __quicksort(@ref lst, low, high, @ref compar) {
+    let __quicksort = |@ref lst, low, high, @ref compar| {
         let partition = |@ref lst, low, high| {
             let pivot = lst[high];
             let i = low-1;
@@ -75,11 +75,11 @@ fn quicksort(@ref lst, compar) {
             for j in low..high {
                 if compar(lst[j], pivot) {
                     i = i+1;
-                    Utils.swap(lst[i], lst[j]);
+                    Utils::swap(lst[i], lst[j]);
                 }
             }
 
-            Utils.swap(lst[i+1], lst[high]);
+            Utils::swap(lst[i+1], lst[high]);
 
             return i+1;
         };
@@ -89,7 +89,7 @@ fn quicksort(@ref lst, compar) {
             __quicksort(lst, low, pi-1, compar);
             __quicksort(lst, pi+1, high, compar);
         }
-    }
+    };
 
     return __quicksort(lst, 0, len(lst)-1, compar);
 }

@@ -1,6 +1,7 @@
 earl-debug-build
 earl
 main
+*.in~
 config.h
 config.h.in
 stamp-h1

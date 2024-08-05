@@ -30,7 +30,8 @@
 StmtLet::StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Expr> expr, uint32_t attrs)
     : m_id(std::move(id)), m_expr(std::move(expr)), m_attrs(attrs) {}
 
-StmtType StmtLet::stmt_type() const {
+StmtType
+StmtLet::stmt_type() const {
     return StmtType::Let;
 }
 

@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -44,49 +45,47 @@ Type Int::type(void) const {
     return Type::Int;
 }
 
-Obj *Int::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
+std::shared_ptr<Obj> Int::binop(Token *op, std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
 
-    Obj *tmp = other;
-
     switch (op->type()) {
     case TokenType::Plus: {
-        return new Int(this->value() + dynamic_cast<Int *>(tmp)->value());
+        return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Minus: {
-        return new Int(this->value() - dynamic_cast<Int *>(tmp)->value());
+        return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Asterisk: {
-        return new Int(this->value() * dynamic_cast<Int *>(tmp)->value());
+        return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Forwardslash: {
-        return new Int(this->value() / dynamic_cast<Int *>(tmp)->value());
+        return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Percent: {
-        return new Int(this->value() % dynamic_cast<Int *>(tmp)->value());
+        return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Lessthan: {
-        return new Bool(static_cast<int>(this->value() < dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() < dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Greaterthan: {
-        return new Bool(static_cast<int>(this->value() > dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() > dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() == dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Greaterthan_Equals: {
-        return new Bool(static_cast<int>(this->value() >= dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() >= dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Lessthan_Equals: {
-        return new Bool(static_cast<int>(this->value() <= dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() <= dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() != dynamic_cast<Int *>(other.get())->value()));
     } break;
     case TokenType::Double_Pipe: {
-        return new Bool(static_cast<int>(this->value() || dynamic_cast<Int *>(tmp)->value()));
+        return std::make_shared<Bool>(static_cast<int>(this->value() || dynamic_cast<Int *>(other.get())->value()));
     } break;
     default: {
         Err::err_wtok(op);
@@ -99,14 +98,14 @@ bool Int::boolean(void) {
     return this->value();
 }
 
-void Int::mutate(Obj *other) {
-    if (!type_is_compatable(this, other)) {
+void Int::mutate(const std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot mutate (fix this message)");
     }
 
     switch (other->type()) {
     case Type::Int: {
-        this->fill(dynamic_cast<Int *>(other)->value());
+        m_value = dynamic_cast<Int *>(other.get())->value();
     } break;
     default: {
         assert(false && "unreachable");
@@ -114,14 +113,17 @@ void Int::mutate(Obj *other) {
     }
 }
 
-Obj *Int::copy(void) {
-    return new Int(this->value());
+std::shared_ptr<Obj> Int::copy(void) {
+    return std::make_shared<Int>(m_value);
 }
 
-bool Int::eq(Obj *other) {
+bool Int::eq(std::shared_ptr<Obj> &other) {
+    if (other->type() == Type::Void)
+        return true;
+
     if (other->type() != Type::Int)
         return false;
-    return this->value() == dynamic_cast<Int *>(other)->value();
+    return this->value() == dynamic_cast<Int *>(other.get())->value();
 }
 
 std::string Int::to_cxxstring(void) {

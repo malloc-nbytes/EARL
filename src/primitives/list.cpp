@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -31,13 +32,15 @@
 
 using namespace earl::value;
 
-List::List(std::vector<Obj *> value) : m_value(std::move(value)) {}
+List::List(std::vector<std::shared_ptr<Obj>> value)
+    : m_value(value) {}
 
-void List::fill(std::vector<Obj *> value) {
-    m_value = std::move(value);
+void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
+    (void)value;
+    UNIMPLEMENTED("List::fill");
 }
 
-std::vector<Obj *> &List::value(void) {
+std::vector<std::shared_ptr<Obj>> &List::value(void) {
     return m_value;
 }
 
@@ -45,127 +48,132 @@ Type List::type(void) const {
     return Type::List;
 }
 
-Obj *List::nth(Obj *idx) {
+std::shared_ptr<Obj> List::nth(std::shared_ptr<Obj> &idx) {
     switch (idx->type()) {
     case Type::Int: {
-        auto *index = dynamic_cast<Int *>(idx);
+        auto index = dynamic_cast<Int *>(idx.get());
         if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
             ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
                       index->value(), this->value().size());
         }
-        return this->value()[index->value()];
+        return this->value().at(index->value());
     } break;
-    default: assert(false && "invalid `nth` argument");
+    default: ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
     }
     return nullptr; // unreachable
 }
 
-Obj *List::rev(void) {
-    std::reverse(m_value.begin(), m_value.end());
-    return new Void();
+void List::rev(void) {
+    for (size_t i = 0; i < this->value().size()/2; ++i) {
+        auto copy = this->value().at(i);
+        this->value().at(i) = this->value().at(this->value().size()-i-1);
+        this->value().at(this->value().size()-i-1) = copy;
+    }
 }
 
-Obj *List::pop(Obj *idx) {
-    assert(idx->type() == earl::value::Type::Int);
-    earl::value::Int *index = dynamic_cast<earl::value::Int *>(idx);
-    m_value.erase(m_value.begin() + index->value());
-    return new Void();
+void List::pop(std::shared_ptr<Obj> &idx) {
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+    m_value.erase(m_value.begin() + idx1->value());
 }
 
-Obj *List::append(std::vector<Obj *> &values) {
-    // NOTE: To append a reference, use the below line
-    // m_value.insert(m_value.end(), values.begin(), values.end());
-
+void List::append(std::vector<std::shared_ptr<Obj>> values) {
     for (size_t i = 0; i < values.size(); ++i) {
         m_value.push_back(values[i]->copy());
     }
-
-    return new Void();
 }
 
-Obj *List::filter(Obj *closure, Ctx &ctx) {
-    assert(closure->type() == Type::Closure);
-    Closure *cl = dynamic_cast<Closure *>(closure);
-
-    List *copy = new List();
-    std::vector<Obj *> keep_values;
-
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        std::vector<Obj *> values = {m_value.at(i)};
-        Obj *filter_result = cl->call(values, ctx);
-        assert(filter_result->type() == Type::Bool);
-        if (dynamic_cast<Bool *>(filter_result)->boolean()) {
-            keep_values.push_back(m_value.at(i)->copy());
-        }
-    }
-
-    copy->append(keep_values);
-
-    return copy;
+void List::append(std::shared_ptr<Obj> value) {
+    m_value.push_back(value);
 }
 
-void List::foreach(Obj *closure, Ctx &ctx) {
-    assert(closure->type() == Type::Closure);
-    Closure *cl = dynamic_cast<Closure *>(closure);
-
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        std::vector<Obj *> values = {m_value[i]};
-        cl->call(values, ctx);
-    }
+std::shared_ptr<List> List::filter(std::shared_ptr<Closure> &closure, Ctx &ctx) {
+    (void)closure;
+    (void)ctx;
+    UNIMPLEMENTED("List::filter");
 }
 
-Obj *List::back(void) {
-    if (m_value.size() == 0) {
-        return new Option();
-    }
+void List::foreach(std::shared_ptr<Closure> &closure, Ctx &ctx) {
+    (void)closure;
+    (void)ctx;
+    UNIMPLEMENTED("List::foreach");
+}
+
+std::shared_ptr<Obj> List::back(void) {
+    if (m_value.size() == 0)
+        return std::make_shared<Option>();
     return m_value.back()->copy();
 }
 
-Obj *List::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
+std::shared_ptr<Obj> List::binop(Token *op, std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get()))
         assert(false && "cannot binop (fix this message)");
-    }
 
-    Obj *tmp = other;
+    auto other_casted = dynamic_cast<List *>(other.get());
+
     switch (op->type()) {
     case TokenType::Plus: {
-        auto list = new List(this->value());
+        auto list = std::make_shared<List>(this->value());
         list->value().insert(list->value().end(),
-                             dynamic_cast<List *>(tmp)->value().begin(),
-                             dynamic_cast<List *>(tmp)->value().end());
+                             other_casted->value().begin(),
+                             other_casted->value().end());
         return list;
     } break;
     case TokenType::Double_Equals: {
-        auto *other_lst = dynamic_cast<List *>(tmp);
         int res = 0;
-        if (m_value.size() == other_lst->value().size()) {
+        if (m_value.size() == other_casted->value().size()) {
             res = 1;
             for (size_t i = 0; i < m_value.size(); ++i) {
-                Obj *o1 = this->value()[i];
-                Obj *o2 = other_lst->value()[i];
-                if (!type_is_compatable(o1, o2)) {
+                auto o1 = this->value()[i];
+                auto o2 = other_casted->value()[i];
+                if (!type_is_compatable(o1.get(), o2.get())) {
                     res = 0;
                     break;
                 }
                 if (o1->type() == Type::Int) {
-                    if (dynamic_cast<Int *>(o1)->value() != dynamic_cast<Int *>(o2)->value()) {
+                    if (dynamic_cast<Int *>(o1.get())->value() != dynamic_cast<Int *>(o2.get())->value()) {
                         res = 0;
                         break;
                     }
                 }
                 else if (o1->type() == Type::Str) {
-                    if (dynamic_cast<Str *>(o1)->value() != dynamic_cast<Str *>(o2)->value()) {
+                    if (dynamic_cast<Str *>(o1.get())->value() != dynamic_cast<Str *>(o2.get())->value()) {
+                        res = 0;
+                        break;
+                    }
+                }
+                else if (o1->type() == Type::Char) {
+                    if (dynamic_cast<Char *>(o1.get())->value() != dynamic_cast<Char *>(o2.get())->value()) {
+                        res = 0;
+                        break;
+                    }
+                }
+                else if (o1->type() == Type::Bool) {
+                    if (dynamic_cast<Bool *>(o1.get())->value() != dynamic_cast<Bool *>(o2.get())->value()) {
+                        res = 0;
+                        break;
+                    }
+                }
+                else if (o1->type() == Type::Option) {
+                    auto option1 = dynamic_cast<Option *>(o1.get());
+                    auto option2 = dynamic_cast<Option *>(o1.get());
+                    if ((!option1 && option2) || (option1 && !option2)) {
+                        res = 0;
+                        break;
+                    }
+                    if ((option1 && option2) && (option1->value() != option2->value())) {
                         res = 0;
                         break;
                     }
                 }
                 else {
-                    res = 0;
-                    break;
+                    assert(false && "unreachable");
+
+                    // res = 0;
+                    // break;
                 }
             }
         }
-        return new Int(res);
+        return std::make_shared<Int>(res);
     } break;
     default: {
         Err::err_wtok(op);
@@ -180,32 +188,20 @@ bool List::boolean(void) {
     return m_value.size() > 0;
 }
 
-void List::mutate(Obj *other) {
-    assert(other->type() == Type::List);
-    auto *lst = dynamic_cast<List *>(other);
-    m_value = lst->value();
+void List::mutate(const std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("List::mutate");
 }
 
-Obj *List::copy(void) {
-    auto list = new List();
+std::shared_ptr<Obj> List::copy(void) {
+    auto list = std::make_shared<List>();
     list->append(this->value());
     return list;
 }
 
-bool List::eq(Obj *other) {
-    if (other->type() != Type::List)
-        return false;
-
-    auto *lst = dynamic_cast<List *>(other);
-
-    if (lst->value().size() != this->value().size())
-        return false;
-
-    for (size_t i = 0; i < lst->value().size(); ++i) {
-        if (!this->value()[i]->eq(lst->value()[i]))
-            return false;
-    }
-    return true;
+bool List::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("List::eq");
 }
 
 std::string List::to_cxxstring(void) {

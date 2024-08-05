@@ -1,0 +1,6 @@
+mod Other
+
+@pub
+fn refer(@ref i) {
+    i = 9;
+}

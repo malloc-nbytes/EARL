@@ -29,7 +29,8 @@
 
 StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
 
-StmtType StmtReturn::stmt_type() const {
+StmtType
+StmtReturn::stmt_type() const {
     return StmtType::Return;
 }
 

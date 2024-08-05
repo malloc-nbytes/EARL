@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -47,19 +48,17 @@ Type Char::type(void) const {
     return Type::Char;
 }
 
-Obj *Char::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
+std::shared_ptr<Obj> Char::binop(Token *op, std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
 
-    Obj *tmp = other;
-
     switch (op->type()) {
     case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Char *>(tmp)->value()));
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
     } break;
     case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Char *>(tmp)->value()));
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -72,20 +71,19 @@ bool Char::boolean(void) {
     UNIMPLEMENTED("Char::boolean");
 }
 
-void Char::mutate(Obj *other) {
+void Char::mutate(const std::shared_ptr<Obj> &other) {
     assert(other->type() == Type::Char);
-    Char *c = dynamic_cast<Char *>(other);
+    auto c = dynamic_cast<Char *>(other.get());
     m_value = c->value();
 }
 
-Obj *Char::copy(void) {
-    return new Char(std::string(1, m_value));
+std::shared_ptr<Obj> Char::copy(void) {
+    return std::make_shared<Char>(std::string(1, m_value));
 }
 
-bool Char::eq(Obj *other) {
-    if (other->type() != Type::Char)
-        return false;
-    return this->value() == dynamic_cast<Char *>(other)->value();
+bool Char::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Char::eq");
 }
 
 std::string Char::to_cxxstring(void) {

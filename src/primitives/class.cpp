@@ -22,67 +22,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
 
 #include "earl.hpp"
 #include "err.hpp"
+#include "common.hpp"
 #include "utils.hpp"
+#include "ctx.hpp"
 
 using namespace earl::value;
 
-Class::Class(StmtClass *stmtclass, Ctx *owner) : m_stmtclass(stmtclass), m_owner(owner) {}
+Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner) : m_stmtclass(stmtclass), m_ctx(owner) {}
 
-const std::string &Class::id(void) const {
-    return m_stmtclass->m_id->lexeme();
+void Class::load_class_members(std::vector<std::shared_ptr<Obj>> &args) {
+    assert(false);
 }
 
-void Class::add_member_assignees(std::vector<Token *> &assignees) {
-    std::for_each(assignees.begin(), assignees.end(), [&](auto &a) {
-        m_member_assignees.push_back(a);
-    });
+std::shared_ptr<Ctx> &Class::ctx(void) {
+    return m_ctx;
 }
 
-void Class::add_member_assignee(Token *assignee) {
-    m_member_assignees.push_back(assignee);
-}
-
-void Class::add_method(std::unique_ptr<function::Obj> func) {
-    m_methods.push_back(std::move(func));
-}
-
-void Class::add_member(std::unique_ptr<variable::Obj> var) {
-    m_members.push_back(std::move(var));
-}
-
-earl::function::Obj *Class::get_method(const std::string &id) {
-    for (size_t i = 0; i < m_methods.size(); ++i) {
-        if (id == m_methods[i]->id()) {
-            return m_methods[i].get();
-        }
-    }
-
-    // ERR_WARGS(Err::Type::Fatal, "no method named %s exists in class %s",
-    //           id.c_str(), this->id().c_str());
-    return nullptr;
-}
-
-earl::variable::Obj *Class::get_member(const std::string &id) {
-    for (auto &mem : m_members) {
-        if (mem->id() == id) {
-            return mem.get();
-        }
-    }
-    return nullptr;
-}
-
+/*** OVERRIDES ***/
 Type Class::type(void) const {
     return Type::Class;
 }
 
-Obj *Class::binop(Token *op, Obj *other) {
-    (void)op;
-    (void)other;
+std::shared_ptr<Obj> Class::binop(Token *op, std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Class::binop");
 }
 
@@ -90,34 +55,18 @@ bool Class::boolean(void) {
     UNIMPLEMENTED("Class::boolean");
 }
 
-void Class::mutate(Obj *other) {
-    (void)other;
+void Class::mutate(const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Class::mutate");
 }
 
-Obj *Class::copy(void) {
-    auto *copy = new Class(m_stmtclass, m_owner);
-
-    for (auto &member : m_members) {
-        copy->add_member(std::unique_ptr<variable::Obj>(member.get()->copy()));
-    }
-
-    for (auto &method : m_methods) {
-        copy->add_method(std::unique_ptr<function::Obj>(method.get()->copy()));
-    }
-
-    for (auto &ctx : m_ctxs) {
-        copy->m_ctxs.push_back(ctx);
-    }
-
-    return copy;
+std::shared_ptr<Obj> Class::copy(void) {
+    UNIMPLEMENTED("Class::copy");
 }
 
-bool Class::eq(Obj *other) {
-    (void)other;
+bool Class::eq(std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Class::eq");
 }
 
 std::string Class::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `class` type to a string");
+    UNIMPLEMENTED("Class::to_cxxstring");
 }

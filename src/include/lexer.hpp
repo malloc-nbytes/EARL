@@ -30,6 +30,7 @@
 
 #include "token.hpp"
 
+enum class TokenType;
 struct Token;
 
 /**
@@ -70,6 +71,8 @@ struct Lexer {
     /// @param tok The token to append
     void append(std::unique_ptr<Token> tok);
 
+    void append(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
+
     /// @brief The same as `Lexer::next()` except it does not give
     /// back the token that was consumed.
     void discard(void);
@@ -88,6 +91,7 @@ struct Lexer {
 /// @param keywords A vector of strings that are the keywords of the language
 /// @param types A vector of strings that specify the types in the language
 /// @param comment What a single line comment is in the language
-std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
+std::unique_ptr<Lexer>
+lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
 
 #endif // LEXER_H

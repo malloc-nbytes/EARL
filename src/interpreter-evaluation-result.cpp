@@ -22,44 +22,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <cassert>
+#include <memory>
 
+#include "interpreter.hpp"
+#include "ctx.hpp"
 #include "earl.hpp"
-#include "err.hpp"
-#include "utils.hpp"
 
-using namespace earl::value;
-
-This::This() {}
-
-Type This::type(void) const {
-    return Type::This;
+Interpreter::ER::ER(std::shared_ptr<earl::value::Obj> value,
+                    ERT rt,
+                    std::string id,
+                    void *extra,
+                    std::shared_ptr<Ctx> ctx) {
+    this->value = value;
+    this->rt = static_cast<uint32_t>(rt);
+    this->id = id;
+    this->extra = extra;
+    this->ctx = ctx;
 }
 
-Obj *This::binop(Token *op, Obj *other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("This::binop");
+bool
+Interpreter::ER::is_literal(void) {
+    return (this->rt & ERT::Literal) != 0;
 }
 
-bool This::boolean(void) {
-    UNIMPLEMENTED("This::boolean");
+bool
+Interpreter::ER::is_ident(void) {
+    return (this->rt & ERT::Ident) != 0;
 }
 
-void This::mutate(Obj *other) {
-    (void)other;
-    UNIMPLEMENTED("This::mutate");
+bool
+Interpreter::ER::is_intrinsic(void) {
+    return (this->rt & ERT::IntrinsicFunction) != 0;
 }
 
-Obj *This::copy(void) {
-    UNIMPLEMENTED("This::copy");
+bool
+Interpreter::ER::is_function_ident(void) {
+    return (this->rt & ERT::FunctionIdent) != 0;
 }
 
-bool This::eq(Obj *other) {
-    (void)other;
-    UNIMPLEMENTED("This::eq");
+bool
+Interpreter::ER::is_class_instant(void) {
+    return (this->rt & ERT::ClassInstant) != 0;
 }
 
-std::string This::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `this` type to a string");
+bool
+Interpreter::ER::is_member_intrinsic(void) {
+    return (this->rt & ERT::IntrinsicMemberFunction) != 0;
+}
+
+bool
+Interpreter::ER::is_wildcard(void) {
+    return (this->rt & ERT::Wildcard) != 0;
+}
+
+bool
+Interpreter::ER::is_none(void) {
+    return (this->rt & ERT::None) != 0;
 }

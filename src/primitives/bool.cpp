@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <memory>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -40,50 +41,57 @@ Type Bool::type(void) const {
     return Type::Bool;
 }
 
-Obj *Bool::binop(Token *op, Obj *other) {
-    if (!type_is_compatable(this, other)) {
+std::shared_ptr<Obj> Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
+    if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
 
-    Obj *tmp = other;
-
     switch (op->type()) {
+    case TokenType::Lessthan: {
+        return std::make_shared<Bool>(this->value() < dynamic_cast<Bool *>(other.get())->value());
+    } break;
+    case TokenType::Greaterthan: {
+        return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other.get())->value());
+    } break;
     case TokenType::Double_Equals: {
-        return new Bool(static_cast<int>(this->value() == dynamic_cast<Bool *>(tmp)->value()));
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
+    } break;
+    case TokenType::Greaterthan_Equals: {
+        return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other.get())->value());
+    } break;
+    case TokenType::Lessthan_Equals: {
+        return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other.get())->value());
     } break;
     case TokenType::Bang_Equals: {
-        return new Bool(static_cast<int>(this->value() != dynamic_cast<Bool *>(tmp)->value()));
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
     } break;
     case TokenType::Double_Pipe: {
-        return new Bool(static_cast<int>(this->value() || dynamic_cast<Bool *>(tmp)->value()));
-    } break;
-    case TokenType::Double_Ampersand: {
-        return new Bool(static_cast<int>(this->value() && dynamic_cast<Bool *>(tmp)->value()));
+        return std::make_shared<Bool>(this->value() || dynamic_cast<Bool *>(other.get())->value());
     } break;
     default: {
         Err::err_wtok(op);
         ERR(Err::Type::Fatal, "invalid binary operator");
     }
     }
+    return nullptr; // unreachable
 }
 
 bool Bool::boolean(void) {
     return m_value;
 }
 
-void Bool::mutate(Obj *other) {
+void Bool::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Bool::mutate");
 }
 
-Obj *Bool::copy(void) {
-    return new Bool(m_value);
+std::shared_ptr<Obj> Bool::copy(void) {
+    return std::make_shared<Bool>(m_value);
 }
 
-bool Bool::eq(Obj *other) {
-    if (other->type() != Type::Bool)
-        return false;
-    return this->value() == dynamic_cast<Bool *>(other)->value();
+bool Bool::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
+    UNIMPLEMENTED("Bool::eq");
 }
 
 std::string Bool::to_cxxstring(void) {

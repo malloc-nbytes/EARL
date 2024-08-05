@@ -34,162 +34,162 @@
 #include <vector>
 #include <unordered_map>
 
+#include "ast.hpp"
+#include "lexer.hpp"
 #include "earl.hpp"
-#include "scope.hpp"
+#include "shared-scope.hpp"
+
+enum class CtxType {
+    World,
+    Function,
+    Class,
+    Closure,
+};
 
 struct Ctx {
-    Ctx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
-    ~Ctx() = default;
+    virtual CtxType type(void) const = 0;
+    virtual void push_scope(void) = 0;
+    virtual void pop_scope(void) = 0;
 
-    /// @brief Set the current function being evaluated
-    /// @param func The function to set
-    void set_function(earl::function::Obj *func);
+    virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
+    virtual bool variable_exists(const std::string &id) = 0;
+    virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
+    virtual void variable_remove(const std::string &id) = 0;
 
-    /// @brief Unset the current function being evaluated
-    void unset_function(void);
+    virtual void function_add(std::shared_ptr<earl::function::Obj> func) = 0;
+    virtual bool function_exists(const std::string &id) = 0;
+    virtual std::shared_ptr<earl::function::Obj> function_get(const std::string &id) = 0;
 
-    void set_closure(earl::value::Closure *closure);
-    void unset_closure();
+    virtual bool closure_exists(const std::string &id) = 0;
 
-    /// @brief Push a new global scope
-    /// @note If in a function, it will push that function's
-    /// local scope instead.
-    void push_scope(void);
+    SharedScope<std::string, earl::variable::Obj> m_scope;
+    SharedScope<std::string, earl::function::Obj> m_funcs;
+};
 
-    /// @brief Pop a global scope
-    /// @note If in a function, it will pop that function's
-    /// local scope instead.
-    void pop_scope(void);
+struct WorldCtx : public Ctx {
+    WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
+    ~WorldCtx() = default;
 
-    /// @brief Register a variable into the current scope
-    /// @note If in a function, it will add the variable
-    /// to that function's local scope instead.
-    /// @param var The variable to add
-    void register_variable(earl::variable::Obj *var);
-
-    /// @brief Remove a variable from the current scope
-    /// @note If in a function, it will remove the variable
-    /// in that function's local scope instead.
-    /// @param var The identifier of the variable to remove
-    void unregister_variable(const std::string &id);
-
-    /// @brief Register a new function in the global scope
-    /// @param func The function to register
-    void register_function(earl::function::Obj *func);
-
-    /// @brief Remove a function in the global scope
-    /// @param func The function to remove
-    void unregister_function(earl::function::Obj *func);
-
-    /// @brief Remove a function in the global scope
-    /// @param id The identifier of the function to remove
-    void unregister_function(const std::string &id);
-
-    /// @brief Check if a variable is registered in either
-    /// the global or local scope of a function
-    /// @param id The identifier of the variable to check
-    bool variable_is_registered(const std::string &id);
-
-    /// @brief Check if a function is registered in the global scope
-    /// @param func The function to check
-    bool function_is_registered(earl::function::Obj &func);
-
-    /// @brief Check if a function is registered in the global scope
-    /// @param id The identifier of the function to check
-    bool function_is_registered(const std::string &id);
-
-    /// @brief Check if the interpreter is currently in a function
-    /// during runtime evaluation
-    bool in_function(void) const;
-
-    /// @brief Get a registered variable from either the global
-    /// or current scope.
-    /// @param id The identifier of the variable to get
-    earl::variable::Obj *get_registered_variable(const std::string &id);
-
-    /// @brief Get a registered function from the global scope
-    /// @param id The identifier of the function to get
-    earl::function::Obj *get_registered_function(const std::string &id);
-
-    /// @brief Get the current function if we are in one.
-    /// @note It is expected to call `in_function()` prior
-    /// to calling this function
-    earl::function::Obj *get_curfunc(void);
-
-    /// @brief Get the current module of the context
-    /// @returns A token representing the module name
-    Token *get_module(void);
-
-    /// @brief Set the module name
-    /// @param id The module to set
-    void set_module(std::unique_ptr<Token> id);
-
-    /// @brief Push on a new child context
-    /// @param child The child context to push
-    void push_child_context(std::unique_ptr<Ctx> child);
-
-    /// @brief Get a already registered and parsed module
-    /// @param id The identifier of the module
-    earl::value::Module *get_registered_module(const std::string &id);
-
-    /// @brief Retrieve a specific statement in the parsed code
-    /// @param i The index of the statement
-    Stmt *get_stmt(size_t i);
-
-    /// @brief Get the total number of statements parsed
     size_t stmts_len(void) const;
+    Stmt *stmt_at(size_t idx);
 
-    earl::value::Class *get_registered_class(const std::string &id);
-    bool class_is_registered(const std::string &id);
-    void register_class(earl::value::Class *klass);
-    bool owns_class(const std::string id);
+    void set_mod(std::string id);
+    const std::string &get_mod(void) const;
 
-    void add_to_tmp_scope(earl::variable::Obj *var);
-    earl::variable::Obj *get_var_from_tmp_scope(const std::string &id);
-    bool var_in_tmp_scope(const std::string &id);
-    void clear_tmp_scope(void);
+    void add_import(std::shared_ptr<Ctx> ctx);
+    std::shared_ptr<Ctx> *get_import(const std::string &id);
 
-    void debug_dump(void);
+    void define_class(StmtClass *klass);
+    bool class_is_defined(const std::string &id) const;
+    StmtClass *class_get(const std::string &id);
+    void debug_dump_defined_classes(void) const;
 
-    std::vector<std::pair<StmtClass *, Ctx *>> available_classes;
+    void debug_dump_variables(void) const;
 
-    Ctx *m_parent;
-    earl::value::Class *curclass;
-    earl::value::Closure *curclosure;
-
-    std::vector<earl::value::Class *> class_chain;
-
-    /// @brief All children contexts from parsed imported files
-    std::vector<std::unique_ptr<Ctx>> m_children_contexts;
-
-    std::vector<std::unordered_map<std::string, earl::variable::Obj *>> m_tmp_scope;
-
-    Ctx *prev;
-
-    /// @brief The lexer associated with this module. This
-    /// is needed because of ownership rules.
-    std::unique_ptr<Lexer> m_lexer;
-
-    std::vector<earl::value::Closure *> closures;
+    CtxType type(void) const override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
 
 private:
-    /// @brief The global scope of all EARL variables
-    Scope<std::string, earl::variable::Obj *> m_globalvars;
+    std::string m_mod;
+    std::vector<std::shared_ptr<Ctx>> m_imports;
 
-    /// @brief The global scope of all EARL functions
-    Scope<std::string, earl::function::Obj *> m_globalfuncs;
-
-    std::unordered_map<std::string, earl::value::Class *> m_globalclasses;
-
-    /// @brief The name of the module as a token
-    std::unique_ptr<Token> m_module;
-
-    /// @brief The parsed program produced from the `Parser`.
-    /// This is needed because of ownership rules.
+    std::unique_ptr<Lexer> m_lexer;
     std::unique_ptr<Program> m_program;
 
-    /// @brief The stacktrace of EARL function calls.
-    std::vector<earl::function::Obj *> m_stacktrace;
+    std::unordered_map<std::string, StmtClass *> m_defined_classes;
+};
+
+struct FunctionCtx : public Ctx {
+    FunctionCtx(std::shared_ptr<Ctx> owner);
+    ~FunctionCtx() = default;
+
+    bool in_class(void) const;
+    std::shared_ptr<Ctx> &get_outer_class_owner_ctx(void);
+    std::shared_ptr<Ctx> &get_owner(void);
+    std::shared_ptr<Ctx> &get_outer_world_owner(void);
+    void debug_dump_variables(void) const;
+
+    CtxType type(void) const override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
+
+private:
+    std::shared_ptr<Ctx> m_owner; // The MAIN owner
+    std::shared_ptr<Ctx> m_immediate_owner;
+};
+
+struct ClassCtx : public Ctx {
+    ClassCtx(std::shared_ptr<Ctx> owner);
+    ~ClassCtx() = default;
+
+    std::shared_ptr<Ctx> &get_owner(void);
+    void function_debug_dump(void) const;
+    void fill___m_class_constructor_tmp_args(std::shared_ptr<earl::variable::Obj> &var);
+    void clear___m_class_constructor_tmp_args(void);
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
+    get___m_class_constructor_tmp_args(void);
+
+    CtxType type(void) const override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
+
+private:
+    std::shared_ptr<Ctx> m_owner;
+
+    // Used in the [x, y, ..., N] arguments when creating a new class.
+    // This should only be available for the duration of eval_class_instantiation()
+    // for the class members as well as providing visibility to the constructor().
+    // Then it should be cleared.
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> __m_class_constructor_tmp_args;
+};
+
+struct ClosureCtx : public Ctx {
+    ClosureCtx(std::shared_ptr<Ctx> owner);
+    ~ClosureCtx() = default;
+
+    std::shared_ptr<Ctx> &get_owner(void);
+    std::shared_ptr<Ctx> &get_outer_world_owner(void);
+    void assert_variable_does_not_exist_for_recursive_cl(const std::string &id) const;
+
+    CtxType type(void) const override;
+    void push_scope(void) override;
+    void pop_scope(void) override;
+    void variable_add(std::shared_ptr<earl::variable::Obj> var) override;
+    bool variable_exists(const std::string &id) override;
+    std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) override;
+    void variable_remove(const std::string &id) override;
+    void function_add(std::shared_ptr<earl::function::Obj> func) override;
+    bool function_exists(const std::string &id) override;
+    std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
+    bool closure_exists(const std::string &id) override;
+
+private:
+    std::shared_ptr<Ctx> m_owner;
 };
 
 #endif // CTX_H

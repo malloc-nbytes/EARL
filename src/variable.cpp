@@ -28,27 +28,30 @@
 
 using namespace earl::variable;
 
-Obj::Obj(Token *id, std::unique_ptr<earl::value::Obj> value, uint32_t attrs)
-    : m_id(id), m_value(std::move(value)), m_attrs(attrs) {}
+Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
+    : m_id(id), m_value(value), m_attrs(attrs) {}
 
 const std::string &Obj::id(void) const {
     return m_id->lexeme();
 }
 
-earl::value::Obj *Obj::value(void) const {
-    return m_value.get();
+std::shared_ptr<earl::value::Obj> Obj::value(void) const {
+    return m_value;
 }
 
 bool Obj::is_ref(void) const {
-    UNIMPLEMENTED("is_ref");
-    // return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
+    return (m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
 }
 
 bool Obj::is_pub(void) const {
     return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
-Obj *Obj::copy(void) {
-    return new Obj(m_id, std::unique_ptr<value::Obj>(m_value->copy()), m_attrs);
+std::shared_ptr<Obj> Obj::copy(void) {
+    return std::make_shared<Obj>(m_id, m_value->copy(), m_attrs);
+}
+
+earl::value::Type Obj::type(void) const {
+    return m_value->type();
 }
 

@@ -123,6 +123,8 @@ std::string tokentype_to_str(TokenType type)
         return "`RIGHTARROW`";
     case TokenType::Double_Period:
         return "`DOUBLE_PERIOD`";
+    case TokenType::Double_Colon:
+        return "`DOUBLE_COLON`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:
@@ -143,6 +145,9 @@ std::string tokentype_to_str(TokenType type)
     }
     return nullptr;
 }
+
+Token::Token(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp)
+    : m_lexeme(std::move(lexeme)), m_type(type), m_row(row), m_col(col), m_fp(fp) {}
 
 Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, std::string &fp)
     : m_type(type), m_row(row), m_col(col), m_fp(std::move(fp)), m_next(nullptr) {

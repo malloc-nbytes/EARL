@@ -29,10 +29,12 @@
 
 ExprCharLit::ExprCharLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
 
-ExprType ExprCharLit::get_type() const {
+ExprType
+ExprCharLit::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprCharLit::get_term_type() const {
+ExprTermType
+ExprCharLit::get_term_type() const {
     return ExprTermType::Char_Literal;
 }

@@ -33,77 +33,87 @@
 
 using namespace earl::value;
 
-Closure::Closure(ExprClosure *expr_closure, std::vector<std::pair<Token *, uint32_t>> params)
-    : m_expr_closure(expr_closure), m_params(std::move(params)) {
-    m_local.emplace_back();
-}
+Closure::Closure(ExprClosure *expr_closure,
+                 std::vector<std::pair<Token *, uint32_t>> params,
+                 std::shared_ptr<Ctx> owner)
+    : m_expr_closure(expr_closure), m_params(std::move(params)), m_owner(owner) {}
 
-StmtBlock *Closure::block(void) {
+StmtBlock *
+Closure::block(void) {
     return m_expr_closure->m_block.get();
 }
 
-void Closure::load_parameters(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    for (size_t i = 0; i < values.size(); i++) {
-        earl::value::Obj *value = values[i];
-
-        earl::variable::Obj *var = nullptr;
-        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0) {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value));
-        }
-        else {
-            var
-                = new earl::variable::Obj(m_params.at(i).first,
-                                          std::unique_ptr<earl::value::Obj>(value->copy()));
-        }
-
-        ctx.register_variable(var);
+void
+Closure::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> ctx) {
+    for (size_t i = 0; i < values.size(); ++i) {
+        auto value = values[i];
+        Token *id = m_params.at(i).first;
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
+        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)
+            var = std::make_shared<earl::variable::Obj>(id, value);
+        else
+            var = std::make_shared<earl::variable::Obj>(id, value->copy());
+        ctx->variable_add(var);
     }
 }
 
-Obj *Closure::call(std::vector<earl::value::Obj *> &values, Ctx &ctx) {
-    ctx.push_scope();
-    load_parameters(values, ctx);
-    earl::value::Obj *result = Interpreter::eval_stmt_block(this->block(), ctx);
-    ctx.pop_scope();
-
-    return result;
+std::shared_ptr<Obj>
+Closure::call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
+    (void)values;
+    (void)ctx;
+    UNIMPLEMENTED("Closure::call");
 }
 
-bool Closure::has_local(const std::string &id) {
-    return m_local.back().contains(id);
+size_t Closure::params_len(void) const {
+    return m_params.size();
+}
+
+bool Closure::param_at_is_ref(size_t i) const {
+    return (m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0;
 }
 
 /*** OVERRIDES ***/
-Type Closure::type(void) const {
+
+Type
+Closure::type(void) const {
     return Type::Closure;
 }
 
-Obj *Closure::binop(Token *op, Obj *other) {
+std::shared_ptr<Obj>
+Closure::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Closure::binop");
 }
 
-bool Closure::boolean(void) {
+bool
+Closure::boolean(void) {
     UNIMPLEMENTED("Closure::boolean");
 }
 
-void Closure::mutate(Obj *other) {
+void
+Closure::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Closure::mutate");
 }
 
-Obj *Closure::copy(void) {
-    return new Closure(m_expr_closure, m_params);
+std::shared_ptr<Obj>
+Closure::copy(void) {
+    std::vector<std::pair<Token *, uint32_t>> params = {};
+    auto copy = std::make_shared<Closure>(m_expr_closure, m_params, m_owner);
+    for (auto &p : m_params)
+        copy->m_params.push_back(p);
+    return copy;
 }
 
-bool Closure::eq(Obj *other) {
+bool
+Closure::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
     UNIMPLEMENTED("Closure::eq");
     return true;
 }
 
-std::string Closure::to_cxxstring(void) {
+std::string
+Closure::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `closure` type to a string");
 }

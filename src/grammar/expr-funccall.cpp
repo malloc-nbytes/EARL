@@ -27,15 +27,17 @@
 
 #include "ast.hpp"
 
-ExprFuncCall::ExprFuncCall(std::unique_ptr<Token> id,
+ExprFuncCall::ExprFuncCall(std::unique_ptr<Expr> left,
                            std::vector<std::unique_ptr<Expr>> params)
-    : m_id(std::move(id)), m_params(std::move(params)) {}
+    : m_left(std::move(left)), m_params(std::move(params)) {}
 
-ExprType ExprFuncCall::get_type() const {
+ExprType
+ExprFuncCall::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprFuncCall::get_term_type() const {
+ExprTermType
+ExprFuncCall::get_term_type() const {
     return ExprTermType::Func_Call;
 }
 

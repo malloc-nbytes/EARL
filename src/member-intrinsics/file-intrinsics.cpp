@@ -36,134 +36,64 @@
 #include "utils.hpp"
 #include "common.hpp"
 
-earl::value::Obj *Intrinsics::intrinsic_member_read(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
+Intrinsics::intrinsic_file_member_functions = {
+    {"dump", &Intrinsics::intrinsic_member_dump},
+    {"close", &Intrinsics::intrinsic_member_close},
+    {"read", &Intrinsics::intrinsic_member_read},
+    {"write", &Intrinsics::intrinsic_member_write},
+    {"writelines", &Intrinsics::intrinsic_member_writelines},
+};
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`read` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`read` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
-    return f->read();
+    (void)obj;
+    (void)unused;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_read");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_write(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &param,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    if (param.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`write` member intrinsic expects 1 argument but %zu were supplied",
-                  param.size());
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`write` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
+    __INTR_ARGS_MUSTBE_SIZE(param, 1, "write");
+    auto f = dynamic_cast<earl::value::File *>(obj.get());
     f->write(param[0]);
-
-    return new earl::value::Void();
+    return nullptr;
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_writelines(earl::value::Obj *obj, std::vector<earl::value::Obj *> &param, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj,
+                                        std::vector<std::shared_ptr<earl::value::Obj>> &param,
+                                        std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    if (param.size() != 1) {
-        ERR_WARGS(Err::Type::Fatal, "`writelines` member intrinsic expects 1 argument but %zu were supplied",
-                  param.size());
-    }
-
-    if (param[0]->type() != earl::value::Type::List) {
-        ERR(Err::Type::Fatal, "argument 1 in `substr` expects an `int` value");
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`writelines` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
-    auto *lst = dynamic_cast<earl::value::List *>(param[0]);
-    f->writelines(lst);
-
-    return new earl::value::Void();
+    (void)obj;
+    (void)param;
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_writelines");
 }
 
-earl::value::Obj *Intrinsics::intrinsic_member_dump(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR(Err::Type::Fatal, "`dump` member intrinsic expects 0 arguments");
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`dump` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "dump");
+    auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->dump();
-
-    return new earl::value::Void();
+    return nullptr;
 }
 
-earl::value::Obj *Intrinsics::intrinsic_open(ExprFuncCall *expr, std::vector<earl::value::Obj *> &params, Ctx &ctx) {
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)expr;
-
-    if (params.size() != 2) {
-        ERR_WARGS(Err::Type::Fatal, "`open` intrinsic expects 2 arguments but %zu were supplied",
-                  params.size());
-    }
-
-    if (params[0]->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "argument 1 in `open` expects a `str` value");
-    }
-    if (params[1]->type() != earl::value::Type::Str) {
-        ERR(Err::Type::Fatal, "argument 2 in `open` expects a `str` value");
-    }
-
-    auto *fp = dynamic_cast<earl::value::Str *>(params[0]);
-    auto *mode = dynamic_cast<earl::value::Str *>(params[1]);
-    std::fstream stream;
-
-    if (mode->value() == "r") {
-        stream.open(fp->value(), std::ios::in);
-    }
-    else if (mode->value() == "w") {
-        stream.open(fp->value(), std::ios::out);
-    }
-    else {
-        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
-                  mode->value().c_str());
-    }
-
-    if (!stream) {
-        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
-    }
-
-    auto *f = new earl::value::File(fp, mode, std::move(stream));
-    f->set_open();
-
-    return f;
-}
-
-earl::value::Obj *Intrinsics::intrinsic_member_close(earl::value::Obj *obj, std::vector<earl::value::Obj *> &unused, Ctx &ctx) {
-    (void)ctx;
-
-    if (unused.size() != 0) {
-        ERR_WARGS(Err::Type::Fatal, "`close` member intrinsic expects 0 arguments but %zu were supplied",
-                  unused.size());
-    }
-
-    if (obj->type() != earl::value::Type::File) {
-        ERR(Err::Type::Fatal, "`close` member intrinsic is only defined for `file` types");
-    }
-
-    auto *f = dynamic_cast<earl::value::File *>(obj);
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "close");
+    auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->close();
-    return new earl::value::Void();
+    return nullptr;
 }
