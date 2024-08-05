@@ -181,6 +181,8 @@ ClosureCtx::get_outer_world_owner(void) {
         return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner();
     else if (m_owner && m_owner->type() == CtxType::Class)
         return dynamic_cast<ClassCtx *>(m_owner.get())->get_owner();
+    else if (m_owner && m_owner->type() == CtxType::Closure)
+        return dynamic_cast<ClosureCtx *>(m_owner.get())->get_outer_world_owner();
     assert(m_owner);
     return m_owner;
 }

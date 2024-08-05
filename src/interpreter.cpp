@@ -187,36 +187,30 @@ evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
         if constexpr (std::is_same_v<T, std::shared_ptr<earl::function::Obj>>) {
 
             // Build reference table
-            for (size_t i = 0; i < fun->params_len(); ++i) {
-                if (fun->param_at_is_ref(i)) refs.push_back(1);
-                else                         refs.push_back(0);
-            }
+            for (size_t i = 0; i < fun->params_len(); ++i)
+                refs.push_back(static_cast<bool>(fun->param_at_is_ref(i)));
 
             // Evaluate the parameters based on the reference table
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
-                if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
-                else         res.push_back(unpack_ER(er, ctx, false));
+                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs[i]);
+                res.push_back(unpack_ER(er, ctx, refs[i]));
+                // if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
+                // else         res.push_back(unpack_ER(er, ctx, false));
             }
         }
 
         else if constexpr (std::is_same_v<T, earl::value::Closure *>) {
 
             // Build reference table
-            for (size_t i = 0; i < fun->params_len(); ++i) {
-                if (fun->param_at_is_ref(i))
-                    refs.push_back(1);
-                else
-                    refs.push_back(0);
-            }
+            for (size_t i = 0; i < fun->params_len(); ++i)
+                refs.push_back(static_cast<bool>(fun->param_at_is_ref(i)));
 
             // Evaluate the parameters based on the reference table
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/false);
-                if (refs[i])
-                    res.push_back(unpack_ER(er, ctx, true));
-                else
-                    res.push_back(unpack_ER(er, ctx, false));
+                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs[i]);
+                res.push_back(unpack_ER(er, ctx, refs[i]));
+                // if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
+                // else         res.push_back(unpack_ER(er, ctx, false));
             }
         }
 
