@@ -286,7 +286,7 @@ namespace earl {
             std::vector<std::shared_ptr<Char>> &value_raw(void);
             std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
-            std::shared_ptr<Str> substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2);
+            std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2);
             void pop(std::shared_ptr<Obj> &idx);
             std::shared_ptr<Obj> back(void);
 

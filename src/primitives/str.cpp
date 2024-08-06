@@ -103,10 +103,11 @@ std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
     return std::make_shared<List>(std::move(splits));
 }
 
-std::shared_ptr<Str> Str::substr(std::shared_ptr<Int> &idx1, std::shared_ptr<Int> &idx2) {
-    (void)idx1;
-    (void)idx2;
-    UNIMPLEMENTED("Str::substr");
+std::shared_ptr<Str> Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
+    assert(idx1->type() == Type::Int);
+    assert(idx2->type() == Type::Int);
+    std::string sub = this->value().substr(dynamic_cast<Int*>(idx1.get())->value(), dynamic_cast<Int*>(idx2.get())->value());
+    return std::make_shared<Str>(sub);
 }
 
 void Str::pop(std::shared_ptr<Obj> &idx) {

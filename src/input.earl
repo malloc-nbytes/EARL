@@ -1,4 +1,5 @@
 mod Main
 
-let s = input("what is your name? ");
-println(s);
+let s = "hello world";
+
+println(s.substr(2, 5));

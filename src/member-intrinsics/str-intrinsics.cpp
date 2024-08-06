@@ -39,6 +39,7 @@ Intrinsics::intrinsic_str_member_functions = {
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
+    {"substr", &Intrinsics::intrinsic_member_substr},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -57,9 +58,10 @@ Intrinsics::intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &idxs,
                                     std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)obj;
-    (void)idxs;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_substr");
+    __INTR_ARGS_MUSTBE_SIZE(idxs, 2, "substr");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(idxs[0], earl::value::Type::Int, 1, "substr");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(idxs[1], earl::value::Type::Int, 2, "substr");
+    return dynamic_cast<earl::value::Str *>(obj.get())->substr(idxs[0], idxs[1]);
 }
 
 std::shared_ptr<earl::value::Obj>
