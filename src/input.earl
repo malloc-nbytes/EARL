@@ -1,7 +1,2 @@
 mod Main
 
-let args = argv();
-
-println(args);
-
-println(type(args));

@@ -163,17 +163,38 @@ Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value:
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
-    (void)params;
-    (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic___internal_mkdir__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_mkdir__");
+    auto obj = params[0];
+    std::string path = obj->to_cxxstring();
+    if (!std::filesystem::exists(path))
+        if (!std::filesystem::create_directory(path))
+            ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx) {
-    (void)params;
-    (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic___internal_ls__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_ls__");
+
+    auto obj = params[0];
+    std::string path = obj->to_cxxstring();
+
+    auto lst = std::make_shared<earl::value::List>();
+    std::vector<std::shared_ptr<earl::value::Obj>> items={};
+
+    try {
+        for (const auto &entry : std::filesystem::directory_iterator(path))
+            items.push_back(std::make_shared<earl::value::Str>(entry.path()));
+    }
+    catch (const std::filesystem::filesystem_error &e) {
+        const char *err = e.what();
+        ERR_WARGS(Err::Type::Fatal, "could not list directory `%s`: %s", path.c_str(), err);
+    }
+
+    lst->append(items);
+
+    return lst;
 }
 
 std::shared_ptr<earl::value::Obj>
