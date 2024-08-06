@@ -1,13 +1,5 @@
 mod Main
 
-@world
-fn test() {
-    println("x: ", x);
-    println("lst: ", lst);
-}
-
-let x = 1;
 let lst = [1,2,3,4,5];
 
-test();
-
+lst.foreach(|x| { println(x); });

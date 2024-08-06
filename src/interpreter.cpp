@@ -711,9 +711,7 @@ eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
-    (void)stmt;
-    (void)ctx;
-    UNIMPLEMENTED("eval_stmt_break");
+    return std::make_shared<earl::value::Break>();
 }
 
 std::shared_ptr<earl::value::Obj>

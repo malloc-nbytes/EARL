@@ -90,10 +90,10 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
                                      std::vector<std::shared_ptr<earl::value::Obj>> &closure,
                                      std::shared_ptr<Ctx> &ctx) {
-    (void)obj;
-    (void)closure;
-    (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_foreach");
+    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "foreach");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach");
+    dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
