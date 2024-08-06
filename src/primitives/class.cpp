@@ -42,6 +42,10 @@ std::shared_ptr<Ctx> &Class::ctx(void) {
     return m_ctx;
 }
 
+bool Class::is_pub(void) const {
+    return (m_stmtclass->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
+}
+
 /*** OVERRIDES ***/
 Type Class::type(void) const {
     return Type::Class;

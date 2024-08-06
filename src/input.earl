@@ -1,8 +1,9 @@
 mod Main
 
-let s = "   hello world    ";
+import "std/set.earl"
 
-s.trim();
+let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
+let n = Set::Node(3);
 
-println(s);
+
 

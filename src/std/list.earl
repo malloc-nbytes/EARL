@@ -116,4 +116,5 @@ fn quicksort(@ref lst, compar) {
     return __quicksort(lst, 0, len(lst)-1, compar);
 }
 
-
+@pub let DEFAULT_INT_ASCEND_QUICKSORT = |x, y| { return y > x; };
+@pub let DEFAULT_INT_DESCEND_QUICKSORT = |x, y| { return x > y; };
