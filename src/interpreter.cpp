@@ -389,13 +389,8 @@ eval_expr_term_funccall(ExprFuncCall *expr, std::shared_ptr<Ctx> &ctx, bool ref)
         return ER(nullptr, static_cast<ERT>(ERT::FunctionIdent|ERT::IntrinsicMemberFunction), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 
     std::shared_ptr<Ctx> ctx_wclass = check_if_is_class(id, ctx);
-    if (ctx_wclass) {
+    if (ctx_wclass)
         return ER(nullptr, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx_wclass);
-
-        // auto params = evaluate_function_parameters(expr, ctx, ref);
-        // auto value = eval_class_instantiation(id, params, ctx_wclass, ref);
-        // return ER(value, static_cast<ERT>(ERT::ClassInstant|ERT::Literal), /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx_wclass);
-    }
 
     return ER(nullptr, ERT::FunctionIdent, /*id=*/id, /*extra=*/static_cast<void *>(expr), /*ctx=*/ctx);
 }
@@ -437,21 +432,31 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     }, expr->m_right);
 
     if (right_er.is_class_instant()) {
+        assert(right_er.ctx->type() == CtxType::World);
+        WorldCtx *world = dynamic_cast<WorldCtx *>(right_er.ctx.get());
+        if (world->class_is_defined(right_er.id)) {
+            if ((world->class_get(right_er.id)->m_attrs & static_cast<uint32_t>(Attr::Pub)) == 0) {
+                ERR_WARGS(Err::Type::Fatal, "class `%s` in module `%s` does not contain the @pub attribute",
+                        right_er.id.c_str(), left_id.c_str());
+            }
+        }
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
         auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx, ref);
         return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
         // Check if the function has @pub attribute
-        if (right_er.ctx->function_exists(right_er.id))
+        if (right_er.ctx->function_exists(right_er.id)) {
             if (!right_er.ctx->function_get(right_er.id)->is_pub())
                 ERR_WARGS(Err::Type::Fatal, "function `%s` in module `%s` does not contain the @pub attribute",
                         right_er.id.c_str(), left_id.c_str());
+        }
         // Check if the closure has @pub attribute
-        else if (right_er.ctx->closure_exists(right_er.id))
+        else if (right_er.ctx->closure_exists(right_er.id)) {
             if (!right_er.ctx->function_get(right_er.id)->is_pub())
                 ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
                         right_er.id.c_str(), left_id.c_str());
+        }
         auto func = eval_user_defined_function_wo_params(right_er.id, static_cast<ExprFuncCall *>(right_er.extra), ctx, right_er.ctx);
         return ER(func, ERT::Literal);
     }

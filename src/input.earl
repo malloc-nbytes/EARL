@@ -1,7 +1,9 @@
 mod Main
 
-import "std/list.earl"
+import "std/set.earl"
 
-let lst = List::preset(0, 10);
+let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
+let n = Set::Node(3);
 
-println(lst);
+
+
