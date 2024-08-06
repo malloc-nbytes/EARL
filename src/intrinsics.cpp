@@ -332,9 +332,11 @@ Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &pa
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                             std::shared_ptr<Ctx> &ctx) {
-    (void)params;
     (void)ctx;
-    UNIMPLEMENTED("Intrinsics::intrinsic_input");
+    intrinsic_print(params, ctx);
+    std::string in = "";
+    std::getline(std::cin, in);
+    return std::make_shared<earl::value::Str>(in);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -351,7 +353,6 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-
     __INTR_ARGS_MUSTBE_SIZE(params, 2, "open");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "open");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "open");
