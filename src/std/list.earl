@@ -24,8 +24,7 @@ mod List
 
 import "std/utils.earl"
 
-@pub
-fn preset(elem, cap) {
+@pub fn preset(elem, cap) {
     let lst = [];
     for i in 0..cap {
         lst.append(elem);
@@ -33,8 +32,7 @@ fn preset(elem, cap) {
     return lst;
 }
 
-@pub
-fn from_range(start, stop, stride) {
+@pub fn from_range(start, stop, stride) {
     assert(stride != 0);
 
     let lst = [];
@@ -48,15 +46,13 @@ fn from_range(start, stop, stride) {
     return lst;
 }
 
-@pub
-fn fill(@ref lst, k) {
+@pub fn fill(@ref lst, k) {
     for i in 0..len(lst) {
         lst[i] = k;
     }
 }
 
-@pub
-fn sum(@ref lst) {
+@pub fn sum(@ref lst) {
     let s = 0;
     for i in 0..len(lst) {
         s = s + lst[i];
@@ -64,8 +60,7 @@ fn sum(@ref lst) {
     return s;
 }
 
-@pub
-fn find(@ref lst, @ref elem) {
+@pub fn find(@ref lst, @ref elem) {
     let i = 0;
     while i < len(lst) {
         if elem == lst[i] {
@@ -76,8 +71,7 @@ fn find(@ref lst, @ref elem) {
     return 0-1;
 }
 
-@pub
-fn count(@ref lst, @ref elem) {
+@pub fn count(@ref lst, @ref elem) {
     let c = 0;
     for i in 0..len(lst) {
         if elem == lst[i] {
@@ -87,8 +81,7 @@ fn count(@ref lst, @ref elem) {
     return c;
 }
 
-@pub
-fn quicksort(@ref lst, compar) {
+@pub fn quicksort(@ref lst, compar) {
     let __quicksort = |@ref lst, low, high, @ref compar| {
         let partition = |@ref lst, low, high| {
             let pivot = lst[high];

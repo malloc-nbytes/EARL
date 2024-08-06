@@ -22,8 +22,7 @@
 
 mod Str
 
-@pub
-fn rmchar(s, c) {
+@pub fn rmchar(s, c) {
     unimplemented("std/str.earl:rmchar");
     for i in 0..len(s) {
     }

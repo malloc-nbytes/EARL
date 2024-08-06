@@ -22,32 +22,26 @@
 
 mod Stack
 
-@pub
-class T [init] {
+@pub class T [init] {
     @ref lst = init;
 
-    @pub
-    fn push(x) {
+    @pub fn push(x) {
         this.lst.append(x);
     }
 
-    @pub
-    fn spop() {
+    @pub fn spop() {
         this.lst.pop(len(this.lst)-1);
     }
 
-    @pub
-    fn empty() {
+    @pub fn empty() {
         return len(this.lst) == 0;
     }
 
-    @pub
-    fn top() {
+    @pub fn top() {
         return this.lst[len(this.lst)-1];
     }
 
-    @pub
-    fn show() {
+    @pub fn show() {
         for i in 0..len(lst) {
             println(lst[i]);
         }

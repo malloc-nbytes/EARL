@@ -22,13 +22,11 @@
 
 mod Utils
 
-@pub
-fn is_even(n) {
+@pub fn is_even(n) {
     return n%2 == 0;
 }
 
-@pub
-fn swap(@ref x1, @ref x2) {
+@pub fn swap(@ref x1, @ref x2) {
     let t = x1;
     x1 = x2;
     x2 = t;
