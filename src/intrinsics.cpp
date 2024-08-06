@@ -68,6 +68,7 @@ Intrinsics::intrinsic_member_functions = {
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},
+    {"trim", &Intrinsics::intrinsic_member_trim},
     {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},

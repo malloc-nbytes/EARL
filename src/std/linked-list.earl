@@ -60,7 +60,7 @@ class T [init] {
         return false;
     }
 
-    @pub fn sdump() {
+    @pub fn show() {
         let it = hd;
         while it.is_some() {
             println(it.unwrap().value);

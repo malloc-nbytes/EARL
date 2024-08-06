@@ -243,6 +243,11 @@ namespace Intrinsics {
                            std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_member_trim(std::shared_ptr<earl::value::Obj> obj,
+                          std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                          std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                   std::shared_ptr<Ctx> &ctx);

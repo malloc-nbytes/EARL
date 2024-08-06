@@ -718,12 +718,11 @@ eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER
-        left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx, true), // POSSIBLE BREAK, WAS FALSE
-        right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
-    std::shared_ptr<earl::value::Obj>
-        l = unpack_ER(left_er, ctx, true),
-        r = unpack_ER(right_er, ctx, false);
+    ER left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx, true);
+    // bool ref = ctx->variable_get(left_er.id)->is_ref();
+    ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
+    auto l = unpack_ER(left_er, ctx, true);
+    auto r = unpack_ER(right_er, ctx, false);
     l->mutate(r);
     return std::make_shared<earl::value::Void>();
 }

@@ -1,4 +1,8 @@
 mod Main
 
+let s = "   hello world    ";
 
+s.trim();
+
+println(s);
 

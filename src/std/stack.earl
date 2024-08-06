@@ -47,7 +47,7 @@ class T [init] {
     }
 
     @pub
-    fn sdump() {
+    fn show() {
         for i in 0..len(lst) {
             println(lst[i]);
         }

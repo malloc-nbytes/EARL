@@ -121,6 +121,19 @@ std::shared_ptr<Obj> Str::back(void) {
     return m_value.back()->copy();
 }
 
+void Str::trim(void) {
+    UNIMPLEMENTED("Str::trim");
+    std::string v = this->value();
+    size_t start = v.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string::npos)
+        return;
+    size_t end = v.find_last_not_of(" \t\n\r\f\v");
+    std::string t = v.substr(start, end-start+1);
+    m_value.clear();
+    for (char c : v)
+        m_value.push_back(std::make_shared<Char>(std::string(1, c)));
+}
+
 Type Str::type(void) const {
     return Type::Str;
 }
@@ -158,11 +171,8 @@ std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
 
 void Str::mutate(const std::shared_ptr<Obj> &other) {
     assert(other->type() == Type::Str);
-
     Str *otherstr = dynamic_cast<Str *>(other.get());
-
     m_value.clear();
-
     for (size_t i = 0; i < otherstr->value_raw().size(); ++i)
         m_value.push_back(otherstr->value_raw()[i]);
 }

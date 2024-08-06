@@ -40,7 +40,18 @@ Intrinsics::intrinsic_str_member_functions = {
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},
+    {"trim", &Intrinsics::intrinsic_member_trim},
 };
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_trim(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "trim");
+    dynamic_cast<earl::value::Str *>(obj.get())->trim();
+    return nullptr;
+}
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,

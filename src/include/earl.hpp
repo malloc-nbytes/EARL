@@ -289,6 +289,7 @@ namespace earl {
             std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2);
             void pop(std::shared_ptr<Obj> &idx);
             std::shared_ptr<Obj> back(void);
+            void trim(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -448,21 +449,15 @@ namespace earl {
 
             /// @brief Get the identifier of this variable
             const std::string &id(void) const;
-
             /// @brief Check if a variable is in global scope
             [[deprecated]]
             bool is_global(void) const;
-
             /// @brief Get the actual value of this variable
             std::shared_ptr<value::Obj> value(void) const;
-
             /// @brief Get the type of this variable
             value::Type type(void) const;
-
             bool is_ref(void) const;
-
             bool is_pub(void) const;
-
             std::shared_ptr<Obj> copy(void);
 
         private:
