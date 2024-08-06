@@ -23,14 +23,12 @@
 mod OS
 
 # List all items at `path`.
-@pub
-fn ls(path) {
+@pub fn ls(path) {
     return __internal_ls__(path);
 }
 
 # Create a new directory at `path`.
-@pub
-fn mkdir(path) {
+@pub fn mkdir(path) {
     __internal_mkdir__(path);
 }
 
@@ -39,8 +37,7 @@ fn mkdir(path) {
 # in the path will be used as the file to be created.
 # It is functionally equivalent to:
 #     mkdir -p <path> && touch <path>/file.txt.
-@pub
-fn fullpath_mkdir(fullpath) {
+@pub fn fullpath_mkdir(fullpath) {
     if len(fullpath) == 0 {
         panic("fullpath_mkdir: the path specified cannot be empty");
     }

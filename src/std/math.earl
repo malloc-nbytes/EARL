@@ -22,24 +22,21 @@
 
 mod Math
 
-@pub
-fn max(x, y) {
+@pub fn max(x, y) {
     if x >= y {
         return x;
     }
     return y;
 }
 
-@pub
-fn min(x, y) {
+@pub fn min(x, y) {
     if x <= y {
         return x;
     }
     return y;
 }
 
-@pub
-fn abs(x) {
+@pub fn abs(x) {
     if x < 0 {
         return x * (0-1);
     }

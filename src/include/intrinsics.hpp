@@ -151,8 +151,16 @@ namespace Intrinsics {
                       std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                      std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                      std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,

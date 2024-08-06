@@ -22,8 +22,7 @@
 
 mod Queue
 
-@pub
-class T [init] {
+@pub class T [init] {
     m_lst = init;
 
     @pub fn empty() {

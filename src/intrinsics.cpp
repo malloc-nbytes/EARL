@@ -55,6 +55,8 @@ Intrinsics::intrinsic_functions = {
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
+    {"fprintln", &Intrinsics::intrinsic_fprintln},
+    {"fprint", &Intrinsics::intrinsic_fprint},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -259,50 +261,52 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
 }
 
 static void
-__intrinsic_print(std::shared_ptr<earl::value::Obj> param) {
+__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
+    if (stream == nullptr)
+        stream = &std::cout;
     switch (param->type()) {
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
-        std::cout << intparam->value();
+        *stream << intparam->value();
     } break;
     case earl::value::Type::Bool: {
         auto *bool_param = dynamic_cast<earl::value::Bool *>(param.get());
-        std::cout << (bool_param->value() ? "true" : "false");
+        *stream << (bool_param->value() ? "true" : "false");
     } break;
     case earl::value::Type::Option: {
         auto *option_param = dynamic_cast<earl::value::Option *>(param.get());
 
         if (option_param->is_none())
-            std::cout << "<none>";
+            *stream << "<none>";
         else {
-            std::cout << "some(";
+            *stream << "some(";
             __intrinsic_print(option_param->value());
-            std::cout << ")";
+            *stream << ")";
         }
 
     } break;
     case earl::value::Type::Str: {
         auto *strparam = dynamic_cast<earl::value::Str *>(param.get());
-        std::cout << strparam->value();
+        *stream << strparam->value();
     } break;
     case earl::value::Type::Char: {
         auto *strparam = dynamic_cast<earl::value::Char *>(param.get());
-        std::cout << strparam->value();
+        *stream << strparam->value();
     } break;
     case earl::value::Type::List: {
         earl::value::List *listparam = dynamic_cast<earl::value::List *>(param.get());
-        std::cout << '[';
+        *stream << '[';
         std::vector<std::shared_ptr<earl::value::Obj>> &list = listparam->value();
 
         for (size_t i = 0; i < list.size(); ++i) {
             __intrinsic_print(list[i]);
 
             if (i != list.size()-1) {
-                std::cout << ", ";
+                *stream << ", ";
             }
         }
 
-        std::cout << ']';
+        *stream << ']';
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
@@ -314,9 +318,8 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                             std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    for (size_t i = 0; i < params.size(); ++i) {
+    for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
-    }
     return nullptr;
 }
 
@@ -324,10 +327,72 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                               std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    for (size_t i = 0; i < params.size(); ++i) {
+    for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
-    }
     std::cout << '\n';
+    return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                               std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln");
+    std::ostream *stream = nullptr;
+    if (params[0]->type() == earl::value::Type::Int) {
+        auto *st = dynamic_cast<earl::value::Int *>(params[0].get());
+        switch (st->value()) {
+        case 0:
+            assert(false && "unimplemented");
+        case 1:
+            stream = &std::cout;
+            break;
+        case 2:
+            stream = &std::cerr;
+            break;
+        default:
+            assert(false && "unimplemented");
+        }
+    }
+    else {
+        assert(false && "unimplemented");
+    }
+
+    for (size_t i = 1; i < params.size(); ++i)
+        __intrinsic_print(params[i], stream);
+    *stream << '\n';
+    return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                             std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln");
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln");
+    std::ostream *stream = nullptr;
+    if (params[0]->type() == earl::value::Type::Int) {
+        auto *st = dynamic_cast<earl::value::Int *>(params[0].get());
+        switch (st->value()) {
+        case 0:
+            assert(false && "unimplemented");
+        case 1:
+            stream = &std::cout;
+            break;
+        case 2:
+            stream = &std::cerr;
+            break;
+        default:
+            assert(false && "unimplemented");
+        }
+    }
+    else {
+        assert(false && "unimplemented");
+    }
+
+    for (size_t i = 1; i < params.size(); ++i)
+        __intrinsic_print(params[i], stream);
     return nullptr;
 }
 

@@ -27,8 +27,7 @@ class Node [value] {
     @pub next = none;
 }
 
-@pub
-class T [init] {
+@pub class T [init] {
     hd = none;
 
     fn constructor() {

@@ -1,9 +1,8 @@
 mod Main
 
-import "std/set.earl"
+import "std/io.earl"
 
-let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
-let n = Set::Node(3);
+fprint(IO::stdout, "hello world ", 1234, ' ', ['a']);
 
 
 

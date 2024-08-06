@@ -22,16 +22,20 @@
 
 mod IO
 
+@pub let stdin = 0;
+@pub let stdout = 1;
+@pub let stderr = 2;
+
 # Get the contents of a file and
 # put it into a string.
-fn file_to_str(fp) {
+@pub fn file_to_str(fp) {
     let f = open(fp, "r");
     let s = f.read();
     f.close();
     return s;
 }
 
-fn read_lines(fp) {
+@pub fn read_lines(fp) {
     let content = file_to_str(fp);
     return content.split("\n");
 }
