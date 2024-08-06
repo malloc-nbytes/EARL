@@ -1,8 +1,7 @@
 mod Main
 
-let s = "   hello world    ";
+import "std/list.earl"
 
-s.trim();
+let lst = List::preset(0, 10);
 
-println(s);
-
+println(lst);

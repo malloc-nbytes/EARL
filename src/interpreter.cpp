@@ -410,16 +410,14 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
 
     std::shared_ptr<Ctx> *ctx_ptr = nullptr;
 
-    if (ctx->type() == CtxType::World) {
+    if (ctx->type() == CtxType::World)
         ctx_ptr = dynamic_cast<WorldCtx *>(ctx.get())->get_import(left_id);
-    }
     else if (ctx->type() == CtxType::Function) {
         auto world = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
     }
-    else if (ctx->type() == CtxType::Class) {
+    else if (ctx->type() == CtxType::Class)
         UNIMPLEMENTED("eval_expr_term_mod_access:ctx->type() == CtxType::Class");
-    }
     else if (ctx->type() == CtxType::Closure) {
         auto world = dynamic_cast<ClosureCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
@@ -444,11 +442,24 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
+        // Check if the function has @pub attribute
+        if (right_er.ctx->function_exists(right_er.id))
+            if (!right_er.ctx->function_get(right_er.id)->is_pub())
+                ERR_WARGS(Err::Type::Fatal, "function `%s` in module `%s` does not contain the @pub attribute",
+                        right_er.id.c_str(), left_id.c_str());
+        // Check if the closure has @pub attribute
+        else if (right_er.ctx->closure_exists(right_er.id))
+            if (!right_er.ctx->function_get(right_er.id)->is_pub())
+                ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
+                        right_er.id.c_str(), left_id.c_str());
         auto func = eval_user_defined_function_wo_params(right_er.id, static_cast<ExprFuncCall *>(right_er.extra), ctx, right_er.ctx);
         return ER(func, ERT::Literal);
     }
     else if (right_er.is_ident()) {
-        auto value = unpack_ER(right_er, other_ctx, ref);
+        auto value = unpack_ER(right_er, other_ctx, ref); // This makes sure that the variable exists
+        if (!right_er.ctx->variable_get(right_er.id)->is_pub()) // So no need to call `exists()`
+            ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
+                        right_er.id.c_str(), left_id.c_str());
         return ER(value, ERT::Literal);
     }
     else
