@@ -677,7 +677,7 @@ fn test_variable_instantiation() {
 fn main() {
     test_variable_instantiation();
     test_variable_mutation();
-    # test_world_attr();
+    test_world_attr();
     test_for_loop();
     test_for_loop2();
     test_while_loop();

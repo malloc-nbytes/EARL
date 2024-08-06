@@ -87,3 +87,8 @@ bool
 Obj::param_at_is_ref(size_t i) const {
     return (m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0;
 }
+
+uint32_t
+Obj::attrs(void) const {
+    return m_stmtdef->m_attrs;
+}

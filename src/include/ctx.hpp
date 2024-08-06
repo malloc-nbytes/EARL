@@ -109,7 +109,7 @@ private:
 };
 
 struct FunctionCtx : public Ctx {
-    FunctionCtx(std::shared_ptr<Ctx> owner);
+    FunctionCtx(std::shared_ptr<Ctx> owner, uint32_t attrs);
     ~FunctionCtx() = default;
 
     bool in_class(void) const;
@@ -133,6 +133,8 @@ struct FunctionCtx : public Ctx {
 private:
     std::shared_ptr<Ctx> m_owner; // The MAIN owner
     std::shared_ptr<Ctx> m_immediate_owner;
+    uint32_t m_attrs;
+    
 };
 
 struct ClassCtx : public Ctx {

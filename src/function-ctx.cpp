@@ -29,11 +29,8 @@
 #include "utils.hpp"
 #include "err.hpp"
 
-FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner) {
-    m_immediate_owner = owner;
-
-    // TODO: check if function is @world, copy variables
-    // from @world scope to this function's scope.
+FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner, uint32_t attrs)
+    : m_immediate_owner(owner), m_attrs(attrs) {
     std::shared_ptr<Ctx> it = owner;
     while (1) {
         switch (it->type()) {
@@ -75,6 +72,14 @@ bool
 FunctionCtx::variable_exists(const std::string &id) {
     bool res = m_scope.contains(id);
 
+    bool world = (m_attrs & static_cast<uint32_t>(m_attrs)) != 0;
+
+    if (!res && world && m_owner && m_owner->type() == CtxType::World)
+        res = dynamic_cast<WorldCtx *>(m_owner.get())->variable_exists(id);
+
+    if (!res && world && m_owner && m_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_exists(id);
+
     if (!res && m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->variable_exists(id);
 
@@ -84,6 +89,14 @@ FunctionCtx::variable_exists(const std::string &id) {
 std::shared_ptr<earl::variable::Obj>
 FunctionCtx::variable_get(const std::string &id) {
     std::shared_ptr<earl::variable::Obj> var = m_scope.get(id);
+
+    bool world = (m_attrs & static_cast<uint32_t>(m_attrs)) != 0;
+
+    if (!var && world && m_owner && m_owner->type() == CtxType::World)
+        var = dynamic_cast<WorldCtx *>(m_owner.get())->variable_get(id);
+
+    if (!var && world && m_owner && m_owner->type() == CtxType::Function)
+        var = dynamic_cast<FunctionCtx *>(m_owner.get())->variable_get(id);
 
     if (!var && m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
@@ -131,9 +144,9 @@ FunctionCtx::function_exists(const std::string &id) {
 // TODO: check for conflics
 std::shared_ptr<earl::function::Obj>
 FunctionCtx::function_get(const std::string &id) {
-    std::shared_ptr<earl::function::Obj> func = nullptr;
+    std::shared_ptr<earl::function::Obj> func = m_funcs.get(id);
 
-    if (m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
+    if (!func && m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
         func = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_get(id);
 
     if (!func && m_owner && m_owner->type() == CtxType::Class)
@@ -144,9 +157,6 @@ FunctionCtx::function_get(const std::string &id) {
 
     if (!func && m_owner->type() == CtxType::World)
         func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
-
-    if (!func)
-        func = m_funcs.get(id);
 
     return func;
 }

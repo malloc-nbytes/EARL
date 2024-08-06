@@ -490,6 +490,7 @@ namespace earl {
             bool is_pub(void) const;
             Obj *copy(void);
             bool param_at_is_ref(size_t i) const;
+            uint32_t attrs(void) const;
 
         private:
             StmtDef *m_stmtdef;

@@ -245,7 +245,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
         params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
 
-        auto fctx = std::make_shared<FunctionCtx>(ctx);
+        auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         func->load_parameters(params, fctx);
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
@@ -277,7 +277,7 @@ eval_user_defined_function(const std::string &id,
         auto func = ctx->function_get(id);
         if (from_outside && !func->is_pub())
             ERR_WARGS(Err::Type::Fatal, "function `%s` does not contain the @pub attribute", id.c_str());
-        auto fctx = std::make_shared<FunctionCtx>(ctx);
+        auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         func->load_parameters(params, fctx);
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
