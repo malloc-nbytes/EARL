@@ -50,9 +50,9 @@ Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                   std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)obj;
-    (void)unused;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_read");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "read");
+    auto f = dynamic_cast<earl::value::File *>(obj.get());
+    return f->read();
 }
 
 std::shared_ptr<earl::value::Obj>

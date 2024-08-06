@@ -70,7 +70,14 @@ void File::close(void) {
 }
 
 std::shared_ptr<earl::value::Str> File::read(void) {
-    UNIMPLEMENTED("File::read");
+    if (!m_open)
+        ERR(Err::Type::Fatal, "file is not open");
+    if (m_mode->value() == "w")
+        ERR(Err::Type::Fatal, "file is not open for reading");
+    m_stream.seekg(0, std::ios::beg);
+    std::stringstream buf;
+    buf << m_stream.rdbuf();
+    return std::make_shared<earl::value::Str>(buf.str());
 }
 
 void File::write(std::shared_ptr<Obj> value) {
