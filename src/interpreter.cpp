@@ -446,10 +446,10 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
     if (right_er.is_function_ident()) {
         auto func = eval_user_defined_function_wo_params(right_er.id, static_cast<ExprFuncCall *>(right_er.extra), ctx, right_er.ctx);
         return ER(func, ERT::Literal);
-
-        // auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
-        // auto func = eval_user_defined_function(right_er.id, params, other_ctx, /*from_outside=*/true);
-        // return ER(func, ERT::Literal);
+    }
+    else if (right_er.is_ident()) {
+        auto value = unpack_ER(right_er, other_ctx, ref);
+        return ER(value, ERT::Literal);
     }
     else
         assert(false && "unimplemented");
@@ -488,10 +488,12 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         PackedERPreliminary perp(left_value);
         std::shared_ptr<earl::value::Obj> value = nullptr;
 
-        if (left_er.is_ident() && ctx->variable_exists(left_er.id) && ctx->variable_get(left_er.id)->type() == earl::value::Type::Class)
+        // if (left_er.is_ident() && ctx->variable_exists(left_er.id) && ctx->variable_get(left_er.id)->type() == earl::value::Type::Class) {
+        if (left_value->type() == earl::value::Type::Class) {
             // Class method/member. The right side (right_er) contains the actual call/identifier to be evaluated,
             // and we need the left (left_value)'s context with the preliminary value of (perp).
             value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+        }
         else
             // Function chaining and member intrinsics...
             value = unpack_ER(right_er, ctx, ref, &perp);
