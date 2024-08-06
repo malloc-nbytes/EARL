@@ -81,10 +81,9 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &closure,
                                     std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)obj;
-    (void)closure;
-    UNIMPLEMENTED("Intrinsics::intrinsic_member_filter");
+    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter");
+    return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
 }
 
 std::shared_ptr<earl::value::Obj>

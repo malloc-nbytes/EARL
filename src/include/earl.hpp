@@ -259,7 +259,7 @@ namespace earl {
             /// @param idx The index of the element to remove
             void pop(std::shared_ptr<Obj> &idx);
 
-            std::shared_ptr<List> filter(std::shared_ptr<Closure> &closure, Ctx &ctx);
+            std::shared_ptr<List> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
 
             void foreach(std::shared_ptr<Closure> &closure, Ctx &ctx);
 

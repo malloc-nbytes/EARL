@@ -1,5 +1,2 @@
 mod Main
 
-let s = "hello world";
-
-println(s.substr(2, 5));

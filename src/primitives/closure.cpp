@@ -59,9 +59,11 @@ Closure::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
 
 std::shared_ptr<Obj>
 Closure::call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> &ctx) {
-    (void)values;
-    (void)ctx;
-    UNIMPLEMENTED("Closure::call");
+    ctx->push_scope();
+    load_parameters(values, ctx);
+    auto result = Interpreter::eval_stmt_block(this->block(), ctx);
+    ctx->pop_scope();
+    return result;
 }
 
 size_t Closure::params_len(void) const {

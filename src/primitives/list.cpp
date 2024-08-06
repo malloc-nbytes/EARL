@@ -86,10 +86,24 @@ void List::append(std::shared_ptr<Obj> value) {
     m_value.push_back(value);
 }
 
-std::shared_ptr<List> List::filter(std::shared_ptr<Closure> &closure, Ctx &ctx) {
-    (void)closure;
-    (void)ctx;
-    UNIMPLEMENTED("List::filter");
+std::shared_ptr<List> List::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+    assert(closure->type() == Type::Closure);
+    Closure *cl = dynamic_cast<Closure *>(closure.get());
+
+    auto copy = std::make_shared<List>();
+    std::vector<std::shared_ptr<Obj>> keep_values={};
+
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> values = {m_value.at(i)};
+        std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
+        assert(filter_result->type() == Type::Bool);
+        if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+            keep_values.push_back(m_value.at(i)->copy());
+    }
+
+    copy->append(keep_values);
+
+    return copy;
 }
 
 void List::foreach(std::shared_ptr<Closure> &closure, Ctx &ctx) {

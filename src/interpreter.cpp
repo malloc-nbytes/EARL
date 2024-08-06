@@ -102,6 +102,7 @@ eval_class_instantiation(const std::string &id,
                          std::vector<std::shared_ptr<earl::value::Obj>> &params,
                          std::shared_ptr<Ctx> &ctx,
                          bool ref) {
+    (void)ref;
     StmtClass *class_stmt = nullptr;
 
     if (ctx->type() == CtxType::Class) {
@@ -485,10 +486,15 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     else {
         auto left_value = unpack_ER(left_er, ctx, true);
         PackedERPreliminary perp(left_value);
+        std::shared_ptr<earl::value::Obj> value = nullptr;
 
-        // The right side (right_er) contains the actual call/identifier to be evaluated,
-        // and we need the left (left_value)'s context with the preliminary value of (perp).
-        auto value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+        if (left_er.is_ident() && ctx->variable_exists(left_er.id) && ctx->variable_get(left_er.id)->type() == earl::value::Type::Class)
+            // Class method/member. The right side (right_er) contains the actual call/identifier to be evaluated,
+            // and we need the left (left_value)'s context with the preliminary value of (perp).
+            value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
+        else
+            // Function chaining and member intrinsics...
+            value = unpack_ER(right_er, ctx, ref, &perp);
 
         return ER(value, ERT::Literal);
     }
