@@ -2,4 +2,6 @@ mod Main
 
 let lst = [1,2,3,4,5];
 
-lst.foreach(|x| { println(x); });
+lst = [4,5];
+
+println(lst);

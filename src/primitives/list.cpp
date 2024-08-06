@@ -207,8 +207,10 @@ bool List::boolean(void) {
 }
 
 void List::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("List::mutate");
+    if (!type_is_compatable(this, other.get()))
+        assert(false && "cannot mutate (fix this message)");
+    auto *lst = dynamic_cast<List *>(other.get());
+    m_value = lst->value();
 }
 
 std::shared_ptr<Obj> List::copy(void) {
@@ -218,8 +220,19 @@ std::shared_ptr<Obj> List::copy(void) {
 }
 
 bool List::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("List::eq");
+    if (other->type() != Type::List)
+        return false;
+
+    auto *lst = dynamic_cast<List *>(other.get());
+
+    if (lst->value().size() != this->value().size())
+        return false;
+
+    for (size_t i = 0; i < lst->value().size(); ++i)
+        if (!this->value()[i]->eq(lst->value()[i]))
+            return false;
+
+    return true;
 }
 
 std::string List::to_cxxstring(void) {
