@@ -123,15 +123,6 @@ std::shared_ptr<Obj> Str::back(void) {
 
 void Str::trim(void) {
     UNIMPLEMENTED("Str::trim");
-    std::string v = this->value();
-    size_t start = v.find_first_not_of(" \t\n\r\f\v");
-    if (start == std::string::npos)
-        return;
-    size_t end = v.find_last_not_of(" \t\n\r\f\v");
-    std::string t = v.substr(start, end-start+1);
-    m_value.clear();
-    for (char c : v)
-        m_value.push_back(std::make_shared<Char>(std::string(1, c)));
 }
 
 Type Str::type(void) const {
@@ -183,8 +174,9 @@ std::shared_ptr<Obj> Str::copy(void) {
 }
 
 bool Str::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Str::eq");
+    if (other->type() != Type::Str)
+        return false;
+    return this->value() == dynamic_cast<Str *>(other.get())->value();
 }
 
 std::string Str::to_cxxstring(void) {
