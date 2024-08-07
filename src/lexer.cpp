@@ -28,7 +28,6 @@
 #include <functional>
 #include <fstream>
 #include <iostream>
-
 #include <filesystem>
 
 #include "err.hpp"

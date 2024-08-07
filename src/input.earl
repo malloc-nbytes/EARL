@@ -1,5 +1,5 @@
 mod Main
 
-let s = "hello world";
+let d = 123.321;
 
-s.foreach(|c| { println(c); });
+
