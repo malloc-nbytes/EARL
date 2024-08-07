@@ -12,7 +12,7 @@
 *NOTE*: This language is still in the infant stage and it is _NOT_ recommended to use
 in any real or professional capacity.
 
-*Note*: As of now, the only supported platform is Linux.
+*NOTE*: As of now, the only supported platform is Linux.
 
 *NOTE*: Do not modify the README.html as it is auto generated from README.org by [[https://orgmode.org/][Emacs Org Mode]].
 
