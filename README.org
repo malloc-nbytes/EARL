@@ -12,6 +12,8 @@
 *NOTE*: This language is still in the infant stage and it is _NOT_ recommended to use
 in any real or professional capacity.
 
+*Note*: As of now, the only supported platform is Linux.
+
 *NOTE*: Do not modify the README.html as it is auto generated from README.org by [[https://orgmode.org/][Emacs Org Mode]].
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
@@ -27,8 +29,6 @@ EARL (Evaluate And Run Language) is being designed to be functionally similar to
 For the manual on how to use the language, see [[./EARL-language-reference.html][Click here for the EARL Language Reference]].
 
 * Compiling
-
-*Note*: As of now, the only support platforms is Linux and MacOS.
 
 EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makefiles. The following are required to build the project:
 1. =autoconf=
