@@ -320,8 +320,19 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
             std::string digit = "";
             while (isdigit(src[i]))
                 digit += src[i++];
-            lexer->append(digit, TokenType::Intlit, row, col, fp);
-            col += digit.size();
+            if (src[i] && src[i] == '.') {
+                ++i;
+                std::string digit2 = ".";
+                while (isdigit(src[i]))
+                    digit2 += src[i++];
+                lexer->append(digit+digit2, TokenType::Floatlit, row, col, fp);
+                // no need for +1 for `.` because its in `digit2`
+                col += digit.size()+digit2.size();
+            }
+            else {
+                lexer->append(digit, TokenType::Intlit, row, col, fp);
+                col += digit.size();
+            }
         }
 
         else {

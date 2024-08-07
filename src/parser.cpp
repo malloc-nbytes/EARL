@@ -179,6 +179,9 @@ static Expr *parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         case TokenType::Intlit: {
             left = new ExprIntLit(lexer.next());
         } break;
+        case TokenType::Floatlit: {
+            left = new ExprFloatLit(lexer.next());
+        } break;
         case TokenType::Strlit: {
             left = new ExprStrLit(lexer.next());
         } break;

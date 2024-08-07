@@ -75,6 +75,7 @@ enum class ExprTermType {
     None,
     Closure,
     Tuple,
+    Float_Literal,
 };
 
 struct StmtDef;
@@ -152,6 +153,16 @@ struct ExprIntLit : public ExprTerm {
     std::unique_ptr<Token> m_tok;
 
     ExprIntLit(std::unique_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+/// @brief The Expression Float Literal class
+struct ExprFloatLit : public ExprTerm {
+    /// @brief The token of the integer literal
+    std::unique_ptr<Token> m_tok;
+
+    ExprFloatLit(std::unique_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
