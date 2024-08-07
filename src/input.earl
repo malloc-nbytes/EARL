@@ -1,2 +1,5 @@
 mod Main
 
+let s = "hello world";
+
+s.foreach(|c| { println(c); });

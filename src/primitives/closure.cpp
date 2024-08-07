@@ -66,11 +66,13 @@ Closure::call(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::share
     return result;
 }
 
-size_t Closure::params_len(void) const {
+size_t
+Closure::params_len(void) const {
     return m_params.size();
 }
 
-bool Closure::param_at_is_ref(size_t i) const {
+bool
+Closure::param_at_is_ref(size_t i) const {
     return (m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0;
 }
 

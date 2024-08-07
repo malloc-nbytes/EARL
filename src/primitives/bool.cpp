@@ -33,15 +33,18 @@ using namespace earl::value;
 
 Bool::Bool(bool value) : m_value(value) {}
 
-bool Bool::value(void) {
+bool
+Bool::value(void) {
     return m_value;
 }
 
-Type Bool::type(void) const {
+Type
+Bool::type(void) const {
     return Type::Bool;
 }
 
-std::shared_ptr<Obj> Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
@@ -76,24 +79,29 @@ std::shared_ptr<Obj> Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
     return nullptr; // unreachable
 }
 
-bool Bool::boolean(void) {
+bool
+Bool::boolean(void) {
     return m_value;
 }
 
-void Bool::mutate(const std::shared_ptr<Obj> &other) {
+void
+Bool::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Bool::mutate");
 }
 
-std::shared_ptr<Obj> Bool::copy(void) {
+std::shared_ptr<Obj>
+Bool::copy(void) {
     return std::make_shared<Bool>(m_value);
 }
 
-bool Bool::eq(std::shared_ptr<Obj> &other) {
+bool
+Bool::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Bool::eq");
 }
 
-std::string Bool::to_cxxstring(void) {
+std::string
+Bool::to_cxxstring(void) {
     return m_value ? "true" : "false";
 }

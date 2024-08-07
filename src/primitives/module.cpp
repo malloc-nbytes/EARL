@@ -33,38 +33,46 @@ using namespace earl::value;
 
 Module::Module(std::shared_ptr<Ctx> ctx) : m_value(ctx) {}
 
-std::shared_ptr<Ctx> &Module::value(void) {
+std::shared_ptr<Ctx> &
+Module::value(void) {
     UNIMPLEMENTED("Module::value");
 }
 
-Type Module::type(void) const {
+Type
+Module::type(void) const {
     return Type::Module;
 }
 
-std::shared_ptr<Obj> Module::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Module::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Module::binop");
 }
 
-bool Module::boolean(void) {
+bool
+Module::boolean(void) {
     UNIMPLEMENTED("Module::boolean");
 }
 
-void Module::mutate(const std::shared_ptr<Obj> &other) {
+void
+Module::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Module::mutate");
 }
 
-std::shared_ptr<Obj> Module::copy(void) {
+std::shared_ptr<Obj>
+Module::copy(void) {
     UNIMPLEMENTED("Module::copy");
 }
 
-bool Module::eq(std::shared_ptr<Obj> &other) {
+bool
+Module::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Module::eq");
 }
 
-std::string Module::to_cxxstring(void) {
+std::string
+Module::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
 }
