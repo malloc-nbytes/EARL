@@ -137,6 +137,42 @@ Str::rev(void) {
 }
 
 void
+Str::append(std::shared_ptr<Obj> &c) {
+    if (c->type() == Type::Char)
+        m_value.push_back(std::dynamic_pointer_cast<Char>(c));
+    else {
+        auto s = dynamic_cast<Str *>(c.get());
+        for (auto &cx : s->value_raw())
+            m_value.push_back(cx);
+    }
+}
+
+void
+Str::append(std::vector<std::shared_ptr<Obj>> &values) {
+    for (size_t i = 0; i < values.size(); ++i) {
+        if (!type_is_compatable(this, values[i].get()))
+            assert(false && "cannot binop (fix this message)");
+        this->append(values[i]);
+    }
+}
+
+std::shared_ptr<Str>
+Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure.get());
+
+    auto acc = std::make_shared<Str>();
+
+    for (auto &c : this->value_raw()) {
+        std::vector<std::shared_ptr<Obj>> values = {c};
+        std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
+        if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+            acc->append(values[0]);
+    }
+
+    return acc;
+}
+
+void
 Str::trim(void) {
     UNIMPLEMENTED("Str::trim");
 }

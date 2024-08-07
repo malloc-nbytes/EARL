@@ -85,7 +85,10 @@ Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
                                     std::shared_ptr<Ctx> &ctx) {
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter");
-    return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
+    if (obj->type() == earl::value::Type::List)
+        return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
+    else
+        return dynamic_cast<earl::value::Str *>(obj.get())->filter(closure.at(0), ctx);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -117,9 +120,10 @@ Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
                                     std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append");
-    earl::value::List *lst = dynamic_cast<earl::value::List *>(obj.get());
-    for (auto &value : values)
-        lst->append(value);
+    if (obj->type() == earl::value::Type::List)
+        dynamic_cast<earl::value::List *>(obj.get())->append(values);
+    else
+        dynamic_cast<earl::value::Str *>(obj.get())->append(values);
     return nullptr;
 }
 

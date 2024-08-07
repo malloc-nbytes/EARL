@@ -290,6 +290,9 @@ namespace earl {
             void pop(std::shared_ptr<Obj> &idx);
             std::shared_ptr<Obj> back(void);
             void rev(void);
+            void append(std::vector<std::shared_ptr<Obj>> &values);
+            void append(std::shared_ptr<Obj> &c);
+            std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void trim(void);
 
             /*** OVERRIDES ***/

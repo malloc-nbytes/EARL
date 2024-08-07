@@ -95,7 +95,6 @@ List::append(std::shared_ptr<Obj> value) {
 
 std::shared_ptr<List>
 List::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    assert(closure->type() == Type::Closure);
     Closure *cl = dynamic_cast<Closure *>(closure.get());
 
     auto copy = std::make_shared<List>();
