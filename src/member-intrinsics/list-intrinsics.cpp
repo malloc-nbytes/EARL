@@ -50,6 +50,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &idx,
                                  std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
     if (obj->type() == earl::value::Type::List) {
@@ -68,6 +69,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                   std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->back();
@@ -100,6 +102,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                  std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
     dynamic_cast<earl::value::List *>(obj.get())->rev();
     return nullptr;
@@ -109,6 +112,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                     std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append");
     earl::value::List *lst = dynamic_cast<earl::value::List *>(obj.get());
     for (auto &value : values)
@@ -120,6 +124,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                  std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
     if (obj->type() == earl::value::Type::List)

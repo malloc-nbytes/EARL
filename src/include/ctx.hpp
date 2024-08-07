@@ -47,6 +47,8 @@ enum class CtxType {
 };
 
 struct Ctx {
+    virtual ~Ctx() = default;
+
     virtual CtxType type(void) const = 0;
     virtual void push_scope(void) = 0;
     virtual void pop_scope(void) = 0;
@@ -82,8 +84,8 @@ struct WorldCtx : public Ctx {
     void define_class(StmtClass *klass);
     bool class_is_defined(const std::string &id) const;
     StmtClass *class_get(const std::string &id);
-    void debug_dump_defined_classes(void) const;
 
+    void debug_dump_defined_classes(void) const;
     void debug_dump_variables(void) const;
 
     CtxType type(void) const override;
@@ -134,11 +136,11 @@ private:
     std::shared_ptr<Ctx> m_owner; // The MAIN owner
     std::shared_ptr<Ctx> m_immediate_owner;
     uint32_t m_attrs;
-    
 };
 
 struct ClassCtx : public Ctx {
     ClassCtx(std::shared_ptr<Ctx> owner);
+    ClassCtx(std::shared_ptr<Ctx> owner, SharedScope<std::string, earl::variable::Obj> scope);
     ~ClassCtx() = default;
 
     std::shared_ptr<Ctx> &get_owner(void);
@@ -147,6 +149,8 @@ struct ClassCtx : public Ctx {
     void clear___m_class_constructor_tmp_args(void);
     std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
     get___m_class_constructor_tmp_args(void);
+    std::shared_ptr<ClassCtx> deep_copy(void);
+    std::shared_ptr<ClassCtx> shallow_copy(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;
