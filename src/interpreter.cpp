@@ -509,7 +509,6 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         PackedERPreliminary perp(left_value);
         std::shared_ptr<earl::value::Obj> value = nullptr;
 
-        // if (left_er.is_ident() && ctx->variable_exists(left_er.id) && ctx->variable_get(left_er.id)->type() == earl::value::Type::Class) {
         if (left_value->type() == earl::value::Type::Class) {
             // Class method/member. The right side (right_er) contains the actual call/identifier to be evaluated,
             // and we need the left (left_value)'s context with the preliminary value of (perp).
@@ -945,6 +944,11 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
     return nullptr;
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
+    assert(false);
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -962,6 +966,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Mod:       return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
     case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
     case StmtType::Match:     return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
+    case StmtType::Enum:      return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     ERR(Err::Type::Internal,

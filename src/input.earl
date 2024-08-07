@@ -1,3 +1,9 @@
 mod Main
 
+enum Item {
+    Item1 = 0,
+    Item2,
+    Item3,
+}
+
 

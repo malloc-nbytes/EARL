@@ -52,6 +52,7 @@ enum class StmtType {
     Mod,
     Class,
     Match,
+    Enum,
 };
 
 /// The different types an expression can be.
@@ -447,6 +448,14 @@ struct StmtMatch : public Stmt {
     std::vector<std::unique_ptr<Branch>> m_branches;
 
     StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Branch>> branches);
+    StmtType stmt_type() const override;
+};
+
+struct StmtEnum : public Stmt {
+    std::unique_ptr<Token> m_id;
+    std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
+
+    StmtEnum(std::unique_ptr<Token> id, std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> elems);
     StmtType stmt_type() const override;
 };
 

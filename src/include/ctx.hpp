@@ -108,6 +108,7 @@ private:
     std::unique_ptr<Program> m_program;
 
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
+    // std::unordered_set<std::string, >
 };
 
 struct FunctionCtx : public Ctx {
