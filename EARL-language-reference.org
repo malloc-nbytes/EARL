@@ -5,7 +5,7 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: num:nil
 
-*NOTE*:
+*NOTE for Grammar*:
 
 1. =This text format represents keywords=
 2. /This test format represents a type of grammar/
@@ -23,6 +23,8 @@ To jump right into testing out EARL, do the following to implement a /Hello Worl
 Create a new file called =hello.earl=
 
 #+begin_example
+mod Main
+
 print("Hello World!");
 #+end_example
 
@@ -158,9 +160,11 @@ This is how to create a function. The =@world=, =@pub= and =@ref= are attributes
 
 ** Grammar
 
+#+begin_quote
 *( =@= [ =pub= | =world= ])
 
 =fn= <id> *(* [ * ( =@ref= ) <id> ] *)* *{* [stmt] *}*
+#+end_quote
 
 ** Examples
 
@@ -185,7 +189,9 @@ such as =List.rev=.
 
 ** Grammar
 
+#+begin_quote
 <id> *( =(= /expr/ =)= | =[= /expr/ =]= | =.= <ident> ) =;=
+#+end_quote
 
 ** Examples
 
@@ -206,14 +212,20 @@ function definitions and classes are gathered.
 
 ** Grammar
 
+#+begin_quote
 =import= "filepath"
+#+end_quote
 
 ** Examples
 
 #+begin_example
+# stdlib imports
 import "std/list.earl"
 import "std/math.earl"
 import "std/utils.earl"
+
+# local imports
+import "my-local-file.earl"
 #+end_example
 
 * Modules
@@ -225,13 +237,18 @@ not have it, the entire file is private. While modules
 do allow other files to access resources, only resources
 that have the =@pub= attribute.
 
+To access some identifer from a different module, you use =::= syntax
+(similar to C++ namespaces).
+
 *It is expected to have the module declaration at the top of the file.
 If you do not follow this rule, undefined behavior will occur.*
 #+end_quote
 
 ** Grammar
 
+#+begin_quote
 =mod= <id>
+#+end_quote
 
 ** Examples
 
@@ -239,7 +256,11 @@ file: =my-math.earl=
 #+begin_example
 mod MyMath
 
-fn sum(a, b) { return a+b; }
+# Function is marked as @pub to make it
+# accessible to other modules.
+@pub fn sum(a, b) {
+    return a+b;
+}
 #+end_example
 
 file: =main.earl=
@@ -248,28 +269,31 @@ mod Main
 
 import "my-math.earl"
 
-let s = MyMath.sum(1, 2);
+let s = MyMath::sum(1, 2);
 #+end_example
 
 * Attributes
 
 #+begin_quote
-Attributes embeds meta information into variables
-and functions. You can have none, one, or multiple.
+Attributes embeds meta information into variables,
+functions, and classes. You can have none, one, or multiple.
 
-| Name     | Vars          | Funcs | Desc                                        |
-|----------+---------------+-------+---------------------------------------------|
-| =@pub=   | UNIMPLEMENTED | YES   | Makes the function available to other files |
-| =@world= | NO            | YES   | The function closes in the world scope      |
-| =@ref=   | YES           | NO    | Declares the var to be a reference          |
+| Name     | Variables | Functions | Classes | Description                                                  |
+|----------+-----------+-----------+---------+--------------------------------------------------------------|
+| =@pub=   | YES       | YES       | YES     | Makes the identifier available to other files                |
+| =@world= | NO        | YES       | NO      | The function closes in the world scope                       |
+| =@ref=   | YES       | NO*       | NO      | Declares the variable to be a reference (see the note below) |
 
-*NOTE:* =@ref= can be used as a function parameter and that function will
+
+*NOTE:* =@ref= can be used in a function parameter and that function will
 take a reference to the value passed to it.
 #+end_quote
 
 ** Grammar
 
+#+begin_quote
 =@= *(pub | world | ref)
+#+end_quote
 
 ** Examples
 
@@ -282,8 +306,7 @@ fn test_world() {
     print(i)
 }
 
-@pub
-fn take_ref(@ref ptr) {
+@pub fn take_ref(@ref ptr) {
     ptr = ptr + 1;
 }
 
@@ -311,11 +334,11 @@ When instantiating a new class, two things will occur.
 1. All member variable assignments will happen. If the class has bracket notation =[ ... ]=,
    it will use these.
 2. If there is a function called =constructor= in the class, that function will immediately happen.
-
 #+end_quote
 
 ** Grammar
 
+#+begin_quote
 =@= *(pub | world | ref)
 
 =class= <id> ?(=[= <arg1>, <arg2>,..., <argN> =]=) ={=
@@ -327,6 +350,7 @@ When instantiating a new class, two things will occur.
     <methods>
 
 =}=
+#+end_quote
 
 ** Examples
 
@@ -335,18 +359,22 @@ When instantiating a new class, two things will occur.
 # constructors and is also not public,
 # so other modules cannot use this class.
 
-class NoPassesArgs {
+class NoPassesArgs [] {
     x = 1;
     y = 2;
 
     @pub fn print() {
-        The use of `this` keyword is optional
+        # The use of `this` keyword is optional.
+        # Because this function is marked as @pub,
+        # it is visible to the outside.
         print(this.x, y);
     }
 }
 #+end_example
 
 #+begin_example
+# This class is marked as @pub, so it is
+# visible to other modules.
 @pub class Point [x, y, name] {
     x = x;
     y = y;
@@ -356,11 +384,18 @@ class NoPassesArgs {
     # it directly from outside the class.
     @pub desc = "A point class"
 
-    @pub set_x(newx) {
+    # Function not marked as @pub so
+    # it does is not visible outside
+    # of this class.
+    fn helper() {
+        println("in helper");
+    }
+
+    @pub fn set_x(newx) {
         this.x = newx
     }
 
-    @pub dump() {
+    @pub fn show() {
         print(this.x);
         print(this.y);
         print(this.name);
@@ -371,11 +406,15 @@ class NoPassesArgs {
 
 #+begin_example
 @pub class Stack [init] {
+    ### THIS HAPPENS FIRST ######
     # You could just assign `init` to `lst` here,
     # but for this example, this is done in the constructor.
     lst = [];
     sz = 0;
+    ############################
 
+
+    ### THIS HAPPENS SECOND #######
     # The constructor gets called
     # right after class instantiation.
     fn constructor() {
@@ -383,6 +422,7 @@ class NoPassesArgs {
             this.push(init[i]);
         }
     }
+    ###############################
 
     @pub fn push(x) {
         this.lst.append(x);
@@ -539,7 +579,7 @@ println(arg1: any, arg2: any, ..., argN: any) -> unit
 Will print all elements if it can. Adds a newline at the end.
 #+end_quote
 
-** TODO =input=
+** =input=
 
 #+begin_quote
 #+begin_example
@@ -582,7 +622,7 @@ some(arg: any) -> option<any>
 Wraps =arg= in an =option= type.
 #+end_quote
 
-** TODO =type=
+** =type=
 
 #+begin_quote
 #+begin_example
@@ -592,7 +632,7 @@ type(arg: any) -> str
 Returns the type of =arg= as a =str=.
 #+end_quote
 
-** TODO =argv=
+** =argv=
 
 #+begin_quote
 #+begin_example
@@ -614,14 +654,14 @@ Opens the filepath =fp= with mode =mode=. Mode must either be
 =r= for read or =w= for write.
 #+end_quote
 
-** TODO =unimplemented=
+** =unimplemented=
 
 #+begin_quote
 #+begin_example
 unimplemented(arg1, arg2, ..., argN)
 #+end_example
 
-Prints arg1..arg$N$ to =stderr= and exits with non-zero exit code.
+Prints "UNIMPLEMENTED" arg1..arg$N$ to =stderr= and exits with non-zero exit code.
 #+end_quote
 
 * Member Intrinsics
@@ -636,7 +676,12 @@ You access these with the dot `.` notation i.e.,
 =lst.rev();=
 #+end_quote
 
-** =list= Implementes
+** =list/str= Implementes
+
+#+begin_quote
+Note: These member intrinsics for =str= is currently
+a work in progress and is not guaranteed to work.
+#+end_quote
 
 #+begin_quote
 #+begin_example
@@ -1101,3 +1146,63 @@ swap(@ref x1, @ref x2) -> unit
 
 Swaps the values of =x1= and =x2=.
 #+end_quote
+
+* Code Style
+
+I don't care how you style your code, do whatever you want. However, when contributing to the
+=stdlib=, please follow the below guidelines.
+
+** Identifier Names
+
+#+begin_quote
+Function and variable identifiers should have =snake_case= naming.
+#+end_quote
+
+#+begin_example
+let my_var = 1;
+let my_var2 = "foo";
+
+fn my_local_function(my_param) {
+    println(my_param);
+}
+#+end_example
+
+#+begin_quote
+Modules and classes should have =PascalCase= naming.
+#+end_quote
+
+#+begin_example
+mod MyModule
+
+class MyClass [] {
+    ...
+}
+#+end_example
+
+** Attributes
+
+#+begin_quote
+If a function/variable/class has _one_ attribute, then it should be put
+_before and on the same line_ as the identifier.
+
+If it has _more than one_ attribute, it should be put on the line
+_directly above_ the declaration.
+#+end_quote
+
+#+begin_example
+@pub let my_var = 1;
+
+@world fn my_fun(@ref x) {
+    ...
+}
+
+@pub @ref
+let ptr = @ref my_var;
+
+@pub @world
+fn my_fun2() {
+    ...
+}
+#+end_example
+
+

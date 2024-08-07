@@ -32,3 +32,11 @@ mod Utils
     x2 = t;
 }
 
+let iota_N = 0;
+
+@pub @world
+fn iota() {
+    let res = iota_N;
+    iota_N = iota_N+1;
+    return res;
+}
