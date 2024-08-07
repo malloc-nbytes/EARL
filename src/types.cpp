@@ -31,7 +31,8 @@
 #include "utils.hpp"
 
 static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type>> type_map = {
-    {earl::value::Type::Int, {earl::value::Type::Int}},
+    {earl::value::Type::Int, {earl::value::Type::Int, earl::value::Type::Float}},
+    {earl::value::Type::Float, {earl::value::Type::Float, earl::value::Type::Int}},
     {earl::value::Type::Bool, {earl::value::Type::Bool}},
     {earl::value::Type::Char, {earl::value::Type::Char}},
     {earl::value::Type::Str, {earl::value::Type::Str, earl::value::Type::Char}},

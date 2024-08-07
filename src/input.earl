@@ -1,5 +1,3 @@
 mod Main
 
-let d = 123.321;
 
-println(type(d));
