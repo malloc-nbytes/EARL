@@ -115,9 +115,7 @@ List::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 
 void
 List::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    assert(closure->type() == Type::Closure);
     Closure *cl = dynamic_cast<Closure *>(closure.get());
-
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::vector<std::shared_ptr<Obj>> values = {m_value[i]};
         cl->call(values, ctx);

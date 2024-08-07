@@ -173,6 +173,15 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 void
+Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure.get());
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> values = {m_value[i]};
+        cl->call(values, ctx);
+    }
+}
+
+void
 Str::trim(void) {
     UNIMPLEMENTED("Str::trim");
 }

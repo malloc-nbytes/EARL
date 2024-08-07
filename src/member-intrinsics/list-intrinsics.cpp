@@ -73,9 +73,8 @@ Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->back();
-    else if (obj->type() == earl::value::Type::Str)
+    else
         return dynamic_cast<earl::value::Str *>(obj.get())->back();
-    assert(false && "unreachable");
     return nullptr; // unreachable
 }
 
@@ -97,7 +96,10 @@ Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
                                      std::shared_ptr<Ctx> &ctx) {
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "foreach");
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach");
-    dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
+    if (obj->type() == earl::value::Type::List)
+        dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
+    else
+        dynamic_cast<earl::value::Str *>(obj.get())->foreach(closure.at(0), ctx);
     return nullptr;
 }
 
