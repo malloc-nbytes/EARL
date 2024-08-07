@@ -32,16 +32,18 @@
 using namespace earl::value;
 
 Char::Char(std::string value) {
-    if (value.size() == 0) {
+    if (value.size() == 0)
         m_value = '\0';
+    else if (value[0] == '\\' && value.size() > 1) {
+        switch (value[1]) {
+        case 'n': m_value = '\n'; break;
+        case 't': m_value = '\t'; break;
+        case 'r': m_value = '\r'; break;
+        default: ERR_WARGS(Err::Type::Fatal, "Unknown escape sequence `%s`", value.c_str());
+        }
     }
-    else if (value[0] == '\\') {
-        assert(false && "unimplemented");
-        m_value = value[0]+value[1];
-    }
-    else {
+    else
         m_value = value[0];
-    }
 }
 
 char Char::value(void) {
@@ -86,8 +88,9 @@ std::shared_ptr<Obj> Char::copy(void) {
 }
 
 bool Char::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Char::eq");
+    if (other->type() != Type::Char)
+        return false;
+    return this->value() == dynamic_cast<Char *>(other.get())->value();
 }
 
 std::string Char::to_cxxstring(void) {
