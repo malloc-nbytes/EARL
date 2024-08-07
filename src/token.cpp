@@ -133,6 +133,8 @@ std::string tokentype_to_str(TokenType type)
         return "STRLIT";
     case TokenType::Charlit:
         return "CHARLIT";
+    case TokenType::Floatlit:
+        return "FLOATLIT";
     case TokenType::Ident:
         return "IDENTIFIER";
     case TokenType::Keyword:

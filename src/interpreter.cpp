@@ -585,23 +585,30 @@ eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(cl, ERT::Literal);
 }
 
+static ER
+eval_expr_term_floatlit(ExprFloatLit *expr) {
+    auto value = std::make_shared<earl::value::Float>(std::stof(expr->m_tok->lexeme()));
+    return ER(value, ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
-    case ExprTermType::Ident:        return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
-    case ExprTermType::Int_Literal:  return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr));
-    case ExprTermType::Str_Literal:  return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr));
-    case ExprTermType::Char_Literal: return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr));
-    case ExprTermType::Func_Call:    return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx, ref);
-    case ExprTermType::List_Literal: return eval_expr_term_listlit(dynamic_cast<ExprListLit *>(expr), ctx, ref);
-    case ExprTermType::Get:          return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
-    case ExprTermType::Mod_Access:   return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
-    case ExprTermType::Array_Access: return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
-    case ExprTermType::Bool:         return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr));
-    case ExprTermType::None:         return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
-    case ExprTermType::Closure:      return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
-    case ExprTermType::Tuple:        UNIMPLEMENTED("ExprTermType::Tuple");
-    default:                         ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
+    case ExprTermType::Ident:         return eval_expr_term_ident(dynamic_cast<ExprIdent *>(expr), ctx, ref);
+    case ExprTermType::Int_Literal:   return eval_expr_term_intlit(dynamic_cast<ExprIntLit *>(expr));
+    case ExprTermType::Str_Literal:   return eval_expr_term_strlit(dynamic_cast<ExprStrLit *>(expr));
+    case ExprTermType::Char_Literal:  return eval_expr_term_charlit(dynamic_cast<ExprCharLit *>(expr));
+    case ExprTermType::Float_Literal: return eval_expr_term_floatlit(dynamic_cast<ExprFloatLit *>(expr));
+    case ExprTermType::Func_Call:     return eval_expr_term_funccall(dynamic_cast<ExprFuncCall *>(expr), ctx, ref);
+    case ExprTermType::List_Literal:  return eval_expr_term_listlit(dynamic_cast<ExprListLit *>(expr), ctx, ref);
+    case ExprTermType::Get:           return eval_expr_term_get(dynamic_cast<ExprGet *>(expr), ctx, ref);
+    case ExprTermType::Mod_Access:    return eval_expr_term_mod_access(dynamic_cast<ExprModAccess *>(expr), ctx, ref);
+    case ExprTermType::Array_Access:  return eval_expr_term_array_access(dynamic_cast<ExprArrayAccess *>(expr), ctx, ref);
+    case ExprTermType::Bool:          return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr));
+    case ExprTermType::None:          return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
+    case ExprTermType::Closure:       return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
+    case ExprTermType::Tuple:         UNIMPLEMENTED("ExprTermType::Tuple");
+    default:                          ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
     }
     assert(false && "unreachable");
     return ER(nullptr, ERT::None);
