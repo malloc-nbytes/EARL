@@ -20,6 +20,7 @@ install-data-local: $(include_HEADERS)
 	$(mkinstalldirs) $(DESTDIR)$(includedir)
 
 install-data-hook:
+	@echo "Installation of earlmngr is currently WIP"
 	@echo "Do you want to install earlmngr? [y/N] " && read ans && [ $${ans:-N} = y ]
 	@if [ $$? -eq 0 ]; then \
 		echo "Installing earlmngr..."; \

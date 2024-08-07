@@ -9,6 +9,9 @@
 # Nicer webpage, but less organized
 # #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
+*NOTE*: This language is still in the infant stage and it is _NOT_ recommended to use
+in any real or professional capacity.
+
 *NOTE*: Do not modify the README.html as it is auto generated from README.org by [[https://orgmode.org/][Emacs Org Mode]].
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
@@ -32,18 +35,17 @@ EARL uses [[https://www.gnu.org/software/autoconf/][autoconf]] to generate Makef
 2. =automake=
 3. =libtool=
 4. =doxygen= (optional) (for EARL source code documentation)
-5. =valgrind= (optional) (for building =vtest=)
 
 Users compiling for the first time should do
 
 #+begin_src bash
   cd EARL/src/
   autoreconf --install --verbose
-  ./configure --<prefix>
+  ./configure --prefix=<path>
 #+end_src
 
-The =prefix= is the prefix to where you want EARL and the stdlib to be installed. The default
-is =/usr/local/=
+The =path= is the path to where you want EARL and the stdlib to be installed. The default
+is =/usr/local/=. If this is desired, it can be left blank.
 
 This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 
@@ -51,7 +53,6 @@ This will create the Makefiles. Use =make <opt>= where =<opt>= is one of,
 - =make= \rightarrow builds the project
 - =make test= \rightarrow build the project and runs tests (stdlib *must* be installed)
 - =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
-- =make all= \rightarrow do all except clean
 - =make clean= \rightarrow cleans the project
 #+end_quote
 

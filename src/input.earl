@@ -1,13 +1,5 @@
 mod Main
 
-class Test [v] {
-    v = v;
-}
+let s = "hello";
 
-fn main() {
-    let t = Test(9);
-
-    println(t.v);
-}
-
-main();
+s.foreach(|x| { println(x); });
