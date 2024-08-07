@@ -35,6 +35,10 @@ Char::Char(std::string value) {
     if (value.size() == 0) {
         m_value = '\0';
     }
+    else if (value[0] == '\\') {
+        assert(false && "unimplemented");
+        m_value = value[0]+value[1];
+    }
     else {
         m_value = value[0];
     }

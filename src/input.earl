@@ -1,8 +1,4 @@
 mod Main
 
-import "std/io.earl"
-
-fprint(IO::stdout, "hello world ", 1234, ' ', ['a']);
-
-
+println('\n');
 
