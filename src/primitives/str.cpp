@@ -116,8 +116,8 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
 
 void
 Str::pop(std::shared_ptr<Obj> &idx) {
-    (void)idx;
-    UNIMPLEMENTED("Str::pop");
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+    m_value.erase(m_value.begin() + idx1->value());
 }
 
 std::shared_ptr<Obj>

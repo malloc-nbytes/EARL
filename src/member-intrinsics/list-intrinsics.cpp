@@ -137,6 +137,6 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else
-        assert(false && "unimplemented");
+        dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0]);
     return nullptr;
 }
