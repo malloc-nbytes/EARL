@@ -33,19 +33,23 @@ using namespace earl::value;
 
 Int::Int(int value) : m_value(value) {}
 
-int Int::value(void) {
+int
+Int::value(void) {
     return m_value;
 }
 
-void Int::fill(int value) {
+void
+Int::fill(int value) {
     m_value = value;
 }
 
-Type Int::type(void) const {
+Type
+Int::type(void) const {
     return Type::Int;
 }
 
-std::shared_ptr<Obj> Int::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Int::binop(Token *op, std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
@@ -94,11 +98,13 @@ std::shared_ptr<Obj> Int::binop(Token *op, std::shared_ptr<Obj> &other) {
     }
 }
 
-bool Int::boolean(void) {
+bool
+Int::boolean(void) {
     return this->value();
 }
 
-void Int::mutate(const std::shared_ptr<Obj> &other) {
+void
+Int::mutate(const std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot mutate (fix this message)");
     }
@@ -113,11 +119,13 @@ void Int::mutate(const std::shared_ptr<Obj> &other) {
     }
 }
 
-std::shared_ptr<Obj> Int::copy(void) {
+std::shared_ptr<Obj>
+Int::copy(void) {
     return std::make_shared<Int>(m_value);
 }
 
-bool Int::eq(std::shared_ptr<Obj> &other) {
+bool
+Int::eq(std::shared_ptr<Obj> &other) {
     if (other->type() == Type::Void)
         return true;
 
@@ -126,6 +134,7 @@ bool Int::eq(std::shared_ptr<Obj> &other) {
     return this->value() == dynamic_cast<Int *>(other.get())->value();
 }
 
-std::string Int::to_cxxstring(void) {
+std::string
+Int::to_cxxstring(void) {
     return std::to_string(m_value);
 }

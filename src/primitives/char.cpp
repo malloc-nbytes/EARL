@@ -46,15 +46,18 @@ Char::Char(std::string value) {
         m_value = value[0];
 }
 
-char Char::value(void) {
+char
+Char::value(void) {
     return m_value;
 }
 
-Type Char::type(void) const {
+Type
+Char::type(void) const {
     return Type::Char;
 }
 
-std::shared_ptr<Obj> Char::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Char::binop(Token *op, std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
@@ -73,21 +76,25 @@ std::shared_ptr<Obj> Char::binop(Token *op, std::shared_ptr<Obj> &other) {
     }
 }
 
-bool Char::boolean(void) {
+bool
+Char::boolean(void) {
     UNIMPLEMENTED("Char::boolean");
 }
 
-void Char::mutate(const std::shared_ptr<Obj> &other) {
+void
+Char::mutate(const std::shared_ptr<Obj> &other) {
     assert(other->type() == Type::Char);
     auto c = dynamic_cast<Char *>(other.get());
     m_value = c->value();
 }
 
-std::shared_ptr<Obj> Char::copy(void) {
+std::shared_ptr<Obj>
+Char::copy(void) {
     return std::make_shared<Char>(std::string(1, m_value));
 }
 
-bool Char::eq(std::shared_ptr<Obj> &other) {
+bool
+Char::eq(std::shared_ptr<Obj> &other) {
     if (other->type() != Type::Char)
         return false;
     return this->value() == dynamic_cast<Char *>(other.get())->value();

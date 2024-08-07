@@ -39,15 +39,18 @@ File::File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stre
     : m_fp(fp), m_mode(mode),
       m_stream(std::move(stream)), m_open(false) {}
 
-void File::set_open(void) {
+void
+File::set_open(void) {
     m_open = true;
 }
 
-void File::set_closed(void) {
+void
+File::set_closed(void) {
     m_open = false;
 }
 
-void File::dump(void) {
+void
+File::dump(void) {
     if (!m_open) {
         ERR(Err::Type::Fatal, "file is not open");
     }
@@ -61,7 +64,8 @@ void File::dump(void) {
     std::cout << m_stream.rdbuf();
 }
 
-void File::close(void) {
+void
+File::close(void) {
     if (!m_open) {
         ERR(Err::Type::Fatal, "file is not open");
     }
@@ -69,7 +73,8 @@ void File::close(void) {
     this->set_closed();
 }
 
-std::shared_ptr<earl::value::Str> File::read(void) {
+std::shared_ptr<earl::value::Str>
+File::read(void) {
     if (!m_open)
         ERR(Err::Type::Fatal, "file is not open");
     if (m_mode->value() == "w")
@@ -80,7 +85,8 @@ std::shared_ptr<earl::value::Str> File::read(void) {
     return std::make_shared<earl::value::Str>(buf.str());
 }
 
-void File::write(std::shared_ptr<Obj> value) {
+void
+File::write(std::shared_ptr<Obj> value) {
     if (!m_open) {
         ERR(Err::Type::Fatal, "file is not open");
     }
@@ -108,40 +114,48 @@ void File::write(std::shared_ptr<Obj> value) {
     }
 }
 
-void File::writelines(std::shared_ptr<List> &value) {
+void
+File::writelines(std::shared_ptr<List> &value) {
     (void)value;
     UNIMPLEMENTED("File::writelines");
 }
 
 /*** OVERRIDES ***/
-Type File::type(void) const {
+Type
+File::type(void) const {
     return Type::File;
 }
 
-std::shared_ptr<Obj> File::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+File::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("File::binop");
 }
 
-bool File::boolean(void) {
+bool
+File::boolean(void) {
     UNIMPLEMENTED("File::boolean");
 }
 
-void File::mutate(const std::shared_ptr<Obj> &other) {
+void
+File::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("File::mutate");
 }
 
-std::shared_ptr<Obj> File::copy(void) {
+std::shared_ptr<Obj>
+File::copy(void) {
     UNIMPLEMENTED("File::copy");
 }
 
-bool File::eq(std::shared_ptr<Obj> &other) {
+bool
+File::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("File::eq");
 }
 
-std::string File::to_cxxstring(void) {
+std::string
+File::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `file` type to a string");
 }

@@ -104,7 +104,10 @@ Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
                                  std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
-    dynamic_cast<earl::value::List *>(obj.get())->rev();
+    if (obj->type() == earl::value::Type::List)
+        dynamic_cast<earl::value::List *>(obj.get())->rev();
+    else
+        dynamic_cast<earl::value::Str *>(obj.get())->rev();
     return nullptr;
 }
 

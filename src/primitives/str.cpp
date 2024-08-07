@@ -65,13 +65,15 @@ Str::Str(std::string value) {
     }
 }
 
-std::string Str::value(void) {
+std::string
+Str::value(void) {
     std::string value = "";
     std::for_each(m_value.begin(), m_value.end(), [&](auto &c){value += c->value();});
     return value;
 }
 
-std::shared_ptr<Char> Str::nth(std::shared_ptr<Obj> &idx) {
+std::shared_ptr<Char>
+Str::nth(std::shared_ptr<Obj> &idx) {
     if (idx->type() != Type::Int)
         ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
 
@@ -84,7 +86,8 @@ std::shared_ptr<Char> Str::nth(std::shared_ptr<Obj> &idx) {
     return m_value[index->value()];
 }
 
-std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
+std::shared_ptr<List>
+Str::split(std::shared_ptr<Obj> &delim) {
     assert(delim->type() == Type::Str);
 
     std::vector<std::shared_ptr<Obj>> splits = {};
@@ -103,33 +106,48 @@ std::shared_ptr<List> Str::split(std::shared_ptr<Obj> &delim) {
     return std::make_shared<List>(std::move(splits));
 }
 
-std::shared_ptr<Str> Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
+std::shared_ptr<Str>
+Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
     assert(idx1->type() == Type::Int);
     assert(idx2->type() == Type::Int);
     std::string sub = this->value().substr(dynamic_cast<Int*>(idx1.get())->value(), dynamic_cast<Int*>(idx2.get())->value());
     return std::make_shared<Str>(sub);
 }
 
-void Str::pop(std::shared_ptr<Obj> &idx) {
+void
+Str::pop(std::shared_ptr<Obj> &idx) {
     (void)idx;
     UNIMPLEMENTED("Str::pop");
 }
 
-std::shared_ptr<Obj> Str::back(void) {
+std::shared_ptr<Obj>
+Str::back(void) {
     if (m_value.size() == 0)
         return std::make_shared<Option>();
     return m_value.back()->copy();
 }
 
-void Str::trim(void) {
+void
+Str::rev(void) {
+    for (size_t i = 0; i < this->value().size()/2; ++i) {
+        auto copy = this->value_raw().at(i);
+        this->value_raw().at(i) = this->value_raw().at(this->value_raw().size()-i-1);
+        this->value_raw().at(this->value_raw().size()-i-1) = copy;
+    }
+}
+
+void
+Str::trim(void) {
     UNIMPLEMENTED("Str::trim");
 }
 
-Type Str::type(void) const {
+Type
+Str::type(void) const {
     return Type::Str;
 }
 
-std::shared_ptr<Obj> Str::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     if (!type_is_compatable(this, other.get())) {
         assert(false && "cannot binop (fix this message)");
     }
@@ -152,15 +170,18 @@ std::shared_ptr<Obj> Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     }
 }
 
-bool Str::boolean(void) {
+bool
+Str::boolean(void) {
     return true;
 }
 
-std::vector<std::shared_ptr<Char>> &Str::value_raw(void) {
+std::vector<std::shared_ptr<Char>> &
+Str::value_raw(void) {
     return m_value;
 }
 
-void Str::mutate(const std::shared_ptr<Obj> &other) {
+void
+Str::mutate(const std::shared_ptr<Obj> &other) {
     assert(other->type() == Type::Str);
     Str *otherstr = dynamic_cast<Str *>(other.get());
     m_value.clear();
@@ -168,17 +189,20 @@ void Str::mutate(const std::shared_ptr<Obj> &other) {
         m_value.push_back(otherstr->value_raw()[i]);
 }
 
-std::shared_ptr<Obj> Str::copy(void) {
+std::shared_ptr<Obj>
+Str::copy(void) {
     auto copy = std::make_shared<Str>(this->value());
     return copy;
 }
 
-bool Str::eq(std::shared_ptr<Obj> &other) {
+bool
+Str::eq(std::shared_ptr<Obj> &other) {
     if (other->type() != Type::Str)
         return false;
     return this->value() == dynamic_cast<Str *>(other.get())->value();
 }
 
-std::string Str::to_cxxstring(void) {
+std::string
+Str::to_cxxstring(void) {
     return this->value();
 }

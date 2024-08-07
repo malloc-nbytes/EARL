@@ -32,34 +32,41 @@ using namespace earl::value;
 
 Void::Void(void *value) : m_value(value) {}
 
-Type Void::type(void) const {
+Type
+Void::type(void) const {
     return Type::Void;
 }
 
-std::shared_ptr<Obj> Void::binop(Token *op, std::shared_ptr<Obj> &other) {
+std::shared_ptr<Obj>
+Void::binop(Token *op, std::shared_ptr<Obj> &other) {
     (void)op;
     (void)other;
     UNIMPLEMENTED("Void::binop");
 }
 
-bool Void::boolean(void) {
+bool
+Void::boolean(void) {
     return false;
 }
 
-void Void::mutate(const std::shared_ptr<Obj> &other) {
+void
+Void::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Void::mutate");
 }
 
-std::shared_ptr<Obj> Void::copy(void) {
+std::shared_ptr<Obj>
+Void::copy(void) {
     UNIMPLEMENTED("Void::copy");
 }
 
-bool Void::eq(std::shared_ptr<Obj> &other) {
+bool
+Void::eq(std::shared_ptr<Obj> &other) {
     (void)other;
     UNIMPLEMENTED("Void::eq");
 }
 
-std::string Void::to_cxxstring(void) {
+std::string
+Void::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
 }
