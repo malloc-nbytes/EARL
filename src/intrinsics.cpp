@@ -167,6 +167,7 @@ Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value:
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_mkdir__");
     auto obj = params[0];
     std::string path = obj->to_cxxstring();
@@ -179,6 +180,7 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_ls__");
 
     auto obj = params[0];
@@ -308,6 +310,10 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
 
         *stream << ']';
     } break;
+    case earl::value::Type::Class: {
+        auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
+        std::cout << "<Class " << classparam->id() << " " << &classparam << '>';
+    } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
     } break;
@@ -409,6 +415,7 @@ Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &para
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "some");
     if (params.size() != 1)
         ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",

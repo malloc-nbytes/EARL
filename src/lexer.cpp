@@ -198,6 +198,12 @@ static bool try_comment(char *src, std::string &comment) {
 }
 
 std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
+    (void)is_keyword;
+    (void)is_type;
+    (void)issym;
+    (void)try_comment;
+    (void)types;
+    (void)comment;
     std::string fp = std::string(filepath);
     std::string src = std::string(read_file(filepath));
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();

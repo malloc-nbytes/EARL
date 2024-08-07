@@ -1,8 +1,20 @@
 mod Main
 
-import "std/io.earl"
+class T {
+    value = 1;
+}
 
-fprint(IO::stdout, "hello world ", 1234, ' ', ['a']);
+let t = T();
+
+let copy = t;
+copy.value = 9;
+
+println(t.value);
+println(copy.value);
+
+println(t);
+println(copy);
+
 
 
 

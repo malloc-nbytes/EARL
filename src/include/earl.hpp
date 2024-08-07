@@ -325,6 +325,7 @@ namespace earl {
 
         struct Class : public Obj {
             Class(StmtClass *stmtclass, std::shared_ptr<Ctx> ctx);
+            Class(const Class &other);
 
             const std::string &id(void) const;
 
