@@ -1,5 +1,2 @@
 mod Main
 
-let s = "hello";
-
-s.foreach(|x| { println(x); });
