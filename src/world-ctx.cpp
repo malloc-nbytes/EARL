@@ -161,3 +161,8 @@ WorldCtx::debug_dump_variables(void) const {
     this->m_scope.debug_dump();
 }
 
+void
+WorldCtx::enum_add(std::shared_ptr<earl::value::Enum> _enum) {
+    const std::string &id = _enum->id();
+    m_enums.insert({id, std::move(_enum)});
+}

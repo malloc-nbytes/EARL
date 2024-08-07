@@ -136,6 +136,8 @@ namespace earl {
             /// @brief Get the underlying integer value
             int value(void);
 
+            void incr(void);
+
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
@@ -392,7 +394,9 @@ namespace earl {
         };
 
         struct Enum : public Obj {
-            Enum(int value = 0);
+            Enum(StmtEnum *stmt, std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems);
+
+            const std::string &id(void) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -402,6 +406,11 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
+
+        private:
+            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> m_elems;
+            StmtEnum *m_stmt;
+            Token *m_id;
         };
 
         struct File : public Obj {

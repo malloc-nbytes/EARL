@@ -99,16 +99,15 @@ struct WorldCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
+    void enum_add(std::shared_ptr<earl::value::Enum> _enum);
 
 private:
     std::string m_mod;
     std::vector<std::shared_ptr<Ctx>> m_imports;
-
     std::unique_ptr<Lexer> m_lexer;
     std::unique_ptr<Program> m_program;
-
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
-    // std::unordered_set<std::string, >
+    std::unordered_map<std::string, std::shared_ptr<earl::value::Enum>> m_enums;
 };
 
 struct FunctionCtx : public Ctx {

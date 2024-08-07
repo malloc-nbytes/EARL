@@ -946,7 +946,32 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
-    assert(false);
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> elems = {};
+
+    earl::value::Int *last_value = nullptr;
+    for (auto &p : stmt->m_elems) {
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
+        if (p.second) {
+            ER er = Interpreter::eval_expr(p.second.get(), ctx, false);
+            auto value = unpack_ER(er, ctx, false);
+            var = std::make_shared<earl::variable::Obj>(p.first.get(), value);
+            last_value = dynamic_cast<earl::value::Int *>(value.get());
+        }
+        else {
+            int actual = 0;
+            if (last_value)
+                actual = last_value->value()+1;
+            auto value = std::make_shared<earl::value::Int>(actual);
+            last_value = value.get();
+            var = std::make_shared<earl::variable::Obj>(p.first.get(), std::shared_ptr<earl::value::Obj>(value));
+        }
+        elems.insert({p.first->lexeme(), std::move(var)});
+    }
+
+    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems));
+    assert(ctx->type() == CtxType::World);
+    dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
