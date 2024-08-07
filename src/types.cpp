@@ -43,6 +43,7 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
 std::string earl::value::type_to_str(earl::value::Type ty) {
     switch (ty) {
     case earl::value::Type::Int: return "int";
+    case earl::value::Type::Float: return "float";
     case earl::value::Type::Bool: return "bool";
     case earl::value::Type::Char: return "char";
     case earl::value::Type::Str: return "str";

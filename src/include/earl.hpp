@@ -57,6 +57,8 @@ namespace earl {
         enum class Type {
             /** EARL 32bit integer type */
             Int,
+            /** EARL floating integer (double) type */
+            Float,
             /** EARL boolean type */
             Bool,
             /** EARL string type */
@@ -143,6 +145,29 @@ namespace earl {
 
         private:
             int m_value;
+        };
+
+        struct Float : public Obj {
+            Float(double value = 0);
+
+            /// @brief Fill the underlying data with some data
+            /// @param value The value to use to fill
+            void fill(double value);
+
+            /// @brief Get the underlying integer value
+            double value(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+
+        private:
+            double m_value;
         };
 
         /// @brief The structure that represents EARL 32bit integers

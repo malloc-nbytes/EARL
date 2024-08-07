@@ -271,6 +271,10 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
         *stream << intparam->value();
     } break;
+    case earl::value::Type::Float: {
+        auto *floatparam = dynamic_cast<earl::value::Float *>(param.get());
+        *stream << floatparam->value();
+    } break;
     case earl::value::Type::Bool: {
         auto *bool_param = dynamic_cast<earl::value::Bool *>(param.get());
         *stream << (bool_param->value() ? "true" : "false");

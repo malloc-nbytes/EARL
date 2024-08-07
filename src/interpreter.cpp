@@ -587,9 +587,8 @@ eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
 static ER
 eval_expr_term_floatlit(ExprFloatLit *expr) {
-    // auto value = std::make_shared<earl::value::Float>(std::stoi(expr->m_tok->lexeme()));
-    // return ER(value, ERT::Literal);
-    abort();
+    auto value = std::make_shared<earl::value::Float>(std::stof(expr->m_tok->lexeme()));
+    return ER(value, ERT::Literal);
 }
 
 ER
