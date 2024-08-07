@@ -1,20 +1,13 @@
 mod Main
 
-class T {
-    value = 1;
+class Test [v] {
+    v = v;
 }
 
-let t = T();
+fn main() {
+    let t = Test(9);
 
-let copy = t;
-copy.value = 9;
+    println(t.v);
+}
 
-println(t.value);
-println(copy.value);
-
-println(t);
-println(copy);
-
-
-
-
+main();

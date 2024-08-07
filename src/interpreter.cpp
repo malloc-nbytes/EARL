@@ -111,17 +111,22 @@ eval_class_instantiation(const std::string &id,
         class_stmt = owner_ctx->class_get(id);
     }
     else if (ctx->type() == CtxType::Function) {
-        auto class_ctx = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_class_owner_ctx();
+        auto functx = dynamic_cast<FunctionCtx *>(ctx.get());
+        if (functx->get_owner()->type() == CtxType::World)
+            class_stmt = dynamic_cast<WorldCtx *>(functx->get_owner().get())->class_get(id);
+        else {
+            auto class_ctx = functx->get_outer_class_owner_ctx();
 
-        assert(class_ctx);
-        assert(class_ctx->type() == CtxType::Class);
+            assert(class_ctx);
+            assert(class_ctx->type() == CtxType::Class);
 
-        auto world_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(class_ctx.get())->get_owner().get());
+            auto world_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(class_ctx.get())->get_owner().get());
 
-        assert(world_ctx);
-        assert(world_ctx->type() == CtxType::World);
+            assert(world_ctx);
+            assert(world_ctx->type() == CtxType::World);
 
-        class_stmt = world_ctx->class_get(id);
+            class_stmt = world_ctx->class_get(id);
+        }
     }
     else
         class_stmt = dynamic_cast<WorldCtx *>(ctx.get())->class_get(id);
