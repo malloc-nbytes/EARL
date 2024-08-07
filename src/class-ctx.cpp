@@ -31,6 +31,11 @@
 
 ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner) : m_owner(owner) {}
 
+ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner, SharedScope<std::string, earl::variable::Obj> scope)
+    : m_owner(owner) {
+    m_scope = std::move(scope);
+}
+
 CtxType
 ClassCtx::type(void) const {
     return CtxType::Class;
@@ -140,3 +145,30 @@ std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
 ClassCtx::get___m_class_constructor_tmp_args(void) {
     return __m_class_constructor_tmp_args;
 }
+
+std::shared_ptr<ClassCtx>
+ClassCtx::deep_copy(void) {
+    SharedScope<std::string, earl::variable::Obj> scope_copy;
+    for (size_t i = 0; i < m_scope.m_map.size(); ++i) {
+        auto el = m_scope.m_map.at(i);
+        for (auto it = el.begin(); it != el.end(); ++it)
+            scope_copy.add(it->first, it->second->copy());
+        if (i != m_scope.size())
+            scope_copy.push();
+    }
+    return std::make_shared<ClassCtx>(m_owner, std::move(scope_copy));
+}
+
+std::shared_ptr<ClassCtx>
+ClassCtx::shallow_copy(void) {
+    SharedScope<std::string, earl::variable::Obj> scope_copy;
+    for (size_t i = 0; i < m_scope.m_map.size(); ++i) {
+        auto el = m_scope.m_map.at(i);
+        for (auto it = el.begin(); it != el.end(); ++it)
+            scope_copy.add(it->first, it->second);
+        if (i != m_scope.size())
+            scope_copy.push();
+    }
+    return std::make_shared<ClassCtx>(m_owner, std::move(scope_copy));
+}
+

@@ -35,6 +35,7 @@ using namespace earl::value;
 Class::Class(StmtClass *stmtclass, std::shared_ptr<Ctx> owner) : m_stmtclass(stmtclass), m_ctx(owner) {}
 
 void Class::load_class_members(std::vector<std::shared_ptr<Obj>> &args) {
+    (void)args;
     assert(false);
 }
 
@@ -46,12 +47,19 @@ bool Class::is_pub(void) const {
     return (m_stmtclass->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
+const std::string &
+Class::id(void) const {
+    return m_stmtclass->m_id->lexeme();
+}
+
 /*** OVERRIDES ***/
 Type Class::type(void) const {
     return Type::Class;
 }
 
 std::shared_ptr<Obj> Class::binop(Token *op, std::shared_ptr<Obj> &other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("Class::binop");
 }
 
@@ -60,14 +68,19 @@ bool Class::boolean(void) {
 }
 
 void Class::mutate(const std::shared_ptr<Obj> &other) {
+    (void)other;
     UNIMPLEMENTED("Class::mutate");
 }
 
 std::shared_ptr<Obj> Class::copy(void) {
-    UNIMPLEMENTED("Class::copy");
+    assert(m_ctx->type() == CtxType::Class);
+    auto ctx_copy = dynamic_cast<ClassCtx *>(m_ctx.get())->deep_copy();
+    auto class_copy = std::make_shared<Class>(m_stmtclass, ctx_copy);
+    return class_copy;
 }
 
 bool Class::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
     UNIMPLEMENTED("Class::eq");
 }
 
