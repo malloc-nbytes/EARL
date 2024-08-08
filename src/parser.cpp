@@ -35,7 +35,8 @@
 
 std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lexer &lexer);
 
-std::unique_ptr<Token> Parser::parse_expect(Lexer &lexer, TokenType expected) {
+std::unique_ptr<Token>
+Parser::parse_expect(Lexer &lexer, TokenType expected) {
     std::unique_ptr<Token> tok = lexer.next();
     if (tok->type() != expected) {
         Err::err_wtok(tok.get());
@@ -46,7 +47,8 @@ std::unique_ptr<Token> Parser::parse_expect(Lexer &lexer, TokenType expected) {
     return tok;
 }
 
-std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
+std::unique_ptr<Token>
+Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     std::unique_ptr<Token> tok = lexer.next();
 
     if (tok->type() != TokenType::Keyword) {
@@ -65,7 +67,8 @@ std::unique_ptr<Token> Parser::parse_expect_keyword(Lexer &lexer, std::string ex
     return tok;
 }
 
-static Attr translate_attr(Lexer &lexer) {
+static Attr
+translate_attr(Lexer &lexer) {
     auto errtok = Parser::parse_expect(lexer, TokenType::At);
 
     std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
@@ -86,7 +89,8 @@ static Attr translate_attr(Lexer &lexer) {
 
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
 // This makes this function more reusable.
-static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
+static std::vector<std::unique_ptr<Expr>>
+parse_comma_sep_exprs(Lexer &lexer) {
     std::vector<std::unique_ptr<Expr>> exprs;
 
     while (1) {
@@ -106,7 +110,8 @@ static std::vector<std::unique_ptr<Expr>> parse_comma_sep_exprs(Lexer &lexer) {
     return exprs;
 }
 
-static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexer &lexer) {
+static std::optional<std::vector<std::unique_ptr<Expr>>>
+try_parse_funccall(Lexer &lexer) {
     if (lexer.peek()->type() == TokenType::Lparen) {
         (void)Parser::parse_expect(lexer, TokenType::Lparen);
         std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
@@ -117,7 +122,8 @@ static std::optional<std::vector<std::unique_ptr<Expr>>> try_parse_funccall(Lexe
     return {};
 }
 
-static std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> parse_identifier_or_funccall(Lexer &lexer) {
+static std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>>
+parse_identifier_or_funccall(Lexer &lexer) {
     auto ident = std::make_unique<ExprIdent>(lexer.next());
     auto group = try_parse_funccall(lexer);
 
@@ -127,7 +133,8 @@ static std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> p
     return ident;
 }
 
-static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_args(Lexer &lexer) {
+static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>>
+parse_closure_args(Lexer &lexer) {
     std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args;
 
     (void)Parser::parse_expect(lexer, TokenType::Pipe);
@@ -150,7 +157,8 @@ static std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_closure_ar
     return args;
 }
 
-static Expr *parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
+static Expr *
+parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Token *tok = nullptr;
     Expr *left = nullptr;
     Expr *right = nullptr;
@@ -258,7 +266,8 @@ static Expr *parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     return nullptr; // unreachable
 }
 
-static Expr *parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
+static Expr *
+parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_primary_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Asterisk
@@ -274,7 +283,8 @@ static Expr *parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
     return lhs;
 }
 
-static Expr *parse_additive_expr(Lexer &lexer, char fail_on = '\0') {
+static Expr *
+parse_additive_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_multiplicative_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Plus
@@ -289,7 +299,8 @@ static Expr *parse_additive_expr(Lexer &lexer, char fail_on = '\0') {
     return lhs;
 }
 
-static Expr *parse_equalitative_expr(Lexer &lexer, char fail_on = '\0') {
+static Expr *
+parse_equalitative_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_additive_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Equals
@@ -308,7 +319,8 @@ static Expr *parse_equalitative_expr(Lexer &lexer, char fail_on = '\0') {
     return lhs;
 }
 
-static Expr *parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
+static Expr *
+parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_equalitative_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Ampersand
@@ -323,11 +335,13 @@ static Expr *parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
     return lhs;
 }
 
-Expr *Parser::parse_expr(Lexer &lexer, char fail_on) {
+Expr *
+Parser::parse_expr(Lexer &lexer, char fail_on) {
     return parse_logical_expr(lexer, fail_on);
 }
 
-std::unique_ptr<StmtMut> Parser::parse_stmt_mut(Lexer &lexer) {
+std::unique_ptr<StmtMut>
+Parser::parse_stmt_mut(Lexer &lexer) {
     Expr *left = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *right = Parser::parse_expr(lexer);
@@ -335,7 +349,8 @@ std::unique_ptr<StmtMut> Parser::parse_stmt_mut(Lexer &lexer) {
     return std::make_unique<StmtMut>(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
 }
 
-std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
+std::unique_ptr<StmtIf>
+Parser::parse_stmt_if(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IF);
 
     Expr *expr = Parser::parse_expr(lexer);
@@ -366,7 +381,8 @@ std::unique_ptr<StmtIf> Parser::parse_stmt_if(Lexer &lexer) {
                                     std::move(else_));
 }
 
-std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
+std::unique_ptr<StmtLet>
+Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
     std::unique_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
     (void)parse_expect(lexer, TokenType::Equals);
@@ -382,13 +398,15 @@ std::unique_ptr<StmtLet> Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr), attrs);
 }
 
-std::unique_ptr<StmtExpr> Parser::parse_stmt_expr(Lexer &lexer) {
+std::unique_ptr<StmtExpr>
+Parser::parse_stmt_expr(Lexer &lexer) {
     Expr *expr = Parser::parse_expr(lexer);
     parse_expect(lexer, TokenType::Semicolon);
     return std::make_unique<StmtExpr>(std::unique_ptr<Expr>(expr));
 }
 
-std::unique_ptr<StmtBlock> Parser::parse_stmt_block(Lexer &lexer) {
+std::unique_ptr<StmtBlock>
+Parser::parse_stmt_block(Lexer &lexer) {
     (void)Parser::parse_expect(lexer, TokenType::Lbrace);
 
     std::vector<std::unique_ptr<Stmt>> stmts;
@@ -403,7 +421,8 @@ std::unique_ptr<StmtBlock> Parser::parse_stmt_block(Lexer &lexer) {
     return std::make_unique<StmtBlock>(std::move(stmts));
 }
 
-std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lexer &lexer) {
+std::vector<std::pair<std::unique_ptr<Token>, uint32_t>>
+parse_stmt_def_args(Lexer &lexer) {
     std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args;
 
     (void)Parser::parse_expect(lexer, TokenType::Lparen);
@@ -426,7 +445,8 @@ std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lex
     return args;
 }
 
-std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
+std::unique_ptr<StmtDef>
+Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
     std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -440,21 +460,24 @@ std::unique_ptr<StmtDef> Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
                                      attrs);
 }
 
-std::unique_ptr<StmtReturn> parse_stmt_return(Lexer &lexer) {
+std::unique_ptr<StmtReturn>
+parse_stmt_return(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_RETURN);
     Expr *expr = Parser::parse_expr(lexer);
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
     return std::make_unique<StmtReturn>(std::unique_ptr<Expr>(expr));
 }
 
-std::unique_ptr<StmtWhile> parse_stmt_while(Lexer &lexer) {
+std::unique_ptr<StmtWhile>
+parse_stmt_while(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WHILE);
     Expr *expr = Parser::parse_expr(lexer);
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
     return std::make_unique<StmtWhile>(std::unique_ptr<Expr>(expr), std::move(block));
 }
 
-std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
+std::unique_ptr<StmtFor>
+parse_stmt_for(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
 
     std::unique_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
@@ -473,19 +496,22 @@ std::unique_ptr<StmtFor> parse_stmt_for(Lexer &lexer) {
                                      std::move(block));
 }
 
-std::unique_ptr<Stmt> parse_stmt_import(Lexer &lexer) {
+std::unique_ptr<Stmt>
+parse_stmt_import(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
     std::unique_ptr<Token> fp = Parser::parse_expect(lexer, TokenType::Strlit);
     return std::make_unique<StmtImport>(std::move(fp));
 }
 
-std::unique_ptr<Stmt> parse_stmt_mod(Lexer &lexer) {
+std::unique_ptr<Stmt>
+parse_stmt_mod(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MODULE);
     std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     return std::make_unique<StmtMod>(std::move(id));
 }
 
-static std::vector<std::unique_ptr<Token>> parse_stmt_class_constructor_arguments(Lexer &lexer) {
+static std::vector<std::unique_ptr<Token>>
+parse_stmt_class_constructor_arguments(Lexer &lexer) {
     std::vector<std::unique_ptr<Token>> ids;
 
     if (lexer.peek()->type() == TokenType::Lbracket) {
@@ -507,7 +533,8 @@ static std::vector<std::unique_ptr<Token>> parse_stmt_class_constructor_argument
 
 }
 
-std::unique_ptr<StmtClass> parse_stmt_class(Lexer &lexer, uint32_t attrs) {
+std::unique_ptr<StmtClass>
+parse_stmt_class(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
 
     std::unique_ptr<Token> class_id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -565,7 +592,8 @@ std::unique_ptr<StmtClass> parse_stmt_class(Lexer &lexer, uint32_t attrs) {
                                        std::move(methods));
 }
 
-static std::unique_ptr<StmtMatch::Branch> parse_branch(Lexer &lexer) {
+static std::unique_ptr<StmtMatch::Branch>
+parse_branch(Lexer &lexer) {
     std::vector<std::unique_ptr<Expr>> exprs = {};
     std::optional<std::unique_ptr<Expr>> when = {};
     std::unique_ptr<StmtBlock> block = nullptr;
@@ -590,14 +618,16 @@ static std::unique_ptr<StmtMatch::Branch> parse_branch(Lexer &lexer) {
     return std::make_unique<StmtMatch::Branch>(std::move(exprs), std::move(when), std::move(block));
 }
 
-static std::vector<std::unique_ptr<StmtMatch::Branch>> parse_branches(Lexer &lexer) {
+static std::vector<std::unique_ptr<StmtMatch::Branch>>
+parse_branches(Lexer &lexer) {
     std::vector<std::unique_ptr<StmtMatch::Branch>> branches;
     while (lexer.peek()->type() != TokenType::Rbrace)
         branches.push_back(parse_branch(lexer));
     return branches;
 }
 
-std::unique_ptr<StmtMatch> parse_stmt_match(Lexer &lexer) {
+std::unique_ptr<StmtMatch>
+parse_stmt_match(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MATCH);
 
     // The expression to match against
@@ -613,13 +643,43 @@ std::unique_ptr<StmtMatch> parse_stmt_match(Lexer &lexer) {
     return std::make_unique<StmtMatch>(std::unique_ptr<Expr>(expr), std::move(branches));
 }
 
-std::unique_ptr<StmtBreak> parse_stmt_break(Lexer &lexer) {
+std::unique_ptr<StmtBreak>
+parse_stmt_break(Lexer &lexer) {
     std::unique_ptr<Token> br = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_BREAK);
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
     return std::make_unique<StmtBreak>(std::move(br));
 }
 
-std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
+std::unique_ptr<StmtEnum>
+parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
+    std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
+    std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
+    Parser::parse_expect(lexer, TokenType::Lbrace);
+    while (1) {
+        if (lexer.peek(0)->type() == TokenType::Rbrace) {
+            lexer.discard(); // }
+            break;
+        }
+        auto entry_item = Parser::parse_expect(lexer, TokenType::Ident);
+        Expr *entry_value = nullptr;
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
+            lexer.discard(); // =
+            entry_value = Parser::parse_expr(lexer);
+        }
+        elems.push_back(std::make_pair(std::move(entry_item), std::unique_ptr<Expr>(entry_value)));
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma)
+            lexer.discard(); // ,
+        else {
+            (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+            break;
+        }
+    }
+    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs);
+}
+
+std::unique_ptr<Stmt>
+Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
 
@@ -660,6 +720,9 @@ std::unique_ptr<Stmt> Parser::parse_stmt(Lexer &lexer) {
             }
             if (tok->lexeme() == COMMON_EARLKW_MATCH) {
                 return parse_stmt_match(lexer);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_ENUM) {
+                return parse_stmt_enum(lexer, attrs);
             }
             Err::err_wtok(tok);
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());

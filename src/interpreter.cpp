@@ -331,12 +331,25 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     else if (er.is_literal())
         return er.value;
     else if (er.is_ident()) {
-        if (!ctx->variable_exists(er.id))
-            ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
-        auto var = ctx->variable_get(er.id);
-        if (!ref)
-            return var->value()->copy();
-        return var->value();
+        if (ctx->variable_exists(er.id)) {
+            auto var = ctx->variable_get(er.id);
+            if (!ref)
+                return var->value()->copy();
+            return var->value();
+        }
+        // Check if it is an enum
+        WorldCtx *world = ctx->type() == CtxType::World ?
+            dynamic_cast<WorldCtx *>(ctx.get()) :
+            ctx->get_world();
+        if (world->enum_exists(er.id))
+            return world->enum_get(er.id);
+        // Check if it is an entry of an enum
+        if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
+            auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
+            if (lhs->has_entry(er.id))
+                return lhs->get_entry(er.id)->value();
+        }
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
     }
     else if (er.is_wildcard())
         return std::make_shared<earl::value::Void>();
@@ -466,10 +479,19 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         return ER(func, ERT::Literal);
     }
     else if (right_er.is_ident()) {
-        auto value = unpack_ER(right_er, other_ctx, ref); // This makes sure that the variable exists
-        if (!right_er.ctx->variable_get(right_er.id)->is_pub()) // So no need to call `exists()`
-            ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
-                        right_er.id.c_str(), left_id.c_str());
+        auto value = unpack_ER(right_er, other_ctx, ref);
+        // Check if it is a variable
+        if (right_er.ctx->variable_exists(right_er.id)) {
+            if (!right_er.ctx->variable_get(right_er.id)->is_pub())
+                ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
+                          right_er.id.c_str(), left_id.c_str());
+            return ER(value, ERT::Literal);
+        }
+        // It must be an enum
+        assert(value->type() == earl::value::Type::Enum);
+        if (!dynamic_cast<earl::value::Enum *>(value.get())->is_pub())
+            ERR_WARGS(Err::Type::Fatal, "enumeration `%s` in module `%s` does not contain the @pub attribute",
+                      right_er.id.c_str(), left_id.c_str());
         return ER(value, ERT::Literal);
     }
     else
@@ -509,7 +531,6 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         PackedERPreliminary perp(left_value);
         std::shared_ptr<earl::value::Obj> value = nullptr;
 
-        // if (left_er.is_ident() && ctx->variable_exists(left_er.id) && ctx->variable_get(left_er.id)->type() == earl::value::Type::Class) {
         if (left_value->type() == earl::value::Type::Class) {
             // Class method/member. The right side (right_er) contains the actual call/identifier to be evaluated,
             // and we need the left (left_value)'s context with the preliminary value of (perp).
@@ -945,6 +966,36 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
     return nullptr;
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
+    std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> elems = {};
+
+    earl::value::Int *last_value = nullptr;
+    for (auto &p : stmt->m_elems) {
+        std::shared_ptr<earl::variable::Obj> var = nullptr;
+        if (p.second) {
+            ER er = Interpreter::eval_expr(p.second.get(), ctx, false);
+            auto value = unpack_ER(er, ctx, false);
+            var = std::make_shared<earl::variable::Obj>(p.first.get(), value);
+            last_value = dynamic_cast<earl::value::Int *>(value.get());
+        }
+        else {
+            int actual = 0;
+            if (last_value)
+                actual = last_value->value()+1;
+            auto value = std::make_shared<earl::value::Int>(actual);
+            last_value = value.get();
+            var = std::make_shared<earl::variable::Obj>(p.first.get(), std::shared_ptr<earl::value::Obj>(value));
+        }
+        elems.insert({p.first->lexeme(), std::move(var)});
+    }
+
+    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
+    assert(ctx->type() == CtxType::World);
+    dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
+    return nullptr;
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -962,6 +1013,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Mod:       return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
     case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
     case StmtType::Match:     return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
+    case StmtType::Enum:      return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     ERR(Err::Type::Internal,

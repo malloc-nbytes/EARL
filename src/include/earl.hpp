@@ -85,6 +85,8 @@ namespace earl {
             Break,
             /** EARL class type */
             Class,
+            /** EARL enum type */
+            Enum,
         };
 
         /// @brief The base abstract class that all
@@ -133,6 +135,8 @@ namespace earl {
 
             /// @brief Get the underlying integer value
             int value(void);
+
+            void incr(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -387,6 +391,32 @@ namespace earl {
             std::vector<std::shared_ptr<variable::Obj>> m_members;
             std::vector<std::shared_ptr<function::Obj>> m_methods;
             std::vector<Token *> m_member_assignees;
+        };
+
+        struct Enum : public Obj {
+            Enum(StmtEnum *stmt,
+                 std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems,
+                 uint32_t attrs);
+
+            const std::string &id(void) const;
+            std::shared_ptr<variable::Obj> get_entry(const std::string &id);
+            bool has_entry(const std::string &id) const;
+            bool is_pub(void) const;
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+
+        private:
+            StmtEnum *m_stmt;
+            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> m_elems;
+            Token *m_id;
+            uint32_t m_attrs;
         };
 
         struct File : public Obj {

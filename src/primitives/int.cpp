@@ -43,6 +43,11 @@ Int::fill(int value) {
     m_value = value;
 }
 
+void
+Int::incr(void) {
+    ++m_value;
+}
+
 Type
 Int::type(void) const {
     return Type::Int;

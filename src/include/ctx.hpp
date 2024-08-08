@@ -46,23 +46,23 @@ enum class CtxType {
     Closure,
 };
 
+struct WorldCtx;
+
 struct Ctx {
     virtual ~Ctx() = default;
 
     virtual CtxType type(void) const = 0;
     virtual void push_scope(void) = 0;
     virtual void pop_scope(void) = 0;
-
     virtual void variable_add(std::shared_ptr<earl::variable::Obj> var) = 0;
     virtual bool variable_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::variable::Obj> variable_get(const std::string &id) = 0;
     virtual void variable_remove(const std::string &id) = 0;
-
     virtual void function_add(std::shared_ptr<earl::function::Obj> func) = 0;
     virtual bool function_exists(const std::string &id) = 0;
     virtual std::shared_ptr<earl::function::Obj> function_get(const std::string &id) = 0;
-
     virtual bool closure_exists(const std::string &id) = 0;
+    virtual WorldCtx *get_world(void) = 0;
 
     SharedScope<std::string, earl::variable::Obj> m_scope;
     SharedScope<std::string, earl::function::Obj> m_funcs;
@@ -74,19 +74,17 @@ struct WorldCtx : public Ctx {
 
     size_t stmts_len(void) const;
     Stmt *stmt_at(size_t idx);
-
     void set_mod(std::string id);
     const std::string &get_mod(void) const;
-
     void add_import(std::shared_ptr<Ctx> ctx);
     std::shared_ptr<Ctx> *get_import(const std::string &id);
-
     void define_class(StmtClass *klass);
     bool class_is_defined(const std::string &id) const;
     StmtClass *class_get(const std::string &id);
-
     void debug_dump_defined_classes(void) const;
     void debug_dump_variables(void) const;
+    bool enum_exists(const std::string &id) const;
+    std::shared_ptr<earl::value::Enum> enum_get(const std::string &id);
 
     CtxType type(void) const override;
     void push_scope(void) override;
@@ -99,15 +97,16 @@ struct WorldCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
+    void enum_add(std::shared_ptr<earl::value::Enum> _enum);
+    WorldCtx *get_world(void) override;
 
 private:
     std::string m_mod;
     std::vector<std::shared_ptr<Ctx>> m_imports;
-
     std::unique_ptr<Lexer> m_lexer;
     std::unique_ptr<Program> m_program;
-
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
+    std::unordered_map<std::string, std::shared_ptr<earl::value::Enum>> m_enums;
 };
 
 struct FunctionCtx : public Ctx {
@@ -131,6 +130,7 @@ struct FunctionCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
+    WorldCtx *get_world(void) override;
 
 private:
     std::shared_ptr<Ctx> m_owner; // The MAIN owner
@@ -163,6 +163,7 @@ struct ClassCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
+    WorldCtx *get_world(void) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -193,6 +194,7 @@ struct ClosureCtx : public Ctx {
     bool function_exists(const std::string &id) override;
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
+    WorldCtx *get_world(void) override;
 
 private:
     std::shared_ptr<Ctx> m_owner;

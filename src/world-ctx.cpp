@@ -62,7 +62,6 @@ WorldCtx::get_import(const std::string &id) {
     for (auto &im : m_imports)
         if (dynamic_cast<WorldCtx *>(im.get())->get_mod() == id)
             return &im;
-
     ERR_WARGS(Err::Type::Undeclared, "module `%s` does not exist", id.c_str());
 }
 
@@ -161,3 +160,23 @@ WorldCtx::debug_dump_variables(void) const {
     this->m_scope.debug_dump();
 }
 
+void
+WorldCtx::enum_add(std::shared_ptr<earl::value::Enum> _enum) {
+    const std::string &id = _enum->id();
+    m_enums.insert({id, std::move(_enum)});
+}
+
+bool
+WorldCtx::enum_exists(const std::string &id) const {
+    return m_enums.find(id) != m_enums.end();
+}
+
+std::shared_ptr<earl::value::Enum>
+WorldCtx::enum_get(const std::string &id) {
+    return m_enums.find(id)->second;
+}
+
+WorldCtx *
+WorldCtx::get_world(void) {
+    UNIMPLEMENTED("WorldCtx::get_world");
+}

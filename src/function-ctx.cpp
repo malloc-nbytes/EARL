@@ -208,3 +208,12 @@ FunctionCtx::debug_dump_variables(void) const {
     std::cout << "DEBUG DUMPING VARS" << std::endl;
     m_scope.debug_dump();
 }
+
+WorldCtx *
+FunctionCtx::get_world(void) {
+    if (m_owner->type() == CtxType::Class)
+        return dynamic_cast<ClassCtx *>(m_owner.get())->get_world();
+    else if (m_owner->type() == CtxType::Closure)
+        return dynamic_cast<ClosureCtx *>(m_owner.get())->get_world();
+    return dynamic_cast<WorldCtx *>(this->get_outer_world_owner().get());
+}
