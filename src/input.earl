@@ -1,5 +1,6 @@
 mod Main
 
-let i = 2;
-i *= 2;
-println(i);
+let s = "foo bar";
+s += " baz";
+
+println(s);

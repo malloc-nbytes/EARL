@@ -107,5 +107,7 @@ Char::to_cxxstring(void) {
 
 void
 Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Char::spec_mutate");
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on char type", op->lexeme().c_str());
 }

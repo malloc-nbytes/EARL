@@ -254,7 +254,19 @@ Str::to_cxxstring(void) {
 
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Str::spec_mutate");
+    std::vector<std::shared_ptr<Char>> prev = {};
+    std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Char> k) {prev.push_back(k);});
+    this->mutate(other); // does type checking
+    switch (op->type()) {
+    case TokenType::Plus_Equals: {
+        for (int i = prev.size()-1; i >= 0; --i)
+            m_value.insert(m_value.begin(), prev.at(i));
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on str type", op->lexeme().c_str());
+    } break;
+    }
 }
 
 

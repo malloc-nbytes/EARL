@@ -69,6 +69,8 @@ Enum::type(void) const  {
 
 std::shared_ptr<Obj>
 Enum::binop(Token *op, std::shared_ptr<Obj> &other) {
+    (void)op;
+    (void)other;
     UNIMPLEMENTED("Enum::binop");
 }
 
@@ -79,6 +81,7 @@ Enum::boolean(void) {
 
 void
 Enum::mutate(const std::shared_ptr<Obj> &other) {
+    (void)other;
     UNIMPLEMENTED("Enum::mutate");
 }
 
@@ -89,6 +92,7 @@ Enum::copy(void) {
 
 bool
 Enum::eq(std::shared_ptr<Obj> &other) {
+    (void)other;
     UNIMPLEMENTED("Enum::eq");
 }
 
@@ -99,6 +103,8 @@ Enum::to_cxxstring(void) {
 
 void
 Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Enum::spec_mutate");
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on enum type", op->lexeme().c_str());
 }
 
