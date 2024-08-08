@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
         - Enums
         - Float type
         - Unary Expressions
+        - Better output when printing enumerations
 
 ### Fixed
 

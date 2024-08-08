@@ -722,11 +722,6 @@ You access these with the dot `.` notation i.e.,
 ** =list/str= Implementes
 
 #+begin_quote
-Note: These member intrinsics for =str= is currently
-a work in progress and is not guaranteed to work.
-#+end_quote
-
-#+begin_quote
 #+begin_example
 rev() -> unit
 #+end_example
@@ -769,14 +764,6 @@ split(delim: str) -> list
 Split a string by the delimiter =delim=.
 #+end_quote
 
-#+begin_quote
-#+begin_example
-pop(idx: int) -> unit
-#+end_example
-
-Will remove the element at index =idx=.
-#+end_quote
-
 ** =char= Implements
 
 #+begin_quote
@@ -803,6 +790,15 @@ is_some() -> bool
 #+end_example
 
 Returns =true= if the value is =some=, =false= otherwise.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+unwrap() -> any
+#+end_example
+
+Returns the inner value of the =option= datatype. If the =option= is
+=none=, a panic will occur.
 #+end_quote
 
 ** =file= Implements
@@ -910,6 +906,10 @@ Check if the stack is empty
 
 *** *Function List*: /None/
 
+*** *Enum List*: /None/
+
+*** *Variable List* /None/
+
 *** *Examples*
 
 #+begin_example
@@ -1015,7 +1015,19 @@ Prints the contents of the =set=.
 Time complexity: $O(\log n)$ where $n = |$ =T= $|$.
 #+end_quote
 
+*** *Enum List*: /None/
+
 *** *Function List*: /None/
+
+*** *Variable List*
+
+#+begin_quote
+#+begin_example
+DEFAULT_INT_SET_COMPAR: closure(any, any) -> int
+#+end_example
+
+The default integer comparison function.
+#+end_quote
 
 ** List
 
@@ -1024,6 +1036,8 @@ Time complexity: $O(\log n)$ where $n = |$ =T= $|$.
 *** *Module*: =List=
 
 *** *Class List*: /None/
+
+*** *Enum List*: /None/
 
 *** *Function List*:
 
@@ -1111,6 +1125,8 @@ Performs the quicksort sorting algorithm on =lst= and
 sorts by the comparison closure =compar=.
 #+end_quote
 
+*** *Variable List* /None/
+
 ** IO
 
 *** *Import*: ="std/io.earl"=
@@ -1118,6 +1134,8 @@ sorts by the comparison closure =compar=.
 *** *Module*: =IO=
 
 *** *Class List*: /None/
+
+*** *Enum List*: /None/
 
 *** *Function List*:
 
@@ -1130,6 +1148,8 @@ Opens the file at the filepath =fp= in read (=r=) mode. Returns
 the contents of the file as a =str= and closes the file.
 #+end_quote
 
+*** *Variable List* /None/
+
 ** Math
 
 *** *Import*: ="std/math.earl"=
@@ -1137,6 +1157,8 @@ the contents of the file as a =str= and closes the file.
 *** *Module*: =Math=
 
 *** *Class List*: /None/
+
+*** *Enum List*: /None/
 
 *** *Function List*:
 
@@ -1164,6 +1186,8 @@ abs(x: int) -> int
 Returns the absolute value of =x=.
 #+end_quote
 
+*** *Variable List* /None/
+
 ** Utils
 
 *** *Import*: ="std/utils.earl"=
@@ -1171,6 +1195,8 @@ Returns the absolute value of =x=.
 *** *Module*: =Utils=
 
 *** *Class List*: /None/
+
+*** *Enum List*: /None/
 
 *** *Function List*:
 
@@ -1189,6 +1215,8 @@ swap(@ref x1, @ref x2) -> unit
 
 Swaps the values of =x1= and =x2=.
 #+end_quote
+
+*** *Variable List* /None/
 
 * Code Style
 
