@@ -1,3 +1,6 @@
 mod Main
 
-println(-.2);
+import "std/io.earl"
+
+println(IO::Fd);
+

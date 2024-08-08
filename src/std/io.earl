@@ -22,9 +22,11 @@
 
 mod IO
 
-@pub let stdin = 0;
-@pub let stdout = 1;
-@pub let stderr = 2;
+@pub enum Fd {
+    In = 0,
+    Out,
+    Err,
+}
 
 # Get the contents of a file and
 # put it into a string.
