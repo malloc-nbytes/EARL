@@ -113,3 +113,14 @@ Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on bool type", op->lexeme().c_str());
 }
 
+std::shared_ptr<Obj>
+Bool::unaryop(Token *op) {
+    switch (op->type()) {
+    case TokenType::Bang: return std::make_shared<Bool>(!m_value);
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid unary operator on bool type");
+    }
+    }
+    return nullptr; // unreachable
+}

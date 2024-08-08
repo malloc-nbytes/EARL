@@ -657,7 +657,10 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
 ER
 eval_expr_unary(ExprUnary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
-    assert(false);
+    ER rhs = Interpreter::eval_expr(expr->m_expr.get(), ctx, ref);
+    auto expr_value = unpack_ER(rhs, ctx, ref);
+    auto result = expr_value->unaryop(expr->m_op.get());
+    return ER(result, ERT::Literal);
 }
 
 ER

@@ -76,3 +76,9 @@ Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     assert(false && "unreachable");
 }
+
+std::shared_ptr<Obj>
+Break::unaryop(Token *op) {
+    (void)op;
+    assert(false && "unreachable");
+}

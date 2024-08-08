@@ -269,4 +269,10 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     }
 }
 
-
+std::shared_ptr<Obj>
+Str::unaryop(Token *op) {
+    (void)op;
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "invalid unary operator on str type");
+    return nullptr; // unreachable
+}

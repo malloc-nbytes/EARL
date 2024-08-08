@@ -127,4 +127,11 @@ Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on option type", op->lexeme().c_str());
 }
 
+std::shared_ptr<Obj>
+Option::unaryop(Token *op) {
+    (void)op;
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "invalid unary operator on option type");
+    return nullptr; // unreachable
+}
 

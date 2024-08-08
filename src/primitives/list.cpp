@@ -272,3 +272,10 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     }
 }
 
+std::shared_ptr<Obj>
+List::unaryop(Token *op) {
+    (void)op;
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "invalid unary operator on list type");
+    return nullptr; // unreachable
+}

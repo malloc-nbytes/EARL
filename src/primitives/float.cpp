@@ -181,3 +181,14 @@ Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     }
 }
 
+std::shared_ptr<Obj>
+Float::unaryop(Token *op) {
+    switch (op->type()) {
+    case TokenType::Minus: return std::make_shared<Float>(-m_value);
+    default: {
+        Err::err_wtok(op);
+        ERR(Err::Type::Fatal, "invalid unary operator on float type");
+    }
+    }
+    return nullptr; // unreachable
+}
