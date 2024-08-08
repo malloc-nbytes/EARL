@@ -656,6 +656,11 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 ER
+eval_expr_unary(ExprUnary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    assert(false);
+}
+
+ER
 Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_type()) {
     case ExprType::Term: {
@@ -664,6 +669,9 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     } break;
     case ExprType::Binary: {
         return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx, ref);
+    } break;
+    case ExprType::Unary: {
+        return eval_expr_unary(dynamic_cast<ExprUnary *>(expr), ctx, ref);
     } break;
     default:
         assert(false && "unreachable");

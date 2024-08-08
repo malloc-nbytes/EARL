@@ -163,6 +163,14 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *left = nullptr;
     Expr *right = nullptr;
 
+    // Unary expressions
+    while (lexer.peek()->type() == TokenType::Minus ||
+           lexer.peek()->type() == TokenType::Bang) {
+        std::unique_ptr<Token> op = lexer.next();
+        Expr *operand = parse_primary_expr(lexer, fail_on);
+        left = new ExprUnary(std::move(op), std::unique_ptr<Expr>(operand));
+    }
+
     while (1) {
         switch (lexer.peek()->type()) {
         case TokenType::Ident: {
@@ -261,9 +269,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         } break;
         }
     }
-
-    assert(false && "unreachable");
-    return nullptr; // unreachable
+    return left;
 }
 
 static Expr *
