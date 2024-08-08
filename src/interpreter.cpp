@@ -347,7 +347,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
             if (lhs->has_entry(er.id))
-                return lhs->get_entry(er.id)->value();
+                return lhs->get_entry(er.id)->value()->copy();
         }
         ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
     }

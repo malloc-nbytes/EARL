@@ -1,4 +1,12 @@
 mod Main
 
-import "other.earl"
+enum El {
+    Item1,
+    Item2,
+    Item3
+}
+
+@ref let p = El.Item3;
+p = 9;
+println(El.Item3);
 
