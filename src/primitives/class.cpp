@@ -55,6 +55,11 @@ Class::id(void) const {
     return m_stmtclass->m_id->lexeme();
 }
 
+std::vector<std::shared_ptr<earl::variable::Obj>> &
+Class::get_members(void) {
+    return m_members;
+}
+
 /*** OVERRIDES ***/
 Type
 Class::type(void) const {

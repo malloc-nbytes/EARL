@@ -1,12 +1,7 @@
 mod Main
 
-enum El {
-    Item1,
-    Item2,
-    Item3
-}
+import "std/set.earl"
 
-@ref let p = El.Item3;
-p = 9;
-println(El.Item3);
-
+let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
+for i in 0..10 { s.insert(i); }
+println(s);

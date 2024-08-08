@@ -51,6 +51,12 @@ ClassCtx::pop_scope(void) {
     UNIMPLEMENTED("ClassCtx::pop_variable_scope");
 }
 
+std::vector<std::shared_ptr<earl::variable::Obj>>
+ClassCtx::get_printable_members(void) {
+    std::vector<std::shared_ptr<earl::variable::Obj>> members = m_scope.extract_tovec();
+    return members;
+}
+
 void
 ClassCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
     const std::string &id = var->id();

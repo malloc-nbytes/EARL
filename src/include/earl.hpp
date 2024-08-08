@@ -370,8 +370,12 @@ namespace earl {
             void add_member_assignee(Token *assignee);
             bool is_pub(void) const;
 
+            [[deprecated]]
             std::shared_ptr<function::Obj> get_method(const std::string &id);
+            [[deprecated]]
             std::shared_ptr<earl::variable::Obj> get_member(const std::string &id);
+            [[deprecated]]
+            std::vector<std::shared_ptr<earl::variable::Obj>> &get_members(void);
 
             std::shared_ptr<Ctx> &ctx(void);
 

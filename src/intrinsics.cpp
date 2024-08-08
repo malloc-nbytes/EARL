@@ -306,17 +306,32 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
 
         for (size_t i = 0; i < list.size(); ++i) {
             __intrinsic_print(list[i]);
-
-            if (i != list.size()-1) {
+            if (i != list.size()-1)
                 *stream << ", ";
-            }
         }
 
         *stream << ']';
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
-        std::cout << "<Class " << classparam->id() << " " << &classparam << '>';
+        *stream << "<Class " << classparam->id() << " { ";
+
+        auto class_ctx = dynamic_cast<ClassCtx *>(classparam->ctx().get());
+        auto members = class_ctx->get_printable_members();
+
+        for (size_t i = 0; i < members.size(); ++i) {
+            auto &mem = members[i];
+            *stream << mem->id() << " = ";
+            __intrinsic_print(mem->value(), stream);
+            if (i != members.size()-1)
+                *stream << ", ";
+        }
+
+        *stream << " }>";
+    } break;
+    case earl::value::Type::Closure: {
+        auto *closureparam = dynamic_cast<earl::value::Closure *>(param.get());
+        *stream << "<closure>";
     } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));

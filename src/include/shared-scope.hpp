@@ -112,6 +112,16 @@ template <typename K, typename V> struct SharedScope {
         }
     }
 
+    inline std::vector<std::shared_ptr<V>> extract_tovec(void) {
+        std::vector<std::shared_ptr<V>> vec = {};
+        for (const auto &map : m_map) {
+            for (const auto &pair : map) {
+                vec.push_back(pair.second);
+            }
+        }
+        return vec;
+    }
+
     inline void debug_dump(void) const {
         int i = 1;
         for (const auto &map : m_map) {

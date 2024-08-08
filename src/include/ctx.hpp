@@ -151,6 +151,7 @@ struct ClassCtx : public Ctx {
     get___m_class_constructor_tmp_args(void);
     std::shared_ptr<ClassCtx> deep_copy(void);
     std::shared_ptr<ClassCtx> shallow_copy(void);
+    std::vector<std::shared_ptr<earl::variable::Obj>> get_printable_members(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;
