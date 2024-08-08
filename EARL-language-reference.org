@@ -622,6 +622,26 @@ println(arg1: any, arg2: any, ..., argN: any) -> unit
 Will print all elements if it can. Adds a newline at the end.
 #+end_quote
 
+** TODO =fprint=
+
+#+begin_quote
+#+begin_example
+fprint(fd: int|file, arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
+Will print all elements to the file descriptor =fd=.
+#+end_quote
+
+** TODO =fprintln=
+
+#+begin_quote
+#+begin_example
+fprintln(fd: int|file, arg1: any, arg2: any, ..., argN: any) -> unit
+#+end_example
+
+Will print all elements as well as a newline to the file descriptor =fd=.
+#+end_quote
+
 ** =input=
 
 #+begin_quote
@@ -637,10 +657,10 @@ and returns it as a =str=.
 
 #+begin_quote
 #+begin_example
-assert(arg1: any, arg2: any, ..., argN: any) -> unit
+assert(arg1: bool, arg2: bool, ..., argN: bool) -> unit
 #+end_example
 
-Tests each argument for =true=. If any of the conditions fails,
+Tests each argument. If any of the conditions fail,
 the program immediately crashes.
 #+end_quote
 
@@ -1135,7 +1155,15 @@ sorts by the comparison closure =compar=.
 
 *** *Class List*: /None/
 
-*** *Enum List*: /None/
+*** *Enum List*:
+
+#+begin_quote
+#+begin_example
+Fd { In, Out, Err }
+#+end_example
+
+The integer codes for =stdin=, =stdout=, and =stderr=.
+#+end_quote
 
 *** *Function List*:
 
