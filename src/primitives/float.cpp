@@ -160,3 +160,24 @@ std::string
 Float::to_cxxstring(void) {
     return std::to_string(m_value);
 }
+
+void
+Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    double prev = m_value;
+    this->mutate(other); // does type checking
+    switch (op->type()) {
+    case TokenType::Plus_Equals: m_value += prev; break;
+    case TokenType::Minus_Equals: m_value -= prev; break;
+    case TokenType::Asterisk_Equals: m_value *= prev; break;
+    case TokenType::Forwardslash_Equals: m_value /= prev; break;
+    case TokenType::Percent_Equals: {
+        Err::err_wtok(op);
+        ERR_WARGS(Err::Type::Fatal, "cannot use module `%s` on float type", op->lexeme().c_str());
+    }
+    default: {
+        Err::err_wtok(op);
+        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s`", op->lexeme().c_str());
+    } break;
+    }
+}
+

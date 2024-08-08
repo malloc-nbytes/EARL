@@ -70,3 +70,9 @@ Break::to_cxxstring(void) {
     UNIMPLEMENTED("Break::to_cxxstring");
 }
 
+void
+Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)op;
+    (void)other;
+    assert(false && "unreachable");
+}

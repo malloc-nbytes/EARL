@@ -254,3 +254,21 @@ List::to_cxxstring(void) {
         res += el->to_cxxstring();
     return res;
 }
+
+void
+List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    std::vector<std::shared_ptr<Obj>> prev = {};
+    std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Obj> k) {prev.push_back(k);});
+    this->mutate(other); // does type checking
+    switch (op->type()) {
+    case TokenType::Plus_Equals: {
+        for (int i = prev.size()-1; i >= 0; --i)
+            m_value.insert(m_value.begin(), prev.at(i));
+    } break;
+    default: {
+        Err::err_wtok(op);
+        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on list type", op->lexeme().c_str());
+    } break;
+    }
+}
+

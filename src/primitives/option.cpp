@@ -119,3 +119,12 @@ Option::to_cxxstring(void) {
         ERR(Err::Type::Fatal, "unable to convert `none` type to a string");
     return m_value->to_cxxstring();
 }
+
+void
+Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on option type", op->lexeme().c_str());
+}
+
+

@@ -1,7 +1,6 @@
 mod Main
 
-import "std/set.earl"
+let s = "foo bar";
+s += " baz";
 
-let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
-for i in 0..10 { s.insert(i); }
 println(s);

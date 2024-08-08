@@ -159,3 +159,12 @@ std::string
 File::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `file` type to a string");
 }
+
+void
+File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on file type", op->lexeme().c_str());
+}
+
+

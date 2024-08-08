@@ -102,3 +102,12 @@ std::string
 Class::to_cxxstring(void) {
     UNIMPLEMENTED("Class::to_cxxstring");
 }
+
+void
+Class::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on class type", op->lexeme().c_str());
+}
+
+

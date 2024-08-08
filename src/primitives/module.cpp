@@ -76,3 +76,12 @@ std::string
 Module::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
 }
+
+void
+Module::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)op;
+    (void)other;
+    assert(false && "unreachable");
+}
+
+

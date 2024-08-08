@@ -100,6 +100,14 @@ Char::eq(std::shared_ptr<Obj> &other) {
     return this->value() == dynamic_cast<Char *>(other.get())->value();
 }
 
-std::string Char::to_cxxstring(void) {
+std::string
+Char::to_cxxstring(void) {
     return std::string(1, m_value);
+}
+
+void
+Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on char type", op->lexeme().c_str());
 }

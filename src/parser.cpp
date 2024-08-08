@@ -343,10 +343,13 @@ Parser::parse_expr(Lexer &lexer, char fail_on) {
 std::unique_ptr<StmtMut>
 Parser::parse_stmt_mut(Lexer &lexer) {
     Expr *left = Parser::parse_expr(lexer);
-    (void)parse_expect(lexer, TokenType::Equals);
+    // (void)parse_expect(lexer, TokenType::Equals);
+    auto tok = lexer.next(); // =, +=, -=, etc
     Expr *right = Parser::parse_expr(lexer);
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtMut>(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+    return std::make_unique<StmtMut>(std::unique_ptr<Expr>(left),
+                                     std::unique_ptr<Expr>(right),
+                                     std::move(tok));
 }
 
 std::unique_ptr<StmtIf>
@@ -736,7 +739,12 @@ Parser::parse_stmt(Lexer &lexer) {
                     ++paren;
                 if (lexer.peek(i)->type() == TokenType::Rparen)
                     --paren;
-                if (lexer.peek(i)->type() == TokenType::Equals && paren == 0)
+                if ((lexer.peek(i)->type() == TokenType::Equals
+                     || lexer.peek(i)->type() == TokenType::Plus_Equals
+                     || lexer.peek(i)->type() == TokenType::Minus_Equals
+                     || lexer.peek(i)->type() == TokenType::Asterisk_Equals
+                     || lexer.peek(i)->type() == TokenType::Forwardslash_Equals)
+                    && paren == 0)
                     return parse_stmt_mut(lexer);
             }
             return parse_stmt_expr(lexer);
