@@ -160,3 +160,9 @@ std::string
 Float::to_cxxstring(void) {
     return std::to_string(m_value);
 }
+
+void
+Float::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Float::spec_mutate");
+}
+

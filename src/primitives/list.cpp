@@ -254,3 +254,9 @@ List::to_cxxstring(void) {
         res += el->to_cxxstring();
     return res;
 }
+
+void
+List::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("List::spec_mutate");
+}
+

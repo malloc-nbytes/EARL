@@ -159,3 +159,10 @@ std::string
 File::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `file` type to a string");
 }
+
+void
+File::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("File::spec_mutate");
+}
+
+

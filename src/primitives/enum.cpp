@@ -97,3 +97,8 @@ Enum::to_cxxstring(void) {
     UNIMPLEMENTED("Enum::to_cxxstring");
 }
 
+void
+Enum::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Enum::spec_mutate");
+}
+

@@ -119,3 +119,10 @@ Option::to_cxxstring(void) {
         ERR(Err::Type::Fatal, "unable to convert `none` type to a string");
     return m_value->to_cxxstring();
 }
+
+void
+Option::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Option::spec_mutate");
+}
+
+

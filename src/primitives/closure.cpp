@@ -121,3 +121,8 @@ std::string
 Closure::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `closure` type to a string");
 }
+
+void
+Closure::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Closure::spec_mutate");
+}

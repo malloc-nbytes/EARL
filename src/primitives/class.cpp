@@ -102,3 +102,10 @@ std::string
 Class::to_cxxstring(void) {
     UNIMPLEMENTED("Class::to_cxxstring");
 }
+
+void
+Class::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Class::spec_mutate");
+}
+
+

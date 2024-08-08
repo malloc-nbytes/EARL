@@ -316,7 +316,9 @@ struct StmtMut : public Stmt {
     /// @brief The expression of the right hand side
     std::unique_ptr<Expr> m_right;
 
-    StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right);
+    std::unique_ptr<Token> m_equals;
+
+    StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, std::unique_ptr<Token> m_equals);
     StmtType stmt_type() const override;
 };
 

@@ -70,3 +70,9 @@ std::string
 Void::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
 }
+
+void
+Void::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Void::spec_mutate");
+}
+

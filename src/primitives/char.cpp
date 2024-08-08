@@ -100,6 +100,12 @@ Char::eq(std::shared_ptr<Obj> &other) {
     return this->value() == dynamic_cast<Char *>(other.get())->value();
 }
 
-std::string Char::to_cxxstring(void) {
+std::string
+Char::to_cxxstring(void) {
     return std::string(1, m_value);
+}
+
+void
+Char::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Char::spec_mutate");
 }

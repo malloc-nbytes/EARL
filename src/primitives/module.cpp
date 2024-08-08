@@ -76,3 +76,10 @@ std::string
 Module::to_cxxstring(void) {
     ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
 }
+
+void
+Module::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Module::spec_mutate");
+}
+
+

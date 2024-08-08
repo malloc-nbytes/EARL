@@ -70,3 +70,7 @@ Break::to_cxxstring(void) {
     UNIMPLEMENTED("Break::to_cxxstring");
 }
 
+void
+Break::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Break::spec_mutate");
+}

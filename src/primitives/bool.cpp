@@ -105,3 +105,9 @@ std::string
 Bool::to_cxxstring(void) {
     return m_value ? "true" : "false";
 }
+
+void
+Bool::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Bool::spec_mutate");
+}
+

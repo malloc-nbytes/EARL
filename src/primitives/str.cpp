@@ -251,3 +251,10 @@ std::string
 Str::to_cxxstring(void) {
     return this->value();
 }
+
+void
+Str::spec_mutate(const std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Str::spec_mutate");
+}
+
+
