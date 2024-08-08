@@ -397,6 +397,8 @@ namespace earl {
             Enum(StmtEnum *stmt, std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems);
 
             const std::string &id(void) const;
+            std::shared_ptr<variable::Obj> get_entry(const std::string &id);
+            bool has_entry(const std::string &id) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -408,8 +410,8 @@ namespace earl {
             std::string to_cxxstring(void)                                     override;
 
         private:
-            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> m_elems;
             StmtEnum *m_stmt;
+            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> m_elems;
             Token *m_id;
         };
 

@@ -202,4 +202,7 @@ bad:
     ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
 }
 
-
+WorldCtx *
+ClosureCtx::get_world(void) {
+    UNIMPLEMENTED("ClosureCtx::get_world");
+}

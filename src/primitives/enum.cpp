@@ -42,32 +42,51 @@ Enum::id(void) const {
     return m_stmt->m_id->lexeme();
 }
 
-/*** OVERRIDES ***/
-Type Enum::type(void) const  {
-    UNIMPLEMENTED("Enum::type");
+std::shared_ptr<earl::variable::Obj>
+Enum::get_entry(const std::string &id) {
+    auto it = m_elems.find(id);
+    assert(it != m_elems.end());
+    return it->second;
 }
 
-std::shared_ptr<Obj> Enum::binop(Token *op, std::shared_ptr<Obj> &other) {
+bool
+Enum::has_entry(const std::string &id) const {
+    return m_elems.find(id) != m_elems.end();
+}
+
+/*** OVERRIDES ***/
+Type
+Enum::type(void) const  {
+    return Type::Enum;
+}
+
+std::shared_ptr<Obj>
+Enum::binop(Token *op, std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Enum::binop");
 }
 
-bool Enum::boolean(void) {
+bool
+Enum::boolean(void) {
     UNIMPLEMENTED("Enum::boolean");
 }
 
-void Enum::mutate(const std::shared_ptr<Obj> &other) {
+void
+Enum::mutate(const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Enum::mutate");
 }
 
-std::shared_ptr<Obj> Enum::copy(void) {
+std::shared_ptr<Obj>
+Enum::copy(void) {
     UNIMPLEMENTED("Enum::copy");
 }
 
-bool Enum::eq(std::shared_ptr<Obj> &other) {
+bool
+Enum::eq(std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Enum::eq");
 }
 
-std::string Enum::to_cxxstring(void) {
+std::string
+Enum::to_cxxstring(void) {
     UNIMPLEMENTED("Enum::to_cxxstring");
 }
 

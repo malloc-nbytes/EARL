@@ -172,3 +172,9 @@ ClassCtx::shallow_copy(void) {
     return std::make_shared<ClassCtx>(m_owner, std::move(scope_copy));
 }
 
+WorldCtx *
+ClassCtx::get_world(void) {
+    if (m_owner && m_owner->type() == CtxType::Function)
+        return dynamic_cast<WorldCtx *>(dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner().get());
+    return dynamic_cast<WorldCtx *>(this->get_owner().get());
+}

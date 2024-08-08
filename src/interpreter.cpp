@@ -331,12 +331,25 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     else if (er.is_literal())
         return er.value;
     else if (er.is_ident()) {
-        if (!ctx->variable_exists(er.id))
-            ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
-        auto var = ctx->variable_get(er.id);
-        if (!ref)
-            return var->value()->copy();
-        return var->value();
+        if (ctx->variable_exists(er.id)) {
+            auto var = ctx->variable_get(er.id);
+            if (!ref)
+                return var->value()->copy();
+            return var->value();
+        }
+        // Check if it is an enum
+        WorldCtx *world = ctx->type() == CtxType::World ?
+            dynamic_cast<WorldCtx *>(ctx.get()) :
+            ctx->get_world();
+        if (world->enum_exists(er.id))
+            return world->enum_get(er.id);
+        // Check if it is an entry of an enum
+        if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
+            auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
+            if (lhs->has_entry(er.id))
+                return lhs->get_entry(er.id)->value();
+        }
+        ERR_WARGS(Err::Type::Fatal, "variable `%s` has not been declared", er.id.c_str());
     }
     else if (er.is_wildcard())
         return std::make_shared<earl::value::Void>();
