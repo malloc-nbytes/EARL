@@ -430,6 +430,8 @@ namespace earl {
             std::shared_ptr<variable::Obj> get_entry(const std::string &id);
             bool has_entry(const std::string &id) const;
             bool is_pub(void) const;
+            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> &
+            extract(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

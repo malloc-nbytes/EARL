@@ -61,6 +61,11 @@ Enum::has_entry(const std::string &id) const {
     return m_elems.find(id) != m_elems.end();
 }
 
+std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
+Enum::extract(void) {
+    return m_elems;
+}
+
 /*** OVERRIDES ***/
 Type
 Enum::type(void) const  {

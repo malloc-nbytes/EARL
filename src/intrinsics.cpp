@@ -333,6 +333,20 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         auto *closureparam = dynamic_cast<earl::value::Closure *>(param.get());
         *stream << "<closure>";
     } break;
+    case earl::value::Type::Enum: {
+        auto *enumparam = dynamic_cast<earl::value::Enum *>(param.get());
+        *stream << "<Enum " << enumparam->id() << " { ";
+        auto &elems = enumparam->extract();
+        size_t i = 0;
+        for (auto &it : elems) {
+            *stream << it.first << " = ";
+            __intrinsic_print(it.second->value(), stream);
+            if (i != elems.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
     default: {
         ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
     } break;
