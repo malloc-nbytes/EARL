@@ -342,7 +342,15 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
             while (!buf.empty()) {
                 auto it = ht.find(buf);
                 if (it != ht.end()) {
-                    lexer->append(buf, (*it).second, row, col, fp);
+                    if (buf == "." && src[i] && isdigit(src[i])) {
+                        std::string digit = "";
+                        while (isdigit(src[i]))
+                            digit += src[i++];
+                        lexer->append(buf+digit, TokenType::Floatlit, row, col, fp);
+                        col += digit.size();
+                    }
+                    else
+                        lexer->append(buf, (*it).second, row, col, fp);
                     break;
                 }
                 else {
