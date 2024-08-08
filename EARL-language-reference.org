@@ -12,8 +12,8 @@
 3. <text> represents an identifier
 4. | represents OR
 5. [text] means list
-6. *(text) either 0 or more
-7. ?(text) means 0 or 1
+6. *(text) either 0 or more of
+7. ?(text) means 0 or 1 of
 8. "text" represents a string
 
 * Your First Program
@@ -132,6 +132,7 @@ true
 #+end_example
 
 * While Loops
+
 =while= /expr/ *{* [stmt] *}*
 
 * For Loops
@@ -275,14 +276,13 @@ let s = MyMath::sum(1, 2);
 * Attributes
 
 #+begin_quote
-Attributes embeds meta information into variables,
-functions, and classes. You can have none, one, or multiple.
+Attributes embeds meta information into identifiers. You can have none, one, or multiple.
 
-| Name     | Variables | Functions | Classes | Description                                                  |
-|----------+-----------+-----------+---------+--------------------------------------------------------------|
-| =@pub=   | YES       | YES       | YES     | Makes the identifier available to other files                |
-| =@world= | NO        | YES       | NO      | The function closes in the world scope                       |
-| =@ref=   | YES       | NO*       | NO      | Declares the variable to be a reference (see the note below) |
+| Name     | Variables | Functions | Classes       | Enumerations  | Description                                                  |
+|----------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
+| =@pub=   | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
+| =@world= | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
+| =@ref=   | YES       | NO*       | NO            | NO            | Declares the variable to be a reference (see the note below) |
 
 
 *NOTE:* =@ref= can be used in a function parameter and that function will
@@ -322,6 +322,41 @@ take_ref(i);
 
 assert(i == 3);
 
+#+end_example
+
+* Enumerations
+
+#+begin_quote
+Enumerations (/enums/) act as it's own datatype, but they are just integers.
+They compose of comma separated identifiers and each identifier can optionally
+have an assignment to it. By default, if no assignments are made, it starts
+at 0 and increments by 1 for each enum item. Once an assignment is found,
+it will start incrementing from _that number_.
+
+To access an enum element, use the dot `.` notation i.e, =MyEnum.Element1= and
+can be accessed from other modules using the double colon `::` notation (as long as
+it has the =@pub= attribute).
+#+end_quote
+
+** TODO Grammar
+
+** Examples
+
+#+begin_example
+import "external-enum.earl"
+
+@pub enum MyPubEnum {
+    El1,     # contains 0
+    El2 = 2, # contains 2
+    El3,     # contains 3
+    El4 = 9, # contains 9
+    El5,     # contains 10
+    El6,     # contains 11
+}
+
+let my_enum_el = MyPubEnum.El2;
+println(my_enum_el, ' ', MyPubEnum.El5); # prints `2 10`
+println(ExternalEnum::MyEnum.Item3); # prints the enum element from "external-enum.earl"
 #+end_example
 
 * Classes
@@ -446,6 +481,14 @@ The following is a list of the currently implemented primitive types.
 
 #+begin_quote
 Your basic 32 bit integer datatype.
+
+*Note*: They *do* over/under-flow
+#+end_quote
+
+** =float=
+
+#+begin_quote
+Your basic 64 bit floating pointer number.
 
 *Note*: They *do* over/under-flow
 #+end_quote
