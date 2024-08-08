@@ -1,6 +1,3 @@
 mod Main
 
-let s = "foo bar";
-s += " baz";
-
-println(s);
+println(-0.1);

@@ -59,6 +59,7 @@ enum class StmtType {
 enum class ExprType {
     Term,
     Binary,
+    Unary,
 };
 
 /// The different types a term can be.
@@ -237,6 +238,14 @@ struct ExprListLit : public ExprTerm {
     ExprListLit(std::vector<std::unique_ptr<Expr>> elems);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+};
+
+struct ExprUnary : public Expr {
+    std::unique_ptr<Token> m_op;
+    std::unique_ptr<Expr> m_expr;
+
+    ExprUnary(std::unique_ptr<Token> op, std::unique_ptr<Expr> expr);
+    ExprType get_type() const override;
 };
 
 /// @brief The Expression Binary class

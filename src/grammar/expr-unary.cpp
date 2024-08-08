@@ -25,60 +25,12 @@
 #include <cassert>
 #include <memory>
 
-#include "earl.hpp"
-#include "err.hpp"
-#include "utils.hpp"
+#include "ast.hpp"
 
-using namespace earl::value;
+ExprUnary::ExprUnary(std::unique_ptr<Token> op, std::unique_ptr<Expr> expr)
+    : m_op(std::move(op)), m_expr(std::move(expr)) {}
 
-Type
-Break::type(void) const {
-    return Type::Break;
-}
-
-std::shared_ptr<Obj>
-Break::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Break::binop");
-}
-
-bool
-Break::boolean(void) {
-    UNIMPLEMENTED("Break::boolean");
-}
-
-void
-Break::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Break::mutate");
-}
-
-std::shared_ptr<Obj>
-Break::copy(void) {
-    UNIMPLEMENTED("Break::copy");
-}
-
-bool
-Break::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Break::eq");
-}
-
-std::string
-Break::to_cxxstring(void) {
-    UNIMPLEMENTED("Break::to_cxxstring");
-}
-
-void
-Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    assert(false && "unreachable");
-}
-
-std::shared_ptr<Obj>
-Break::unaryop(Token *op) {
-    (void)op;
-    assert(false && "unreachable");
+ExprType
+ExprUnary::get_type() const {
+    return ExprType::Unary;
 }
