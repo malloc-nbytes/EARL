@@ -1,6 +1,6 @@
 mod Main
 
-import "std/io.earl"
+import "std/io.earl" almost
 
 println(IO::Fd);
 
