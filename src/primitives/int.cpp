@@ -169,8 +169,20 @@ Int::to_cxxstring(void) {
 }
 
 void
-Int::spec_mutate(const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Int::spec_mutate");
+Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+    int prev = m_value;
+    this->mutate(other); // does type checking
+    switch (op->type()) {
+    case TokenType::Plus_Equals: m_value += prev; break;
+    case TokenType::Minus_Equals: m_value -= prev; break;
+    case TokenType::Asterisk_Equals: m_value *= prev; break;
+    case TokenType::Forwardslash_Equals: m_value /= prev; break;
+    case TokenType::Percent_Equals: m_value %= prev; break;
+    default: {
+        Err::err_wtok(op);
+        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s`", op->lexeme().c_str());
+    } break;
+    }
 }
 
 

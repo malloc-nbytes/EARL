@@ -106,6 +106,6 @@ Char::to_cxxstring(void) {
 }
 
 void
-Char::spec_mutate(const std::shared_ptr<Obj> &other) {
+Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Char::spec_mutate");
 }

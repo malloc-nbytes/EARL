@@ -98,7 +98,7 @@ Enum::to_cxxstring(void) {
 }
 
 void
-Enum::spec_mutate(const std::shared_ptr<Obj> &other) {
+Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Enum::spec_mutate");
 }
 

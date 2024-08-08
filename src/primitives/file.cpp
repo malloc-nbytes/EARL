@@ -161,7 +161,7 @@ File::to_cxxstring(void) {
 }
 
 void
-File::spec_mutate(const std::shared_ptr<Obj> &other) {
+File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("File::spec_mutate");
 }
 

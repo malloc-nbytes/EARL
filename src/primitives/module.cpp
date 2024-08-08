@@ -78,7 +78,7 @@ Module::to_cxxstring(void) {
 }
 
 void
-Module::spec_mutate(const std::shared_ptr<Obj> &other) {
+Module::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Module::spec_mutate");
 }
 

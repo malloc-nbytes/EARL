@@ -104,7 +104,7 @@ Class::to_cxxstring(void) {
 }
 
 void
-Class::spec_mutate(const std::shared_ptr<Obj> &other) {
+Class::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Class::spec_mutate");
 }
 

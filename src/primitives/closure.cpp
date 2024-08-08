@@ -123,6 +123,6 @@ Closure::to_cxxstring(void) {
 }
 
 void
-Closure::spec_mutate(const std::shared_ptr<Obj> &other) {
+Closure::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Closure::spec_mutate");
 }

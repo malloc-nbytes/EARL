@@ -1,5 +1,5 @@
 mod Main
 
-let i = 1;
-i += 3;
+let i = 2;
+i *= 2;
 println(i);

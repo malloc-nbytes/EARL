@@ -777,14 +777,11 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     case TokenType::Equals: {
         l->mutate(r);
     } break;
-    case TokenType::Plus_Equals: {
-        l->spec_mutate(r);
-    } break;
-    case TokenType::Minus_Equals: {
-    } break;
-    case TokenType::Asterisk_Equals: {
-    } break;
+    case TokenType::Plus_Equals:
+    case TokenType::Minus_Equals:
+    case TokenType::Asterisk_Equals:
     case TokenType::Forwardslash_Equals: {
+        l->spec_mutate(stmt->m_equals.get(), r);
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());

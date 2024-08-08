@@ -72,7 +72,7 @@ Void::to_cxxstring(void) {
 }
 
 void
-Void::spec_mutate(const std::shared_ptr<Obj> &other) {
+Void::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Void::spec_mutate");
 }
 

@@ -124,7 +124,7 @@ namespace earl {
             /// @return The stringified version of the value
             virtual std::string to_cxxstring(void) = 0;
 
-            virtual void spec_mutate(const std::shared_ptr<Obj> &other) = 0;
+            virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other) = 0;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -148,7 +148,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             int m_value;
@@ -172,7 +172,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             double m_value;
@@ -193,7 +193,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             bool m_value;
@@ -213,7 +213,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             char m_value;
@@ -231,7 +231,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             void *m_value;
@@ -256,7 +256,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             ExprClosure *m_expr_closure;
@@ -310,7 +310,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
@@ -342,7 +342,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             std::vector<std::shared_ptr<Char>> m_value;
@@ -362,7 +362,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             std::shared_ptr<Ctx> m_value;
@@ -398,7 +398,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             StmtClass *m_stmtclass;
@@ -427,7 +427,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             StmtEnum *m_stmt;
@@ -456,7 +456,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             std::shared_ptr<Str> m_fp;
@@ -481,7 +481,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
 
         private:
             std::shared_ptr<Obj> m_value;
@@ -498,7 +498,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                    override;
             bool eq(std::shared_ptr<Obj> &other)                               override;
             std::string to_cxxstring(void)                                     override;
-            void spec_mutate(const std::shared_ptr<Obj> &other)                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
         };
 
         std::string type_to_str(earl::value::Type ty);

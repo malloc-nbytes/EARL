@@ -256,7 +256,7 @@ List::to_cxxstring(void) {
 }
 
 void
-List::spec_mutate(const std::shared_ptr<Obj> &other) {
+List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("List::spec_mutate");
 }
 

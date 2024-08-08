@@ -107,7 +107,7 @@ Bool::to_cxxstring(void) {
 }
 
 void
-Bool::spec_mutate(const std::shared_ptr<Obj> &other) {
+Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Bool::spec_mutate");
 }
 

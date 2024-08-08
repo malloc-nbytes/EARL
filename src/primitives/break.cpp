@@ -71,6 +71,6 @@ Break::to_cxxstring(void) {
 }
 
 void
-Break::spec_mutate(const std::shared_ptr<Obj> &other) {
+Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Break::spec_mutate");
 }
