@@ -10,10 +10,14 @@ enum Item {
 
 class T [] {
     value = Item.Item3;
+    cl = |_| {
+        println("in cl(): ", Item.Item2);
+    };
 
     fn test() {
         let x = Item.Item2;
         println("x: ", x);
+        this.cl();
     }
 }
 
@@ -22,6 +26,11 @@ fn test() {
     let t = T();
     println(t.value);
     t.test();
+    let cl = |_| {
+        println(Item.Item2);
+    };
+    cl();
 }
 
 test();
+

@@ -320,7 +320,7 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
             std::string digit = "";
             while (isdigit(src[i]))
                 digit += src[i++];
-            if (src[i] && src[i] == '.') {
+            if (src[i] && src[i+1] && src[i] == '.' && src[i+1] != '.') {
                 ++i;
                 std::string digit2 = ".";
                 while (isdigit(src[i]))

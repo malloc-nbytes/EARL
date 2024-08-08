@@ -204,5 +204,11 @@ bad:
 
 WorldCtx *
 ClosureCtx::get_world(void) {
-    UNIMPLEMENTED("ClosureCtx::get_world");
+    if (m_owner->type() == CtxType::Function)
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_world();
+    else if (m_owner->type() == CtxType::Class)
+        return dynamic_cast<ClassCtx *>(m_owner.get())->get_world();
+    else if (m_owner->type() == CtxType::Closure)
+        return dynamic_cast<ClosureCtx *>(m_owner.get())->get_world();
+    return dynamic_cast<WorldCtx *>(m_owner.get());
 }
