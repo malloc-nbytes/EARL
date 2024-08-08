@@ -32,14 +32,21 @@
 
 using namespace earl::value;
 
-Enum::Enum(StmtEnum *stmt, std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems)
-    : m_stmt(stmt), m_elems(std::move(elems)) {
+Enum::Enum(StmtEnum *stmt,
+           std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems,
+           uint32_t attrs)
+    : m_stmt(stmt), m_elems(std::move(elems)), m_attrs(attrs) {
     m_id = stmt->m_id.get();
 }
 
 const std::string &
 Enum::id(void) const {
     return m_stmt->m_id->lexeme();
+}
+
+bool
+Enum::is_pub(void) const {
+    return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
 std::shared_ptr<earl::variable::Obj>

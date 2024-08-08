@@ -651,7 +651,7 @@ parse_stmt_break(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtEnum>
-parse_stmt_enum(Lexer &lexer) {
+parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
     std::unique_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
@@ -675,7 +675,7 @@ parse_stmt_enum(Lexer &lexer) {
             break;
         }
     }
-    return std::make_unique<StmtEnum>(std::move(id), std::move(elems));
+    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs);
 }
 
 std::unique_ptr<Stmt>
@@ -722,7 +722,7 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_match(lexer);
             }
             if (tok->lexeme() == COMMON_EARLKW_ENUM) {
-                return parse_stmt_enum(lexer);
+                return parse_stmt_enum(lexer, attrs);
             }
             Err::err_wtok(tok);
             ERR_WARGS(Err::Type::Fatal, "invalid keyword `%s`", tok->lexeme().c_str());

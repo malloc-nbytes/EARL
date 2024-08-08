@@ -479,10 +479,19 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         return ER(func, ERT::Literal);
     }
     else if (right_er.is_ident()) {
-        auto value = unpack_ER(right_er, other_ctx, ref); // This makes sure that the variable exists
-        if (!right_er.ctx->variable_get(right_er.id)->is_pub()) // So no need to call `exists()`
-            ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
-                        right_er.id.c_str(), left_id.c_str());
+        auto value = unpack_ER(right_er, other_ctx, ref);
+        // Check if it is a variable
+        if (right_er.ctx->variable_exists(right_er.id)) {
+            if (!right_er.ctx->variable_get(right_er.id)->is_pub())
+                ERR_WARGS(Err::Type::Fatal, "variable `%s` in module `%s` does not contain the @pub attribute",
+                          right_er.id.c_str(), left_id.c_str());
+            return ER(value, ERT::Literal);
+        }
+        // It must be an enum
+        assert(value->type() == earl::value::Type::Enum);
+        if (!dynamic_cast<earl::value::Enum *>(value.get())->is_pub())
+            ERR_WARGS(Err::Type::Fatal, "enumeration `%s` in module `%s` does not contain the @pub attribute",
+                      right_er.id.c_str(), left_id.c_str());
         return ER(value, ERT::Literal);
     }
     else
@@ -981,7 +990,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
         elems.insert({p.first->lexeme(), std::move(var)});
     }
 
-    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems));
+    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
     assert(ctx->type() == CtxType::World);
     dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
     return nullptr;

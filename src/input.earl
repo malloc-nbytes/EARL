@@ -1,36 +1,4 @@
 mod Main
 
-let x = 2;
-
-enum Item {
-    Item1 = x,
-    Item2,
-    Item3,
-}
-
-class T [] {
-    value = Item.Item3;
-    cl = |_| {
-        println("in cl(): ", Item.Item2);
-    };
-
-    fn test() {
-        let x = Item.Item2;
-        println("x: ", x);
-        this.cl();
-    }
-}
-
-fn test() {
-    println(Item.Item1);
-    let t = T();
-    println(t.value);
-    t.test();
-    let cl = |_| {
-        println(Item.Item2);
-    };
-    cl();
-}
-
-test();
+import "other.earl"
 

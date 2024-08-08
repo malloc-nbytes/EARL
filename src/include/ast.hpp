@@ -454,8 +454,12 @@ struct StmtMatch : public Stmt {
 struct StmtEnum : public Stmt {
     std::unique_ptr<Token> m_id;
     std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
+    uint32_t m_attrs;
 
-    StmtEnum(std::unique_ptr<Token> id, std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> elems);
+    StmtEnum(std::unique_ptr<Token> id,
+             std::vector<std::pair<std::unique_ptr<Token>,
+             std::unique_ptr<Expr>>> elems,
+             uint32_t attrs);
     StmtType stmt_type() const override;
 };
 

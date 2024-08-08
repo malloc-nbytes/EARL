@@ -394,11 +394,14 @@ namespace earl {
         };
 
         struct Enum : public Obj {
-            Enum(StmtEnum *stmt, std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems);
+            Enum(StmtEnum *stmt,
+                 std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems,
+                 uint32_t attrs);
 
             const std::string &id(void) const;
             std::shared_ptr<variable::Obj> get_entry(const std::string &id);
             bool has_entry(const std::string &id) const;
+            bool is_pub(void) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
@@ -413,6 +416,7 @@ namespace earl {
             StmtEnum *m_stmt;
             std::unordered_map<std::string, std::shared_ptr<variable::Obj>> m_elems;
             Token *m_id;
+            uint32_t m_attrs;
         };
 
         struct File : public Obj {
