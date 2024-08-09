@@ -193,9 +193,7 @@ Str::type(void) const {
 
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get())) {
-        assert(false && "cannot binop (fix this message)");
-    }
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
     switch (op->type()) {
     case TokenType::Plus: {
         if (other->type() == Type::Char) {
@@ -227,7 +225,7 @@ Str::value_raw(void) {
 
 void
 Str::mutate(const std::shared_ptr<Obj> &other) {
-    assert(other->type() == Type::Str);
+    ASSERT_MUTATE_COMPAT(this, other.get());
     Str *otherstr = dynamic_cast<Str *>(other.get());
     m_value.clear();
     for (size_t i = 0; i < otherstr->value_raw().size(); ++i)

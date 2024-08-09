@@ -58,9 +58,7 @@ Char::type(void) const {
 
 std::shared_ptr<Obj>
 Char::binop(Token *op, std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get())) {
-        assert(false && "cannot binop (fix this message)");
-    }
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
 
     switch (op->type()) {
     case TokenType::Double_Equals: {
@@ -83,7 +81,7 @@ Char::boolean(void) {
 
 void
 Char::mutate(const std::shared_ptr<Obj> &other) {
-    assert(other->type() == Type::Char);
+    ASSERT_MUTATE_COMPAT(this, other.get());
     auto c = dynamic_cast<Char *>(other.get());
     m_value = c->value();
 }

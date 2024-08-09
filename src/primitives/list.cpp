@@ -131,8 +131,7 @@ List::back(void) {
 
 std::shared_ptr<Obj>
 List::binop(Token *op, std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get()))
-        assert(false && "cannot binop (fix this message)");
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
 
     auto other_casted = dynamic_cast<List *>(other.get());
 
@@ -217,8 +216,7 @@ List::boolean(void) {
 
 void
 List::mutate(const std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get()))
-        assert(false && "cannot mutate (fix this message)");
+    ASSERT_MUTATE_COMPAT(this, other.get());
     auto *lst = dynamic_cast<List *>(other.get());
     m_value = lst->value();
 }
