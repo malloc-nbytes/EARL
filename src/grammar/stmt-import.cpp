@@ -28,9 +28,15 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-StmtImport::StmtImport(std::unique_ptr<Token> fp, std::unique_ptr<Token> depth)
+StmtImport::StmtImport(std::unique_ptr<Token> fp, std::optional<std::unique_ptr<Token>> depth)
     : m_fp(std::move(fp)), m_depth(std::move(depth)) {
-    __m_depth = m_depth->lexeme() == COMMON_EARLKW_ALMOST ? COMMON_DEPTH_ALMOST : COMMON_DEPTH_FULL;
+    // __m_depth = m_depth->lexeme() == COMMON_EARLKW_ALMOST ? COMMON_DEPTH_ALMOST : COMMON_DEPTH_FULL;
+    if (!m_depth.has_value())
+        __m_depth = COMMON_DEPTH_FULL;
+    else if (m_depth.value()->lexeme() == COMMON_EARLKW_ALMOST)
+        __m_depth = COMMON_DEPTH_ALMOST;
+    else
+        __m_depth = COMMON_DEPTH_FULL;
 }
 
 StmtType

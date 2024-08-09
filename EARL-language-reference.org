@@ -210,15 +210,15 @@ statement is hit, it will immediately interpret that file.
 If there is no processing in the =@world= scope, only the
 function definitions and classes are gathered.
 
-When importing, a depth needs to be specified. Use =full=
+When importing, a depth can be specified. Use =full=
 if you want all public elements from the file (enums, functions, variables, classes, etc.),
-or =almost= if you only desire variables and enums.
+or =almost= if you only desire variables and enums. If none is provided, =full= will be used.
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=import= "filepath" =full= | =almost=
+=import= "filepath" ?(=full= | =almost=)
 #+end_quote
 
 ** Examples
@@ -226,7 +226,7 @@ or =almost= if you only desire variables and enums.
 #+begin_example
 # stdlib imports
 import "std/list.earl" full
-import "std/math.earl" full
+import "std/math.earl" # uses `full`
 import "std/utils.earl" almost
 
 # local imports
