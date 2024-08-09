@@ -41,17 +41,82 @@ Hello World!
 #+end_example
 
 * Variable Declarations
+
+** Grammar
+
 =let= <id> = /expr/;
 
+** Examples
+
+#+begin_example
+let k = 1;
+let x = func(k);
+let y = [1,2,3];
+let z = (0..10).rev().filter(|x| { return x % 2 == 0; });
+#+end_example
+
 * Mutation
-<id> | /expr/ = /expr/;
+
+#+begin_quote
+Mutation describes changing a variables value in memory.
+#+end_quote
+
+** Grammar
+
+/expr/ = /expr/;
+
+** Examples
+
+#+begin_example
+k = 1;
+k = 3+9;
+k = (3+3)*2;
+lst[3] = 9+23;
+lst[3].nth(1) = 9+23;
+#+end_example
+
+** Shorthand
+
+#+begin_quote
+For convenience, there are some shorthand operations that can be performed.
+
+#+begin_example
+k += N # substitutes -> k = k + (N);
+k -= N # substitutes -> k = k - (N);
+k *= N # substitutes -> k = k * (N);
+k /= N # substitutes -> k = k / (N);
+k %= N # substitutes -> k = k % (N);
+#+end_example
+#+end_quote
 
 * Conditionals
+
+#+begin_quote
+Conditionals are =if=, =if-else=, and =if-else-if= statements.
+If the expression is true, that branch will occur.
+#+end_quote
+
+** Grammar
+
 =if= /expr/ *{* [stmt] *}*
 
 =else if= /expr/ *{* [stmt] *}*
 
 =else= *{* [stmt] *}*
+
+** Examples
+
+#+begin_example
+if k == 2 {
+    # code
+}
+else if (k+1 == 9) {
+    # code
+}
+else {
+    # code
+}
+#+end_example
 
 * Pattern Matching
 
@@ -133,25 +198,76 @@ true
 
 * While Loops
 
+#+begin_quote
+=while= loops will continue to loop while the expression is =true=.
+#+end_quote
+
+** Grammar
+
 =while= /expr/ *{* [stmt] *}*
+
+** Examples
+
+#+begin_example
+let i = 0;
+while i < 3 {
+    print(i);
+    i += 1;
+} # prints 012
+#+end_example
 
 * For Loops
 
 #+begin_quote
-As of now, the =for= loop only enumerates by incrementing
-by 1. It takes a start ($s$) and an end ($e$) and will not end until
-$s = e$.
-
-\[
-\sum_{i = start}^{i < end} i = i + 1
-\]
-
-You can modify =i= within the body of the loop.
-
+For loops take a list or a string and will iterate over the elements.
+The most common way to use these loops is with a =range=. The iterator
+(usually the variable labeled as $i$), can be set as a reference to the expression.
+This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
+(see /ref example/ below).
 #+end_quote
 
+** Grammar
 
-=for= <id> =in= /expr/ .. /expr/ *{* [stmt] *}*
+=for= ?(=@= =ref=) <id> =in= /expr/ *{* [stmt] *}*
+
+** Examples
+
+#+begin_example
+for i in 0..5 {
+    print(i);
+} # prints 12345
+
+let iterable = [9,4,2];
+for i in iterable {
+    print(i);
+} # prints 942
+
+for i in (0..5).rev() {
+    print(i);
+} # prints 43210
+
+for i in 0..len(iterable) {
+    print(i);
+} # prints 012
+
+for @ref i in iterable { # REF EXAMPLE
+    i = 9;
+}
+println(iterable); # prints [9, 9, 9]
+
+for i in "foo" {
+    print(i);
+} # prints foo
+
+for i in 'a'..'d' {
+    print(i);
+} # prints abc
+
+let s = "bar";
+for i in s {
+    print(i);
+} # prints bar
+#+end_example
 
 * Function Definitions
 
@@ -178,27 +294,6 @@ fn func1(@ref x, y, @ref z) {
 fn func2() {
     ...
 }
-#+end_example
-
-* Statement Expressions
-
-#+begin_quote
-Statement expressions are statements that are only evaluated
-for their side effects such as printing, file IO, or in-place mutation
-such as =List.rev=.
-#+end_quote
-
-** Grammar
-
-#+begin_quote
-<id> *( =(= /expr/ =)= | =[= /expr/ =]= | =.= <ident> ) =;=
-#+end_quote
-
-** Examples
-
-#+begin_example
-print("hello world");
-my_list.rev();
 #+end_example
 
 * Imports
@@ -535,7 +630,22 @@ A string is a list of =char='s. They are surrounded with double quotes ="=.
 
 #+begin_quote
 A list is a growable array. They can hold any datatype, and you
-can even mix multiple datatypes in a single list.
+can even mix multiple datatypes in a single list. They can be initialized with
+braces or a =range=.
+
+#+begin_example
+let lst0 = [];
+let lst1 = [1,2,3];
+println(lst0); # prints []
+println(lst1); # prints [1, 2, 3]
+
+let lst2 = 1..3;
+let lst3 = (1..3).rev();
+let lst4 = 'a'..'c';
+println(lst2); # prints [1, 2];
+println(lst3); # prints [2, 1];
+println(lst4); # prints ['a', 'b'];
+#+end_example
 #+end_quote
 
 ** =option=
@@ -614,6 +724,31 @@ examples of correct usage of it:
 
 =match x { _ -> { print("example"); } }=
 #+end_quote
+
+* Binary Operations
+
+#+begin_quote
+In the table below, the datatypes section describes which datatypes
+are able to use the binary operations. This does not mean that if an
+entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
+describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
+#+end_quote
+
+| Symbol | Datatypes                     | Description                      |
+|--------+-------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str= | Adds the elements together       |
+| -      | =int=, =float=                | Subtracts the elements           |
+| *      | =int=, =float=                | Multiplies the elements together |
+| ///    | =int=, =float=                | Divides the elements             |
+| %      | =int=                         | Produces the modulo              |
+| >      | =bool=                        | Greater than                     |
+| <      | =bool=                        | Less than                        |
+| >=     | =bool=                        | Greater than or equal to         |
+| <=     | =bool=                        | Less than or equal to            |
+| ==     | =bool=                        | Equal to                         |
+| &&     | =bool=                        | Logical AND                      |
+
+=||=, =bool= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
 * Intrinsics
 

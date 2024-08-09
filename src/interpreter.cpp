@@ -870,9 +870,11 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
+    bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+
     std::shared_ptr<earl::value::Obj> result = nullptr;
-    ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
-    auto expr = unpack_ER(expr_er, ctx, true);
+    ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
+    auto expr = unpack_ER(expr_er, ctx, ref);
 
     if (expr->type() == earl::value::Type::List) {
         auto lst = std::dynamic_pointer_cast<earl::value::List>(expr);
