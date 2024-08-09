@@ -767,8 +767,11 @@ eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
-    ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
-    return unpack_ER(er, ctx, false);
+    if (stmt->m_expr.has_value()) {
+        ER er = Interpreter::eval_expr(stmt->m_expr.value().get(), ctx, false);
+        return unpack_ER(er, ctx, false);
+    }
+    return std::make_shared<earl::value::Option>();
 }
 
 std::shared_ptr<earl::value::Obj>

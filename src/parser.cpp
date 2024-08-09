@@ -472,9 +472,12 @@ Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
 std::unique_ptr<StmtReturn>
 parse_stmt_return(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_RETURN);
+    std::optional<std::unique_ptr<Expr>> value = {};
     Expr *expr = Parser::parse_expr(lexer);
+    if (expr)
+        value = std::unique_ptr<Expr>(expr);
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtReturn>(std::unique_ptr<Expr>(expr));
+    return std::make_unique<StmtReturn>(std::move(value));
 }
 
 std::unique_ptr<StmtWhile>
@@ -513,17 +516,6 @@ parse_stmt_import(Lexer &lexer) {
     Token *peek = lexer.peek(0);
     if (peek && peek->type() == TokenType::Keyword && (peek->lexeme() == COMMON_EARLKW_ALMOST || peek->lexeme() == COMMON_EARLKW_FULL))
         depth = lexer.next();
-    // auto depth = lexer.next();
-    // if (!depth || (depth->lexeme() != COMMON_EARLKW_ALMOST && depth->lexeme() != COMMON_EARLKW_FULL)) {
-    //     std::string actual = "";
-    //     if (depth) {
-    //         actual = depth->lexeme();
-    //         Err::err_wtok(depth.get());
-    //     }
-    //     ERR_WARGS(Err::Type::Syntax,
-    //               "expected keyword `%s` or `%s`, got `%s`",
-    //               COMMON_EARLKW_ALMOST, COMMON_EARLKW_FULL, actual.c_str());
-    // }
     return std::make_unique<StmtImport>(std::move(fp), std::move(depth));
 }
 
