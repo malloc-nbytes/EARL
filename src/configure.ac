@@ -1,4 +1,4 @@
-AC_INIT([earl], [0.1.1], [zdhdev@yahoo.com])
+AC_INIT([earl], [0.1.2], [zdhdev@yahoo.com])
 
 AC_CONFIG_SRCDIR([main.cpp])
 AC_CONFIG_AUX_DIR([build-aux])

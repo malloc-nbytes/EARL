@@ -35,6 +35,34 @@
 
 std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> parse_stmt_def_args(Lexer &lexer);
 
+static Attr
+translate_attr(Lexer &lexer) {
+    auto errtok = Parser::parse_expect(lexer, TokenType::At);
+
+    std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
+    if (attr->lexeme() == COMMON_EARLATTR_PUB) {
+        return Attr::Pub;
+    }
+    if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
+        return Attr::World;
+    }
+    if (attr->lexeme() == COMMON_EARLATTR_REF) {
+        return Attr::Ref;
+    }
+    else {
+        Err::err_wtok(errtok.get());
+        ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
+    }
+}
+
+static uint32_t
+gather_attrs(Lexer &lexer) {
+    uint32_t attrs = 0;
+    while (lexer.peek(0)->type() == TokenType::At)
+        attrs |= static_cast<uint32_t>(translate_attr(lexer));
+    return attrs;
+}
+
 std::unique_ptr<Token>
 Parser::parse_expect(Lexer &lexer, TokenType expected) {
     std::unique_ptr<Token> tok = lexer.next();
@@ -65,26 +93,6 @@ Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     }
 
     return tok;
-}
-
-static Attr
-translate_attr(Lexer &lexer) {
-    auto errtok = Parser::parse_expect(lexer, TokenType::At);
-
-    std::unique_ptr<Token> attr = Parser::parse_expect(lexer, TokenType::Ident);
-    if (attr->lexeme() == COMMON_EARLATTR_PUB) {
-        return Attr::Pub;
-    }
-    if (attr->lexeme() == COMMON_EARLATTR_WORLD) {
-        return Attr::World;
-    }
-    if (attr->lexeme() == COMMON_EARLATTR_REF) {
-        return Attr::Ref;
-    }
-    else {
-        Err::err_wtok(errtok.get());
-        ERR_WARGS(Err::Type::Fatal, "unknown attribute `%s`", attr->lexeme().c_str());
-    }
 }
 
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
@@ -508,13 +516,15 @@ parse_stmt_while(Lexer &lexer) {
 std::unique_ptr<StmtFor>
 parse_stmt_for(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
+    uint32_t attrs = gather_attrs(lexer);
     std::unique_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
     Expr *expr = Parser::parse_expr(lexer);
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
     return std::make_unique<StmtFor>(std::move(enumerator),
                                      std::unique_ptr<Expr>(expr),
-                                     std::move(block));
+                                     std::move(block),
+                                     attrs);
 }
 
 std::unique_ptr<Stmt>

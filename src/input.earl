@@ -1,2 +1,5 @@
 module Main
 
+let z = (0..10).rev().filter(|x| { return x % 2 == 0; });
+
+println(z);

@@ -27,21 +27,14 @@
 
 #include "ast.hpp"
 
-// StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
-//                  std::unique_ptr<Expr> start,
-//                  std::unique_ptr<Expr> end,
-//                  std::unique_ptr<StmtBlock> block)
-//     : m_enumerator(std::move(enumerator)),
-//       m_start(std::move(start)),
-//       m_end(std::move(end)),
-//       m_block(std::move(block)) {}
-
 StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
                  std::unique_ptr<Expr> expr,
-                 std::unique_ptr<StmtBlock> block)
+                 std::unique_ptr<StmtBlock> block,
+                 uint32_t attrs)
     : m_enumerator(std::move(enumerator)),
       m_expr(std::move(expr)),
-      m_block(std::move(block)) {}
+      m_block(std::move(block)),
+      m_attrs(attrs) {}
 
 StmtType
 StmtFor::stmt_type() const {
