@@ -509,7 +509,18 @@ std::unique_ptr<Stmt>
 parse_stmt_import(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
     std::unique_ptr<Token> fp = Parser::parse_expect(lexer, TokenType::Strlit);
-    return std::make_unique<StmtImport>(std::move(fp));
+    auto depth = lexer.next();
+    if (!depth || (depth->lexeme() != COMMON_EARLKW_ALMOST && depth->lexeme() != COMMON_EARLKW_FULL)) {
+        std::string actual = "";
+        if (depth) {
+            actual = depth->lexeme();
+            Err::err_wtok(depth.get());
+        }
+        ERR_WARGS(Err::Type::Syntax,
+                  "expected keyword `%s` or `%s`, got `%s`",
+                  COMMON_EARLKW_ALMOST, COMMON_EARLKW_FULL, actual.c_str());
+    }
+    return std::make_unique<StmtImport>(std::move(fp), std::move(depth));
 }
 
 std::unique_ptr<Stmt>

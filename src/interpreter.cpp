@@ -891,8 +891,10 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
 
     std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+    assert(child_ctx->type() == CtxType::World);
+    if (stmt->__m_depth == COMMON_DEPTH_ALMOST)
+        dynamic_cast<WorldCtx *>(child_ctx.get())->strip_funs_and_classes();
     dynamic_cast<WorldCtx *>(ctx.get())->add_import(std::move(child_ctx));
-
     return std::make_shared<earl::value::Void>();
 }
 
@@ -994,16 +996,24 @@ static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> elems = {};
 
+    bool mixed_types = false;
+    bool found_unassigned = false;
+
     earl::value::Int *last_value = nullptr;
     for (auto &p : stmt->m_elems) {
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if (p.second) {
             ER er = Interpreter::eval_expr(p.second.get(), ctx, false);
             auto value = unpack_ER(er, ctx, false);
+            if (value->type() != earl::value::Type::Int)
+                mixed_types = true;
             var = std::make_shared<earl::variable::Obj>(p.first.get(), value);
             last_value = dynamic_cast<earl::value::Int *>(value.get());
         }
         else {
+            found_unassigned = true;
+            if (mixed_types)
+                ERR(Err::Type::Fatal, "if using datatypes other than integers inside of an enum, all entries must be explicitly assigned");
             int actual = 0;
             if (last_value)
                 actual = last_value->value()+1;
@@ -1013,6 +1023,9 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         elems.insert({p.first->lexeme(), std::move(var)});
     }
+
+    if (mixed_types && found_unassigned)
+        ERR(Err::Type::Fatal, "if using datatypes other than integers inside of an enum, all entries must be explicitly assigned");
 
     auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
     assert(ctx->type() == CtxType::World);

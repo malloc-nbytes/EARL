@@ -411,8 +411,10 @@ struct StmtFor : public Stmt {
 
 struct StmtImport : public Stmt {
     std::unique_ptr<Token> m_fp;
+    std::unique_ptr<Token> m_depth;
+    uint32_t __m_depth;
 
-    StmtImport(std::unique_ptr<Token> fp);
+    StmtImport(std::unique_ptr<Token> fp, std::unique_ptr<Token> depth);
     StmtType stmt_type() const override;
 };
 

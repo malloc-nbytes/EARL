@@ -23,7 +23,7 @@ To jump right into testing out EARL, do the following to implement a /Hello Worl
 Create a new file called =hello.earl=
 
 #+begin_example
-mod Main
+module Main
 
 print("Hello World!");
 #+end_example
@@ -209,24 +209,28 @@ that it was invoked in. During runtime, if an =import=
 statement is hit, it will immediately interpret that file.
 If there is no processing in the =@world= scope, only the
 function definitions and classes are gathered.
+
+When importing, a depth needs to be specified. Use =full=
+if you want all public elements from the file (enums, functions, variables, classes, etc.),
+or =almost= if you only desire variables and enums.
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=import= "filepath"
+=import= "filepath" =full= | =almost=
 #+end_quote
 
 ** Examples
 
 #+begin_example
 # stdlib imports
-import "std/list.earl"
-import "std/math.earl"
-import "std/utils.earl"
+import "std/list.earl" full
+import "std/math.earl" full
+import "std/utils.earl" almost
 
 # local imports
-import "my-local-file.earl"
+import "my-local-file.earl" almost
 #+end_example
 
 * Modules
@@ -248,14 +252,14 @@ If you do not follow this rule, undefined behavior will occur.*
 ** Grammar
 
 #+begin_quote
-=mod= <id>
+=module= <id>
 #+end_quote
 
 ** Examples
 
 file: =my-math.earl=
 #+begin_example
-mod MyMath
+module MyMath
 
 # Function is marked as @pub to make it
 # accessible to other modules.
@@ -266,9 +270,9 @@ mod MyMath
 
 file: =main.earl=
 #+begin_example
-mod Main
+module Main
 
-import "my-math.earl"
+import "my-math.earl" full
 
 let s = MyMath::sum(1, 2);
 #+end_example
@@ -336,6 +340,9 @@ it will start incrementing from _that number_.
 To access an enum element, use the dot `.` notation i.e, =MyEnum.Element1= and
 can be accessed from other modules using the double colon `::` notation (as long as
 it has the =@pub= attribute).
+
+An /enum/ can consist of multiple datatypes, however, once a datatype other than
+an integer is encountered, all values of the entries in the /enum/ _must_ be specified.
 #+end_quote
 
 ** TODO Grammar
@@ -343,7 +350,7 @@ it has the =@pub= attribute).
 ** Examples
 
 #+begin_example
-import "external-enum.earl"
+import "external-enum.earl" almost
 
 @pub enum MyPubEnum {
     El1,     # contains 0
@@ -357,6 +364,19 @@ import "external-enum.earl"
 let my_enum_el = MyPubEnum.El2;
 println(my_enum_el, ' ', MyPubEnum.El5); # prints `2 10`
 println(ExternalEnum::MyEnum.Item3); # prints the enum element from "external-enum.earl"
+#+end_example
+
+#+begin_example
+let x = [1,2,3];
+
+# All values are must be explicit if datatypes other
+# than integers are used.
+enum MixedEnum {
+    El1 = 0,
+    El2 = "hello",
+    El3 = some(some('a')),
+    El4 = x
+}
 #+end_example
 
 * Classes
@@ -871,7 +891,7 @@ Upon installing EARL, the standard library is installed into
 =/usr/local/include/EARL/std=. The first place that EARL looks
 when evaluating an =import= statement is =/usr/local/include/EARL/=.
 This means that all you need to do to import these files is do:
-=import "std/<file>.earl"=.
+=import "std/<file>.earl"= <depth>.
 #+end_quote
 
 ** Stack
@@ -1271,7 +1291,7 @@ Modules and classes should have =PascalCase= naming.
 #+end_quote
 
 #+begin_example
-mod MyModule
+module MyModule
 
 class MyClass [] {
     ...

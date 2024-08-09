@@ -1,8 +1,8 @@
-mod Test
+module Test
 
-import "point-class.1.earl"
-import "test-std.earl"
-import "other.1.earl"
+import "point-class.1.earl" full
+import "test-std.earl" full
+import "other.1.earl" full
 
 fn test_nested_func1() {
     print("test_nested_func1... ");

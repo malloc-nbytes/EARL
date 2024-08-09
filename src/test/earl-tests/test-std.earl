@@ -1,9 +1,9 @@
-mod TestStd
+module TestStd
 
-import "std/list.earl"
-import "std/math.earl"
-import "std/utils.earl"
-import "std/stack.earl"
+import "std/list.earl" full
+import "std/math.earl" full
+import "std/utils.earl" full
+import "std/stack.earl" full
 
 fn test_class_wmodule_bug() {
     print("test_class_wmodule_bug... ");

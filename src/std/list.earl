@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-mod List
+module List
 
-import "std/utils.earl"
+import "std/utils.earl" full
 
 @pub fn preset(elem, cap) {
     let lst = [];

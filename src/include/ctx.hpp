@@ -85,6 +85,7 @@ struct WorldCtx : public Ctx {
     void debug_dump_variables(void) const;
     bool enum_exists(const std::string &id) const;
     std::shared_ptr<earl::value::Enum> enum_get(const std::string &id);
+    void strip_funs_and_classes(void);
 
     CtxType type(void) const override;
     void push_scope(void) override;

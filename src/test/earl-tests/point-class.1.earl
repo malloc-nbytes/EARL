@@ -1,4 +1,4 @@
-mod PointClass
+module PointClass
 
 @pub
 class Point [x, y, name] {

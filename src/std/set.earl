@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-mod Set
+module Set
 
 class Node [value] {
     @pub value = value;
@@ -111,5 +111,3 @@ class T [init, compar] {
     if x1 > x0 { return 1; }
     return 0;
 };
-
-

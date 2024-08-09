@@ -1,4 +1,4 @@
-mod Other2
+module Other2
 
 @pub
 fn double(x) {

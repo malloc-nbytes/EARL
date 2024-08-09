@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
         - Float type
         - Unary Expressions
         - Better output when printing enumerations
+        - Import depth
+        - Enum type security
+        - Renamed keyword `mod` -> `module`
 
 ### Fixed
 

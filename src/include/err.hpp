@@ -77,7 +77,7 @@ namespace Err {
 /// with the message `msg` with no arguments.
 #define ERR(errtype, msg)                       \
     do {                                        \
-        fprintf(stderr, "%s: ", __func__);      \
+        fprintf(stderr, "error: ");             \
         fprintf(stderr, msg);                   \
         fprintf(stderr, "\n");                  \
         std::exit(1);                           \
