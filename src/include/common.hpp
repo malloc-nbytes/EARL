@@ -65,7 +65,7 @@ enum class Attr {
 #define COMMON_EARLKW_FOR    "for"
 #define COMMON_EARLKW_IN     "in"
 #define COMMON_EARLKW_IMPORT "import"
-#define COMMON_EARLKW_MODULE "mod"
+#define COMMON_EARLKW_MODULE "module"
 #define COMMON_EARLKW_CLASS  "class"
 #define COMMON_EARLKW_TRUE   "true"
 #define COMMON_EARLKW_FALSE  "false"

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-mod Str
+module Str
 
 @pub fn rmchar(s, c) {
     unimplemented("std/str.earl:rmchar");

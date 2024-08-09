@@ -1,12 +1,5 @@
-mod Main
+module Main
 
-import "std/io.earl" full
+import "std/io.earl" almost
 
-enum Test {
-    el1 = some(8),
-    el2 = 3,
-    el3 = 'a',
-    el4 = 4,
-}
-
-println(Test);
+println(IO::file_to_str("./other.earl"));

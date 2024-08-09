@@ -1,4 +1,4 @@
-mod TestStd
+module TestStd
 
 import "std/list.earl" full
 import "std/math.earl" full
