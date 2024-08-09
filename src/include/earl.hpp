@@ -35,6 +35,25 @@
 #include "ast.hpp"
 #include "token.hpp"
 
+#define ASSERT_BINOP_COMPAT(obj0, obj1, op)                             \
+    do {                                                                \
+        if (!type_is_compatable(obj0, obj1)) {                          \
+            Err::err_wtok(op);                                          \
+            ERR_WARGS(Err::Type::Fatal,                                 \
+                      "value of type `%s` is not compatible with value of type `%s`", \
+                      earl::value::type_to_str(obj0->type()).c_str(), earl::value::type_to_str(obj1->type()).c_str()); \
+        }                                                                       \
+    } while (0)
+
+#define ASSERT_MUTATE_COMPAT(obj0, obj1)                                \
+    do {                                                                \
+        if (!type_is_compatable(obj0, obj1)) {                          \
+            ERR_WARGS(Err::Type::Fatal,                                 \
+                      "value of type `%s` is not compatible with value of type `%s`", \
+                      earl::value::type_to_str(obj0->type()).c_str(), earl::value::type_to_str(obj1->type()).c_str()); \
+        }                                                                       \
+    } while (0)
+
 struct Ctx;
 struct FunctionCtx;
 

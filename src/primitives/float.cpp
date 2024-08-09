@@ -50,9 +50,7 @@ Float::type(void) const {
 
 std::shared_ptr<Obj>
 Float::binop(Token *op, std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get())) {
-        assert(false && "cannot binop (fix this message)");
-    }
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
 
     switch (op->type()) {
     case TokenType::Plus: {
@@ -127,9 +125,7 @@ Float::boolean(void) {
 
 void
 Float::mutate(const std::shared_ptr<Obj> &other) {
-    if (!type_is_compatable(this, other.get())) {
-        assert(false && "cannot mutate (fix this message)");
-    }
+    ASSERT_MUTATE_COMPAT(this, other.get());
 
     switch (other->type()) {
     case Type::Float: {

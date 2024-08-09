@@ -1,5 +1,6 @@
 module Main
 
-import "std/io.earl" almost
+let b = true;
+b = false;
 
-println(IO::file_to_str("./other.earl"));
+println(b);
