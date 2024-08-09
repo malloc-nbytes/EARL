@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file.
 ## [0.1.2] - 2024-09-8
 
 ### Changes
-- MAJOR `for` loops now take an expression (list/range) as the argument.
-- MAJOR in `for` loops, the enumerator can now have attributes.
+- MAJOR `foreach` loops now take an expression (list/range) as the argument.
+- MAJOR in `foreach` loops, the enumerator can now have attributes.
 - MAJOR `<list>.rev()` does not reverse the list in-place anymore. It now produces a new list with the elements reversed.
+- MAJOR changed syntax for the regular `for` loops.
 
 ### Added
 - Syntax sugar for lists in the form of a range ie [0..10] (range is from 0-9) or ['a'..'z'].
