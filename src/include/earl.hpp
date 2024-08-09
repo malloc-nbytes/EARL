@@ -291,6 +291,26 @@ namespace earl {
             std::shared_ptr<Ctx> m_owner;
         };
 
+        struct Range : public Obj {
+            Range(int start, int end, int stride, Type range_ty);
+
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
+            std::shared_ptr<Obj> unaryop(Token *op)                            override;
+
+        private:
+            int m_start;
+            int m_end;
+            int m_stride;
+            Type m_range_ty;
+        };
+
         /// @brief The structure that represents EARL lists.
         /// They can hold any value in any mix of them i.e.,
         /// list = [int, str, str, int, list[int, str]]

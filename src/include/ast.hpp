@@ -70,6 +70,7 @@ enum class ExprTermType {
     Char_Literal,
     Func_Call,
     List_Literal,
+    Range,
     Get,
     Mod_Access,
     Array_Access,
@@ -236,6 +237,15 @@ struct ExprListLit : public ExprTerm {
     std::vector<std::unique_ptr<Expr>> m_elems;
 
     ExprListLit(std::vector<std::unique_ptr<Expr>> elems);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprRange : public ExprTerm {
+    std::unique_ptr<Expr> m_start;
+    std::unique_ptr<Expr> m_end;
+
+    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

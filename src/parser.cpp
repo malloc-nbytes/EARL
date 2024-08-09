@@ -204,6 +204,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         case TokenType::Charlit: {
             left = new ExprCharLit(lexer.next());
         } break;
+        case TokenType::Double_Period: {
+            lexer.discard(); // ..
+            right = Parser::parse_expr(lexer);
+            left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+        } break;
         case TokenType::Lbracket: {
             if (left) {
                 lexer.discard(); // [

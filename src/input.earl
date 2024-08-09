@@ -1,3 +1,3 @@
 module Main
 
-
+let r = 1..10;
