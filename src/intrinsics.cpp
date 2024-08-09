@@ -178,6 +178,18 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
 }
 
 std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+					 std::shared_ptr<Ctx> &ctx) {
+  (void)ctx;
+  __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_rename__");
+  std::string file = obj->to_cxxstring();
+  if (!std::filesystem::exists(file))
+    if(!std::filesystem::rename(file))
+      ERR_WARGS(Err::Type::Fatal, "Could not rename file `%s`", file.c_str());
+  return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx) {
     (void)ctx;

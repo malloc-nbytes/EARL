@@ -1,3 +1,5 @@
+
+
 # MIT License
 
 # Copyright (c) 2023 malloc-nbytes
@@ -40,3 +42,8 @@ fn iota() {
     iota_N = iota_N+1;
     return res;
 }
+
+# @pub fn renamef(@ref oldf, @ref newf) 
+    # int save = 0;
+
+# for i in 0..len(lst)
