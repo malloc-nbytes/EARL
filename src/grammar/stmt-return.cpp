@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-StmtReturn::StmtReturn(std::unique_ptr<Expr> expr) : m_expr(std::move(expr)) {}
+StmtReturn::StmtReturn(std::optional<std::unique_ptr<Expr>> expr) : m_expr(std::move(expr)) {}
 
 StmtType
 StmtReturn::stmt_type() const {

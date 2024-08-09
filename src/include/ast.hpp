@@ -361,9 +361,9 @@ struct StmtIf : public Stmt {
 /// @brief The Statement Return class
 struct StmtReturn : public Stmt {
     /// @brief The expression that the Statement Return is returning
-    std::unique_ptr<Expr> m_expr;
+    std::optional<std::unique_ptr<Expr>> m_expr;
 
-    StmtReturn(std::unique_ptr<Expr> expr);
+    StmtReturn(std::optional<std::unique_ptr<Expr>> expr);
     StmtType stmt_type() const override;
 };
 
