@@ -59,24 +59,28 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
 
     switch (op->type()) {
     case TokenType::Plus: {
-        return other->type() == Type::Float ?
-            std::make_shared<Int>(this->value() + dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
+        if (other->type() == Type::Float)
+            return std::make_shared<Float>(this->value() + dynamic_cast<Float *>(other.get())->value());
+        else
+            return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Minus: {
-        return other->type() == Type::Float ?
-            std::make_shared<Int>(this->value() - dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
+        if (other->type() == Type::Float)
+            return std::make_shared<Float>(this->value() - dynamic_cast<Float *>(other.get())->value());
+        else
+            return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Asterisk: {
-        return other->type() == Type::Float ?
-            std::make_shared<Int>(this->value() * dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
+        if (other->type() == Type::Float)
+            return std::make_shared<Float>(this->value() * dynamic_cast<Float *>(other.get())->value());
+        else
+            return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Forwardslash: {
-        return other->type() == Type::Float ?
-            std::make_shared<Int>(this->value() / dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
+        if (other->type() == Type::Float)
+            return std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other.get())->value());
+        else
+            return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
     } break;
     case TokenType::Percent: {
         if (other->type() == Type::Float)
@@ -137,6 +141,9 @@ Int::mutate(const std::shared_ptr<Obj> &other) {
     switch (other->type()) {
     case Type::Int: {
         m_value = dynamic_cast<Int *>(other.get())->value();
+    } break;
+    case Type::Float: {
+        m_value = static_cast<int>(dynamic_cast<Float *>(other.get())->value());
     } break;
     default: {
         assert(false && "unreachable");

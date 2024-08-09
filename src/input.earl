@@ -1,6 +1,5 @@
 module Main
 
-let b = true;
-b = false;
-
-println(b);
+let x = 1.;
+x += .2+3;
+println(x);

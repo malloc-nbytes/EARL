@@ -131,6 +131,9 @@ Float::mutate(const std::shared_ptr<Obj> &other) {
     case Type::Float: {
         m_value = dynamic_cast<Float *>(other.get())->value();
     } break;
+    case Type::Int: {
+        m_value = static_cast<double>(dynamic_cast<Int *>(other.get())->value());
+    } break;
     default: {
         assert(false && "unreachable");
     }
