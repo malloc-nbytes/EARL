@@ -1,5 +1,6 @@
 module Main
 
-let x = 1.;
-x += .2+3;
-println(x);
+import "std/io.earl"
+
+println(IO::Fd.Out);
+println(IO::file_to_str("other.earl"));
