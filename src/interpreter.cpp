@@ -612,6 +612,39 @@ eval_expr_term_floatlit(ExprFloatLit *expr) {
     return ER(value, ERT::Literal);
 }
 
+static ER
+eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER left_er = Interpreter::eval_expr(expr->m_start.get(), ctx, ref);
+    ER right_er = Interpreter::eval_expr(expr->m_end.get(), ctx, ref);
+    auto lvalue = unpack_ER(left_er, ctx, ref);
+    auto rvalue = unpack_ER(right_er, ctx, ref);
+
+    if (lvalue->type() != rvalue->type())
+        ERR(Err::Type::Fatal, "type mismatch for generating a range");
+
+    std::vector<std::shared_ptr<earl::value::Obj>> values = {};
+
+    switch (lvalue->type()) {
+    case earl::value::Type::Int: {
+        int start = dynamic_cast<earl::value::Int *>(lvalue.get())->value();
+        int end = dynamic_cast<earl::value::Int *>(rvalue.get())->value();
+        while (start < end)
+            values.push_back(std::make_shared<earl::value::Int>(start++));
+        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+    } break;
+    case earl::value::Type::Char: {
+        char start = dynamic_cast<earl::value::Char *>(lvalue.get())->value();
+        char end = dynamic_cast<earl::value::Char *>(rvalue.get())->value();
+        while (start < end)
+            values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+    }
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "invalid type `%s` for type range", earl::value::type_to_str(lvalue->type()).c_str());
+    } break;
+    }
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -628,6 +661,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Bool:          return eval_expr_term_boollit(dynamic_cast<ExprBool *>(expr));
     case ExprTermType::None:          return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
     case ExprTermType::Closure:       return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
+    case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
     case ExprTermType::Tuple:         UNIMPLEMENTED("ExprTermType::Tuple");
     default:                          ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
     }
@@ -837,35 +871,56 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<earl::value::Obj> result = nullptr;
-    ER start_er = Interpreter::eval_expr(stmt->m_start.get(), ctx, false);
-    ER end_er = Interpreter::eval_expr(stmt->m_end.get(), ctx, false);
+    ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    auto expr = unpack_ER(expr_er, ctx, true);
 
-    auto start_expr = unpack_ER(start_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
-    auto end_expr = unpack_ER(end_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
-
-    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr);
-
-    assert(!ctx->variable_exists(enumerator->id()));
-    ctx->variable_add(enumerator);
-
-    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());
-    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
-
-    while (start->value() < end->value()) {
-        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-
-        if (result && result->type() == earl::value::Type::Break) {
-            result = nullptr;
-            break;
+    if (expr->type() == earl::value::Type::List) {
+        auto lst = std::dynamic_pointer_cast<earl::value::List>(expr);
+        if (lst->value().size() == 0)
+            return result;
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            Err::err_wtok(stmt->m_enumerator.get());
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_enumerator->lexeme().c_str());
         }
-
-        if (result && result->type() != earl::value::Type::Void)
-            break;
-
-        start->mutate(std::make_shared<earl::value::Int>(start->value()+1));
+        ctx->variable_add(enumerator);
+        for (size_t i = 0; i < lst->value().size(); ++i) {
+            if (i != 0)
+                enumerator->reset(lst->value()[i]);
+            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+            if (result && result->type() == earl::value::Type::Break) {
+                result = nullptr;
+                break;
+            }
+            if (result && result->type() != earl::value::Type::Void)
+                break;
+        }
+        ctx->variable_remove(enumerator->id());
     }
-
-    ctx->variable_remove(enumerator->id());
+    else if (expr->type() == earl::value::Type::Str) {
+        auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
+        if (str->value().size() == 0)
+            return result;
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_raw()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            Err::err_wtok(stmt->m_enumerator.get());
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_enumerator->lexeme().c_str());
+        }
+        ctx->variable_add(enumerator);
+        for (size_t i = 0; i < str->value().size(); ++i) {
+            if (i != 0)
+                enumerator->reset(str->value_raw()[i]);
+            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+            if (result && result->type() == earl::value::Type::Break) {
+                result = nullptr;
+                break;
+            }
+            if (result && result->type() != earl::value::Type::Void)
+                break;
+        }
+    }
+    else
+        ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list type");
 
     return result;
 }

@@ -127,17 +127,16 @@ Str::back(void) {
     return m_value.back()->copy();
 }
 
-void
+std::shared_ptr<Str>
 Str::rev(void) {
-    for (size_t i = 0; i < this->value().size()/2; ++i) {
-        auto copy = this->value_raw().at(i);
-        this->value_raw().at(i) = this->value_raw().at(this->value_raw().size()-i-1);
-        this->value_raw().at(this->value_raw().size()-i-1) = copy;
-    }
+    auto str = std::make_shared<Str>();
+    for (int i = m_value.size()-1; i >= 0; --i)
+        str->append(m_value[i]);
+    return str;
 }
 
 void
-Str::append(std::shared_ptr<Obj> &c) {
+Str::append(std::shared_ptr<Obj> c) {
     if (c->type() == Type::Char)
         m_value.push_back(std::dynamic_pointer_cast<Char>(c));
     else {

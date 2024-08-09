@@ -55,3 +55,7 @@ earl::value::Type Obj::type(void) const {
     return m_value->type();
 }
 
+void
+Obj::reset(std::shared_ptr<earl::value::Obj> value) {
+    m_value = value;
+}
