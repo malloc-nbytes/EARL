@@ -79,7 +79,7 @@ fn test_closure2() {
 
     let count_evens = |lst| {
         let res = [];
-        for i in 0..len(lst) {
+        for i in 0 to len(lst) {
             if lst[i] % 2 == 0 {
                 res.append(some(lst[i]));
             }
@@ -335,7 +335,7 @@ fn test_reference2() {
 
     @ref let ptr = lst;
 
-    for i in 0..len(ptr) {
+    for i in 0 to len(ptr) {
         ptr[i] = ptr[i] + 1;
     }
 
@@ -380,7 +380,7 @@ fn test_list_access2() {
 fn test_list_access1() {
     print("test_list_access1... ");
     let lst = [1,2,3,4,5];
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         assert(lst[i] == i+1);
     }
     println("ok");
@@ -430,13 +430,13 @@ fn test_list_append_intrinsic3() {
 
     let lst = [];
 
-    for i in 0..3 {
+    foreach i in 0..3 {
         lst.append(i);
     }
 
     let t = 0;
 
-    for i in 0..3 {
+    foreach i in 0..3 {
         assert(lst.nth(i) == t);
         t = t+1;
     }
@@ -452,7 +452,7 @@ fn test_list_append_intrinsic2() {
 
     let t = 1;
 
-    for i in 0..len(lst)-2 {
+    for i in 0 to len(lst)-2 {
         assert(lst.nth(i) == t);
         t = t+1;
     }
@@ -473,7 +473,7 @@ fn test_list_append_intrinsic1() {
 
     let t = 1;
 
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         assert(lst.nth(i) == t);
         t = t+1;
     }
@@ -486,8 +486,8 @@ fn test_len_intrinsic2() {
 
     let lst = [[1,2,3],[4,5,6],[7,8,9]];
     let t = 1;
-    for i in 0..len(lst) {
-        for j in 0..len(lst.nth(i)) {
+    for i in 0 to len(lst) {
+        for j in 0 to len(lst.nth(i)) {
             assert(lst.nth(i).nth(j) == t);
             t = t+1;
         }
@@ -500,7 +500,7 @@ fn test_len_intrinsic1() {
     print("test_len_intrinsic1... ");
 
     let lst = [1,2,3,4,5];
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         assert(lst.nth(i) == i+1);
     }
 
@@ -512,8 +512,8 @@ fn test_function_chaining() {
 
     let tmp = 1;
 
-    for i in 0..3 {
-        for j in 0..3 {
+    for i in 0 to 3 {
+        for j in 0 to 3 {
             assert(lst.nth(i).nth(j) == tmp);
             tmp = tmp+1;
         }
@@ -527,8 +527,8 @@ fn test_nested_lists() {
 
     let tmp = 1;
 
-    for i in 0..3 {
-        for j in 0..3 {
+    foreach i in 0..3 {
+        foreach j in 0..3 {
             let l = lst.nth(i);
             assert(l.nth(j) == tmp);
             tmp = tmp+1;
@@ -557,7 +557,7 @@ fn test_list_access() {
 
     let lst = [1,2,3,4,5];
 
-    for i in 0..5 {
+    foreach i in 0..5 {
         assert(i+1 == lst.nth(i));
     }
 
@@ -585,8 +585,14 @@ fn test_for_loop2() {
     let start = 0;
     let end = 10;
 
-    let tmp = 0-1;
-    for i in start..end+10 {
+    let tmp = -1;
+    foreach i in start..end+10 {
+        assert(tmp == i-1);
+        tmp = tmp+1;
+    }
+
+    tmp = -1;
+    for i in start to end+10 {
         assert(tmp == i-1);
         tmp = tmp+1;
     }
@@ -598,7 +604,7 @@ fn test_for_loop() {
     print("test_for_loop... ");
 
     let tmp = 0-1;
-    for i in 0..100 {
+    foreach i in 0..100 {
         assert(tmp == i-1);
         tmp = tmp+1;
     }

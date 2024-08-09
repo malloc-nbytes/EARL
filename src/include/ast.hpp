@@ -48,6 +48,7 @@ enum class StmtType {
     Break,
     While,
     For,
+    Foreach,
     Import,
     Mod,
     Class,
@@ -398,7 +399,7 @@ struct StmtWhile : public Stmt {
 };
 
 /// @brief The Statement For class
-struct StmtFor : public Stmt {
+struct StmtForeach : public Stmt {
     /// @brief The identifier of the enumerator variable
     std::unique_ptr<Token> m_enumerator;
 
@@ -409,10 +410,31 @@ struct StmtFor : public Stmt {
 
     uint32_t m_attrs;
 
+    StmtForeach(std::unique_ptr<Token> enumerator,
+                std::unique_ptr<Expr> expr,
+                std::unique_ptr<StmtBlock> block,
+                uint32_t attrs);
+
+    StmtType stmt_type() const override;
+};
+
+struct StmtFor : public Stmt {
+    /// @brief The identifier of the enumerator variable
+    std::unique_ptr<Token> m_enumerator;
+
+    /// @brief The starting expression
+    std::unique_ptr<Expr> m_start;
+
+    /// @brief The ending expression
+    std::unique_ptr<Expr> m_end;
+
+    /// @brief The block for the loop to execute
+    std::unique_ptr<StmtBlock> m_block;
+
     StmtFor(std::unique_ptr<Token> enumerator,
-            std::unique_ptr<Expr> expr,
-            std::unique_ptr<StmtBlock> block,
-            uint32_t attrs);
+            std::unique_ptr<Expr> start,
+            std::unique_ptr<Expr> end,
+            std::unique_ptr<StmtBlock> block);
 
     StmtType stmt_type() const override;
 };

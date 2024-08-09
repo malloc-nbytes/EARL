@@ -219,7 +219,43 @@ while i < 3 {
 * For Loops
 
 #+begin_quote
-For loops take a list or a string and will iterate over the elements.
+#+begin_quote
+For loops will enumerate over a range of numbers, with the enumerator being assigned the current number.
+If the enumerator is less than the initial destination value, it will be incremented. If it is less than the
+initial destination value, it will decrement.
+#+begin_quote
+
+** Grammar
+
+=for= <id> =in= /expr/ =to= /expr/ *{* [stmt] *}*
+
+** Examples
+
+#+begin_example
+for i in 0 to 5 {
+    print(i);
+} # prints 01234
+
+for i in 5 to 0 {
+    print(i);
+} # prints 54321
+
+let lst = [1,2,3];
+for i in 0 to len(lst) {
+    print(lst[i]);
+} # prints 123
+
+for i in len(lst)-1 to 0 {
+    print(lst[i]);
+} # prints 321
+#+end_example
+
+#+end_quote
+
+* Foreach Loops
+
+#+begin_quote
+Foreach loops take a list or a string and will iterate over the elements.
 The most common way to use these loops is with a =range=. The iterator
 (usually the variable labeled as $i$), can be set as a reference to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly

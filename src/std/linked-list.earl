@@ -31,7 +31,7 @@ class Node [value] {
     hd = none;
 
     fn constructor() {
-        for i in 0..len(init) {
+        for i in 0 to len(init) {
             this.insert(init[i]);
         }
     }

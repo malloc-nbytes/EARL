@@ -34,7 +34,7 @@ class T [init, compar] {
     compar = compar;
 
     fn constructor() {
-        for i in 0..len(init) {
+        for i in 0 to len(init) {
             insert(init[i]);
         }
     }
