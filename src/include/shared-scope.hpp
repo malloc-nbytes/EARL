@@ -122,6 +122,10 @@ template <typename K, typename V> struct SharedScope {
         return vec;
     }
 
+    inline void clear(void) {
+        m_map.clear();
+    }
+
     inline void debug_dump(void) const {
         int i = 1;
         for (const auto &map : m_map) {

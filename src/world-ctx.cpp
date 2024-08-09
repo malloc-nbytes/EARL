@@ -180,3 +180,10 @@ WorldCtx *
 WorldCtx::get_world(void) {
     UNIMPLEMENTED("WorldCtx::get_world");
 }
+
+void
+WorldCtx::strip_funs_and_classes(void) {
+    m_funcs.clear();
+    m_defined_classes.clear();
+}
+

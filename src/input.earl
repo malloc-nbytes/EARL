@@ -1,6 +1,12 @@
 mod Main
 
-import "std/io.earl" almost
+import "std/io.earl" full
 
-println(IO::Fd);
+enum Test {
+    el1 = some(8),
+    el2 = 3,
+    el3 = 'a',
+    el4 = 4,
+}
 
+println(Test);

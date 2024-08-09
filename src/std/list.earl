@@ -22,7 +22,7 @@
 
 mod List
 
-import "std/utils.earl"
+import "std/utils.earl" full
 
 @pub fn preset(elem, cap) {
     let lst = [];

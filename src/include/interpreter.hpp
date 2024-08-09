@@ -30,6 +30,7 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
+#include "utils.hpp"
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
