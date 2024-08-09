@@ -18,4 +18,4 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - MINOR Fixed segfault bug when creating a float without a left number ie `.34`.
-- MINOR Fixed integer+float bug
+- MAJOR Fixed integer+float bug
