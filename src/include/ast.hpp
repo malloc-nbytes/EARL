@@ -70,6 +70,7 @@ enum class ExprTermType {
     Char_Literal,
     Func_Call,
     List_Literal,
+    Range,
     Get,
     Mod_Access,
     Array_Access,
@@ -240,6 +241,15 @@ struct ExprListLit : public ExprTerm {
     ExprTermType get_term_type() const override;
 };
 
+struct ExprRange : public ExprTerm {
+    std::unique_ptr<Expr> m_start;
+    std::unique_ptr<Expr> m_end;
+
+    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
 struct ExprUnary : public Expr {
     std::unique_ptr<Token> m_op;
     std::unique_ptr<Expr> m_expr;
@@ -393,17 +403,23 @@ struct StmtFor : public Stmt {
     std::unique_ptr<Token> m_enumerator;
 
     /// @brief The starting expression
-    std::unique_ptr<Expr> m_start;
+    // std::unique_ptr<Expr> m_start;
 
     /// @brief The ending expression
-    std::unique_ptr<Expr> m_end;
+    // std::unique_ptr<Expr> m_end;
+
+    std::unique_ptr<Expr> m_expr;
 
     /// @brief The block for the loop to execute
     std::unique_ptr<StmtBlock> m_block;
 
+    // StmtFor(std::unique_ptr<Token> enumerator,
+    //         std::unique_ptr<Expr> start,
+    //         std::unique_ptr<Expr> end,
+    //         std::unique_ptr<StmtBlock> block);
+
     StmtFor(std::unique_ptr<Token> enumerator,
-            std::unique_ptr<Expr> start,
-            std::unique_ptr<Expr> end,
+            std::unique_ptr<Expr> expr,
             std::unique_ptr<StmtBlock> block);
 
     StmtType stmt_type() const override;

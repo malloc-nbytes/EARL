@@ -311,11 +311,11 @@ namespace earl {
             std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
 
             /// @brief Reverse a list
-            void rev(void);
+            std::shared_ptr<List> rev(void);
 
             /// @brief Append a list of values to a list
             /// @param values The values to append
-            void append(std::vector<std::shared_ptr<Obj>> values);
+            void append(std::vector<std::shared_ptr<Obj>> &values);
 
             void append(std::shared_ptr<Obj> value);
 
@@ -355,9 +355,9 @@ namespace earl {
             std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2);
             void pop(std::shared_ptr<Obj> &idx);
             std::shared_ptr<Obj> back(void);
-            void rev(void);
+            std::shared_ptr<Str> rev(void);
             void append(std::vector<std::shared_ptr<Obj>> &values);
-            void append(std::shared_ptr<Obj> &c);
+            void append(std::shared_ptr<Obj> c);
             std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void trim(void);
@@ -578,6 +578,7 @@ namespace earl {
             bool is_ref(void) const;
             bool is_pub(void) const;
             std::shared_ptr<Obj> copy(void);
+            void reset(std::shared_ptr<value::Obj> value);
 
         private:
             Token *m_id;

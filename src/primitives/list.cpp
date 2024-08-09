@@ -66,13 +66,12 @@ List::nth(std::shared_ptr<Obj> &idx) {
     return nullptr; // unreachable
 }
 
-void
+std::shared_ptr<List>
 List::rev(void) {
-    for (size_t i = 0; i < this->value().size()/2; ++i) {
-        auto copy = this->value().at(i);
-        this->value().at(i) = this->value().at(this->value().size()-i-1);
-        this->value().at(this->value().size()-i-1) = copy;
-    }
+    auto lst = std::make_shared<List>();
+    for (int i = m_value.size()-1; i >= 0; --i)
+        lst->append(m_value[i]);
+    return lst;
 }
 
 void
@@ -82,7 +81,7 @@ List::pop(std::shared_ptr<Obj> &idx) {
 }
 
 void
-List::append(std::vector<std::shared_ptr<Obj>> values) {
+List::append(std::vector<std::shared_ptr<Obj>> &values) {
     for (size_t i = 0; i < values.size(); ++i) {
         m_value.push_back(values[i]->copy());
     }

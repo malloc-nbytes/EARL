@@ -22,40 +22,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "earl.hpp"
-#include "utils.hpp"
-#include "common.hpp"
+#include <cassert>
+#include <memory>
 
-using namespace earl::variable;
+#include "ast.hpp"
 
-Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
-    : m_id(id), m_value(value), m_attrs(attrs) {}
+ExprRange::ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end)
+    : m_start(std::move(start)), m_end(std::move(end)) {}
 
-const std::string &Obj::id(void) const {
-    return m_id->lexeme();
+ExprType ExprRange::get_type() const {
+    return ExprType::Term;
 }
 
-std::shared_ptr<earl::value::Obj> Obj::value(void) const {
-    return m_value;
-}
-
-bool Obj::is_ref(void) const {
-    return (m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
-}
-
-bool Obj::is_pub(void) const {
-    return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
-}
-
-std::shared_ptr<Obj> Obj::copy(void) {
-    return std::make_shared<Obj>(m_id, m_value->copy(), m_attrs);
-}
-
-earl::value::Type Obj::type(void) const {
-    return m_value->type();
-}
-
-void
-Obj::reset(std::shared_ptr<earl::value::Obj> value) {
-    m_value = value;
+ExprTermType ExprRange::get_term_type() const {
+    return ExprTermType::Range;
 }
