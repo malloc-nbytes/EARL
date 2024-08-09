@@ -26,7 +26,7 @@ import "std/utils.earl" full
 
 @pub fn preset(elem, cap) {
     let lst = [];
-    for i in 0..cap {
+    for i in 0 to cap {
         lst.append(elem);
     }
     return lst;
@@ -47,14 +47,14 @@ import "std/utils.earl" full
 }
 
 @pub fn fill(@ref lst, k) {
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         lst[i] = k;
     }
 }
 
 @pub fn sum(@ref lst) {
     let s = 0;
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         s = s + lst[i];
     }
     return s;
@@ -73,7 +73,7 @@ import "std/utils.earl" full
 
 @pub fn count(@ref lst, @ref elem) {
     let c = 0;
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         if elem == lst[i] {
             c = c+1;
         }
@@ -87,7 +87,7 @@ import "std/utils.earl" full
             let pivot = lst[high];
             let i = low-1;
 
-            for j in low..high {
+            for j in low to high {
                 if compar(lst[j], pivot) {
                     i = i+1;
                     Utils::swap(lst[i], lst[j]);

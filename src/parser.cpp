@@ -257,6 +257,8 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             return new ExprClosure(std::move(args), std::move(block));
         }
         case TokenType::Keyword: {
+            if (lexer.peek()->lexeme() == COMMON_EARLKW_TO)
+                return left;
             if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
                 return left;
 
@@ -513,18 +515,39 @@ parse_stmt_while(Lexer &lexer) {
     return std::make_unique<StmtWhile>(std::unique_ptr<Expr>(expr), std::move(block));
 }
 
-std::unique_ptr<StmtFor>
-parse_stmt_for(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
+std::unique_ptr<StmtForeach>
+parse_stmt_foreach(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOREACH);
     uint32_t attrs = gather_attrs(lexer);
     std::unique_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
     Expr *expr = Parser::parse_expr(lexer);
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
+    return std::make_unique<StmtForeach>(std::move(enumerator),
+                                         std::unique_ptr<Expr>(expr),
+                                         std::move(block),
+                                         attrs);
+}
+
+std::unique_ptr<StmtFor>
+parse_stmt_for(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
+
+    std::unique_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
+
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
+
+    Expr *start_expr = Parser::parse_expr(lexer);
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_TO);
+    //(void)Parser::parse_expect(lexer, TokenType::Double_Period);
+    Expr *end_expr = Parser::parse_expr(lexer);
+
+    std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
+
     return std::make_unique<StmtFor>(std::move(enumerator),
-                                     std::unique_ptr<Expr>(expr),
-                                     std::move(block),
-                                     attrs);
+                                     std::unique_ptr<Expr>(start_expr),
+                                     std::unique_ptr<Expr>(end_expr),
+                                     std::move(block));
 }
 
 std::unique_ptr<Stmt>
@@ -740,6 +763,9 @@ Parser::parse_stmt(Lexer &lexer) {
             }
             if (tok->lexeme() == COMMON_EARLKW_WHILE) {
                 return parse_stmt_while(lexer);
+            }
+            if (tok->lexeme() == COMMON_EARLKW_FOREACH) {
+                return parse_stmt_foreach(lexer);
             }
             if (tok->lexeme() == COMMON_EARLKW_FOR) {
                 return parse_stmt_for(lexer);

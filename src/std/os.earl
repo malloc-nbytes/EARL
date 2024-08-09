@@ -45,7 +45,7 @@ module OS
     let parts = fullpath.split("/");
 
     let curpath = "";
-    for i in 0..len(parts)-1 {
+    for i in 0 to len(parts)-1 {
         curpath = curpath + parts[i];
         mkdir(curpath);
         curpath = curpath + '/';

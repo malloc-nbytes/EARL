@@ -42,7 +42,7 @@ module Stack
     }
 
     @pub fn show() {
-        for i in 0..len(lst) {
+        for i in 0 to len(lst) {
             println(lst[i]);
         }
     }

@@ -24,7 +24,7 @@ fn test_stack() {
     print("test_stack... ");
 
     let s = Stack.T([]);
-    for i in 0..10 {
+    foreach i in 0..10 {
         s.push(i);
     }
 
@@ -68,7 +68,7 @@ fn test_list_fill() {
     let lst = [0,0,0,0,0];
     List.fill(lst, 10);
 
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         assert(lst[i] == 10);
     }
 

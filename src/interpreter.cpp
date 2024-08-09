@@ -869,7 +869,7 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<earl::value::Obj>
-eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
+eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
 
     std::shared_ptr<earl::value::Obj> result = nullptr;
@@ -923,6 +923,53 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     else
         ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list type");
+
+    return result;
+}
+
+std::shared_ptr<earl::value::Obj>
+eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+    ER start_er = Interpreter::eval_expr(stmt->m_start.get(), ctx, false);
+    ER end_er = Interpreter::eval_expr(stmt->m_end.get(), ctx, false);
+
+    auto start_expr = unpack_ER(start_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
+    auto end_expr = unpack_ER(end_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
+
+    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr);
+
+    assert(!ctx->variable_exists(enumerator->id()));
+    ctx->variable_add(enumerator);
+
+    earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());
+    earl::value::Int *end = dynamic_cast<earl::value::Int *>(end_expr.get());
+
+    bool lt = start->value() <= end->value();
+    bool gt = start->value() > end->value();
+
+    while (true) {
+        if (lt && start->value() > end->value()-1)
+            break;
+        else if (gt && start->value() < end->value())
+            break;
+
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+
+        if (lt)
+            start->mutate(std::make_shared<earl::value::Int>(start->value()+1));
+        else if (gt)
+            start->mutate(std::make_shared<earl::value::Int>(start->value()-1));
+    }
+
+    ctx->variable_remove(enumerator->id());
 
     return result;
 }
@@ -1105,6 +1152,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Return:    return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
     case StmtType::Break:     return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
     case StmtType::While:     return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
+    case StmtType::Foreach:   return eval_stmt_foreach(dynamic_cast<StmtForeach *>(stmt), ctx);
     case StmtType::For:       return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
     case StmtType::Import:    return eval_stmt_import(dynamic_cast<StmtImport *>(stmt), ctx);
     case StmtType::Mod:       return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);

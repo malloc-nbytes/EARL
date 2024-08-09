@@ -3,7 +3,7 @@ module Other1
 import "other.2.earl" full
 
 fn __modify_ref_list(@ref lst) {
-    for i in 0..len(lst) {
+    for i in 0 to len(lst) {
         lst[i] = lst[i] + 1;
     }
 }
