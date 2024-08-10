@@ -514,12 +514,14 @@ enum MixedEnum {
 
 #+begin_quote
 While classes are available, support for inheritance is not yet implemented.
-
-When instantiating a new class, two things will occur.
-
 1. All member variable assignments will happen. If the class has bracket notation =[ ... ]=,
    it will use these.
 2. If there is a function called =constructor= in the class, that function will immediately happen.
+3. For visibility:
+   - All member variables that have the =@pub= attribute will be visible outside of the class scope, including other modules (if the class is marked as =@pub=).
+   - All methods that have the =@pub= attribute will be visible outside of the class scope, including other modules (if the class is marked as =@pub=).
+   - Everything that does not have =@pub= will only be visibile to the class scope.
+4. The use of the =this= keyword is optional.
 #+end_quote
 
 ** Grammar
@@ -562,8 +564,8 @@ class NoPassesArgs [] {
 # This class is marked as @pub, so it is
 # visible to other modules.
 @pub class Point [x, y, name] {
-    x = x;
-    y = y;
+    @pub x = x;
+    @pub y = y;
     name = name;
 
     # Because this is public, you can access
@@ -592,6 +594,7 @@ class NoPassesArgs [] {
 
 #+begin_example
 @pub class Stack [init] {
+
     ### THIS HAPPENS FIRST ######
     # You could just assign `init` to `lst` here,
     # but for this example, this is done in the constructor.

@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Syntax sugar for lists in the form of a range ie [0..10] (range is from 0-9) or ['a'..'z'].
+- Member variables and methods in classes now adhere to the @pub and private system
 
 ## [0.1.1] - 2024-08-8
 
