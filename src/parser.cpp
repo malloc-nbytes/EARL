@@ -97,9 +97,9 @@ Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
 
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
 // This makes this function more reusable.
-static std::vector<std::unique_ptr<Expr>>
+static std::vector<Expr *>
 parse_comma_sep_exprs(Lexer &lexer) {
-    std::vector<std::unique_ptr<Expr>> exprs;
+    std::vector<Expr *> exprs;
 
     while (1) {
         // Only needed if no arguments are provided.
@@ -108,7 +108,7 @@ parse_comma_sep_exprs(Lexer &lexer) {
             || lexer.peek()->type() == TokenType::Rbracket) {
             break;
         }
-        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
+        exprs.push_back(Parser::parse_expr(lexer));
         if (lexer.peek()->type() == TokenType::Comma)
             (void)Parser::parse_expect(lexer, TokenType::Comma);
         else
@@ -122,9 +122,12 @@ static std::optional<std::vector<std::unique_ptr<Expr>>>
 try_parse_funccall(Lexer &lexer) {
     if (lexer.peek()->type() == TokenType::Lparen) {
         (void)Parser::parse_expect(lexer, TokenType::Lparen);
-        std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
+        std::vector<Expr *> exprs = parse_comma_sep_exprs(lexer);
+        std::vector<std::unique_ptr<Expr>> unique_exprs = {};
+        for (size_t i = 0; i < exprs.size(); ++i)
+            unique_exprs.push_back(std::unique_ptr<Expr>(exprs[i]));
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
-        return exprs;
+        return unique_exprs;
     }
 
     return {};
@@ -186,18 +189,28 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         } break;
         case TokenType::Lparen: {
             lexer.discard(); // (
+            std::vector<Expr *> tuple = parse_comma_sep_exprs(lexer);
+            (void)Parser::parse_expect(lexer, TokenType::Rparen);
+            // Function call
             if (left) {
-                std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
-                (void)Parser::parse_expect(lexer, TokenType::Rparen);
-                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(tuple));
+                std::vector<std::unique_ptr<Expr>> unique_tuple = {};
+                for (size_t i = 0; i < tuple.size(); ++i)
+                    unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
+                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple));
             }
-            else {
-                left = Parser::parse_expr(lexer);
-                (void)Parser::parse_expect(lexer, TokenType::Rparen);
+            // Tuple
+            else if (tuple.size() > 1) {
+                std::vector<std::unique_ptr<Expr>> unique_tuple = {};
+                for (size_t i = 0; i < tuple.size(); ++i)
+                    unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
+                return new ExprTuple(std::move(unique_tuple));
             }
+            // Math
+            else
+                left = std::move(tuple[0]);
         } break;
         case TokenType::Period: {
-            lexer.discard();
+            lexer.discard(); // .
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer));
         } break;
         case TokenType::Intlit: {
@@ -226,9 +239,12 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             }
             else {
                 lexer.discard(); // [
-                std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
+                std::vector<Expr *> lst = parse_comma_sep_exprs(lexer);
+                std::vector<std::unique_ptr<Expr>> unique_lst = {};
+                for (size_t i = 0; i < lst.size(); ++i)
+                    unique_lst.push_back(std::unique_ptr<Expr>(lst[i]));
                 (void)Parser::parse_expect(lexer, TokenType::Rbracket);
-                left = new ExprListLit(std::move(lst));
+                left = new ExprListLit(std::move(unique_lst));
             }
         } break;
         case TokenType::Double_Colon: {
