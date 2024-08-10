@@ -112,7 +112,7 @@ namespace Intrinsics {
     /// @brief Check if an identifier is the name of an intrinsic member function
     /// @param id The identifier to check
     /// @return true if intrinsic member, false if otherwise
-    bool is_member_intrinsic(const std::string &id);
+    bool is_member_intrinsic(const std::string &id, int ty = -1);
 
     /// @brief Call an intrinsic function
     /// @note It is expected to call `is_intrinsic` before calling this function

@@ -350,6 +350,7 @@ namespace earl {
             Tuple(std::vector<std::shared_ptr<Obj>> values);
 
             std::vector<std::shared_ptr<Obj>> &value(void);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

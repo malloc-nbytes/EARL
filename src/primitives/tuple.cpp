@@ -39,6 +39,22 @@ Tuple::value(void) {
     return m_values;
 }
 
+std::shared_ptr<Obj>
+Tuple::nth(std::shared_ptr<Obj> &idx) {
+    switch (idx->type()) {
+    case Type::Int: {
+        auto index = dynamic_cast<Int *>(idx.get());
+        if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
+                      index->value(), this->value().size());
+        }
+        return this->value().at(index->value());
+    } break;
+    default: ERR(Err::Type::Fatal, "invalid index when accessing value in a tuple");
+    }
+    return nullptr; // unreachable
+}
+
 /*** OVERRIDES ***/
 Type Tuple::type(void) const {
     return Type::Tuple;

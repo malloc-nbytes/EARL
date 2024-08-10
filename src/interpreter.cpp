@@ -314,6 +314,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return Intrinsics::call(er.id, params, ctx);
         if (er.is_member_intrinsic()) {
             assert(perp && perp->lhs_getter_accessor);
+            if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
+                ERR_WARGS(Err::Type::Fatal, "type `%s` does not implement member intrinsic `%s`",
+                          earl::value::type_to_str(perp->lhs_getter_accessor->type()).c_str(), er.id.c_str());
+            }
             return Intrinsics::call_member(er.id,
                                            perp->lhs_getter_accessor->type(),
                                            perp->lhs_getter_accessor,
@@ -589,8 +593,12 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
         return ER(str->nth(idx_value), ERT::Literal);
     }
+    else if (left_value->type() == earl::value::Type::Tuple) {
+        auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
+        return ER(tuple->nth(idx_value), ERT::Literal);
+    }
     else
-        ERR(Err::Type::Fatal, "cannot use `[]` on non-list or non-str type");
+        ERR(Err::Type::Fatal, "cannot use `[]` on non-list non-tuple, or non-str type");
 }
 
 static ER

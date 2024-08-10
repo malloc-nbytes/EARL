@@ -96,7 +96,21 @@ Intrinsics::is_intrinsic(const std::string &id) {
 }
 
 bool
-Intrinsics::is_member_intrinsic(const std::string &id) {
+Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
+    if (ty == -1)
+        return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
+
+    switch (static_cast<earl::value::Type>(ty)) {
+    case earl::value::Type::Int: return false;
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.find(id) != Intrinsics::intrinsic_char_member_functions.end();
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.find(id) != Intrinsics::intrinsic_str_member_functions.end();
+    case earl::value::Type::Bool: return false;
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.find(id) != Intrinsics::intrinsic_list_member_functions.end();
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
+    case earl::value::Type::Tuple: return false;
+    default: return false;
+    }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
