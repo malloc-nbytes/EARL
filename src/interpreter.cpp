@@ -47,8 +47,9 @@ using namespace Interpreter;
 
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
-    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr)
-        : lhs_getter_accessor(lhs_get) {}
+    bool this_;
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool this_ = false)
+        : lhs_getter_accessor(lhs_get), this_(this_) {}
 };
 
 static std::shared_ptr<earl::value::Obj>
@@ -320,8 +321,14 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                                            ctx);
         }
 
-        if (ctx->type() == CtxType::Class)
+        if (ctx->type() == CtxType::Class) {
+            std::shared_ptr<earl::function::Obj> func = nullptr;
+            if (ctx->function_exists(er.id))
+                func = ctx->function_get(er.id);
+            if ((!perp || !perp->this_) && (func && er.ctx != ctx && !func->is_pub()))
+                ERR_WARGS(Err::Type::Fatal, "member variable `%s` is missing the @pub attribute", func->id().c_str());
             return eval_user_defined_function(er.id, params, ctx);
+        }
 
         // We need to have this function to gen the parameters so we
         // know which ones need to be taken as a reference. NOTE: The
@@ -333,6 +340,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     else if (er.is_ident()) {
         if (ctx->variable_exists(er.id)) {
             auto var = ctx->variable_get(er.id);
+            if ((!perp || !perp->this_) && (er.ctx != ctx && !var->is_pub()))
+                ERR_WARGS(Err::Type::Fatal, "member variable `%s` is missing the @pub attribute", var->id().c_str());
             if (!ref)
                 return var->value()->copy();
             return var->value();
@@ -523,7 +532,8 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         if (!fctx->in_class())
             ERR(Err::Type::Fatal, "Must be in a class context when using the `this` keyword");
 
-        auto value = unpack_ER(right_er, fctx->get_outer_class_owner_ctx(), /*ref=*/true);
+        PackedERPreliminary perp(nullptr, true);
+        auto value = unpack_ER(right_er, fctx->get_outer_class_owner_ctx(), /*ref=*/true, /*perp=*/&perp);
         return ER(value, ERT::Literal);
     }
     else {
