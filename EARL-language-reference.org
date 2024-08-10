@@ -40,6 +40,35 @@ Output:
 Hello World!
 #+end_example
 
+* Keywords
+
+|---------|
+| let     |
+| fn      |
+| if      |
+| else    |
+| while   |
+| for     |
+| foreach |
+| import  |
+| return  |
+| in      |
+| module  |
+| class   |
+| true    |
+| false   |
+| none    |
+| match   |
+| when    |
+| break   |
+| enum    |
+| almost  |
+| full    |
+| to      |
+| @ref    |
+| @pub    |
+| @world  |
+
 * Variable Declarations
 
 ** Grammar
