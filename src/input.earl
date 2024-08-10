@@ -1,5 +1,5 @@
 module Main
 
-let x = (1, 2);
+let x = (1, 2, [1,2,3]);
 
-
+println(x);

@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
 
@@ -32,6 +33,11 @@
 using namespace earl::value;
 
 Tuple::Tuple(std::vector<std::shared_ptr<Obj>> values) : m_values(values) {}
+
+std::vector<std::shared_ptr<Obj>> &
+Tuple::value(void) {
+    return m_values;
+}
 
 /*** OVERRIDES ***/
 Type Tuple::type(void) const {
@@ -50,7 +56,9 @@ void Tuple::mutate(const std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj> Tuple::copy(void) {
-    UNIMPLEMENTED("Tuple::copy");
+    std::vector<std::shared_ptr<Obj>> values = {};
+    std::for_each(m_values.begin(), m_values.end(), [&](auto &v){values.push_back(v);});
+    return std::make_shared<Tuple>(values);
 }
 
 bool Tuple::eq(std::shared_ptr<Obj> &other) {

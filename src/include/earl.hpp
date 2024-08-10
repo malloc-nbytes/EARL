@@ -349,6 +349,8 @@ namespace earl {
         struct Tuple : public Obj {
             Tuple(std::vector<std::shared_ptr<Obj>> values);
 
+            std::vector<std::shared_ptr<Obj>> &value(void);
+
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;

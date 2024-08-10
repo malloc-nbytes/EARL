@@ -312,6 +312,17 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
 
         *stream << ']';
     } break;
+    case earl::value::Type::Tuple: {
+        earl::value::Tuple *tupleparam = dynamic_cast<earl::value::Tuple *>(param.get());
+        *stream << '(';
+        auto values = tupleparam->value();
+        for (size_t i = 0; i < values.size(); ++i) {
+            __intrinsic_print(values[i]);
+            if (i != values.size()-1)
+                *stream << ", ";
+        }
+        *stream << ')';
+    } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
         *stream << "<Class " << classparam->id() << " { ";
