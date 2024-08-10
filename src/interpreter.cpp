@@ -657,7 +657,13 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
 static ER
 eval_expr_term_tuple(ExprTuple *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
-    assert(false);
+    std::vector<std::shared_ptr<earl::value::Obj>> values = {};
+    for (auto &e : expr->m_exprs) {
+        ER er = Interpreter::eval_expr(e.get(), ctx, ref);
+        auto value = unpack_ER(er, ctx, ref);
+        values.push_back(value);
+    }
+    return ER(std::make_shared<earl::value::Tuple>(values), ERT::Literal);
 }
 
 ER
