@@ -170,7 +170,11 @@ Tuple::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Tuple::to_cxxstring(void) {
-    UNIMPLEMENTED("Tuple::to_cxxstring");
+    std::string res = "(";
+    for (auto &el : m_values)
+        res += el->to_cxxstring();
+    res += ")";
+    return res;
 }
 
 void

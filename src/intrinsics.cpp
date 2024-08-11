@@ -322,7 +322,7 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
     if (!std::filesystem::exists(path))
         if (!std::filesystem::create_directory(path))
             ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -407,7 +407,7 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
                       i+1, (int)param->type());
         }
     }
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 static void
@@ -415,6 +415,9 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
     if (stream == nullptr)
         stream = &std::cout;
     switch (param->type()) {
+    case earl::value::Type::Void: {
+        *stream << "<unit>";
+    } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
         *stream << intparam->value();
@@ -518,7 +521,7 @@ Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &para
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -528,7 +531,7 @@ Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &pa
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
     std::cout << '\n';
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -560,7 +563,7 @@ Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &p
     for (size_t i = 1; i < params.size(); ++i)
         __intrinsic_print(params[i], stream);
     *stream << '\n';
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -591,7 +594,7 @@ Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &par
 
     for (size_t i = 1; i < params.size(); ++i)
         __intrinsic_print(params[i], stream);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

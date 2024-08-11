@@ -50,7 +50,7 @@ std::string earl::value::type_to_str(earl::value::Type ty) {
     case earl::value::Type::Char: return "char";
     case earl::value::Type::Str: return "str";
     case earl::value::Type::List: return "list";
-    case earl::value::Type::Void: return "void";
+    case earl::value::Type::Void: return "unit";
     case earl::value::Type::Option: return "option";
     case earl::value::Type::Tuple: return "tuple";
     default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
