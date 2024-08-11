@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2024-11-8
+
+### Fixed
+- Fixed file handler mode type to except multiple types
+
 ## [0.1.3] - 2024-10-8
 
 ### Added
