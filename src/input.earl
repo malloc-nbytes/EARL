@@ -1,7 +1,2 @@
 module Main
 
-let f = open("other.earl", "r");
-# f.write("foo bar baz\nhello world");
-f.dump();
-
-f.close();

@@ -246,9 +246,10 @@ List::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 List::to_cxxstring(void) {
-    std::string res = "";
+    std::string res = "[";
     for (auto &el : m_value)
         res += el->to_cxxstring();
+    res += "]";
     return res;
 }
 

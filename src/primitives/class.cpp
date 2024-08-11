@@ -100,7 +100,7 @@ Class::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Class::to_cxxstring(void) {
-    UNIMPLEMENTED("Class::to_cxxstring");
+    return "<Class " + this->id() + ">";
 }
 
 void
