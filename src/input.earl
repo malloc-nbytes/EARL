@@ -1,6 +1,5 @@
 module Main
 
-let s = "hello";
-s.append('a');
+let x = 1+2;
 
-println(s);
+x;

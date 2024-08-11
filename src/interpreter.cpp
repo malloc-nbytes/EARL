@@ -1044,13 +1044,20 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
-    assert(ctx->type() == CtxType::World);
+    if (ctx->type() != CtxType::World) {
+        Err::err_wtok(stmt->m_fp.get());
+        ERR(Err::Type::Fatal, "`import` statements must be used in the @world context");
+    }
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
 
-    std::unique_ptr<Lexer> lexer      = lex_file(stmt->m_fp.get()->lexeme().c_str(), keywords, types, comment);
+    std::unique_ptr<Lexer> lexer      = lex_file(read_file(stmt->m_fp.get()->lexeme().c_str()),
+                                                 stmt->m_fp.get()->lexeme(),
+                                                 keywords,
+                                                 types,
+                                                 comment);
     std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
 
     std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
@@ -1223,15 +1230,21 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Ctx>
-Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
-    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
-    auto wctx = dynamic_cast<WorldCtx *>(ctx.get());
+Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer, std::shared_ptr<Ctx> prev_ctx) {
+    WorldCtx *wctx = nullptr;
+    std::shared_ptr<Ctx> ctx = nullptr;
+    if (!prev_ctx)
+        ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
+    else
+        ctx = prev_ctx;
+
+    wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        if (i == 0 && stmt->stmt_type() != StmtType::Mod)
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0))
             WARN("A `mod` statement is expected to be the first statement. "
                  "This may lead to undefined behavior and break functionality.");
         if (stmt->stmt_type() == StmtType::Def
@@ -1240,14 +1253,19 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
             || stmt->stmt_type() == StmtType::Import)
             (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
     }
-
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
         if (stmt->stmt_type() != StmtType::Def
             && stmt->stmt_type() != StmtType::Class
             && stmt->stmt_type() != StmtType::Mod
-            && stmt->stmt_type() != StmtType::Import)
-            (void)Interpreter::eval_stmt(stmt, ctx);
+            && stmt->stmt_type() != StmtType::Import) {
+            auto val = Interpreter::eval_stmt(stmt, ctx);
+            if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
+                std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+                (void)Intrinsics::intrinsic_println(params, ctx);
+            }
+
+        }
     }
 
     return ctx;

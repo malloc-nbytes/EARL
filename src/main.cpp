@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <filesystem>
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -33,6 +34,7 @@
 #include "utils.hpp"
 #include "lexer.hpp"
 #include "interpreter.hpp"
+#include "ctx.hpp"
 #include "config.h"
 
 std::vector<std::string> earl_argv = {};
@@ -53,6 +55,8 @@ static void usage(void) {
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
     std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
+
+    std::exit(0);
 }
 
 static void version() {
@@ -134,23 +138,50 @@ static std::string handlecli(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    if (argc == 1 || argc == 0) {
-        usage();
-    }
+    // if (argc == 1 || argc == 0) {
+    //     usage();
+    // }
 
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
 
-    if (filepath != "") {
-        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-        std::vector<std::string> types = {};
-        std::string comment = "#";
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types = {};
+    std::string comment = "#";
 
-        std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
+    if (filepath != "") {
+
+        std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
         // lexer->dump();
 
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-        Interpreter::interpret(std::move(program), std::move(lexer));
+        Interpreter::interpret(std::move(program), std::move(lexer), nullptr);
+    }
+    else {
+        flags |= __REPL;
+
+        // std::shared_ptr<Ctx> ctx = nullptr;
+        while (true) {
+            std::vector<std::string> lines;
+            std::string line;
+            while (std::getline(std::cin, line)) {
+                if (line == "eof")
+                    break;
+                lines.push_back(line);
+            }
+
+            std::string combined;
+            for (size_t i = 0; i < lines.size(); ++i) {
+                combined += lines[i];
+                if (i < lines.size()-1)
+                    combined += '\n';
+            }
+
+            std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), filepath, keywords, types, comment);
+            std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+            (void)Interpreter::interpret(std::move(program), std::move(lexer));
+            std::cout << "*****************" << std::endl;
+        }
     }
 
     return 0;
