@@ -498,6 +498,12 @@ namespace earl {
         };
 
         struct File : public Obj {
+            enum class Mode {
+                Read = 1 << 0,
+                Write = 1 << 1,
+                Binary = 1 << 2,
+            };
+
             File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
 
             void set_open(void);
@@ -525,6 +531,7 @@ namespace earl {
             std::shared_ptr<Str> m_mode;
             std::fstream m_stream;
             bool m_open;
+            uint32_t m_mode_actual;
         };
 
         struct Option : public Obj {

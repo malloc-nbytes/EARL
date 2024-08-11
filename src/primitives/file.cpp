@@ -37,7 +37,19 @@ using namespace earl::value;
 
 File::File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream)
     : m_fp(fp), m_mode(mode),
-      m_stream(std::move(stream)), m_open(false) {}
+      m_stream(std::move(stream)), m_open(false), m_mode_actual(0) {
+    const std::string &literal = m_mode->value();
+    for (char c : literal) {
+        switch (c) {
+        case 'w': m_mode_actual |= static_cast<uint32_t>(Mode::Write); break;
+        case 'r': m_mode_actual |= static_cast<uint32_t>(Mode::Read); break;
+        case 'b': m_mode_actual |= static_cast<uint32_t>(Mode::Binary); break;
+        default:
+            ERR_WARGS(Err::Type::Fatal, "unknown mode `%c` for file type", c);
+            break;
+        }
+    }
+}
 
 void
 File::set_open(void) {
@@ -51,16 +63,11 @@ File::set_closed(void) {
 
 void
 File::dump(void) {
-    if (!m_open) {
+    if (!m_open)
         ERR(Err::Type::Fatal, "file is not open");
-    }
-
-    if (m_mode->value() == "w") {
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0)
         ERR(Err::Type::Fatal, "file is not open for reading");
-    }
-
     m_stream.seekg(0, std::ios::beg);
-
     std::cout << m_stream.rdbuf();
 }
 
@@ -77,7 +84,7 @@ std::shared_ptr<earl::value::Str>
 File::read(void) {
     if (!m_open)
         ERR(Err::Type::Fatal, "file is not open");
-    if (m_mode->value() == "w")
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0)
         ERR(Err::Type::Fatal, "file is not open for reading");
     m_stream.seekg(0, std::ios::beg);
     std::stringstream buf;
@@ -87,13 +94,11 @@ File::read(void) {
 
 void
 File::write(std::shared_ptr<Obj> value) {
-    if (!m_open) {
+    if (!m_open)
         ERR(Err::Type::Fatal, "file is not open");
-    }
 
-    if (m_mode->value() != "w") {
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Write)) == 0)
         ERR(Err::Type::Fatal, "file is not open for writing");
-    }
 
     switch (value->type()) {
     case Type::Int: {
