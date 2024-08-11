@@ -73,9 +73,8 @@ File::dump(void) {
 
 void
 File::close(void) {
-    if (!m_open) {
+    if (!m_open)
         ERR(Err::Type::Fatal, "file is not open");
-    }
     m_stream.close();
     this->set_closed();
 }

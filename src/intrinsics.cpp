@@ -492,14 +492,18 @@ Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &param
     auto fp = dynamic_cast<earl::value::Str *>(params[0].get());
     auto mode = dynamic_cast<earl::value::Str *>(params[1].get());
     std::fstream stream;
+    std::ios_base::openmode om{};
 
-    if (mode->value() == "r")
-        stream.open(fp->value(), std::ios::in);
-    else if (mode->value() == "w")
-        stream.open(fp->value(), std::ios::out);
-    else
-        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
-                  mode->value().c_str());
+    for (char &c : mode->value()) {
+        switch (c) {
+        case 'r': om |= std::ios::in; break;
+        case 'w': om |= std::ios::out; break;
+        case 'b': om |= std::ios::binary; break;
+        default: ERR_WARGS(Err::Type::Fatal, "invalid mode `%c` for file handler, must be either r|w|b", c);
+        }
+    }
+
+    stream.open(fp->value(), om);
 
     if (!stream)
         ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
