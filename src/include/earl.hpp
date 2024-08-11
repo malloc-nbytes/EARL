@@ -106,6 +106,8 @@ namespace earl {
             Class,
             /** EARL enum type */
             Enum,
+            /** EARL tuple type */
+            Tuple,
         };
 
         /// @brief The base abstract class that all
@@ -344,6 +346,31 @@ namespace earl {
             std::vector<std::shared_ptr<Obj>> m_value;
         };
 
+        struct Tuple : public Obj {
+            Tuple(std::vector<std::shared_ptr<Obj>> values = {});
+
+            std::vector<std::shared_ptr<Obj>> &value(void);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> back(void);
+            std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<Tuple> rev(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
+            std::shared_ptr<Obj> unaryop(Token *op)                            override;
+
+        private:
+            std::vector<std::shared_ptr<Obj>> m_values;
+        };
+
         /// @brief The structure that represents EARL strings
         struct Str : public Obj {
             Str(std::string value = "");
@@ -471,6 +498,12 @@ namespace earl {
         };
 
         struct File : public Obj {
+            enum class Mode {
+                Read = 1 << 0,
+                Write = 1 << 1,
+                Binary = 1 << 2,
+            };
+
             File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stream);
 
             void set_open(void);
@@ -498,6 +531,7 @@ namespace earl {
             std::shared_ptr<Str> m_mode;
             std::fstream m_stream;
             bool m_open;
+            uint32_t m_mode_actual;
         };
 
         struct Option : public Obj {

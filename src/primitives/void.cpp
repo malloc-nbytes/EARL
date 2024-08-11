@@ -39,25 +39,23 @@ Void::type(void) const {
 
 std::shared_ptr<Obj>
 Void::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Void::binop");
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "unable to perform binary operation on unit type");
 }
 
 bool
 Void::boolean(void) {
-    return false;
+    return true;
 }
 
 void
 Void::mutate(const std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Void::mutate");
+    ASSERT_MUTATE_COMPAT(this, other.get());
 }
 
 std::shared_ptr<Obj>
 Void::copy(void) {
-    UNIMPLEMENTED("Void::copy");
+    return std::make_shared<Void>();
 }
 
 bool
@@ -68,7 +66,7 @@ Void::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Void::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `void` type to a string");
+    return "<unit>";
 }
 
 void

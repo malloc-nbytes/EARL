@@ -28,6 +28,7 @@
 #include "earl.hpp"
 #include "err.hpp"
 #include "utils.hpp"
+#include "common.hpp"
 
 using namespace earl::value;
 
@@ -112,8 +113,8 @@ Option::eq(std::shared_ptr<Obj> &other) {
 std::string
 Option::to_cxxstring(void) {
     if (this->is_none())
-        ERR(Err::Type::Fatal, "unable to convert `none` type to a string");
-    return m_value->to_cxxstring();
+        return COMMON_EARLKW_NONE;
+    return "some(" + m_value->to_cxxstring() + ")";
 }
 
 void

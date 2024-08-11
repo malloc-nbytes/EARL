@@ -1,8 +1,2 @@
-mod Other
-
-@pub enum Test {
-    Item1 = 0,
-    Item2 = 1,
-    Item3
-}
-
+foo bar baz
+hello world

@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2024-11-8
+
+### Added
+- Added intrinsic casting functions
+
+### Fixed
+- Fixed file handler mode type to except multiple types
+- The appropriate unit functions now return a unit type instead of null.
+
+## [0.1.3] - 2024-10-8
+
+### Added
+- MAJOR New Tuple type
+
 ## [0.1.2] - 2024-09-8
 
 ### Changes
@@ -11,6 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Syntax sugar for lists in the form of a range ie [0..10] (range is from 0-9) or ['a'..'z'].
+- Member variables and methods in classes now adhere to the @pub and private system
 
 ## [0.1.1] - 2024-08-8
 

@@ -1,8 +1,29 @@
 module Test
 
-import "point-class.1.earl" full
-import "test-std.earl" full
+import "point-class.1.earl"
+import "test-std.earl"
 import "other.1.earl" full
+
+fn test_tuple1() {
+    print("test_tuple1...");
+
+    let t = (1,2,3);
+    foreach i in t {
+        assert(i == t[i-1]);
+    }
+
+    assert(t + (4,5) == (1,2,3,4,5));
+
+    let copy = t;
+
+    assert(copy == t);
+
+    let single = (-1,);
+
+    assert(single == (-1,));
+
+    println("ok");
+}
 
 fn test_nested_func1() {
     print("test_nested_func1... ");
@@ -689,6 +710,7 @@ fn main() {
     test_closure5();
     test_match1();
     test_nested_func1();
+    test_tuple1();
 
     # TestStd::test_std();
 }

@@ -68,14 +68,13 @@ Class::type(void) const {
 
 std::shared_ptr<Obj>
 Class::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Class::binop");
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "unable to perform binary operation on class type");
 }
 
 bool
 Class::boolean(void) {
-    UNIMPLEMENTED("Class::boolean");
+    return true;
 }
 
 void
@@ -100,7 +99,7 @@ Class::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Class::to_cxxstring(void) {
-    UNIMPLEMENTED("Class::to_cxxstring");
+    return "<Class " + this->id() + ">";
 }
 
 void

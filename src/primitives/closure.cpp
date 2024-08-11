@@ -119,7 +119,7 @@ Closure::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Closure::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `closure` type to a string");
+    return "<closure>";
 }
 
 void

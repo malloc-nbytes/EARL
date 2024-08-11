@@ -97,9 +97,9 @@ Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
 
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
 // This makes this function more reusable.
-static std::vector<std::unique_ptr<Expr>>
-parse_comma_sep_exprs(Lexer &lexer) {
-    std::vector<std::unique_ptr<Expr>> exprs;
+static std::vector<Expr *>
+parse_comma_sep_exprs(Lexer &lexer, bool &trailing_comma) {
+    std::vector<Expr *> exprs;
 
     while (1) {
         // Only needed if no arguments are provided.
@@ -108,9 +108,14 @@ parse_comma_sep_exprs(Lexer &lexer) {
             || lexer.peek()->type() == TokenType::Rbracket) {
             break;
         }
-        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
-        if (lexer.peek()->type() == TokenType::Comma)
+        exprs.push_back(Parser::parse_expr(lexer));
+        if (lexer.peek()->type() == TokenType::Comma) {
             (void)Parser::parse_expect(lexer, TokenType::Comma);
+        if (lexer.peek()->type() == TokenType::Rparen
+            || lexer.peek()->type() == TokenType::Rbrace
+            || lexer.peek()->type() == TokenType::Rbracket)
+            trailing_comma = true;
+        }
         else
             break;
     }
@@ -122,9 +127,13 @@ static std::optional<std::vector<std::unique_ptr<Expr>>>
 try_parse_funccall(Lexer &lexer) {
     if (lexer.peek()->type() == TokenType::Lparen) {
         (void)Parser::parse_expect(lexer, TokenType::Lparen);
-        std::vector<std::unique_ptr<Expr>> exprs = parse_comma_sep_exprs(lexer);
+        bool unused = false;
+        std::vector<Expr *> exprs = parse_comma_sep_exprs(lexer, unused);
+        std::vector<std::unique_ptr<Expr>> unique_exprs = {};
+        for (size_t i = 0; i < exprs.size(); ++i)
+            unique_exprs.push_back(std::unique_ptr<Expr>(exprs[i]));
         (void)Parser::parse_expect(lexer, TokenType::Rparen);
-        return exprs;
+        return unique_exprs;
     }
 
     return {};
@@ -186,18 +195,29 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         } break;
         case TokenType::Lparen: {
             lexer.discard(); // (
+            bool trailing_comma = false;
+            std::vector<Expr *> tuple = parse_comma_sep_exprs(lexer, trailing_comma);
+            (void)Parser::parse_expect(lexer, TokenType::Rparen);
+            // Function call
             if (left) {
-                std::vector<std::unique_ptr<Expr>> tuple = parse_comma_sep_exprs(lexer);
-                (void)Parser::parse_expect(lexer, TokenType::Rparen);
-                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(tuple));
+                std::vector<std::unique_ptr<Expr>> unique_tuple = {};
+                for (size_t i = 0; i < tuple.size(); ++i)
+                    unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
+                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple));
             }
-            else {
-                left = Parser::parse_expr(lexer);
-                (void)Parser::parse_expect(lexer, TokenType::Rparen);
+            // Tuple
+            else if (tuple.size() > 1 || trailing_comma) {
+                std::vector<std::unique_ptr<Expr>> unique_tuple = {};
+                for (size_t i = 0; i < tuple.size(); ++i)
+                    unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
+                left = new ExprTuple(std::move(unique_tuple));
             }
+            // Math
+            else
+                left = std::move(tuple[0]);
         } break;
         case TokenType::Period: {
-            lexer.discard();
+            lexer.discard(); // .
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer));
         } break;
         case TokenType::Intlit: {
@@ -226,14 +246,17 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             }
             else {
                 lexer.discard(); // [
-                std::vector<std::unique_ptr<Expr>> lst = parse_comma_sep_exprs(lexer);
+                bool unused = false;
+                std::vector<Expr *> lst = parse_comma_sep_exprs(lexer, unused);
+                std::vector<std::unique_ptr<Expr>> unique_lst = {};
+                for (size_t i = 0; i < lst.size(); ++i)
+                    unique_lst.push_back(std::unique_ptr<Expr>(lst[i]));
                 (void)Parser::parse_expect(lexer, TokenType::Rbracket);
-                left = new ExprListLit(std::move(lst));
+                left = new ExprListLit(std::move(unique_lst));
             }
         } break;
         case TokenType::Double_Colon: {
-            assert(left);
-            lexer.discard();
+            lexer.discard(); // ::
 
             if (left->get_type() == ExprType::Term) {
                 auto _left = dynamic_cast<ExprTerm *>(left);
@@ -811,8 +834,7 @@ Parser::parse_stmt(Lexer &lexer) {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
         default: {
-            Err::err_wtok(tok);
-            ERR_WARGS(Err::Type::Fatal, "invalid statement `%s`", tok->lexeme().c_str());
+            return parse_stmt_expr(lexer);
         }
         }
     } while (attrs != 0);

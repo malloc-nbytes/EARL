@@ -58,6 +58,13 @@ Intrinsics::intrinsic_functions = {
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
     {"fprint", &Intrinsics::intrinsic_fprint},
+    // Casting Functions
+    {"str", &Intrinsics::intrinsic_str},
+    {"int", &Intrinsics::intrinsic_int},
+    {"float", &Intrinsics::intrinsic_float},
+    {"bool", &Intrinsics::intrinsic_bool},
+    {"tuple", &Intrinsics::intrinsic_tuple},
+    {"list", &Intrinsics::intrinsic_list},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -97,7 +104,21 @@ Intrinsics::is_intrinsic(const std::string &id) {
 }
 
 bool
-Intrinsics::is_member_intrinsic(const std::string &id) {
+Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
+    if (ty == -1)
+        return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
+
+    switch (static_cast<earl::value::Type>(ty)) {
+    case earl::value::Type::Int: return false;
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.find(id) != Intrinsics::intrinsic_char_member_functions.end();
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.find(id) != Intrinsics::intrinsic_str_member_functions.end();
+    case earl::value::Type::Bool: return false;
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.find(id) != Intrinsics::intrinsic_list_member_functions.end();
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
+    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.find(id) != Intrinsics::intrinsic_tuple_member_functions.end();
+    default: return false;
+    }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
@@ -107,24 +128,149 @@ Intrinsics::call_member(const std::string &id,
                         std::shared_ptr<earl::value::Obj> accessor,
                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
                         std::shared_ptr<Ctx> &ctx) {
-    assert(ctx);
     switch (type) {
-    case earl::value::Type::Int:
-        assert(false);
-    case earl::value::Type::Char:
-        return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Str:
-        return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Bool:
-        assert(false);
-    case earl::value::Type::List:
-        return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Option:
-        return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::File:
-        return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Int: assert(false);
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Bool: assert(false);
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx);
     default: assert(false);
     }
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_str(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "str");
+    return std::make_shared<earl::value::Str>(params[0]->to_cxxstring());
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "int");
+    {
+        std::vector<earl::value::Type> tys = {
+            earl::value::Type::Int,
+            earl::value::Type::Float,
+            earl::value::Type::Str,
+            earl::value::Type::Bool,
+        };
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "int");
+    }
+    switch (params[0]->type()) {
+    case earl::value::Type::Int: {
+        int i = dynamic_cast<earl::value::Int *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(i);
+    } break;
+    case earl::value::Type::Float: {
+        double f = dynamic_cast<earl::value::Float *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(static_cast<int>(f));
+    } break;
+    case earl::value::Type::Str: {
+        std::string s = dynamic_cast<earl::value::Str *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(std::stoi(s));
+    } break;
+    case earl::value::Type::Bool: {
+        bool b = dynamic_cast<earl::value::Bool *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(static_cast<int>(b));
+    } break;
+    default: {
+    } break;
+        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
+                  earl::value::type_to_str(params[0]->type()).c_str());
+    }
+    return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                            std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "float");
+    {
+        std::vector<earl::value::Type> tys = {
+            earl::value::Type::Int,
+            earl::value::Type::Float,
+            earl::value::Type::Str,
+        };
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "float");
+    }
+    switch (params[0]->type()) {
+    case earl::value::Type::Int: {
+        int i = dynamic_cast<earl::value::Int *>(params[0].get())->value();
+        return std::make_shared<earl::value::Float>(static_cast<double>(i));
+    } break;
+    case earl::value::Type::Float: {
+        double f = dynamic_cast<earl::value::Float *>(params[0].get())->value();
+        return std::make_shared<earl::value::Float>(f);
+    } break;
+    case earl::value::Type::Str: {
+        std::string s = dynamic_cast<earl::value::Str *>(params[0].get())->value();
+        return std::make_shared<earl::value::Float>(std::stof(s));
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
+                  earl::value::type_to_str(params[0]->type()).c_str());
+    } break;
+    }
+    return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "bool");
+    {
+        std::vector<earl::value::Type> tys = {
+            earl::value::Type::Int,
+            earl::value::Type::Float,
+            earl::value::Type::Str,
+        };
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "bool");
+    }
+    switch (params[0]->type()) {
+    case earl::value::Type::Int: {
+        int i = dynamic_cast<earl::value::Int *>(params[0].get())->value();
+        return std::make_shared<earl::value::Bool>(static_cast<bool>(i));
+    } break;
+    case earl::value::Type::Float: {
+        double f = dynamic_cast<earl::value::Float *>(params[0].get())->value();
+        return std::make_shared<earl::value::Bool>(static_cast<bool>(f));
+    } break;
+    case earl::value::Type::Str: {
+        std::string s = dynamic_cast<earl::value::Str *>(params[0].get())->value();
+        if (s == COMMON_EARLKW_TRUE)
+            return std::make_shared<earl::value::Bool>(true);
+        else if (s == COMMON_EARLKW_FALSE)
+            return std::make_shared<earl::value::Bool>(false);
+        ERR_WARGS(Err::Type::Fatal, "cannot convert str `%s` to type bool", s.c_str());
+    } break;
+    default: {
+        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
+                  earl::value::type_to_str(params[0]->type()).c_str());
+    } break;
+    }
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_tuple(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                            std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    return std::make_shared<earl::value::Tuple>(params);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    return std::make_shared<earl::value::List>(params);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -132,7 +278,10 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
                           std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
+    {
+        std::vector<earl::value::Type> lst = {earl::value::Type::List, earl::value::Type::Str, earl::value::Type::Tuple};
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], lst, 1, "len");
+    }
     auto &item = params[0];
     if (item->type() == earl::value::Type::List) {
         size_t sz = dynamic_cast<earl::value::List *>(item.get())->value().size();
@@ -140,6 +289,10 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
     }
     else if (item->type() == earl::value::Type::Str) {
         size_t sz = dynamic_cast<earl::value::Str *>(item.get())->value().size();
+        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
+    }
+    else if (item->type() == earl::value::Type::Tuple) {
+        size_t sz = dynamic_cast<earl::value::Tuple *>(item.get())->value().size();
         return std::make_shared<earl::value::Int>(static_cast<int>(sz));
     }
     assert(false && "unreachable");
@@ -175,7 +328,7 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
     if (!std::filesystem::exists(path))
         if (!std::filesystem::create_directory(path))
             ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -279,7 +432,7 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
                       i+1, (int)param->type());
         }
     }
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 static void
@@ -287,6 +440,9 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
     if (stream == nullptr)
         stream = &std::cout;
     switch (param->type()) {
+    case earl::value::Type::Void: {
+        *stream << "<unit>";
+    } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
         *stream << intparam->value();
@@ -331,6 +487,17 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         }
 
         *stream << ']';
+    } break;
+    case earl::value::Type::Tuple: {
+        earl::value::Tuple *tupleparam = dynamic_cast<earl::value::Tuple *>(param.get());
+        *stream << '(';
+        auto values = tupleparam->value();
+        for (size_t i = 0; i < values.size(); ++i) {
+            __intrinsic_print(values[i]);
+            if (i != values.size()-1)
+                *stream << ", ";
+        }
+        *stream << ')';
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
@@ -379,7 +546,7 @@ Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &para
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -389,7 +556,7 @@ Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &pa
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
     std::cout << '\n';
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -421,7 +588,7 @@ Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &p
     for (size_t i = 1; i < params.size(); ++i)
         __intrinsic_print(params[i], stream);
     *stream << '\n';
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -452,7 +619,7 @@ Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &par
 
     for (size_t i = 1; i < params.size(); ++i)
         __intrinsic_print(params[i], stream);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -487,14 +654,18 @@ Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &param
     auto fp = dynamic_cast<earl::value::Str *>(params[0].get());
     auto mode = dynamic_cast<earl::value::Str *>(params[1].get());
     std::fstream stream;
+    std::ios_base::openmode om{};
 
-    if (mode->value() == "r")
-        stream.open(fp->value(), std::ios::in);
-    else if (mode->value() == "w")
-        stream.open(fp->value(), std::ios::out);
-    else
-        ERR_WARGS(Err::Type::Fatal, "invalid mode `%s` for file handler, must be either r|w",
-                  mode->value().c_str());
+    for (char &c : mode->value()) {
+        switch (c) {
+        case 'r': om |= std::ios::in; break;
+        case 'w': om |= std::ios::out; break;
+        case 'b': om |= std::ios::binary; break;
+        default: ERR_WARGS(Err::Type::Fatal, "invalid mode `%c` for file handler, must be either r|w|b", c);
+        }
+    }
+
+    stream.open(fp->value(), om);
 
     if (!stream)
         ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
