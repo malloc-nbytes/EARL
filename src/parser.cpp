@@ -210,7 +210,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 std::vector<std::unique_ptr<Expr>> unique_tuple = {};
                 for (size_t i = 0; i < tuple.size(); ++i)
                     unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
-                return new ExprTuple(std::move(unique_tuple));
+                left = new ExprTuple(std::move(unique_tuple));
             }
             // Math
             else

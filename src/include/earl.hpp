@@ -347,10 +347,14 @@ namespace earl {
         };
 
         struct Tuple : public Obj {
-            Tuple(std::vector<std::shared_ptr<Obj>> values);
+            Tuple(std::vector<std::shared_ptr<Obj>> values = {});
 
             std::vector<std::shared_ptr<Obj>> &value(void);
             std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> back(void);
+            std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<Tuple> rev(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                              override;

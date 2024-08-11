@@ -79,6 +79,19 @@
                       earl::value::type_to_str(arg->type()).c_str());                                                 \
     } while (0)
 
+#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(arg, tys, loc, fn) \
+    do { \
+        bool __ok = false;     \
+        for (auto &ty : tys) { \
+            if (earl::value::type_is_compatable(arg->type(), ty)) \
+                __ok = true; \
+        } \
+        if (!__ok)                                                      \
+            ERR_WARGS(Err::Type::Fatal,                                 \
+                      "the %d argument of function `%s` expects type `%s` but got `%s`", \
+                      loc, fn, earl::value::type_to_str(tys.at(0)).c_str(), earl::value::type_to_str(arg->type()).c_str()); \
+    } while (0)
+
 /// @brief The `Intrinsics` namespace
 namespace Intrinsics {
 
@@ -103,6 +116,7 @@ namespace Intrinsics {
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_char_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_option_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_tuple_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check

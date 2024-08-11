@@ -1,7 +1,5 @@
 module Main
 
-let x = (1,2,3);
+let t = (1,2,3,4,5).foreach(|x| { println(x); });
 
-x.append(9);
 
-println(x[0]);

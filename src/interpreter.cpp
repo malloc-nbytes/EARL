@@ -928,6 +928,29 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         ctx->variable_remove(enumerator->id());
     }
+    else if (expr->type() == earl::value::Type::Tuple) {
+        auto tuple = std::dynamic_pointer_cast<earl::value::Tuple>(expr);
+        if (tuple->value().size() == 0)
+            return result;
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            Err::err_wtok(stmt->m_enumerator.get());
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_enumerator->lexeme().c_str());
+        }
+        ctx->variable_add(enumerator);
+        for (size_t i = 0; i < tuple->value().size(); ++i) {
+            if (i != 0)
+                enumerator->reset(tuple->value()[i]);
+            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+            if (result && result->type() == earl::value::Type::Break) {
+                result = nullptr;
+                break;
+            }
+            if (result && result->type() != earl::value::Type::Void)
+                break;
+        }
+        ctx->variable_remove(enumerator->id());
+    }
     else if (expr->type() == earl::value::Type::Str) {
         auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
         if (str->value().size() == 0)
@@ -951,7 +974,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
     }
     else
-        ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list type");
+        ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list, str, or tuple type");
 
     return result;
 }
