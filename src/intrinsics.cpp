@@ -62,6 +62,8 @@ Intrinsics::intrinsic_functions = {
     {"int", &Intrinsics::intrinsic_int},
     {"float", &Intrinsics::intrinsic_float},
     {"bool", &Intrinsics::intrinsic_bool},
+    {"tuple", &Intrinsics::intrinsic_tuple},
+    {"list", &Intrinsics::intrinsic_list},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -249,6 +251,20 @@ Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &param
                   earl::value::type_to_str(params[0]->type()).c_str());
     } break;
     }
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_tuple(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                            std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    return std::make_shared<earl::value::Tuple>(params);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    return std::make_shared<earl::value::List>(params);
 }
 
 std::shared_ptr<earl::value::Obj>

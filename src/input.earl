@@ -1,9 +1,2 @@
 module Main
 
-let t = 1;
-let f = 0;
-let x = 0.
-
-println(bool(t));
-println(bool(f));
-println(bool(x));
