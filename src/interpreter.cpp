@@ -774,12 +774,14 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    stmt->m_evald = true;
     return unpack_ER(er, ctx, false);
 }
 
@@ -794,6 +796,7 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
             break;
     }
     ctx->pop_scope();
+    block->m_evald = true;
     return result;
 }
 
@@ -811,6 +814,7 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
 
     auto func = std::make_shared<earl::function::Obj>(stmt, args);
     ctx->function_add(func);
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
@@ -825,6 +829,7 @@ eval_stmt_if(StmtIf *stmt, std::shared_ptr<Ctx> &ctx) {
     else if (stmt->m_else.has_value())
         result = Interpreter::eval_stmt_block(stmt->m_else.value().get(), ctx);
 
+    stmt->m_evald = true;
     return result;
 }
 
@@ -832,8 +837,10 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
     if (stmt->m_expr.has_value()) {
         ER er = Interpreter::eval_expr(stmt->m_expr.value().get(), ctx, false);
+        stmt->m_evald = true;
         return unpack_ER(er, ctx, false);
     }
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Option>();
 }
 
@@ -841,6 +848,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_break(StmtBreak *stmt, std::shared_ptr<Ctx> &ctx) {
     (void)stmt;
     (void)ctx;
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Break>();
 }
 
@@ -869,6 +877,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
         ERR_WARGS(Err::Type::Fatal, "invalid mutation operation `%s`", stmt->m_equals->lexeme().c_str());
     } break;
     }
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
@@ -898,6 +907,7 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
     }
 
+    stmt->m_evald = true;
     return result;
 }
 
@@ -911,8 +921,10 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
 
     if (expr->type() == earl::value::Type::List) {
         auto lst = std::dynamic_pointer_cast<earl::value::List>(expr);
-        if (lst->value().size() == 0)
+        if (lst->value().size() == 0) {
+            stmt->m_evald = true;
             return result;
+        }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
         if (ctx->variable_exists(enumerator->id())) {
             Err::err_wtok(stmt->m_enumerator.get());
@@ -934,8 +946,10 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     else if (expr->type() == earl::value::Type::Tuple) {
         auto tuple = std::dynamic_pointer_cast<earl::value::Tuple>(expr);
-        if (tuple->value().size() == 0)
+        if (tuple->value().size() == 0) {
+            stmt->m_evald = true;
             return result;
+        }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
         if (ctx->variable_exists(enumerator->id())) {
             Err::err_wtok(stmt->m_enumerator.get());
@@ -957,8 +971,10 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     else if (expr->type() == earl::value::Type::Str) {
         auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
-        if (str->value().size() == 0)
+        if (str->value().size() == 0) {
+            stmt->m_evald = true;
             return result;
+        }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_raw()[0]);
         if (ctx->variable_exists(enumerator->id())) {
             Err::err_wtok(stmt->m_enumerator.get());
@@ -980,6 +996,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list, str, or tuple type");
 
+    stmt->m_evald = true;
     return result;
 }
 
@@ -1027,18 +1044,21 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
     ctx->variable_remove(enumerator->id());
 
+    stmt->m_evald = true;
     return result;
 }
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
     dynamic_cast<WorldCtx *>(ctx.get())->define_class(stmt);
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
     dynamic_cast<WorldCtx *>(ctx.get())->set_mod(stmt->m_id->lexeme());
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
@@ -1065,6 +1085,7 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     if (stmt->__m_depth == COMMON_DEPTH_ALMOST)
         dynamic_cast<WorldCtx *>(child_ctx.get())->strip_funs_and_classes();
     dynamic_cast<WorldCtx *>(ctx.get())->add_import(std::move(child_ctx));
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
@@ -1129,6 +1150,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
                         if (guard == nullptr || guard->boolean()) {
                             auto res = Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
                             ctx->variable_remove(tmp_var->id());
+                            stmt->m_evald = true;
                             return res;
                         }
                         else
@@ -1152,6 +1174,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
                         guard = unpack_ER(_guard, ctx, true);
                     }
                     if (guard == nullptr || guard->boolean()) {
+                        stmt->m_evald = true;
                         return Interpreter::eval_stmt_block(branch->m_block.get(), ctx);
                     }
                 }
@@ -1159,6 +1182,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
         }
     }
 
+    stmt->m_evald = true;
     return nullptr;
 }
 
@@ -1200,6 +1224,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
     assert(ctx->type() == CtxType::World);
     dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
 
@@ -1230,26 +1255,45 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Ctx>
-Interpreter::repl(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer, std::shared_ptr<Ctx> prev_ctx) {
-    WorldCtx *wctx = nullptr;
-    std::shared_ptr<Ctx> ctx = nullptr;
-    if (!prev_ctx)
-        ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
-    else
-        ctx = prev_ctx;
+Interpreter::repl(void) {
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types    = {};
+    std::string comment               = COMMON_EARL_COMMENT;
 
-    wctx = dynamic_cast<WorldCtx *>(ctx.get());
+    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
 
-    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-        Stmt *stmt = wctx->stmt_at(i);
-        auto val = Interpreter::eval_stmt(stmt, ctx);
-        if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
-            std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-            (void)Intrinsics::intrinsic_println(params, ctx);
+    while (true) {
+        std::string line;
+        std::getline(std::cin, line);
+        // std::vector<std::string> lines;
+        // while (std::getline(std::cin, line)) {
+        //     if (line == "e")
+        //         break;
+        //     lines.push_back(line);
+        // }
+
+        // std::string combined = "";
+        // std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s; });
+
+        std::unique_ptr<Lexer> lexer = lex_file(line.c_str(), "", keywords, types, comment);
+        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
+        wctx->add_repl_lexer(std::move(lexer));
+        wctx->add_repl_program(std::move(program));
+
+        for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+            Stmt *stmt = wctx->stmt_at(i);
+            if (!stmt->m_evald) {
+                auto val = Interpreter::eval_stmt(stmt, ctx);
+                if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
+                    std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+                    (void)Intrinsics::intrinsic_println(params, ctx);
+                }
+            }
         }
     }
 
-    return ctx;
+    return nullptr;
 }
 
 std::shared_ptr<Ctx>

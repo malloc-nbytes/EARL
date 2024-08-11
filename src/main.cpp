@@ -159,29 +159,7 @@ int main(int argc, char **argv) {
     }
     else {
         flags |= __REPL;
-
-        std::shared_ptr<Ctx> ctx = nullptr;
-        while (true) {
-            std::vector<std::string> lines;
-            std::string line;
-            while (std::getline(std::cin, line)) {
-                if (line == "eof")
-                    break;
-                lines.push_back(line);
-            }
-
-            std::string combined;
-            for (size_t i = 0; i < lines.size(); ++i) {
-                combined += lines[i];
-                if (i < lines.size()-1)
-                    combined += '\n';
-            }
-
-            std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), filepath, keywords, types, comment);
-            std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-            (void)Interpreter::repl(std::move(program), std::move(lexer), ctx);
-            std::cout << "*****************" << std::endl;
-        }
+        Interpreter::repl();
     }
 
     return 0;
