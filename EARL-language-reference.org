@@ -896,6 +896,66 @@ Will print all elements if it can. Gets input from the user
 and returns it as a =str=.
 #+end_quote
 
+** =int=
+
+#+begin_quote
+#+begin_example
+int(arg: int|float|str|bool) -> int
+#+end_example
+
+Casts =arg= to an =int=.
+#+end_quote
+
+** =float=
+
+#+begin_quote
+#+begin_example
+float(arg: int|float|str) -> float
+#+end_example
+
+Casts =arg= to a =float=.
+#+end_quote
+
+** =str=
+
+#+begin_quote
+#+begin_example
+str(arg: int|float|str|bool|option) -> str
+#+end_example
+
+Casts =arg= to a =str=.
+#+end_quote
+
+** =bool=
+
+#+begin_quote
+#+begin_example
+bool(arg: int|float|str) -> bool
+#+end_example
+
+Casts =arg= to a =bool=.
+#+end_quote
+
+** =tuple=
+
+#+begin_quote
+#+begin_example
+tuple(arg0: any, arg1: any, ..., argN: any) -> tuple
+#+end_example
+
+Cast the values to a =tuple=. You can also supply 0 arguments to create an empty =tuple=.
+#+end_quote
+
+** =list=
+
+#+begin_quote
+#+begin_example
+list(arg0: any, arg1: any, ..., argN: any) -> list
+#+end_example
+
+Cast the values to a =list=. You can also supply 0 arguments to create an empty =list=.
+#+end_quote
+
 ** =assert=
 
 #+begin_quote
@@ -957,7 +1017,9 @@ open(fp: str, mode: str) -> file
 #+end_example
 
 Opens the filepath =fp= with mode =mode=. Mode must either be
-=r= for read or =w= for write.
+=r= for read, =w= for write, or =b= for binary. You can also
+supply multiple modes by combining the letters into a single =str=
+i.e., ="wrb"=.
 #+end_quote
 
 ** =unimplemented=

@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2024-11-8
+
+### Added
+- Added intrinsic casting functions
+
+### Fixed
+- Fixed file handler mode type to except multiple types
+- The appropriate unit functions now return a unit type instead of null.
+
 ## [0.1.3] - 2024-10-8
 
 ### Added

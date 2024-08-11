@@ -103,7 +103,7 @@ Enum::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Enum::to_cxxstring(void) {
-    UNIMPLEMENTED("Enum::to_cxxstring");
+    return "<Enum " + this->id() + ">";
 }
 
 void

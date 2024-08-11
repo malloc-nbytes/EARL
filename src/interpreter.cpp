@@ -90,12 +90,12 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
         value = unpack_ER(rhs, ctx, _ref);
 
     if (stmt->m_id->lexeme() == "_")
-        return nullptr;
+        return std::make_shared<earl::value::Void>();
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 static std::shared_ptr<earl::value::Obj>
@@ -769,12 +769,12 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         value = unpack_ER(rhs, ctx, ref);
 
     if (stmt->m_id->lexeme() == "_")
-        return nullptr;
+        return std::make_shared<earl::value::Void>();
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
     ctx->variable_add(var);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -1200,7 +1200,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
     assert(ctx->type() == CtxType::World);
     dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
