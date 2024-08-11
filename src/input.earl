@@ -1,7 +1,9 @@
 module Main
 
-let _ = 1;
+class T {
+}
 
-
+let t = T();
+println(str(t) + "hello");
 
 

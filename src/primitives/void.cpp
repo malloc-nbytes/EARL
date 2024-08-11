@@ -39,9 +39,8 @@ Void::type(void) const {
 
 std::shared_ptr<Obj>
 Void::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Void::binop");
+    Err::err_wtok(op);
+    ERR(Err::Type::Fatal, "unable to perform binary operation on unit type");
 }
 
 bool
