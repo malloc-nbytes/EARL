@@ -716,6 +716,12 @@ println(lst4); # prints ['a', 'b'];
 #+end_example
 #+end_quote
 
+** =tuple=
+
+#+begin_quote
+A tuple is an immutable list of elements.
+#+end_quote
+
 ** =option=
 
 #+begin_quote

@@ -256,8 +256,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             }
         } break;
         case TokenType::Double_Colon: {
-            assert(left);
-            lexer.discard();
+            lexer.discard(); // ::
 
             if (left->get_type() == ExprType::Term) {
                 auto _left = dynamic_cast<ExprTerm *>(left);
@@ -835,8 +834,7 @@ Parser::parse_stmt(Lexer &lexer) {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
         default: {
-            Err::err_wtok(tok);
-            ERR_WARGS(Err::Type::Fatal, "invalid statement `%s`", tok->lexeme().c_str());
+            return parse_stmt_expr(lexer);
         }
         }
     } while (attrs != 0);
