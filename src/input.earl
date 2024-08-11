@@ -1,7 +1,9 @@
 module Main
 
-let f = open("other.earl", "r");
-# f.write("foo bar baz\nhello world");
-f.dump();
+let t = 1;
+let f = 0;
+let x = 0.
 
-f.close();
+println(bool(t));
+println(bool(f));
+println(bool(x));
