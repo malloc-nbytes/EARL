@@ -158,6 +158,7 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
             earl::value::Type::Int,
             earl::value::Type::Float,
             earl::value::Type::Str,
+            earl::value::Type::Bool,
         };
         __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "int");
     }
@@ -173,6 +174,10 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
     case earl::value::Type::Str: {
         std::string s = dynamic_cast<earl::value::Str *>(params[0].get())->value();
         return std::make_shared<earl::value::Int>(std::stoi(s));
+    } break;
+    case earl::value::Type::Bool: {
+        bool b = dynamic_cast<earl::value::Bool *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(static_cast<int>(b));
     } break;
     default: {
     } break;

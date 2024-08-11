@@ -900,7 +900,7 @@ and returns it as a =str=.
 
 #+begin_quote
 #+begin_example
-int(arg: int|float|str) -> int
+int(arg: int|float|str|bool) -> int
 #+end_example
 
 Casts =arg= to an =int=.
