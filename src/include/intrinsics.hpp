@@ -205,6 +205,10 @@ namespace Intrinsics {
                                  std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                 std::shared_ptr<Ctx> &ctx);
+  
+    std::shared_ptr<earl::value::Obj>
     intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                               std::shared_ptr<Ctx> &ctx);
 

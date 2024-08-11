@@ -1,1 +1,3 @@
 module Main
+
+__internal_rename__("other22.earl", "other2.earl");

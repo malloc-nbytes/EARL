@@ -54,6 +54,7 @@ Intrinsics::intrinsic_functions = {
     {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
+    {"__internal_rename__", &Intrinsics::intrinsic__internal_rename__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
     {"fprint", &Intrinsics::intrinsic_fprint},
@@ -179,14 +180,21 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-					 std::shared_ptr<Ctx> &ctx) {
-  (void)ctx;
-  __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_rename__");
-  std::string file = obj->to_cxxstring();
-  if (!std::filesystem::exists(file))
-    if(!std::filesystem::rename(file))
-      ERR_WARGS(Err::Type::Fatal, "Could not rename file `%s`", file.c_str());
-  return nullptr;
+                                         std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_rename__");
+    auto path_obj = params[0];
+    auto to_obj = params[1];
+    //std::error_code err = 0;
+    std::string path_from = path_obj->to_cxxstring();
+    std::string path_to = to_obj->to_cxxstring();
+    if (!std::filesystem::exists(path_from)) {
+        std::filesystem::rename(path_from, path_to);
+    }
+           
+             
+
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
