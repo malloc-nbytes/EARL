@@ -155,12 +155,12 @@ int main(int argc, char **argv) {
         // lexer->dump();
 
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-        Interpreter::interpret(std::move(program), std::move(lexer), nullptr);
+        Interpreter::interpret(std::move(program), std::move(lexer));
     }
     else {
         flags |= __REPL;
 
-        // std::shared_ptr<Ctx> ctx = nullptr;
+        std::shared_ptr<Ctx> ctx = nullptr;
         while (true) {
             std::vector<std::string> lines;
             std::string line;
@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 
             std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), filepath, keywords, types, comment);
             std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-            (void)Interpreter::interpret(std::move(program), std::move(lexer));
+            (void)Interpreter::repl(std::move(program), std::move(lexer), ctx);
             std::cout << "*****************" << std::endl;
         }
     }

@@ -1230,7 +1230,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Ctx>
-Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer, std::shared_ptr<Ctx> prev_ctx) {
+Interpreter::repl(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer, std::shared_ptr<Ctx> prev_ctx) {
     WorldCtx *wctx = nullptr;
     std::shared_ptr<Ctx> ctx = nullptr;
     if (!prev_ctx)
@@ -1239,6 +1239,23 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
         ctx = prev_ctx;
 
     wctx = dynamic_cast<WorldCtx *>(ctx.get());
+
+    for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+        Stmt *stmt = wctx->stmt_at(i);
+        auto val = Interpreter::eval_stmt(stmt, ctx);
+        if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
+            std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+            (void)Intrinsics::intrinsic_println(params, ctx);
+        }
+    }
+
+    return ctx;
+}
+
+std::shared_ptr<Ctx>
+Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
+    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
+    WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
@@ -1259,12 +1276,7 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
             && stmt->stmt_type() != StmtType::Class
             && stmt->stmt_type() != StmtType::Mod
             && stmt->stmt_type() != StmtType::Import) {
-            auto val = Interpreter::eval_stmt(stmt, ctx);
-            if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
-                std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                (void)Intrinsics::intrinsic_println(params, ctx);
-            }
-
+            (void)Interpreter::eval_stmt(stmt, ctx);
         }
     }
 
