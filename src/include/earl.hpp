@@ -106,6 +106,8 @@ namespace earl {
             Class,
             /** EARL enum type */
             Enum,
+            /** EARL tuple type */
+            Tuple,
         };
 
         /// @brief The base abstract class that all
@@ -342,6 +344,31 @@ namespace earl {
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
+        };
+
+        struct Tuple : public Obj {
+            Tuple(std::vector<std::shared_ptr<Obj>> values = {});
+
+            std::vector<std::shared_ptr<Obj>> &value(void);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> back(void);
+            std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<Tuple> rev(void);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
+            std::shared_ptr<Obj> unaryop(Token *op)                            override;
+
+        private:
+            std::vector<std::shared_ptr<Obj>> m_values;
         };
 
         /// @brief The structure that represents EARL strings

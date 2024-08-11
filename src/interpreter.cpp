@@ -314,6 +314,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return Intrinsics::call(er.id, params, ctx);
         if (er.is_member_intrinsic()) {
             assert(perp && perp->lhs_getter_accessor);
+            if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
+                ERR_WARGS(Err::Type::Fatal, "type `%s` does not implement member intrinsic `%s`",
+                          earl::value::type_to_str(perp->lhs_getter_accessor->type()).c_str(), er.id.c_str());
+            }
             return Intrinsics::call_member(er.id,
                                            perp->lhs_getter_accessor->type(),
                                            perp->lhs_getter_accessor,
@@ -589,8 +593,12 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
         return ER(str->nth(idx_value), ERT::Literal);
     }
+    else if (left_value->type() == earl::value::Type::Tuple) {
+        auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
+        return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
+    }
     else
-        ERR(Err::Type::Fatal, "cannot use `[]` on non-list or non-str type");
+        ERR(Err::Type::Fatal, "cannot use `[]` on non-list, non-tuple, or non-str type");
 }
 
 static ER
@@ -655,6 +663,17 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
 }
 
+static ER
+eval_expr_term_tuple(ExprTuple *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::vector<std::shared_ptr<earl::value::Obj>> values = {};
+    for (auto &e : expr->m_exprs) {
+        ER er = Interpreter::eval_expr(e.get(), ctx, ref);
+        auto value = unpack_ER(er, ctx, ref);
+        values.push_back(value);
+    }
+    return ER(std::make_shared<earl::value::Tuple>(values), ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -672,7 +691,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::None:          return eval_expr_term_none(dynamic_cast<ExprNone *>(expr));
     case ExprTermType::Closure:       return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
     case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
-    case ExprTermType::Tuple:         UNIMPLEMENTED("ExprTermType::Tuple");
+    case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
     default:                          ERR_WARGS(Err::Type::Fatal, "unknown term: `%d`", (int)expr->get_term_type());
     }
     assert(false && "unreachable");
@@ -829,6 +848,10 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     ER left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx, true);
     ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
+
+    if (left_er.is_tuple_access())
+        ERR(Err::Type::Fatal, "cannot mutate tuple type as they are immutable");
+
     auto l = unpack_ER(left_er, ctx, true);
     auto r = unpack_ER(right_er, ctx, false);
     switch (stmt->m_equals->type()) {
@@ -909,6 +932,29 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         ctx->variable_remove(enumerator->id());
     }
+    else if (expr->type() == earl::value::Type::Tuple) {
+        auto tuple = std::dynamic_pointer_cast<earl::value::Tuple>(expr);
+        if (tuple->value().size() == 0)
+            return result;
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            Err::err_wtok(stmt->m_enumerator.get());
+            ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", stmt->m_enumerator->lexeme().c_str());
+        }
+        ctx->variable_add(enumerator);
+        for (size_t i = 0; i < tuple->value().size(); ++i) {
+            if (i != 0)
+                enumerator->reset(tuple->value()[i]);
+            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+            if (result && result->type() == earl::value::Type::Break) {
+                result = nullptr;
+                break;
+            }
+            if (result && result->type() != earl::value::Type::Void)
+                break;
+        }
+        ctx->variable_remove(enumerator->id());
+    }
     else if (expr->type() == earl::value::Type::Str) {
         auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
         if (str->value().size() == 0)
@@ -932,7 +978,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
     }
     else
-        ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list type");
+        ERR(Err::Type::Fatal, "unable to perform a `for` loop with an expression other than a list, str, or tuple type");
 
     return result;
 }

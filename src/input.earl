@@ -1,5 +1,6 @@
 module Main
 
+let s = "hello";
+s.append('a');
 
-
-
+println(s);

@@ -96,7 +96,21 @@ Intrinsics::is_intrinsic(const std::string &id) {
 }
 
 bool
-Intrinsics::is_member_intrinsic(const std::string &id) {
+Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
+    if (ty == -1)
+        return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
+
+    switch (static_cast<earl::value::Type>(ty)) {
+    case earl::value::Type::Int: return false;
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.find(id) != Intrinsics::intrinsic_char_member_functions.end();
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.find(id) != Intrinsics::intrinsic_str_member_functions.end();
+    case earl::value::Type::Bool: return false;
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.find(id) != Intrinsics::intrinsic_list_member_functions.end();
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
+    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.find(id) != Intrinsics::intrinsic_tuple_member_functions.end();
+    default: return false;
+    }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 }
 
@@ -106,22 +120,15 @@ Intrinsics::call_member(const std::string &id,
                         std::shared_ptr<earl::value::Obj> accessor,
                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
                         std::shared_ptr<Ctx> &ctx) {
-    assert(ctx);
     switch (type) {
-    case earl::value::Type::Int:
-        assert(false);
-    case earl::value::Type::Char:
-        return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Str:
-        return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Bool:
-        assert(false);
-    case earl::value::Type::List:
-        return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Option:
-        return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::File:
-        return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Int: assert(false);
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Bool: assert(false);
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx);
     default: assert(false);
     }
 }
@@ -131,7 +138,10 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
                           std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::List, earl::value::Type::Str, 1, "len");
+    {
+        std::vector<earl::value::Type> lst = {earl::value::Type::List, earl::value::Type::Str, earl::value::Type::Tuple};
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], lst, 1, "len");
+    }
     auto &item = params[0];
     if (item->type() == earl::value::Type::List) {
         size_t sz = dynamic_cast<earl::value::List *>(item.get())->value().size();
@@ -139,6 +149,10 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
     }
     else if (item->type() == earl::value::Type::Str) {
         size_t sz = dynamic_cast<earl::value::Str *>(item.get())->value().size();
+        return std::make_shared<earl::value::Int>(static_cast<int>(sz));
+    }
+    else if (item->type() == earl::value::Type::Tuple) {
+        size_t sz = dynamic_cast<earl::value::Tuple *>(item.get())->value().size();
         return std::make_shared<earl::value::Int>(static_cast<int>(sz));
     }
     assert(false && "unreachable");
@@ -311,6 +325,17 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         }
 
         *stream << ']';
+    } break;
+    case earl::value::Type::Tuple: {
+        earl::value::Tuple *tupleparam = dynamic_cast<earl::value::Tuple *>(param.get());
+        *stream << '(';
+        auto values = tupleparam->value();
+        for (size_t i = 0; i < values.size(); ++i) {
+            __intrinsic_print(values[i]);
+            if (i != values.size()-1)
+                *stream << ", ";
+        }
+        *stream << ')';
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());

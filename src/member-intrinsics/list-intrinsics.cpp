@@ -61,6 +61,10 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
         earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj.get());
         return str->nth(idx[0]);
     }
+    else if (obj->type() == earl::value::Type::Tuple) {
+        earl::value::Tuple *tuple = dynamic_cast<earl::value::Tuple *>(obj.get());
+        return tuple->nth(idx[0]);
+    }
     else
         ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
 }
@@ -73,6 +77,8 @@ Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->back();
+    else if (obj->type() == earl::value::Type::Tuple)
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->back();
     else
         return dynamic_cast<earl::value::Str *>(obj.get())->back();
     return nullptr; // unreachable
@@ -86,6 +92,8 @@ Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter");
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
+    else if (obj->type() == earl::value::Type::Tuple)
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->filter(closure.at(0), ctx);
     else
         return dynamic_cast<earl::value::Str *>(obj.get())->filter(closure.at(0), ctx);
 }
@@ -98,6 +106,8 @@ Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach");
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
+    else if (obj->type() == earl::value::Type::Tuple)
+        dynamic_cast<earl::value::Tuple *>(obj.get())->foreach(closure.at(0), ctx);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->foreach(closure.at(0), ctx);
     return nullptr;
@@ -111,6 +121,8 @@ Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->rev();
+    else if (obj->type() == earl::value::Type::Tuple)
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->rev();
     else
         return dynamic_cast<earl::value::Str *>(obj.get())->rev();
 }
