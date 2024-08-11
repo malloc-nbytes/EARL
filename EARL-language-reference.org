@@ -719,7 +719,19 @@ println(lst4); # prints ['a', 'b'];
 ** =tuple=
 
 #+begin_quote
-A tuple is an immutable list of elements.
+A =tuple= is the exact same thing as a =list= except they are /immutable/.
+You cannot reassign, append, or modify a =tuple=. You can use bracket notation
+=[]= to index values.
+
+They can be created by using parenthesis and having elements be separated by commas _(including tuples of size 1)_:
+
+#+begin_example
+let tuple = (1, 'a', [1,2,3]);
+tuple.foreach(|x| { println(x); });
+
+let single_elem_tuple = (1,);
+println(single_elem_tuple[0]);
+#+end_example
 #+end_quote
 
 ** =option=
@@ -806,21 +818,23 @@ In the table below, the datatypes section describes which datatypes
 are able to use the binary operations. This does not mean that if an
 entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
 describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
+The exception is that you can add a =char= to a =str=.
 #+end_quote
 
-| Symbol | Datatypes                     | Description                      |
-|--------+-------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str= | Adds the elements together       |
-| -      | =int=, =float=                | Subtracts the elements           |
-| *      | =int=, =float=                | Multiplies the elements together |
-| ///    | =int=, =float=                | Divides the elements             |
-| %      | =int=                         | Produces the modulo              |
-| >      | =bool=                        | Greater than                     |
-| <      | =bool=                        | Less than                        |
-| >=     | =bool=                        | Greater than or equal to         |
-| <=     | =bool=                        | Less than or equal to            |
-| ==     | =bool=                        | Equal to                         |
-| &&     | =bool=                        | Logical AND                      |
+| Symbol | Datatypes                                                 | Description                      |
+|--------+-----------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                             | Adds the elements together       |
+| -      | =int=, =float=                                            | Subtracts the elements           |
+| *      | =int=, =float=                                            | Multiplies the elements together |
+| ///    | =int=, =float=                                            | Divides the elements             |
+| %      | =int=                                                     | Produces the modulo              |
+| >      | =int=, =float=                                            | Greater than                     |
+| <      | =int=, =float=                                            | Less than                        |
+| >=     | =int=, =float=                                            | Greater than or equal to         |
+| <=     | =int=, =float=                                            | Less than or equal to            |
+| ==     | =bool=, =int=, =float=, =char=, =list=, =option=, =tuple= | Equal to                         |
+| !=     | =bool=, =int=, =float=, =char=, =list=, =option=, =tuple= | Not equal to                     |
+| &&     | =bool=                                                    | Logical AND                      |
 
 =||=, =bool= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
@@ -897,10 +911,10 @@ the program immediately crashes.
 
 #+begin_quote
 #+begin_example
-len(arg: list|str) -> int
+len(arg: list|str|tuple) -> int
 #+end_example
 
-Expects either a =list= or =string=. Will give the length
+Expects either a =list=, =string=, or =tuple=. Will give the length
 as an integer.
 #+end_quote
 
@@ -968,15 +982,7 @@ You access these with the dot `.` notation i.e.,
 =lst.rev();=
 #+end_quote
 
-** =list/str= Implementes
-
-#+begin_quote
-#+begin_example
-rev() -> unit
-#+end_example
-
-Reverses the list inplace.
-#+end_quote
+** =list= Implements
 
 #+begin_quote
 #+begin_example
@@ -996,6 +1002,14 @@ Will remove the element at index =idx=.
 
 #+begin_quote
 #+begin_example
+rev() -> list
+#+end_example
+
+Returns a new list that is the reverse of the original.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 filter(cl: closure) -> list
 #+end_example
 
@@ -1003,7 +1017,56 @@ Takes the closure =cl= and creates a new =list= of all the
 elements where =cl= returns =true=.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+foreach(cl: closure) -> unit
+#+end_example
+
+Calls the closure =cl= on each element.
+#+end_quote
+
 ** =str= Implements
+
+#+begin_quote
+#+begin_example
+append(arg1: char|str, arg2: char|str, ..., argN: char|str) -> unit
+#+end_example
+
+Will append arg1..arg$N$ to the =str=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+pop(idx: int) -> unit
+#+end_example
+
+Will remove the element at index =idx=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+rev() -> str
+#+end_example
+
+Returns a new =str= that is the reverse of the original.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+filter(cl: closure) -> str
+#+end_example
+
+Takes the closure =cl= and creates a new =str= of all the
+elements where =cl= returns =true=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+foreach(cl: closure) -> unit
+#+end_example
+
+Calls the closure =cl= on each element.
+#+end_quote
 
 #+begin_quote
 #+begin_example
@@ -1011,6 +1074,33 @@ split(delim: str) -> list
 #+end_example
 
 Split a string by the delimiter =delim=.
+#+end_quote
+
+** =tuple= Implements
+
+#+begin_quote
+#+begin_example
+rev() -> tuple
+#+end_example
+
+Returns a new tuple that is the reverse of the original.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+filter(cl: closure) -> tuple
+#+end_example
+
+Takes the closure =cl= and creates a new =tuple= of all the
+elements where =cl= returns =true=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+foreach(cl: closure) -> unit
+#+end_example
+
+Calls the closure =cl= on each element.
 #+end_quote
 
 ** =char= Implements
@@ -1113,7 +1203,7 @@ This means that all you need to do to import these files is do:
 
 #+begin_quote
 #+begin_example
-T [init: list] -> Stack.T
+T [init: list] -> Stack::T
 #+end_example
 
 Creates a =Stack= container with the initializer list =init=.
@@ -1196,7 +1286,7 @@ while s.empty() != true {
 
 #+begin_quote
 #+begin_example
-T [init: list, compar: closure(x1: any, x2: type(x1)) -> int] -> Set.T
+T [init: list, compar: closure(x1: any, x2: type(x1)) -> int] -> Set::T
 #+end_example
 
 where =compar= is some ordering function $F(x_1, x_2) \rightarrow k \in \{2,1,0\}$
@@ -1388,7 +1478,11 @@ sorts by the comparison closure =compar=.
 
 #+begin_quote
 #+begin_example
-Fd { In, Out, Err }
+Fd {
+    In -> int,
+    Out -> int,
+    Err -> int
+}
 #+end_example
 
 The integer codes for =stdin=, =stdout=, and =stderr=.

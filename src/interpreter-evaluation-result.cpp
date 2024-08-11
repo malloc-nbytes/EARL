@@ -76,6 +76,11 @@ Interpreter::ER::is_wildcard(void) {
 }
 
 bool
+Interpreter::ER::is_tuple_access(void) {
+    return (this->rt & TupleAccess) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

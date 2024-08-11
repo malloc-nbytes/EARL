@@ -595,10 +595,10 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else if (left_value->type() == earl::value::Type::Tuple) {
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
-        return ER(tuple->nth(idx_value), ERT::Literal);
+        return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
     else
-        ERR(Err::Type::Fatal, "cannot use `[]` on non-list non-tuple, or non-str type");
+        ERR(Err::Type::Fatal, "cannot use `[]` on non-list, non-tuple, or non-str type");
 }
 
 static ER
@@ -848,6 +848,10 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     ER left_er = Interpreter::eval_expr(stmt->m_left.get(), ctx, true);
     ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
+
+    if (left_er.is_tuple_access())
+        ERR(Err::Type::Fatal, "cannot mutate tuple type as they are immutable");
+
     auto l = unpack_ER(left_er, ctx, true);
     auto r = unpack_ER(right_er, ctx, false);
     switch (stmt->m_equals->type()) {

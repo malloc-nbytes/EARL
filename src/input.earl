@@ -1,8 +1,6 @@
 module Main
 
-let t = (1,2,3);
+let s = "hello";
+s.append('a');
 
-t = (4,5);
-
-println(t);
-
+println(s);

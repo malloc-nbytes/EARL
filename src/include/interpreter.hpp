@@ -43,7 +43,8 @@ namespace Interpreter {
         ClassInstant = 1 << 5,
         FromMemberAccess = 1 << 6,
         Wildcard = 1 << 7,
-        None = 1 << 8,
+        TupleAccess = 1 << 8,
+        None = 1 << 9,
     };
 
     struct ER {
@@ -60,6 +61,7 @@ namespace Interpreter {
         bool is_class_instant(void);
         bool is_member_intrinsic(void);
         bool is_wildcard(void);
+        bool is_tuple_access(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;
