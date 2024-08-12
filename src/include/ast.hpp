@@ -281,6 +281,8 @@ struct Stmt {
     /// @brief Get the statement type
     /// @returns The type of the statement
     virtual StmtType stmt_type() const = 0;
+
+    bool m_evald = false;
 };
 
 /// @brief The Statement Definition Class

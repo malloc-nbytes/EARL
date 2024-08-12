@@ -40,6 +40,123 @@ Output:
 Hello World!
 #+end_example
 
+* REPL
+
+** REPL Commands
+
+#+begin_quote
+If you were to just start =earl= without any files, it will
+launch the built-in REPL. Here you can evaluate and run
+code that is provided.
+
+When in the REPL, typing =:= <cmd> will run a REPL command.
+It will not evaluate any code, but you can use it to show the current session,
+edit lines that have already been typed, remove lines, and more. Typing =$= <cmd> will issue
+a shell command. To view more information, launch the REPL and type =:help=.
+#+end_quote
+
+** REPL Programming
+
+#+begin_quote
+If a line that is typed does not start with =:= or =$=, it will be
+interpreted as code. Upon hitting =<enter>=, it will not immediately
+evaluate the code. It only does code evaluation when an empty line is processed.
+Because of this, you can code in _sessions_. Starting a new session does not mean
+that the current environment is lost, but it essentially focuses on a new code block.
+As long as =<enter>= has not been hit on an empty line, you can continue to write code
+and have it wait to be evaluated. One benefit to this is that if a mistake has been made,
+you can edit it or remove that line entirely by using the REPL command =:e= or =:rm=.
+Keep in mind that as soon as =<enter>= is performed on an empty line, you will _not_ be
+able to go back and change it as it starts a new session.
+
+You will know when a new session starts because the line numbers on the left will reset to 0
+and the last evaluated expression will have its result printed to stdout.
+
+Using the REPL allows for one major benefit, which is immediate evaluation of _any_ expression.
+This means that if =1 + 2;= is typed into the REPL followed by =<enter><enter>=, it will print
+=3 -> int= (the value and the type). Here are some examples.
+
+*Note*: The line numbers are provided from the REPL and you do not type these in.
+
+#+begin_example
+0: let x = 1;
+1: x;
+2:
+<unit> -> unit
+1 -> int
+0:
+#+end_example
+
+The first result =<unit> -> unit= is the result type of the =let= statement and can be ignored
+as it's not important. The second output =1 -> int= is the result of =x;=.
+
+Starting a new session does not remove variables that were created. That means that this is also valid:
+
+#+begin_example
+0: let x = 1;
+1:
+<unit> -> unit
+0: x;
+1:
+1 -> int
+0:
+#+end_example
+
+If you just want to do some quick math and use EARL as a calculator, here is another example:
+
+#+begin_example
+0: -(3 * (0.5 / float(2)) - 1);
+1:
+0.25 -> float
+0:
+#+end_example
+
+It is important to note that if inside ={ }=, =[ ]=, and =( )=, the =<enter><enter>= will not
+work. It will wait to evaluate the statements until you are outside of the nested brackets. This
+means that if inside of a class, enum, function, or closure, you can hit =<enter>= as many times
+as you want.
+
+For example:
+
+#+begin_example
+0: fn fib(n) {
+1:      if n < 2 {
+2:              return n;
+3:      }
+4:
+5:      return fib(n-1)+fib(n-2);
+6: }
+7: class Point [x, y] {
+8:      @pub x = x;
+9:
+10:     @pub y = y;
+11:
+12:     @pub fn sumxy() {
+13:             return this. + this.y;
+14:     }
+15: }
+16:
+<unit> -> unit
+<unit> -> unit
+0: Point(fib(10), fib(15));
+1:
+<Class Point { y = 610, x = 55 }> -> class
+0:
+#+end_example
+
+Another cool benefit of using the REPL is importing local files. By using the
+REPL command =:i= <file1> <file2> ... <fileN>, it will essentially just insert the code in those
+files in-place. After doing so, you can use and test functions, classes, enums etc. right from within
+the REPL.
+
+*Note*: You can also still use the =import= statement as well. See [[Imports][Imports]].
+
+*Note*: The REPL uses some colors and if undesired can be disabled by using the =--repl-nocolor= flag.
+
+*Note*: The REPL saves your history and stores it in =~/.earl_history= and will be cleared every time
+it hits 1MB in file size.
+#+end_quote
+
 * Keywords
 
 |---------|
@@ -248,11 +365,10 @@ while i < 3 {
 * For Loops
 
 #+begin_quote
-#+begin_quote
 For loops will enumerate over a range of numbers, with the enumerator being assigned the current number.
 If the enumerator is less than the initial destination value, it will be incremented. If it is less than the
 initial destination value, it will decrement.
-#+begin_quote
+#+end_quote
 
 ** Grammar
 
@@ -279,12 +395,10 @@ for i in len(lst)-1 to 0 {
 } # prints 321
 #+end_example
 
-#+end_quote
-
 * Foreach Loops
 
 #+begin_quote
-Foreach loops take a list or a string and will iterate over the elements.
+Foreach loops take a list, string, or tuple and will iterate over the elements.
 The most common way to use these loops is with a =range=. The iterator
 (usually the variable labeled as $i$), can be set as a reference to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
@@ -732,6 +846,9 @@ tuple.foreach(|x| { println(x); });
 let single_elem_tuple = (1,);
 println(single_elem_tuple[0]);
 #+end_example
+
+*Note*: If an empty =tuple= is desired (for whatever reason), you can use the intrinsic casting
+function =tuple()=.
 #+end_quote
 
 ** =option=
@@ -821,20 +938,20 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 The exception is that you can add a =char= to a =str=.
 #+end_quote
 
-| Symbol | Datatypes                                                 | Description                      |
-|--------+-----------------------------------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str=                             | Adds the elements together       |
-| -      | =int=, =float=                                            | Subtracts the elements           |
-| *      | =int=, =float=                                            | Multiplies the elements together |
-| ///    | =int=, =float=                                            | Divides the elements             |
-| %      | =int=                                                     | Produces the modulo              |
-| >      | =int=, =float=                                            | Greater than                     |
-| <      | =int=, =float=                                            | Less than                        |
-| >=     | =int=, =float=                                            | Greater than or equal to         |
-| <=     | =int=, =float=                                            | Less than or equal to            |
-| ==     | =bool=, =int=, =float=, =char=, =list=, =option=, =tuple= | Equal to                         |
-| !=     | =bool=, =int=, =float=, =char=, =list=, =option=, =tuple= | Not equal to                     |
-| &&     | =bool=                                                    | Logical AND                      |
+| Symbol | Datatypes                                                        | Description                      |
+|--------+------------------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                                    | Adds the elements together       |
+| -      | =int=, =float=                                                   | Subtracts the elements           |
+| *      | =int=, =float=                                                   | Multiplies the elements together |
+| ///    | =int=, =float=                                                   | Divides the elements             |
+| %      | =int=                                                            | Produces the modulo              |
+| >      | =int=, =float=                                                   | Greater than                     |
+| <      | =int=, =float=                                                   | Less than                        |
+| >=     | =int=, =float=                                                   | Greater than or equal to         |
+| <=     | =int=, =float=                                                   | Less than or equal to            |
+| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple= | Equal to                         |
+| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple= | Not equal to                     |
+| &&     | =bool=                                                           | Logical AND                      |
 
 =||=, =bool= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 

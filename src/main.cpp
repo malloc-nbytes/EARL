@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <filesystem>
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -33,6 +34,8 @@
 #include "utils.hpp"
 #include "lexer.hpp"
 #include "interpreter.hpp"
+#include "repl.hpp"
+#include "ctx.hpp"
 #include "config.h"
 
 std::vector<std::string> earl_argv = {};
@@ -48,15 +51,19 @@ static void usage(void) {
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [options] [file] -- <args>" << std::endl << std::endl;
+    std::cerr << "Usage: earl [options...] <file> -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
     std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor    Do not use color in the REPL" << std::endl;
+
+    std::exit(0);
 }
 
 static void version() {
     std::cout << "EARL " << VERSION << std::endl;
+    exit(0);
 }
 
 static void parse_2hypharg(std::string arg) {
@@ -68,6 +75,9 @@ static void parse_2hypharg(std::string arg) {
     }
     else if (arg == COMMON_EARL2ARG_VERSION) {
         version();
+    }
+    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR) {
+        flags |= __REPL_NOCOLOR;
     }
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
@@ -134,23 +144,23 @@ static std::string handlecli(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    if (argc == 1 || argc == 0) {
-        usage();
-    }
-
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
 
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types = {};
+    std::string comment = "#";
+
     if (filepath != "") {
-        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-        std::vector<std::string> types = {};
-        std::string comment = "#";
-
-        std::unique_ptr<Lexer> lexer = lex_file(filepath.c_str(), keywords, types, comment);
-        // lexer->dump();
-
+        std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
         Interpreter::interpret(std::move(program), std::move(lexer));
+    }
+    else {
+        flags |= __REPL;
+        std::cout << "EARL REPL v" << VERSION << '\n';
+        std::cout << "Use `:help` for help" << std::endl;
+        Repl::run();
     }
 
     return 0;

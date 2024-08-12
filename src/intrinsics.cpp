@@ -422,9 +422,13 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_exit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "exit");
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "exit");
-    exit(dynamic_cast<earl::value::Int *>(params[0].get())->value());
+    if (params.size() == 0)
+        exit(0);
+    else {
+        __INTR_ARGS_MUSTBE_SIZE(params, 1, "exit");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "exit");
+        exit(dynamic_cast<earl::value::Int *>(params[0].get())->value());
+    }
 }
 
 std::shared_ptr<earl::value::Obj>
