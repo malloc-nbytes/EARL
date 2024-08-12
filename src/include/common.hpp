@@ -37,11 +37,13 @@ extern std::vector<std::string> earl_argv;
 extern uint32_t flags;
 
 #define __WITHOUT_STDLIB 1 << 0
-#define __REPL 1 << 2
+#define __REPL 1 << 1
+#define __REPL_NOCOLOR 1 << 2
 
 #define COMMON_EARL2ARG_HELP           "help"
 #define COMMON_EARL2ARG_WITHOUT_STDLIB "without-stdlib"
 #define COMMON_EARL2ARG_VERSION        "version"
+#define COMMON_EARL2ARG_REPL_NOCOLOR   "repl-nocolor"
 
 #define COMMON_EARL1ARG_HELP     'h'
 #define COMMON_EARL1ARG_VERSTION 'v'
