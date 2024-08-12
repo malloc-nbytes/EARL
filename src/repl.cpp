@@ -55,11 +55,11 @@
 
 #define QUIT ":q"
 #define CLEAR ":c"
-#define CANCEL ":cancel"
+#define SKIP ":skip"
 #define HELP ":help"
 #define RM_ENTRY ":rm"
 #define EDIT_ENTRY ":e"
-#define LIST_ENTRIES ":ls"
+#define LIST_ENTRIES ":show"
 #define IMPORT ":i"
 
 static std::string REPL_HIST = "";
@@ -184,12 +184,13 @@ void
 help(void) {
     log(HELP " -> show this message\n");
     log(QUIT " -> quit the session\n");
-    log(CANCEL " -> cancel current action\n");
+    log(SKIP " -> skip current action\n");
     log(CLEAR " -> clear the screen\n");
     log(IMPORT " [files...] -> import local EARL files\n");
     log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
     log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
     log(LIST_ENTRIES " -> list all entries in the current session\n");
+    log("You can also issue bash commands by typing `$` followed by the command\n");
 }
 
 void
@@ -255,6 +256,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
 
 void
 edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
+    log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
     if (args.size() > 0) {
         for (auto arg : args) {
             int lnum = std::stoi(arg);
@@ -269,11 +271,14 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
             std::cout << " ]" << std::endl;
             noc();
             std::string newline = get_special_input();
-            if (newline == CANCEL) {
-                log("Cancelling\n", gray);
+            if (newline == QUIT) {
+                log("Quitting session editor\n", gray);
                 return;
             }
-            lines.at(lnum) = newline;
+            if (newline == SKIP)
+                log("Skipping current selection\n", gray);
+            else
+                lines.at(lnum) = newline;
         }
     }
     else {
@@ -295,7 +300,7 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
 void
 clearscrn(void) {
     if (system("clear") != 0)
-        log("warning: failed to clearscrn\n");
+        log("warning: failed to clearscrn\n", yellow);
 }
 
 void
@@ -314,11 +319,20 @@ ls_entries(std::vector<std::string> &lines) {
 }
 
 void
+bash(std::string &line) {
+    std::string cmd = line.substr(1, line.size());
+    if (system(cmd.c_str()) != 0)
+        log("warning: failed to ls\n", yellow);
+}
+
+void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
-    if (lst[0] == RM_ENTRY)
+    if (line.size() != 0 && line[0] == '$')
+        bash(line);
+    else if (lst[0] == RM_ENTRY)
         rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
         edit_entry(args, lines);
@@ -333,7 +347,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     else if (lst[0] == HELP)
         help();
     else
-        log("unknown command sequence `" + lst[0] + "`\n");
+        log("unknown command sequence `" + lst[0] + "`\n", gray);
 }
 
 void
@@ -375,7 +389,7 @@ Repl::run(void) {
             i = lines.size();
             std::cout << i << ": ";
             std::getline(std::cin, line);
-            if (line.size() > 0 && line[0] == ':') {
+            if (line.size() > 0 && (line[0] == ':' || line[0] == '$')) {
                 handle_repl_arg(line, lines);
                 --i;
             }

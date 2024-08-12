@@ -51,7 +51,7 @@ static void usage(void) {
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [options] [file] -- <args>" << std::endl << std::endl;
+    std::cerr << "Usage: earl [options...] <file> -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
@@ -63,6 +63,7 @@ static void usage(void) {
 
 static void version() {
     std::cout << "EARL " << VERSION << std::endl;
+    exit(0);
 }
 
 static void parse_2hypharg(std::string arg) {
