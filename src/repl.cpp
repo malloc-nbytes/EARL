@@ -61,6 +61,7 @@
 #define EDIT_ENTRY ":e"
 #define LIST_ENTRIES ":show"
 #define IMPORT ":i"
+#define DISCARD ":d"
 
 static std::string REPL_HIST = "";
 
@@ -190,6 +191,7 @@ help(void) {
     log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
     log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
     log(LIST_ENTRIES " -> list all entries in the current session\n");
+    log(DISCARD " -> discard the current session\n");
     log("You can also issue bash commands by typing `$` followed by the command\n");
 }
 
@@ -264,11 +266,11 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
                 log("Line number is out of range for session\n");
                 return;
             }
-            log("Editing [ ", gray);
+            log("Editing [", gray);
             yellow();
             std::cout << lines.at(lnum);
             gray();
-            std::cout << " ]" << std::endl;
+            std::cout << "]" << std::endl;
             noc();
             std::string newline = get_special_input();
             if (newline == QUIT) {
@@ -286,11 +288,11 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
             log("No lines to edit\n", gray);
             return;
         }
-        log("Editing [ ", gray);
+        log("Editing [", gray);
         yellow();
         std::cout << lines.back();
         gray();
-        std::cout << " ]" << std::endl;
+        std::cout << "]" << std::endl;
         noc();
         std::string newline = get_special_input();
         lines.at(lines.size()-1) = newline;
@@ -326,6 +328,30 @@ bash(std::string &line) {
 }
 
 void
+discard(std::vector<std::string> &lines) {
+    auto to_lower = [](std::string &str) {
+        for (char& c : str)
+            c = std::tolower(static_cast<unsigned char>(c));
+    };
+
+    std::string line = "";
+    while (true) {
+        log("Discard the current session? [Y/n]: ", red);
+        std::getline(std::cin, line);
+        to_lower(line);
+        if (line == "" || line == "y" || line == "yes") {
+            lines.clear();
+            return;
+        }
+        else if (line == "n" || line == "no") {
+            return;
+        }
+        else
+            log("invalid input\n");
+    }
+}
+
+void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
@@ -344,6 +370,8 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         clearscrn();
     else if (lst[0] == QUIT)
         exit(0);
+    else if (lst[0] == DISCARD)
+        discard(lines);
     else if (lst[0] == HELP)
         help();
     else
