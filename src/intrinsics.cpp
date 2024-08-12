@@ -180,9 +180,9 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
         return std::make_shared<earl::value::Int>(static_cast<int>(b));
     } break;
     default: {
+        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
+        throw InterpreterException(msg);
     } break;
-        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
-                  earl::value::type_to_str(params[0]->type()).c_str());
     }
     return nullptr; // unreachable
 }
@@ -214,8 +214,8 @@ Intrinsics::intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &para
         return std::make_shared<earl::value::Float>(std::stof(s));
     } break;
     default: {
-        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
-                  earl::value::type_to_str(params[0]->type()).c_str());
+        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
+        throw InterpreterException(msg);
     } break;
     }
     return nullptr; // unreachable
@@ -249,11 +249,12 @@ Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &param
             return std::make_shared<earl::value::Bool>(true);
         else if (s == COMMON_EARLKW_FALSE)
             return std::make_shared<earl::value::Bool>(false);
-        ERR_WARGS(Err::Type::Fatal, "cannot convert str `%s` to type bool", s.c_str());
+        std::string msg = "cannot convert str `"+s+"` to type bool";
+        throw InterpreterException(msg);
     } break;
     default: {
-        ERR_WARGS(Err::Type::Fatal, "cannot convert type `%s` to type float",
-                  earl::value::type_to_str(params[0]->type()).c_str());
+        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -325,8 +326,10 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
     auto obj = params[0];
     std::string path = obj->to_cxxstring();
     if (!std::filesystem::exists(path))
-        if (!std::filesystem::create_directory(path))
-            ERR_WARGS(Err::Type::Fatal, "could not create directory `%s`", path.c_str());
+        if (!std::filesystem::create_directory(path)) {
+            std::string msg = "could not create directory `"+path+"`";
+            throw InterpreterException(msg);
+        }
     return std::make_shared<earl::value::Void>();
 }
 
@@ -348,7 +351,8 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
     }
     catch (const std::filesystem::filesystem_error &e) {
         const char *err = e.what();
-        ERR_WARGS(Err::Type::Fatal, "could not list directory `%s`: %s", path.c_str(), err);
+        std::string msg = "could not list directory `"+path+"`:"+err;
+        throw InterpreterException(msg);
     }
 
     lst->append(items);
@@ -411,9 +415,8 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
     for (size_t i = 0; i < params.size(); ++i) {
         earl::value::Obj *param = params.at(i).get();
         if (!param->boolean()) {
-            ERR_WARGS(Err::Type::Assertion,
-                      "assertion failure (expression=%zu) (earl::value::Type=%d)",
-                      i+1, (int)param->type());
+            std::string msg = "assertion failure (expression="+std::to_string(i+1)+") (earl::value::Type="+std::to_string((int)param->type())+")";
+            throw InterpreterException(msg);
         }
     }
     return std::make_shared<earl::value::Void>();
@@ -519,7 +522,8 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         *stream << " }>";
     } break;
     default: {
-        ERR_WARGS(Err::Type::Fatal, "intrinsic_print: unknown parameter type %d", static_cast<int>(param->type()));
+        std::string msg = "intrinsic_print: unknown parameter type "+static_cast<int>(param->type());
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -621,9 +625,6 @@ Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &param
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "some");
-    if (params.size() != 1)
-        ERR_WARGS(Err::Type::Fatal, "`some` intrinsic expects 1 argument but %zu were supplied",
-                  params.size());
     return std::make_shared<earl::value::Option>(params[0]);
 }
 
@@ -645,14 +646,19 @@ Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &param
         case 'r': om |= std::ios::in; break;
         case 'w': om |= std::ios::out; break;
         case 'b': om |= std::ios::binary; break;
-        default: ERR_WARGS(Err::Type::Fatal, "invalid mode `%c` for file handler, must be either r|w|b", c);
+        default: {
+            std::string msg = "invalid mode `"+std::to_string(c)+"` for file handler, must be either r|w|b";
+            throw InterpreterException(msg);
+        } break;
         }
     }
 
     stream.open(fp->value(), om);
 
-    if (!stream)
-        ERR_WARGS(Err::Type::Fatal, "file `%s` could not be found", fp->value().c_str());
+    if (!stream) {
+        std::string msg = "file `"+fp->value()+"` could not be found";
+        throw InterpreterException(msg);
+    }
 
     auto f = std::make_shared<earl::value::File>(std::dynamic_pointer_cast<earl::value::Str>(params[0]),
                                                  std::dynamic_pointer_cast<earl::value::Str>(params[1]),

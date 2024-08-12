@@ -39,8 +39,10 @@ Void::type(void) const {
 
 std::shared_ptr<Obj>
 Void::binop(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "unable to perform binary operation on unit type");
+    std::string msg = "unable to perform binary operation on unit type";
+    throw InterpreterException(msg);
 }
 
 bool
@@ -73,13 +75,15 @@ void
 Void::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on unit type", op->lexeme().c_str());
+    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on unit type";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 Void::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on unit type");
+    std::string msg = "invalid unary operator on unit type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

@@ -74,7 +74,8 @@ Module::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Module::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `module` type to a string");
+    std::string msg = "unable to convert `module` type to a string";
+    throw InterpreterException(msg);
 }
 
 void
@@ -88,6 +89,7 @@ std::shared_ptr<Obj>
 Module::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on module type");
+    std::string msg = "invalid unary operator on module type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

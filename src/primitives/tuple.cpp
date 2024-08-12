@@ -45,12 +45,15 @@ Tuple::nth(std::shared_ptr<Obj> &idx) {
     case Type::Int: {
         auto index = dynamic_cast<Int *>(idx.get());
         if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
-            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
-                      index->value(), this->value().size());
+            std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
+            throw InterpreterException(msg);
         }
         return this->value().at(index->value());
     } break;
-    default: ERR(Err::Type::Fatal, "invalid index when accessing value in a tuple");
+    default: {
+        std::string msg = "invalid index when accessing value in a tuple";
+        throw InterpreterException(msg);
+    } break;
     }
     return nullptr; // unreachable
 }
@@ -127,7 +130,8 @@ Tuple::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     }
     }
     assert(false && "unreachable");
@@ -142,7 +146,8 @@ Tuple::boolean(void) {
 void
 Tuple::mutate(const std::shared_ptr<Obj> &other) {
     (void)other;
-    ERR(Err::Type::Fatal, "unable to mutate value of type `tuple` as it is immutable");
+    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
@@ -181,12 +186,14 @@ void
 Tuple::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "unable to mutate value of type `tuple` as it is immutable");
+    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 Tuple::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator for type `tuple`");
+    std::string msg = "invalid unary operator for type `tuple`";
+    throw InterpreterException(msg);
 }

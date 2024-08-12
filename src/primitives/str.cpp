@@ -55,7 +55,8 @@ Str::Str(std::string value) {
                 m_value.push_back(std::make_shared<Char>(std::string(1, '\\')));
             } break;
             default:
-                ERR_WARGS(Err::Type::Fatal, "unkown escape sequence `%c%c`", '\\', c);
+                std::string msg = "unkown escape sequence `\\"+std::to_string(c)+"`";
+                throw InterpreterException(msg);
             }
             escape = false;
         }
@@ -74,13 +75,15 @@ Str::value(void) {
 
 std::shared_ptr<Char>
 Str::nth(std::shared_ptr<Obj> &idx) {
-    if (idx->type() != Type::Int)
-        ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
+    if (idx->type() != Type::Int) {
+        std::string msg = "invalid index when accessing value in a list";
+        throw InterpreterException(msg);
+    }
 
     auto index = dynamic_cast<Int *>(idx.get());
     if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
-        ERR_WARGS(Err::Type::Fatal, "index %d is out of str range of length %zu",
-                  index->value(), this->value().size());
+        std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
+        throw InterpreterException(msg);
     }
 
     return m_value[index->value()];
@@ -207,7 +210,8 @@ Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     }
     }
 }
@@ -261,7 +265,8 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on str type", op->lexeme().c_str());
+        std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on str type";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -270,6 +275,7 @@ std::shared_ptr<Obj>
 Str::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on str type");
+    std::string msg = "invalid unary operator on str type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

@@ -176,7 +176,8 @@ std::shared_ptr<Ctx> &FunctionCtx::get_outer_class_owner_ctx(void) {
         return m_owner;
     else if (m_owner->type() == CtxType::Function)
         return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_class_owner_ctx();
-    ERR(Err::Type::Fatal, "Could not find outer class context for function context");
+    std::string msg = "Could not find outer class context for function context";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Ctx> &FunctionCtx::get_owner(void) {

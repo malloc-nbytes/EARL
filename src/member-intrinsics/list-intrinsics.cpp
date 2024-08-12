@@ -65,8 +65,10 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
         earl::value::Tuple *tuple = dynamic_cast<earl::value::Tuple *>(obj.get());
         return tuple->nth(idx[0]);
     }
-    else
-        ERR(Err::Type::Fatal, "`nth` member intrinsic is only defined for `list` and `str` types");
+    else {
+        std::string msg = "`nth` member intrinsic is only defined for `list` and `str` types";
+        throw InterpreterException(msg);
+    }
 }
 
 std::shared_ptr<earl::value::Obj>

@@ -199,7 +199,8 @@ ClosureCtx::assert_variable_does_not_exist_for_recursive_cl(const std::string &i
     return;
 
 bad:
-    ERR_WARGS(Err::Type::Redeclared, "variable `%s` is already declared", id.c_str());
+    std::string msg = "variable `"+id+"` is already declared";
+    throw InterpreterException(msg);
 }
 
 WorldCtx *

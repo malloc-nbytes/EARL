@@ -1,22 +1,5 @@
 module Main
 
-# class Point [x, y] {
-#     @pub x = x;
-#     @pub y = y;
-
-#     @pub fn get_sum() {
-#         return this.x + this.y;
-#     }
-
-#     fn priv() {
-#         println("should not print");
-#     }
-# }
-
-# fn sum(a, b) {
-#     return a+b;
-# }
-
 let lst = [1,2,3,4,5];
 
 foreach @ref i in lst {
@@ -24,3 +7,5 @@ foreach @ref i in lst {
 }
 
 println(lst);
+
+
