@@ -152,6 +152,9 @@ the REPL.
 *Note*: You can also still use the =import= statement as well. See [[Imports][Imports]].
 
 *Note*: The REPL uses some colors and if undesired can be disabled by using the =--repl-nocolor= flag.
+
+*Note*: The REPL saves your history and stores it in =~/.earl_history= and will be cleared every time
+it hits 1MB in file size.
 #+end_quote
 
 * Keywords
