@@ -43,6 +43,9 @@
 #include "earl.hpp"
 #include "lexer.hpp"
 
+#define EARL_REPL_HISTORY_FILENAME ".earl_history"
+#define REPL_HISTORY_MAX_FILESZ 1024 * 1024
+
 #define GREEN "\033[32m"
 #define GRAY "\033[90m"
 #define RED "\033[31m"
@@ -56,6 +59,52 @@
 #define EDIT_ENTRY ":e"
 #define LIST_ENTRIES ":ls"
 #define IMPORT ":i"
+
+static std::string REPL_HIST = "";
+
+void
+try_clear_repl_history() {
+    const char* home_dir = std::getenv("HOME");
+    if (home_dir == nullptr) {
+        std::cerr << "Unable to get home directory path. Will not clear REPL history." << std::endl;
+        return;
+    }
+
+    std::string fp = std::string(home_dir) + "/" + EARL_REPL_HISTORY_FILENAME;
+
+    std::ifstream file(fp, std::ios::binary);
+    if (!file) {
+        std::cerr << "Unable to open file for reading. Will not clear REPL history." << std::endl;
+        return;
+    }
+
+    file.seekg(0, std::ios::end);
+    std::streampos filesz = file.tellg();
+    file.close();
+
+    if (filesz >= REPL_HISTORY_MAX_FILESZ) {
+        std::ofstream file(fp, std::ios::trunc | std::ios::binary);
+        if (!file) {
+            std::cerr << "Unable to open file for clearing. Will not clear REPL history." << std::endl;
+            return;
+        }
+        file.close();
+        std::cout << "REPL history file cleared." << std::endl;
+    }
+}
+
+void
+save_repl_history() {
+    const char *home_dir = std::getenv("HOME");
+    if (home_dir == nullptr)
+        std::cerr << "Unable to get home directory path. Will not save REPL history." << std::endl;
+    std::string fp = std::string(home_dir) + "/" EARL_REPL_HISTORY_FILENAME;
+    std::ofstream of(fp, std::ios::app);
+    if (!of)
+        std::cerr << "Unable to open file for writing. Will not save REPL history." << std::endl;
+    of << REPL_HIST;
+    of.close();
+}
 
 void
 log(std::string msg) {
@@ -198,7 +247,7 @@ ls_entries(std::vector<std::string> &lines) {
     }
 
     for (size_t i = 0; i < lines.size(); ++i)
-        std::cout << i << ": " << lines[i] << std::endl;
+        std::cout << i << ": " << GREEN << lines[i] << NOC << std::endl;
 }
 
 void
@@ -242,6 +291,8 @@ analyze_eol(std::string &line, int &brace, int &bracket, int &paren) {
 
 std::shared_ptr<Ctx>
 Repl::run(void) {
+    try_clear_repl_history();
+
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
@@ -275,6 +326,7 @@ Repl::run(void) {
 
         std::string combined = "";
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s + "\n"; });
+        REPL_HIST += combined;
 
         std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), "", keywords, types, comment);
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
@@ -291,12 +343,13 @@ Repl::run(void) {
                     std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
                     std::cout << GREEN;
                     (void)Intrinsics::intrinsic_print(params, ctx);
-                    std::cout << GRAY;
-                    std::cout << " -> " << earl::value::type_to_str(val->type()) << std::endl;
+                    std::cout << " -> " << GRAY << earl::value::type_to_str(val->type()) << std::endl;
                     std::cout << NOC;
                 }
             }
         }
+
+        save_repl_history();
     }
 
     return nullptr;

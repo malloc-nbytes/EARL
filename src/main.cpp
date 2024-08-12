@@ -56,6 +56,7 @@ static void usage(void) {
     std::cerr << "  -v, --version         Print version information" << std::endl;
     std::cerr << "  -h, --help            Print this help message" << std::endl;
     std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor    Do not use color in the REPL" << std::endl;
 
     std::exit(0);
 }
@@ -73,6 +74,9 @@ static void parse_2hypharg(std::string arg) {
     }
     else if (arg == COMMON_EARL2ARG_VERSION) {
         version();
+    }
+    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR) {
+        flags |= __REPL_NOCOLOR;
     }
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
@@ -139,10 +143,6 @@ static std::string handlecli(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    // if (argc == 1 || argc == 0) {
-    //     usage();
-    // }
-
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
 
@@ -151,9 +151,7 @@ int main(int argc, char **argv) {
     std::string comment = "#";
 
     if (filepath != "") {
-
         std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
-
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
         Interpreter::interpret(std::move(program), std::move(lexer));
     }
