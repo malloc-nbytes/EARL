@@ -1,10 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.1.4] - 2024-11-8
+## [0.2.0] - 2024-11-8
 
 ### Added
 - Added intrinsic casting functions
+- MAJOR Added a REPL
 
 ### Fixed
 - Fixed file handler mode type to except multiple types
