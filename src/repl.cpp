@@ -432,11 +432,16 @@ Repl::run(void) {
         std::string combined = "";
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s + "\n"; });
         REPL_HIST += combined;
-        //std::unique_ptr<Program> program = nullptr;
 
-        std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), "", keywords, types, comment);
-        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-
+        std::unique_ptr<Program> program = nullptr;
+        std::unique_ptr<Lexer> lexer = nullptr;
+        lexer = lex_file(combined.c_str(), "", keywords, types, comment);
+        try {
+            program = Parser::parse_program(*lexer.get());
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+            continue;
+        }
         WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
         wctx->add_repl_lexer(std::move(lexer));
         wctx->add_repl_program(std::move(program));

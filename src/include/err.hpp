@@ -47,6 +47,11 @@ public:
     ParserException(const std::string &msg);
 };
 
+class LexerException : public InterpreterException {
+public:
+    LexerException(const std::string &msg);
+};
+
 /// @brief The namespace for all errors
 namespace Err {
     /// @brief The different classes of errors

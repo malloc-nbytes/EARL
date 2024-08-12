@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-
 #include "err.hpp"
 
 InterpreterException::InterpreterException(const std::string &msg)
@@ -33,4 +32,7 @@ const char *InterpreterException::what() const noexcept {
 }
 
 ParserException::ParserException(const std::string &msg)
+    : InterpreterException(msg) {}
+
+LexerException::LexerException(const std::string &msg)
     : InterpreterException(msg) {}

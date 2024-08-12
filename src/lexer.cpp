@@ -170,9 +170,8 @@ read_file(const char *filepath) {
     }
 
     if (f == nullptr || fseek(f, 0, SEEK_END)) {
-        std::filesystem::path cwd = std::filesystem::current_path();
-        std::cout << "Current working directory is: " << cwd << std::endl;
-        ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
+        std::string msg = "could not find the specified source filepath: " + std::string(filepath);
+        throw std::runtime_error(msg);
     }
 
     long length = ftell(f);

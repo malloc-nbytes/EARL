@@ -152,8 +152,15 @@ int main(int argc, char **argv) {
     std::string comment = "#";
 
     if (filepath != "") {
-        std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
+        std::unique_ptr<Lexer> lexer = nullptr;
         std::unique_ptr<Program> program = nullptr;
+        try {
+            lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
+        }
+        catch (const LexerException &e) {
+            std::cerr << "Lexer error: " << e.what() << std::endl;
+            return 1;
+        }
         try {
             program = Parser::parse_program(*lexer.get());
         } catch (const ParserException &e) {
