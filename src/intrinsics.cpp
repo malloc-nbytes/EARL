@@ -336,18 +336,26 @@ Intrinsics::intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value
                                          std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_rename__");
+
     auto path_obj = params[0];
     auto to_obj = params[1];
-    //std::error_code err = 0;
     std::string path_from = path_obj->to_cxxstring();
     std::string path_to = to_obj->to_cxxstring();
-    if (!std::filesystem::exists(path_from)) {
-        std::filesystem::rename(path_from, path_to);
+   
+    try {
+        if (std::filesystem::exists(path_from)) {
+            std::filesystem::rename(path_from, path_to);
+        }
+        else {
+            std::cout << "Source file " << path_from << " does not exist" << std::endl;
+        }
     }
-           
-             
+    catch(const std::filesystem::filesystem_error &e) {
+        const char *err = e.what();
+        ERR_WARGS(Err::Type::Fatal, "Could not rename file %s to %s: %s\n", path_from.c_str(), path_to.c_str(), err);
+    }
 
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
