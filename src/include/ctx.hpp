@@ -70,6 +70,7 @@ struct Ctx {
 
 struct WorldCtx : public Ctx {
     WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program);
+    WorldCtx();
     ~WorldCtx() = default;
 
     size_t stmts_len(void) const;
@@ -101,6 +102,10 @@ struct WorldCtx : public Ctx {
     void enum_add(std::shared_ptr<earl::value::Enum> _enum);
     WorldCtx *get_world(void) override;
 
+    // REPL
+    void add_repl_lexer(std::unique_ptr<Lexer> lexer);
+    void add_repl_program(std::unique_ptr<Program> program);
+
 private:
     std::string m_mod;
     std::vector<std::shared_ptr<Ctx>> m_imports;
@@ -108,6 +113,10 @@ private:
     std::unique_ptr<Program> m_program;
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
     std::unordered_map<std::string, std::shared_ptr<earl::value::Enum>> m_enums;
+
+    // REPL
+    std::vector<std::unique_ptr<Lexer>> m_repl_lexers;
+    std::vector<std::unique_ptr<Program>> m_repl_programs;
 };
 
 struct FunctionCtx : public Ctx {

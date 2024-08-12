@@ -92,6 +92,13 @@ struct Lexer {
 /// @param types A vector of strings that specify the types in the language
 /// @param comment What a single line comment is in the language
 std::unique_ptr<Lexer>
-lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment);
+lex_file(const char *src_code,
+         std::string fp,
+         std::vector<std::string> &keywords,
+         std::vector<std::string> &types,
+         std::string &comment);
+
+char *
+read_file(const char *filepath);
 
 #endif // LEXER_H
