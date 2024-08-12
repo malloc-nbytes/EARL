@@ -48,10 +48,11 @@
 #define RED "\033[31m"
 #define NOC "\033[0m"
 
+#define QUIT ":q"
 #define CLEAR ":c"
 #define CANCEL ":cancel"
 #define HELP ":help"
-#define RM_LAST_ENTRY ":rm"
+#define RM_ENTRY ":rm"
 #define EDIT_ENTRY ":e"
 #define LIST_ENTRIES ":ls"
 #define IMPORT ":i"
@@ -88,14 +89,14 @@ split_on_newline(std::string &line) {
 
 void
 help(void) {
-    log("(Help)");
-    log("  " HELP " -> show this message");
-    log("  " CANCEL " -> cancel current action");
-    log("  " CLEAR " -> clear the screen");
-    log("  " IMPORT " [files...] -> import local EARL file");
-    log("  " RM_LAST_ENTRY " -> remove previous entry");
-    log("  " EDIT_ENTRY " [lineno...] -> edit previous entrie(s)");
-    log("  " LIST_ENTRIES " -> list all entries in the current session");
+    log(HELP " -> show this message");
+    log(QUIT " -> quit the session");
+    log(CANCEL " -> cancel current action");
+    log(CLEAR " -> clear the screen");
+    log(IMPORT " [files...] -> import local EARL files");
+    log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)");
+    log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)");
+    log(LIST_ENTRIES " -> list all entries in the current session");
 }
 
 void
@@ -122,11 +123,36 @@ get_special_input(void) {
 }
 
 void
-rm_last_entry(std::vector<std::string> &entries) {
-    if (entries.size() == 0)
+rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
+    if (lines.size() == 0) {
         log("No previous entry exists");
-    else
-        entries.pop_back();
+        return;
+    }
+
+    std::vector<std::string> hist = {};
+
+    if (args.size() == 0) {
+        hist.push_back(lines.back());
+        lines.pop_back();
+    }
+    else {
+        int i = 0;
+        for (auto &arg : args) {
+            int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
+            if (lnum < 0 || lnum >= (int)lines.size()) {
+                log("Line number is out of range for session");
+                return;
+            }
+            hist.push_back(lines[lnum]);
+            lines.erase(lines.begin()+lnum);
+            ++i;
+        }
+    }
+
+    log("Removed:");
+    for (auto &h : hist) {
+        std::cout << RED << h << NOC << std::endl;
+    }
 }
 
 void
@@ -160,7 +186,8 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
 
 void
 clearscrn(void) {
-    (void)system("clear");
+    if (system("clear") != 0)
+        log("warning: failed to clearscrn");
 }
 
 void
@@ -179,8 +206,8 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
-    if (lst[0] == RM_LAST_ENTRY)
-        rm_last_entry(lines);
+    if (lst[0] == RM_ENTRY)
+        rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
         edit_entry(args, lines);
     else if (lst[0] == LIST_ENTRIES)
@@ -189,6 +216,8 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         import_file(args, lines);
     else if (lst[0] == CLEAR)
         clearscrn();
+    else if (lst[0] == QUIT)
+        exit(0);
     else if (lst[0] == HELP)
         help();
     else
@@ -229,7 +258,8 @@ Repl::run(void) {
         int i = 0;
 
         while (1) {
-            std::cout << i++ << ": ";
+            i = lines.size();
+            std::cout << i << ": ";
             std::getline(std::cin, line);
             if (line.size() > 0 && line[0] == ':') {
                 handle_repl_arg(line, lines);
