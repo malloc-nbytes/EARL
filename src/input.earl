@@ -16,3 +16,4 @@ class Point [x, y] {
 fn sum(a, b) {
     return a+b;
 }
+

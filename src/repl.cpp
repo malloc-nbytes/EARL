@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <cstdlib>
 #include <sstream>
 #include <algorithm>
 #include <cassert>
@@ -47,7 +48,8 @@
 #define RED "\033[31m"
 #define NOC "\033[0m"
 
-#define CANCEL ":c"
+#define CLEAR ":c"
+#define CANCEL ":cancel"
 #define HELP ":help"
 #define RM_LAST_ENTRY ":rm"
 #define EDIT_ENTRY ":e"
@@ -89,7 +91,8 @@ help(void) {
     log("(Help)");
     log("  " HELP " -> show this message");
     log("  " CANCEL " -> cancel current action");
-    log("  " IMPORT " <file> -> import local EARL file");
+    log("  " CLEAR " -> clear the screen");
+    log("  " IMPORT " [files...] -> import local EARL file");
     log("  " RM_LAST_ENTRY " -> remove previous entry");
     log("  " EDIT_ENTRY " [lineno...] -> edit previous entrie(s)");
     log("  " LIST_ENTRIES " -> list all entries in the current session");
@@ -98,15 +101,16 @@ help(void) {
 void
 import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (args.size() == 0) {
-        log("No file supplied");
+        log("No files supplied");
         return;
     }
-    else if (args.size() > 1)
-        log("only expecting one argument, ignoring others...");
-    const char *src_c = read_file(args[0].c_str());
-    std::string src = std::string(src_c);
-    auto src_lines = split_on_newline(src);
-    std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
+    for (auto &f : args) {
+        const char *src_c = read_file(f.c_str());
+        std::string src = std::string(src_c);
+        auto src_lines = split_on_newline(src);
+        std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
+        log(GREEN "Imported " + f + NOC);
+    }
 }
 
 std::string
@@ -155,6 +159,11 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
 }
 
 void
+clearscrn(void) {
+    (void)system("clear");
+}
+
+void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         log("Nothing appropriate");
@@ -176,13 +185,30 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         edit_entry(args, lines);
     else if (lst[0] == LIST_ENTRIES)
         ls_entries(lines);
-    else if (lst[0] == IMPORT) {
+    else if (lst[0] == IMPORT)
         import_file(args, lines);
-    }
+    else if (lst[0] == CLEAR)
+        clearscrn();
     else if (lst[0] == HELP)
         help();
     else
         log("unknown command sequence `" + lst[0] + "`");
+}
+
+void
+analyze_eol(std::string &line, int &brace, int &bracket, int &paren) {
+    for (auto it = line.rbegin(); it != line.rend(); ++it) {
+        switch (*it) {
+        case '{': ++brace; break;
+        case '}': --brace; break;
+        case '[': ++bracket; break;
+        case ']': --bracket; break;
+        case '(': ++paren; break;
+        case ')': --paren; break;
+        case ';': break;
+        default: break;
+        }
+    }
 }
 
 std::shared_ptr<Ctx>
@@ -199,7 +225,7 @@ Repl::run(void) {
 
         int brace = 0;
         int bracket = 0;
-        int quote = 0;
+        int paren = 0;
         int i = 0;
 
         while (1) {
@@ -210,35 +236,15 @@ Repl::run(void) {
                 --i;
             }
             else {
-                switch (line.back()) {
-                case '{': ++brace; break;
-                case '}': --brace; break;
-                case '[': ++bracket; break;
-                case '"': ++quote; break;
-                case ';': {
-                    // closure 1
-                    if (line.size() > 1 && line[line.size()-2] == '}')
-                        --brace;
-                    // closure 2
-                    if (line.size() > 2 && line[line.size()-3] == '}')
-                        --brace;
-                    // list
-                    if (line.size() > 1 && line[line.size()-2] == ']')
-                        --bracket;
-                    // str
-                    if (line.size() > 1 && line[line.size()-2] == '"')
-                        --quote;
-                } break;
-                default: break;
-                }
-                if (line == "" && brace == 0 && bracket == 0)
+                analyze_eol(line, brace, bracket, paren);
+                if (line.size() == 0 && !brace && !bracket && !paren)
                     break;
                 lines.push_back(line);
             }
         }
 
         std::string combined = "";
-        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s; });
+        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s + "\n"; });
 
         std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), "", keywords, types, comment);
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
