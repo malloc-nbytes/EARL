@@ -449,15 +449,20 @@ Repl::run(void) {
         for (size_t i = 0; i < wctx->stmts_len(); ++i) {
             Stmt *stmt = wctx->stmt_at(i);
             if (!stmt->m_evald) {
-                auto val = Interpreter::eval_stmt(stmt, ctx);
-                if (val) {
-                    std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                    green();
-                    (void)Intrinsics::intrinsic_print(params, ctx);
-                    std::cout << " -> ";
-                    gray();
-                    std::cout << earl::value::type_to_str(val->type()) << std::endl;
-                    noc();
+                try {
+                    auto val = Interpreter::eval_stmt(stmt, ctx);
+                    if (val) {
+                        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+                        green();
+                        (void)Intrinsics::intrinsic_print(params, ctx);
+                        std::cout << " -> ";
+                        gray();
+                        std::cout << earl::value::type_to_str(val->type()) << std::endl;
+                        noc();
+                    }
+                }
+                catch (InterpreterException &e) {
+                    std::cerr << "Interpreter error: " << e.what() << std::endl;
                 }
             }
         }

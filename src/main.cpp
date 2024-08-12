@@ -167,7 +167,13 @@ int main(int argc, char **argv) {
             std::cerr << "Parser error: " << e.what() << std::endl;
             return 1;
         }
-        Interpreter::interpret(std::move(program), std::move(lexer));
+        try {
+            (void)Interpreter::interpret(std::move(program), std::move(lexer));
+        }
+        catch (const InterpreterException &e) {
+            std::cerr << "Interpreter error: " << e.what() << std::endl;
+            return 1;
+        }
     }
     else {
         flags |= __REPL;
