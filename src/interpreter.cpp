@@ -1255,48 +1255,6 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Ctx>
-Interpreter::repl(void) {
-    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-    std::vector<std::string> types    = {};
-    std::string comment               = COMMON_EARL_COMMENT;
-
-    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
-
-    while (true) {
-        std::string line;
-        std::getline(std::cin, line);
-        // std::vector<std::string> lines;
-        // while (std::getline(std::cin, line)) {
-        //     if (line == "e")
-        //         break;
-        //     lines.push_back(line);
-        // }
-
-        // std::string combined = "";
-        // std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s; });
-
-        std::unique_ptr<Lexer> lexer = lex_file(line.c_str(), "", keywords, types, comment);
-        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-        WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
-        wctx->add_repl_lexer(std::move(lexer));
-        wctx->add_repl_program(std::move(program));
-
-        for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-            Stmt *stmt = wctx->stmt_at(i);
-            if (!stmt->m_evald) {
-                auto val = Interpreter::eval_stmt(stmt, ctx);
-                if (((flags & __REPL) != 0) && val && val->type() != earl::value::Type::Void) {
-                    std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                    (void)Intrinsics::intrinsic_println(params, ctx);
-                }
-            }
-        }
-    }
-
-    return nullptr;
-}
-
-std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());

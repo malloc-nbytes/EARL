@@ -34,6 +34,7 @@
 #include "utils.hpp"
 #include "lexer.hpp"
 #include "interpreter.hpp"
+#include "repl.hpp"
 #include "ctx.hpp"
 #include "config.h"
 
@@ -159,7 +160,7 @@ int main(int argc, char **argv) {
     }
     else {
         flags |= __REPL;
-        Interpreter::repl();
+        Repl::run();
     }
 
     return 0;
