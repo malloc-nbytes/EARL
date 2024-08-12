@@ -42,24 +42,76 @@
 #include "earl.hpp"
 #include "lexer.hpp"
 
+#define GREEN "\033[32m"
+#define GRAY "\033[90m"
+#define RED "\033[31m"
+#define NOC "\033[0m"
+
+#define CANCEL ":c"
+#define HELP ":help"
 #define RM_LAST_ENTRY ":rm"
 #define EDIT_ENTRY ":e"
 #define LIST_ENTRIES ":ls"
+#define IMPORT ":i"
 
 void
 log(std::string msg) {
     std::cout << "[EARL] " << msg << std::endl;
 }
 
+std::vector<std::string>
+split_on_space(std::string &line) {
+    std::vector<std::string> res = {};
+    std::stringstream ss(line);
+    std::string word;
+    while (ss >> word)
+        res.push_back(word);
+    return res;
+}
+
+std::vector<std::string>
+split_on_newline(std::string &line) {
+    std::vector<std::string> res = {};
+    std::string buf = "";
+    for (auto &c : line) {
+        if (c == '\n') {
+            res.push_back(buf);
+            buf = "";
+        }
+        else
+            buf += c;
+    }
+    return res;
+}
+
 void
 help(void) {
-    log("Help:");
+    log("(Help)");
+    log("  " HELP " -> show this message");
+    log("  " CANCEL " -> cancel current action");
+    log("  " IMPORT " <file> -> import local EARL file");
     log("  " RM_LAST_ENTRY " -> remove previous entry");
+    log("  " EDIT_ENTRY " [lineno...] -> edit previous entrie(s)");
+    log("  " LIST_ENTRIES " -> list all entries in the current session");
+}
+
+void
+import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
+    if (args.size() == 0) {
+        log("No file supplied");
+        return;
+    }
+    else if (args.size() > 1)
+        log("only expecting one argument, ignoring others...");
+    const char *src_c = read_file(args[0].c_str());
+    std::string src = std::string(src_c);
+    auto src_lines = split_on_newline(src);
+    std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
 }
 
 std::string
 get_special_input(void) {
-    std::cout << "> ";
+    std::cout << ">>> ";
     std::string line;
     std::getline(std::cin, line);
     return line;
@@ -68,7 +120,7 @@ get_special_input(void) {
 void
 rm_last_entry(std::vector<std::string> &entries) {
     if (entries.size() == 0)
-        log("no previous entry exists");
+        log("No previous entry exists");
     else
         entries.pop_back();
 }
@@ -79,37 +131,58 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
         for (auto arg : args) {
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
-                log("line number is out of range for session");
+                log("Line number is out of range for session");
                 return;
             }
-            log("editing: " + lines.at(lnum));
+            log("Editing [ " RED + lines.at(lnum) + NOC " ]");
             std::string newline = get_special_input();
+            if (newline == CANCEL) {
+                log("Cancelling");
+                return;
+            }
             lines.at(lnum) = newline;
         }
+    }
+    else {
+        if (lines.size() == 0) {
+            log("No lines to edit");
+            return;
+        }
+        log("Editing [ " RED + lines.back() + NOC " ]");
+        std::string newline = get_special_input();
+        lines.at(lines.size()-1) = newline;
     }
 }
 
 void
+ls_entries(std::vector<std::string> &lines) {
+    if (lines.size() == 0) {
+        log("Nothing appropriate");
+        return;
+    }
+
+    for (size_t i = 0; i < lines.size(); ++i)
+        std::cout << i << ": " << lines[i] << std::endl;
+}
+
+void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
-    std::vector<std::string> lst;
-    std::stringstream ss(line);
-    std::string word;
-
-    while (ss >> word)
-        lst.push_back(word);
-
-    std::string cmd = lst[0];
+    std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
     if (lst[0] == RM_LAST_ENTRY)
         rm_last_entry(lines);
-    else if (lst[0] == EDIT_ENTRY) {
+    else if (lst[0] == EDIT_ENTRY)
         edit_entry(args, lines);
+    else if (lst[0] == LIST_ENTRIES)
+        ls_entries(lines);
+    else if (lst[0] == IMPORT) {
+        import_file(args, lines);
     }
-    else {
-        log("unknown command sequence `" + lst[0] + "`");
+    else if (lst[0] == HELP)
         help();
-    }
+    else
+        log("unknown command sequence `" + lst[0] + "`");
 }
 
 std::shared_ptr<Ctx>
@@ -132,8 +205,10 @@ Repl::run(void) {
         while (1) {
             std::cout << i++ << ": ";
             std::getline(std::cin, line);
-            if (line.size() > 0 && line[0] == ':')
+            if (line.size() > 0 && line[0] == ':') {
                 handle_repl_arg(line, lines);
+                --i;
+            }
             else {
                 switch (line.back()) {
                 case '{': ++brace; break;
@@ -178,8 +253,11 @@ Repl::run(void) {
                 auto val = Interpreter::eval_stmt(stmt, ctx);
                 if (val) {
                     std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+                    std::cout << GREEN;
                     (void)Intrinsics::intrinsic_print(params, ctx);
+                    std::cout << GRAY;
                     std::cout << " -> " << earl::value::type_to_str(val->type()) << std::endl;
+                    std::cout << NOC;
                 }
             }
         }

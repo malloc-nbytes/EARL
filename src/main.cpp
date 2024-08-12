@@ -153,13 +153,14 @@ int main(int argc, char **argv) {
     if (filepath != "") {
 
         std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
-        // lexer->dump();
 
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
         Interpreter::interpret(std::move(program), std::move(lexer));
     }
     else {
         flags |= __REPL;
+        std::cout << "EARL REPL v" << VERSION << '\n';
+        std::cout << "Use `:help` for help" << std::endl;
         Repl::run();
     }
 
