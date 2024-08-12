@@ -46,9 +46,11 @@
 #define EARL_REPL_HISTORY_FILENAME ".earl_history"
 #define REPL_HISTORY_MAX_FILESZ 1024 * 1024
 
+#define YELLOW "\033[93m"
 #define GREEN "\033[32m"
 #define GRAY "\033[90m"
 #define RED "\033[31m"
+#define BLUE "\033[94m"
 #define NOC "\033[0m"
 
 #define QUIT ":q"
@@ -94,6 +96,42 @@ try_clear_repl_history() {
 }
 
 void
+yellow(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << YELLOW;
+}
+
+void
+blue(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << BLUE;
+}
+
+void
+green(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << GREEN;
+}
+
+void
+gray(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << GRAY;
+}
+
+void
+red(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << RED;
+}
+
+void
+noc(void) {
+    if ((flags & __REPL_NOCOLOR) == 0)
+        std::cout << NOC;
+}
+
+void
 save_repl_history() {
     const char *home_dir = std::getenv("HOME");
     if (home_dir == nullptr)
@@ -107,8 +145,14 @@ save_repl_history() {
 }
 
 void
-log(std::string msg) {
-    std::cout << "[EARL] " << msg << std::endl;
+log(std::string msg, void(*color)(void) = nullptr) {
+    blue();
+    std::cout << "[EARL] ";
+    noc();
+    if (color)
+        color();
+    std::cout << msg;
+    noc();
 }
 
 std::vector<std::string>
@@ -138,20 +182,20 @@ split_on_newline(std::string &line) {
 
 void
 help(void) {
-    log(HELP " -> show this message");
-    log(QUIT " -> quit the session");
-    log(CANCEL " -> cancel current action");
-    log(CLEAR " -> clear the screen");
-    log(IMPORT " [files...] -> import local EARL files");
-    log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)");
-    log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)");
-    log(LIST_ENTRIES " -> list all entries in the current session");
+    log(HELP " -> show this message\n");
+    log(QUIT " -> quit the session\n");
+    log(CANCEL " -> cancel current action\n");
+    log(CLEAR " -> clear the screen\n");
+    log(IMPORT " [files...] -> import local EARL files\n");
+    log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
+    log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
+    log(LIST_ENTRIES " -> list all entries in the current session\n");
 }
 
 void
 import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (args.size() == 0) {
-        log("No files supplied");
+        log("No files supplied\n");
         return;
     }
     for (auto &f : args) {
@@ -159,7 +203,9 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
         std::string src = std::string(src_c);
         auto src_lines = split_on_newline(src);
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
-        log(GREEN "Imported " + f + NOC);
+        // green();
+        log("Imported " + f + "\n", green);
+        noc();
     }
 }
 
@@ -174,7 +220,7 @@ get_special_input(void) {
 void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
-        log("No previous entry exists");
+        log("No previous entry exists\n");
         return;
     }
 
@@ -189,7 +235,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         for (auto &arg : args) {
             int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
             if (lnum < 0 || lnum >= (int)lines.size()) {
-                log("Line number is out of range for session");
+                log("Line number is out of range for session\n");
                 return;
             }
             hist.push_back(lines[lnum]);
@@ -198,9 +244,12 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         }
     }
 
-    log("Removed:");
+    log("Removed:\n");
     for (auto &h : hist) {
-        std::cout << RED << h << NOC << std::endl;
+        red();
+        std::cout << h;
+        noc();
+        std::cout << std::endl;
     }
 }
 
@@ -210,13 +259,18 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
         for (auto arg : args) {
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
-                log("Line number is out of range for session");
+                log("Line number is out of range for session\n");
                 return;
             }
-            log("Editing [ " RED + lines.at(lnum) + NOC " ]");
+            log("Editing [ ", gray);
+            yellow();
+            std::cout << lines.at(lnum);
+            gray();
+            std::cout << " ]" << std::endl;
+            noc();
             std::string newline = get_special_input();
             if (newline == CANCEL) {
-                log("Cancelling");
+                log("Cancelling\n", gray);
                 return;
             }
             lines.at(lnum) = newline;
@@ -224,10 +278,15 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
     }
     else {
         if (lines.size() == 0) {
-            log("No lines to edit");
+            log("No lines to edit\n", gray);
             return;
         }
-        log("Editing [ " RED + lines.back() + NOC " ]");
+        log("Editing [ ", gray);
+        yellow();
+        std::cout << lines.back();
+        gray();
+        std::cout << " ]" << std::endl;
+        noc();
         std::string newline = get_special_input();
         lines.at(lines.size()-1) = newline;
     }
@@ -236,18 +295,22 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
 void
 clearscrn(void) {
     if (system("clear") != 0)
-        log("warning: failed to clearscrn");
+        log("warning: failed to clearscrn\n");
 }
 
 void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
-        log("Nothing appropriate");
+        log("Nothing appropriate\n", gray);
         return;
     }
-
-    for (size_t i = 0; i < lines.size(); ++i)
-        std::cout << i << ": " << GREEN << lines[i] << NOC << std::endl;
+    for (size_t i = 0; i < lines.size(); ++i) {
+        green();
+        std::cout << i << ": ";
+        std::cout << lines[i];
+        noc();
+        std::cout << std::endl;
+    }
 }
 
 void
@@ -270,7 +333,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     else if (lst[0] == HELP)
         help();
     else
-        log("unknown command sequence `" + lst[0] + "`");
+        log("unknown command sequence `" + lst[0] + "`\n");
 }
 
 void
@@ -341,10 +404,12 @@ Repl::run(void) {
                 auto val = Interpreter::eval_stmt(stmt, ctx);
                 if (val) {
                     std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                    std::cout << GREEN;
+                    green();
                     (void)Intrinsics::intrinsic_print(params, ctx);
-                    std::cout << " -> " << GRAY << earl::value::type_to_str(val->type()) << std::endl;
-                    std::cout << NOC;
+                    std::cout << " -> ";
+                    gray();
+                    std::cout << earl::value::type_to_str(val->type()) << std::endl;
+                    noc();
                 }
             }
         }
