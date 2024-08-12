@@ -432,6 +432,7 @@ Repl::run(void) {
         std::string combined = "";
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s + "\n"; });
         REPL_HIST += combined;
+        //std::unique_ptr<Program> program = nullptr;
 
         std::unique_ptr<Lexer> lexer = lex_file(combined.c_str(), "", keywords, types, comment);
         std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());

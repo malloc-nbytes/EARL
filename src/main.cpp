@@ -153,7 +153,13 @@ int main(int argc, char **argv) {
 
     if (filepath != "") {
         std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
-        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
+        std::unique_ptr<Program> program = nullptr;
+        try {
+            program = Parser::parse_program(*lexer.get());
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+            return 1;
+        }
         Interpreter::interpret(std::move(program), std::move(lexer));
     }
     else {
