@@ -45,7 +45,8 @@ File::File(std::shared_ptr<Str> fp, std::shared_ptr<Str> mode, std::fstream stre
         case 'r': m_mode_actual |= static_cast<uint32_t>(Mode::Read); break;
         case 'b': m_mode_actual |= static_cast<uint32_t>(Mode::Binary); break;
         default:
-            ERR_WARGS(Err::Type::Fatal, "unknown mode `%c` for file type", c);
+            std::string msg = "unknown mode `"+std::to_string(c)+"` for file type";
+            throw InterpreterException(msg);
             break;
         }
     }
@@ -63,28 +64,38 @@ File::set_closed(void) {
 
 void
 File::dump(void) {
-    if (!m_open)
-        ERR(Err::Type::Fatal, "file is not open");
-    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0)
-        ERR(Err::Type::Fatal, "file is not open for reading");
+    if (!m_open) {
+        std::string msg = "file is not open";
+        throw InterpreterException(msg);
+    }
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0) {
+        std::string msg = "file is not open for reading";
+        throw InterpreterException(msg);
+    }
     m_stream.seekg(0, std::ios::beg);
     std::cout << m_stream.rdbuf();
 }
 
 void
 File::close(void) {
-    if (!m_open)
-        ERR(Err::Type::Fatal, "file is not open");
+    if (!m_open) {
+        std::string msg = "file is not open";
+        throw InterpreterException(msg);
+    }
     m_stream.close();
     this->set_closed();
 }
 
 std::shared_ptr<earl::value::Str>
 File::read(void) {
-    if (!m_open)
-        ERR(Err::Type::Fatal, "file is not open");
-    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0)
-        ERR(Err::Type::Fatal, "file is not open for reading");
+    if (!m_open) {
+        std::string msg = "file is not open";
+        throw InterpreterException(msg);
+    }
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Read)) == 0) {
+        std::string msg = "file is not open for reading";
+        throw InterpreterException(msg);
+    }
     m_stream.seekg(0, std::ios::beg);
     std::stringstream buf;
     buf << m_stream.rdbuf();
@@ -93,11 +104,15 @@ File::read(void) {
 
 void
 File::write(std::shared_ptr<Obj> value) {
-    if (!m_open)
-        ERR(Err::Type::Fatal, "file is not open");
+    if (!m_open) {
+        std::string msg = "file is not open";
+        throw InterpreterException(msg);
+    }
 
-    if ((m_mode_actual & static_cast<uint32_t>(Mode::Write)) == 0)
-        ERR(Err::Type::Fatal, "file is not open for writing");
+    if ((m_mode_actual & static_cast<uint32_t>(Mode::Write)) == 0) {
+        std::string msg = "file is not open for writing";
+        throw InterpreterException(msg);
+    }
 
     switch (value->type()) {
     case Type::Int: {
@@ -113,7 +128,8 @@ File::write(std::shared_ptr<Obj> value) {
         m_stream << str->value();
     } break;
     default: {
-        ERR_WARGS(Err::Type::Fatal, "cannot write `%s` type to a file", type_to_str(value->type()).c_str());
+        std::string msg = "cannot write `"+type_to_str(value->type())+"` type to a file";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -161,20 +177,23 @@ File::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 File::to_cxxstring(void) {
-    ERR(Err::Type::Fatal, "unable to convert `file` type to a string");
+    std::string msg = "unable to convert `file` type to a string";
+    throw InterpreterException(msg);
 }
 
 void
 File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on file type", op->lexeme().c_str());
+    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on file type";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 File::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on file type");
+    std::string msg = "invalid unary operator on file type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

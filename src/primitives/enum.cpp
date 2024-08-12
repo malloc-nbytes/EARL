@@ -110,13 +110,15 @@ void
 Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on enum type", op->lexeme().c_str());
+    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on enum type";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 Enum::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on enum type");
+    std::string msg = "invalid unary operator on enum type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

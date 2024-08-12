@@ -78,7 +78,8 @@ WorldCtx::get_import(const std::string &id) {
     for (auto &im : m_imports)
         if (dynamic_cast<WorldCtx *>(im.get())->get_mod() == id)
             return &im;
-    ERR_WARGS(Err::Type::Undeclared, "module `%s` does not exist", id.c_str());
+    std::string msg = "module `"+id+"` does not exist";
+    throw InterpreterException(msg);
 }
 
 void

@@ -74,7 +74,8 @@ Float::binop(Token *op, std::shared_ptr<Obj> &other) {
             std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other.get())->value());
     } break;
     case TokenType::Percent: {
-        ERR(Err::Type::Fatal, "cannot use module `%%` with floating point");
+        std::string msg = "cannot use module `%%` with floating point";
+        throw InterpreterException(msg);
     } break;
     case TokenType::Lessthan: {
         return other->type() == Type::Int ?
@@ -113,7 +114,8 @@ Float::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     }
     }
 }
@@ -171,11 +173,13 @@ Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     case TokenType::Forwardslash_Equals: m_value /= prev; break;
     case TokenType::Percent_Equals: {
         Err::err_wtok(op);
-        ERR_WARGS(Err::Type::Fatal, "cannot use module `%s` on float type", op->lexeme().c_str());
+        std::string msg = "cannot use module `"+op->lexeme()+"` on float type";
+        throw InterpreterException(msg);
     }
     default: {
         Err::err_wtok(op);
-        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s`", op->lexeme().c_str());
+        std::string msg = "invalid operator for special mutation `"+op->lexeme()+"`";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -186,7 +190,8 @@ Float::unaryop(Token *op) {
     case TokenType::Minus: return std::make_shared<Float>(-m_value);
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid unary operator on float type");
+        std::string msg = "invalid unary operator on float type";
+        throw InterpreterException(msg);
     }
     }
     return nullptr; // unreachable

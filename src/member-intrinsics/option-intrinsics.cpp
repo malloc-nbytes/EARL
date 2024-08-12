@@ -52,7 +52,8 @@ Intrinsics::intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj,
     auto none = dynamic_cast<earl::value::Option *>(obj.get());
 
     if (!none->value()) {
-        ERR(Err::Type::Fatal, "tried to unwrap none value");
+        std::string msg = "tried to unwrap none value";
+        throw InterpreterException(msg);
     }
 
     return none->value();

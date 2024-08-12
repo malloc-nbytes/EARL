@@ -261,11 +261,15 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 auto _left = dynamic_cast<ExprTerm *>(left);
                 if (_left->get_term_type() == ExprTermType::Ident)
                     left = new ExprModAccess(std::unique_ptr<ExprIdent>(dynamic_cast<ExprIdent *>(_left)), parse_identifier_or_funccall(lexer));
-                else
-                    ERR(Err::Type::Fatal, "Module getters must be of term type identifier");
+                else {
+                    std::string msg = "Module getters must be of term type identifier";
+                    throw ParserException(msg);
+                }
             }
-            else
-                ERR(Err::Type::Fatal, "Module getters must be of term type identifier");
+            else {
+                std::string msg = "Module getters must be of term type identifier";
+                throw ParserException(msg);
+            }
 
         } break;
         case TokenType::Pipe: {
@@ -828,8 +832,8 @@ Parser::parse_stmt(Lexer &lexer) {
         }
     } while (attrs != 0);
 
-    ERR(Err::Type::Internal,
-        "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong");
+    std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";
+    throw ParserException(msg);
     return nullptr;
 }
 

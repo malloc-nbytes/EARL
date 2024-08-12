@@ -625,10 +625,6 @@ Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &param
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "some");
-    if (params.size() != 1) {
-        std::string msg = "`some` intrinsic expects 1 argument but "+std::to_string(params.size())+" were supplied";
-        throw InterpreterException(msg);
-    }
     return std::make_shared<earl::value::Option>(params[0]);
 }
 
