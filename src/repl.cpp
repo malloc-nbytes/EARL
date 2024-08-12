@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <sstream>
 #include <algorithm>
 #include <cassert>
 #include <vector>
@@ -41,6 +42,76 @@
 #include "earl.hpp"
 #include "lexer.hpp"
 
+#define RM_LAST_ENTRY ":rm"
+#define EDIT_ENTRY ":e"
+#define LIST_ENTRIES ":ls"
+
+void
+log(std::string msg) {
+    std::cout << "[EARL] " << msg << std::endl;
+}
+
+void
+help(void) {
+    log("Help:");
+    log("  " RM_LAST_ENTRY " -> remove previous entry");
+}
+
+std::string
+get_special_input(void) {
+    std::cout << "> ";
+    std::string line;
+    std::getline(std::cin, line);
+    return line;
+}
+
+void
+rm_last_entry(std::vector<std::string> &entries) {
+    if (entries.size() == 0)
+        log("no previous entry exists");
+    else
+        entries.pop_back();
+}
+
+void
+edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
+    if (args.size() > 0) {
+        for (auto arg : args) {
+            int lnum = std::stoi(arg);
+            if (lnum < 0 || lnum >= (int)lines.size()) {
+                log("line number is out of range for session");
+                return;
+            }
+            log("editing: " + lines.at(lnum));
+            std::string newline = get_special_input();
+            lines.at(lnum) = newline;
+        }
+    }
+}
+
+void
+handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
+    std::vector<std::string> lst;
+    std::stringstream ss(line);
+    std::string word;
+
+    while (ss >> word)
+        lst.push_back(word);
+
+    std::string cmd = lst[0];
+    std::vector<std::string> args(lst.begin()+1, lst.end());
+
+    if (lst[0] == RM_LAST_ENTRY)
+        rm_last_entry(lines);
+    else if (lst[0] == EDIT_ENTRY) {
+        edit_entry(args, lines);
+    }
+    else {
+        log("unknown command sequence `" + lst[0] + "`");
+        help();
+    }
+}
+
 std::shared_ptr<Ctx>
 Repl::run(void) {
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
@@ -55,30 +126,40 @@ Repl::run(void) {
 
         int brace = 0;
         int bracket = 0;
+        int quote = 0;
+        int i = 0;
 
         while (1) {
-            std::cout << ">>> ";
+            std::cout << i++ << ": ";
             std::getline(std::cin, line);
-            switch (line.back()) {
-            case '{': ++brace; break;
-            case '}': --brace; break;
-            case '[': ++bracket; break;
-            case ';': {
-                // closure 1
-                if (line.size() > 1 && line[line.size()-2] == '}')
-                    --brace;
-                // closure 2
-                if (line.size() > 2 && line[line.size()-3] == '}')
-                    --brace;
-                // list
-                if (line.size() > 1 && line[line.size()-2] == ']')
-                    --bracket;
-            } break;
-            default: break;
+            if (line.size() > 0 && line[0] == ':')
+                handle_repl_arg(line, lines);
+            else {
+                switch (line.back()) {
+                case '{': ++brace; break;
+                case '}': --brace; break;
+                case '[': ++bracket; break;
+                case '"': ++quote; break;
+                case ';': {
+                    // closure 1
+                    if (line.size() > 1 && line[line.size()-2] == '}')
+                        --brace;
+                    // closure 2
+                    if (line.size() > 2 && line[line.size()-3] == '}')
+                        --brace;
+                    // list
+                    if (line.size() > 1 && line[line.size()-2] == ']')
+                        --bracket;
+                    // str
+                    if (line.size() > 1 && line[line.size()-2] == '"')
+                        --quote;
+                } break;
+                default: break;
+                }
+                if (line == "" && brace == 0 && bracket == 0)
+                    break;
+                lines.push_back(line);
             }
-            if (line == "" && brace == 0 && bracket == 0)
-                break;
-            lines.push_back(line);
         }
 
         std::string combined = "";
