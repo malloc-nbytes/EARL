@@ -37,6 +37,7 @@ extern std::vector<std::string> earl_argv;
 extern uint32_t flags;
 
 #define __WITHOUT_STDLIB 1 << 0
+#define __REPL 1 << 2
 
 #define COMMON_EARL2ARG_HELP           "help"
 #define COMMON_EARL2ARG_WITHOUT_STDLIB "without-stdlib"

@@ -122,7 +122,38 @@ static size_t find_comment_end(char *s) {
     return i;
 }
 
-static char *read_file(const char *filepath) {
+static bool
+is_keyword(char *s, size_t len, std::vector<std::string> &keywords) {
+    std::string word(s, len);
+    for (std::string &kw : keywords)
+        if (word == kw)
+            return true;
+    return false;
+}
+
+static bool
+is_type(char *s, size_t len, std::vector<std::string> &types) {
+    std::string word(s, len);
+    for (std::string &ty : types)
+        if (word == ty)
+            return true;
+    return false;
+}
+
+static bool
+issym(char c) {
+    return !isalnum(c) && c != '_';
+}
+
+static bool
+try_comment(char *src, std::string &comment) {
+    if (std::string(src).compare(0, comment.length(), comment) == 0)
+        return find_comment_end(src);
+    return false;
+}
+
+char *
+read_file(const char *filepath) {
     const char *search_path = PREFIX "/include/EARL/";
 
     char full_path[256];
@@ -165,47 +196,19 @@ static char *read_file(const char *filepath) {
     return buffer;
 }
 
-static bool is_keyword(char *s, size_t len, std::vector<std::string> &keywords) {
-
-    std::string word(s, len);
-
-    for (std::string &kw : keywords)
-        if (word == kw)
-            return true;
-
-    return false;
-}
-
-static bool is_type(char *s, size_t len, std::vector<std::string> &types) {
-
-    std::string word(s, len);
-
-    for (std::string &ty : types)
-        if (word == ty)
-            return true;
-
-    return false;
-}
-
-static bool issym(char c) {
-    return !isalnum(c) && c != '_';
-}
-
-static bool try_comment(char *src, std::string &comment) {
-    if (std::string(src).compare(0, comment.length(), comment) == 0)
-        return find_comment_end(src);
-    return false;
-}
-
-std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &keywords, std::vector<std::string> &types, std::string &comment) {
+std::unique_ptr<Lexer>
+lex_file(const char *src_code,
+         std::string fp,
+         std::vector<std::string> &keywords,
+         std::vector<std::string> &types,
+         std::string &comment) {
     (void)is_keyword;
     (void)is_type;
     (void)issym;
     (void)try_comment;
     (void)types;
     (void)comment;
-    std::string fp = std::string(filepath);
-    std::string src = std::string(read_file(filepath));
+    std::string src = std::string(src_code);
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();
 
     const std::unordered_map<std::string, TokenType> ht = {
@@ -277,7 +280,7 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
             size_t strlit_len = consume_until(lexeme+1, [](const char c) {
                 return c == '"';
             });
-            std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, strlit_len, TokenType::Strlit, row, col, filepath);
+            std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, strlit_len, TokenType::Strlit, row, col, fp);
             lexer->append(std::move(tok));
             i += 1 + strlit_len + 1;
             col += 1 + strlit_len + 1;
@@ -362,6 +365,6 @@ std::unique_ptr<Lexer> lex_file(const char *filepath, std::vector<std::string> &
         }
     }
 
-    lexer->append(token_alloc(*lexer.get(), nullptr, 0, TokenType::Eof, row, col, filepath));
+    lexer->append(token_alloc(*lexer.get(), nullptr, 0, TokenType::Eof, row, col, fp));
     return lexer;
 }

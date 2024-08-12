@@ -53,6 +53,10 @@ std::string earl::value::type_to_str(earl::value::Type ty) {
     case earl::value::Type::Void: return "unit";
     case earl::value::Type::Option: return "option";
     case earl::value::Type::Tuple: return "tuple";
+    case earl::value::Type::Class: return "class";
+    case earl::value::Type::Module: return "module";
+    case earl::value::Type::Enum: return "enum";
+    case earl::value::Type::File: return "file";
     default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
     }
 }

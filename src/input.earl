@@ -1,9 +1,3 @@
 module Main
 
-class T {
-}
-
-let t = T();
-println(str(t) + "hello");
-
-
+exit();
