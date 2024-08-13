@@ -1,3 +1,9 @@
 module Main
 
-println("hello");
+import "std/os.earl"
+
+let fp = "a.out.test.in";
+
+let cont = OS::name_and_ext(fp);
+
+println("name: ", cont[0], ", ext: ", cont[1]);

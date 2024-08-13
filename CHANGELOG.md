@@ -3,13 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.1] - 2024-12-8
 
+### Added
+- New name_and_ext function in the OS module.
+
 ### Fixes
-- performing: str += str caused a segfault because of `char` conversion.
+- Performing: str += str caused a segfault because of `char` conversion.
 
 ## [0.2.0] - 2024-11-8
 
 ### Added
-- Added intrinsic casting functions
+- Added Intrinsic casting functions.
 - MAJOR Added a REPL
 
 ### Fixed
