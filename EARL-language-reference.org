@@ -5,16 +5,18 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: num:nil
 
-*NOTE for Grammar*:
+_*NOTE for Grammar sections of this document*:_
 
-1. =This text format represents keywords=
-2. /This test format represents a type of grammar/
-3. <text> represents an identifier
-4. | represents OR
-5. [text] means list
-6. *(text) either 0 or more of
-7. ?(text) means 0 or 1 of
-8. "text" represents a string
+#+begin_quote
+- =This text format represents keywords=
+- /This text format represents a type of grammar/
+- <text> represents an identifier
+- | represents OR
+- [text] means list
+- *(text) either 0 or more _of_
+- ?(text) means 0 or 1 _of_
+- "text" represents a string
+#+end_quote
 
 * Your First Program
 
@@ -132,7 +134,7 @@ For example:
 10:     @pub y = y;
 11:
 12:     @pub fn sumxy() {
-13:             return this. + this.y;
+13:             return this.x + this.y;
 14:     }
 15: }
 16:
@@ -399,7 +401,7 @@ for i in len(lst)-1 to 0 {
 
 #+begin_quote
 Foreach loops take a list, string, or tuple and will iterate over the elements.
-The most common way to use these loops is with a =range=. The iterator
+The most common way to use these loops is with a =range=. Also, the iterator
 (usually the variable labeled as $i$), can be set as a reference to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
 (see /ref example/ below).
