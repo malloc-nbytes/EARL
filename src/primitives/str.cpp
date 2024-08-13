@@ -229,10 +229,17 @@ Str::value_raw(void) {
 void
 Str::mutate(const std::shared_ptr<Obj> &other) {
     ASSERT_MUTATE_COMPAT(this, other.get());
-    Str *otherstr = dynamic_cast<Str *>(other.get());
-    m_value.clear();
-    for (size_t i = 0; i < otherstr->value_raw().size(); ++i)
-        m_value.push_back(otherstr->value_raw()[i]);
+    if (other->type() == Type::Str) {
+        Str *otherstr = dynamic_cast<Str *>(other.get());
+        m_value.clear();
+        for (size_t i = 0; i < otherstr->value_raw().size(); ++i)
+            m_value.push_back(otherstr->value_raw()[i]);
+    }
+    else {
+        auto otherchar = std::dynamic_pointer_cast<Char>(other);
+        m_value.clear();
+        m_value.push_back(otherchar);
+    }
 }
 
 std::shared_ptr<Obj>
