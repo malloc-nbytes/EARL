@@ -674,15 +674,27 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case earl::value::Type::Int: {
         int start = dynamic_cast<earl::value::Int *>(lvalue.get())->value();
         int end = dynamic_cast<earl::value::Int *>(rvalue.get())->value();
-        while (start < end)
-            values.push_back(std::make_shared<earl::value::Int>(start++));
+        if (expr->m_inclusive) {
+            while (start <= end)
+                values.push_back(std::make_shared<earl::value::Int>(start++));
+        }
+        else {
+            while (start < end)
+                values.push_back(std::make_shared<earl::value::Int>(start++));
+        }
         return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
     } break;
     case earl::value::Type::Char: {
         char start = dynamic_cast<earl::value::Char *>(lvalue.get())->value();
         char end = dynamic_cast<earl::value::Char *>(rvalue.get())->value();
-        while (start < end)
-            values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+        if (expr->m_inclusive) {
+            while (start <= end)
+                values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+        }
+        else {
+            while (start < end)
+                values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+        }
         return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
     }
     default: {

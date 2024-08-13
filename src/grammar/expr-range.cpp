@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprRange::ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end)
-    : m_start(std::move(start)), m_end(std::move(end)) {}
+ExprRange::ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive)
+    : m_start(std::move(start)), m_end(std::move(end)), m_inclusive(inclusive) {}
 
 ExprType ExprRange::get_type() const {
     return ExprType::Term;

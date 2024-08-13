@@ -233,8 +233,15 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         } break;
         case TokenType::Double_Period: {
             lexer.discard(); // ..
-            right = Parser::parse_expr(lexer);
-            left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right));
+            if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
+                lexer.discard(); // =
+                right = Parser::parse_expr(lexer);
+                left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), true);
+            }
+            else {
+                right = Parser::parse_expr(lexer);
+                left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), false);
+            }
         } break;
         case TokenType::Lbracket: {
             if (left) {
