@@ -8,6 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
 set(PROJECT_VERSION ${PROJECT_VERSION} CACHE STRING "The project version")
 
+# Set default INSTALL_PREFIX if not specified
+if(NOT INSTALL_PREFIX)
+    set(INSTALL_PREFIX "/usr/local")
+endif()
+
+# Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
+set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
+
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/src/include)
 
@@ -30,11 +38,6 @@ configure_file(
     @ONLY
 )
 
-# Optionally, you can set up an installation prefix for install
-if(INSTALL_PREFIX)
-    set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
-endif()
-
 # Install targets
 install(TARGETS earl DESTINATION bin)
 
@@ -44,8 +47,13 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
     FILES_MATCHING PATTERN "*.*"
 )
 
-# Add a custom target for uninstall
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake
-    COMMENT "Uninstalling project"
-)
+# uninstall target
+if(NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+  add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
