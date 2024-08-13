@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2024-13-8
+
+### Changed
+- MAJOR New build system CMake
+
 ## [0.2.1] - 2024-12-8
 
 ### Added

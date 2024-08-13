@@ -33,19 +33,20 @@ We have moved from =autotools= to [[https://cmake.org/][cmake]], so the new requ
 Users compiling for the first time should do
 
 #+begin_src bash
-  cd EARL
-  mkdir build ; cd build
-  cmake -S ../ -B . -DINSTALL_PREFIX=<prefix>
+    cd EARL
+    mkdir build
+    cd build
+    cmake -S ../ -B .
 #+end_src
 
-*Note*: The prefix is optional. By default it will be set to =/usr/local=.
+*Note*: You can also supply a =prefix= option to changed the default installation location (=/usr/local=) by using =-DINSTALL_PREFIX=<prefix>=
 
 This will create the Makefile. Use =make <opt>= where =<opt>= is one of,
 
 #+begin_quote
 - =make= \rightarrow builds the project
 - =make clean= \rightarrow cleans the project
-- =make test= \rightarrow build the project and runs tests (stdlib *must* be installed)
+- =make test= \rightarrow build the project and runs tests (stdlib *must* be installed, see [[Installation][Installation]])
 - =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 #+end_quote
 
