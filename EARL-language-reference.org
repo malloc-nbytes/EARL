@@ -344,6 +344,8 @@ x is: 4
 true
 #+end_example
 
+* Ranges
+
 * While Loops
 
 #+begin_quote
@@ -401,7 +403,7 @@ for i in len(lst)-1 to 0 {
 
 #+begin_quote
 Foreach loops take a list, string, or tuple and will iterate over the elements.
-The most common way to use these loops is with a =range=. Also, the iterator
+The most common way to use these loops is with a =range= (see [[Ranges][Ranges]]). Also, the iterator
 (usually the variable labeled as $i$), can be set as a reference to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
 (see /ref example/ below).
@@ -830,6 +832,22 @@ println(lst2); # prints [1, 2];
 println(lst3); # prints [2, 1];
 println(lst4); # prints ['a', 'b'];
 #+end_example
+#+end_quote
+
+*** Ranges
+
+#+begin_quote
+Ranges are not their own datatype, they are just syntax sugar for a list. For example:
+
+#+begin_example
+1..5 # expands to [1, 2, 3, 4]
+1..=5 # expands to [1, 2, 3, 4, 5]
+'a'..'d' # expands to ['a', 'b', 'c'];
+'a'..='d' # expands to ['a', 'b', 'c', 'd'];
+(1..=10).rev().filter(|x| { x%2 == 0; }); # expands to [10, 8, 6, 4, 2]
+#+end_example
+
+Currently they only work with =int= and =char=.
 #+end_quote
 
 ** =tuple=

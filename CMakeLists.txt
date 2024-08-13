@@ -68,7 +68,7 @@ else()
     message(STATUS "Doxygen not found. Documentation target will not be available.")
 endif()
 
-# uninstall target
+# Uninstall target
 if(NOT TARGET uninstall)
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -83,4 +83,16 @@ endif()
 add_custom_target(test
     COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/src/test/earl-tests ${PROJECT_BINARY_DIR}/earl ./main.earl
     COMMENT "Running tests"
+)
+
+# Custom debug build type
+set(CMAKE_BUILD_TYPE DebugCustom CACHE STRING "Build type with custom debug flags")
+
+# Set flags for the custom debug build type
+set(CMAKE_CXX_FLAGS_DebugCustom "-ggdb -DDEBUG -O0")
+
+# Custom target to build with DebugCustom configuration
+add_custom_target(debug
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --config DebugCustom
+    COMMENT "Building with custom debug flags"
 )

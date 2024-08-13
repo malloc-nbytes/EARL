@@ -1,3 +1,4 @@
 module Main
 
-println('a'..='z');
+println(1..=10);
+

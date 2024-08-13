@@ -3,11 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.2] - 2024-13-8
 
+### Added
+- Ranges can now be inclusive using the `=` symbol.
+
 ### Fixes
 - Fixed the bug when removing or editing a line of code in the REPL that had a bracket.
 
 ### Changed
 - MAJOR New build system CMake
+- Adjusted minimum CMake version to support Debian
 
 ## [0.2.1] - 2024-12-8
 
