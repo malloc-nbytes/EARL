@@ -1,13 +1,9 @@
 module Main
 
-let res = "";
-let fp = "test.txt";
+import "std/os.earl"
 
-for i in 0 to len(fp) {
-    if i == len(fp)-1 {
-        res += ".1.";
-    }
-    res += fp[i];
-}
+let fp = "a.out.test.in";
 
-println(res);
+let cont = OS::name_and_ext(fp);
+
+println("name: ", cont[0], ", ext: ", cont[1]);
