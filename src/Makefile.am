@@ -19,29 +19,6 @@ $(includedir):
 install-data-local: $(include_HEADERS)
 	$(mkinstalldirs) $(DESTDIR)$(includedir)
 
-install-data-hook:
-	@echo "Installation of earlmngr is currently WIP"
-	@echo "Do you want to install earlmngr? [y/N] " && read ans && [ $${ans:-N} = y ]
-	@if [ $$? -eq 0 ]; then \
-		echo "Installing earlmngr..."; \
-		wget https://raw.githubusercontent.com/malloc-nbytes/earlmngr/main/src/earlmngr.earl -O earlmngr; \
-		chmod +x earlmngr; \
-		sudo mv earlmngr $(prefix)/bin/; \
-		echo "earlmngr installed to $(prefix)/bin/"; \
-	else \
-		echo "earlmngr installation skipped."; \
-		exit 0; \
-	fi
-
-uninstall-hook:
-	@if [ -f $(prefix)/bin/earlmngr ]; then \
-		echo "Uninstalling earlmngr..."; \
-		sudo rm -f $(prefix)/bin/earlmngr; \
-		echo "earlmngr uninstalled from $(prefix)/bin/"; \
-	else \
-		echo "earlmngr not found in $(prefix)/bin/"; \
-	fi
-
 test: earl
 	@echo "Running tests, make sure that the stdlib is installed"
 	cd test/earl-tests && ../../earl ./main.earl
