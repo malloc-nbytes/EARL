@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Fixed having excess semicolons segfaulting. They now throw an error.
 - MAJOR Fixed array null access that was causing segfaults on MacOS.
 - Fixed allowing the creation of duplicate enums of the same name.
+- Fixed segfault with invalid getter operation. It now throws an error.
 
 ## [0.2.0] - 2024-11-8
 
