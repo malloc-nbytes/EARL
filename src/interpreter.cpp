@@ -322,7 +322,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
         if (er.is_member_intrinsic()) {
-            assert(perp && perp->lhs_getter_accessor);
+            if (!perp || !perp->lhs_getter_accessor) {
+                std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
+                throw InterpreterException(msg);
+            }
             if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
                 std::string msg = "type `" + earl::value::type_to_str(perp->lhs_getter_accessor->type())
                     + "` does not implement the member intrinsic `" + er.id + "`";
