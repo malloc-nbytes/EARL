@@ -47,6 +47,27 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
     FILES_MATCHING PATTERN "*.*"
 )
 
+# Find Doxygen
+find_package(Doxygen)
+
+# Add documentation target if Doxygen is found
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_IN "${PROJECT_SOURCE_DIR}/src/Doxyfile")
+    set(DOXYGEN_OUT "${PROJECT_BINARY_DIR}/docs")
+
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+
+    # Ensure docs target depends on the main build (optional)
+    add_dependencies(docs earl)
+else()
+    message(STATUS "Doxygen not found. Documentation target will not be available.")
+endif()
+
 # uninstall target
 if(NOT TARGET uninstall)
   configure_file(
@@ -57,3 +78,9 @@ if(NOT TARGET uninstall)
   add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
+
+# Add a custom target for testing
+add_custom_target(test
+    COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/src/test/earl-tests ${PROJECT_BINARY_DIR}/earl ./main.earl
+    COMMENT "Running tests"
+)
