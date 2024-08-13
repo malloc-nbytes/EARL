@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Performing str += str caused a segfault because of `char` conversion.
 - Fixed having excess semicolons segfaulting. They now throw an error.
 - MAJOR Fixed array null access that was causing segfaults on MacOS.
+- Fixed allowing the creation of duplicate enums of the same name.
 
 ## [0.2.0] - 2024-11-8
 
