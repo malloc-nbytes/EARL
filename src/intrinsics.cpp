@@ -522,7 +522,7 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         *stream << " }>";
     } break;
     default: {
-        std::string msg = "intrinsic_print: unknown parameter type "+static_cast<int>(param->type());
+        std::string msg = "intrinsic_print: unknown parameter type "+std::to_string(static_cast<int>(param->type()));
         throw InterpreterException(msg);
     } break;
     }
