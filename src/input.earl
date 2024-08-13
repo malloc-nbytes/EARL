@@ -1,11 +1,13 @@
 module Main
 
-let lst = [1,2,3,4,5];
+let res = "";
+let fp = "test.txt";
 
-foreach @ref i in lst {
-    i = 9;
+for i in 0 to len(fp) {
+    if i == len(fp)-1 {
+        res += ".1.";
+    }
+    res += fp[i];
 }
 
-println(lst);
-
-
+println(res);
