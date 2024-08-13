@@ -3,10 +3,8 @@ earl
 main
 *.in~
 config.h
-config.h.in
 stamp-h1
 *.swp
-test-suite
 .vscode
 *.tex
 *.pdf
@@ -27,6 +25,20 @@ test-suite
 *.js
 *.clangd
 
+# Cmake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+
 # Configure
 *.m4
 *.cache
@@ -39,7 +51,6 @@ configure~
 .dirstamp
 Makefile
 Makefile.in
-test_suite
 
 # Prerequisites
 *.d

@@ -207,8 +207,6 @@ evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
                 ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs[i]);
                 res.push_back(unpack_ER(er, ctx, refs[i]));
-                // if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
-                // else         res.push_back(unpack_ER(er, ctx, false));
             }
         }
 
@@ -222,8 +220,6 @@ evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
                 ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs[i]);
                 res.push_back(unpack_ER(er, ctx, refs[i]));
-                // if (refs[i]) res.push_back(unpack_ER(er, ctx, true));
-                // else         res.push_back(unpack_ER(er, ctx, false));
             }
         }
 

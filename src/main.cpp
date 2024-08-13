@@ -21,9 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <filesystem>
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <iostream>
 
@@ -185,4 +183,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
