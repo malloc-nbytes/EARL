@@ -1,1 +1,12 @@
-import "other.earl";
+module Main
+
+enum Test {
+    Item1,
+    Item2,
+}
+
+enum Test {
+    Item1,
+    Item2,
+}
+

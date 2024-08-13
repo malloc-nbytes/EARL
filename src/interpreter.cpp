@@ -1233,6 +1233,18 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
+    if (ctx->type() != CtxType::World) {
+        std::string msg = "enum statements are only allowed in the @world scope";
+        throw InterpreterException(msg);
+    }
+
+    WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
+
+    if (wctx->enum_exists(stmt->m_id->lexeme())) {
+        std::string msg = "enum `"+stmt->m_id->lexeme()+"` is already declared";
+        throw InterpreterException(msg);
+    }
+
     std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> elems = {};
 
     bool mixed_types = false;
@@ -1271,8 +1283,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
-    assert(ctx->type() == CtxType::World);
-    dynamic_cast<WorldCtx *>(ctx.get())->enum_add(std::move(_enum));
+    wctx->enum_add(std::move(_enum));
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
