@@ -334,42 +334,28 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
-  (void)ctx;
-  __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_rename__");
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_rename__");
 
-  auto path_obj = params[0];
-  auto to_obj = params[1];
-  std::string path_from = path_obj->to_cxxstring();
-  std::string path_to = to_obj->to_cxxstring();
+    auto path_obj = params[0];
+    auto to_obj = params[1];
+    std::string path_from = path_obj->to_cxxstring();
+    std::string path_to = to_obj->to_cxxstring();
    
-  try {
-    if (std::filesystem::exists(path_from)) {
-      if (std::filesystem::exists(path_to)) {
-	std::string yn;
-	yn.clear();
-	do {
-	  std::cout << "Destination file " << path_to << " already exists" << std::endl;
-	  std::cout << "Would you like to overwrite this file? [y/n] : ";
-	  std::cin >> yn;
-	} while(!std::cin.fail() && yn != "y" && yn != "n");
-	if (yn == "y") {
-	  std::filesystem::rename(path_from, path_to);
-	}
-      }
-      else {
-	std::filesystem::rename(path_from, path_to);
-      }
+    try {
+        if (std::filesystem::exists(path_from)) {
+            std::filesystem::rename(path_from, path_to);
+        }
+        else {
+            std::cout << "Source file " << path_from << " does not exist" << std::endl;
+        }
     }
-    else {
-      std::cout << "Source file " << path_from << " does not exist" << std::endl;
+    catch(const std::filesystem::filesystem_error &e) {
+        const char *err = e.what();
+        ERR_WARGS(Err::Type::Fatal, "Could not rename file %s to %s: %s\n", path_from.c_str(), path_to.c_str(), err);
     }
-  }
-  catch(const std::filesystem::filesystem_error &e) {
-    const char *err = e.what();
-    ERR_WARGS(Err::Type::Fatal, "Could not rename file %s to %s: %s\n", path_from.c_str(), path_to.c_str(), err);
-  }
 
-  return std::make_shared<earl::value::Void>();
+    return std::make_shared<earl::value::Void>();
 }
   
 std::shared_ptr<earl::value::Obj>
