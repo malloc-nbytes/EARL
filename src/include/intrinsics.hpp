@@ -39,44 +39,47 @@
 #include "ast.hpp"
 #include "earl.hpp"
 
-#define __INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                                                \
-    do {                                                                                            \
-        if (args.size() != sz)                                                                      \
-            ERR_WARGS(Err::Type::Fatal, "function `%s` expects %d arguments but %zu were supplied", \
-                      fn, sz, args.size());                                                         \
+#define __INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                           \
+    do {                                                                \
+        if (args.size() != sz) {                                        \
+            std::string __Msg = "function `" fn "` expects "+std::to_string(sz)+" arguments but "+std::to_string(args.size())+" were supplied"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
     } while (0)
 
 #define __MEMBER_INTR_ARGS_MUSTNOT_BE_0(args, fn)                                                      \
     do {                                                                                               \
-        if (args.size() == 0)                                                                          \
-            ERR_WARGS(Err::Type::Fatal, "member intrinsic `%s` expects greater than 0 arguments", fn); \
+        if (args.size() == 0) {                                         \
+            std::string __Msg = "member intrinsic `" fn "` expects grater than 0 arguments"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
     } while (0)
 
 #define __MEMBER_INTR_ARGS_MUSTBE_GTSIZE(args, sz, fn)                                                                       \
     do {                                                                                                                     \
-        if (args.size() < sz)                                                                                                \
-            ERR_WARGS(Err::Type::Fatal, "member intrinsic `%s` expects greater than %d arguments but %zu were supplied",     \
-                      fn, sz, args.size());                                                                                  \
+        if (args.size() < sz) {                                         \
+            std::string __Msg = "member intrinsic `" fn "` expects greater than "+std::to_string(sz)+" arguments but " \
+                +std::to_string(args.size())+" were supplied";          \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
     } while (0)
 
 #define __INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \
     do {                                                                                                              \
-        if (!earl::value::type_is_compatable(arg->type(), ty))                                                        \
-            ERR_WARGS(Err::Type::Fatal,                                                                               \
-                      "the %d argument of function `%s` expects type `%s` but got `%s`",                              \
-                      loc, fn, earl::value::type_to_str(ty).c_str(), earl::value::type_to_str(arg->type()).c_str());  \
+        if (!earl::value::type_is_compatable(arg->type(), ty)) {        \
+            std::string __Msg = "the "+std::to_string(loc)+"argument of function `" fn "` expects type `" \
+                +earl::value::type_to_str(ty)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
     } while (0)
 
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn)                                               \
     do {                                                                                                              \
-        if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) \
-            ERR_WARGS(Err::Type::Fatal,                                                                               \
-                      "the %d argument of function `%s` expects either type `%s` or `%s` but got `%s`",               \
-                      loc,                                                                                            \
-                      fn,                                                                                             \
-                      earl::value::type_to_str(ty1).c_str(),                                                          \
-                      earl::value::type_to_str(ty2).c_str(),                                                          \
-                      earl::value::type_to_str(arg->type()).c_str());                                                 \
+        if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) { \
+            std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects either type `" \
+                +earl::value::type_to_str(ty1)+"` or `"+earl::value::type_to_str(ty2)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+            throw InterpreterException(__Msg);                          \
+        } \
     } while (0)
 
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(arg, tys, loc, fn) \
@@ -86,10 +89,10 @@
             if (earl::value::type_is_compatable(arg->type(), ty)) \
                 __ok = true; \
         } \
-        if (!__ok)                                                      \
-            ERR_WARGS(Err::Type::Fatal,                                 \
-                      "the %d argument of function `%s` expects type `%s` but got `%s`", \
-                      loc, fn, earl::value::type_to_str(tys.at(0)).c_str(), earl::value::type_to_str(arg->type()).c_str()); \
+        if (!__ok) {                                                    \
+            std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type-adjacent `" \
+                +earl::value::type_to_str(tys.at(0))+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+        }                                                               \
     } while (0)
 
 /// @brief The `Intrinsics` namespace
@@ -198,7 +201,7 @@ namespace Intrinsics {
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                      std::shared_ptr<Ctx> &ctx);
+                     std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,

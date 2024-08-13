@@ -32,6 +32,26 @@
 #ifndef ERR_H
 #define ERR_H
 
+class InterpreterException : public std::exception {
+protected:
+    std::string m_msg;
+
+public:
+    InterpreterException(const std::string &msg);
+
+    virtual const char *what() const noexcept override;
+};
+
+class ParserException : public InterpreterException {
+public:
+    ParserException(const std::string &msg);
+};
+
+class LexerException : public InterpreterException {
+public:
+    LexerException(const std::string &msg);
+};
+
 /// @brief The namespace for all errors
 namespace Err {
     /// @brief The different classes of errors

@@ -1,10 +1,27 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2024-13-8
+
+### Changed
+- MAJOR New build system CMake
+
+## [0.2.1] - 2024-12-8
+
+### Added
+- New name_and_ext function in the OS module.
+
+### Fixes
+- Performing str += str caused a segfault because of `char` conversion.
+- Fixed having excess semicolons segfaulting. They now throw an error.
+- MAJOR Fixed array null access that was causing segfaults on MacOS.
+- Fixed allowing the creation of duplicate enums of the same name.
+- Fixed segfault with invalid getter operation. It now throws an error.
+
 ## [0.2.0] - 2024-11-8
 
 ### Added
-- Added intrinsic casting functions
+- Added Intrinsic casting functions.
 - MAJOR Added a REPL
 
 ### Fixed

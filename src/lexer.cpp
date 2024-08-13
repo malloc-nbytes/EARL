@@ -170,9 +170,8 @@ read_file(const char *filepath) {
     }
 
     if (f == nullptr || fseek(f, 0, SEEK_END)) {
-        std::filesystem::path cwd = std::filesystem::current_path();
-        std::cout << "Current working directory is: " << cwd << std::endl;
-        ERR_WARGS(Err::Type::Fatal, "could not find the specified source filepath: %s", filepath);
+        std::string msg = "could not find the specified source filepath: " + std::string(filepath);
+        throw std::runtime_error(msg);
     }
 
     long length = ftell(f);
@@ -197,7 +196,7 @@ read_file(const char *filepath) {
 }
 
 std::unique_ptr<Lexer>
-lex_file(const char *src_code,
+lex_file(std::string &src,
          std::string fp,
          std::vector<std::string> &keywords,
          std::vector<std::string> &types,
@@ -208,7 +207,6 @@ lex_file(const char *src_code,
     (void)try_comment;
     (void)types;
     (void)comment;
-    std::string src = std::string(src_code);
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();
 
     const std::unordered_map<std::string, TokenType> ht = {
@@ -341,7 +339,7 @@ lex_file(const char *src_code,
 
         else {
             std::string buf = "";
-            while (!isalnum(src[i]) && src[i] != '_')
+            while (src[i] && !isalnum(src[i]) && src[i] != '_') // check `src[i]` first for possible fix for random segfaults on MacOS.
                 buf += src[i++];
             while (!buf.empty()) {
                 auto it = ht.find(buf);

@@ -14,8 +14,8 @@ alias done='source ~/.bashrc'
 export PS1="(DEBUG EARL) [ "
 LS_COLORS='' ; export LS_COLORS
 
-echo -e "\033[5;41mBuilding earl-debug-build\033[0m"
-b
+# echo -e "\033[5;41mBuilding earl-debug-build\033[0m"
+# b
 
 printf "\033[5;41mArguments: \033[0m"
 read ARGS

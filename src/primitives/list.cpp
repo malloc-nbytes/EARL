@@ -56,12 +56,15 @@ List::nth(std::shared_ptr<Obj> &idx) {
     case Type::Int: {
         auto index = dynamic_cast<Int *>(idx.get());
         if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
-            ERR_WARGS(Err::Type::Fatal, "index %d is out of range of length %zu",
-                      index->value(), this->value().size());
+            std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
+            throw InterpreterException(msg);
         }
         return this->value().at(index->value());
     } break;
-    default: ERR(Err::Type::Fatal, "invalid index when accessing value in a list");
+    default: {
+        std::string msg = "invalid index when accessing value in a list";
+        throw InterpreterException(msg);
+    }
     }
     return nullptr; // unreachable
 }
@@ -201,7 +204,8 @@ List::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     }
     }
 
@@ -265,7 +269,8 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on list type", op->lexeme().c_str());
+        std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on list type";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -274,6 +279,7 @@ std::shared_ptr<Obj>
 List::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on list type");
+    std::string msg = "invalid unary operator on list type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }

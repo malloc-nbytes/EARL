@@ -21,9 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <filesystem>
 #include <iostream>
-#include <algorithm>
 #include <vector>
 #include <iostream>
 
@@ -152,9 +150,29 @@ int main(int argc, char **argv) {
     std::string comment = "#";
 
     if (filepath != "") {
-        std::unique_ptr<Lexer> lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
-        std::unique_ptr<Program> program = Parser::parse_program(*lexer.get());
-        Interpreter::interpret(std::move(program), std::move(lexer));
+        std::unique_ptr<Lexer> lexer = nullptr;
+        std::unique_ptr<Program> program = nullptr;
+        try {
+            std::string src_code = read_file(filepath.c_str());
+            lexer = lex_file(src_code, filepath, keywords, types, comment);
+        }
+        catch (const LexerException &e) {
+            std::cerr << "Lexer error: " << e.what() << std::endl;
+            return 1;
+        }
+        try {
+            program = Parser::parse_program(*lexer.get());
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+            return 1;
+        }
+        try {
+            (void)Interpreter::interpret(std::move(program), std::move(lexer));
+        }
+        catch (const InterpreterException &e) {
+            std::cerr << "Interpreter error: " << e.what() << std::endl;
+            return 1;
+        }
     }
     else {
         flags |= __REPL;
@@ -165,4 +183,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-

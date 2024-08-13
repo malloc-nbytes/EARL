@@ -1,9 +1,11 @@
 module Main
 
-
+<<<<<<< HEAD
+__internal_rename__("other.earl", "other2.earl");
+=======
 import "std/set.earl"
 
 let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
 
 println(s);
-
+>>>>>>> upstream/main

@@ -71,7 +71,8 @@ Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     }
     }
     return nullptr; // unreachable
@@ -108,7 +109,8 @@ void
 Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on bool type", op->lexeme().c_str());
+    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on bool type";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
@@ -117,7 +119,8 @@ Bool::unaryop(Token *op) {
     case TokenType::Bang: return std::make_shared<Bool>(!m_value);
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid unary operator on bool type");
+        std::string msg = "invalid unary operator on bool type";
+        throw InterpreterException(msg);
     }
     }
     return nullptr; // unreachable

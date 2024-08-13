@@ -39,7 +39,10 @@ Char::Char(std::string value) {
         case 'n': m_value = '\n'; break;
         case 't': m_value = '\t'; break;
         case 'r': m_value = '\r'; break;
-        default: ERR_WARGS(Err::Type::Fatal, "Unknown escape sequence `%s`", value.c_str());
+        default: {
+            std::string msg = "Unknown escape sequence `"+value+"`";
+            throw InterpreterException(msg);
+        }
         }
     }
     else
@@ -69,7 +72,8 @@ Char::binop(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     default: {
         Err::err_wtok(op);
-        ERR(Err::Type::Fatal, "invalid binary operator");
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
     } break;
     }
 }
@@ -107,13 +111,15 @@ void
 Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
     (void)other;
     Err::err_wtok(op);
-    ERR_WARGS(Err::Type::Fatal, "invalid operator for special mutation `%s` on char type", op->lexeme().c_str());
+    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on char type";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 Char::unaryop(Token *op) {
     (void)op;
     Err::err_wtok(op);
-    ERR(Err::Type::Fatal, "invalid unary operator on char type");
+    std::string msg = "invalid unary operator on char type";
+    throw InterpreterException(msg);
     return nullptr; // unreachable
 }
