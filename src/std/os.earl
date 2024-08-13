@@ -56,3 +56,37 @@ module OS
     f.write("");
     f.close();
 }
+
+@pub fn name_and_ext(filepath) {
+    assert(len(filepath) > 0);
+
+    let ext = "";
+    let name = "";
+    let period = 0;
+
+    for i in len(filepath)-1 to 0 {
+        if filepath[i] == '.' {
+            period = i;
+            break;
+        }
+        ext += filepath[i];
+    }
+
+    ext = ext.rev();
+
+    for i in 0 to period {
+        name += filepath[i];
+    }
+
+    if name == "" && ext == "" {
+        return (none, none);
+    }
+    if name == "" {
+        return (ext, none);
+    }
+    if ext == "" {
+        return (name, none);
+    }
+
+    return (name, ext);
+}
