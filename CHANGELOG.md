@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.2] - 2024-13-8
 
+### Fixes
+- Fixed the bug when removing or editing a line of code in the REPL that had a bracket.
+
 ### Changed
 - MAJOR New build system CMake
 
