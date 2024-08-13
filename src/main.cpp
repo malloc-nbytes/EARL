@@ -155,7 +155,8 @@ int main(int argc, char **argv) {
         std::unique_ptr<Lexer> lexer = nullptr;
         std::unique_ptr<Program> program = nullptr;
         try {
-            lexer = lex_file(read_file(filepath.c_str()), filepath, keywords, types, comment);
+            std::string src_code = read_file(filepath.c_str());
+            lexer = lex_file(src_code, filepath, keywords, types, comment);
         }
         catch (const LexerException &e) {
             std::cerr << "Lexer error: " << e.what() << std::endl;

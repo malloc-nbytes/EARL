@@ -416,7 +416,10 @@ Repl::run(void) {
         while (1) {
             i = lines.size();
             std::cout << i << ": ";
-            std::getline(std::cin, line);
+            if (!std::getline(std::cin, line)) {
+                std::cout << std::endl;
+                exit(0);
+            }
             if (line.size() > 0 && (line[0] == ':' || line[0] == '$')) {
                 handle_repl_arg(line, lines);
                 --i;
@@ -435,7 +438,7 @@ Repl::run(void) {
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
-        lexer = lex_file(combined.c_str(), "", keywords, types, comment);
+        lexer = lex_file(combined, "", keywords, types, comment);
         try {
             program = Parser::parse_program(*lexer.get());
         } catch (const ParserException &e) {

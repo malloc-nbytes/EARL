@@ -196,7 +196,7 @@ read_file(const char *filepath) {
 }
 
 std::unique_ptr<Lexer>
-lex_file(const char *src_code,
+lex_file(std::string &src,
          std::string fp,
          std::vector<std::string> &keywords,
          std::vector<std::string> &types,
@@ -207,7 +207,6 @@ lex_file(const char *src_code,
     (void)try_comment;
     (void)types;
     (void)comment;
-    std::string src = std::string(src_code);
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();
 
     const std::unordered_map<std::string, TokenType> ht = {
@@ -340,7 +339,7 @@ lex_file(const char *src_code,
 
         else {
             std::string buf = "";
-            while (!isalnum(src[i]) && src[i] != '_')
+            while (src[i] && !isalnum(src[i]) && src[i] != '_') // check `src[i]` first for possible fix for random segfaults on MacOS.
                 buf += src[i++];
             while (!buf.empty()) {
                 auto it = ht.find(buf);

@@ -1117,7 +1117,8 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
 
-    std::unique_ptr<Lexer> lexer      = lex_file(read_file(stmt->m_fp.get()->lexeme().c_str()),
+    std::string src_code              = read_file(stmt->m_fp.get()->lexeme().c_str());
+    std::unique_ptr<Lexer> lexer      = lex_file(src_code,
                                                  stmt->m_fp.get()->lexeme(),
                                                  keywords,
                                                  types,

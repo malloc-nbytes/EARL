@@ -1,13 +1,3 @@
 module Main
 
-let res = "";
-let fp = "test.txt";
-
-for i in 0 to len(fp) {
-    if i == len(fp)-1 {
-        res += ".1.";
-    }
-    res += fp[i];
-}
-
-println(res);
+println("hello");
