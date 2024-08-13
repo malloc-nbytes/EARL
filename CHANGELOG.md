@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2024-12-8
+
+### Fixes
+- performing: str += str caused a segfault because of `char` conversion.
+
 ## [0.2.0] - 2024-11-8
 
 ### Added
