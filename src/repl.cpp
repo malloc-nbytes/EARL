@@ -65,6 +65,10 @@
 
 static std::string REPL_HIST = "";
 
+static int g_brace = 0;
+static int g_bracket = 0;
+static int g_paren = 0;
+
 void
 try_clear_repl_history() {
     const char* home_dir = std::getenv("HOME");
@@ -221,6 +225,36 @@ get_special_input(void) {
 }
 
 void
+analyze_new_line(std::string &line) {
+    for (auto it = line.rbegin(); it != line.rend(); ++it) {
+        switch (*it) {
+        case '{': ++g_brace; break;
+        case '}': --g_brace; break;
+        case '[': ++g_bracket; break;
+        case ']': --g_bracket; break;
+        case '(': ++g_paren; break;
+        case ')': --g_paren; break;
+        case ';': break;
+        default: break;
+        }
+    }
+}
+
+void
+manage_removed_or_edited_line(std::string &line) {
+    for (auto it = line.rbegin(); it != line.rend(); ++it) {
+        switch (*it) {
+        case '{': --g_brace; break;
+        case '}': ++g_brace; break;
+        case '[': --g_bracket; break;
+        case ']': ++g_bracket; break;
+        case '(': --g_paren; break;
+        case ')': ++g_paren; break;
+        }
+    }
+}
+
+void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         log("No previous entry exists\n");
@@ -231,6 +265,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
 
     if (args.size() == 0) {
         hist.push_back(lines.back());
+        manage_removed_or_edited_line(lines.back());
         lines.pop_back();
     }
     else {
@@ -242,6 +277,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
                 return;
             }
             hist.push_back(lines[lnum]);
+            manage_removed_or_edited_line(lines[lnum]);
             lines.erase(lines.begin()+lnum);
             ++i;
         }
@@ -279,8 +315,15 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
             }
             if (newline == SKIP)
                 log("Skipping current selection\n", gray);
-            else
+            else if (newline == "") {
+                manage_removed_or_edited_line(lines.at(lnum));
+                lines.erase(lines.begin()+lnum);
+            }
+            else {
+                manage_removed_or_edited_line(lines.at(lnum));
                 lines.at(lnum) = newline;
+                analyze_new_line(lines.at(lnum));
+            }
         }
     }
     else {
@@ -295,7 +338,13 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
         std::cout << "]" << std::endl;
         noc();
         std::string newline = get_special_input();
-        lines.at(lines.size()-1) = newline;
+        manage_removed_or_edited_line(lines.at(lines.size()-1));
+        if (newline == "")
+            lines.erase(lines.end()-1);
+        else {
+            lines.at(lines.size()-1) = newline;
+            analyze_new_line(lines.at(lines.size()-1));
+        }
     }
 }
 
@@ -343,9 +392,8 @@ discard(std::vector<std::string> &lines) {
             lines.clear();
             return;
         }
-        else if (line == "n" || line == "no") {
+        else if (line == "n" || line == "no")
             return;
-        }
         else
             log("invalid input\n");
     }
@@ -378,22 +426,6 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         log("unknown command sequence `" + lst[0] + "`\n", gray);
 }
 
-void
-analyze_eol(std::string &line, int &brace, int &bracket, int &paren) {
-    for (auto it = line.rbegin(); it != line.rend(); ++it) {
-        switch (*it) {
-        case '{': ++brace; break;
-        case '}': --brace; break;
-        case '[': ++bracket; break;
-        case ']': --bracket; break;
-        case '(': ++paren; break;
-        case ')': --paren; break;
-        case ';': break;
-        default: break;
-        }
-    }
-}
-
 std::shared_ptr<Ctx>
 Repl::run(void) {
     try_clear_repl_history();
@@ -407,44 +439,40 @@ Repl::run(void) {
     while (true) {
         std::string line;
         std::vector<std::string> lines;
-
-        int brace = 0;
-        int bracket = 0;
-        int paren = 0;
         int i = 0;
 
         while (1) {
-            i = lines.size();
-            std::cout << i << ": ";
+            std::cout << lines.size() << ": ";
             if (!std::getline(std::cin, line)) {
                 std::cout << std::endl;
-                exit(0);
+                std::exit(0);
             }
             if (line.size() > 0 && (line[0] == ':' || line[0] == '$')) {
                 handle_repl_arg(line, lines);
-                --i;
             }
             else {
-                analyze_eol(line, brace, bracket, paren);
-                if (line.size() == 0 && !brace && !bracket && !paren)
+                analyze_new_line(line);
+                if (line.size() == 0 && !g_brace && !g_bracket && !g_paren)
                     break;
                 lines.push_back(line);
             }
         }
 
         std::string combined = "";
-        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s + "\n"; });
+        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
         REPL_HIST += combined;
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
         lexer = lex_file(combined, "", keywords, types, comment);
+
         try {
             program = Parser::parse_program(*lexer.get());
         } catch (const ParserException &e) {
             std::cerr << "Parser error: " << e.what() << std::endl;
             continue;
         }
+
         WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
         wctx->add_repl_lexer(std::move(lexer));
         wctx->add_repl_program(std::move(program));
@@ -475,4 +503,3 @@ Repl::run(void) {
 
     return nullptr;
 }
-
