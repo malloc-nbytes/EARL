@@ -826,6 +826,11 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::At: {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
+        case TokenType::Semicolon: {
+            Err::err_wtok(tok);
+            std::string msg = "expected a statement or expression but got excess semicolon(s)";
+            throw ParserException(msg);
+        } break;
         default: {
             return parse_stmt_expr(lexer);
         }

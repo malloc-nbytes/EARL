@@ -7,7 +7,9 @@ All notable changes to this project will be documented in this file.
 - New name_and_ext function in the OS module.
 
 ### Fixes
-- Performing: str += str caused a segfault because of `char` conversion.
+- Performing str += str caused a segfault because of `char` conversion.
+- Fixed having excess semicolons segfaulting. They now throw an error.
+- MAJOR Fixed array null access that was causing segfaults on MacOS.
 
 ## [0.2.0] - 2024-11-8
 
