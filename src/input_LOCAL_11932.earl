@@ -1,3 +1,0 @@
-module Main
-
-__internal_rename__("other.earl", "other2.earl");

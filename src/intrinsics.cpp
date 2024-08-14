@@ -54,7 +54,6 @@ Intrinsics::intrinsic_functions = {
     {"input", &Intrinsics::intrinsic_input},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
-    {"__internal_rename__", &Intrinsics::intrinsic__internal_rename__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
     {"fprint", &Intrinsics::intrinsic_fprint},
@@ -312,14 +311,6 @@ Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &param
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                        std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic___internal_move__");
-}
-
-std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
@@ -333,34 +324,29 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
         }
     return std::make_shared<earl::value::Void>();
 }
- 
+
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic__internal_rename__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_rename__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "___internal_rename__");
 
     auto path_obj = params[0];
     auto to_obj = params[1];
     std::string path_from = path_obj->to_cxxstring();
     std::string path_to = to_obj->to_cxxstring();
    
-    try {
-        if (std::filesystem::exists(path_from)) {
-            std::filesystem::rename(path_from, path_to);
-        }
-        else {
-            std::cout << "Source file " << path_from << " does not exist" << std::endl;
-        }
+    if (std::filesystem::exists(path_from)) {
+        std::filesystem::rename(path_from, path_to);
     }
-    catch(const std::filesystem::filesystem_error &e) {
-        const char *err = e.what();
-        ERR_WARGS(Err::Type::Fatal, "Could not rename file %s to %s: %s\n", path_from.c_str(), path_to.c_str(), err);
+    else {
+        std::string msg = "File `"+path_from+"` does not exist";
+        throw InterpreterException(msg);
     }
 
     return std::make_shared<earl::value::Void>();
 }
-  
+ 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx) {
