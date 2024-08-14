@@ -34,6 +34,16 @@ using namespace earl::value;
 Slice::Slice(std::shared_ptr<Obj> start, std::shared_ptr<Obj> end)
     : m_start(start), m_end(end) {}
 
+std::shared_ptr<Obj> &
+Slice::start(void) {
+    return m_start;
+}
+
+std::shared_ptr<Obj> &
+Slice::end(void) {
+    return m_end;
+}
+
 /*** OVERRIDES ***/
 Type
 Slice::type(void) const {

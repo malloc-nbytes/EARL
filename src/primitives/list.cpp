@@ -62,7 +62,26 @@ List::nth(std::shared_ptr<Obj> &idx) {
         return this->value().at(index->value());
     } break;
     case Type::Slice: {
+        auto slice = dynamic_cast<Slice *>(idx.get());
+        std::shared_ptr<Obj> &s = slice->start(), &e = slice->end();
+        int start_actual = 0, end_actual = 0;
+
+        // case of [:].
+        if (s->type() == Type::Void && e->type() == Type::Void)
+            return std::vector<std::shared_ptr<Obj>>(m_value);
+
+        if (s->type() == Type::Int)
+            start_actual = dynamic_cast<Int *>(s.get())->value();
+        else
+            start_actual = 0;
+
+        if (e->type() == Type::Int)
+            end_actual = dynamic_cast<Int *>(e.get())->value();
+        else
+            end_actual = m_value.size()-1;
+
         abort();
+
     } break;
     default: {
         std::string msg = "invalid index when accessing value in a list";

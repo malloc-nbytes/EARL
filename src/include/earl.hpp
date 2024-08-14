@@ -351,6 +351,9 @@ namespace earl {
         struct Slice : public Obj {
             Slice(std::shared_ptr<Obj> start, std::shared_ptr<Obj> end);
 
+            std::shared_ptr<Obj> &start(void);
+            std::shared_ptr<Obj> &end(void);
+
             /*** OVERRIDES ***/
             Type type(void) const                                              override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
