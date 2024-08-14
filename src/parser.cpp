@@ -215,6 +215,16 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             else
                 left = std::move(tuple[0]);
         } break;
+        case TokenType::Colon: {
+            lexer.discard(); // :
+            right = Parser::parse_expr(lexer);
+            std::optional<std::unique_ptr<Expr>> l = {}, r = {};
+            if (left)
+                l = std::unique_ptr<Expr>(left);
+            if (right)
+                r = std::unique_ptr<Expr>(right);
+            return new ExprSubArray(std::move(l), std::move(r));
+        } break;
         case TokenType::Period: {
             lexer.discard(); // .
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer));

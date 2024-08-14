@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-ExprSubArray::ExprSubArray(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end)
+ExprSubArray::ExprSubArray(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end)
     : m_start(std::move(start)), m_end(std::move(end)) {}
 
 ExprType ExprSubArray::get_type() const {

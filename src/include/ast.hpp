@@ -254,10 +254,10 @@ struct ExprRange : public ExprTerm {
 };
 
 struct ExprSubArray : public ExprTerm {
-    std::unique_ptr<Expr> m_start;
-    std::unique_ptr<Expr> m_end;
+    std::optional<std::unique_ptr<Expr>> m_start;
+    std::optional<std::unique_ptr<Expr>> m_end;
 
-    ExprSubArray(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
+    ExprSubArray(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
