@@ -27,13 +27,13 @@
 
 #include "ast.hpp"
 
-ExprSubArray::ExprSubArray(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end)
+ExprSlice::ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end)
     : m_start(std::move(start)), m_end(std::move(end)) {}
 
-ExprType ExprSubArray::get_type() const {
+ExprType ExprSlice::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprSubArray::get_term_type() const {
-    return ExprTermType::SubArray;
+ExprTermType ExprSlice::get_term_type() const {
+    return ExprTermType::Slice;
 }

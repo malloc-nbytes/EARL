@@ -223,7 +223,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 l = std::unique_ptr<Expr>(left);
             if (right)
                 r = std::unique_ptr<Expr>(right);
-            return new ExprSubArray(std::move(l), std::move(r));
+            return new ExprSlice(std::move(l), std::move(r));
         } break;
         case TokenType::Period: {
             lexer.discard(); // .
