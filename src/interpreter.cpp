@@ -738,7 +738,7 @@ eval_expr_term_slice(ExprSlice *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     if (e->type() != earl::value::Type::Void && e->type() != earl::value::Type::Int)
         goto bad_type;
 
-    abort();
+    return ER(std::make_shared<earl::value::Slice>(s, e), ERT::Literal);
 
 bad_type:
     std::string msg = "array slices must be indexed with either type int or type unit";

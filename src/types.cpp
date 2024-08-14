@@ -40,6 +40,7 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Void, {earl::value::Type::Void}},
     {earl::value::Type::Option, {earl::value::Type::Option}},
     {earl::value::Type::Tuple, {earl::value::Type::Tuple}},
+    {earl::value::Type::Tuple, {}},
 };
 
 std::string earl::value::type_to_str(earl::value::Type ty) {
@@ -57,6 +58,7 @@ std::string earl::value::type_to_str(earl::value::Type ty) {
     case earl::value::Type::Module: return "module";
     case earl::value::Type::Enum: return "enum";
     case earl::value::Type::File: return "file";
+    case earl::value::Type::Slice: return "slice";
     default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
     }
 }

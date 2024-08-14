@@ -61,6 +61,9 @@ List::nth(std::shared_ptr<Obj> &idx) {
         }
         return this->value().at(index->value());
     } break;
+    case Type::Slice: {
+        abort();
+    } break;
     default: {
         std::string msg = "invalid index when accessing value in a list";
         throw InterpreterException(msg);

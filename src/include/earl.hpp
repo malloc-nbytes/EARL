@@ -108,6 +108,8 @@ namespace earl {
             Enum,
             /** EARL tuple type */
             Tuple,
+            /** EARL slice type */
+            Slice,
         };
 
         /// @brief The base abstract class that all
@@ -344,6 +346,25 @@ namespace earl {
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
+        };
+
+        struct Slice : public Obj {
+            Slice(std::shared_ptr<Obj> start, std::shared_ptr<Obj> end);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                              override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other) override;
+            bool boolean(void)                                                 override;
+            void mutate(const std::shared_ptr<Obj> &other)                     override;
+            std::shared_ptr<Obj> copy(void)                                    override;
+            bool eq(std::shared_ptr<Obj> &other)                               override;
+            std::string to_cxxstring(void)                                     override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other)     override;
+            std::shared_ptr<Obj> unaryop(Token *op)                            override;
+
+        private:
+            std::shared_ptr<Obj> m_start;
+            std::shared_ptr<Obj> m_end;
         };
 
         struct Tuple : public Obj {
