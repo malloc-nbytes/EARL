@@ -308,6 +308,9 @@ namespace earl {
             /// @brief Get the underlying list value
             std::vector<std::shared_ptr<Obj>> &value(void);
 
+            /// @brief Get a sublist of the vector from `start` to `finish`
+            std::vector<std::shared_ptr<Obj>> slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end);
+
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
             /// @param idx The object that contains the index
@@ -398,6 +401,7 @@ namespace earl {
         /// @brief The structure that represents EARL strings
         struct Str : public Obj {
             Str(std::string value = "");
+            Str(std::vector<std::shared_ptr<Char>> chars);
 
             std::string value(void); // NOTE: needs optimization
             std::vector<std::shared_ptr<Char>> &value_raw(void);

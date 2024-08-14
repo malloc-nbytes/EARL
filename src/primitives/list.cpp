@@ -50,6 +50,45 @@ List::type(void) const {
     return Type::List;
 }
 
+std::vector<std::shared_ptr<Obj>>
+List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end) {
+    if (start->type() != Type::Void && start->type() != Type::Int) {
+        std::string msg = "invalid slice `start` type: `"+type_to_str(start->type())+"`";
+        throw InterpreterException(msg);
+    }
+    if (end->type() != Type::Void && end->type() != Type::Int) {
+        std::string msg = "invalid slice `end` type: `"+type_to_str(end->type())+"`";
+        throw InterpreterException(msg);
+    }
+
+    std::vector<std::shared_ptr<Obj>> v = {};
+    if (start->type() == Type::Void && end->type() == Type::Void) {
+        std::for_each(m_value.begin(), m_value.end(), [&](auto &k) {v.push_back(k);});
+        return v;
+    }
+    int s, e;
+
+    if (start->type() == Type::Void)
+        s = 0;
+    else
+        s = dynamic_cast<Int *>(start.get())->value();
+
+    if (end->type() == Type::Void)
+        e = m_value.size();
+    else
+        e = dynamic_cast<Int *>(end.get())->value();
+
+    for (; s < e; ++s) {
+        if (s >= m_value.size()) {
+            std::string msg = "index "+std::to_string(s)+" is out of range for list of length "+std::to_string(m_value.size());
+            throw InterpreterException(msg);
+        }
+        v.push_back(m_value.at(s));
+    }
+
+    return v;
+}
+
 std::shared_ptr<Obj>
 List::nth(std::shared_ptr<Obj> &idx) {
     switch (idx->type()) {
@@ -64,24 +103,7 @@ List::nth(std::shared_ptr<Obj> &idx) {
     case Type::Slice: {
         auto slice = dynamic_cast<Slice *>(idx.get());
         std::shared_ptr<Obj> &s = slice->start(), &e = slice->end();
-        int start_actual = 0, end_actual = 0;
-
-        // case of [:].
-        if (s->type() == Type::Void && e->type() == Type::Void)
-            return std::vector<std::shared_ptr<Obj>>(m_value);
-
-        if (s->type() == Type::Int)
-            start_actual = dynamic_cast<Int *>(s.get())->value();
-        else
-            start_actual = 0;
-
-        if (e->type() == Type::Int)
-            end_actual = dynamic_cast<Int *>(e.get())->value();
-        else
-            end_actual = m_value.size()-1;
-
-        abort();
-
+        return std::make_shared<List>(this->slice(s, e));
     } break;
     default: {
         std::string msg = "invalid index when accessing value in a list";
