@@ -1,9 +1,4 @@
 module Main
 
-
-# import "std/set.earl"
-
-# let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
-
-println(s);
+println(1..=10);
 

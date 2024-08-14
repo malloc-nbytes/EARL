@@ -1,21 +1,5 @@
-# To use this file, run:
-#   bash --rcfile debug
+#!/bin/bash
 
-ARGS=""
+set -xe
 
-# source ~/.bashrc
-
-echo -e "\033[5;41mEntering debug environment. Use \`exit\` or \`C-d\` to exit.\033[0m"
-
-# alias build='g++ -Iinclude/ -Wreturn-type -O0 -DDEBUG -std=c++17 -g -o earl-debug-build *.cpp primitives/*.cpp member-intrinsics/*.cpp grammar/*.cpp include/scope.hpp'
-alias b='make debug -j$(nproc)'
-alias r='gdb --args ./earl-debug-build $ARGS'
-alias done='source ~/.bashrc'
-export PS1="(DEBUG EARL) [ "
-LS_COLORS='' ; export LS_COLORS
-
-# echo -e "\033[5;41mBuilding earl-debug-build\033[0m"
-# b
-
-printf "\033[5;41mArguments: \033[0m"
-read ARGS
+g++ -ggdb -O0 -DDEBUG -Iinclude/ -o earl-debug-build *.cpp primitives/*.cpp grammar/*.cpp member-intrinsics/*.cpp include/shared-scope.hpp

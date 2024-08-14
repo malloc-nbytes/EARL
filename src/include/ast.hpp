@@ -245,8 +245,9 @@ struct ExprListLit : public ExprTerm {
 struct ExprRange : public ExprTerm {
     std::unique_ptr<Expr> m_start;
     std::unique_ptr<Expr> m_end;
+    bool m_inclusive;
 
-    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
+    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
