@@ -19,7 +19,7 @@
 * Introduction
 
 #+begin_quote
-EARL (Evaluate And Run Language) is being designed to be functionally similar to Python with a C style syntax.
+EARL (Evaluate And Run Language) is being designed to be functionally similar to Python but is gradually typed and has C style syntax.
 #+end_quote
 
 For the manual on how to use the language, see [[./EARL-language-reference.html][Click here for the EARL Language Reference]].

@@ -63,12 +63,15 @@ Slice::boolean(void) {
 
 void
 Slice::mutate(const std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Slice::mutate");
+    ASSERT_MUTATE_COMPAT(this, other.get());
+    auto othersl = dynamic_cast<Slice *>(other.get());
+    m_start = othersl->start();
+    m_end = othersl->end();
 }
 
 std::shared_ptr<Obj>
 Slice::copy(void) {
-    UNIMPLEMENTED("Slice::copy");
+    return std::make_shared<Slice>(m_start, m_end);
 }
 
 bool

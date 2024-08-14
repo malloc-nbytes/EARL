@@ -40,7 +40,7 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Void, {earl::value::Type::Void}},
     {earl::value::Type::Option, {earl::value::Type::Option}},
     {earl::value::Type::Tuple, {earl::value::Type::Tuple}},
-    {earl::value::Type::Tuple, {}},
+    {earl::value::Type::Slice, {earl::value::Type::Slice}},
 };
 
 std::string earl::value::type_to_str(earl::value::Type ty) {
