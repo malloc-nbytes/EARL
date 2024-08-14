@@ -1,6 +1,5 @@
 module Main
 
-let s = 1:3;
-s = _:2;
+import "std/os.earl"
 
-println([1,2,3,4,5][s]);
+OS::move("../src/main.cpp", 1..10);
