@@ -715,6 +715,22 @@ eval_expr_term_tuple(ExprTuple *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(std::make_shared<earl::value::Tuple>(values), ERT::Literal);
 }
 
+static ER
+eval_expr_term_subarray(ExprSubArray *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::shared_ptr<earl::value::Obj> s = nullptr, e = nullptr;
+    if (expr->m_start.has_value()) {
+        ER er = Interpreter::eval_expr(expr->m_start.value().get(), ctx, ref);
+        s = unpack_ER(er, ctx, ref);
+    }
+    if (expr->m_end.has_value()) {
+        ER er = Interpreter::eval_expr(expr->m_end.value().get(), ctx, ref);
+        e = unpack_ER(er, ctx, ref);
+    }
+    assert(s);
+    assert(e);
+    assert(false);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -733,6 +749,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Closure:       return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
     case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
     case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
+    case ExprTermType::SubArray:      return eval_expr_term_subarray(dynamic_cast<ExprSubArray *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

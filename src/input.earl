@@ -2,5 +2,5 @@ module Main
 
 let lst = [1,2,3,4,5];
 
-println(lst[:3]);
+println(lst[0:3]);
 
