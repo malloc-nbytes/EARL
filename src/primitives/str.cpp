@@ -66,6 +66,10 @@ Str::Str(std::string value) {
     }
 }
 
+Str::Str(std::vector<std::shared_ptr<Char>> chars) {
+    std::for_each(chars.begin(), chars.end(), [&](auto &c){m_value.push_back(c);});
+}
+
 std::string
 Str::value(void) {
     std::string value = "";
@@ -85,7 +89,6 @@ Str::nth(std::shared_ptr<Obj> &idx) {
         std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
         throw InterpreterException(msg);
     }
-
     return m_value[index->value()];
 }
 

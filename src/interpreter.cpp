@@ -715,6 +715,37 @@ eval_expr_term_tuple(ExprTuple *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(std::make_shared<earl::value::Tuple>(values), ERT::Literal);
 }
 
+static ER
+eval_expr_term_slice(ExprSlice *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    std::shared_ptr<earl::value::Obj> s = nullptr, e = nullptr;
+
+    if (expr->m_start.has_value()) {
+        ER er = Interpreter::eval_expr(expr->m_start.value().get(), ctx, ref);
+        s = unpack_ER(er, ctx, ref);
+    }
+    if (expr->m_end.has_value()) {
+        ER er = Interpreter::eval_expr(expr->m_end.value().get(), ctx, ref);
+        e = unpack_ER(er, ctx, ref);
+    }
+
+    if (!s)
+        s = std::make_shared<earl::value::Void>();
+    if (!e)
+        e = std::make_shared<earl::value::Void>();
+
+    if (s->type() != earl::value::Type::Void && s->type() != earl::value::Type::Int)
+        goto bad_type;
+    if (e->type() != earl::value::Type::Void && e->type() != earl::value::Type::Int)
+        goto bad_type;
+
+    return ER(std::make_shared<earl::value::Slice>(s, e), ERT::Literal);
+
+bad_type:
+    std::string msg = "array slices must be indexed with either type int or type unit";
+    throw InterpreterException(msg);
+    return ER(nullptr, ERT::None); // unreachable
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -733,6 +764,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Closure:       return eval_expr_term_closure(dynamic_cast<ExprClosure *>(expr), ctx, ref);
     case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
     case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
+    case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);
