@@ -90,3 +90,7 @@ module OS
 
     return (name, ext);
 }
+
+@pub fn move(path_from, path_to) {
+    __internal_move__(path_from, path_to);
+}

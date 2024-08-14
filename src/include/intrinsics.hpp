@@ -238,12 +238,12 @@ namespace Intrinsics {
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>
-    intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                std::shared_ptr<Ctx> &ctx);
-
-    std::shared_ptr<earl::value::Obj>
     intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                  std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,

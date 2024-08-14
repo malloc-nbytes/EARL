@@ -41,3 +41,7 @@ module IO
     let content = file_to_str(fp);
     return content.split("\n");
 }
+
+@pub fn rename(path_from, path_to) {
+    __internal_move__(path_from, path_to);
+}

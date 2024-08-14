@@ -311,14 +311,6 @@ Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &param
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                        std::shared_ptr<Ctx> &ctx) {
-    (void)ctx;
-    (void)params;
-    UNIMPLEMENTED("Intrinsics::intrinsic___internal_move__");
-}
-
-std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
@@ -333,6 +325,28 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
     return std::make_shared<earl::value::Void>();
 }
 
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                         std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "___internal_rename__");
+
+    auto path_obj = params[0];
+    auto to_obj = params[1];
+    std::string path_from = path_obj->to_cxxstring();
+    std::string path_to = to_obj->to_cxxstring();
+   
+    if (std::filesystem::exists(path_from)) {
+        std::filesystem::rename(path_from, path_to);
+    }
+    else {
+        std::string msg = "File `"+path_from+"` does not exist";
+        throw InterpreterException(msg);
+    }
+
+    return std::make_shared<earl::value::Void>();
+}
+ 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx) {
