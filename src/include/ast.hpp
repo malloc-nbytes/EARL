@@ -72,6 +72,7 @@ enum class ExprTermType {
     Func_Call,
     List_Literal,
     Range,
+    SubArray,
     Get,
     Mod_Access,
     Array_Access,
@@ -248,6 +249,15 @@ struct ExprRange : public ExprTerm {
     bool m_inclusive;
 
     ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprSubArray : public ExprTerm {
+    std::unique_ptr<Expr> m_start;
+    std::unique_ptr<Expr> m_end;
+
+    ExprSubArray(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
