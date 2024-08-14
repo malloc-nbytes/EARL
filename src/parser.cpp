@@ -82,13 +82,13 @@ Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     if (tok->type() != TokenType::Keyword) {
         Err::err_wtok(tok.get());
         std::string msg = tokentype_to_str(tok->type())
-            + " `" + tok->lexeme() + "` is not a keyword";
+            + "expected keyword `"+expected+"`, but got `" + tok->lexeme() + "` which is not a keyword";
         throw ParserException(msg);
     }
     if (tok->lexeme() != expected) {
         Err::err_wtok(tok.get());
         std::string msg = tokentype_to_str(tok->type())
-            + " `" + tok->lexeme() + "` is not the correct keyword";
+            + "expected keyword `"+expected+"`, but got `" + tok->lexeme() + "` which is not the correct keyword";
         throw ParserException(msg);
     }
     return tok;

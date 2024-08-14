@@ -24,6 +24,7 @@ stamp-h1
 *.svg
 *.js
 *.clangd
+input.earl
 
 # Cmake
 build

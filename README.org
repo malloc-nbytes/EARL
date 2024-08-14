@@ -28,7 +28,7 @@ For the manual on how to use the language, see [[./EARL-language-reference.html]
 
 We have moved from =autotools= to [[https://cmake.org/][cmake]], so the new required tools are:
 1. =c++17=
-2. =cmake= (at least v3.26.4)
+2. =cmake= (at least v3.25.1)
 3. =doxygen= (optional) (for EARL source code documentation)
 
 Users compiling for the first time should do

@@ -1,4 +1,2 @@
 module Main
 
-println(1..=10);
-

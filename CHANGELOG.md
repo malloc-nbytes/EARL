@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2024-14-8
+
+### Fixed
+- Better error messages for the expect_keyword function in parser.
+- The minimum cmake version in the README is now up to date with what it actually it.
+
 ## [0.2.2] - 2024-13-8
 
 ### Added
