@@ -48,8 +48,11 @@ using namespace Interpreter;
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
     bool this_;
-    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr, bool this_ = false)
-        : lhs_getter_accessor(lhs_get), this_(this_) {}
+    Token *errtok;
+    PackedERPreliminary(std::shared_ptr<earl::value::Obj> lhs_get = nullptr,
+                        bool this_ = false,
+                        Token *errtok = nullptr)
+        : lhs_getter_accessor(lhs_get), this_(this_), errtok(errtok) {}
 };
 
 static std::shared_ptr<earl::value::Obj>
@@ -181,9 +184,10 @@ eval_class_instantiation(const std::string &id,
 static std::vector<std::shared_ptr<earl::value::Obj>>
 evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, bool ref) {
     std::vector<std::shared_ptr<earl::value::Obj>> res = {};
+    PackedERPreliminary perp(nullptr, /*this_=*/false, /*errtok=*/funccall->m_tok.get());
     for (size_t i = 0; i < funccall->m_params.size(); ++i) {
         ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, ref);
-        res.push_back(unpack_ER(er, ctx, ref));
+        res.push_back(unpack_ER(er, ctx, ref, /*perp=*/&perp));
     }
     return res;
 }
@@ -323,6 +327,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 throw InterpreterException(msg);
             }
             if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
+                Err::err_wtok(perp->errtok);
                 std::string msg = "type `" + earl::value::type_to_str(perp->lhs_getter_accessor->type())
                     + "` does not implement the member intrinsic `" + er.id + "`";
                 throw InterpreterException(msg);
@@ -375,6 +380,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
+        if (perp && perp->errtok)
+            Err::err_wtok(perp->errtok);
         std::string msg = "variable `"+er.id+"` has not been declared";
         throw InterpreterException(msg);
     }
@@ -566,7 +573,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
     else {
         auto left_value = unpack_ER(left_er, ctx, true);
-        PackedERPreliminary perp(left_value);
+        PackedERPreliminary perp(left_value, /*this=*/false, /*errtok=*/expr->m_tok.get());
         std::shared_ptr<earl::value::Obj> value = nullptr;
 
         if (left_value->type() == earl::value::Type::Class) {

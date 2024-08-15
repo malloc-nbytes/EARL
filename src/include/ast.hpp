@@ -135,9 +135,11 @@ struct ExprIdent : public ExprTerm {
 struct ExprGet : public ExprTerm {
     std::unique_ptr<Expr> m_left;
     std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
+    std::shared_ptr<Token> m_tok;
 
     ExprGet(std::unique_ptr<Expr> left,
-            std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
+            std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right,
+            std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -228,7 +230,9 @@ struct ExprFuncCall : public ExprTerm {
     /// to the function call
     std::vector<std::unique_ptr<Expr>> m_params;
 
-    ExprFuncCall(std::unique_ptr<Expr> id, std::vector<std::unique_ptr<Expr>> params);
+    std::shared_ptr<Token> m_tok;
+
+    ExprFuncCall(std::unique_ptr<Expr> id, std::vector<std::unique_ptr<Expr>> params, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

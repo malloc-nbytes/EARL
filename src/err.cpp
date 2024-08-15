@@ -53,3 +53,85 @@ Err::warn(std::string msg, Token *tok) {
     }
     std::cerr << "[WARN] " << msg << std::endl;
 }
+
+static void
+err_wident(ExprIdent *expr) {
+    Err::err_wtok(expr->m_tok.get());
+}
+
+static void
+err_wterm(ExprTerm *expr) {
+    switch (expr->get_term_type()) {
+    case ExprTermType::Ident: {
+        err_wident(dynamic_cast<ExprIdent *>(expr));
+    } break;
+    case ExprTermType::Int_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Str_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Char_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Func_Call: {
+        assert(false);
+    } break;
+    case ExprTermType::List_Literal: {
+        assert(false);
+    } break;
+    case ExprTermType::Range: {
+        assert(false);
+    } break;
+    case ExprTermType::Slice: {
+        assert(false);
+    } break;
+    case ExprTermType::Get: {
+        assert(false);
+    } break;
+    case ExprTermType::Mod_Access: {
+        assert(false);
+    } break;
+    case ExprTermType::Array_Access: {
+        assert(false);
+    } break;
+    case ExprTermType::Bool: {
+        assert(false);
+    } break;
+    case ExprTermType::None: {
+        assert(false);
+    } break;
+    case ExprTermType::Closure: {
+        assert(false);
+    } break;
+    case ExprTermType::Tuple: {
+        assert(false);
+    } break;
+    case ExprTermType::Float_Literal: {
+        assert(false);
+    } break;
+    default: break;
+    }
+}
+
+static void
+err_wbinary(ExprBinary *expr) {
+    assert(false);
+}
+
+static void
+err_wunary(ExprUnary *expr) {
+    assert(false);
+}
+
+void
+Err::err_wexpr(Expr *expr) {
+    switch (expr->get_type()) {
+    case ExprType::Term: err_wterm(dynamic_cast<ExprTerm *>(expr));
+    case ExprType::Binary: err_wbinary(dynamic_cast<ExprBinary *>(expr));
+    case ExprType::Unary: err_wunary(dynamic_cast<ExprUnary *>(expr));
+    default: break;
+    }
+}
+
+

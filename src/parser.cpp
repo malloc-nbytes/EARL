@@ -144,7 +144,7 @@ parse_identifier_or_funccall(Lexer &lexer) {
     auto group = try_parse_funccall(lexer);
 
     if (group.has_value())
-        return std::make_unique<ExprFuncCall>(std::move(ident), std::move(group.value()));
+        return std::make_unique<ExprFuncCall>(std::move(ident), std::move(group.value()), ident->m_tok);
 
     return ident;
 }
@@ -193,7 +193,8 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             left = new ExprIdent(lexer.next());
         } break;
         case TokenType::Lparen: {
-            lexer.discard(); // (
+            //lexer.discard(); // (
+            auto tok = lexer.next(); // (
             bool trailing_comma = false;
             std::vector<Expr *> tuple = parse_comma_sep_exprs(lexer, trailing_comma);
             (void)Parser::parse_expect(lexer, TokenType::Rparen);
@@ -202,7 +203,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 std::vector<std::unique_ptr<Expr>> unique_tuple = {};
                 for (size_t i = 0; i < tuple.size(); ++i)
                     unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
-                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple));
+                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple), tok);
             }
             // Tuple
             else if (tuple.size() > 1 || trailing_comma) {
@@ -226,8 +227,8 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             return new ExprSlice(std::move(l), std::move(r));
         } break;
         case TokenType::Period: {
-            lexer.discard(); // .
-            left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer));
+            auto tok = lexer.next();
+            left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer), tok);
         } break;
         case TokenType::Intlit: {
             left = new ExprIntLit(lexer.next());
