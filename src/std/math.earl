@@ -49,25 +49,25 @@ import "std/list.earl"
 
 # Mode
 @pub fn mode(lst) {
-
     if len(lst) == 0 {
         return none;
     }
-
-    # May have to return the first element if len is == 1
     let count = 0;
     let max_count = 0;
-    #let max_value = 0;
     let lst_modes = [];
-
     for i in 0 to len(lst) {
         count = List::count(lst, lst[i]);
-
-        if count >= max_count {
+        if max_count == count && (List::find(lst, lst[i]) != -1){
             lst_modes.append(lst[i]);
+            count = 0;
+        }
+        if max_count < count {
+            lst_modes = [];
+            lst_modes.append(lst[i]);
+            max_count = count;
+            count = 0;
         }
     }
-
     return lst_modes;
 }   
 
