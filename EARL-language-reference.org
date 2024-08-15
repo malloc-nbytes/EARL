@@ -310,13 +310,13 @@ let x = 4;
 let msg = "foo";
 
 match x {
-    1 -> { print("x is 1"); }
-    2 | 3 -> { print("x is two or three"); }
-    [1,2,3] when type(x) == "list" -> { print(x is a list and is [1,2,3]") };
-    4 when msg = "bar" -> { print("x is 4 with msg = bar"); }
-    4 when msg = "foo" -> { print("x is 4 with msg = foo"); }
-    _ when msg = "hello" -> { print("base case, 4 is something else and msg = hello"); }
-    _ -> { print("base case, 4 is something else"); }
+    1 -> { println("x is 1"); }
+    2 | 3 -> { println("x is two or three"); }
+    [1,2,3] when type(x) == "list" -> { println(x is a list and is [1,2,3]") };
+    4 when msg = "bar" -> { println("x is 4 with msg = bar"); }
+    4 when msg = "foo" -> { println("x is 4 with msg = foo"); }
+    _ when msg = "hello" -> { println("base case, 4 is something else and msg = hello"); }
+    _ -> { println("base case, 4 is something else"); }
 }
 #+end_example
 
@@ -360,6 +360,11 @@ Output:
 x is: 4
 true
 #+end_example
+
+#+begin_quote
+*Note*: For more information on =some= and =none=, see =option= in [[Datatypes]].
+For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
+#+end_quote
 
 * Ranges
 
@@ -421,7 +426,7 @@ for i in len(lst)-1 to 0 {
 #+begin_quote
 Foreach loops take a list, string, or tuple and will iterate over the elements.
 The most common way to use these loops is with a =range= (see [[Ranges][Ranges]]). Also, the iterator
-(usually the variable labeled as $i$), can be set as a reference to the expression.
+(usually the variable labeled as $i$), can be set as a reference (see [[Attributes]]) to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
 (see /ref example/ below).
 #+end_quote
@@ -505,9 +510,15 @@ statement is hit, it will immediately interpret that file.
 If there is no processing in the =@world= scope, only the
 function definitions and classes are gathered.
 
+If importing something from the stdlib, you want to start the import
+string with "std/" then the file name. It will look at the prefix that
+the project was compiled with that CMake set up (=-DINSTALL_PREFIX=) and append "EARL/" to it.
+If you did not do this, or this section does not make any sense, then the stdlib is most likely installed
+in =/usr/local/=. tl;dr make sure to put "std/" before the filename if using the stdlib.
+
 When importing, a depth can be specified. Use =full=
 if you want all public elements from the file (enums, functions, variables, classes, etc.),
-or =almost= if you only desire variables and enums. If none is provided, =full= will be used.
+or =almost= if you only desire public variables and enums. If none is provided, =full= will be used by default.
 #+end_quote
 
 ** Grammar
@@ -535,13 +546,15 @@ import "my-local-file.earl" almost
 file that has the module declared in it. If a file does
 not have it, the entire file is private. While modules
 do allow other files to access resources, only resources
-that have the =@pub= attribute.
+that have the =@pub= attribute (see [[Attributes]]).
 
 To access some identifer from a different module, you use =::= syntax
 (similar to C++ namespaces).
 
 *It is expected to have the module declaration at the top of the file.
-If you do not follow this rule, undefined behavior will occur.*
+If you do not follow this rule, undefined behavior can occur.* If you
+forget, the interpreter will throw a warning (with the exception of using the REPL
+as the REPL module is not required).
 #+end_quote
 
 ** Grammar
@@ -552,6 +565,15 @@ If you do not follow this rule, undefined behavior will occur.*
 
 ** Examples
 
+#+begin_example
+.
+├── main.earl
+└── my-math.earl
+
+1 directory, 2 files
+#+end_example
+
+#+begin_quote
 file: =my-math.earl=
 #+begin_example
 module MyMath
@@ -567,10 +589,11 @@ file: =main.earl=
 #+begin_example
 module Main
 
-import "my-math.earl" full
+import "my-math.earl"
 
 let s = MyMath::sum(1, 2);
 #+end_example
+#+end_quote
 
 * Attributes
 
@@ -581,7 +604,7 @@ Attributes embeds meta information into identifiers. You can have none, one, or 
 |----------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
 | =@pub=   | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
 | =@world= | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
-| =@ref=   | YES       | NO*       | NO            | NO            | Declares the variable to be a reference (see the note below) |
+| =@ref=   | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
 
 
 *NOTE:* =@ref= can be used in a function parameter and that function will
@@ -686,6 +709,9 @@ While classes are available, support for inheritance is not yet implemented.
    - All methods that have the =@pub= attribute will be visible outside of the class scope, including other modules (if the class is marked as =@pub=).
    - Everything that does not have =@pub= will only be visibile to the class scope.
 4. The use of the =this= keyword is optional.
+
+To use _public_ member variables or _public_ methods from outside of the class scope, you use the
+dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 #+end_quote
 
 ** Grammar
@@ -871,12 +897,13 @@ Currently they only work with =int= and =char=.
 
 #+begin_quote
 Currently, =slice= types are only useful for indexing a =list=. They allow you to
-take a slice of the list and create a new list of those elements.
+take a slice of the list and create a new list of those elements. They are two expressions
+separated by a colon =:=.
 
 A =slice= is defined as:
 
-Let $S$ be a "starting" <expr>, $E$ be an "ending" <expr>, and L be some nonempty list of elements
-where $S \le E$ in
+Let $S$ be a "starting" expression, $E$ be an "ending" expression, and L be some nonempty list of elements
+and $S \le E$ in
 
 $L_{S : E} = [L_{S}, L_{S+1}, L_{S+2}, ..., L_{E-1}]$
 
@@ -915,12 +942,12 @@ They can be created by using parenthesis and having elements be separated by com
 let tuple = (1, 'a', [1,2,3]);
 tuple.foreach(|x| { println(x); });
 
-let single_elem_tuple = (1,);
+let single_elem_tuple = (1,); # note the comma here
 println(single_elem_tuple[0]);
 #+end_example
 
-*Note*: If an empty =tuple= is desired (for whatever reason), you can use the intrinsic casting
-function =tuple()=.
+*Note*: If an empty =tuple= is desired (why would you ever want this?) you can use the intrinsic casting
+function =tuple()= i.e., =let empty_tuple = tuple()=.
 #+end_quote
 
 ** =option=
@@ -940,7 +967,7 @@ x = some(9);
 The underlying value (in the above example, =9=) can be extracted out
 using the =unwrap()= member intrinsic.
 
-Another important note is that the underlying value that the =option= holds are dynamic:
+Another important note is that the underlying value that the =option= holds is dynamic:
 
 #+begin_example
 let x = some(8);
@@ -954,7 +981,46 @@ println(x.unwrap()); # prints 'a'
 
 #+begin_quote
 Closures are anonymous functions that close in the outer scope. They
-can be used as functions or passed around as variables.
+can be used as functions or passed around as variables. The closure parameters
+are surrouned by vertical bars =||=. If a closure does not take any parameters,
+then the item inside of the vertical bars is =_= i.e., =|_|=.
+
+Here is an example of c++ lambdas and the equivalent EARL closures.
+
+#+begin_example
+std::function<int(int, int)> sum_and_modify_b = [&](int a, int &b) -> int {
+    std::cout << "in sum" << std::endl;
+    b *= 2;
+    return a+b;
+}
+
+std::function<int(void)> loop = [](void) -> void {
+    for (int i = 0; i < 10; ++i)
+        std::cout << i << std::endl;
+}
+
+std::vector<int> v = {1,2,3,4,5};
+v.for_each(v.begin(), v.end(), [](int k) { std::cout << k << std::endl; });
+#+end_example
+
+#+begin_example
+let sum_and_modify_b = |a, @ref b| {
+    println("in sum");
+    b *= 2;
+    return a+b;
+}
+
+let loop = |_| {
+    foreach i in 0..10 {
+        println(i);
+    }
+}
+
+let v = [1,2,3,4,5];
+v.foreach(|k| { println(k); });
+#+end_example
+
+Some other examples:
 
 #+begin_example
 fn take_sum_closure(f, a, b) {
@@ -989,7 +1055,7 @@ in sum
 
 #+begin_quote
 The =file= type is a file handler. It handles opening, closing, reading, and writing
-to files.
+to files. The way to get a file handler is by using the intrinsic function =open()= (see [[Intrinsics]]).
 
 *Note*: It is up to the user to =close()= the file handle.
 #+end_quote
@@ -1062,6 +1128,10 @@ println(arg1: any, arg2: any, ..., argN: any) -> unit
 #+end_example
 
 Will print all elements if it can. Adds a newline at the end.
+
+*Note*: If given a class or enum, both this function and =print()= will
+do an in-depth print showing all variables that they contain as well
+as their value. This is very helpful for debugging.
 #+end_quote
 
 ** TODO =fprint=
@@ -1238,9 +1308,10 @@ Member intrinsics are the same as intrinsics, except they are
 member functions (or methods) that types have built into them.
 You access these with the dot `.` notation i.e.,
 
-=let lst = [1,2,3];=
-
-=lst.rev();=
+#+begin_example
+let lst = [1,2,3];
+lst.rev();
+#+end_example
 #+end_quote
 
 ** =list= Implements
