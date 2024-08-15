@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprRange::ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive)
-    : m_start(std::move(start)), m_end(std::move(end)), m_inclusive(inclusive) {}
+ExprRange::ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive, std::shared_ptr<Token> tok)
+    : m_start(std::move(start)), m_end(std::move(end)), m_inclusive(inclusive), m_tok(tok) {}
 
 ExprType ExprRange::get_type() const {
     return ExprType::Term;

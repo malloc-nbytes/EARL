@@ -275,6 +275,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         return Interpreter::eval_stmt_block(clvalue->block(), mask);
     }
 
+    Err::err_wexpr(funccall);
     std::string msg = "function `" + id + "` has not been defined";
     throw InterpreterException(msg);
     return nullptr; // unreachable

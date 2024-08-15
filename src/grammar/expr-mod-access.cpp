@@ -28,8 +28,9 @@
 #include "ast.hpp"
 
 ExprModAccess::ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
-                             std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right)
-    : m_expr_ident(std::move(expr_ident)), m_right(std::move(right)) {}
+                             std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right,
+                             std::shared_ptr<Token> tok)
+    : m_expr_ident(std::move(expr_ident)), m_right(std::move(right)), m_tok(tok) {}
 
 ExprType
 ExprModAccess::get_type() const {

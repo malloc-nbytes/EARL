@@ -107,8 +107,9 @@ struct ExprTerm : public Expr {
 
 struct ExprTuple : public ExprTerm {
     std::vector<std::unique_ptr<Expr>> m_exprs;
+    std::shared_ptr<Token> m_tok;
 
-    ExprTuple(std::vector<std::unique_ptr<Expr>> exprs);
+    ExprTuple(std::vector<std::unique_ptr<Expr>> exprs, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -116,8 +117,9 @@ struct ExprTuple : public ExprTerm {
 struct ExprArrayAccess : public ExprTerm {
     std::unique_ptr<Expr> m_left;
     std::unique_ptr<Expr> m_expr;
+    std::shared_ptr<Token> m_tok;
 
-    ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr);
+    ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -147,9 +149,11 @@ struct ExprGet : public ExprTerm {
 struct ExprModAccess : public ExprTerm {
     std::unique_ptr<ExprIdent> m_expr_ident;
     std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> m_right;
+    std::shared_ptr<Token> m_tok;
 
     ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
-                  std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right);
+                  std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right,
+                  std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -214,8 +218,11 @@ struct ExprNone : public ExprTerm {
 struct ExprClosure : public ExprTerm {
     std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> m_args;
     std::unique_ptr<StmtBlock> m_block;
+    std::shared_ptr<Token> m_tok;
 
-    ExprClosure(std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block);
+    ExprClosure(std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args,
+                std::unique_ptr<StmtBlock> block,
+                std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -241,8 +248,9 @@ struct ExprFuncCall : public ExprTerm {
 struct ExprListLit : public ExprTerm {
     /// @brief The elements in the list
     std::vector<std::unique_ptr<Expr>> m_elems;
+    std::shared_ptr<Token> m_tok;
 
-    ExprListLit(std::vector<std::unique_ptr<Expr>> elems);
+    ExprListLit(std::vector<std::unique_ptr<Expr>> elems, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -251,8 +259,9 @@ struct ExprRange : public ExprTerm {
     std::unique_ptr<Expr> m_start;
     std::unique_ptr<Expr> m_end;
     bool m_inclusive;
+    std::shared_ptr<Token> m_tok;
 
-    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive);
+    ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -260,8 +269,9 @@ struct ExprRange : public ExprTerm {
 struct ExprSlice : public ExprTerm {
     std::optional<std::unique_ptr<Expr>> m_start;
     std::optional<std::unique_ptr<Expr>> m_end;
+    std::shared_ptr<Token> m_tok;
 
-    ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end);
+    ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
