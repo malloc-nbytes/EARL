@@ -251,6 +251,11 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
+        if (func->params_len() != params.size()) {
+            const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
+            Err::err_wexpr(funccall);
+            throw InterpreterException(msg);
+        }
         v = func;
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
@@ -293,6 +298,11 @@ eval_user_defined_function(ExprFuncCall *expr,
                            bool from_outside) {
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
+        if (func->params_len() != params.size()) {
+            const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
+            Err::err_wexpr(expr);
+            throw InterpreterException(msg);
+        }
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
             if (expr)
@@ -304,7 +314,7 @@ eval_user_defined_function(ExprFuncCall *expr,
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }
-    else if (ctx->closure_exists(id)) {
+    else if (ctx->closure_exists(id)) {//work
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
         auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());

@@ -1,8 +1,12 @@
 module Main
 
-class T [] {
-    let x = 2;
+# import "std/csv.earl"
+# CSV::parse("\"hello\" \"world\"");
+
+fn test(cl) {
+    cl();
 }
 
-
+let x = 3;
+test(|_| { println(x); });
 

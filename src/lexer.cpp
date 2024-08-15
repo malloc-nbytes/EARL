@@ -255,8 +255,12 @@ lex_file(std::string &src,
     while (i < src.size()) {
         char *lexeme = &src[i];
 
-        if (src[i] == '#')
-            while (src[i++] != '\n');
+        if (src[i] == '#') {
+            while (src[i] != '\n') {
+                ++i;
+                ++col;
+            }
+        }
 
         else if (src[i] == '\t' || src[i] == ' ') {
             ++col;
