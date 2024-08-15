@@ -22,8 +22,10 @@
 
 module Str
 
-@pub fn rmchar(s, c) {
-    unimplemented("std/str.earl:rmchar");
-    for i in 0 to len(s) {
+@pub fn to_list(@ref s) {
+    let lst = [];
+    foreach c in s {
+        lst.append(c);
     }
+    return c;
 }
