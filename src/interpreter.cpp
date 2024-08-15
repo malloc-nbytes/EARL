@@ -273,10 +273,12 @@ eval_user_defined_function_wo_params(const std::string &id,
     else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
-        earl::value::Closure *clvalue = nullptr;
-
-        clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
-
+        earl::value::Closure *clvalue =dynamic_cast<earl::value::Closure *>(cl->value().get());
+        if (clvalue->params_len() != params.size()) {
+            const std::string msg = "closure `"+id+"` expects "+std::to_string(clvalue->params_len())+" arguments but got "+std::to_string(params.size());
+            Err::err_wexpr(funccall);
+            throw InterpreterException(msg);
+        }
         v = clvalue;
         params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
         clvalue->load_parameters(params, clctx);
@@ -314,10 +316,15 @@ eval_user_defined_function(ExprFuncCall *expr,
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }
-    else if (ctx->closure_exists(id)) {//work
+    else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
         auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+        if (clvalue->params_len() != params.size()) {
+            const std::string msg = "closure `"+id+"` expects "+std::to_string(clvalue->params_len())+" arguments but got "+std::to_string(params.size());
+            Err::err_wexpr(expr);
+            throw InterpreterException(msg);
+        }
         clvalue->load_parameters(params, clctx);
         std::shared_ptr<Ctx> mask = clctx;
         return Interpreter::eval_stmt_block(clvalue->block(), mask);

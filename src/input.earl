@@ -1,12 +1,7 @@
 module Main
 
-# import "std/csv.earl"
-# CSV::parse("\"hello\" \"world\"");
+fn test(a,b,c,d) {return 1;}
 
-fn test(cl) {
-    cl();
-}
+fn test2(x, y, z) {return 1;}
 
-let x = 3;
-test(|_| { println(x); });
-
+test(1, 2, test2(1,2,3), 4);
