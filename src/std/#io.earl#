@@ -20,58 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Math
+module IO
 
-import "std/list.earl"
-
-@pub fn max(x, y) {
-    if x >= y {
-        return x;
-    }
-    return y;
+@pub enum Fd {
+    In = 0,
+    Out,
+    Err,
 }
 
-@pub fn min(x, y) {
-    if x <= y {
-        return x;
-    }
-    return y;
+# Get the contents of a file and
+# put it into a string.
+@pub fn file_to_str(fp) {
+    let f = open(fp, "r");
+    let s = f.read();
+    f.close();
+    return s;
 }
 
-@pub fn abs(x) {
-    if x < 0 {
-        return x * (0-1);
-    }
-    return x;
+@pub fn read_lines(fp) {
+    let content = file_to_str(fp);
+    return content.split("\n");
 }
 
-# Statistical Functions
-
-# Mode
-@pub fn mode(lst) {
-
-    if len(lst) == 0 {
-        return none;
-    }
-
-    # May have to return the first element if len is == 1
-    let count = 0;
-    let max_count = 0;
-    #let max_value = 0;
-    let lst_modes = [];
-
-    for i in 0 to len(lst) {
-        count = List::count(lst, lst[i]);
-
-        if count >= max_count {
-            lst_modes.append(lst[i]);
-        }
-    }
-
-    return lst_modes;
-}   
-
-
-# Median
-
-
+@pub fn rename(path_from, path_to) {
+    __internal_move__(path_from, path_to);
+}

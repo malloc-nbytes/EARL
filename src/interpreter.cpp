@@ -874,6 +874,8 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     }
     ctx->pop_scope();
     block->m_evald = true;
+    if(!result)
+        result = std::make_shared<earl::value::Void>();
     return result;
 }
 
