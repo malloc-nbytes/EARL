@@ -27,9 +27,8 @@
 
 #include "ast.hpp"
 
-StmtEnum::StmtEnum(std::unique_ptr<Token> id,
-                   std::vector<std::pair<std::unique_ptr<Token>,
-                   std::unique_ptr<Expr>>> elems,
+StmtEnum::StmtEnum(std::shared_ptr<Token> id,
+                   std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems,
                    uint32_t attrs)
     : m_id(std::move(id)), m_elems(std::move(elems)), m_attrs(attrs) {}
 

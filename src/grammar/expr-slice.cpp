@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprSlice::ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end)
-    : m_start(std::move(start)), m_end(std::move(end)) {}
+ExprSlice::ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end, std::shared_ptr<Token> tok)
+    : m_start(std::move(start)), m_end(std::move(end)), m_tok(tok) {}
 
 ExprType ExprSlice::get_type() const {
     return ExprType::Term;

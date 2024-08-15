@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-ExprIdent::ExprIdent(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+ExprIdent::ExprIdent(std::shared_ptr<Token> tok) : m_tok(tok) {}
 
 ExprType
 ExprIdent::get_type() const {

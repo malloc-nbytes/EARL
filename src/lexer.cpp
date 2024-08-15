@@ -40,19 +40,19 @@
 
 Lexer::Lexer() : m_hd(nullptr), m_tl(nullptr), m_len(0) {}
 
-void Lexer::append(std::unique_ptr<Token> tok) {
+void Lexer::append(std::shared_ptr<Token> tok) {
     if (!m_hd) {
-        m_hd = std::move(tok);
+        m_hd = tok;
         m_tl = m_hd.get();
     } else {
-        m_tl->m_next = std::move(tok);
+        m_tl->m_next = tok;
         m_tl = m_tl->m_next.get();
     }
     ++m_len;
 }
 
 void Lexer::append(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp) {
-    auto tok = std::make_unique<Token>(lexeme, type, row, col, fp);
+    auto tok = std::make_shared<Token>(lexeme, type, row, col, fp);
     this->append(std::move(tok));
 }
 
@@ -66,12 +66,12 @@ Token *Lexer::peek(size_t n) {
     return tok;
 }
 
-std::unique_ptr<Token> Lexer::next(void) {
+std::shared_ptr<Token> Lexer::next(void) {
     if (!m_hd)
         return nullptr;
 
-    std::unique_ptr<Token> tok = std::move(m_hd);
-    m_hd = std::move(tok->m_next);
+    std::shared_ptr<Token> tok = m_hd;
+    m_hd = tok->m_next;
 
     if (!m_hd)
         m_tl = nullptr;
@@ -83,7 +83,7 @@ std::unique_ptr<Token> Lexer::next(void) {
 void Lexer::discard(void) {
     if (!m_hd)
         return;
-    m_hd = std::move(m_hd->m_next);
+    m_hd = m_hd->m_next;
 }
 
 void Lexer::dump(void) {
@@ -99,26 +99,21 @@ static size_t consume_until(const std::string &s, const std::function<bool(char)
     size_t i;
     bool skip = false;
     for (i = 0; s[i]; ++i) {
-        if (!skip && predicate(s[i])) {
+        if (!skip && predicate(s[i]))
             return i;
-        }
-        if (s[i] == '\\') {
+        if (s[i] == '\\')
             skip = true;
-        }
-        else {
+        else
             skip = false;
-        }
     }
     return i;
 }
 
 static size_t find_comment_end(char *s) {
     size_t i;
-    for (i = 0; s[i]; ++i) {
-        if (s[i] == '\n') {
+    for (i = 0; s[i]; ++i)
+        if (s[i] == '\n')
             return i;
-        }
-    }
     return i;
 }
 
@@ -278,18 +273,10 @@ lex_file(std::string &src,
             size_t strlit_len = consume_until(lexeme+1, [](const char c) {
                 return c == '"';
             });
-            std::unique_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, strlit_len, TokenType::Strlit, row, col, fp);
+            std::shared_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, strlit_len, TokenType::Strlit, row, col, fp);
             lexer->append(std::move(tok));
             i += 1 + strlit_len + 1;
             col += 1 + strlit_len + 1;
-
-            // ++i;
-            // std::string strlit = "";
-            // while (src[i] != '"')
-            //     strlit += src[i++];
-            // lexer->append(strlit, TokenType::Strlit, row, col, fp);
-            // ++i;
-            // col += 1 + strlit.size() + 1;
         }
 
         else if (src[i] == '\'') {
