@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprUnary::ExprUnary(std::unique_ptr<Token> op, std::unique_ptr<Expr> expr)
-    : m_op(std::move(op)), m_expr(std::move(expr)) {}
+ExprUnary::ExprUnary(std::shared_ptr<Token> op, std::unique_ptr<Expr> expr)
+    : m_op(op), m_expr(std::move(expr)) {}
 
 ExprType
 ExprUnary::get_type() const {

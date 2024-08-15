@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprClosure::ExprClosure(std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block)
-    : m_args(std::move(args)), m_block(std::move(block)) {}
+ExprClosure::ExprClosure(std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block)
+    : m_args(args), m_block(std::move(block)) {}
 
 ExprType
 ExprClosure::get_type() const {

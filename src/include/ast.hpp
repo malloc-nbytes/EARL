@@ -125,9 +125,9 @@ struct ExprArrayAccess : public ExprTerm {
 /// @brief The Expression Identifier class
 struct ExprIdent : public ExprTerm {
     /// @brief The token of the identifier
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprIdent(std::unique_ptr<Token> tok);
+    ExprIdent(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -155,9 +155,9 @@ struct ExprModAccess : public ExprTerm {
 /// @brief The Expression Integer Literal class
 struct ExprIntLit : public ExprTerm {
     /// @brief The token of the integer literal
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprIntLit(std::unique_ptr<Token> tok);
+    ExprIntLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -165,9 +165,9 @@ struct ExprIntLit : public ExprTerm {
 /// @brief The Expression Float Literal class
 struct ExprFloatLit : public ExprTerm {
     /// @brief The token of the integer literal
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprFloatLit(std::unique_ptr<Token> tok);
+    ExprFloatLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -175,45 +175,45 @@ struct ExprFloatLit : public ExprTerm {
 /// @brief The Expression String Literal class
 struct ExprStrLit : public ExprTerm {
     /// @brief The token of the string literal
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprStrLit(std::unique_ptr<Token> tok);
+    ExprStrLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
 
 struct ExprCharLit : public ExprTerm {
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprCharLit(std::unique_ptr<Token> tok);
+    ExprCharLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
 
 /// @brief The Expression Bool class
 struct ExprBool : public ExprTerm {
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
     bool m_value;
 
-    ExprBool(std::unique_ptr<Token> tok, bool value);
+    ExprBool(std::shared_ptr<Token> tok, bool value);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
 
 /// @brief The Expression None class
 struct ExprNone : public ExprTerm {
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    ExprNone(std::unique_ptr<Token> tok);
+    ExprNone(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
 
 struct ExprClosure : public ExprTerm {
-    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_args;
+    std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> m_args;
     std::unique_ptr<StmtBlock> m_block;
 
-    ExprClosure(std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block);
+    ExprClosure(std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args, std::unique_ptr<StmtBlock> block);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };
@@ -263,10 +263,10 @@ struct ExprSlice : public ExprTerm {
 };
 
 struct ExprUnary : public Expr {
-    std::unique_ptr<Token> m_op;
+    std::shared_ptr<Token> m_op;
     std::unique_ptr<Expr> m_expr;
 
-    ExprUnary(std::unique_ptr<Token> op, std::unique_ptr<Expr> expr);
+    ExprUnary(std::shared_ptr<Token> op, std::unique_ptr<Expr> expr);
     ExprType get_type() const override;
 };
 
@@ -276,12 +276,12 @@ struct ExprBinary : public Expr {
     std::unique_ptr<Expr> m_lhs;
 
     /// @brief The token of the binary operator
-    std::unique_ptr<Token> m_op;
+    std::shared_ptr<Token> m_op;
 
     /// @brief The expression of the right hand side
     std::unique_ptr<Expr> m_rhs;
 
-    ExprBinary(std::unique_ptr<Expr> lhs, std::unique_ptr<Token> op, std::unique_ptr<Expr> rhs);
+    ExprBinary(std::unique_ptr<Expr> lhs, std::shared_ptr<Token> op, std::unique_ptr<Expr> rhs);
     ExprType get_type() const override;
 };
 
@@ -300,17 +300,17 @@ struct Stmt {
 struct StmtDef : public Stmt {
 
     /// @brief The token of the function name
-    std::unique_ptr<Token> m_id;
+    std::shared_ptr<Token> m_id;
 
-    std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> m_args;
+    std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> m_args;
 
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
 
     uint32_t m_attrs;
 
-    StmtDef(std::unique_ptr<Token> id,
-            std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args,
+    StmtDef(std::shared_ptr<Token> id,
+            std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 
@@ -320,14 +320,14 @@ struct StmtDef : public Stmt {
 /// @brief The Statement Let class
 struct StmtLet : public Stmt {
     /// @brief The token of the identifer
-    std::unique_ptr<Token> m_id;
+    std::shared_ptr<Token> m_id;
 
     /// @brief The expression of the Let Statement
     std::unique_ptr<Expr> m_expr;
 
     uint32_t m_attrs;
 
-    StmtLet(std::unique_ptr<Token> id, std::unique_ptr<Expr> expr, uint32_t attrs);
+    StmtLet(std::shared_ptr<Token> id, std::unique_ptr<Expr> expr, uint32_t attrs);
     StmtType stmt_type() const override;
 };
 
@@ -349,9 +349,9 @@ struct StmtMut : public Stmt {
     /// @brief The expression of the right hand side
     std::unique_ptr<Expr> m_right;
 
-    std::unique_ptr<Token> m_equals;
+    std::shared_ptr<Token> m_equals;
 
-    StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, std::unique_ptr<Token> m_equals);
+    StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, std::shared_ptr<Token> m_equals);
     StmtType stmt_type() const override;
 };
 
@@ -393,9 +393,9 @@ struct StmtReturn : public Stmt {
 
 /// @brief The Statement Break class
 struct StmtBreak : public Stmt {
-    std::unique_ptr<Token> m_tok;
+    std::shared_ptr<Token> m_tok;
 
-    StmtBreak(std::unique_ptr<Token> tok);
+    StmtBreak(std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
 };
 
@@ -414,7 +414,7 @@ struct StmtWhile : public Stmt {
 /// @brief The Statement For class
 struct StmtForeach : public Stmt {
     /// @brief The identifier of the enumerator variable
-    std::unique_ptr<Token> m_enumerator;
+    std::shared_ptr<Token> m_enumerator;
 
     std::unique_ptr<Expr> m_expr;
 
@@ -423,7 +423,7 @@ struct StmtForeach : public Stmt {
 
     uint32_t m_attrs;
 
-    StmtForeach(std::unique_ptr<Token> enumerator,
+    StmtForeach(std::shared_ptr<Token> enumerator,
                 std::unique_ptr<Expr> expr,
                 std::unique_ptr<StmtBlock> block,
                 uint32_t attrs);
@@ -433,7 +433,7 @@ struct StmtForeach : public Stmt {
 
 struct StmtFor : public Stmt {
     /// @brief The identifier of the enumerator variable
-    std::unique_ptr<Token> m_enumerator;
+    std::shared_ptr<Token> m_enumerator;
 
     /// @brief The starting expression
     std::unique_ptr<Expr> m_start;
@@ -444,7 +444,7 @@ struct StmtFor : public Stmt {
     /// @brief The block for the loop to execute
     std::unique_ptr<StmtBlock> m_block;
 
-    StmtFor(std::unique_ptr<Token> enumerator,
+    StmtFor(std::shared_ptr<Token> enumerator,
             std::unique_ptr<Expr> start,
             std::unique_ptr<Expr> end,
             std::unique_ptr<StmtBlock> block);
@@ -453,32 +453,32 @@ struct StmtFor : public Stmt {
 };
 
 struct StmtImport : public Stmt {
-    std::unique_ptr<Token> m_fp;
-    std::optional<std::unique_ptr<Token>> m_depth;
+    std::shared_ptr<Token> m_fp;
+    std::optional<std::shared_ptr<Token>> m_depth;
     uint32_t __m_depth;
 
-    StmtImport(std::unique_ptr<Token> fp, std::optional<std::unique_ptr<Token>> depth);
+    StmtImport(std::shared_ptr<Token> fp, std::optional<std::shared_ptr<Token>> depth);
     StmtType stmt_type() const override;
 };
 
 struct StmtMod : public Stmt {
-    std::unique_ptr<Token> m_id;
+    std::shared_ptr<Token> m_id;
 
-    StmtMod(std::unique_ptr<Token> id);
+    StmtMod(std::shared_ptr<Token> id);
     StmtType stmt_type() const override;
 };
 
 struct StmtClass : public Stmt {
-    std::unique_ptr<Token> m_id;
+    std::shared_ptr<Token> m_id;
     uint32_t m_attrs;
-    std::vector<std::unique_ptr<Token>> m_constructor_args;
+    std::vector<std::shared_ptr<Token>> m_constructor_args;
 
     std::vector<std::unique_ptr<StmtLet>> m_members;
     std::vector<std::unique_ptr<StmtDef>> m_methods;
 
-    StmtClass(std::unique_ptr<Token> id,
+    StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
-              std::vector<std::unique_ptr<Token>> constructor_args,
+              std::vector<std::shared_ptr<Token>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
               std::vector<std::unique_ptr<StmtDef>> methods);
 
@@ -508,12 +508,12 @@ struct StmtMatch : public Stmt {
 };
 
 struct StmtEnum : public Stmt {
-    std::unique_ptr<Token> m_id;
-    std::vector<std::pair<std::unique_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
+    std::shared_ptr<Token> m_id;
+    std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
     uint32_t m_attrs;
 
-    StmtEnum(std::unique_ptr<Token> id,
-             std::vector<std::pair<std::unique_ptr<Token>,
+    StmtEnum(std::shared_ptr<Token> id,
+             std::vector<std::pair<std::shared_ptr<Token>,
              std::unique_ptr<Expr>>> elems,
              uint32_t attrs);
     StmtType stmt_type() const override;

@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-ExprNone::ExprNone(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+ExprNone::ExprNone(std::shared_ptr<Token> tok) : m_tok(tok) {}
 
 ExprType
 ExprNone::get_type() const {

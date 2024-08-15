@@ -27,11 +27,11 @@
 
 #include "ast.hpp"
 
-StmtForeach::StmtForeach(std::unique_ptr<Token> enumerator,
+StmtForeach::StmtForeach(std::shared_ptr<Token> enumerator,
                          std::unique_ptr<Expr> expr,
                          std::unique_ptr<StmtBlock> block,
                          uint32_t attrs)
-    : m_enumerator(std::move(enumerator)),
+    : m_enumerator(enumerator),
       m_expr(std::move(expr)),
       m_block(std::move(block)),
       m_attrs(attrs) {}
