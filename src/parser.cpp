@@ -243,8 +243,15 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             left = new ExprCharLit(lexer.next());
         } break;
         case TokenType::Double_Period: {
+            if (!left) {
+                Err::err_wtok(lexer.peek(0));
+                std::string msg = "cannot use a range where the start expression is empty";
+                throw ParserException(msg);
+            }
+
             //lexer.discard(); // ..
             auto tok = lexer.next();
+
             if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
                 lexer.discard(); // =
                 right = Parser::parse_expr(lexer);
@@ -252,6 +259,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             }
             else {
                 right = Parser::parse_expr(lexer);
+                if (!right) {
+                    Err::err_wtok(lexer.peek(0));
+                    std::string msg = "cannot use a range where the end expression is empty";
+                    throw ParserException(msg);
+                }
                 left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), false, tok);
             }
         } break;
