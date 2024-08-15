@@ -40,10 +40,9 @@ Err::err_w2tok(Token *tok1, Token *tok2) {
 }
 
 void
-Err::err_wconflict(Token *tok1, Token *tok2) {
-    (void)tok1;
-    (void)tok2;
-    UNIMPLEMENTED("Err::err_wconflict");
+Err::err_wconflict(Token *newtok, Token *orig) {
+    err_wtok(newtok);
+    std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << " <---- conflict\n";
 }
 
 void
@@ -235,6 +234,8 @@ err_wunary(ExprUnary *expr) {
 
 void
 Err::err_wexpr(Expr *expr) {
+    if (!expr)
+        return;
     switch (expr->get_type()) {
     case ExprType::Term: err_wterm(dynamic_cast<ExprTerm *>(expr)); break;
     case ExprType::Binary: err_wbinary(dynamic_cast<ExprBinary *>(expr)); break;

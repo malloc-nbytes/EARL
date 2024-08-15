@@ -31,6 +31,11 @@ using namespace earl::variable;
 Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
     : m_id(id), m_value(value), m_attrs(attrs) {}
 
+Token *
+Obj::gettok(void) {
+    return m_id;
+}
+
 const std::string &Obj::id(void) const {
     return m_id->lexeme();
 }

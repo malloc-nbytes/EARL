@@ -1,2 +1,5 @@
 module Main
 
+fn test() {}
+
+fn test() {}

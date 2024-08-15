@@ -628,6 +628,8 @@ namespace earl {
             Obj(Token *id, std::shared_ptr<value::Obj> value, uint32_t attrs = 0);
             ~Obj() = default;
 
+            Token *gettok(void);
+
             /// @brief Get the identifier of this variable
             const std::string &id(void) const;
             /// @brief Check if a variable is in global scope
@@ -656,9 +658,10 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params, Token *tok);
             ~Obj() = default;
 
+            Token *gettok(void);
             const std::string &id(void) const;
             size_t params_len(void) const;
             StmtBlock *block(void) const;
@@ -672,6 +675,7 @@ namespace earl {
         private:
             StmtDef *m_stmtdef;
             std::vector<std::pair<Token *, uint32_t>> m_params;
+            Token *m_tok;
         };
     };
 };

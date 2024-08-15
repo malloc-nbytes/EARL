@@ -56,7 +56,8 @@ struct PackedERPreliminary {
 };
 
 static std::shared_ptr<earl::value::Obj>
-eval_user_defined_function(const std::string &id,
+eval_user_defined_function(ExprFuncCall *expr,
+                           const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx,
                            bool from_outside = false);
@@ -102,7 +103,8 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
 }
 
 static std::shared_ptr<earl::value::Obj>
-eval_class_instantiation(const std::string &id,
+eval_class_instantiation(ExprFuncCall *expr,
+                         const std::string &id,
                          std::vector<std::shared_ptr<earl::value::Obj>> &params,
                          std::shared_ptr<Ctx> &ctx,
                          bool ref) {
@@ -140,6 +142,7 @@ eval_class_instantiation(const std::string &id,
     if (params.size() != class_stmt->m_constructor_args.size()) {
         std::string msg = "Class `" + id + "` expects " + std::to_string(class_stmt->m_constructor_args.size()) +
                           " arguments but " + std::to_string(params.size()) + " were supplied";
+        Err::err_wexpr(expr);
         throw InterpreterException(msg);
     }
 
@@ -172,7 +175,7 @@ eval_class_instantiation(const std::string &id,
 
     if (has_constructor) {
         std::vector<std::shared_ptr<earl::value::Obj>> unused = {};
-        (void)eval_user_defined_function(constructor_id, unused, klass->ctx());
+        (void)eval_user_defined_function(nullptr, constructor_id, unused, klass->ctx());
     }
 
     // CLEARED!
@@ -251,6 +254,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         v = func;
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
+            Err::err_wexpr(funccall);
             throw InterpreterException(msg);
         }
 
@@ -282,7 +286,8 @@ eval_user_defined_function_wo_params(const std::string &id,
 }
 
 static std::shared_ptr<earl::value::Obj>
-eval_user_defined_function(const std::string &id,
+eval_user_defined_function(ExprFuncCall *expr,
+                           const std::string &id,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx,
                            bool from_outside) {
@@ -290,6 +295,8 @@ eval_user_defined_function(const std::string &id,
         auto func = ctx->function_get(id);
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
+            if (expr)
+                Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
@@ -308,6 +315,8 @@ eval_user_defined_function(const std::string &id,
 
     std::string msg = "function `" + id + "` has not been defined";
     throw InterpreterException(msg);
+    if (expr)
+        Err::err_wexpr(expr);
     return nullptr; // unreachable
 }
 
@@ -315,7 +324,7 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
-        auto class_instantiation = eval_class_instantiation(er.id, params, ctx, ref);
+        auto class_instantiation = eval_class_instantiation(static_cast<ExprFuncCall *>(er.extra), er.id, params, ctx, ref);
         return class_instantiation;
     }
     if (er.is_function_ident()) {
@@ -325,6 +334,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         if (er.is_member_intrinsic()) {
             if (!perp || !perp->lhs_getter_accessor) {
                 std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
+                if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }
             if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
@@ -346,9 +356,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 func = ctx->function_get(er.id);
             if ((!perp || !perp->this_) && (func && er.ctx != ctx && !func->is_pub())) {
                 std::string msg = "member variable `" + func->id() + "` is missing the @pub attribute";
+                if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }
-            return eval_user_defined_function(er.id, params, ctx);
+            return eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
         }
 
         // We need to have this function to gen the parameters so we
@@ -363,6 +374,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             auto var = ctx->variable_get(er.id);
             if ((!perp || !perp->this_) && (er.ctx != ctx && !var->is_pub())) {
                 std::string msg = "member variable `"+var->id()+"` is missing the @pub attribute";
+                if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }
             if (!ref)
@@ -381,8 +393,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
-        if (perp && perp->errtok)
-            Err::err_wtok(perp->errtok);
+        if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
         std::string msg = "variable `"+er.id+"` has not been declared";
         throw InterpreterException(msg);
     }
@@ -398,7 +409,7 @@ eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     const std::string &id = expr->m_tok->lexeme();
     if (id == "_")
         return ER(nullptr, ERT::Wildcard, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
-    return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/nullptr, /*ctx=*/ctx);
+    return ER(nullptr, ERT::Ident, /*id=*/id, /*extra=*/expr, /*ctx=*/ctx);
 }
 
 // RETURNS ACTUAL EVALUATED VALUE IN ER
@@ -490,12 +501,13 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         WorldCtx *world = dynamic_cast<WorldCtx *>(right_er.ctx.get());
         if (world->class_is_defined(right_er.id)) {
             if ((world->class_get(right_er.id)->m_attrs & static_cast<uint32_t>(Attr::Pub)) == 0) {
+                Err::err_wexpr(expr);
                 std::string msg = "class `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
                 throw InterpreterException(msg);
             }
         }
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(right_er.extra), ctx, ref);
-        auto class_instantiation = eval_class_instantiation(right_er.id, params, right_er.ctx, ref);
+        auto class_instantiation = eval_class_instantiation(static_cast<ExprFuncCall *>(right_er.extra), right_er.id, params, right_er.ctx, ref);
         return ER(class_instantiation, ERT::Literal, /*id=*/"", /*extra=*/nullptr, /*ctx=*/ctx);
     }
     if (right_er.is_function_ident()) {
@@ -503,6 +515,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         if (right_er.ctx->function_exists(right_er.id)) {
             if (!right_er.ctx->function_get(right_er.id)->is_pub()) {
                 std::string msg = "function `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+                Err::err_wexpr(left_ident);
                 throw InterpreterException(msg);
             }
         }
@@ -510,6 +523,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         else if (right_er.ctx->closure_exists(right_er.id)) {
             if (!right_er.ctx->function_get(right_er.id)->is_pub()) {
                 std::string msg = "variable `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+                Err::err_wexpr(left_ident);
                 throw InterpreterException(msg);
             }
         }
@@ -522,6 +536,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         if (right_er.ctx->variable_exists(right_er.id)) {
             if (!right_er.ctx->variable_get(right_er.id)->is_pub()) {
                 std::string msg = "variable `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+                Err::err_wexpr(left_ident);
                 throw InterpreterException(msg);
             }
             return ER(value, ERT::Literal);
@@ -530,6 +545,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         assert(value->type() == earl::value::Type::Enum);
         if (!dynamic_cast<earl::value::Enum *>(value.get())->is_pub()) {
             std::string msg = "enumeration `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+            Err::err_wexpr(left_ident);
             throw InterpreterException(msg);
         }
         return ER(value, ERT::Literal);
@@ -558,6 +574,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     if (left_er.id == "this") {
         if (ctx->type() != CtxType::Function) {
             std::string msg = "Must be in a function in a class context to use the `this` keyword";
+            Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
 
@@ -565,6 +582,7 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
         if (!fctx->in_class()) {
             std::string msg = "Must be in a class context when using the `this` keyword";
+            Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
 
@@ -631,6 +649,7 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, or non-str type";
+        Err::err_wexpr(expr);
         throw InterpreterException(msg);
     }
 }
@@ -673,6 +692,8 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
     if (lvalue->type() != rvalue->type()) {
         std::string msg = "type mismatch for generating a range";
+        Err::err_wexpr(expr->m_start.get());
+        Err::err_wexpr(expr->m_end.get());
         throw InterpreterException(msg);
     }
 
@@ -707,6 +728,7 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
     default: {
         std::string msg = "invalid type "+earl::value::type_to_str(lvalue->type())+"` for type range";
+        Err::err_wexpr(expr->m_start.get());
         throw InterpreterException(msg);
     } break;
     }
@@ -741,10 +763,16 @@ eval_expr_term_slice(ExprSlice *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     if (!e)
         e = std::make_shared<earl::value::Void>();
 
-    if (s->type() != earl::value::Type::Void && s->type() != earl::value::Type::Int)
+    if (s->type() != earl::value::Type::Void && s->type() != earl::value::Type::Int) {
+        if (expr->m_start.has_value())
+            Err::err_wexpr(expr->m_start.value().get());
         goto bad_type;
-    if (e->type() != earl::value::Type::Void && e->type() != earl::value::Type::Int)
+    }
+    if (e->type() != earl::value::Type::Void && e->type() != earl::value::Type::Int) {
+        if (expr->m_end.has_value())
+            Err::err_wexpr(expr->m_end.value().get());
         goto bad_type;
+    }
 
     return ER(std::make_shared<earl::value::Slice>(s, e), ERT::Literal);
 
@@ -835,8 +863,9 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(stmt->m_id->lexeme());
     else {
         if (ctx->variable_exists(stmt->m_id->lexeme())) {
-            Err::err_wtok(stmt->m_id.get());
             std::string msg = "variable `"+stmt->m_id->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(stmt->m_id->lexeme());
+            Err::err_wconflict(stmt->m_id.get(), conflict->gettok());
             throw InterpreterException(msg);
         }
     }
@@ -882,6 +911,8 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     }
     ctx->pop_scope();
     block->m_evald = true;
+    if (!result)
+        result = std::make_shared<earl::value::Void>();
     return result;
 }
 
@@ -889,8 +920,9 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
     const std::string &id = stmt->m_id->lexeme();
     if (ctx->function_exists(id)) {
-        Err::err_wtok(stmt->m_id.get());
         std::string msg = "function `"+id+"` has already been declared";
+        auto conflict = ctx->function_get(id);
+        Err::err_wconflict(stmt->m_id.get(), conflict->gettok());
         throw InterpreterException(msg);
     }
 
@@ -898,7 +930,7 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
     for (auto &entry : stmt->m_args)
         args.push_back(std::make_pair(entry.first.get(), entry.second));
 
-    auto func = std::make_shared<earl::function::Obj>(stmt, args);
+    auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get());
     ctx->function_add(func);
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -944,6 +976,8 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     ER right_er = Interpreter::eval_expr(stmt->m_right.get(), ctx, false);
 
     if (left_er.is_tuple_access()) {
+        Err::err_wexpr(stmt->m_left.get());
+        Err::err_wexpr(stmt->m_right.get());
         std::string msg = "cannot mutate tuple type as they are immutable";
         throw InterpreterException(msg);
     }
@@ -1016,8 +1050,9 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
         if (ctx->variable_exists(enumerator->id())) {
-            Err::err_wtok(stmt->m_enumerator.get());
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
             throw InterpreterException(msg);
         }
         ctx->variable_add(enumerator);
@@ -1042,8 +1077,9 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
         if (ctx->variable_exists(enumerator->id())) {
-            Err::err_wtok(stmt->m_enumerator.get());
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
             throw InterpreterException(msg);
         }
         ctx->variable_add(enumerator);
@@ -1068,8 +1104,9 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_raw()[0]);
         if (ctx->variable_exists(enumerator->id())) {
-            Err::err_wtok(stmt->m_enumerator.get());
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
             throw InterpreterException(msg);
         }
         ctx->variable_add(enumerator);
@@ -1087,6 +1124,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     else {
         std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
+        Err::err_wexpr(stmt->m_expr.get());
         throw InterpreterException(msg);
     }
 
@@ -1286,12 +1324,14 @@ static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() != CtxType::World) {
         std::string msg = "enum statements are only allowed in the @world scope";
+        Err::err_wtok(stmt->m_id.get());
         throw InterpreterException(msg);
     }
 
     WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
     if (wctx->enum_exists(stmt->m_id->lexeme())) {
+        Err::err_wtok(stmt->m_id.get());
         std::string msg = "enum `"+stmt->m_id->lexeme()+"` is already declared";
         throw InterpreterException(msg);
     }
@@ -1316,6 +1356,8 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
             found_unassigned = true;
             if (mixed_types) {
                 std::string msg = "if using datatypes other than integers inside of an enum, all entries must be explicitly assigned";
+                Err::err_wtok(p.first.get());
+                Err::err_wexpr(p.second.get());
                 throw InterpreterException(msg);
             }
             int actual = 0;
@@ -1330,6 +1372,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
 
     if (mixed_types && found_unassigned) {
         std::string msg = "if using datatypes other than integers inside of an enum, all entries must be explicitly assigned";
+        Err::err_wtok(stmt->m_id.get());
         throw InterpreterException(msg);
     }
 
