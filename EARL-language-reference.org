@@ -27,7 +27,7 @@ Create a new file called =hello.earl=
 #+begin_example
 module Main
 
-print("Hello World!");
+println("Hello World!");
 #+end_example
 
 Then run
@@ -41,6 +41,8 @@ Output:
 #+begin_example
 Hello World!
 #+end_example
+
+For more information on =module Main=, see [[Modules]].
 
 * Typing
 
@@ -176,32 +178,32 @@ it hits 1MB in file size.
 
 * Keywords
 
-|---------|
-| let     |
-| fn      |
-| if      |
-| else    |
-| while   |
-| for     |
-| foreach |
-| import  |
-| return  |
-| in      |
-| module  |
-| class   |
-| true    |
-| false   |
-| none    |
-| match   |
-| when    |
-| break   |
-| enum    |
-| almost  |
-| full    |
-| to      |
-| @ref    |
-| @pub    |
-| @world  |
+|-----------------------------------------|
+| let \rightarrow [[Variable Declarations]]   |
+| fn  \rightarrow [[Function Definitions]]    |
+| if \rightarrow [[Conditionals]]             |
+| else \rightarrow [[Conditionals]]           |
+| while \rightarrow [[While Loops]]           |
+| for \rightarrow [[For Loops]]               |
+| foreach \rightarrow [[Foreach Loops]]       |
+| in \rightarrow [[For Loops]], [[Foreach Loops]] |
+| to \rightarrow [[For Loops]], [[Foreach Loops]] |
+| import \rightarrow [[Imports]]              |
+| almost \rightarrow [[Imports]]              |
+| full \rightarrow [[Imports]]                |
+| module \rightarrow [[Modules]]              |
+| class \rightarrow [[Classes]]               |
+| match \rightarrow [[Pattern Matching]]      |
+| when  \rightarrow [[Pattern Matching]]      |
+| enum \rightarrow [[Enumerations]]           |
+| @ref \rightarrow [[Attributes]]             |
+| @pub \rightarrow [[Attributes]]             |
+| @world \rightarrow [[Attributes]]           |
+| return                                  |
+| true                                    |
+| false                                   |
+| none                                    |
+| break                                   |
 
 * Variable Declarations
 

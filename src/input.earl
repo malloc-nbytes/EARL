@@ -1,5 +1,27 @@
 module Main
 
-fn test() {}
+let x = some(4);
 
-fn test() {}
+match x {
+    none -> {
+        println("x is none");
+    }
+    some(3) -> {
+        println("x is some 3");
+    }
+    some(k) when k % 2 == 1 -> {
+        println("x is something and is odd");
+    }
+    some(k) -> {
+        # This branch will execute.
+        # `k` is the unwrapped value of `x`.
+        println("x is: ", k);
+        println(x.unwrap() == k);
+    }
+    some(_) -> {
+        println("x is something");
+    }
+    _ -> {
+        println("x is something else");
+    }
+}
