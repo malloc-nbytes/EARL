@@ -20,12 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Str
+module Char
 
-@pub fn to_list(@ref s) {
-    let lst = [];
-    foreach c in s {
-        lst.append(c);
-    }
-    return lst;
+@pub fn isalpha(c) {
+    let dc = c.ascii();
+    return (dc >= 'A'.ascii() && dc <= 'Z'.ascii()) || (dc >= 'a' && dc <= 'z');
+}
+
+@pub fn isnum(c) {
+    let dc = c.ascii();
+    return dc >= '0'.ascii() && dc <= '9'.ascii();
+}
+
+@pub fn isalnum(c) {
+    return isalpha(c) || isnum(c);
 }
