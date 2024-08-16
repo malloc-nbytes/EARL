@@ -1,7 +1,1 @@
 module Main
-
-fn test(a,b,c,d) {return 1;}
-
-fn test2(x, y, z) {return 1;}
-
-test(1, 2, test2(1,2,3), 4);

@@ -30,19 +30,19 @@
 
 void
 Err::err_wtok(Token *tok) {
-    std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << '\n';
+    std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
 }
 
 void
 Err::err_w2tok(Token *tok1, Token *tok2) {
-    std::cerr << tok1->m_fp << ':' << tok1->m_row << ':' << tok1->m_col << '\n';
-    std::cerr << tok2->m_fp << ':' << tok2->m_row << ':' << tok2->m_col << '\n';
+    std::cerr << tok1->m_fp << ':' << tok1->m_row << ':' << tok1->m_col << ":\n";
+    std::cerr << tok2->m_fp << ':' << tok2->m_row << ':' << tok2->m_col << ":\n";
 }
 
 void
 Err::err_wconflict(Token *newtok, Token *orig) {
     err_wtok(newtok);
-    std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << " <---- conflict\n";
+    std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << ": <---- conflict\n";
 }
 
 void
@@ -55,6 +55,7 @@ Err::warn(std::string msg, Token *tok) {
 
 static void
 spaces(int s) {
+    return;
     for (int i = 0; i < s; ++i)
         std::cout << ' ';
 }
@@ -72,10 +73,10 @@ err_wtuple(ExprTuple *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
 
-    if (expr->m_exprs.size() > 0)
-        std::cerr << "The folling will be ignored..." << std::endl;
-    for (auto &e : expr->m_exprs)
-        Err::err_wexpr(e.get(), s+2);
+    // if (expr->m_exprs.size() > 0)
+    //     std::cerr << "Ignoring..." << std::endl;
+    // for (auto &e : expr->m_exprs)
+    //     Err::err_wexpr(e.get(), s+2);
 }
 
 static void
@@ -83,10 +84,10 @@ err_wclosure(ExprClosure *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
 
-    if (expr->m_args.size() > 0)
-        std::cerr << "The folling will be ignored..." << std::endl;
-    for (auto &p : expr->m_args)
-        Err::err_wtok(p.first.get());
+    // if (expr->m_args.size() > 0)
+    //     std::cerr << "Ignoring..." << std::endl;
+    // for (auto &p : expr->m_args)
+    //     Err::err_wtok(p.first.get());
     // TODO: block
 }
 
@@ -106,9 +107,9 @@ static void
 err_warray_access(ExprArrayAccess *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    std::cerr << "The folling will be ignored..." << std::endl;
-    Err::err_wexpr(expr->m_left.get(), s+2);
-    Err::err_wexpr(expr->m_expr.get(), s+2);
+    // std::cerr << "Ignoring..." << std::endl;
+    // Err::err_wexpr(expr->m_left.get(), s+2);
+    // Err::err_wexpr(expr->m_expr.get(), s+2);
 }
 
 static void
@@ -141,14 +142,14 @@ static void
 err_wslice(ExprSlice *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    if (expr->m_start.has_value()) {
-        std::cerr << "The folling will be ignored..." << std::endl;
-        Err::err_wexpr(expr->m_start.value().get(), s+2);
-    }
-    if (expr->m_end.has_value()) {
-        std::cerr << "The folling will be ignored..." << std::endl;
-        Err::err_wexpr(expr->m_end.value().get(), s+2);
-    }
+    // if (expr->m_start.has_value()) {
+    //     std::cerr << "Ignoring..." << std::endl;
+    //     Err::err_wexpr(expr->m_start.value().get(), s+2);
+    // }
+    // if (expr->m_end.has_value()) {
+    //     std::cerr << "Ignoring..." << std::endl;
+    //     Err::err_wexpr(expr->m_end.value().get(), s+2);
+    // }
 }
 
 static void
@@ -156,9 +157,9 @@ err_wrange(ExprRange *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
 
-    std::cerr << "The folling will be ignored..." << std::endl;
-    Err::err_wexpr(expr->m_start.get(), s+2);
-    Err::err_wexpr(expr->m_end.get(), s+2);
+    // std::cerr << "Ignoring..." << std::endl;
+    // Err::err_wexpr(expr->m_start.get(), s+2);
+    // Err::err_wexpr(expr->m_end.get(), s+2);
 }
 
 static void
@@ -166,20 +167,18 @@ err_wlistlit(ExprListLit *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
 
-    std::cerr << "The folling will be ignored..." << std::endl;
-    for (auto &e : expr->m_elems)
-        Err::err_wexpr(e.get(), s+2);
+    // std::cerr << "Ignoring..." << std::endl;
+    // for (auto &e : expr->m_elems)
+    //     Err::err_wexpr(e.get(), s+2);
 }
 
 static void
 err_wfunccall(ExprFuncCall *expr, int s) {
     spaces(s);
-    Err::err_wtok(expr->m_tok.get());
-
-    std::cerr << "The folling will be ignored..." << std::endl;
     Err::err_wexpr(expr->m_left.get(), s+2);
-    for (auto &e : expr->m_params)
-        Err::err_wexpr(e.get(), s+2);
+    // std::cerr << "Ignoring..." << std::endl;
+    // for (auto &e : expr->m_params)
+    //     Err::err_wexpr(e.get(), s+2);
 }
 
 static void

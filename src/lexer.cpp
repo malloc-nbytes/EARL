@@ -263,8 +263,8 @@ lex_file(std::string &src,
         }
 
         else if (src[i] == '\t' || src[i] == ' ') {
-            ++col;
             ++i;
+            ++col;
         }
 
         else if (src[i] == '\n') {
@@ -288,6 +288,7 @@ lex_file(std::string &src,
             ++i;
             if (src[i] == '\\') {
                 ++i;
+                ++col;
                 std::string escape = "\\" + std::string(1, src[i]);
                 charlit = escape;
             }
@@ -306,7 +307,7 @@ lex_file(std::string &src,
                 lexer->append(ident, TokenType::Keyword, row, col, fp);
             else
                 lexer->append(ident, TokenType::Ident, row, col, fp);
-            col += ident.size();
+            col += ident.size()+1;
         }
 
         else if (isdigit(src[i])) {
@@ -324,7 +325,7 @@ lex_file(std::string &src,
             }
             else {
                 lexer->append(digit, TokenType::Intlit, row, col, fp);
-                col += digit.size();
+                col += digit.size()+1;
             }
         }
 
@@ -340,7 +341,7 @@ lex_file(std::string &src,
                         while (isdigit(src[i]))
                             digit += src[i++];
                         lexer->append(buf+digit, TokenType::Floatlit, row, col, fp);
-                        col += digit.size();
+                        col += digit.size()+1;
                     }
                     else
                         lexer->append(buf, (*it).second, row, col, fp);

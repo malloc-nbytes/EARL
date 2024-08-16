@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
 #include <vector>
 #include <iostream>
@@ -251,11 +250,6 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
-        if (func->params_len() != params.size()) {
-            const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
-            Err::err_wexpr(funccall);
-            throw InterpreterException(msg);
-        }
         v = func;
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
@@ -265,6 +259,12 @@ eval_user_defined_function_wo_params(const std::string &id,
 
         params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
 
+        if (func->params_len() != params.size()) {
+            const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
+            Err::err_wexpr(funccall);
+            throw InterpreterException(msg);
+        }
+
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         func->load_parameters(params, fctx);
         std::shared_ptr<Ctx> mask = fctx;
@@ -273,14 +273,14 @@ eval_user_defined_function_wo_params(const std::string &id,
     else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
-        earl::value::Closure *clvalue =dynamic_cast<earl::value::Closure *>(cl->value().get());
+        earl::value::Closure *clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
+        v = clvalue;
+        params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
         if (clvalue->params_len() != params.size()) {
             const std::string msg = "closure `"+id+"` expects "+std::to_string(clvalue->params_len())+" arguments but got "+std::to_string(params.size());
             Err::err_wexpr(funccall);
             throw InterpreterException(msg);
         }
-        v = clvalue;
-        params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
         clvalue->load_parameters(params, clctx);
         std::shared_ptr<Ctx> mask = clctx;
         return Interpreter::eval_stmt_block(clvalue->block(), mask);
