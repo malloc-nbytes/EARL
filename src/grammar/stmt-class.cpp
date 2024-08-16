@@ -27,12 +27,12 @@
 
 #include "ast.hpp"
 
-StmtClass::StmtClass(std::unique_ptr<Token> id,
+StmtClass::StmtClass(std::shared_ptr<Token> id,
                      uint32_t attrs,
-                     std::vector<std::unique_ptr<Token>> constructor_args,
+                     std::vector<std::shared_ptr<Token>> constructor_args,
                      std::vector<std::unique_ptr<StmtLet>> members,
                      std::vector<std::unique_ptr<StmtDef>> methods)
-    : m_id(std::move(id)), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
+    : m_id(id), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
       m_members(std::move(members)), m_methods(std::move(methods)) {}
 
 StmtType

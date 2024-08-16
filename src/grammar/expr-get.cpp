@@ -28,8 +28,9 @@
 #include "ast.hpp"
 
 ExprGet::ExprGet(std::unique_ptr<Expr> left,
-                 std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right)
-    : m_left(std::move(left)), m_right(std::move(right)) {}
+                 std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right,
+                 std::shared_ptr<Token> tok)
+    : m_left(std::move(left)), m_right(std::move(right)), m_tok(tok) {}
 
 ExprType
 ExprGet::get_type() const {

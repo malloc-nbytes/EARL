@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-StmtMod::StmtMod(std::unique_ptr<Token> id) : m_id(std::move(id)) {}
+StmtMod::StmtMod(std::shared_ptr<Token> id) : m_id(id) {}
 
 StmtType
 StmtMod::stmt_type() const {

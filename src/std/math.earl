@@ -62,10 +62,10 @@ import "std/list.earl"
     let lst_modes = [];
     
     for i in 0 to len(lst) {
-        
-        count = List::count(lst, lst[i]);
-
         if (List::find(lst_modes, lst[i]) == -1) {
+
+            count = List::count(lst, lst[i]);
+            
             if max_count == count {
                 lst_modes.append(lst[i]);
                 count = 0;

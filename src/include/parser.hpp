@@ -75,8 +75,6 @@ namespace Parser {
 
     /// @brief Parses an expression. It uses
     /// a recursive descent parser to determine precidence.
-    /// @note The precidence is as follows:
-    /// logical -> equalitative -> additive -> multiplicative -> primary.
     /// @param lexer The lexer with the linked list of tokens
     Expr *parse_expr(Lexer &lexer, char fail_on = '\0');
 
@@ -84,13 +82,13 @@ namespace Parser {
     /// to use to expect the next token to be an EARL keyword.
     /// @param lexer The lexer with the linked list of tokens
     /// @param expected The keyword to expect
-    std::unique_ptr<Token> parse_expect_keyword(Lexer &lexer, std::string expected);
+    std::shared_ptr<Token> parse_expect_keyword(Lexer &lexer, std::string expected);
 
     /// @brief A utility function for the parsers
     /// to use to expect the next token to be of type `expected`.
     /// @param lexer The lexer with the linked list of tokens
     /// @param expected The type to expect
-    std::unique_ptr<Token> parse_expect(Lexer &lexer, TokenType expected);
+    std::shared_ptr<Token> parse_expect(Lexer &lexer, TokenType expected);
 };
 
 #endif // PARSER_H

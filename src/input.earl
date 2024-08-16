@@ -1,5 +1,1 @@
 module Main
-
-import "std/os.earl"
-
-OS::move("../src/main.cpp", 1..10);

@@ -29,8 +29,8 @@
 
 StmtMut::StmtMut(std::unique_ptr<Expr> left,
                  std::unique_ptr<Expr> right,
-                 std::unique_ptr<Token> equals)
-    : m_left(std::move(left)), m_right(std::move(right)), m_equals(std::move(equals)) {}
+                 std::shared_ptr<Token> equals)
+    : m_left(std::move(left)), m_right(std::move(right)), m_equals(equals) {}
 
 StmtType
 StmtMut::stmt_type() const {

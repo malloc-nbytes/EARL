@@ -108,8 +108,16 @@ Option::copy(void) {
 
 bool
 Option::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Option::eq");
+    if (other->type() != Type::Option)
+        return false;
+    auto other_option = dynamic_cast<Option *>(other.get());
+    if (this->is_none() && other_option->is_some())
+        return false;
+    if (this->is_some() && other_option->is_none())
+        return false;
+    if (this->is_none() && other_option->is_none())
+        return true;
+    return m_value->eq(other);
 }
 
 std::string

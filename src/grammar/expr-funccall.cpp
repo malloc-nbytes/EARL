@@ -28,8 +28,9 @@
 #include "ast.hpp"
 
 ExprFuncCall::ExprFuncCall(std::unique_ptr<Expr> left,
-                           std::vector<std::unique_ptr<Expr>> params)
-    : m_left(std::move(left)), m_params(std::move(params)) {}
+                           std::vector<std::unique_ptr<Expr>> params,
+                           std::shared_ptr<Token> tok)
+    : m_left(std::move(left)), m_params(std::move(params)), m_tok(tok) {}
 
 ExprType
 ExprFuncCall::get_type() const {

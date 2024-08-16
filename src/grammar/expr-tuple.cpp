@@ -27,7 +27,8 @@
 
 #include "ast.hpp"
 
-ExprTuple::ExprTuple(std::vector<std::unique_ptr<Expr>> exprs) : m_exprs(std::move(exprs)) {}
+ExprTuple::ExprTuple(std::vector<std::unique_ptr<Expr>> exprs, std::shared_ptr<Token> tok)
+    : m_exprs(std::move(exprs)), m_tok(tok) {}
 
 ExprType
 ExprTuple::get_type() const {

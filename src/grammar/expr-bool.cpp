@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprBool::ExprBool(std::unique_ptr<Token> tok, bool value)
-    : m_tok(std::move(tok)), m_value(value) {}
+ExprBool::ExprBool(std::shared_ptr<Token> tok, bool value)
+    : m_tok(tok), m_value(value) {}
 
 ExprType
 ExprBool::get_type() const {
