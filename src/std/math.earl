@@ -24,6 +24,7 @@ module Math
 
 import "std/list.earl"
 
+
 @pub fn max(x, y) {
     if x >= y {
         return x;
@@ -48,30 +49,59 @@ import "std/list.earl"
 # Statistical Functions
 
 # Mode
+# This function returns a list of all modes that appear at the
+# highest frequency in the given list in the order modes are found.
 @pub fn mode(lst) {
+    
     if len(lst) == 0 {
         return none;
     }
+    
     let count = 0;
     let max_count = 0;
     let lst_modes = [];
+    
     for i in 0 to len(lst) {
+        
         count = List::count(lst, lst[i]);
-        if max_count == count && (List::find(lst, lst[i]) != -1){
-            lst_modes.append(lst[i]);
-            count = 0;
-        }
-        if max_count < count {
-            lst_modes = [];
-            lst_modes.append(lst[i]);
-            max_count = count;
-            count = 0;
+
+        if (List::find(lst_modes, lst[i]) == -1) {
+            if max_count == count {
+                lst_modes.append(lst[i]);
+                count = 0;
+            }
+
+            if max_count < count {
+                lst_modes = [];
+                lst_modes.append(lst[i]);
+                max_count = count;
+                count = 0;
+             }
         }
     }
     return lst_modes;
-}   
+}
 
+# Mean
+# This function returns the mean (Average in a dataset) of a given list
+@pub fn mean(lst) {
+    return (float(List::sum(lst)) / float(len(lst)));
+}
 
 # Median
+# This function sorts and then returns the middle number of a given list
+@pub fn median(lst) {
+    let x = len(lst);
+    List::quicksort(lst, List::DEFAULT_INT_ASCEND_QUICKSORT);
+    #println(lst);
+    let middle = float((x + 1)) / float(2);
+    return middle;
+}
 
+    
+# Mathematical Constants
+# pi
+@pub let pi = 3.141592653589793;
 
+# Euler's number 
+@pub let e = 2.718281828459045;
