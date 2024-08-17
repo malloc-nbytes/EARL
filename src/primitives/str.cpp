@@ -235,8 +235,8 @@ Str::value_raw(void) {
 }
 
 void
-Str::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     if (other->type() == Type::Str) {
         Str *otherstr = dynamic_cast<Str *>(other.get());
         m_value.clear();
@@ -269,10 +269,10 @@ Str::to_cxxstring(void) {
 }
 
 void
-Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     std::vector<std::shared_ptr<Char>> prev = {};
     std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Char> k) {prev.push_back(k);});
-    this->mutate(other); // does type checking
+    this->mutate(other, stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: {
         for (int i = prev.size()-1; i >= 0; --i)

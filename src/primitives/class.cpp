@@ -79,7 +79,7 @@ Class::boolean(void) {
 }
 
 void
-Class::mutate(const std::shared_ptr<Obj> &other) {
+Class::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("Class::mutate");
 }
@@ -104,7 +104,7 @@ Class::to_cxxstring(void) {
 }
 
 void
-Class::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Class::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on class type";

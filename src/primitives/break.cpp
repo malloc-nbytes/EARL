@@ -49,7 +49,7 @@ Break::boolean(void) {
 }
 
 void
-Break::mutate(const std::shared_ptr<Obj> &other) {
+Break::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("Break::mutate");
 }
@@ -71,7 +71,7 @@ Break::to_cxxstring(void) {
 }
 
 void
-Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Break::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)op;
     (void)other;
     assert(false && "unreachable");

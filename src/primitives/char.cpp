@@ -39,6 +39,7 @@ Char::Char(std::string value) {
         case 'n': m_value = '\n'; break;
         case 't': m_value = '\t'; break;
         case 'r': m_value = '\r'; break;
+        case '\'': m_value = '\''; break;
         default: {
             std::string msg = "Unknown escape sequence `"+value+"`";
             throw InterpreterException(msg);
@@ -84,8 +85,8 @@ Char::boolean(void) {
 }
 
 void
-Char::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Char::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     auto c = dynamic_cast<Char *>(other.get());
     m_value = c->value();
 }
@@ -108,7 +109,7 @@ Char::to_cxxstring(void) {
 }
 
 void
-Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on char type";

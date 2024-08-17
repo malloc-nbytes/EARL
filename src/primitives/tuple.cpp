@@ -144,7 +144,7 @@ Tuple::boolean(void) {
 }
 
 void
-Tuple::mutate(const std::shared_ptr<Obj> &other) {
+Tuple::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     std::string msg = "unable to mutate value of type `tuple` as it is immutable";
     throw InterpreterException(msg);
@@ -183,7 +183,7 @@ Tuple::to_cxxstring(void) {
 }
 
 void
-Tuple::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Tuple::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "unable to mutate value of type `tuple` as it is immutable";

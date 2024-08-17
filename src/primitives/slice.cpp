@@ -62,8 +62,8 @@ Slice::boolean(void) {
 }
 
 void
-Slice::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Slice::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     auto othersl = dynamic_cast<Slice *>(other.get());
     m_start = othersl->start();
     m_end = othersl->end();
@@ -85,7 +85,7 @@ Slice::to_cxxstring(void) {
 }
 
 void
-Slice::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Slice::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     UNIMPLEMENTED("Slice::spec_mutate");
 }
 

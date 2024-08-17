@@ -90,8 +90,8 @@ Option::boolean(void) {
 }
 
 void
-Option::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Option::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
 
     auto *other2 = dynamic_cast<Option *>(other.get());
 
@@ -128,7 +128,7 @@ Option::to_cxxstring(void) {
 }
 
 void
-Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on option type";

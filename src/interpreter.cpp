@@ -1152,13 +1152,13 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     auto r = unpack_ER(right_er, ctx, false);
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
-        l->mutate(r);
+        l->mutate(r, stmt);
     } break;
     case TokenType::Plus_Equals:
     case TokenType::Minus_Equals:
     case TokenType::Asterisk_Equals:
     case TokenType::Forwardslash_Equals: {
-        l->spec_mutate(stmt->m_equals.get(), r);
+        l->spec_mutate(stmt->m_equals.get(), r, stmt);
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());
@@ -1336,9 +1336,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
 
         if (lt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()+1));
+            start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
         else if (gt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()-1));
+            start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
     }
 
     ctx->variable_remove(enumerator->id());
