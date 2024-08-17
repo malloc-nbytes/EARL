@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Classes allowing duplicate member variables.
+- Precedence changes to ranges and slices.
 
 ## [0.2.4] - 2024-14-8
 

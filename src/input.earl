@@ -1,8 +1,5 @@
 module Main
 
-class T [t] {
-    @pub let x, y = t;
-}
+let lst = -1..10;
 
-let t = T((1, 2));
-println(t.x, ' ', t.y);
+println(lst);
