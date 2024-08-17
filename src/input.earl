@@ -1,5 +1,2 @@
 module Main
 
-let lst = -1..10;
-
-println(lst);

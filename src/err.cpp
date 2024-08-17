@@ -31,6 +31,20 @@
 void
 Err::err_wtok(Token *tok) {
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
+    Token *it = tok;
+    while (it && it->type() != TokenType::Semicolon) {
+        std::cerr << it->lexeme();
+        if (it->m_next && it->m_next->type() != TokenType::Semicolon)
+            std::cerr << ' ';
+        it = it->m_next.get();
+    }
+    if (it && it->type() == TokenType::Semicolon)
+        std::cerr << ';';
+    std::cerr << '\n';
+
+    for (int i = 0; i < tok->lexeme().size(); ++i)
+        std::cerr << '^';
+    std::cerr << std::endl;
 }
 
 void
