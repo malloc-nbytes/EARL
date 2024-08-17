@@ -125,7 +125,7 @@ struct Token {
     std::string m_fp;
 
     /// @brief A pointer to the next token
-    std::unique_ptr<Token> m_next;
+    std::shared_ptr<Token> m_next;
 
     /// @brief Get the `lexeme` of the current token
     std::string &lexeme(void);
@@ -142,7 +142,7 @@ struct Token {
 /// @param row The row of the token
 /// @param col The column of the token
 /// @param fp The filepath of the token
-std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp);
+std::shared_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp);
 
 /// @brief Prints tokens from the current token to the end of line.
 /// @param tok The token to start from

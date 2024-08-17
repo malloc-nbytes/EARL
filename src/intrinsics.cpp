@@ -329,13 +329,15 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                          std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 2, "___internal_rename__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_move__");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_move__");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "__internal_move__");
 
     auto path_obj = params[0];
     auto to_obj = params[1];
     std::string path_from = path_obj->to_cxxstring();
     std::string path_to = to_obj->to_cxxstring();
-   
+
     if (std::filesystem::exists(path_from)) {
         std::filesystem::rename(path_from, path_to);
     }

@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprListLit::ExprListLit(std::vector<std::unique_ptr<Expr>> elems)
-    : m_elems(std::move(elems)) {}
+ExprListLit::ExprListLit(std::vector<std::unique_ptr<Expr>> elems, std::shared_ptr<Token> tok)
+    : m_elems(std::move(elems)), m_tok(tok) {}
 
 ExprType
 ExprListLit::get_type() const {

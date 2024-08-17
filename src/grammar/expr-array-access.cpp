@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-ExprArrayAccess::ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr)
-    : m_left(std::move(left)), m_expr(std::move(expr)) {}
+ExprArrayAccess::ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr, std::shared_ptr<Token> tok)
+    : m_left(std::move(left)), m_expr(std::move(expr)), m_tok(tok) {}
 
 ExprType
 ExprArrayAccess::get_type() const {

@@ -36,8 +36,8 @@
 #include "token.hpp"
 #include "lexer.hpp"
 
-std::string tokentype_to_str(TokenType type)
-{
+std::string
+tokentype_to_str(TokenType type) {
     switch (type) {
     case TokenType::Lparen:
         return "LPAREN";
@@ -156,20 +156,24 @@ Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, st
     std::for_each(start, start+len, [&](char c) {this->m_lexeme.push_back(c);});
 }
 
-std::unique_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
+std::shared_ptr<Token>
+token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
     (void)lexer;
-    return std::make_unique<Token>(start, len, type, row, col, fp);
+    return std::make_shared<Token>(start, len, type, row, col, fp);
 }
 
-std::string &Token::lexeme(void) {
+std::string &
+Token::lexeme(void) {
     return m_lexeme;
 }
 
-TokenType Token::type(void) const {
+TokenType
+Token::type(void) const {
     return m_type;
 }
 
-void token_dump_until_eol(Token *tok, int padding) {
+void
+token_dump_until_eol(Token *tok, int padding) {
     for (int i = 0; i < padding; ++i)
         std::cout << ' ';
     while (tok && tok->type() != TokenType::Semicolon) {

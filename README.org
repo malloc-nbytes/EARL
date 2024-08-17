@@ -29,7 +29,7 @@ For the manual on how to use the language, see [[./EARL-language-reference.html]
 We have moved from =autotools= to [[https://cmake.org/][cmake]], so the new required tools are:
 1. =c++17=
 2. =cmake= (at least v3.25.1)
-3. =doxygen= (optional) (for EARL source code documentation)
+3. =doxygen= (optional) (for c++ source code documentation [good for doing development on the interpreter])
 
 Users compiling for the first time should do
 
@@ -48,7 +48,7 @@ This will create the Makefile. Use =make <opt>= where =<opt>= is one of,
 - =make= \rightarrow builds the project
 - =make clean= \rightarrow cleans the project
 - =make test= \rightarrow build the project and runs tests (stdlib *must* be installed, see [[Installation][Installation]])
-- =make docs= \rightarrow generate the documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
+- =make docs= \rightarrow generate the c++ source code documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 #+end_quote
 
 * Installation

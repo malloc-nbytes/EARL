@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-StmtBreak::StmtBreak(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+StmtBreak::StmtBreak(std::shared_ptr<Token> tok) : m_tok(tok) {}
 
 StmtType
 StmtBreak::stmt_type() const {

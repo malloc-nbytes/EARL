@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-ExprIntLit::ExprIntLit(std::unique_ptr<Token> tok) : m_tok(std::move(tok)) {}
+ExprIntLit::ExprIntLit(std::shared_ptr<Token> tok) : m_tok(tok) {}
 
 ExprType
 ExprIntLit::get_type() const {

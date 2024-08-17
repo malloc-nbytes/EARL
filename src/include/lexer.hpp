@@ -42,7 +42,7 @@ struct Token;
 /// @brief The API for lexical analysis of a document.
 struct Lexer {
     /// @brief Head of the linked list
-    std::unique_ptr<Token> m_hd;
+    std::shared_ptr<Token> m_hd;
 
     /// @brief Tail of the linked list
     Token *m_tl;
@@ -59,7 +59,7 @@ struct Lexer {
     /// @brief Get the current token, namely the one
     /// that `m_hd` is currently at. It will
     /// return that one and update the head accordingly.
-    std::unique_ptr<Token> next(void);
+    std::shared_ptr<Token> next(void);
 
     /// @brief Peek `n` tokens into the lexer. This does not
     /// consume the current token, only views `n` tokens ahead.
@@ -69,7 +69,7 @@ struct Lexer {
 
     /// @brief Append a token to the lexer at the end of the tail.
     /// @param tok The token to append
-    void append(std::unique_ptr<Token> tok);
+    void append(std::shared_ptr<Token> tok);
 
     void append(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
 

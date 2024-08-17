@@ -20,12 +20,34 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module Str
+module CSV
 
-@pub fn to_list(@ref s) {
-    let lst = [];
-    foreach c in s {
-        lst.append(c);
+import "std/char.earl"
+
+fn consume_until(s, predicate) {
+    let i = 0;
+    let buf = "";
+    while predicate(s[i]) {
+        buf += s[i];
+        i += 1;
     }
-    return lst;
+    return (buf, i+1);
+}
+
+@pub fn parse(src) {
+    unimplemented("Char::parse");
+
+    let res = [];
+    let lst = [];
+    src.foreach(|c| { lst.append(c); });
+
+    for i in 0 to len(lst) {
+        let c = src[i];
+        if c == '"' {
+            let parts = consume_until(lst[(i+1):_], |d| { d == '"'; });
+            println("appending: ", parts[0]);
+            res.append(parts[0]);
+            i += parts[1];
+        }
+    }
 }

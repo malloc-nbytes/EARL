@@ -67,7 +67,7 @@
 #define __INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn)                                                        \
     do {                                                                                                              \
         if (!earl::value::type_is_compatable(arg->type(), ty)) {        \
-            std::string __Msg = "the "+std::to_string(loc)+"argument of function `" fn "` expects type `" \
+            std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type `" \
                 +earl::value::type_to_str(ty)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
             throw InterpreterException(__Msg);                          \
         }                                                               \

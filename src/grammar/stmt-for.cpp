@@ -27,11 +27,11 @@
 
 #include "ast.hpp"
 
-StmtFor::StmtFor(std::unique_ptr<Token> enumerator,
+StmtFor::StmtFor(std::shared_ptr<Token> enumerator,
                  std::unique_ptr<Expr> start,
                  std::unique_ptr<Expr> end,
                  std::unique_ptr<StmtBlock> block)
-    : m_enumerator(std::move(enumerator)),
+    : m_enumerator(enumerator),
       m_start(std::move(start)),
       m_end(std::move(end)),
       m_block(std::move(block)) {}

@@ -27,11 +27,11 @@
 
 #include "ast.hpp"
 
-StmtDef::StmtDef(std::unique_ptr<Token> id,
-                 std::vector<std::pair<std::unique_ptr<Token>, uint32_t>> args,
+StmtDef::StmtDef(std::shared_ptr<Token> id,
+                 std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args,
                  std::unique_ptr<StmtBlock> block,
                  uint32_t attrs) :
-    m_id(std::move(id)), m_args(std::move(args)),
+    m_id(id), m_args(args),
     m_block(std::move(block)),
     m_attrs(attrs) {}
 
