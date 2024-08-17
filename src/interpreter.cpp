@@ -1302,15 +1302,21 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<earl::value::Obj> result = nullptr;
+
     ER start_er = Interpreter::eval_expr(stmt->m_start.get(), ctx, false);
     ER end_er = Interpreter::eval_expr(stmt->m_end.get(), ctx, false);
 
-    auto start_expr = unpack_ER(start_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
+    auto start_expr = unpack_ER(start_er, ctx, false); // DO NOT MAKE THIS TRUE! BREAKS LOOPS ENTIRELY
     auto end_expr = unpack_ER(end_er, ctx, true); // POSSIBLE BREAK, WAS FALSE
 
     auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), start_expr);
 
-    assert(!ctx->variable_exists(enumerator->id()));
+    if (ctx->variable_exists(enumerator->id())) {
+        std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+        auto conflict = ctx->variable_get(enumerator->id());
+        Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
+        throw InterpreterException(msg);
+    }
     ctx->variable_add(enumerator);
 
     earl::value::Int *start = dynamic_cast<earl::value::Int *>(start_expr.get());

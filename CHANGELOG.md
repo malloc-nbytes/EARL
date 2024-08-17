@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.2.5] - 2024-17-8
+## [0.2.6] - 2024-17-8
 
 ### Added
 - Added new Char module to stdlib
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Classes allowing duplicate member variables.
 - Precedence changes to ranges and slices.
+- MAJOR Fixed nested for loop bug where the second enumerator would point to the first if set to it.
 
 ## [0.2.4] - 2024-14-8
 

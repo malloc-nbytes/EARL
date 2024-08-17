@@ -38,7 +38,7 @@
 
 /// The different types a statement can be.
 enum class StmtType {
-    Def,
+    Def=0,
     Let,
     Block,
     Mut,
