@@ -62,6 +62,7 @@
 #define LIST_ENTRIES ":show"
 #define IMPORT ":i"
 #define DISCARD ":d"
+#define EE ":q!"
 
 static std::string REPL_HIST = "";
 
@@ -400,6 +401,12 @@ discard(std::vector<std::string> &lines) {
 }
 
 void
+ee(void) {
+    log("Hey! This is not vim! D:\n", red);
+    log("Did you mean " QUIT "\n", gray);
+}
+
+void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
@@ -420,6 +427,8 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         exit(0);
     else if (lst[0] == DISCARD)
         discard(lines);
+    else if (lst[0] == EE)
+        ee();
     else if (lst[0] == HELP)
         help();
     else
