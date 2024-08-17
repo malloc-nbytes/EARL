@@ -1,3 +1,7 @@
 module Main
 
-println('a' != 'a');
+let lst = [1,2,3];
+
+lst += "hi";
+
+

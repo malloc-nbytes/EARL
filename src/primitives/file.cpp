@@ -159,7 +159,7 @@ File::boolean(void) {
 }
 
 void
-File::mutate(const std::shared_ptr<Obj> &other) {
+File::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("File::mutate");
 }
@@ -182,7 +182,7 @@ File::to_cxxstring(void) {
 }
 
 void
-File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on file type";

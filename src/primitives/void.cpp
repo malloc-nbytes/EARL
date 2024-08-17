@@ -51,8 +51,8 @@ Void::boolean(void) {
 }
 
 void
-Void::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Void::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
 }
 
 std::shared_ptr<Obj>
@@ -72,7 +72,7 @@ Void::to_cxxstring(void) {
 }
 
 void
-Void::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Void::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on unit type";

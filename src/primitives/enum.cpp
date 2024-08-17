@@ -85,7 +85,7 @@ Enum::boolean(void) {
 }
 
 void
-Enum::mutate(const std::shared_ptr<Obj> &other) {
+Enum::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("Enum::mutate");
 }
@@ -107,7 +107,7 @@ Enum::to_cxxstring(void) {
 }
 
 void
-Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on enum type";

@@ -23,7 +23,7 @@
 module Queue
 
 @pub class T [init] {
-    m_lst = init;
+    let m_lst = init;
 
     @pub fn empty() {
         return len(m_lst) == 0;

@@ -159,6 +159,7 @@ struct ClassCtx : public Ctx {
     void clear___m_class_constructor_tmp_args(void);
     std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
     get___m_class_constructor_tmp_args(void);
+    bool variable_exists_wo__m_class_constructor_tmp_args(const std::string &id);
     std::shared_ptr<ClassCtx> deep_copy(void);
     std::shared_ptr<ClassCtx> shallow_copy(void);
     std::vector<std::shared_ptr<earl::variable::Obj>> get_printable_members(void);

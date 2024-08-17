@@ -23,15 +23,15 @@
 module Set
 
 class Node [value] {
-    @pub value = value;
-    @pub left = none;
-    @pub right = none;
+    @pub let value = value;
+    @pub let left = none;
+    @pub let right = none;
 }
 
 @pub
 class T [init, compar] {
-    root = none;
-    compar = compar;
+    let root = none;
+    let compar = compar;
 
     fn constructor() {
         for i in 0 to len(init) {

@@ -31,6 +31,20 @@
 void
 Err::err_wtok(Token *tok) {
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
+    Token *it = tok;
+    while (it && it->type() != TokenType::Semicolon) {
+        std::cerr << it->lexeme();
+        if (it->m_next && it->m_next->type() != TokenType::Semicolon)
+            std::cerr << ' ';
+        it = it->m_next.get();
+    }
+    if (it && it->type() == TokenType::Semicolon)
+        std::cerr << ';';
+    std::cerr << '\n';
+
+    for (int i = 0; i < tok->lexeme().size(); ++i)
+        std::cerr << '^';
+    std::cerr << std::endl;
 }
 
 void
@@ -282,4 +296,108 @@ Err::err_wexpr(Expr *expr, int s) {
     }
 }
 
+void
+err_wdefstmt(StmtDef *stmt) {
+    assert(false);
+}
 
+void
+err_wletstmt(StmtLet *stmt) {
+    assert(false);
+}
+
+void
+err_wblockstmt(StmtBlock *stmt) {
+    assert(false);
+}
+
+void
+err_wmutstmt(StmtMut *stmt) {
+    Err::err_wexpr(stmt->m_left.get());
+    Err::err_wtok(stmt->m_equals.get());
+    Err::err_wexpr(stmt->m_right.get());
+}
+
+void
+err_wstmtexpr(StmtExpr *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtif(StmtIf *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtreturn(StmtReturn *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtbreak(StmtBreak *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtwhile(StmtWhile *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtfor(StmtFor *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtforeach(StmtForeach *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtimport(StmtImport *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtmod(StmtMod *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtclass(StmtClass *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtmatch(StmtMatch *stmt) {
+    assert(false);
+}
+
+void
+err_wstmtenum(StmtEnum *stmt) {
+    assert(false);
+}
+
+void
+Err::err_wstmt(Stmt *stmt) {
+    switch (stmt->stmt_type()) {
+    case StmtType::Def: assert(false); break;
+    case StmtType::Let: assert(false); break;
+    case StmtType::Block: assert(false); break;
+    case StmtType::Mut: err_wmutstmt(dynamic_cast<StmtMut *>(stmt)); break;
+    case StmtType::Stmt_Expr: assert(false); break;
+    case StmtType::If: assert(false); break;
+    case StmtType::Return: assert(false); break;
+    case StmtType::Break: assert(false); break;
+    case StmtType::While: assert(false); break;
+    case StmtType::For: assert(false); break;
+    case StmtType::Foreach: assert(false); break;
+    case StmtType::Import: assert(false); break;
+    case StmtType::Mod: assert(false); break;
+    case StmtType::Class: assert(false); break;
+    case StmtType::Match: assert(false); break;
+    case StmtType::Enum: assert(false); break;
+    default:
+        assert(false && "unreachable");
+    }
+}

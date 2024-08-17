@@ -96,7 +96,7 @@ Closure::boolean(void) {
 }
 
 void
-Closure::mutate(const std::shared_ptr<Obj> &other) {
+Closure::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("Closure::mutate");
 }
@@ -121,7 +121,7 @@ Closure::to_cxxstring(void) {
 }
 
 void
-Closure::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Closure::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on closure type";

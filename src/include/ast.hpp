@@ -334,14 +334,14 @@ struct StmtDef : public Stmt {
 /// @brief The Statement Let class
 struct StmtLet : public Stmt {
     /// @brief The token of the identifer
-    std::shared_ptr<Token> m_id;
+    std::vector<std::shared_ptr<Token>> m_ids;
 
     /// @brief The expression of the Let Statement
     std::unique_ptr<Expr> m_expr;
 
     uint32_t m_attrs;
 
-    StmtLet(std::shared_ptr<Token> id, std::unique_ptr<Expr> expr, uint32_t attrs);
+    StmtLet(std::vector<std::shared_ptr<Token>> ids, std::unique_ptr<Expr> expr, uint32_t attrs);
     StmtType stmt_type() const override;
 };
 

@@ -71,10 +71,89 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::shared_ptr<earl::value::Obj>
-eval_stmt_let_wcustom_buffer(StmtLet *stmt,
+eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
+                                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
+                                             std::shared_ptr<Ctx> &ctx,
+                                             bool ref) {
+    bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
+
+    {
+        int i = 0;
+        for (auto &id : stmt->m_ids) {
+            if (dynamic_cast<ClassCtx *>(ctx.get())->variable_exists_wo__m_class_constructor_tmp_args(id->lexeme())) {
+                std::string msg = "variable `"+id->lexeme()+"` is already declared";
+                auto conflict = ctx->variable_get(id->lexeme());
+                Err::err_wconflict(stmt->m_ids.at(i).get(), conflict->gettok());
+                throw InterpreterException(msg);
+                ++i;
+            }
+        }
+    }
+
+    if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end())
+        value = buffer.find(rhs.id)->second->value();
+    else
+        value = unpack_ER(rhs, ctx, ref);
+
+    if (!rhs.is_class_instant()) {
+        PackedERPreliminary perp(nullptr);
+        value = unpack_ER(rhs, ctx, _ref, /*perp=*/&perp);
+    }
+    else
+        value = unpack_ER(rhs, ctx, _ref);
+
+    if (value->type() != earl::value::Type::Tuple) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg = "cannot declare multiple variables that do not equate to a tuple expression";
+        throw InterpreterException(msg);
+    }
+
+    auto tuple = dynamic_cast<earl::value::Tuple *>(value.get());
+
+    if (tuple->value().size() != stmt->m_ids.size()) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg =
+            "the number of variables declared ("
+            +std::to_string(stmt->m_ids.size())
+            +") does not match the size of the tuple expression ("
+            +std::to_string(tuple->value().size())
+            +")";
+        throw InterpreterException(msg);
+    }
+
+    int i = 0;
+    for (auto &tok : stmt->m_ids) {
+        if (tok->lexeme() == "_")
+            continue;
+
+        std::shared_ptr<earl::variable::Obj> var
+            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
+        ctx->variable_add(var);
+        ++i;
+    }
+
+    return std::make_shared<earl::value::Void>();
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_let_wcustom_buffer_in_class(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
                              std::shared_ptr<Ctx> &ctx,
                              bool ref) {
+    if (stmt->m_ids.size() > 1)
+        return eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(stmt, buffer, ctx, ref);
+
+    assert(ctx->type() == CtxType::Class);
+
+    const std::string &id = stmt->m_ids.at(0)->lexeme();
+    if (dynamic_cast<ClassCtx *>(ctx.get())->variable_exists_wo__m_class_constructor_tmp_args(id)) {
+        std::string msg = "variable `"+id+"` is already declared";
+        auto conflict = ctx->variable_get(id);
+        Err::err_wconflict(stmt->m_ids.at(0).get(), conflict->gettok());
+        throw InterpreterException(msg);
+    }
 
     bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
@@ -92,11 +171,11 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
     else
         value = unpack_ER(rhs, ctx, _ref);
 
-    if (stmt->m_id->lexeme() == "_")
+    if (id == "_")
         return std::make_shared<earl::value::Void>();
 
     std::shared_ptr<earl::variable::Obj> var
-        = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
     ctx->variable_add(var);
     return std::make_shared<earl::value::Void>();
 }
@@ -157,10 +236,10 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     // Eval member variables
     for (auto &member : class_stmt->m_members)
-        (void)eval_stmt_let_wcustom_buffer(member.get(),
-                                           class_ctx->get___m_class_constructor_tmp_args(),
-                                           klass->ctx(),
-                                           true);
+        (void)eval_stmt_let_wcustom_buffer_in_class(member.get(),
+                                                    class_ctx->get___m_class_constructor_tmp_args(),
+                                                    klass->ctx(),
+                                                    true);
 
     const std::string constructor_id = "constructor";
     bool has_constructor = false;
@@ -874,15 +953,85 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 std::shared_ptr<earl::value::Obj>
-eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
+eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() == CtxType::Closure)
         // Special case for when we declare a variable in a recursive closure.
-        dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(stmt->m_id->lexeme());
+        for (auto &id : stmt->m_ids)
+            dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id->lexeme());
     else {
-        if (ctx->variable_exists(stmt->m_id->lexeme())) {
-            std::string msg = "variable `"+stmt->m_id->lexeme()+"` is already declared";
-            auto conflict = ctx->variable_get(stmt->m_id->lexeme());
-            Err::err_wconflict(stmt->m_id.get(), conflict->gettok());
+        int i = 0;
+        for (auto &id : stmt->m_ids) {
+            if (ctx->variable_exists(id->lexeme())) {
+                std::string msg = "variable `"+id->lexeme()+"` is already declared";
+                auto conflict = ctx->variable_get(id->lexeme());
+                Err::err_wconflict(stmt->m_ids.at(i).get(), conflict->gettok());
+                throw InterpreterException(msg);
+                ++i;
+            }
+        }
+    }
+
+    bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
+
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+
+    if (!rhs.is_class_instant()) {
+        PackedERPreliminary perp(nullptr);
+        value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+    }
+    else
+        value = unpack_ER(rhs, ctx, ref);
+
+    if (value->type() != earl::value::Type::Tuple) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg = "cannot declare multiple variables that do not equate to a tuple expression";
+        throw InterpreterException(msg);
+    }
+
+    auto tuple = dynamic_cast<earl::value::Tuple *>(value.get());
+
+    if (tuple->value().size() != stmt->m_ids.size()) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg =
+            "the number of variables declared ("
+            +std::to_string(stmt->m_ids.size())
+            +") does not match the size of the tuple expression ("
+            +std::to_string(tuple->value().size())
+            +")";
+        throw InterpreterException(msg);
+    }
+
+    int i = 0;
+    for (auto &tok : stmt->m_ids) {
+        if (tok->lexeme() == "_")
+            continue;
+
+        std::shared_ptr<earl::variable::Obj> var
+            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
+        ctx->variable_add(var);
+        ++i;
+    }
+
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
+    if (stmt->m_ids.size() > 1)
+        return eval_stmt_let_wmultiple_vars(stmt, ctx);
+
+    const std::string &id = stmt->m_ids.at(0)->lexeme();
+
+    if (ctx->type() == CtxType::Closure)
+        // Special case for when we declare a variable in a recursive closure.
+        dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id);
+    else {
+        if (ctx->variable_exists(id)) {
+            std::string msg = "variable `"+id+"` is already declared";
+            auto conflict = ctx->variable_get(id);
+            Err::err_wconflict(stmt->m_ids.at(0).get(), conflict->gettok());
             throw InterpreterException(msg);
         }
     }
@@ -899,11 +1048,11 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         value = unpack_ER(rhs, ctx, ref);
 
-    if (stmt->m_id->lexeme() == "_")
+    if (id == "_")
         return std::make_shared<earl::value::Void>();
 
     std::shared_ptr<earl::variable::Obj> var
-        = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
+        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
     ctx->variable_add(var);
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -1003,13 +1152,13 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     auto r = unpack_ER(right_er, ctx, false);
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
-        l->mutate(r);
+        l->mutate(r, stmt);
     } break;
     case TokenType::Plus_Equals:
     case TokenType::Minus_Equals:
     case TokenType::Asterisk_Equals:
     case TokenType::Forwardslash_Equals: {
-        l->spec_mutate(stmt->m_equals.get(), r);
+        l->spec_mutate(stmt->m_equals.get(), r, stmt);
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());
@@ -1138,6 +1287,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
+        ctx->variable_remove(enumerator->id());
     }
     else {
         std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
@@ -1186,9 +1336,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
 
         if (lt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()+1));
+            start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
         else if (gt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()-1));
+            start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
     }
 
     ctx->variable_remove(enumerator->id());

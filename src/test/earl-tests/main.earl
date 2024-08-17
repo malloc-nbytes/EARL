@@ -1,7 +1,7 @@
 module Test
 
 import "point-class.1.earl"
-import "test-std.earl"
+# import "test-std.earl"
 import "other.1.earl" full
 
 fn test_tuple1() {

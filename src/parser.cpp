@@ -213,17 +213,6 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             else
                 left = std::move(tuple[0]);
         } break;
-        case TokenType::Colon: {
-            //lexer.discard(); // :
-            auto tok = lexer.next();
-            right = Parser::parse_expr(lexer);
-            std::optional<std::unique_ptr<Expr>> l = {}, r = {};
-            if (left)
-                l = std::unique_ptr<Expr>(left);
-            if (right)
-                r = std::unique_ptr<Expr>(right);
-            return new ExprSlice(std::move(l), std::move(r), tok);
-        } break;
         case TokenType::Period: {
             auto tok = lexer.next();
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer), tok);
@@ -240,31 +229,31 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         case TokenType::Charlit: {
             left = new ExprCharLit(lexer.next());
         } break;
-        case TokenType::Double_Period: {
-            if (!left) {
-                Err::err_wtok(lexer.peek(0));
-                std::string msg = "cannot use a range where the start expression is empty";
-                throw ParserException(msg);
-            }
+        // case TokenType::Double_Period: {
+        //     if (!left) {
+        //         Err::err_wtok(lexer.peek(0));
+        //         std::string msg = "cannot use a range where the start expression is empty";
+        //         throw ParserException(msg);
+        //     }
 
-            //lexer.discard(); // ..
-            auto tok = lexer.next();
+        //     //lexer.discard(); // ..
+        //     auto tok = lexer.next();
 
-            if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
-                lexer.discard(); // =
-                right = Parser::parse_expr(lexer);
-                left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), true, tok);
-            }
-            else {
-                right = Parser::parse_expr(lexer);
-                if (!right) {
-                    Err::err_wtok(lexer.peek(0));
-                    std::string msg = "cannot use a range where the end expression is empty";
-                    throw ParserException(msg);
-                }
-                left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), false, tok);
-            }
-        } break;
+        //     if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
+        //         lexer.discard(); // =
+        //         right = Parser::parse_expr(lexer);
+        //         left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), true, tok);
+        //     }
+        //     else {
+        //         right = Parser::parse_expr(lexer);
+        //         if (!right) {
+        //             Err::err_wtok(lexer.peek(0));
+        //             std::string msg = "cannot use a range where the end expression is empty";
+        //             throw ParserException(msg);
+        //         }
+        //         left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), false, tok);
+        //     }
+        // } break;
         case TokenType::Lbracket: {
             if (left) {
                 //lexer.discard(); // [
@@ -416,9 +405,54 @@ parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
     return lhs;
 }
 
+static Expr *
+parse_slice_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_logical_expr(lexer, fail_on);
+    Token *cur = lexer.peek();
+    while (cur && (cur->type() == TokenType::Colon)) {
+        auto tok = lexer.next(); // :
+        Expr *rhs = Parser::parse_expr(lexer, fail_on);
+        std::optional<std::unique_ptr<Expr>> l = {}, r = {};
+        if (lhs)
+            l = std::unique_ptr<Expr>(lhs);
+        if (rhs)
+            r = std::unique_ptr<Expr>(rhs);
+        lhs = new ExprSlice(std::move(l), std::move(r), tok);
+        cur = lexer.peek();
+    }
+    return lhs;
+}
+
+static Expr *
+parse_range_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_slice_expr(lexer, fail_on);
+    Token *cur = lexer.peek();
+    while (cur && (cur->type() == TokenType::Double_Period)) {
+        auto tok = lexer.next(); // ..
+        Expr *rhs = nullptr;
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
+            lexer.discard(); // =
+            rhs = Parser::parse_expr(lexer);
+            lhs = new ExprRange(std::unique_ptr<Expr>(lhs), std::unique_ptr<Expr>(rhs), true, tok);
+        }
+        else {
+            rhs = Parser::parse_expr(lexer);
+            if (!rhs) {
+                Err::err_wtok(lexer.peek(0));
+                std::string msg = "cannot use a range where the end expression is empty";
+                throw ParserException(msg);
+            }
+            lhs = new ExprRange(std::unique_ptr<Expr>(lhs), std::unique_ptr<Expr>(rhs), false, tok);
+        }
+
+        cur = lexer.peek();
+    }
+    return lhs;
+}
+
 Expr *
 Parser::parse_expr(Lexer &lexer, char fail_on) {
-    return parse_logical_expr(lexer, fail_on);
+    return parse_range_expr(lexer, fail_on);
 }
 
 std::unique_ptr<StmtMut>
@@ -467,7 +501,14 @@ Parser::parse_stmt_if(Lexer &lexer) {
 std::unique_ptr<StmtLet>
 Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
-    std::shared_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
+
+    std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
+
+    while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma) {
+        lexer.discard(); // ,
+        ids.push_back(parse_expect(lexer, TokenType::Ident));
+    }
+
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
 
@@ -478,7 +519,7 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr), attrs);
+    return std::make_unique<StmtLet>(std::move(ids), std::unique_ptr<Expr>(expr), attrs);
 }
 
 std::unique_ptr<StmtExpr>
@@ -666,17 +707,11 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
         assert(tok);
 
         switch (tok->type()) {
-        case TokenType::Ident: {
-            std::shared_ptr<Token> member_id = Parser::parse_expect(lexer, TokenType::Ident);
-            (void)Parser::parse_expect(lexer, TokenType::Equals);
-            Expr *member_expr = Parser::parse_expr(lexer);
-            (void)Parser::parse_expect(lexer, TokenType::Semicolon);
-            members.push_back(std::make_unique<StmtLet>(std::move(member_id),
-                                                        std::unique_ptr<Expr>(member_expr),
-                                                        inclass_attrs));
-        } break;
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_FN)
+            if (tok->lexeme() == COMMON_EARLKW_LET) {
+                members.push_back(Parser::parse_stmt_let(lexer, inclass_attrs));
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_FN)
                 methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs));
             else {
                 Err::err_wtok(tok);

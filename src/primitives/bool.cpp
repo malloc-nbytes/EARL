@@ -84,8 +84,8 @@ Bool::boolean(void) {
 }
 
 void
-Bool::mutate(const std::shared_ptr<Obj> &other) {
-    ASSERT_MUTATE_COMPAT(this, other.get());
+Bool::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     m_value = dynamic_cast<Bool *>(other.get())->m_value;
 }
 
@@ -106,7 +106,7 @@ Bool::to_cxxstring(void) {
 }
 
 void
-Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     Err::err_wtok(op);
     std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on bool type";

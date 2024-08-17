@@ -56,7 +56,7 @@ Module::boolean(void) {
 }
 
 void
-Module::mutate(const std::shared_ptr<Obj> &other) {
+Module::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
     UNIMPLEMENTED("Module::mutate");
 }
@@ -79,7 +79,7 @@ Module::to_cxxstring(void) {
 }
 
 void
-Module::spec_mutate(Token *op, const std::shared_ptr<Obj> &other) {
+Module::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)op;
     (void)other;
     assert(false && "unreachable");
