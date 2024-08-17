@@ -250,7 +250,7 @@ lex_file(std::string &src,
         {"::", TokenType::Double_Colon},
     };
 
-    int row = 1, col = 1;
+    int row = 1, col = 0;
     size_t i = 0;
     while (i < src.size()) {
         char *lexeme = &src[i];
@@ -268,7 +268,7 @@ lex_file(std::string &src,
         }
 
         else if (src[i] == '\n') {
-            col = 1;
+            col = 0;
             ++row;
             ++i;
         }
