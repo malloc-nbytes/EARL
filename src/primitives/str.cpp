@@ -211,6 +211,11 @@ Str::binop(Token *op, std::shared_ptr<Obj> &other) {
             return std::make_shared<Bool>(this->value() == std::string(1, dynamic_cast<Char *>(other.get())->value()));
         return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
     } break;
+    case TokenType::Bang_Equals: {
+        if (other->type() == Type::Char)
+            return std::make_shared<Bool>(this->value() != std::string(1, dynamic_cast<Char *>(other.get())->value()));
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other.get())->value());
+    } break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid binary operator";
