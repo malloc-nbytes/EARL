@@ -467,7 +467,14 @@ Parser::parse_stmt_if(Lexer &lexer) {
 std::unique_ptr<StmtLet>
 Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
-    std::shared_ptr<Token> id = parse_expect(lexer, TokenType::Ident);
+
+    std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
+
+    while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma) {
+        lexer.discard(); // ,
+        ids.push_back(parse_expect(lexer, TokenType::Ident));
+    }
+
     (void)parse_expect(lexer, TokenType::Equals);
     Expr *expr = Parser::parse_expr(lexer);
 
@@ -478,7 +485,7 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(id), std::unique_ptr<Expr>(expr), attrs);
+    return std::make_unique<StmtLet>(std::move(ids), std::unique_ptr<Expr>(expr), attrs);
 }
 
 std::unique_ptr<StmtExpr>
@@ -666,17 +673,11 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
         assert(tok);
 
         switch (tok->type()) {
-        case TokenType::Ident: {
-            std::shared_ptr<Token> member_id = Parser::parse_expect(lexer, TokenType::Ident);
-            (void)Parser::parse_expect(lexer, TokenType::Equals);
-            Expr *member_expr = Parser::parse_expr(lexer);
-            (void)Parser::parse_expect(lexer, TokenType::Semicolon);
-            members.push_back(std::make_unique<StmtLet>(std::move(member_id),
-                                                        std::unique_ptr<Expr>(member_expr),
-                                                        inclass_attrs));
-        } break;
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_FN)
+            if (tok->lexeme() == COMMON_EARLKW_LET) {
+                members.push_back(Parser::parse_stmt_let(lexer, inclass_attrs));
+            }
+            else if (tok->lexeme() == COMMON_EARLKW_FN)
                 methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs));
             else {
                 Err::err_wtok(tok);

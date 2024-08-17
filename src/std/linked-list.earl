@@ -23,12 +23,12 @@
 module SinglyLL
 
 class Node [value] {
-    @pub value = value;
-    @pub next = none;
+    @pub let value = value;
+    @pub let next = none;
 }
 
 @pub class T [init] {
-    hd = none;
+    let hd = none;
 
     fn constructor() {
         for i in 0 to len(init) {

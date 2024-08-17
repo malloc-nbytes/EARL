@@ -1,3 +1,9 @@
 module Main
 
-println('a' != 'a');
+import "../src/other.earl"
+
+let lst = [1,2,3,4,5];
+Other::modify_ref_list(lst);
+
+assert(lst == [2,3,4,5,6]);
+println(lst);

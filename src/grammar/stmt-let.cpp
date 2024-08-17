@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-StmtLet::StmtLet(std::shared_ptr<Token> id, std::unique_ptr<Expr> expr, uint32_t attrs)
-    : m_id(id), m_expr(std::move(expr)), m_attrs(attrs) {}
+StmtLet::StmtLet(std::vector<std::shared_ptr<Token>> ids, std::unique_ptr<Expr> expr, uint32_t attrs)
+    : m_ids(ids), m_expr(std::move(expr)), m_attrs(attrs) {}
 
 StmtType
 StmtLet::stmt_type() const {

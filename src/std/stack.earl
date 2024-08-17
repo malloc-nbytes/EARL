@@ -23,7 +23,7 @@
 module Stack
 
 @pub class T [init] {
-    @ref lst = init;
+    @ref let lst = init;
 
     @pub fn push(x) {
         this.lst.append(x);
