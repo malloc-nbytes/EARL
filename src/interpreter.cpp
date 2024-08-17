@@ -71,20 +71,89 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::shared_ptr<earl::value::Obj>
-eval_stmt_let_wmultiple_vars_wcustom_buffer(StmtLet *stmt,
+eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
                                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
                                              std::shared_ptr<Ctx> &ctx,
                                              bool ref) {
-    assert(false);
+    bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+    ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
+
+    {
+        int i = 0;
+        for (auto &id : stmt->m_ids) {
+            if (dynamic_cast<ClassCtx *>(ctx.get())->variable_exists_wo__m_class_constructor_tmp_args(id->lexeme())) {
+                std::string msg = "variable `"+id->lexeme()+"` is already declared";
+                auto conflict = ctx->variable_get(id->lexeme());
+                Err::err_wconflict(stmt->m_ids.at(i).get(), conflict->gettok());
+                throw InterpreterException(msg);
+                ++i;
+            }
+        }
+    }
+
+    if (rhs.is_ident() && buffer.find(rhs.id) != buffer.end())
+        value = buffer.find(rhs.id)->second->value();
+    else
+        value = unpack_ER(rhs, ctx, ref);
+
+    if (!rhs.is_class_instant()) {
+        PackedERPreliminary perp(nullptr);
+        value = unpack_ER(rhs, ctx, _ref, /*perp=*/&perp);
+    }
+    else
+        value = unpack_ER(rhs, ctx, _ref);
+
+    if (value->type() != earl::value::Type::Tuple) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg = "cannot declare multiple variables that do not equate to a tuple expression";
+        throw InterpreterException(msg);
+    }
+
+    auto tuple = dynamic_cast<earl::value::Tuple *>(value.get());
+
+    if (tuple->value().size() != stmt->m_ids.size()) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg =
+            "the number of variables declared ("
+            +std::to_string(stmt->m_ids.size())
+            +") does not match the size of the tuple expression ("
+            +std::to_string(tuple->value().size())
+            +")";
+        throw InterpreterException(msg);
+    }
+
+    int i = 0;
+    for (auto &tok : stmt->m_ids) {
+        if (tok->lexeme() == "_")
+            continue;
+
+        std::shared_ptr<earl::variable::Obj> var
+            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
+        ctx->variable_add(var);
+        ++i;
+    }
+
+    return std::make_shared<earl::value::Void>();
 }
 
 static std::shared_ptr<earl::value::Obj>
-eval_stmt_let_wcustom_buffer(StmtLet *stmt,
+eval_stmt_let_wcustom_buffer_in_class(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
                              std::shared_ptr<Ctx> &ctx,
                              bool ref) {
-    if (stmt->m_ids.size() > 0)
-        return eval_stmt_let_wmultiple_vars_wcustom_buffer(stmt, buffer, ctx, ref);
+    if (stmt->m_ids.size() > 1)
+        return eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(stmt, buffer, ctx, ref);
+
+    assert(ctx->type() == CtxType::Class);
+
+    const std::string &id = stmt->m_ids.at(0)->lexeme();
+    if (dynamic_cast<ClassCtx *>(ctx.get())->variable_exists_wo__m_class_constructor_tmp_args(id)) {
+        std::string msg = "variable `"+id+"` is already declared";
+        auto conflict = ctx->variable_get(id);
+        Err::err_wconflict(stmt->m_ids.at(0).get(), conflict->gettok());
+        throw InterpreterException(msg);
+    }
 
     bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
@@ -102,7 +171,7 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
     else
         value = unpack_ER(rhs, ctx, _ref);
 
-    if (stmt->m_ids.at(0)->lexeme() == "_")
+    if (id == "_")
         return std::make_shared<earl::value::Void>();
 
     std::shared_ptr<earl::variable::Obj> var
@@ -167,10 +236,10 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     // Eval member variables
     for (auto &member : class_stmt->m_members)
-        (void)eval_stmt_let_wcustom_buffer(member.get(),
-                                           class_ctx->get___m_class_constructor_tmp_args(),
-                                           klass->ctx(),
-                                           true);
+        (void)eval_stmt_let_wcustom_buffer_in_class(member.get(),
+                                                    class_ctx->get___m_class_constructor_tmp_args(),
+                                                    klass->ctx(),
+                                                    true);
 
     const std::string constructor_id = "constructor";
     bool has_constructor = false;
