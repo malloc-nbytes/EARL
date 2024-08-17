@@ -71,18 +71,21 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::shared_ptr<earl::value::Obj>
+eval_stmt_let_wmultiple_vars_wcustom_buffer(StmtLet *stmt,
+                                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
+                                             std::shared_ptr<Ctx> &ctx,
+                                             bool ref) {
+    assert(false);
+}
+
+static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wcustom_buffer(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
                              std::shared_ptr<Ctx> &ctx,
                              bool ref) {
-    abort();
-}
+    if (stmt->m_ids.size() > 0)
+        return eval_stmt_let_wmultiple_vars_wcustom_buffer(stmt, buffer, ctx, ref);
 
-static std::shared_ptr<earl::value::Obj>
-eval_stmt_let__wmultiple_vars_wcustom_buffer(StmtLet *stmt,
-                                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
-                                             std::shared_ptr<Ctx> &ctx,
-                                             bool ref) {
     bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
@@ -99,14 +102,13 @@ eval_stmt_let__wmultiple_vars_wcustom_buffer(StmtLet *stmt,
     else
         value = unpack_ER(rhs, ctx, _ref);
 
-    // if (stmt->m_id->lexeme() == "_")
-    //     return std::make_shared<earl::value::Void>();
+    if (stmt->m_ids.at(0)->lexeme() == "_")
+        return std::make_shared<earl::value::Void>();
 
-    // std::shared_ptr<earl::variable::Obj> var
-    //     = std::make_shared<earl::variable::Obj>(stmt->m_id.get(), value, stmt->m_attrs);
-    // ctx->variable_add(var);
-    // return std::make_shared<earl::value::Void>();
-    abort();
+    std::shared_ptr<earl::variable::Obj> var
+        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
+    ctx->variable_add(var);
+    return std::make_shared<earl::value::Void>();
 }
 
 static std::shared_ptr<earl::value::Obj>
@@ -1216,6 +1218,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
+        ctx->variable_remove(enumerator->id());
     }
     else {
         std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
