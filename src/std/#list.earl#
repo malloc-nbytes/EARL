@@ -1,0 +1,116 @@
+# MIT License
+
+# Copyright (c) 2023 malloc-nbytes
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+module List
+
+import "std/utils.earl" full
+
+@pub fn preset(elem, cap) {
+    let lst = [];
+    for i in 0 to cap {
+        lst.append(elem);
+    }
+    return lst;
+}
+
+@pub fn from_range(start, stop, stride) {
+    assert(stride != 0);
+
+    let lst = [];
+    let i = start;
+
+    while i <= stop {
+        lst.append(i);
+        i = i+stride;
+    }
+
+    return lst;
+}
+
+@pub fn fill(@ref lst, k) {
+    for i in 0 to len(lst) {
+        lst[i] = k;
+    }
+}
+
+@pub fn sum(@ref lst) {
+    let s = 0;
+    for i in 0 to len(lst) {
+        s = s + lst[i];
+    }
+    return s;
+}
+
+@pub fn sumf(@ref lst) {
+    let s = 0.0
+
+@pub fn find(@ref lst, @ref elem) {
+    let i = 0;
+    while i < len(lst) {
+        if elem == lst[i] {
+            return i;
+        }
+        i = i+1;
+    }
+    return 0-1;
+}
+
+@pub fn count(@ref lst, @ref elem) {
+    let c = 0;
+    for i in 0 to len(lst) {
+        if elem == lst[i] {
+            c = c+1;
+        }
+    }
+    return c;
+}
+
+@pub fn quicksort(@ref lst, compar) {
+    let __quicksort = |@ref lst, low, high, @ref compar| {
+        let partition = |@ref lst, low, high| {
+            let pivot = lst[high];
+            let i = low-1;
+
+            for j in low to high {
+                if compar(lst[j], pivot) {
+                    i = i+1;
+                    Utils::swap(lst[i], lst[j]);
+                }
+            }
+
+            Utils::swap(lst[i+1], lst[high]);
+
+            return i+1;
+        };
+
+        if low < high {
+            let pi = partition(lst, low, high);
+            __quicksort(lst, low, pi-1, compar);
+            __quicksort(lst, pi+1, high, compar);
+        }
+    };
+
+    return __quicksort(lst, 0, len(lst)-1, compar);
+}
+
+@pub let DEFAULT_INT_ASCEND_QUICKSORT = |x, y| { return y > x; };
+@pub let DEFAULT_INT_DESCEND_QUICKSORT = |x, y| { return x > y; };

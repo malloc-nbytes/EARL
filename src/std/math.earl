@@ -24,7 +24,6 @@ module Math
 
 import "std/list.earl"
 
-
 @pub fn max(x, y) {
     if x >= y {
         return x;
@@ -56,6 +55,10 @@ import "std/list.earl"
     if len(lst) == 0 {
         return none;
     }
+
+    # if len(lst) == 1 {
+    #     return lst[0];
+    # }
     
     let count = 0;
     let max_count = 0;
@@ -85,7 +88,8 @@ import "std/list.earl"
 # Mean
 # This function returns the mean (Average in a dataset) of a given list
 @pub fn mean(lst) {
-    return (float(List::sum(lst)) / float(len(lst)));
+    return List::sum(lst) / float
+    (len(lst));
 }
 
 # Median
@@ -97,7 +101,6 @@ import "std/list.earl"
     let middle = float((x + 1)) / float(2);
     return middle;
 }
-
     
 # Mathematical Constants
 # pi
