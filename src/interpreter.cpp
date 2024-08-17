@@ -75,7 +75,14 @@ eval_stmt_let_wcustom_buffer(StmtLet *stmt,
                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
                              std::shared_ptr<Ctx> &ctx,
                              bool ref) {
+    abort();
+}
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_let__wmultiple_vars_wcustom_buffer(StmtLet *stmt,
+                                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
+                                             std::shared_ptr<Ctx> &ctx,
+                                             bool ref) {
     bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
