@@ -88,19 +88,24 @@ import "std/list.earl"
 # Mean
 # This function returns the mean (Average in a dataset) of a given list
 @pub fn mean(lst) {
-    return List::sum(lst) / float
-    (len(lst));
+    return List::sumf(lst) / len(lst);
 }
 
 # Median
 # This function sorts and then returns the middle number of a given list
 @pub fn median(lst) {
-    let x = len(lst);
+    
     List::quicksort(lst, List::DEFAULT_INT_ASCEND_QUICKSORT);
-    #println(lst);
-    let middle = float((x + 1)) / float(2);
-    return middle;
+    
+    let middle = len(lst)/2;
+    
+    if len(lst) % 2 == 0 {
+        return (lst[middle-1]+lst[middle])/2.0;
+    }
+
+    return lst[middle];
 }
+
     
 # Mathematical Constants
 # pi
