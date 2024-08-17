@@ -106,6 +106,36 @@ import "std/list.earl"
     return lst[middle];
 }
 
+# min
+@pub fn min(lst) {
+
+    let x = 0;
+    let min = 0;
+    for i in len(lst) {
+        x = lst[i];
+        if min >= x {
+            min = x;
+        }
+    }
+
+    return min;
+}
+
+# max
+@pub fn max(lst) {
+    let x = 0;
+    let max = 0;
+    for i in len(lst) {
+        x = lst[i];
+        if max <= x {
+            max = x;
+        }
+    }
+    return max;
+}
+
+
+
     
 # Mathematical Constants
 # pi
