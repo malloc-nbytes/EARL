@@ -22,16 +22,22 @@
 
 module Char
 
+# Takes the char `c` and returns a boolean of whether or not
+# it is a an alpha character.
 @pub fn isalpha(c) {
     let dc = c.ascii();
-    return (dc >= 'A'.ascii() && dc <= 'Z'.ascii()) || (dc >= 'a' && dc <= 'z');
+    return (dc >= 'A'.ascii() && dc <= 'Z'.ascii()) || (dc >= 'a'.ascii() && dc <= 'z'.ascii());
 }
 
+# Takes the char `c` and returns a boolean of whether or not
+# it is a digit.
 @pub fn isnum(c) {
     let dc = c.ascii();
     return dc >= '0'.ascii() && dc <= '9'.ascii();
 }
 
+# Takes the char `c` and returns a boolean of whether or not
+# it is a digit or an alpha character.
 @pub fn isalnum(c) {
     return isalpha(c) || isnum(c);
 }

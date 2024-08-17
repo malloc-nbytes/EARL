@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.2.5] - 2024-17-8
+
+### Added
+- Added new Char module to stdlib
+
 ## [0.2.4] - 2024-14-8
 
 ### Added
