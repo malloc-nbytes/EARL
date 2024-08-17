@@ -73,6 +73,11 @@ ClassCtx::variable_exists(const std::string &id) {
     return res;
 }
 
+bool
+ClassCtx::variable_exists_wo__m_class_constructor_tmp_args(const std::string &id) {
+    return m_scope.contains(id);
+}
+
 std::shared_ptr<earl::variable::Obj>
 ClassCtx::variable_get(const std::string &id) {
     auto var = m_scope.get(id);

@@ -2,10 +2,10 @@ module PointClass
 
 @pub
 class Point [x, y, name] {
-    @pub x = x;
-    @pub y = y;
-    @pub name = name;
-    desc = "A Point Class";
+    @pub let x = x;
+    @pub let y = y;
+    @pub let name = name;
+    let desc = "A Point Class";
 
     @pub
     fn get_x() {

@@ -211,6 +211,10 @@ it hits 1MB in file size.
 
 =let= <id> = /expr/;
 
+or
+
+=let= <id0>, <id1>, <id2>, ..., <idN> = /tuple/
+
 ** Examples
 
 #+begin_example
@@ -218,6 +222,10 @@ let k = 1;
 let x = func(k);
 let y = [1,2,3];
 let z = (0..10).rev().filter(|x| { return x % 2 == 0; });
+
+let a, b, c = (1, 2, 3);
+let s = (1, 2);
+let k, j = s;
 #+end_example
 
 * Mutation
