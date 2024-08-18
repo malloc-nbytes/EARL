@@ -879,6 +879,14 @@ bad_type:
     return ER(nullptr, ERT::None); // unreachable
 }
 
+static ER
+eval_expr_term_set(ExprSet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    (void)ctx;
+    (void)ref;
+    (void)expr;
+    assert(false);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -898,6 +906,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
     case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
     case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
+    case ExprTermType::Set:           return eval_expr_term_set(dynamic_cast<ExprSet *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

@@ -111,6 +111,8 @@ namespace earl {
             Tuple,
             /** EARL slice type */
             Slice,
+            /** EARL dictionary type */
+            Dict,
         };
 
         /// @brief The base abstract class that all
@@ -494,6 +496,27 @@ namespace earl {
             std::vector<std::shared_ptr<variable::Obj>> m_members;
             std::vector<std::shared_ptr<function::Obj>> m_methods;
             std::vector<Token *> m_member_assignees;
+        };
+
+        template <typename T>
+        struct Dict : public Obj {
+            Dict() = default;
+
+            void insert(T key, std::shared_ptr<Obj> value);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                                         override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            bool boolean(void)                                                            override;
+            void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            std::string to_cxxstring(void)                                                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+
+        private:
+            std::unordered_map<T, std::shared_ptr<Obj>> m_map;
         };
 
         struct Enum : public Obj {

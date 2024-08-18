@@ -170,6 +170,23 @@ parse_closure_args(Lexer &lexer) {
     return args;
 }
 
+static std::vector<std::pair<std::unique_ptr<Expr>, std::unique_ptr<Expr>>>
+parse_set_values(Lexer &lexer) {
+    std::vector<std::pair<std::unique_ptr<Expr>, std::unique_ptr<Expr>>> values = {};
+    while (lexer.peek(0) && lexer.peek(0)->type() != TokenType::Rbrace) {
+        Expr *key = Parser::parse_expr(lexer, /*fail_on=*/':');
+        Parser::parse_expect(lexer, TokenType::Colon);
+        Expr *value = Parser::parse_expr(lexer);
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma)
+            lexer.discard(); // ,
+        else {
+            Parser::parse_expect(lexer, TokenType::Rbrace);
+            break;
+        }
+    }
+    return values;
+}
+
 static Expr *
 parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Token *tok = nullptr;
@@ -188,6 +205,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         switch (lexer.peek()->type()) {
         case TokenType::Ident: {
             left = new ExprIdent(lexer.next());
+        } break;
+        case TokenType::Lbrace: {
+            auto tok = lexer.next();
+            auto values = parse_set_values(lexer);
+            return new ExprSet(std::move(values), tok);
         } break;
         case TokenType::Lparen: {
             //lexer.discard(); // (
@@ -229,41 +251,14 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         case TokenType::Charlit: {
             left = new ExprCharLit(lexer.next());
         } break;
-        // case TokenType::Double_Period: {
-        //     if (!left) {
-        //         Err::err_wtok(lexer.peek(0));
-        //         std::string msg = "cannot use a range where the start expression is empty";
-        //         throw ParserException(msg);
-        //     }
-
-        //     //lexer.discard(); // ..
-        //     auto tok = lexer.next();
-
-        //     if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Equals) {
-        //         lexer.discard(); // =
-        //         right = Parser::parse_expr(lexer);
-        //         left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), true, tok);
-        //     }
-        //     else {
-        //         right = Parser::parse_expr(lexer);
-        //         if (!right) {
-        //             Err::err_wtok(lexer.peek(0));
-        //             std::string msg = "cannot use a range where the end expression is empty";
-        //             throw ParserException(msg);
-        //         }
-        //         left = new ExprRange(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(right), false, tok);
-        //     }
-        // } break;
         case TokenType::Lbracket: {
             if (left) {
-                //lexer.discard(); // [
-                auto tok = lexer.next();
+                auto tok = lexer.next(); // [
                 Expr *idx = Parser::parse_expr(lexer);
                 (void)Parser::parse_expect(lexer, TokenType::Rbracket);
                 left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(idx), tok);
             }
             else {
-                //lexer.discard(); // [
                 auto tok = lexer.next(); // [
                 bool unused = false;
                 std::vector<Expr *> lst = parse_comma_sep_exprs(lexer, unused);
@@ -275,7 +270,6 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             }
         } break;
         case TokenType::Double_Colon: {
-            //lexer.discard(); // ::
             auto tok = lexer.next(); // ::
 
             if (left->get_type() == ExprType::Term) {
@@ -409,7 +403,7 @@ static Expr *
 parse_slice_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_logical_expr(lexer, fail_on);
     Token *cur = lexer.peek();
-    while (cur && (cur->type() == TokenType::Colon)) {
+    while (fail_on != ':' && cur && (cur->type() == TokenType::Colon)) {
         auto tok = lexer.next(); // :
         Expr *rhs = Parser::parse_expr(lexer, fail_on);
         std::optional<std::unique_ptr<Expr>> l = {}, r = {};
