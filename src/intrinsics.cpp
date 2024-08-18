@@ -46,6 +46,7 @@ Intrinsics::intrinsic_functions = {
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
     {"type", &Intrinsics::intrinsic_type},
+    {"typeof", &Intrinsics::intrinsic_typeof},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"exit", &Intrinsics::intrinsic_exit},
     {"panic", &Intrinsics::intrinsic_panic},
@@ -64,10 +65,13 @@ Intrinsics::intrinsic_functions = {
     {"bool", &Intrinsics::intrinsic_bool},
     {"tuple", &Intrinsics::intrinsic_tuple},
     {"list", &Intrinsics::intrinsic_list},
+    {"unit", &Intrinsics::intrinsic_unit},
+    {"Dict", &Intrinsics::intrinsic_Dict},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_member_functions = {
+    // List/str
     {"nth", &Intrinsics::intrinsic_member_nth},
     {"back", &Intrinsics::intrinsic_member_back},
     {"filter", &Intrinsics::intrinsic_member_filter},
@@ -75,19 +79,27 @@ Intrinsics::intrinsic_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    // Str
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},
-    {"trim", &Intrinsics::intrinsic_member_trim},
-    {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},
+    {"trim", &Intrinsics::intrinsic_member_trim},// UNIMPLEMENTED
+    {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},// UNIMPLEMENTED
+    // File
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
     {"write", &Intrinsics::intrinsic_member_write},
     {"writelines", &Intrinsics::intrinsic_member_writelines},
+    // Char
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    // Option
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
     {"is_some", &Intrinsics::intrinsic_member_is_some},
+    // Dict
+    {"insert", &Intrinsics::intrinsic_member_insert},
+    {"has_key", &Intrinsics::intrinsic_member_has_key},
+    {"has_value", &Intrinsics::intrinsic_member_has_value},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -116,6 +128,10 @@ Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
     case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
     case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
     case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.find(id) != Intrinsics::intrinsic_tuple_member_functions.end();
+    case earl::value::Type::DictInt:
+    case earl::value::Type::DictStr:
+    case earl::value::Type::DictChar:
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.find(id) != Intrinsics::intrinsic_dict_member_functions.end();
     default: return false;
     }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
@@ -136,6 +152,10 @@ Intrinsics::call_member(const std::string &id,
     case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
     case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
     case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::DictInt:
+    case earl::value::Type::DictStr:
+    case earl::value::Type::DictChar:
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx);
     default: assert(false);
     }
 }
@@ -278,6 +298,39 @@ Intrinsics::intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &param
 }
 
 std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    (void)params;
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "Dict");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::TypeKW, 1, "Dict");
+
+    auto value = dynamic_cast<earl::value::TypeKW *>(params[0].get());
+    earl::value::Type ty = value->ty();
+
+    switch (ty) {
+    case earl::value::Type::Int: return std::make_shared<earl::value::Dict<int>>(ty);
+    case earl::value::Type::Str: return std::make_shared<earl::value::Dict<std::string>>(ty);
+    case earl::value::Type::Char: return std::make_shared<earl::value::Dict<char>>(ty);
+    case earl::value::Type::Float: return std::make_shared<earl::value::Dict<float>>(ty);
+    default: {
+        const std::string msg = "cannot create an empty dictionary of type `"+earl::value::type_to_str(ty)+"` (unsupported)";
+        throw InterpreterException(msg);
+    }
+    }
+
+    assert(false);
+    return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                           std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
@@ -389,6 +442,14 @@ Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &param
 }
 
 std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_typeof(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                             std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "typeof");
+    return std::make_shared<earl::value::TypeKW>(params[0]->type());
+}
+
+std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                     std::shared_ptr<Ctx> &ctx) {
     std::cout << "[EARL] UNIMPLEMENTED";
@@ -450,6 +511,66 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
     case earl::value::Type::Void: {
         *stream << "<unit>";
     } break;
+    case earl::value::Type::DictInt: {
+        auto dict = dynamic_cast<earl::value::Dict<int> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictStr: {
+        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictChar: {
+        auto dict = dynamic_cast<earl::value::Dict<char> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictFloat: {
+        auto dict = dynamic_cast<earl::value::Dict<double> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::TypeKW: {
+        auto tkw = dynamic_cast<earl::value::TypeKW *>(param.get());
+        *stream << "<TypeKW: " << earl::value::type_to_str(tkw->ty()) << ">";
+    } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
         *stream << intparam->value();
@@ -505,6 +626,16 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
                 *stream << ", ";
         }
         *stream << ')';
+    } break;
+    case earl::value::Type::Slice: {
+        auto *sliceparam = dynamic_cast<earl::value::Slice *>(param.get());
+        *stream << "<Slice { ";
+        auto &start = sliceparam->start();
+        auto &end = sliceparam->end();
+        __intrinsic_print(start);
+        *stream << " : ";
+        __intrinsic_print(end);
+        *stream << " }>";
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());

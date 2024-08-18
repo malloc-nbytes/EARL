@@ -120,6 +120,7 @@ namespace Intrinsics {
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_option_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_tuple_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_dict_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check
@@ -184,6 +185,14 @@ namespace Intrinsics {
                     std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                               std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                   std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                      std::shared_ptr<Ctx> &ctx);
 
@@ -210,6 +219,10 @@ namespace Intrinsics {
     std::shared_ptr<earl::value::Obj>
     intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                    std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_typeof(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                     std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params,
@@ -350,6 +363,21 @@ namespace Intrinsics {
     intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj,
                              std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                              std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_insert(std::shared_ptr<earl::value::Obj> obj,
+                            std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                            std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_has_key(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &key,
+                             std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
+                               std::vector<std::shared_ptr<earl::value::Obj>> &value,
+                               std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTRINSICS_H

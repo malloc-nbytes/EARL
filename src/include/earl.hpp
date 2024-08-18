@@ -31,7 +31,6 @@
 #include <vector>
 #include <fstream>
 
-#include "shared-scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
 
@@ -76,7 +75,7 @@ namespace earl {
         /// @brief The intrinsic types of EARL
         enum class Type {
             /** EARL 32bit integer type */
-            Int,
+            Int=0,
             /** EARL floating integer (double) type */
             Float,
             /** EARL boolean type */
@@ -111,6 +110,13 @@ namespace earl {
             Tuple,
             /** EARL slice type */
             Slice,
+            /** EARL dictionary types */
+            DictInt,
+            DictStr,
+            DictFloat,
+            DictChar,
+            /** EARL type keyword */
+            TypeKW,
         };
 
         /// @brief The base abstract class that all
@@ -151,6 +157,26 @@ namespace earl {
             virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) = 0;
 
             virtual std::shared_ptr<Obj> unaryop(Token *op) = 0;
+        };
+
+        struct TypeKW : public Obj {
+            TypeKW(Type ty);
+
+            Type ty(void) const;
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                                         override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            bool boolean(void)                                                            override;
+            void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            std::string to_cxxstring(void)                                                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+
+        private:
+            Type m_ty;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -496,6 +522,33 @@ namespace earl {
             std::vector<Token *> m_member_assignees;
         };
 
+        template <typename T>
+        struct Dict : public Obj {
+            Dict(Type kty);
+
+            void insert(T key, std::shared_ptr<Obj> value);
+            Type ktype(void) const;
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key, Expr *expr);
+            std::unordered_map<T, std::shared_ptr<Obj>> &extract(void);
+            bool has_key(T key) const;
+            bool has_value(std::shared_ptr<Obj> &value) const;
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                                         override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            bool boolean(void)                                                            override;
+            void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            std::string to_cxxstring(void)                                                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+
+        private:
+            std::unordered_map<T, std::shared_ptr<Obj>> m_map;
+            Type m_kty;
+        };
+
         struct Enum : public Obj {
             Enum(StmtEnum *stmt,
                  std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems,
@@ -617,6 +670,9 @@ namespace earl {
         /// @param obj2 The second object
         [[nodiscard]]
         bool type_is_compatable(const Obj *const obj1, const Obj *const obj2);
+
+        bool is_typekw(const std::string &id);
+        Type get_typekw_proper(const std::string &id);
     };
 
     /**
@@ -680,5 +736,153 @@ namespace earl {
         };
     };
 };
+
+/*** DICTIONARY IMPLEMENTATION */
+
+#include <cassert>
+#include "utils.hpp"
+#include "err.hpp"
+
+template <typename T> earl::value::Dict<T>::Dict::Dict(earl::value::Type kty) {
+    m_kty = kty;
+}
+
+template <typename T> void
+earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
+    m_map[key] = value;
+}
+
+template <typename T> earl::value::Type
+earl::value::Dict<T>::ktype(void) const {
+    return m_kty;
+}
+
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
+    if constexpr (std::is_same_v<T, int>) {
+        if (key->type() != earl::value::Type::Int) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type int";
+            throw InterpreterException(msg);
+        }
+        int k = dynamic_cast<earl::value::Int *>(key.get())->value();
+        auto value = m_map.find(k);
+        if (value == m_map.end())
+            return std::make_shared<earl::value::Void>();
+        return value->second;
+    }
+    else if constexpr (std::is_same_v<T, std::string>) {
+        if (key->type() != earl::value::Type::Str) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type str";
+            throw InterpreterException(msg);
+        }
+        std::string k = dynamic_cast<earl::value::Str *>(key.get())->value();
+        auto value = m_map.find(k);
+        if (value == m_map.end())
+            return std::make_shared<earl::value::Void>();
+        return value->second;
+    }
+    else if constexpr (std::is_same_v<T, double>) {
+        if (key->type() != earl::value::Type::Float) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type float";
+            throw InterpreterException(msg);
+        }
+        double k = dynamic_cast<earl::value::Float *>(key.get())->value();
+        auto value = m_map.find(k);
+        if (value == m_map.end())
+            return std::make_shared<earl::value::Void>();
+        return value->second;
+    }
+    else if constexpr (std::is_same_v<T, char>) {
+        if (key->type() != earl::value::Type::Char) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type char";
+            throw InterpreterException(msg);
+        }
+        char k = dynamic_cast<earl::value::Char *>(key.get())->value();
+        auto value = m_map.find(k);
+        if (value == m_map.end())
+            return std::make_shared<earl::value::Void>();
+        return value->second;
+    }
+    assert(false && "unreachable");
+    return nullptr; // unreachable
+}
+
+template <typename T> std::unordered_map<T, std::shared_ptr<earl::value::Obj>> &
+earl::value::Dict<T>::extract(void) {
+    return m_map;
+}
+
+template <typename T> bool
+earl::value::Dict<T>::has_key(T key) const {
+    return m_map.find(key) != m_map.end();
+}
+
+template <typename T> bool
+earl::value::Dict<T>::has_value(std::shared_ptr<earl::value::Obj> &value) const {
+    for (auto &pair : m_map)
+        if (pair.second->eq(value))
+            return true;
+    return false;
+}
+
+/*** OVERRIDES ***/
+template <typename T> earl::value::Type
+earl::value::Dict<T>::type(void) const {
+    switch (m_kty) {
+    case earl::value::Type::Int: return Type::DictInt;
+    case earl::value::Type::Str: return Type::DictStr;
+    case earl::value::Type::Char: return Type::DictChar;
+    case earl::value::Type::Float: return Type::DictFloat;
+    default: assert(false && "unreachable"); break;
+    }
+    return (earl::value::Type)0; // unreachable
+}
+
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::binop(Token *op, std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Dict::binop");
+}
+
+template <typename T> bool
+earl::value::Dict<T>::boolean(void) {
+    UNIMPLEMENTED("Dict::boolean");
+}
+
+template <typename T> void
+earl::value::Dict<T>::mutate(const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+    UNIMPLEMENTED("Dict::mutate");
+}
+
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::copy(void) {
+    auto new_dict = std::make_shared<Dict<T>>(m_kty);
+    for (auto &pair : m_map)
+        new_dict->insert(pair.first, pair.second->copy());
+    return new_dict;
+}
+
+template <typename T> bool
+earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
+    UNIMPLEMENTED("Dict::eq");
+}
+
+template <typename T> std::string
+earl::value::Dict<T>::to_cxxstring(void) {
+    UNIMPLEMENTED("Dict::to_cxxstring");
+}
+
+template <typename T> void
+earl::value::Dict<T>::spec_mutate(Token *op, const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+    UNIMPLEMENTED("Dict::spec_mutate");
+}
+
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::unaryop(Token *op) {
+    UNIMPLEMENTED("Dict::unaryop");
+}
 
 #endif // EARL_H
