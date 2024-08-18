@@ -294,8 +294,8 @@ lex_file(std::string &src,
             }
             else
                 charlit = std::string(1, src[i]);
-            i += 2;
             lexer->append(charlit, TokenType::Charlit, row, col, fp);
+            i += 2;
             col += 3;
         }
 
@@ -304,10 +304,11 @@ lex_file(std::string &src,
             while (src[i] == '_' || isalnum(src[i]))
                 ident += src[i++];
             if (std::find(keywords.begin(), keywords.end(), ident) != keywords.end())
-                lexer->append(ident, TokenType::Keyword, row, col, fp);
+                lexer->append(ident, TokenType::Keyword, row, col+1, fp);
             else
-                lexer->append(ident, TokenType::Ident, row, col, fp);
-            col += ident.size()+1;
+                lexer->append(ident, TokenType::Ident, row, col+1, fp);
+            std::cout << "CREATED: " << ident << " R: " << row << " C: " << col << std::endl;
+            col += ident.size();
         }
 
         else if (isdigit(src[i])) {
@@ -343,8 +344,10 @@ lex_file(std::string &src,
                         lexer->append(buf+digit, TokenType::Floatlit, row, col, fp);
                         col += digit.size()+1;
                     }
-                    else
+                    else {
                         lexer->append(buf, (*it).second, row, col, fp);
+                        col += buf.size();
+                    }
                     break;
                 }
                 else {

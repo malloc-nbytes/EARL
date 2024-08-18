@@ -1,8 +1,2 @@
 module Main
 
-for i in 0 to 10 {
-    for j in i to 10 {
-        println(j, ' ', i);
-    }
-}
-
