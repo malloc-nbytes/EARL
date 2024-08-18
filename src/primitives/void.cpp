@@ -39,10 +39,14 @@ Void::type(void) const {
 
 std::shared_ptr<Obj>
 Void::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "unable to perform binary operation on unit type";
-    throw InterpreterException(msg);
+    switch (op->type()) {
+    case TokenType::Double_Equals: return std::make_shared<Bool>(this->eq(other));
+    case TokenType::Bang_Equals: return std::make_shared<Bool>(!this->eq(other));
+    default:
+        Err::err_wtok(op);
+        std::string msg = "invalid operator for binary operation `"+op->lexeme()+"` on unit type";
+        throw InterpreterException(msg);
+    }
 }
 
 bool
@@ -62,8 +66,7 @@ Void::copy(void) {
 
 bool
 Void::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Void::eq");
+    return other->type() == Type::Void;
 }
 
 std::string

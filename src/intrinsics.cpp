@@ -64,6 +64,7 @@ Intrinsics::intrinsic_functions = {
     {"bool", &Intrinsics::intrinsic_bool},
     {"tuple", &Intrinsics::intrinsic_tuple},
     {"list", &Intrinsics::intrinsic_list},
+    {"unit", &Intrinsics::intrinsic_unit},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -275,6 +276,14 @@ Intrinsics::intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &param
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
     return std::make_shared<earl::value::List>(params);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    (void)params;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -505,6 +514,16 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
                 *stream << ", ";
         }
         *stream << ')';
+    } break;
+    case earl::value::Type::Slice: {
+        auto *sliceparam = dynamic_cast<earl::value::Slice *>(param.get());
+        *stream << "<Slice { ";
+        auto &start = sliceparam->start();
+        auto &end = sliceparam->end();
+        __intrinsic_print(start);
+        *stream << " : ";
+        __intrinsic_print(end);
+        *stream << " }>";
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());

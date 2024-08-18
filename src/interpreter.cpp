@@ -729,8 +729,8 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     ER idx_er = Interpreter::eval_expr(expr->m_expr.get(), ctx, ref);
 
-    auto left_value = unpack_ER(left_er, ctx, ref);
-    auto idx_value = unpack_ER(idx_er, ctx, ref);
+    auto left_value = unpack_ER(left_er, ctx, true);
+    auto idx_value = unpack_ER(idx_er, ctx, true);
 
     if (left_value->type() == earl::value::Type::List) {
         auto list = dynamic_cast<earl::value::List *>(left_value.get());
@@ -746,19 +746,19 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
-        return ER(dict->nth(idx_value), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictStr) {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
-        return ER(dict->nth(idx_value), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictChar) {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
-        return ER(dict->nth(idx_value), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictFloat) {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
-        return ER(dict->nth(idx_value), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
     }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";

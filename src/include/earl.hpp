@@ -506,7 +506,7 @@ namespace earl {
 
             void insert(T key, std::shared_ptr<Obj> value);
             Type ktype(void) const;
-            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key, Expr *expr);
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
@@ -713,6 +713,7 @@ namespace earl {
 
 #include <cassert>
 #include "utils.hpp"
+#include "err.hpp"
 
 template <typename T> earl::value::Dict<T>::Dict::Dict(earl::value::Type kty) {
     m_kty = kty;
@@ -729,9 +730,13 @@ earl::value::Dict<T>::ktype(void) const {
 }
 
 template <typename T> std::shared_ptr<earl::value::Obj>
-earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key) {
+earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
     if constexpr (std::is_same_v<T, int>) {
-        assert(key->type() == earl::value::Type::Int && "key must be of type int");
+        if (key->type() != earl::value::Type::Int) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type int";
+            throw InterpreterException(msg);
+        }
         int k = dynamic_cast<earl::value::Int *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
@@ -739,7 +744,11 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key) {
         return value->second;
     }
     else if constexpr (std::is_same_v<T, std::string>) {
-        assert(key->type() == earl::value::Type::Str && "key must be of type str");
+        if (key->type() != earl::value::Type::Str) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type str";
+            throw InterpreterException(msg);
+        }
         std::string k = dynamic_cast<earl::value::Str *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
@@ -747,7 +756,11 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key) {
         return value->second;
     }
     else if constexpr (std::is_same_v<T, double>) {
-        assert(key->type() == earl::value::Type::Float && "key must be of type float");
+        if (key->type() != earl::value::Type::Float) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type float";
+            throw InterpreterException(msg);
+        }
         double k = dynamic_cast<earl::value::Float *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
@@ -755,16 +768,19 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key) {
         return value->second;
     }
     else if constexpr (std::is_same_v<T, char>) {
-        assert(key->type() == earl::value::Type::Char && "key must be of type char");
+        if (key->type() != earl::value::Type::Char) {
+            Err::err_wexpr(expr);
+            const std::string msg = "key must be of type char";
+            throw InterpreterException(msg);
+        }
         char k = dynamic_cast<earl::value::Char *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
             return std::make_shared<earl::value::Void>();
         return value->second;
     }
-    else {
-        assert(false && "unreachable");
-    }
+    assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
 /*** OVERRIDES ***/

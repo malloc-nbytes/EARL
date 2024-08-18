@@ -1,5 +1,11 @@
 module Main
 
-let s = {1: "foo", 2: "bar", 3: "baz"};
+let s1 = {
+    "foo": 1..=10,
+    "bar": none,
+    "baz": false
+};
 
-println(s["hello"]);
+let empty = Dict(int);
+
+

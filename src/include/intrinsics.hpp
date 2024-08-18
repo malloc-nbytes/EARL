@@ -184,6 +184,10 @@ namespace Intrinsics {
                     std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                               std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                      std::shared_ptr<Ctx> &ctx);
 
