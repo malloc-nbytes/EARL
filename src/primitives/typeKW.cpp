@@ -32,7 +32,7 @@
 
 using namespace earl::value;
 
-const std::unordered_map<std::string, Type> typekw_map = {
+static const std::unordered_map<std::string, Type> typekw_map = {
     {"int", Type::Int},
     {"float", Type::Float},
     {"bool", Type::Bool},
@@ -59,6 +59,11 @@ earl::value::get_typekw_proper(const std::string &id) {
 }
 
 TypeKW::TypeKW(Type ty) : m_ty(ty) {}
+
+Type
+TypeKW::ty(void) const {
+    return m_ty;
+}
 
 /*** OVERRIDES ***/
 Type

@@ -291,8 +291,25 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx) {
     (void)ctx;
-    (void)params;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "Dict");
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::TypeKW, 1, "Dict");
+
+    auto value = dynamic_cast<earl::value::TypeKW *>(params[0].get());
+    earl::value::Type ty = value->ty();
+
+    switch (ty) {
+    case earl::value::Type::Int: return std::make_shared<earl::value::Dict<int>>(ty);
+    case earl::value::Type::Str: return std::make_shared<earl::value::Dict<std::string>>(ty);
+    case earl::value::Type::Char: return std::make_shared<earl::value::Dict<char>>(ty);
+    case earl::value::Type::Float: return std::make_shared<earl::value::Dict<float>>(ty);
+    default: {
+        const std::string msg = "cannot create an empty dictionary of type `"+earl::value::type_to_str(ty)+"` (unsupported)";
+        throw InterpreterException(msg);
+    }
+    }
+
     assert(false);
+    return nullptr; // unreachable
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -467,6 +484,62 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
     switch (param->type()) {
     case earl::value::Type::Void: {
         *stream << "<unit>";
+    } break;
+    case earl::value::Type::DictInt: {
+        auto dict = dynamic_cast<earl::value::Dict<int> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictStr: {
+        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictChar: {
+        auto dict = dynamic_cast<earl::value::Dict<char> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
+    } break;
+    case earl::value::Type::DictFloat: {
+        auto dict = dynamic_cast<earl::value::Dict<double> *>(param.get());
+        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        auto map = dict->extract();
+        int i = 0;
+        for (auto it = map.begin(); it != map.end(); ++it) {
+            *stream << it->first << ": ";
+            __intrinsic_print(it->second, stream);
+            if (i != map.size()-1)
+                *stream << ", ";
+            ++i;
+        }
+        *stream << " }>";
     } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());

@@ -901,12 +901,8 @@ bad_type:
 
 static ER
 eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
-    (void)ctx;
-    (void)ref;
-    (void)expr;
-
     if (expr->m_values.size() == 0) {
-        const std::string msg = "Cannot create a dictionary of size 0. Use the `dict(type)` to get an empty dictionary.";
+        const std::string msg = "Cannot create a dictionary of size 0. Use the `Dict(TypeKW)` to get an empty dictionary.";
         Err::err_wexpr(expr);
         throw InterpreterException(msg);
     }

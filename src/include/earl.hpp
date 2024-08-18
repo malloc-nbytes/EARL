@@ -162,6 +162,8 @@ namespace earl {
         struct TypeKW : public Obj {
             TypeKW(Type ty);
 
+            Type ty(void) const;
+
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
@@ -527,6 +529,7 @@ namespace earl {
             void insert(T key, std::shared_ptr<Obj> value);
             Type ktype(void) const;
             std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key, Expr *expr);
+            std::unordered_map<T, std::shared_ptr<Obj>> &extract(void);
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
@@ -804,6 +807,11 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
     }
     assert(false && "unreachable");
     return nullptr; // unreachable
+}
+
+template <typename T> std::unordered_map<T, std::shared_ptr<earl::value::Obj>> &
+earl::value::Dict<T>::extract(void) {
+    return m_map;
 }
 
 /*** OVERRIDES ***/

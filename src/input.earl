@@ -8,3 +8,4 @@ let s1 = {
 
 let empty = Dict(int);
 
+println(s1);
