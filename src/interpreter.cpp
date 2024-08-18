@@ -745,18 +745,23 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
+        auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
+        return ER(dict->nth(idx_value), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictStr) {
-        assert(false);
+        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
+        return ER(dict->nth(idx_value), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictChar) {
-        assert(false);
+        auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
+        return ER(dict->nth(idx_value), ERT::Literal);
     }
     else if (left_value->type() == earl::value::Type::DictFloat) {
-        assert(false);
+        auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
+        return ER(dict->nth(idx_value), ERT::Literal);
     }
     else {
-        std::string msg = "cannot use `[]` on non-list, non-tuple, or non-str type";
+        std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";
         Err::err_wexpr(expr);
         throw InterpreterException(msg);
     }
@@ -913,7 +918,7 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
     switch (ty) {
     case earl::value::Type::Int: {
-        auto dict = std::make_shared<earl::value::Dict<int>>();
+        auto dict = std::make_shared<earl::value::Dict<int>>(ty);
         int __first_key = dynamic_cast<earl::value::Int *>(first_key.get())->value();
         dict->insert(__first_key, first_value);
 
@@ -936,7 +941,7 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Str: {
-        auto dict = std::make_shared<earl::value::Dict<std::string>>();
+        auto dict = std::make_shared<earl::value::Dict<std::string>>(ty);
         std::string __first_key = dynamic_cast<earl::value::Str *>(first_key.get())->value();
         dict->insert(__first_key, first_value);
 
@@ -959,7 +964,7 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Char: {
-        auto dict = std::make_shared<earl::value::Dict<char>>();
+        auto dict = std::make_shared<earl::value::Dict<char>>(ty);
         char __first_key = dynamic_cast<earl::value::Char *>(first_key.get())->value();
         dict->insert(__first_key, first_value);
 
@@ -982,7 +987,7 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Float: {
-        auto dict = std::make_shared<earl::value::Dict<double>>();
+        auto dict = std::make_shared<earl::value::Dict<double>>(ty);
         double __first_key = dynamic_cast<earl::value::Float *>(first_key.get())->value();
         dict->insert(__first_key, first_value);
 

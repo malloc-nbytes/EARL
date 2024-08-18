@@ -1,5 +1,5 @@
 module Main
 
-let s = {"hello": 1, "world": 2, "foo": 3};
+let s = {1: "foo", 2: "bar", 3: "baz"};
 
-println(s["world"]);
+println(s["hello"]);
