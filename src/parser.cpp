@@ -177,6 +177,7 @@ parse_set_values(Lexer &lexer) {
         Expr *key = Parser::parse_expr(lexer, /*fail_on=*/':');
         Parser::parse_expect(lexer, TokenType::Colon);
         Expr *value = Parser::parse_expr(lexer);
+        values.push_back(std::make_pair(std::unique_ptr<Expr>(key), std::unique_ptr<Expr>(value)));
         if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma)
             lexer.discard(); // ,
         else {

@@ -885,10 +885,19 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ref;
     (void)expr;
 
-    earl::value::Dict<int> dint;
-    earl::value::Dict<char> ds;
+    if (expr->m_values.size() == 0) {
+        const std::string msg = "Cannot create a dictionary of size 0. Use the `dict(type)` to get an empty dictionary.";
+        Err::err_wexpr(expr);
+        throw InterpreterException(msg);
+    }
 
-    assert(false);
+    ER first_er = Interpreter::eval_expr(expr->m_values.at(0).first.get(), ctx, false);
+    auto first_value = unpack_ER(first_er, ctx, false);
+    earl::value::Type ty = first_value->type();
+
+    switch (ty) {
+    default: assert(false);
+    }
 }
 
 ER
