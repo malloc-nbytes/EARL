@@ -4,13 +4,3 @@ let empty = Dict(int);
 empty.insert(2, "hi");
 empty.insert(1, "test");
 
-if empty[3] {
-    println("IF");
-}
-else {
-    println("ELSE");
-}
-
-
-
-

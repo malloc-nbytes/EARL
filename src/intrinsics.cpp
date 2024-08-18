@@ -70,6 +70,7 @@ Intrinsics::intrinsic_functions = {
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_member_functions = {
+    // List/str
     {"nth", &Intrinsics::intrinsic_member_nth},
     {"back", &Intrinsics::intrinsic_member_back},
     {"filter", &Intrinsics::intrinsic_member_filter},
@@ -77,20 +78,27 @@ Intrinsics::intrinsic_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    // Str
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},
-    {"trim", &Intrinsics::intrinsic_member_trim},
-    {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},
+    {"trim", &Intrinsics::intrinsic_member_trim},// UNIMPLEMENTED
+    {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},// UNIMPLEMENTED
+    // File
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},
     {"read", &Intrinsics::intrinsic_member_read},
     {"write", &Intrinsics::intrinsic_member_write},
     {"writelines", &Intrinsics::intrinsic_member_writelines},
+    // Char
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    // Option
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
     {"is_some", &Intrinsics::intrinsic_member_is_some},
+    // Dict
     {"insert", &Intrinsics::intrinsic_member_insert},
+    {"has_key", &Intrinsics::intrinsic_member_has_key},
+    {"has_value", &Intrinsics::intrinsic_member_has_value},
 };
 
 std::shared_ptr<earl::value::Obj>

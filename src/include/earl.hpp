@@ -530,6 +530,8 @@ namespace earl {
             Type ktype(void) const;
             std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key, Expr *expr);
             std::unordered_map<T, std::shared_ptr<Obj>> &extract(void);
+            bool has_key(T key) const;
+            bool has_value(std::shared_ptr<Obj> &value) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
@@ -812,6 +814,19 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
 template <typename T> std::unordered_map<T, std::shared_ptr<earl::value::Obj>> &
 earl::value::Dict<T>::extract(void) {
     return m_map;
+}
+
+template <typename T> bool
+earl::value::Dict<T>::has_key(T key) const {
+    return m_map.find(key) != m_map.end();
+}
+
+template <typename T> bool
+earl::value::Dict<T>::has_value(std::shared_ptr<earl::value::Obj> &value) const {
+    for (auto &pair : m_map)
+        if (pair.second->eq(value))
+            return true;
+    return false;
 }
 
 /*** OVERRIDES ***/

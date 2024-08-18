@@ -364,6 +364,16 @@ namespace Intrinsics {
     intrinsic_member_insert(std::shared_ptr<earl::value::Obj> obj,
                             std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                             std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_has_key(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &key,
+                             std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
+                               std::vector<std::shared_ptr<earl::value::Obj>> &value,
+                               std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTRINSICS_H
