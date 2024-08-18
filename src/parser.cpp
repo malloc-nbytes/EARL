@@ -209,7 +209,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
         case TokenType::Lbrace: {
             auto tok = lexer.next();
             auto values = parse_set_values(lexer);
-            return new ExprSet(std::move(values), tok);
+            return new ExprDict(std::move(values), tok);
         } break;
         case TokenType::Lparen: {
             //lexer.discard(); // (

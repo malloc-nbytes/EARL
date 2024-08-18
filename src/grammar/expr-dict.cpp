@@ -27,13 +27,13 @@
 
 #include "ast.hpp"
 
-ExprSet::ExprSet(std::vector<std::pair<std::unique_ptr<Expr>, std::unique_ptr<Expr>>> values, std::shared_ptr<Token> tok)
+ExprDict::ExprDict(std::vector<std::pair<std::unique_ptr<Expr>, std::unique_ptr<Expr>>> values, std::shared_ptr<Token> tok)
     : m_values(std::move(values)), m_tok(tok) {}
 
-ExprType ExprSet::get_type() const {
+ExprType ExprDict::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprSet::get_term_type() const {
-    return ExprTermType::Set;
+ExprTermType ExprDict::get_term_type() const {
+    return ExprTermType::Dict;
 }
