@@ -891,13 +891,45 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         throw InterpreterException(msg);
     }
 
-    ER first_er = Interpreter::eval_expr(expr->m_values.at(0).first.get(), ctx, false);
-    auto first_value = unpack_ER(first_er, ctx, false);
+    ER first_key_er = Interpreter::eval_expr(expr->m_values.at(0).first.get(), ctx, false);
+    ER first_value_er = Interpreter::eval_expr(expr->m_values.at(0).second.get(), ctx, false);
+    auto first_key = unpack_ER(first_key_er, ctx, false);
+    auto first_value = unpack_ER(first_value_er, ctx, false);
     earl::value::Type ty = first_value->type();
 
     switch (ty) {
-    default: assert(false);
+    case earl::value::Type::Int: {
+        auto dict = std::make_shared<earl::value::Dict<int>>();
+        int __first_key = dynamic_cast<earl::value::Int *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            int __key = dynamic_cast<earl::value::Int *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
+    } break;
+    case earl::value::Type::Str: {
+    } break;
+    case earl::value::Type::Char: {
+    } break;
+    case earl::value::Type::Float: {
+    } break;
+    default: {
+        Err::err_wexpr(expr->m_values.at(0).first.get());
+        const std::string msg = "type `"+earl::value::type_to_str(ty)+"` is not supported as a key in dictionaries";
+        throw InterpreterException(msg);
+    } break;
     }
+
+    assert(false && "unreachable");
+    return ER(nullptr, ERT::None); // unreachable
 }
 
 ER
