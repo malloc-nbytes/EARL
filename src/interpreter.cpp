@@ -204,7 +204,8 @@ eval_class_instantiation(ExprFuncCall *expr,
             assert(class_ctx);
             assert(class_ctx->type() == CtxType::Class);
 
-            auto world_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(class_ctx.get())->get_owner().get());
+            auto owner = dynamic_cast<ClassCtx*>(class_ctx.get())->get_owner();
+            auto world_ctx = dynamic_cast<WorldCtx *>(dynamic_cast<ClassCtx *>(class_ctx.get())->get_world_owner().get());
 
             assert(world_ctx);
             assert(world_ctx->type() == CtxType::World);
