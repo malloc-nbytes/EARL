@@ -176,6 +176,7 @@ struct ClassCtx : public Ctx {
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
     WorldCtx *get_world(void) override;
+    std::shared_ptr<Ctx> &get_world_owner(void);
 
 private:
     std::shared_ptr<Ctx> m_owner;

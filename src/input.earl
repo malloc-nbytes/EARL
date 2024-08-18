@@ -1,7 +1,4 @@
 module Main
 
-let lst = [1,2,3];
-
-lst += "hi";
 
 

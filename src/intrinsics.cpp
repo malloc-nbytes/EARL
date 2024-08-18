@@ -175,12 +175,16 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
         std::string s = dynamic_cast<earl::value::Str *>(params[0].get())->value();
         return std::make_shared<earl::value::Int>(std::stoi(s));
     } break;
+    case earl::value::Type::Char: {
+        char c = dynamic_cast<earl::value::Char *>(params[0].get())->value();
+        return std::make_shared<earl::value::Int>(c-'0');
+    } break;
     case earl::value::Type::Bool: {
         bool b = dynamic_cast<earl::value::Bool *>(params[0].get())->value();
         return std::make_shared<earl::value::Int>(static_cast<int>(b));
     } break;
     default: {
-        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
+        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type int";
         throw InterpreterException(msg);
     } break;
     }
@@ -253,7 +257,7 @@ Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &param
         throw InterpreterException(msg);
     } break;
     default: {
-        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
+        std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type bool";
         throw InterpreterException(msg);
     } break;
     }

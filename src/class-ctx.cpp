@@ -130,7 +130,17 @@ ClassCtx::function_debug_dump(void) const {
 
 std::shared_ptr<Ctx> &
 ClassCtx::get_owner(void) {
+    assert(m_owner);
     return m_owner;
+}
+
+std::shared_ptr<Ctx> &
+ClassCtx::get_world_owner(void) {
+    if (m_owner && m_owner->type() == CtxType::World)
+        return m_owner;
+    if (m_owner && m_owner->type() == CtxType::Function)
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner();
+    assert(false && "unreachable");
 }
 
 bool

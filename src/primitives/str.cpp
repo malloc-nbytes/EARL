@@ -85,7 +85,7 @@ Str::nth(std::shared_ptr<Obj> &idx) {
     }
 
     auto index = dynamic_cast<Int *>(idx.get());
-    if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+    if (index->value() < 0 || static_cast<size_t>(index->value()) >= this->value().size()) {
         std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
         throw InterpreterException(msg);
     }

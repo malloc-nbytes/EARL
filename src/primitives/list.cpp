@@ -94,7 +94,7 @@ List::nth(std::shared_ptr<Obj> &idx) {
     switch (idx->type()) {
     case Type::Int: {
         auto index = dynamic_cast<Int *>(idx.get());
-        if (index->value() < 0 || static_cast<size_t>(index->value()) > this->value().size()) {
+        if (index->value() < 0 || static_cast<size_t>(index->value()) >= this->value().size()) {
             std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
             throw InterpreterException(msg);
         }
@@ -106,7 +106,7 @@ List::nth(std::shared_ptr<Obj> &idx) {
         return std::make_shared<List>(this->slice(s, e));
     } break;
     default: {
-        std::string msg = "invalid index when accessing value in a list";
+        std::string msg = "invalid index value when accessing value in a list";
         throw InterpreterException(msg);
     }
     }
