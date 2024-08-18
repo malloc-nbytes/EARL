@@ -490,7 +490,11 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
-        if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
+        if (earl::value::is_typekw(er.id)) {
+            return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
+        }
+        if (er.extra)
+            Err::err_wexpr(static_cast<Expr *>(er.extra));
         std::string msg = "variable `"+er.id+"` has not been declared";
         throw InterpreterException(msg);
     }

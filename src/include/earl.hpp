@@ -75,7 +75,7 @@ namespace earl {
         /// @brief The intrinsic types of EARL
         enum class Type {
             /** EARL 32bit integer type */
-            Int,
+            Int=0,
             /** EARL floating integer (double) type */
             Float,
             /** EARL boolean type */
@@ -110,11 +110,13 @@ namespace earl {
             Tuple,
             /** EARL slice type */
             Slice,
-            /** EARL dictionary type */
+            /** EARL dictionary types */
             DictInt,
             DictStr,
             DictFloat,
             DictChar,
+            /** EARL type keyword */
+            TypeKW,
         };
 
         /// @brief The base abstract class that all
@@ -155,6 +157,24 @@ namespace earl {
             virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) = 0;
 
             virtual std::shared_ptr<Obj> unaryop(Token *op) = 0;
+        };
+
+        struct TypeKW : public Obj {
+            TypeKW(Type ty);
+
+            /*** OVERRIDES ***/
+            Type type(void) const                                                         override;
+            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            bool boolean(void)                                                            override;
+            void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            std::string to_cxxstring(void)                                                override;
+            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+
+        private:
+            Type m_ty;
         };
 
         /// @brief The structure that represents EARL 32bit integers
@@ -645,6 +665,9 @@ namespace earl {
         /// @param obj2 The second object
         [[nodiscard]]
         bool type_is_compatable(const Obj *const obj1, const Obj *const obj2);
+
+        bool is_typekw(const std::string &id);
+        Type get_typekw_proper(const std::string &id);
     };
 
     /**

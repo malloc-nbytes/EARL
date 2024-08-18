@@ -65,6 +65,7 @@ Intrinsics::intrinsic_functions = {
     {"tuple", &Intrinsics::intrinsic_tuple},
     {"list", &Intrinsics::intrinsic_list},
     {"unit", &Intrinsics::intrinsic_unit},
+    {"Dict", &Intrinsics::intrinsic_Dict},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -284,6 +285,14 @@ Intrinsics::intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &param
     (void)ctx;
     (void)params;
     return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    (void)params;
+    assert(false);
 }
 
 std::shared_ptr<earl::value::Obj>
