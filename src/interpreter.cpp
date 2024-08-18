@@ -744,6 +744,17 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
         return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
+    else if (left_value->type() == earl::value::Type::DictInt) {
+    }
+    else if (left_value->type() == earl::value::Type::DictStr) {
+        assert(false);
+    }
+    else if (left_value->type() == earl::value::Type::DictChar) {
+        assert(false);
+    }
+    else if (left_value->type() == earl::value::Type::DictFloat) {
+        assert(false);
+    }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, or non-str type";
         Err::err_wexpr(expr);

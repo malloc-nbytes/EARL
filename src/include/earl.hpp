@@ -31,7 +31,6 @@
 #include <vector>
 #include <fstream>
 
-#include "shared-scope.hpp"
 #include "ast.hpp"
 #include "token.hpp"
 
@@ -112,7 +111,10 @@ namespace earl {
             /** EARL slice type */
             Slice,
             /** EARL dictionary type */
-            Dict,
+            DictInt,
+            DictStr,
+            DictFloat,
+            DictChar,
         };
 
         /// @brief The base abstract class that all
@@ -503,6 +505,7 @@ namespace earl {
             Dict() = default;
 
             void insert(T key, std::shared_ptr<Obj> value);
+            Type ktype(void) const;
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
@@ -517,6 +520,7 @@ namespace earl {
 
         private:
             std::unordered_map<T, std::shared_ptr<Obj>> m_map;
+            Type m_kty;
         };
 
         struct Enum : public Obj {
@@ -709,54 +713,69 @@ namespace earl {
 #include <cassert>
 #include "utils.hpp"
 
-template <typename T>
-void earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
+template <typename T> void
+earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
     m_map.insert({key, value});
 }
 
-/*** OVERRIDES ***/
-template <typename T>
-earl::value::Type earl::value::Dict<T>::type(void) const {
-    UNIMPLEMENTED("Dict::type");
+template <typename T> earl::value::Type
+earl::value::Dict<T>::ktype(void) const {
+    return m_kty;
 }
 
-template <typename T>
-std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::binop(Token *op, std::shared_ptr<Obj> &other) {
+/*** OVERRIDES ***/
+template <typename T> earl::value::Type
+earl::value::Dict<T>::type(void) const {
+    switch (m_kty) {
+    case earl::value::Type::Int: return Type::DictInt;
+    case earl::value::Type::Str: return Type::DictStr;
+    case earl::value::Type::Char: return Type::DictChar;
+    case earl::value::Type::Float: return Type::DictFloat;
+    default: assert(false && "unreachable"); break;
+    }
+    return (earl::value::Type)0; // unreachable
+}
+
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::binop(Token *op, std::shared_ptr<Obj> &other) {
     UNIMPLEMENTED("Dict::binop");
 }
 
-template <typename T>
-bool earl::value::Dict<T>::boolean(void) {
+template <typename T> bool
+earl::value::Dict<T>::boolean(void) {
     UNIMPLEMENTED("Dict::boolean");
 }
 
-template <typename T>
-void earl::value::Dict<T>::mutate(const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+template <typename T> void
+earl::value::Dict<T>::mutate(const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
     UNIMPLEMENTED("Dict::mutate");
 }
 
-template <typename T>
-std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::copy(void) {
-    UNIMPLEMENTED("Dict::copy");
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::copy(void) {
+    auto new_dict = std::make_shared<Dict<T>>();
+    for (auto &pair : m_map)
+        new_dict->insert(pair.first, pair.second->copy());
+    return new_dict;
 }
 
-template <typename T>
-bool earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
+template <typename T> bool
+earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
     UNIMPLEMENTED("Dict::eq");
 }
 
-template <typename T>
-std::string earl::value::Dict<T>::to_cxxstring(void) {
+template <typename T> std::string
+earl::value::Dict<T>::to_cxxstring(void) {
     UNIMPLEMENTED("Dict::to_cxxstring");
 }
 
-template <typename T>
-void earl::value::Dict<T>::spec_mutate(Token *op, const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+template <typename T> void
+earl::value::Dict<T>::spec_mutate(Token *op, const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
     UNIMPLEMENTED("Dict::spec_mutate");
 }
 
-template <typename T>
-std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::unaryop(Token *op) {
+template <typename T> std::shared_ptr<earl::value::Obj>
+earl::value::Dict<T>::unaryop(Token *op) {
     UNIMPLEMENTED("Dict::unaryop");
 }
 
