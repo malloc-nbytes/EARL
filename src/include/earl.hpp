@@ -704,4 +704,60 @@ namespace earl {
     };
 };
 
+/*** DICTIONARY IMPLEMENTATION */
+
+#include <cassert>
+#include "utils.hpp"
+
+template <typename T>
+void earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
+    assert(false);
+}
+
+/*** OVERRIDES ***/
+template <typename T>
+earl::value::Type earl::value::Dict<T>::type(void) const {
+    UNIMPLEMENTED("Dict::type");
+}
+
+template <typename T>
+std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::binop(Token *op, std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Dict::binop");
+}
+
+template <typename T>
+bool earl::value::Dict<T>::boolean(void) {
+    UNIMPLEMENTED("Dict::boolean");
+}
+
+template <typename T>
+void earl::value::Dict<T>::mutate(const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+    UNIMPLEMENTED("Dict::mutate");
+}
+
+template <typename T>
+std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::copy(void) {
+    UNIMPLEMENTED("Dict::copy");
+}
+
+template <typename T>
+bool earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
+    UNIMPLEMENTED("Dict::eq");
+}
+
+template <typename T>
+std::string earl::value::Dict<T>::to_cxxstring(void) {
+    UNIMPLEMENTED("Dict::to_cxxstring");
+}
+
+template <typename T>
+void earl::value::Dict<T>::spec_mutate(Token *op, const std::shared_ptr<earl::value::Obj> &other, StmtMut *stmt) {
+    UNIMPLEMENTED("Dict::spec_mutate");
+}
+
+template <typename T>
+std::shared_ptr<earl::value::Obj> earl::value::Dict<T>::unaryop(Token *op) {
+    UNIMPLEMENTED("Dict::unaryop");
+}
+
 #endif // EARL_H

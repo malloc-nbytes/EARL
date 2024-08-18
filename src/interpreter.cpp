@@ -884,6 +884,10 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ctx;
     (void)ref;
     (void)expr;
+
+    earl::value::Dict<int> dint;
+    earl::value::Dict<char> ds;
+
     assert(false);
 }
 
