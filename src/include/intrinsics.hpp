@@ -120,6 +120,7 @@ namespace Intrinsics {
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_option_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_tuple_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_dict_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check
@@ -358,6 +359,11 @@ namespace Intrinsics {
     intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj,
                              std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                              std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_insert(std::shared_ptr<earl::value::Obj> obj,
+                            std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                            std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTRINSICS_H

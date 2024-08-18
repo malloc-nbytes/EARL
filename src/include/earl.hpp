@@ -747,7 +747,7 @@ template <typename T> earl::value::Dict<T>::Dict::Dict(earl::value::Type kty) {
 
 template <typename T> void
 earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
-    m_map.insert({key, value});
+    m_map[key] = value;
 }
 
 template <typename T> earl::value::Type

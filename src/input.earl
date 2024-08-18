@@ -7,5 +7,7 @@ let s1 = {
 };
 
 let empty = Dict(int);
+empty.insert(2, "hi");
+empty.insert(1, "test");
 
-println(s1);
+println(empty);

@@ -90,6 +90,7 @@ Intrinsics::intrinsic_member_functions = {
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
     {"is_some", &Intrinsics::intrinsic_member_is_some},
+    {"insert", &Intrinsics::intrinsic_member_insert},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -118,6 +119,10 @@ Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
     case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
     case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
     case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.find(id) != Intrinsics::intrinsic_tuple_member_functions.end();
+    case earl::value::Type::DictInt:
+    case earl::value::Type::DictStr:
+    case earl::value::Type::DictChar:
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.find(id) != Intrinsics::intrinsic_dict_member_functions.end();
     default: return false;
     }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
@@ -138,6 +143,10 @@ Intrinsics::call_member(const std::string &id,
     case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
     case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
     case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::DictInt:
+    case earl::value::Type::DictStr:
+    case earl::value::Type::DictChar:
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx);
     default: assert(false);
     }
 }
