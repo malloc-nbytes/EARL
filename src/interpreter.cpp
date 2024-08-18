@@ -891,11 +891,14 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         throw InterpreterException(msg);
     }
 
+    // Get the values of the first insertion.
     ER first_key_er = Interpreter::eval_expr(expr->m_values.at(0).first.get(), ctx, false);
     ER first_value_er = Interpreter::eval_expr(expr->m_values.at(0).second.get(), ctx, false);
     auto first_key = unpack_ER(first_key_er, ctx, false);
     auto first_value = unpack_ER(first_value_er, ctx, false);
-    earl::value::Type ty = first_value->type();
+
+    // All keys MUST match the initial type.
+    earl::value::Type ty = first_key->type();
 
     switch (ty) {
     case earl::value::Type::Int: {
@@ -909,6 +912,12 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             auto key = unpack_ER(key_er, ctx, false);
             auto value = unpack_ER(value_er, ctx, false);
 
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
             int __key = dynamic_cast<earl::value::Int *>(key.get())->value();
             dict->insert(__key, value);
         }
@@ -916,10 +925,73 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Str: {
+        auto dict = std::make_shared<earl::value::Dict<std::string>>();
+        std::string __first_key = dynamic_cast<earl::value::Str *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            std::string __key = dynamic_cast<earl::value::Str *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Char: {
+        auto dict = std::make_shared<earl::value::Dict<char>>();
+        char __first_key = dynamic_cast<earl::value::Char *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            char __key = dynamic_cast<earl::value::Char *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
     } break;
     case earl::value::Type::Float: {
+        auto dict = std::make_shared<earl::value::Dict<double>>();
+        double __first_key = dynamic_cast<earl::value::Float *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            double __key = dynamic_cast<earl::value::Float *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
     } break;
     default: {
         Err::err_wexpr(expr->m_values.at(0).first.get());

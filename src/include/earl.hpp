@@ -711,7 +711,7 @@ namespace earl {
 
 template <typename T>
 void earl::value::Dict<T>::insert(T key, std::shared_ptr<earl::value::Obj> value) {
-    assert(false);
+    m_map.insert({key, value});
 }
 
 /*** OVERRIDES ***/
