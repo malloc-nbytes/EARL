@@ -550,6 +550,10 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         }
         *stream << " }>";
     } break;
+    case earl::value::Type::TypeKW: {
+        auto tkw = dynamic_cast<earl::value::TypeKW *>(param.get());
+        *stream << "<TypeKW: " << earl::value::type_to_str(tkw->ty()) << ">";
+    } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
         *stream << intparam->value();

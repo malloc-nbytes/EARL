@@ -73,27 +73,39 @@ TypeKW::type(void) const {
 
 std::shared_ptr<Obj>
 TypeKW::binop(Token *op, std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("TypeKW::binop");
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+
+    if (op->type() == TokenType::Double_Equals)
+        return std::make_shared<Bool>(m_ty == std::static_pointer_cast<TypeKW>(other)->ty());
+    else if (op->type() == TokenType::Bang_Equals)
+        return std::make_shared<Bool>(m_ty != std::static_pointer_cast<TypeKW>(other)->ty());
+
+    Err::err_wtok(op);
+    const std::string msg = "Invalid binary operation for type " + earl::value::type_to_str(m_ty);
+    throw InterpreterException(msg);
 }
 
 bool
 TypeKW::boolean(void) {
-    UNIMPLEMENTED("TypeKW::boolean");
+    return true;
 }
 
 void
 TypeKW::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    UNIMPLEMENTED("TypeKW::mutate");
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    m_ty = dynamic_cast<TypeKW *>(other.get())->ty();
 }
 
 std::shared_ptr<Obj>
 TypeKW::copy(void) {
-    UNIMPLEMENTED("TypeKW::copy");
+    return std::make_shared<TypeKW>(m_ty);
 }
 
 bool
 TypeKW::eq(std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("TypeKW::eq");
+    if (other->type() != Type::TypeKW)
+        return false;
+    return m_ty == dynamic_cast<TypeKW *>(other.get())->ty();
 }
 
 std::string
@@ -103,10 +115,14 @@ TypeKW::to_cxxstring(void) {
 
 void
 TypeKW::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    UNIMPLEMENTED("TypeKW::spec_mutate");
+    Err::err_wstmt(stmt);
+    const std::string msg = "cannot special mutate type keyword";
+    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
 TypeKW::unaryop(Token *op) {
-    UNIMPLEMENTED("TypeKW::unaryop");
+    Err::err_wtok(op);
+    const std::string msg = "Invalid unary operation for type " + earl::value::type_to_str(m_ty);
+    throw InterpreterException(msg);
 }

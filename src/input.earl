@@ -1,13 +1,16 @@
 module Main
 
-let s1 = {
-    "foo": 1..=10,
-    "bar": none,
-    "baz": false
-};
-
 let empty = Dict(int);
 empty.insert(2, "hi");
 empty.insert(1, "test");
 
-println(empty);
+if empty[3] {
+    println("IF");
+}
+else {
+    println("ELSE");
+}
+
+
+
+

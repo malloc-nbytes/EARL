@@ -51,7 +51,7 @@ Void::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Void::boolean(void) {
-    return true;
+    return false;
 }
 
 void
