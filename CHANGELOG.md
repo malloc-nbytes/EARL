@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2024-18-8
+
+### Added
+- MAJOR Added new Dictionary type.
+- Added new TypeKW type.
+
+### Changed
+- Unit types now return false in boolean expressions.
+
 ## [0.2.6] - 2024-17-8
 
 ### Added

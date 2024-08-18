@@ -46,6 +46,7 @@ Intrinsics::intrinsic_functions = {
     {"len", &Intrinsics::intrinsic_len},
     {"open", &Intrinsics::intrinsic_open},
     {"type", &Intrinsics::intrinsic_type},
+    {"typeof", &Intrinsics::intrinsic_typeof},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"exit", &Intrinsics::intrinsic_exit},
     {"panic", &Intrinsics::intrinsic_panic},
@@ -438,6 +439,14 @@ Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &param
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "type");
     return std::make_shared<earl::value::Str>(earl::value::type_to_str(params[0]->type()));
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_typeof(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                             std::shared_ptr<Ctx> &ctx) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "typeof");
+    return std::make_shared<earl::value::TypeKW>(params[0]->type());
 }
 
 std::shared_ptr<earl::value::Obj>

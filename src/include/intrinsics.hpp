@@ -221,6 +221,10 @@ namespace Intrinsics {
                    std::shared_ptr<Ctx> &ctx);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_typeof(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                     std::shared_ptr<Ctx> &ctx);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                             std::shared_ptr<Ctx> &ctx);
 

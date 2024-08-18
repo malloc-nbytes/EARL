@@ -1059,6 +1059,57 @@ in sum
 
 #+end_quote
 
+** =dictionary=
+
+#+begin_quote
+A =dictionary= is a collection of key-value pairs. Every key has an associated value.
+If a dictionary is indexed with a key that does not exist, it will return a =unit= value.
+They can be created with a brace initializer list where keys and values are separed by a colon =:=
+and entries are separated by a comma =,=.
+
+The keys in dictionaries must be uniform throughout, although the values can be of any type.
+They must also be initalized with data so it can infer the type of the keys, however you may want
+an empty set. This can be done by using the =Dict(type: TypeKW) -> Dict<type>= function which will
+produce an empty dictionary that holds keys of type =type=.
+
+#+begin_example
+let empty_set = Dict(int);
+
+# Notice how all keys are strings
+let s = {"foo": 1, "bar", 1..=10, "baz": some('a')};
+
+println(s["foo"]);         # 1
+println(s["bar"])          # [1,2,3,4,5,6,7,8,9,10]
+println(s["baz"].unwrap()) # 'a'
+println(s["invalid"]);     # <unit>
+
+s.insert("hello", 9);
+println(s.has_key("hello") && s.has_key("bar")); # true
+println(s.has_value(1))        # true
+
+println(empty_set.has_key(3)); # false
+empty_set.insert(3, [1,2,3]);
+println(empty_set.has_key(3)); # true
+println(empty_set[3]); # [1,2,3]
+#+end_example
+#+end_quote
+
+** =TypeKW=
+
+#+begin_quote
+=TypeKW= (or Type Keyword) are global identifiers for types. You are unable to do
+any operations on them except for passing them around as variables, using them as
+raw values, or doing equality ==== or =!==.
+
+*Note*: These are not the same as the casting functions.
+
+#+begin_example
+let integer_type = int;
+let str_type = str;
+println(integer_type == str_type); # false
+#+end_example
+#+end_quote
+
 ** =file=
 
 #+begin_quote
@@ -1094,20 +1145,20 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 The exception is that you can add a =char= to a =str=.
 #+end_quote
 
-| Symbol | Datatypes                                                        | Description                      |
-|--------+------------------------------------------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str=                                    | Adds the elements together       |
-| -      | =int=, =float=                                                   | Subtracts the elements           |
-| *      | =int=, =float=                                                   | Multiplies the elements together |
-| ///    | =int=, =float=                                                   | Divides the elements             |
-| %      | =int=                                                            | Produces the modulo              |
-| >      | =int=, =float=                                                   | Greater than                     |
-| <      | =int=, =float=                                                   | Less than                        |
-| >=     | =int=, =float=                                                   | Greater than or equal to         |
-| <=     | =int=, =float=                                                   | Less than or equal to            |
-| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple= | Equal to                         |
-| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple= | Not equal to                     |
-| &&     | =bool=                                                           | Logical AND                      |
+| Symbol | Datatypes                                                                          | Description                      |
+|--------+------------------------------------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                                                      | Adds the elements together       |
+| -      | =int=, =float=                                                                     | Subtracts the elements           |
+| *      | =int=, =float=                                                                     | Multiplies the elements together |
+| ///    | =int=, =float=                                                                     | Divides the elements             |
+| %      | =int=                                                                              | Produces the modulo              |
+| >      | =int=, =float=                                                                     | Greater than                     |
+| <      | =int=, =float=                                                                     | Less than                        |
+| >=     | =int=, =float=                                                                     | Greater than or equal to         |
+| <=     | =int=, =float=                                                                     | Less than or equal to            |
+| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
+| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
+| &&     | =bool=                                                                             | Logical AND                      |
 
 =||=, =bool= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
@@ -1233,6 +1284,16 @@ list(arg0: any, arg1: any, ..., argN: any) -> list
 Cast the values to a =list=. You can also supply 0 arguments to create an empty =list=.
 #+end_quote
 
+** =Dict=
+
+#+begin_quote
+#+begin_example
+Dict(ty: TypeKW) -> Dict<ty>
+#+end_example
+
+Creates a new *empty* dictionary that holds keys of type =ty=.
+#+end_quote
+
 ** =assert=
 
 #+begin_quote
@@ -1273,6 +1334,16 @@ type(arg: any) -> str
 #+end_example
 
 Returns the type of =arg= as a =str=.
+#+end_quote
+
+** =typeof=
+
+#+begin_quote
+#+begin_example
+typeof(arg: any) -> TypeKW
+#+end_example
+
+Returns the type of =arg= as a =TypeKW=.
 #+end_quote
 
 ** =argv=
@@ -1414,6 +1485,32 @@ split(delim: str) -> list
 #+end_example
 
 Split a string by the delimiter =delim=.
+#+end_quote
+
+** =dictionary= Implements
+
+#+begin_quote
+#+begin_example
+insert(k: any, v: any) -> unit
+#+end_example
+
+Inserts the key =k= and value =v= into the dictionary.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+has_key(k: any) -> bool
+#+end_example
+
+Returns =true= if the key =k= is present in the dictionary and false if otherwise.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+has_value(v: any) -> bool
+#+end_example
+
+Returns =true= if the value =v= is present in the dictionary and false if otherwise.
 #+end_quote
 
 ** =tuple= Implements

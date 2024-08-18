@@ -1,6 +1,4 @@
 module Main
 
-let empty = Dict(int);
-empty.insert(2, "hi");
-empty.insert(1, "test");
+println(Dict(typeof("")));
 
