@@ -142,10 +142,16 @@ struct FunctionCtx : public Ctx {
     bool closure_exists(const std::string &id) override;
     WorldCtx *get_world(void) override;
 
+    void setrec(void);
+    void set_curfunc(const std::string &id);
+    const std::string &get_curfuncid(void);
+
 private:
     std::shared_ptr<Ctx> m_owner; // The MAIN owner
     std::shared_ptr<Ctx> m_immediate_owner;
     uint32_t m_attrs;
+    bool m_in_rec;
+    std::string m_curfunc_id;
 };
 
 struct ClassCtx : public Ctx {

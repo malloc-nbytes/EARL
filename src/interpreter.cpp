@@ -346,7 +346,16 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
+        fctx->set_curfunc(id);
         func->load_parameters(params, fctx);
+
+        // Recursion optimization
+        if (ctx->type() == CtxType::Function) {
+            if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
+                fctx->setrec();
+            }
+        }
+
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }
@@ -386,13 +395,22 @@ eval_user_defined_function(ExprFuncCall *expr,
             throw InterpreterException(msg);
         }
         if (from_outside && !func->is_pub()) {
-            std::string msg = "function `" + id + "` does not contain the @pub attribute";
+            std::string msg = "function `"+id+"` does not contain the @pub attribute";
             if (expr)
                 Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         func->load_parameters(params, fctx);
+        fctx->set_curfunc(id);
+        func->load_parameters(params, fctx);
+
+        if (ctx->type() == CtxType::Function) {
+            if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
+                fctx->setrec();
+            }
+        }
+
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }
@@ -419,16 +437,23 @@ eval_user_defined_function(ExprFuncCall *expr,
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
+
+    // CLASSES
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
         auto class_instantiation = eval_class_instantiation(static_cast<ExprFuncCall *>(er.extra), er.id, params, ctx, ref);
         return class_instantiation;
     }
+
+    // FUNCTIONS/MEMBERS/INTRINSICS
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
-        if (er.is_member_intrinsic()) {
+
+        // Classes do not implement any member intrinsics, so its ok
+        // to check to make sure that the context is not a class context.
+        if (ctx->type() != CtxType::Class && er.is_member_intrinsic()) {
             if (!perp || !perp->lhs_getter_accessor) {
                 std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
@@ -464,8 +489,12 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         // routine(s) above this may need this change as well.
         return eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
     }
+
+    // LITERAL
     else if (er.is_literal())
         return er.value;
+
+    // IDENTIFIER
     else if (er.is_ident()) {
         if (ctx->variable_exists(er.id)) {
             auto var = ctx->variable_get(er.id);
@@ -490,14 +519,20 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
-        if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
+        if (earl::value::is_typekw(er.id))
+            return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
+        if (er.extra)
+            Err::err_wexpr(static_cast<Expr *>(er.extra));
         std::string msg = "variable `"+er.id+"` has not been declared";
         throw InterpreterException(msg);
     }
+
+    // UNIT
     else if (er.is_wildcard())
         return std::make_shared<earl::value::Void>();
     else
-        assert(false);
+        assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
 static ER
@@ -729,8 +764,8 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     ER left_er = Interpreter::eval_expr(expr->m_left.get(), ctx, ref);
     ER idx_er = Interpreter::eval_expr(expr->m_expr.get(), ctx, ref);
 
-    auto left_value = unpack_ER(left_er, ctx, ref);
-    auto idx_value = unpack_ER(idx_er, ctx, ref);
+    auto left_value = unpack_ER(left_er, ctx, true);
+    auto idx_value = unpack_ER(idx_er, ctx, true);
 
     if (left_value->type() == earl::value::Type::List) {
         auto list = dynamic_cast<earl::value::List *>(left_value.get());
@@ -744,8 +779,24 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
         return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
+    else if (left_value->type() == earl::value::Type::DictInt) {
+        auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
+    }
+    else if (left_value->type() == earl::value::Type::DictStr) {
+        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
+    }
+    else if (left_value->type() == earl::value::Type::DictChar) {
+        auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
+    }
+    else if (left_value->type() == earl::value::Type::DictFloat) {
+        auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
+        return ER(dict->nth(idx_value, expr), ERT::Literal);
+    }
     else {
-        std::string msg = "cannot use `[]` on non-list, non-tuple, or non-str type";
+        std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";
         Err::err_wexpr(expr);
         throw InterpreterException(msg);
     }
@@ -768,8 +819,10 @@ static ER
 eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ref;
     std::vector<std::pair<Token *, uint32_t>> args;
-    for (auto &entry : expr->m_args)
-        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    for (auto &entry : expr->m_args) {
+        if (entry.first->lexeme() != "_")
+            args.push_back(std::make_pair(entry.first.get(), entry.second));
+    }
     auto cl = std::make_shared<earl::value::Closure>(expr, std::move(args), ctx);
     return ER(cl, ERT::Literal);
 }
@@ -879,6 +932,127 @@ bad_type:
     return ER(nullptr, ERT::None); // unreachable
 }
 
+static ER
+eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    if (expr->m_values.size() == 0) {
+        const std::string msg = "Cannot create a dictionary of size 0. Use the `Dict(TypeKW)` to get an empty dictionary.";
+        Err::err_wexpr(expr);
+        throw InterpreterException(msg);
+    }
+
+    // Get the values of the first insertion.
+    ER first_key_er = Interpreter::eval_expr(expr->m_values.at(0).first.get(), ctx, false);
+    ER first_value_er = Interpreter::eval_expr(expr->m_values.at(0).second.get(), ctx, false);
+    auto first_key = unpack_ER(first_key_er, ctx, false);
+    auto first_value = unpack_ER(first_value_er, ctx, false);
+
+    // All keys MUST match the initial type.
+    earl::value::Type ty = first_key->type();
+
+    switch (ty) {
+    case earl::value::Type::Int: {
+        auto dict = std::make_shared<earl::value::Dict<int>>(ty);
+        int __first_key = dynamic_cast<earl::value::Int *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            int __key = dynamic_cast<earl::value::Int *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
+    } break;
+    case earl::value::Type::Str: {
+        auto dict = std::make_shared<earl::value::Dict<std::string>>(ty);
+        std::string __first_key = dynamic_cast<earl::value::Str *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            std::string __key = dynamic_cast<earl::value::Str *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
+    } break;
+    case earl::value::Type::Char: {
+        auto dict = std::make_shared<earl::value::Dict<char>>(ty);
+        char __first_key = dynamic_cast<earl::value::Char *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            char __key = dynamic_cast<earl::value::Char *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
+    } break;
+    case earl::value::Type::Float: {
+        auto dict = std::make_shared<earl::value::Dict<double>>(ty);
+        double __first_key = dynamic_cast<earl::value::Float *>(first_key.get())->value();
+        dict->insert(__first_key, first_value);
+
+        for (size_t i = 1; i < expr->m_values.size(); ++i) {
+            ER key_er = Interpreter::eval_expr(expr->m_values.at(i).first.get(), ctx, false);
+            ER value_er = Interpreter::eval_expr(expr->m_values.at(i).second.get(), ctx, false);
+            auto key = unpack_ER(key_er, ctx, false);
+            auto value = unpack_ER(value_er, ctx, false);
+
+            if (key->type() != ty) {
+                const std::string msg = "all keys must be the same type in dictionaries";
+                Err::err_wexpr(expr->m_values.at(i).first.get());
+                throw InterpreterException(msg);
+            }
+
+            double __key = dynamic_cast<earl::value::Float *>(key.get())->value();
+            dict->insert(__key, value);
+        }
+
+        return ER(dict, ERT::Literal);
+    } break;
+    default: {
+        Err::err_wexpr(expr->m_values.at(0).first.get());
+        const std::string msg = "type `"+earl::value::type_to_str(ty)+"` is not supported as a key in dictionaries";
+        throw InterpreterException(msg);
+    } break;
+    }
+
+    assert(false && "unreachable");
+    return ER(nullptr, ERT::None); // unreachable
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -898,6 +1072,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Range:         return eval_expr_term_range(dynamic_cast<ExprRange *>(expr), ctx, ref);
     case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
     case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
+    case ExprTermType::Dict:          return eval_expr_term_dict(dynamic_cast<ExprDict *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

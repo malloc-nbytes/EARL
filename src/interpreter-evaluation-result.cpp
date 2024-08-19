@@ -81,6 +81,11 @@ Interpreter::ER::is_tuple_access(void) {
 }
 
 bool
+Interpreter::ER::is_type(void) {
+    return (this->rt & Type) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

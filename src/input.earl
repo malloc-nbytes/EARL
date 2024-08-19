@@ -1,4 +1,11 @@
 module Main
 
+import "../src/std/set.earl"
+
+let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
+
+s.insert(8);
+s.insert(3);
+
 
 
