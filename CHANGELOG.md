@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Calling a class method that has the same name as a member intrinsic no longer fails.
 
+### Changed
+- std/set.earl now uses an AVL tree instead of a regulary binary search tree.
+
 ## [0.3.0] - 2024-18-8
 
 ### Added
