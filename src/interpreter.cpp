@@ -346,7 +346,15 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
+        fctx->set_curfunc(id);
         func->load_parameters(params, fctx);
+
+        if (ctx->type() == CtxType::Function) {
+            if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
+                fctx->setrec();
+            }
+        }
+
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }
@@ -386,13 +394,22 @@ eval_user_defined_function(ExprFuncCall *expr,
             throw InterpreterException(msg);
         }
         if (from_outside && !func->is_pub()) {
-            std::string msg = "function `" + id + "` does not contain the @pub attribute";
+            std::string msg = "function `"+id+"` does not contain the @pub attribute";
             if (expr)
                 Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         func->load_parameters(params, fctx);
+        fctx->set_curfunc(id);
+        func->load_parameters(params, fctx);
+
+        if (ctx->type() == CtxType::Function) {
+            if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
+                fctx->setrec();
+            }
+        }
+
         std::shared_ptr<Ctx> mask = fctx;
         return Interpreter::eval_stmt_block(func->block(), mask);
     }

@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2024-19-8
+
+### Added
+- Some recursion optimizations
+
 ## [0.3.0] - 2024-18-8
 
 ### Added

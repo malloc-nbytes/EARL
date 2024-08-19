@@ -1,7 +1,5 @@
 module Main
 
-let cl = |_| {
-    println("hello");
-};
+import "../src/std/set.earl"
 
-cl();
+

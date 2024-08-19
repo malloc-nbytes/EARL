@@ -45,6 +45,11 @@ FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner, uint32_t attrs)
     }
 }
 
+void
+FunctionCtx::setrec(void) {
+    m_in_rec = true;
+}
+
 CtxType
 FunctionCtx::type(void) const {
     return CtxType::Function;
@@ -115,17 +120,30 @@ FunctionCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
     m_funcs.add(id, func);
 }
 
+void
+FunctionCtx::set_curfunc(const std::string &id) {
+    m_curfunc_id = id;
+}
+
+const std::string &
+FunctionCtx::get_curfuncid(void) {
+    return m_curfunc_id;
+}
+
 // TODO: check for conflics
 bool
 FunctionCtx::function_exists(const std::string &id) {
     bool res = false;
 
-    // Handle recurive nested functions.
-    if (m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
-        res = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_exists(id);
+    if (m_in_rec && m_owner && m_owner->type() == CtxType::World)
+        res = dynamic_cast<WorldCtx *>(m_owner.get())->function_exists(id);
 
     if (!res && m_owner && m_owner->type() == CtxType::Class)
         res = dynamic_cast<ClassCtx *>(m_owner.get())->function_exists(id);
+
+    // Handle recurive nested functions.
+    if (!res && m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_exists(id);
 
     // May be in recursive chain, keep going backwards until
     // we hit the @world scope.
@@ -146,11 +164,14 @@ std::shared_ptr<earl::function::Obj>
 FunctionCtx::function_get(const std::string &id) {
     std::shared_ptr<earl::function::Obj> func = m_funcs.get(id);
 
-    if (!func && m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
-        func = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_get(id);
+    if (m_in_rec && m_owner && m_owner->type() == CtxType::World)
+        func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
 
     if (!func && m_owner && m_owner->type() == CtxType::Class)
         func = dynamic_cast<ClassCtx *>(m_owner.get())->function_get(id);
+
+    if (!func && m_immediate_owner && m_immediate_owner->type() == CtxType::Function)
+        func = dynamic_cast<FunctionCtx *>(m_immediate_owner.get())->function_get(id);
 
     if (!func && m_owner && m_owner->type() == CtxType::Function)
         func = dynamic_cast<FunctionCtx *>(m_owner.get())->function_get(id);
