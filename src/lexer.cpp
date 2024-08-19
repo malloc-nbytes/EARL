@@ -150,7 +150,6 @@ try_comment(char *src, std::string &comment) {
 char *
 read_file(const char *filepath) {
     const char *search_path = PREFIX "/include/EARL/";
-
     char full_path[256];
     snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
 
@@ -267,7 +266,7 @@ lex_file(std::string &src,
             ++col;
         }
 
-        else if (src[i] == '\n') {
+        else if (src[i] == '\n' || src[i] == '\r') {
             col = 0;
             ++row;
             ++i;
@@ -355,6 +354,7 @@ lex_file(std::string &src,
                 }
             }
         }
+
     }
 
     lexer->append(token_alloc(*lexer.get(), nullptr, 0, TokenType::Eof, row, col, fp));

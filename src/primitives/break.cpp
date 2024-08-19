@@ -81,4 +81,5 @@ std::shared_ptr<Obj>
 Break::unaryop(Token *op) {
     (void)op;
     assert(false && "unreachable");
+    return nullptr; // unreachable
 }

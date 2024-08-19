@@ -26,6 +26,9 @@ stamp-h1
 *.clangd
 input.earl
 
+.vs
+CMakeSettings.json
+
 # Cmake
 build
 CMakeLists.txt.user

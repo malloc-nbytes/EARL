@@ -419,8 +419,13 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
     std::vector<std::shared_ptr<earl::value::Obj>> items={};
 
     try {
-        for (const auto &entry : std::filesystem::directory_iterator(path))
+        for (const auto& entry : std::filesystem::directory_iterator(path)) {
+#ifdef _WIN32
+            items.push_back(std::make_shared<earl::value::Str>(entry.path().string()));
+#else
             items.push_back(std::make_shared<earl::value::Str>(entry.path()));
+#endif
+        }
     }
     catch (const std::filesystem::filesystem_error &e) {
         const char *err = e.what();
@@ -742,6 +747,7 @@ Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &par
         switch (st->value()) {
         case 0:
             assert(false && "unimplemented");
+            break;
         case 1:
             stream = &std::cout;
             break;

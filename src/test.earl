@@ -1,0 +1,11 @@
+module Main
+
+println("hello world");
+
+let d = Dict(int);
+
+d.insert(1, "foo");
+d.insert(2, "bar");
+d.insert(3, "baz");
+
+println(d);

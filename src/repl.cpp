@@ -43,8 +43,11 @@
 #include "earl.hpp"
 #include "lexer.hpp"
 
+#ifndef _WIN32
 #define EARL_REPL_HISTORY_FILENAME ".earl_history"
 #define REPL_HISTORY_MAX_FILESZ 1024 * 1024
+static std::string REPL_HIST = "";
+#endif
 
 #define YELLOW "\033[93m"
 #define GREEN "\033[32m"
@@ -64,12 +67,11 @@
 #define DISCARD ":d"
 #define EE ":q!"
 
-static std::string REPL_HIST = "";
-
 static int g_brace = 0;
 static int g_bracket = 0;
 static int g_paren = 0;
 
+#ifndef _WIN32
 void
 try_clear_repl_history() {
     const char* home_dir = std::getenv("HOME");
@@ -100,6 +102,7 @@ try_clear_repl_history() {
         std::cout << "REPL history file cleared." << std::endl;
     }
 }
+#endif
 
 void
 yellow(void) {
@@ -137,6 +140,7 @@ noc(void) {
         std::cout << NOC;
 }
 
+#ifndef _WIN32
 void
 save_repl_history() {
     const char *home_dir = std::getenv("HOME");
@@ -149,6 +153,7 @@ save_repl_history() {
     of << REPL_HIST;
     of.close();
 }
+#endif
 
 void
 log(std::string msg, void(*color)(void) = nullptr) {
@@ -211,7 +216,6 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
         std::string src = std::string(src_c);
         auto src_lines = split_on_newline(src);
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
-        // green();
         log("Imported " + f + "\n", green);
         noc();
     }
@@ -437,7 +441,9 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
 
 std::shared_ptr<Ctx>
 Repl::run(void) {
+#ifndef _WIN32
     try_clear_repl_history();
+#endif
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
@@ -469,8 +475,9 @@ Repl::run(void) {
 
         std::string combined = "";
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
+#ifndef _WIN32
         REPL_HIST += combined;
-
+#endif
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
         lexer = lex_file(combined, "", keywords, types, comment);
@@ -506,8 +513,9 @@ Repl::run(void) {
                 }
             }
         }
-
+#ifndef _WIN32
         save_repl_history();
+#endif
     }
 
     return nullptr;
