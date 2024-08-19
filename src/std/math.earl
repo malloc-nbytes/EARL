@@ -56,10 +56,6 @@ import "std/list.earl"
         return none;
     }
 
-    # if len(lst) == 1 {
-    #     return lst[0];
-    # }
-    
     let count = 0;
     let max_count = 0;
     let lst_modes = [];
@@ -106,40 +102,45 @@ import "std/list.earl"
     return lst[middle];
 }
 
-# min
-@pub fn min(lst) {
+# list min
+# This function finds the smallest element in a list
+@pub fn list_min(lst) {
+    if len(lst) == 0 {
+        return none;
+    }
 
-    let x = 0;
-    let min = 0;
-    for i in len(lst) {
-        x = lst[i];
-        if min >= x {
-            min = x;
+    let min = lst[0];
+
+    for i in 1 to len(lst) {
+        if lst[i] < min {
+            min = lst[i];
         }
     }
 
     return min;
 }
 
-# max
-@pub fn max(lst) {
-    let x = 0;
-    let max = 0;
-    for i in len(lst) {
-        x = lst[i];
-        if max <= x {
-            max = x;
+# list max
+# This function finds the largest element in a list
+@pub fn list_max(lst) {
+    if len(lst) == 0 {
+        return none;
+    }
+
+    let max = lst[0];
+
+    for i in 1 to len(lst) {
+        if lst[i] > max {
+            max = lst[i];
         }
     }
+
     return max;
 }
 
-
-
-    
 # Mathematical Constants
 # pi
 @pub let pi = 3.141592653589793;
 
 # Euler's number 
-@pub let e = 2.718281828459045;
+@pub let euler = 2.718281828459045;
