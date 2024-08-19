@@ -4,13 +4,22 @@ project(EARL VERSION 0.3.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Detect the platform and set default INSTALL_PREFIX accordingly
+if(WIN32)
+    # Windows-specific installation prefix
+    set(DEFAULT_INSTALL_PREFIX "$ENV{LOCALAPPDATA}" CACHE STRING "The installation prefix for Windows")
+else()
+    # Unix/Linux/Mac-specific installation prefix
+    set(DEFAULT_INSTALL_PREFIX "/usr/local" CACHE STRING "The installation prefix for Unix-based systems")
+endif()
+
 # Define INSTALL_PREFIX and PROJECT_VERSION as cache variables
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
 set(PROJECT_VERSION ${PROJECT_VERSION} CACHE STRING "The project version")
 
 # Set default INSTALL_PREFIX if not specified
 if(NOT INSTALL_PREFIX)
-    set(INSTALL_PREFIX "/usr/local")
+    set(INSTALL_PREFIX ${DEFAULT_INSTALL_PREFIX})
 endif()
 
 # Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
@@ -41,11 +50,20 @@ configure_file(
 # Install targets
 install(TARGETS earl DESTINATION bin)
 
-# Install the contents of the src/std directory
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
-    DESTINATION include/EARL/std
-    FILES_MATCHING PATTERN "*.*"
-)
+if(WIN32)
+    # Install the contents of the src/std directory
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
+        DESTINATION include/std
+        FILES_MATCHING PATTERN "*.*"
+    )
+else()
+    # Install the contents of the src/std directory
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
+        DESTINATION include/EARL/std
+        FILES_MATCHING PATTERN "*.*"
+    )
+endif()
+
 
 # Find Doxygen
 find_package(Doxygen)
