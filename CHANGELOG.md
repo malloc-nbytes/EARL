@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Some recursion optimizations
 
+### Fixed
+- Calling a class method that has the same name as a member intrinsic no longer fails.
+
 ## [0.3.0] - 2024-18-8
 
 ### Added

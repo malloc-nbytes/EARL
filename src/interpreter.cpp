@@ -437,16 +437,23 @@ eval_user_defined_function(ExprFuncCall *expr,
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
+
+    // CLASSES
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
         auto class_instantiation = eval_class_instantiation(static_cast<ExprFuncCall *>(er.extra), er.id, params, ctx, ref);
         return class_instantiation;
     }
+
+    // FUNCTIONS/MEMBERS/INTRINSICS
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
-        if (er.is_member_intrinsic()) {
+
+        // Classes do not implement any member intrinsics, so its ok
+        // to check to make sure that the context is not a class context.
+        if (ctx->type() != CtxType::Class && er.is_member_intrinsic()) {
             if (!perp || !perp->lhs_getter_accessor) {
                 std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
@@ -482,8 +489,12 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         // routine(s) above this may need this change as well.
         return eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
     }
+
+    // LITERAL
     else if (er.is_literal())
         return er.value;
+
+    // IDENTIFIER
     else if (er.is_ident()) {
         if (ctx->variable_exists(er.id)) {
             auto var = ctx->variable_get(er.id);
@@ -508,18 +519,20 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
-        if (earl::value::is_typekw(er.id)) {
+        if (earl::value::is_typekw(er.id))
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
-        }
         if (er.extra)
             Err::err_wexpr(static_cast<Expr *>(er.extra));
         std::string msg = "variable `"+er.id+"` has not been declared";
         throw InterpreterException(msg);
     }
+
+    // UNIT
     else if (er.is_wildcard())
         return std::make_shared<earl::value::Void>();
     else
-        assert(false);
+        assert(false && "unreachable");
+    return nullptr; // unreachable
 }
 
 static ER

@@ -54,7 +54,7 @@ class T [init, compar] {
         return ret;
     }
 
-    @pub fn add(value) {
+    @pub fn insert(value) {
         this.__insert(this.root, value);
     }
 
