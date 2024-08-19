@@ -1,4 +1,7 @@
 module Main
 
-println(Dict(typeof("")));
+let cl = |_| {
+    println("hello");
+};
 
+cl();
