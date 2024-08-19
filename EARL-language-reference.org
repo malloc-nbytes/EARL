@@ -215,6 +215,8 @@ or
 
 =let= <id0>, <id1>, <id2>, ..., <idN> = /tuple/
 
+where |tuple| $=$ number of ids.
+
 ** Examples
 
 #+begin_example
@@ -373,8 +375,6 @@ true
 *Note*: For more information on =some= and =none=, see =option= in [[Datatypes]].
 For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
 #+end_quote
-
-* Ranges
 
 * While Loops
 
