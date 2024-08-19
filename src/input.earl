@@ -2,10 +2,6 @@ module Main
 
 import "../src/std/set.earl"
 
-let s = Set::T([], Set::DEFAULT_INT_SET_COMPAR);
+let avl = Set::T(1..=100);
 
-s.insert(8);
-s.insert(3);
-
-
-
+avl.show();

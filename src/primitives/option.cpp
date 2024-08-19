@@ -98,7 +98,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Option::boolean(void) {
-    UNIMPLEMENTED("Option::boolean");
+    return this->is_some();
 }
 
 void
@@ -149,7 +149,9 @@ Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt)
 
 std::shared_ptr<Obj>
 Option::unaryop(Token *op) {
-    (void)op;
+    if (op->type() == TokenType::Bang) {
+        return std::make_shared<Bool>(this->is_none());
+    }
     Err::err_wtok(op);
     std::string msg = "invalid unary operator on option type";
     throw InterpreterException(msg);

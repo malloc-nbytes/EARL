@@ -729,9 +729,9 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 
 =class= <id> ?(=[= <arg1>, <arg2>,..., <argN> =]=) ={=
 
-    =@= *(pub | world | ref) <member1> = <id> | /expr/ =;=
+    =@= *(pub | world | ref) let <member1> = <id> | /expr/ =;=
 
-    =@= *(pub | world | ref) <member2> = <id> | /expr/ =;=
+    =@= *(pub | world | ref) let <member2> = <id> | /expr/ =;=
 
     <methods>
 
@@ -746,8 +746,8 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 # so other modules cannot use this class.
 
 class NoPassesArgs [] {
-    x = 1;
-    y = 2;
+    let x = 1;
+    let y = 2;
 
     @pub fn print() {
         # The use of `this` keyword is optional.
@@ -762,13 +762,13 @@ class NoPassesArgs [] {
 # This class is marked as @pub, so it is
 # visible to other modules.
 @pub class Point [x, y, name] {
-    @pub x = x;
-    @pub y = y;
-    name = name;
+    @pub let x = x;
+    @pub let y = y;
+    let name = name;
 
     # Because this is public, you can access
     # it directly from outside the class.
-    @pub desc = "A point class"
+    @pub let desc = "A point class"
 
     # Function not marked as @pub so
     # it does is not visible outside
@@ -796,8 +796,8 @@ class NoPassesArgs [] {
     ### THIS HAPPENS FIRST ######
     # You could just assign `init` to `lst` here,
     # but for this example, this is done in the constructor.
-    lst = [];
-    sz = 0;
+    let lst = [];
+    let sz = 0;
     ############################
 
 

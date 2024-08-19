@@ -1096,6 +1096,15 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         return ER(unpack_ER(rhs, ctx, ref), ERT::Literal);
     }
 
+    // Short-circuit evaluation for logical OR (||)
+    if (expr->m_op->type() == TokenType::Double_Pipe) {
+        // If lhs is true, return lhs (no need to evaluate rhs)
+        if (lhs_value->boolean())
+            return lhs;
+        ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
+        return ER(unpack_ER(rhs, ctx, ref), ERT::Literal);
+    }
+
     ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
     auto rhs_value = unpack_ER(rhs, ctx, ref);
     auto result = lhs_value->binop(expr->m_op.get(), rhs_value);
