@@ -788,8 +788,10 @@ static ER
 eval_expr_term_closure(ExprClosure *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     (void)ref;
     std::vector<std::pair<Token *, uint32_t>> args;
-    for (auto &entry : expr->m_args)
-        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    for (auto &entry : expr->m_args) {
+        if (entry.first->lexeme() != "_")
+            args.push_back(std::make_pair(entry.first.get(), entry.second));
+    }
     auto cl = std::make_shared<earl::value::Closure>(expr, std::move(args), ctx);
     return ER(cl, ERT::Literal);
 }
