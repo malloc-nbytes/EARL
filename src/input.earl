@@ -1,5 +1,11 @@
 module Main
 
-import "../src/std/set.earl"
+fn rec(i) {
+    println(i);
+    if i == 7920 {
+        return i;
+    }
+    return rec(i+1);
+}
 
-
+println(rec(0));

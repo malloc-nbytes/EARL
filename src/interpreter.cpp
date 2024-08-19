@@ -349,6 +349,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         fctx->set_curfunc(id);
         func->load_parameters(params, fctx);
 
+        // Recursion optimization
         if (ctx->type() == CtxType::Function) {
             if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
                 fctx->setrec();
