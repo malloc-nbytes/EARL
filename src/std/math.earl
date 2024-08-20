@@ -22,6 +22,8 @@
 
 module Math
 
+import "std/list.earl"
+
 @pub fn max(x, y) {
     if x >= y {
         return x;
@@ -42,3 +44,103 @@ module Math
     }
     return x;
 }
+
+# Statistical Functions
+
+# Mode
+# This function returns a list of all modes that appear at the
+# highest frequency in the given list in the order modes are found.
+@pub fn mode(lst) {
+    
+    if len(lst) == 0 {
+        return none;
+    }
+
+    let count = 0;
+    let max_count = 0;
+    let lst_modes = [];
+    
+    for i in 0 to len(lst) {
+        if (List::find(lst_modes, lst[i]) == -1) {
+
+            count = List::count(lst, lst[i]);
+            
+            if max_count == count {
+                lst_modes.append(lst[i]);
+                count = 0;
+            }
+
+            if max_count < count {
+                lst_modes = [];
+                lst_modes.append(lst[i]);
+                max_count = count;
+                count = 0;
+             }
+        }
+    }
+    return lst_modes;
+}
+
+# Mean
+# This function returns the mean (Average in a dataset) of a given list
+@pub fn mean(lst) {
+    return List::sumf(lst) / len(lst);
+}
+
+# Median
+# This function sorts and then returns the middle number of a given list
+@pub fn median(lst) {
+    
+    List::quicksort(lst, List::DEFAULT_INT_ASCEND_QUICKSORT);
+    
+    let middle = len(lst)/2;
+    
+    if len(lst) % 2 == 0 {
+        return (lst[middle-1]+lst[middle])/2.0;
+    }
+
+    return lst[middle];
+}
+
+# list min
+# This function finds the smallest element in a list
+@pub fn list_min(lst) {
+    if len(lst) == 0 {
+        return none;
+    }
+
+    let min = lst[0];
+
+    for i in 1 to len(lst) {
+        if lst[i] < min {
+            min = lst[i];
+        }
+    }
+
+    return min;
+}
+
+# list max
+# This function finds the largest element in a list
+@pub fn list_max(lst) {
+    if len(lst) == 0 {
+        return none;
+    }
+
+    let max = lst[0];
+
+    for i in 1 to len(lst) {
+        if lst[i] > max {
+            max = lst[i];
+        }
+    }
+
+    return max;
+}
+
+# Mathematical Constants
+# pi
+@pub let pi = 3.141592653589793;
+
+# Euler's number 
+@pub let euler = 2.718281828459045;
