@@ -159,6 +159,41 @@ Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, st
 std::shared_ptr<Token>
 token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
     (void)lexer;
+    if (type == TokenType::Strlit) {
+        std::string s = "";
+        for (size_t i = 0; i < len; ++i) {
+            if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 'n') {
+                s += '\n';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 'r') {
+                s += '\r';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 't') {
+                s += '\t';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == '"') {
+                s += '"';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == '\\') {
+                s += '\\';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1)) {
+                auto err = std::make_shared<Token>(start, len, type, row, col, fp);
+                const std::string msg = "unknown escape sequence: `\\" + std::string(1, *(start+i+1));
+                Err::err_wtok(err.get());
+                throw ParserException(msg);
+            }
+            else {
+                s += *(start+i);
+            }
+        }
+        return std::make_shared<Token>(s, type, row, col, fp);
+    }
     return std::make_shared<Token>(start, len, type, row, col, fp);
 }
 

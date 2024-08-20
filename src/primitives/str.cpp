@@ -36,8 +36,9 @@ using namespace earl::value;
 Str::Str(std::string value) {
     m_value = value;
     m_chars = {};
-    for (size_t i = 0; i < m_value.size(); ++i)
-        m_chars.push_back(nullptr);
+    m_chars = std::vector<std::shared_ptr<Char>>(m_value.size(), nullptr);
+    // for (size_t i = 0; i < m_value.size(); ++i)
+    //     m_chars.push_back(nullptr);
     // bool escape = false;
     // for (size_t i = 0; i < value.size(); ++i) {
     //     char c = value[i];
