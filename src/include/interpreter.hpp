@@ -45,7 +45,8 @@ namespace Interpreter {
         Wildcard = 1 << 7,
         TupleAccess = 1 << 8,
         Type = 1 << 9,
-        None = 1 << 10,
+        ListAccess = 1 << 10,
+        None = 1 << 11,
     };
 
     struct ER {
@@ -64,6 +65,7 @@ namespace Interpreter {
         bool is_wildcard(void);
         bool is_tuple_access(void);
         bool is_type(void);
+        bool is_list_access(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;

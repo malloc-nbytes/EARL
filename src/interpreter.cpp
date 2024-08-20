@@ -769,11 +769,11 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
 
     if (left_value->type() == earl::value::Type::List) {
         auto list = dynamic_cast<earl::value::List *>(left_value.get());
-        return ER(list->nth(idx_value), ERT::Literal);
+        return ER(list->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Str) {
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
-        return ER(str->nth(idx_value), ERT::Literal);
+        return ER(str->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Tuple) {
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
@@ -781,19 +781,19 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictStr) {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictChar) {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictFloat) {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), ERT::Literal);
+        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";
@@ -1228,7 +1228,12 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     if (!rhs.is_class_instant()) {
         PackedERPreliminary perp(nullptr);
-        value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+        if (rhs.is_list_access() && !ref)
+            value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp)->copy();
+        else if (rhs.is_list_access())
+            value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
+        else
+            value = unpack_ER(rhs, ctx, ref, /*perp=*/&perp);
     }
     else
         value = unpack_ER(rhs, ctx, ref);
@@ -1335,6 +1340,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
 
     auto l = unpack_ER(left_er, ctx, true);
     auto r = unpack_ER(right_er, ctx, false);
+
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
         l->mutate(r, stmt);
@@ -1453,7 +1459,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             stmt->m_evald = true;
             return result;
         }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_raw()[0]);
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_as_earlchar()[0]);
         if (ctx->variable_exists(enumerator->id())) {
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
             auto conflict = ctx->variable_get(enumerator->id());
@@ -1463,7 +1469,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         ctx->variable_add(enumerator);
         for (size_t i = 0; i < str->value().size(); ++i) {
             if (i != 0)
-                enumerator->reset(str->value_raw()[i]);
+                enumerator->reset(str->value_as_earlchar()[i]);
             result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
             if (result && result->type() == earl::value::Type::Break) {
                 result = nullptr;
