@@ -1,7 +1,5 @@
 module Main
 
-import "../src/std/set.earl"
-
 let avl = Set::T(1..=100);
 
 avl.show();

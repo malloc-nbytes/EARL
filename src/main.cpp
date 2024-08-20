@@ -51,10 +51,11 @@ static void usage(void) {
 
     std::cerr << "Usage: earl [options...] <file> -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "  -v, --version         Print version information" << std::endl;
-    std::cerr << "  -h, --help            Print this help message" << std::endl;
-    std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
-    std::cerr << "      --repl-nocolor    Do not use color in the REPL" << std::endl;
+    std::cerr << "  -v, --version           Print version information" << std::endl;
+    std::cerr << "  -h, --help              Print this help message" << std::endl;
+    std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
+    std::cerr << "      --watch [files...]  Watch files for changes and hot reload" << std::endl;
 
     std::exit(0);
 }
@@ -65,18 +66,16 @@ static void version() {
 }
 
 static void parse_2hypharg(std::string arg) {
-    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
+    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
-    }
-    else if (arg == COMMON_EARL2ARG_HELP) {
+    else if (arg == COMMON_EARL2ARG_HELP)
         usage();
-    }
-    else if (arg == COMMON_EARL2ARG_VERSION) {
+    else if (arg == COMMON_EARL2ARG_VERSION)
         version();
-    }
-    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR) {
+    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
         flags |= __REPL_NOCOLOR;
-    }
+    else if (arg == COMMON_EARL2ARG_WATCH)
+        flags |= __WATCH;
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
     }
@@ -144,35 +143,45 @@ static std::string handlecli(int argc, char **argv) {
 int main(int argc, char **argv) {
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
+    std::vector<std::string> watch_files = {};
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types = {};
     std::string comment = "#";
 
     if (filepath != "") {
-        std::unique_ptr<Lexer> lexer = nullptr;
-        std::unique_ptr<Program> program = nullptr;
-        try {
-            std::string src_code = read_file(filepath.c_str());
-            lexer = lex_file(src_code, filepath, keywords, types, comment);
-        }
-        catch (const LexerException &e) {
-            std::cerr << "Lexer error: " << e.what() << std::endl;
-            return 1;
-        }
-        try {
-            program = Parser::parse_program(*lexer.get());
-        } catch (const ParserException &e) {
-            std::cerr << "Parser error: " << e.what() << std::endl;
-            return 1;
-        }
-        try {
-            (void)Interpreter::interpret(std::move(program), std::move(lexer));
-        }
-        catch (const InterpreterException &e) {
-            std::cerr << "Interpreter error: " << e.what() << std::endl;
-            return 1;
-        }
+        do {
+            std::unique_ptr<Lexer> lexer = nullptr;
+            std::unique_ptr<Program> program = nullptr;
+            try {
+                std::string src_code = read_file(filepath.c_str());
+                lexer = lex_file(src_code, filepath, keywords, types, comment);
+            } catch (const LexerException &e) {
+                std::cerr << "Lexer error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+                goto wait;
+            }
+            try {
+                program = Parser::parse_program(*lexer.get());
+            } catch (const ParserException &e) {
+                std::cerr << "Parser error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+                goto wait;
+            }
+            try {
+                (void)Interpreter::interpret(std::move(program), std::move(lexer));
+            } catch (const InterpreterException &e) {
+                std::cerr << "Interpreter error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+                goto wait;
+            }
+
+        wait:
+            (void)0x0;
+        } while ((flags & __WATCH) != 0);
     }
     else {
         flags |= __REPL;
