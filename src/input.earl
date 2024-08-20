@@ -1,6 +1,2 @@
 module Main
 
-let s1 = "hello";
-
-println(s1);
-

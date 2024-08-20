@@ -110,7 +110,7 @@ Str::nth(std::shared_ptr<Obj> &idx) {
     return m_chars.at(index->value());
 }
 
-// CHANGEME
+// TODO: Adhere to new string optimization
 std::shared_ptr<List>
 Str::split(std::shared_ptr<Obj> &delim) {
     if (delim->type() != Type::Str) {
@@ -134,7 +134,7 @@ Str::split(std::shared_ptr<Obj> &delim) {
     return std::make_shared<List>(std::move(splits));
 }
 
-// CHANGEME
+// TODO: Adhere to new string optimization
 std::shared_ptr<Str>
 Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
@@ -260,7 +260,7 @@ Str::type(void) const {
     return Type::Str;
 }
 
-// CHANGEME
+// TODO: Adhere to new string optimization
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
@@ -303,13 +303,15 @@ Str::value_as_earlchar(void) {
     return values;
 }
 
-// CHANGEME
+// TODO: Adhere to new string optimization
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     if (other->type() == Type::Str) {
         Str *otherstr = dynamic_cast<Str *>(other.get());
+        //m_value = otherstr->value();
         m_value = otherstr->value();
+        m_chars = otherstr->m_chars;
     }
     else {
         m_value.clear();
