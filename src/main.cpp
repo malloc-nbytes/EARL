@@ -35,12 +35,15 @@
 #include "repl.hpp"
 #include "ctx.hpp"
 #include "config.h"
+#include "hot-reload.hpp"
 
 std::vector<std::string> earl_argv = {};
+static std::vector<std::string> watch_files = {};
 
 uint32_t flags = 0x00;
 
-static void usage(void) {
+static void
+usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
@@ -60,12 +63,14 @@ static void usage(void) {
     std::exit(0);
 }
 
-static void version() {
+static void
+version() {
     std::cout << "EARL " << VERSION << std::endl;
     exit(0);
 }
 
-static void parse_2hypharg(std::string arg) {
+static void
+parse_2hypharg(std::string arg) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
     else if (arg == COMMON_EARL2ARG_HELP)
@@ -81,7 +86,8 @@ static void parse_2hypharg(std::string arg) {
     }
 }
 
-static void parse_1hypharg(std::string arg) {
+static void
+parse_1hypharg(std::string arg) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
         case COMMON_EARL1ARG_HELP: {
@@ -97,7 +103,8 @@ static void parse_1hypharg(std::string arg) {
     }
 }
 
-static void parsearg(std::string line) {
+static void
+parsearg(std::string line) {
     if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
         parse_2hypharg(line.substr(2));
     }
@@ -109,13 +116,15 @@ static void parsearg(std::string line) {
     }
 }
 
-static void parse_earl_argv(int i, int argc, char **argv) {
+static void
+parse_earl_argv(int i, int argc, char **argv) {
     for (i = i+1; i < argc; ++i) {
         earl_argv.push_back(std::string(argv[i]));
     }
 }
 
-static std::string handlecli(int argc, char **argv) {
+static std::string
+handlecli(int argc, char **argv) {
     std::string filepath = "";
 
     for (int i = 0; i < argc; ++i) {
@@ -140,14 +149,17 @@ static std::string handlecli(int argc, char **argv) {
     return filepath;
 }
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv) {
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
-    std::vector<std::string> watch_files = {};
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types = {};
     std::string comment = "#";
+
+    if ((flags & __WATCH) != 0)
+        hot_reload::register_watch_files(watch_files);
 
     if (filepath != "") {
         do {
