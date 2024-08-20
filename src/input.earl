@@ -1,5 +1,3 @@
 module Main
 
-let avl = Set::T(1..=100);
-
-avl.show();
+println("hello");

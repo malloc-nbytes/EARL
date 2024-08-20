@@ -70,6 +70,11 @@ version() {
 }
 
 static void
+gather_watch_files(void) {
+    
+}
+
+static void
 parse_2hypharg(std::string arg) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -79,8 +84,10 @@ parse_2hypharg(std::string arg) {
         version();
     else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
         flags |= __REPL_NOCOLOR;
-    else if (arg == COMMON_EARL2ARG_WATCH)
+    else if (arg == COMMON_EARL2ARG_WATCH) {
+        gather_watch_files();
         flags |= __WATCH;
+    }
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
     }
@@ -158,8 +165,13 @@ main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
-    if ((flags & __WATCH) != 0)
+    if ((flags & __WATCH) != 0) {
+        if (watch_files.size() == 0) {
+            std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
+            std::exit(1);
+        }
         hot_reload::register_watch_files(watch_files);
+    }
 
     if (filepath != "") {
         do {

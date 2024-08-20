@@ -82,12 +82,20 @@ update_last_write_time(const std::filesystem::path &path) {
 
 void
 hot_reload::register_watch_files(std::vector<std::string> &watch_files) {
-    assert(false);
+    for (auto &f : watch_files)
+        last_writes.insert({std::filesystem::path(f), std::chrono::system_clock::time_point{}});
+    for (auto it = last_writes.begin(); it != last_writes.end(); ++it)
+        update_last_write_time(it->first);
 }
 
 bool
 hot_reload::watch(void) {
-
+    while (1) {
+        for (auto it = last_writes.begin(); it != last_writes.end(); ++it) {
+            if (is_newer(it->first, it->second))
+                break;
+        }
+    }
 
     return true;
 }
