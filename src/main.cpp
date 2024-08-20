@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 #include <iostream>
@@ -35,12 +36,15 @@
 #include "repl.hpp"
 #include "ctx.hpp"
 #include "config.h"
+#include "hot-reload.hpp"
 
 std::vector<std::string> earl_argv = {};
+static std::vector<std::string> watch_files = {};
 
 uint32_t flags = 0x00;
 
-static void usage(void) {
+static void
+usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
@@ -51,38 +55,53 @@ static void usage(void) {
 
     std::cerr << "Usage: earl [options...] <file> -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "  -v, --version         Print version information" << std::endl;
-    std::cerr << "  -h, --help            Print this help message" << std::endl;
-    std::cerr << "      --without-stdlib  Do not use standard library" << std::endl;
-    std::cerr << "      --repl-nocolor    Do not use color in the REPL" << std::endl;
+    std::cerr << "  -v, --version           Print version information" << std::endl;
+    std::cerr << "  -h, --help              Print this help message" << std::endl;
+    std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
+    std::cerr << "      --watch [files...]  Watch files for changes and hot reload" << std::endl;
 
     std::exit(0);
 }
 
-static void version() {
+static void
+version() {
     std::cout << "EARL " << VERSION << std::endl;
     exit(0);
 }
 
-static void parse_2hypharg(std::string arg) {
-    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB) {
+static void
+gather_watch_files(std::vector<std::string> &args) {
+    while (args.size() > 0) {
+        if (!std::filesystem::exists(std::filesystem::path(args.at(0)))) {
+            break;
+        }
+        watch_files.push_back(std::string(args.at(0)));
+        args.erase(args.begin());
+    }
+}
+
+static void
+parse_2hypharg(std::string arg, std::vector<std::string> &args) {
+    if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
-    }
-    else if (arg == COMMON_EARL2ARG_HELP) {
+    else if (arg == COMMON_EARL2ARG_HELP)
         usage();
-    }
-    else if (arg == COMMON_EARL2ARG_VERSION) {
+    else if (arg == COMMON_EARL2ARG_VERSION)
         version();
-    }
-    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR) {
+    else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
         flags |= __REPL_NOCOLOR;
+    else if (arg == COMMON_EARL2ARG_WATCH) {
+        gather_watch_files(args);
+        flags |= __WATCH;
     }
     else {
         ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
     }
 }
 
-static void parse_1hypharg(std::string arg) {
+static void
+parse_1hypharg(std::string arg) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
         case COMMON_EARL1ARG_HELP: {
@@ -98,9 +117,11 @@ static void parse_1hypharg(std::string arg) {
     }
 }
 
-static void parsearg(std::string line) {
+static void
+parsearg(std::string line, std::vector<std::string> &args) {
     if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
-        parse_2hypharg(line.substr(2));
+        args.erase(args.begin());
+        parse_2hypharg(line.substr(2), args);
     }
     else if (line[0] == '-') {
         parse_1hypharg(line.substr(1));
@@ -110,38 +131,46 @@ static void parsearg(std::string line) {
     }
 }
 
-static void parse_earl_argv(int i, int argc, char **argv) {
+static void
+parse_earl_argv(int i, int argc, char **argv) {
     for (i = i+1; i < argc; ++i) {
         earl_argv.push_back(std::string(argv[i]));
     }
 }
 
-static std::string handlecli(int argc, char **argv) {
+static std::string
+handlecli(int argc, char **argv) {
     std::string filepath = "";
+    std::vector<std::string> args = {};
+    while (*argv) {
+        args.push_back(std::string(*argv));
+        ++argv;
+    }
 
-    for (int i = 0; i < argc; ++i) {
-        std::string line = std::string(argv[i]);
-        if (line == "--") {
-            parse_earl_argv(i, argc, argv);
+    int i = 0;
+    while (args.size() > 0) {
+        const std::string &entry = args.at(i);
+        if (entry == "--") {
+            assert(false && "unimplemented");
             break;
         }
-
-        if (line[0] == '-') {
-            parsearg(line);
+        if (entry[0] == '-') {
+            parsearg(entry, args);
         }
         else {
-            if (filepath != "") {
+            if (filepath != "")
                 ERR(Err::Type::Fatal, "too many input files provided");
-            }
-            filepath = line;
+            filepath = entry;
             earl_argv.push_back(filepath);
+            args.erase(args.begin());
         }
     }
 
     return filepath;
 }
 
-int main(int argc, char **argv) {
+int
+main(int argc, char **argv) {
     ++argv; --argc;
     std::string filepath = handlecli(argc, argv);
 
@@ -149,30 +178,52 @@ int main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
+    if ((flags & __WATCH) != 0) {
+        if (watch_files.size() == 0) {
+            std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
+            std::exit(1);
+        }
+        hot_reload::register_watch_files(watch_files);
+    }
+
+    bool locked = true;
+
     if (filepath != "") {
-        std::unique_ptr<Lexer> lexer = nullptr;
-        std::unique_ptr<Program> program = nullptr;
-        try {
-            std::string src_code = read_file(filepath.c_str());
-            lexer = lex_file(src_code, filepath, keywords, types, comment);
-        }
-        catch (const LexerException &e) {
-            std::cerr << "Lexer error: " << e.what() << std::endl;
-            return 1;
-        }
-        try {
-            program = Parser::parse_program(*lexer.get());
-        } catch (const ParserException &e) {
-            std::cerr << "Parser error: " << e.what() << std::endl;
-            return 1;
-        }
-        try {
-            (void)Interpreter::interpret(std::move(program), std::move(lexer));
-        }
-        catch (const InterpreterException &e) {
-            std::cerr << "Interpreter error: " << e.what() << std::endl;
-            return 1;
-        }
+        do {
+            // No need to check for __WATCH cause this statement
+            // will not happen unless we are looping, which is
+            // already determined by __WATCH.
+            if (!locked)
+                hot_reload::watch();
+            else
+                locked = false;
+
+            std::unique_ptr<Lexer> lexer = nullptr;
+            std::unique_ptr<Program> program = nullptr;
+            try {
+                std::string src_code = read_file(filepath.c_str());
+                lexer = lex_file(src_code, filepath, keywords, types, comment);
+            } catch (const LexerException &e) {
+                std::cerr << "Lexer error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+            }
+            try {
+                program = Parser::parse_program(*lexer.get());
+            } catch (const ParserException &e) {
+                std::cerr << "Parser error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+            }
+            try {
+                (void)Interpreter::interpret(std::move(program), std::move(lexer));
+            } catch (const InterpreterException &e) {
+                std::cerr << "Interpreter error: " << e.what() << std::endl;
+                if ((flags & __WATCH) == 0)
+                    return 1;
+            }
+
+        } while ((flags & __WATCH) != 0);
     }
     else {
         flags |= __REPL;

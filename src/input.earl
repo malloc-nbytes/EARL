@@ -1,7 +1,7 @@
 module Main
 
-import "../src/std/set.earl"
+import "../src/other.earl"
+import "std/utils.earl"
 
-let avl = Set::T(1..=100);
+println(Other::X);
 
-avl.show();
