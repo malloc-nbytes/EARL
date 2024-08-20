@@ -236,7 +236,15 @@ void
 Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     Closure *cl = dynamic_cast<Closure *>(closure.get());
     for (size_t i = 0; i < m_value.size(); ++i) {
-        auto cx = std::make_shared<Char>(std::string(1, m_value[i]));
+        std::shared_ptr<Char> cx = nullptr;
+        if (m_value.at(i) == '\0')
+            cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
+        else {
+            cx = std::make_shared<Char>(std::string(1, m_value.at(i)));
+            m_value.at(i) = '\0';
+            m_chars.at(i) = cx;
+        }
+
         std::vector<std::shared_ptr<Obj>> values = {cx};
         cl->call(values, ctx);
     }

@@ -1,8 +1,9 @@
 module Main
 
 let s1 = "hello";
-let f = s1.filter(|c| { return c == 'l'; });
+
+let c = s1[0];
+c = 'a';
 
 println(s1);
-println(f);
 
