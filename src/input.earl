@@ -1,7 +1,17 @@
 module Main
 
-import "../src/other.earl"
-import "std/utils.earl"
+let s1 = "hello";
+# let s2 = "world";
 
-println(Other::X);
+# let s3 = s1 + " " + s2;
+
+# assert(s3 == "hello world");
+
+# s1 = s3;
+
+# assert(s1 == "hello world");
+
+s1[0] = 'a';
+
+println(s1);
 

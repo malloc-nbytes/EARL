@@ -431,13 +431,14 @@ namespace earl {
             Str(std::vector<std::shared_ptr<Char>> chars);
 
             std::string value(void); // NOTE: needs optimization
-            std::vector<std::shared_ptr<Char>> &value_raw(void);
+            std::vector<std::shared_ptr<Char>> value_as_earlchar(void);
             std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
             std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2);
             void pop(std::shared_ptr<Obj> &idx);
             std::shared_ptr<Obj> back(void);
             std::shared_ptr<Str> rev(void);
+            void append(char c);
             void append(std::vector<std::shared_ptr<Obj>> &values);
             void append(std::shared_ptr<Obj> c);
             std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
@@ -456,7 +457,9 @@ namespace earl {
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
 
         private:
-            std::vector<std::shared_ptr<Char>> m_value;
+            std::string m_value;
+            std::vector<std::shared_ptr<Char>> m_chars;
+            std::vector<bool> m_converted;
         };
 
         struct Module : public Obj {

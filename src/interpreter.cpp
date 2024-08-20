@@ -1453,7 +1453,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             stmt->m_evald = true;
             return result;
         }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_raw()[0]);
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_as_earlchar()[0]);
         if (ctx->variable_exists(enumerator->id())) {
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
             auto conflict = ctx->variable_get(enumerator->id());
@@ -1463,7 +1463,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         ctx->variable_add(enumerator);
         for (size_t i = 0; i < str->value().size(); ++i) {
             if (i != 0)
-                enumerator->reset(str->value_raw()[i]);
+                enumerator->reset(str->value_as_earlchar()[i]);
             result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
             if (result && result->type() == earl::value::Type::Break) {
                 result = nullptr;
