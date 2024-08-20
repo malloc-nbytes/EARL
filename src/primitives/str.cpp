@@ -260,6 +260,7 @@ Str::type(void) const {
     return Type::Str;
 }
 
+// CHANGEME
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
@@ -302,6 +303,7 @@ Str::value_as_earlchar(void) {
     return values;
 }
 
+// CHANGEME
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -315,6 +317,7 @@ Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
+// CHANGME
 std::shared_ptr<Obj>
 Str::copy(void) {
     auto copy = std::make_shared<Str>();
@@ -335,6 +338,7 @@ Str::to_cxxstring(void) {
     return this->value();
 }
 
+// CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     // std::vector<std::shared_ptr<Char>> prev = {};

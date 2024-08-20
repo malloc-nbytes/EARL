@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - New flag to watch files for changes and perform hot reloading.
+- String optimization
+
+### Fixed
+- List/str/dictionary/tuple indexing no longer returns the value as a reference by default.
 
 ## [0.3.1] - 2024-19-8
 

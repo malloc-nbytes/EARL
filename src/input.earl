@@ -1,8 +1,6 @@
 module Main
 
 let s1 = "hello";
-@ref let c = s1[0];
-c = 'z';
 
 println(s1);
 
