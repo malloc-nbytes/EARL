@@ -1,3 +1,7 @@
 module Main
 
-println("hello");
+import "../src/other.earl"
+import "std/utils.earl"
+
+println(Other::X);
+

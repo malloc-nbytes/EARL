@@ -1,13 +1,6 @@
 module Other
 
-fn __modify_ref_list(@ref lst) {
-    for i in 0 to len(lst) {
-        lst[i] = lst[i] + 1;
-    }
-}
+@pub let X = 9900;
 
-@pub
-fn modify_ref_list(@ref lst) {
-    __modify_ref_list(lst);
-}
+
 

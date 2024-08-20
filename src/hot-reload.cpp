@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <thread>
 #include <cassert>
 #include <iostream>
 #include <chrono>
@@ -32,31 +33,24 @@
 
 #include "hot-reload.hpp"
 
-static std::unordered_map<std::filesystem::path, std::chrono::system_clock::time_point> last_writes;
+static std::unordered_map<std::filesystem::path, std::filesystem::file_time_type> last_writes;
 
 static bool
 is_newer(const std::filesystem::path &path,
-         const std::chrono::system_clock::time_point &last_time) {
+         const std::filesystem::file_time_type &last_time) {
     try {
         if (!std::filesystem::exists(path)) {
             std::cerr << "File " << path << " does not exist\n";
-            std::exit(1);
+            return false;
         }
 
-        std::filesystem::file_time_type ft = std::filesystem::last_write_time(path);
-        auto ft_sysclock =
-            std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-                ft-std::filesystem::file_time_type::clock::now()+std::chrono::system_clock::now()
-            );
-
-        return ft_sysclock > last_time;
+        auto ft = std::filesystem::last_write_time(path);
+        return ft > last_time;
 
     } catch (const std::filesystem::filesystem_error &e) {
         std::cerr << "Filesystem error: " << e.what() << '\n';
         std::exit(1);
     }
-
-    return false; // unreachable
 }
 
 static void
@@ -64,15 +58,11 @@ update_last_write_time(const std::filesystem::path &path) {
     try {
         if (!std::filesystem::exists(path)) {
             std::cerr << "File " << path << " does not exist\n";
-            std::exit(1);
+            return;
         }
 
-        std::filesystem::file_time_type ft = std::filesystem::last_write_time(path);
-        auto ft_sysclock = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-            ft-std::filesystem::file_time_type::clock::now()+std::chrono::system_clock::now()
-        );
-
-        last_writes[path] = ft_sysclock;
+        auto ft = std::filesystem::last_write_time(path);
+        last_writes[path] = ft;
 
     } catch (std::filesystem::filesystem_error &e) {
         std::cerr << "Filesystem error: " << e.what() << '\n';
@@ -82,21 +72,33 @@ update_last_write_time(const std::filesystem::path &path) {
 
 void
 hot_reload::register_watch_files(std::vector<std::string> &watch_files) {
-    for (auto &f : watch_files)
-        last_writes.insert({std::filesystem::path(f), std::chrono::system_clock::time_point{}});
-    for (auto it = last_writes.begin(); it != last_writes.end(); ++it)
-        update_last_write_time(it->first);
-}
-
-bool
-hot_reload::watch(void) {
-    while (1) {
-        for (auto it = last_writes.begin(); it != last_writes.end(); ++it) {
-            if (is_newer(it->first, it->second))
-                break;
+    for (const auto &f : watch_files) {
+        std::filesystem::path file_path(f);
+        if (std::filesystem::exists(file_path)) {
+            last_writes[file_path] = std::filesystem::last_write_time(file_path);
+        } else {
+            std::cerr << "File " << file_path << " does not exist at registration\n";
         }
     }
-
-    return true;
 }
 
+void
+hot_reload::watch(void) {
+    while (true) {
+        bool file_changed = false;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        for (auto it = last_writes.begin(); it != last_writes.end(); ++it) {
+            if (is_newer(it->first, it->second)) {
+                update_last_write_time(it->first);
+                file_changed = true;
+            }
+        }
+
+        if (file_changed) {
+            // Exit loop if any file changed
+            return;
+        }
+    }
+}

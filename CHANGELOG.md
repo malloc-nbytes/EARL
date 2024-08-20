@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] - 2024-20-8
+
+### Added
+- New flag to watch files for changes and perform hot reloading.
+
 ## [0.3.1] - 2024-19-8
 
 ### Added

@@ -30,7 +30,7 @@
 
 namespace hot_reload {
     void register_watch_files(std::vector<std::string> &watch_files);
-    bool watch(void);
+    void watch(void);
 };
 
 #endif // HOT_RELOAD_H

@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 #include <iostream>
@@ -70,12 +71,18 @@ version() {
 }
 
 static void
-gather_watch_files(void) {
-    
+gather_watch_files(std::vector<std::string> &args) {
+    while (args.size() > 0) {
+        if (!std::filesystem::exists(std::filesystem::path(args.at(0)))) {
+            break;
+        }
+        watch_files.push_back(std::string(args.at(0)));
+        args.erase(args.begin());
+    }
 }
 
 static void
-parse_2hypharg(std::string arg) {
+parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
     else if (arg == COMMON_EARL2ARG_HELP)
@@ -85,7 +92,7 @@ parse_2hypharg(std::string arg) {
     else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
         flags |= __REPL_NOCOLOR;
     else if (arg == COMMON_EARL2ARG_WATCH) {
-        gather_watch_files();
+        gather_watch_files(args);
         flags |= __WATCH;
     }
     else {
@@ -111,9 +118,10 @@ parse_1hypharg(std::string arg) {
 }
 
 static void
-parsearg(std::string line) {
+parsearg(std::string line, std::vector<std::string> &args) {
     if (line.size() > 1 && line[0] == '-' && line[1] == '-') {
-        parse_2hypharg(line.substr(2));
+        args.erase(args.begin());
+        parse_2hypharg(line.substr(2), args);
     }
     else if (line[0] == '-') {
         parse_1hypharg(line.substr(1));
@@ -133,23 +141,28 @@ parse_earl_argv(int i, int argc, char **argv) {
 static std::string
 handlecli(int argc, char **argv) {
     std::string filepath = "";
+    std::vector<std::string> args = {};
+    while (*argv) {
+        args.push_back(std::string(*argv));
+        ++argv;
+    }
 
-    for (int i = 0; i < argc; ++i) {
-        std::string line = std::string(argv[i]);
-        if (line == "--") {
-            parse_earl_argv(i, argc, argv);
+    int i = 0;
+    while (args.size() > 0) {
+        const std::string &entry = args.at(i);
+        if (entry == "--") {
+            assert(false && "unimplemented");
             break;
         }
-
-        if (line[0] == '-') {
-            parsearg(line);
+        if (entry[0] == '-') {
+            parsearg(entry, args);
         }
         else {
-            if (filepath != "") {
+            if (filepath != "")
                 ERR(Err::Type::Fatal, "too many input files provided");
-            }
-            filepath = line;
+            filepath = entry;
             earl_argv.push_back(filepath);
+            args.erase(args.begin());
         }
     }
 
@@ -173,8 +186,18 @@ main(int argc, char **argv) {
         hot_reload::register_watch_files(watch_files);
     }
 
+    bool locked = true;
+
     if (filepath != "") {
         do {
+            // No need to check for __WATCH cause this statement
+            // will not happen unless we are looping, which is
+            // already determined by __WATCH.
+            if (!locked)
+                hot_reload::watch();
+            else
+                locked = false;
+
             std::unique_ptr<Lexer> lexer = nullptr;
             std::unique_ptr<Program> program = nullptr;
             try {
@@ -184,7 +207,6 @@ main(int argc, char **argv) {
                 std::cerr << "Lexer error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)
                     return 1;
-                goto wait;
             }
             try {
                 program = Parser::parse_program(*lexer.get());
@@ -192,7 +214,6 @@ main(int argc, char **argv) {
                 std::cerr << "Parser error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)
                     return 1;
-                goto wait;
             }
             try {
                 (void)Interpreter::interpret(std::move(program), std::move(lexer));
@@ -200,11 +221,8 @@ main(int argc, char **argv) {
                 std::cerr << "Interpreter error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)
                     return 1;
-                goto wait;
             }
 
-        wait:
-            (void)0x0;
         } while ((flags & __WATCH) != 0);
     }
     else {
