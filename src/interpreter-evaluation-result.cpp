@@ -86,6 +86,11 @@ Interpreter::ER::is_type(void) {
 }
 
 bool
+Interpreter::ER::is_list_access(void) {
+    return (this->rt & ERT::ListAccess) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }
