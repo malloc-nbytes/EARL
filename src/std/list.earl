@@ -52,6 +52,14 @@ import "std/utils.earl" full
     }
 }
 
+@pub fn sumf(@ref lst) {
+    let s = 0.0;
+    for i in 0 to len(lst) {
+        s = s + lst[i];
+    }
+    return s;
+}
+
 @pub fn sum(@ref lst) {
     let s = 0;
     for i in 0 to len(lst) {
