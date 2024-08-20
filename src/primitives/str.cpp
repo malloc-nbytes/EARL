@@ -36,10 +36,8 @@ using namespace earl::value;
 Str::Str(std::string value) {
     m_value = value;
     m_chars = {};
-    for (size_t i = 0; i < m_value.size(); ++i) {
+    for (size_t i = 0; i < m_value.size(); ++i)
         m_chars.push_back(nullptr);
-        m_converted.push_back(false);
-    }
     // bool escape = false;
     // for (size_t i = 0; i < value.size(); ++i) {
     //     char c = value[i];
@@ -82,7 +80,7 @@ std::string
 Str::value(void) {
     std::string actual = "";
     for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_converted.at(i))
+        if (m_value.at(i) == '\0')
             actual += m_chars.at(i)->value();
         else
             actual += m_value.at(i);
@@ -102,12 +100,17 @@ Str::nth(std::shared_ptr<Obj> &idx) {
         std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
         throw InterpreterException(msg);
     }
+
+    if (m_value.at(index->value()) == '\0')
+        return m_chars.at(index->value());
+
     auto c = std::make_shared<Char>(std::string(1, m_value[index->value()]));
     m_chars.at(index->value()) = std::move(c);
-    m_converted.at(index->value()) = true;
+    m_value.at(index->value()) = '\0';
     return m_chars.at(index->value());
 }
 
+// CHANGEME
 std::shared_ptr<List>
 Str::split(std::shared_ptr<Obj> &delim) {
     if (delim->type() != Type::Str) {
@@ -131,6 +134,7 @@ Str::split(std::shared_ptr<Obj> &delim) {
     return std::make_shared<List>(std::move(splits));
 }
 
+// CHANGEME
 std::shared_ptr<Str>
 Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
@@ -144,14 +148,25 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
 void
 Str::pop(std::shared_ptr<Obj> &idx) {
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
-    m_value.erase(m_value.begin() + idx1->value());
+    int I = idx1->value();
+
+    if (m_value.at(I) == '\0') {
+        m_chars.erase(m_chars.begin() + I);
+    }
+    m_value.erase(m_value.begin() + I);
 }
 
 std::shared_ptr<Obj>
 Str::back(void) {
     if (m_value.size() == 0)
         return std::make_shared<Option>();
-    return std::make_shared<Char>(std::string(1, m_value.back()));
+    if (m_value.back() == '\0')
+        return m_chars.back();
+
+    auto c = std::make_shared<Char>(std::string(1, m_value.back()));
+    m_chars.at(m_chars.size()-1) = std::move(c);
+    m_value.at(m_value.size()-1) = '\0';
+    return m_chars.at(m_chars.size()-1);
 }
 
 std::shared_ptr<Str>
@@ -165,12 +180,16 @@ Str::rev(void) {
 void
 Str::append(char c) {
     m_value.push_back(c);
+    m_chars.push_back(nullptr);
 }
 
 void
 Str::append(std::shared_ptr<Obj> c) {
-    if (c->type() == Type::Char)
-        m_value.push_back(dynamic_cast<Char *>(c.get())->value());
+    if (c->type() == Type::Char) {
+        auto cx = std::dynamic_pointer_cast<Char>(c);
+        m_chars.push_back(cx);
+        m_value.push_back('\0');
+    }
     else {
         auto s = dynamic_cast<Str *>(c.get());
         for (auto &cx : s->value())
@@ -193,12 +212,21 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 
     auto acc = std::make_shared<Str>();
 
+    int i = 0;
     for (auto &c : m_value) {
-        auto cx = std::make_shared<Char>(std::string(1, c));
+        std::shared_ptr<Char> cx = nullptr;
+        if (c == '\0')
+            cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
+        else {
+            cx = std::make_shared<Char>(std::string(1, c));
+            m_value.at(i) = '\0';
+            m_chars.at(i) = cx;
+        }
         std::vector<std::shared_ptr<Obj>> values = {cx};
         std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
         if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-            acc->append(c);
+            acc->append(cx);
+        ++i;
     }
 
     return acc;
@@ -281,9 +309,9 @@ Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Str::copy(void) {
-    auto copy = std::make_shared<Str>(m_value);
+    auto copy = std::make_shared<Str>();
+    copy->m_value = m_value;
     copy->m_chars = m_chars;
-    copy->m_converted = m_converted;
     return copy;
 }
 

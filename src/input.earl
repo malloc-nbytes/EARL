@@ -1,17 +1,8 @@
 module Main
 
 let s1 = "hello";
-# let s2 = "world";
-
-# let s3 = s1 + " " + s2;
-
-# assert(s3 == "hello world");
-
-# s1 = s3;
-
-# assert(s1 == "hello world");
-
-s1[0] = 'a';
+let f = s1.filter(|c| { return c == 'l'; });
 
 println(s1);
+println(f);
 
