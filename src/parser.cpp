@@ -212,10 +212,9 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 return left;
             auto tok = lexer.next();
             auto values = parse_set_values(lexer);
-            return new ExprDict(std::move(values), tok);
+            left = new ExprDict(std::move(values), tok);
         } break;
         case TokenType::Lparen: {
-            //lexer.discard(); // (
             auto tok = lexer.next(); // (
             bool trailing_comma = false;
             std::vector<Expr *> tuple = parse_comma_sep_exprs(lexer, trailing_comma);

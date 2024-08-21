@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - List/str/dictionary/tuple indexing no longer returns the value as a reference by default.
 - Strings can now have delimiters again.
+- Fixed the bug where dictionaries would end parsing expressions.
 
 ### Changed
 - Dictionaries now return none if the value does not exist, and some(V) if it does exist.

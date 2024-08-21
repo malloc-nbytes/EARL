@@ -2,7 +2,7 @@ module Main
 
 let d = {1: true, 2: false, 3: true};
 
-let x = 1;
+let x = 9;
 
 if d[x] {
     println("contains: ", x, " which is: ", d[1].unwrap());
@@ -10,5 +10,4 @@ if d[x] {
 else {
     println("does not contain: ", x);
 }
-
 
