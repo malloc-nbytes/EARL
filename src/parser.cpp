@@ -56,7 +56,7 @@ translate_attr(Lexer &lexer) {
 static uint32_t
 gather_attrs(Lexer &lexer) {
     uint32_t attrs = 0;
-    while (lexer.peek(0)->type() == TokenType::At)
+    while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::At)
         attrs |= static_cast<uint32_t>(translate_attr(lexer));
     return attrs;
 }
@@ -100,15 +100,15 @@ parse_comma_sep_exprs(Lexer &lexer, bool &trailing_comma) {
 
     while (1) {
         // Only needed if no arguments are provided.
-        if (lexer.peek()->type() == TokenType::Rparen
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Rparen
             || lexer.peek()->type() == TokenType::Rbrace
             || lexer.peek()->type() == TokenType::Rbracket) {
             break;
         }
         exprs.push_back(Parser::parse_expr(lexer));
-        if (lexer.peek()->type() == TokenType::Comma) {
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Comma) {
             (void)Parser::parse_expect(lexer, TokenType::Comma);
-        if (lexer.peek()->type() == TokenType::Rparen
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Rparen
             || lexer.peek()->type() == TokenType::Rbrace
             || lexer.peek()->type() == TokenType::Rbracket)
             trailing_comma = true;
@@ -122,7 +122,7 @@ parse_comma_sep_exprs(Lexer &lexer, bool &trailing_comma) {
 
 static std::optional<std::vector<std::unique_ptr<Expr>>>
 try_parse_funccall(Lexer &lexer) {
-    if (lexer.peek()->type() == TokenType::Lparen) {
+    if (lexer.peek(0) && lexer.peek()->type() == TokenType::Lparen) {
         (void)Parser::parse_expect(lexer, TokenType::Lparen);
         bool unused = false;
         std::vector<Expr *> exprs = parse_comma_sep_exprs(lexer, unused);
@@ -151,10 +151,10 @@ static std::vector<std::pair<std::shared_ptr<Token>, uint32_t>>
 parse_closure_args(Lexer &lexer) {
     std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args;
 
-    while (lexer.peek()->type() != TokenType::Pipe) {
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Pipe) {
         uint32_t attr = 0;
 
-        while (lexer.peek()->type() == TokenType::At) {
+        while (lexer.peek(0) && lexer.peek()->type() == TokenType::At) {
             attr |= static_cast<uint32_t>(translate_attr(lexer));
         }
 
@@ -162,7 +162,7 @@ parse_closure_args(Lexer &lexer) {
         std::shared_ptr<Token> var = std::move(id);
         args.push_back(std::make_pair(std::move(var), attr));
 
-        if (lexer.peek()->type() == TokenType::Comma)
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Comma)
             lexer.discard();
     }
     (void)Parser::parse_expect(lexer, TokenType::Pipe);
@@ -195,7 +195,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *right = nullptr;
 
     // Unary expressions
-    while (lexer.peek()->type() == TokenType::Minus ||
+    while (lexer.peek(0) && lexer.peek()->type() == TokenType::Minus ||
            lexer.peek()->type() == TokenType::Bang) {
         std::shared_ptr<Token> op = lexer.next();
         Expr *operand = parse_primary_expr(lexer, fail_on);
@@ -203,6 +203,8 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     }
 
     while (1) {
+        if (!lexer.peek(0))
+            return left;
         switch (lexer.peek()->type()) {
         case TokenType::Ident: {
             left = new ExprIdent(lexer.next());
@@ -303,9 +305,9 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             return new ExprClosure(std::move(args), std::move(block), tok);
         }
         case TokenType::Keyword: {
-            if (lexer.peek()->lexeme() == COMMON_EARLKW_TO)
+            if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_TO)
                 return left;
-            if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
+            if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
                 return left;
 
             std::shared_ptr<Token> kw = lexer.next();
@@ -531,7 +533,7 @@ Parser::parse_stmt_block(Lexer &lexer) {
 
     std::vector<std::unique_ptr<Stmt>> stmts;
 
-    while (lexer.peek()->type() != TokenType::Rbrace) {
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rbrace) {
         std::unique_ptr<Stmt> stmt = Parser::parse_stmt(lexer);
         stmts.push_back(std::move(stmt));
     }
@@ -546,10 +548,10 @@ parse_stmt_def_args(Lexer &lexer) {
     std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args;
 
     (void)Parser::parse_expect(lexer, TokenType::Lparen);
-    while (lexer.peek()->type() != TokenType::Rparen) {
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rparen) {
         uint32_t attr = 0;
 
-        while (lexer.peek()->type() == TokenType::At) {
+        while (lexer.peek(0) && lexer.peek()->type() == TokenType::At) {
             attr |= static_cast<uint32_t>(translate_attr(lexer));
         }
 
@@ -557,7 +559,7 @@ parse_stmt_def_args(Lexer &lexer) {
         std::shared_ptr<Token> var = std::move(id);
         args.push_back(std::make_pair(std::move(var), attr));
 
-        if (lexer.peek()->type() == TokenType::Comma)
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Comma)
             lexer.discard();
     }
     (void)Parser::parse_expect(lexer, TokenType::Rparen);
@@ -655,17 +657,17 @@ static std::vector<std::shared_ptr<Token>>
 parse_stmt_class_constructor_arguments(Lexer &lexer) {
     std::vector<std::shared_ptr<Token>> ids;
 
-    if (lexer.peek()->type() == TokenType::Lbracket) {
+    if (lexer.peek(0) && lexer.peek()->type() == TokenType::Lbracket) {
         lexer.discard();
 
         while (1) {
             // Only needed if no arguments are provided.
-            if (lexer.peek()->type() == TokenType::Rbracket) {
+            if (lexer.peek(0) && lexer.peek()->type() == TokenType::Rbracket) {
                 lexer.discard();
                 break;
             }
             ids.push_back(Parser::parse_expect(lexer, TokenType::Ident));
-            if (lexer.peek()->type() == TokenType::Comma)
+            if (lexer.peek(0) && lexer.peek()->type() == TokenType::Comma)
                 (void)Parser::parse_expect(lexer, TokenType::Comma);
         }
     }
@@ -688,11 +690,11 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect(lexer, TokenType::Lbrace);
 
     uint32_t inclass_attrs = 0;
-    while (lexer.peek()->type() != TokenType::Rbrace) {
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rbrace) {
 
         inclass_attrs = 0;
         do {
-            if (lexer.peek()->type() == TokenType::At)
+            if (lexer.peek(0) && lexer.peek()->type() == TokenType::At)
                 inclass_attrs |= static_cast<uint32_t>(translate_attr(lexer));
             else
                 break;
@@ -738,13 +740,13 @@ parse_branch(Lexer &lexer) {
 
     while (1) {
         exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer, /*fail_on=*/'|')));
-        if (lexer.peek()->type() == TokenType::Pipe)
+        if (lexer.peek(0) && lexer.peek()->type() == TokenType::Pipe)
             lexer.discard();
         else
             break;
     }
 
-    if (lexer.peek()->lexeme() == COMMON_EARLKW_WHEN) {
+    if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_WHEN) {
         (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WHEN);
         when = std::unique_ptr<Expr>(Parser::parse_expr(lexer));
     }
@@ -759,7 +761,7 @@ parse_branch(Lexer &lexer) {
 static std::vector<std::unique_ptr<StmtMatch::Branch>>
 parse_branches(Lexer &lexer) {
     std::vector<std::unique_ptr<StmtMatch::Branch>> branches;
-    while (lexer.peek()->type() != TokenType::Rbrace)
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rbrace)
         branches.push_back(parse_branch(lexer));
     return branches;
 }
@@ -795,7 +797,7 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
     Parser::parse_expect(lexer, TokenType::Lbrace);
     while (1) {
-        if (lexer.peek(0)->type() == TokenType::Rbrace) {
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Rbrace) {
             lexer.discard(); // }
             break;
         }
@@ -873,7 +875,7 @@ Parser::parse_stmt(Lexer &lexer) {
             // Keeping track of parens to fix an equals sign being in a closure
             // that is defined inside of a function call.
             int paren = 0;
-            for (size_t i = 0; lexer.peek(i) && lexer.peek(i)->type() != TokenType::Semicolon; ++i) {
+            for (size_t i = 0; lexer.peek(i) && lexer.peek(i) && lexer.peek(i)->type() != TokenType::Semicolon; ++i) {
                 if (lexer.peek(i)->type() == TokenType::Lparen)
                     ++paren;
                 if (lexer.peek(i)->type() == TokenType::Rparen)
@@ -910,9 +912,8 @@ Parser::parse_stmt(Lexer &lexer) {
 std::unique_ptr<Program> Parser::parse_program(Lexer &lexer) {
     std::vector<std::unique_ptr<Stmt>> stmts;
 
-    while (lexer.peek()->type() != TokenType::Eof) {
+    while (lexer.peek(0) && lexer.peek()->type() != TokenType::Eof)
         stmts.push_back(parse_stmt(lexer));
-    }
 
     return std::make_unique<Program>(std::move(stmts));
 }

@@ -30,6 +30,8 @@
 
 void
 Err::err_wtok(Token *tok) {
+    if (!tok)
+        return;
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
     Token *it = tok;
     while (it && it->type() != TokenType::Semicolon) {
