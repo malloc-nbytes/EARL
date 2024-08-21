@@ -132,10 +132,10 @@ parsearg(std::string line, std::vector<std::string> &args) {
 }
 
 static void
-parse_earl_argv(int i, int argc, char **argv) {
-    for (i = i+1; i < argc; ++i) {
-        earl_argv.push_back(std::string(argv[i]));
-    }
+parse_earl_argv(std::vector<std::string> &args) {
+    args.erase(args.begin());
+    for (auto &s : args)
+        earl_argv.push_back(s);
 }
 
 static std::string
@@ -151,7 +151,7 @@ handlecli(int argc, char **argv) {
     while (args.size() > 0) {
         const std::string &entry = args.at(i);
         if (entry == "--") {
-            assert(false && "unimplemented");
+            parse_earl_argv(args);
             break;
         }
         if (entry[0] == '-') {
