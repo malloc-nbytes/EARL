@@ -109,10 +109,10 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
     }
 
     std::string sub = "";
-    int i = dynamic_cast<Int *>(idx1.get())->value();
+    int S = dynamic_cast<Int *>(idx1.get())->value();
     int N = dynamic_cast<Int *>(idx2.get())->value();
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = S; i < N; ++i) {
         if (m_value.at(i) != '\0')
             sub += m_value.at(i);
         else
