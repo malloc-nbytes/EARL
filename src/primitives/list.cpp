@@ -130,7 +130,7 @@ List::pop(std::shared_ptr<Obj> &idx) {
 void
 List::append(std::vector<std::shared_ptr<Obj>> &values) {
     for (size_t i = 0; i < values.size(); ++i) {
-        m_value.push_back(values[i]->copy());
+        m_value.push_back(values.at(i));
     }
 }
 

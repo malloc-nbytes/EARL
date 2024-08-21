@@ -36,6 +36,14 @@ ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner, SharedScope<std::string, earl::va
     m_scope = std::move(scope);
 }
 
+ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner,
+                   SharedScope<std::string, earl::variable::Obj> scope,
+                   SharedScope<std::string, earl::function::Obj> funcs)
+    : m_owner(owner) {
+    m_scope = std::move(scope);
+    m_funcs = std::move(funcs);
+}
+
 CtxType
 ClassCtx::type(void) const {
     return CtxType::Class;
@@ -177,7 +185,17 @@ ClassCtx::deep_copy(void) {
         if (i != m_scope.size())
             scope_copy.push();
     }
-    return std::make_shared<ClassCtx>(m_owner, std::move(scope_copy));
+
+    SharedScope<std::string, earl::function::Obj> funcs_copy;
+    for (size_t i = 0; i < m_funcs.m_map.size(); ++i) {
+        auto el = m_funcs.m_map.at(i);
+        for (auto it = el.begin(); it != el.end(); ++it)
+            funcs_copy.add(it->first, it->second);
+        if (i != m_funcs.size())
+            funcs_copy.push();
+    }
+
+    return std::make_shared<ClassCtx>(m_owner, std::move(scope_copy), std::move(funcs_copy));
 }
 
 std::shared_ptr<ClassCtx>

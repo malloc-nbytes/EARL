@@ -481,6 +481,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }
+
+            // dynamic_cast<ClassCtx *>(ctx.get())->function_debug_dump();
             return eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
         }
 
@@ -730,6 +732,8 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         if (left_value->type() == earl::value::Type::Class) {
             // Class method/member. The right side (right_er) contains the actual call/identifier to be evaluated,
             // and we need the left (left_value)'s context with the preliminary value of (perp).
+            // auto cctx = dynamic_cast<earl::value::Class *>(left_value.get())->ctx();
+            // dynamic_cast<ClassCtx *>(cctx.get())->function_debug_dump();
             value = unpack_ER(right_er, dynamic_cast<earl::value::Class *>(left_value.get())->ctx(), ref, &perp);
         }
         else

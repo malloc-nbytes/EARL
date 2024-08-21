@@ -1,11 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.4] - 2024-21-8
+
+### Fixed
+- Using .append() on a list no longer always does an unnecessary copy.
+- Updated class deep copy to now actually copy over methods.
+
 ## [0.3.3] - 2024-20-8
 
 ### Added
 - New flag to watch files for changes and perform hot reloading.
 - String optimization
+- Implemented the `continue` keyword.
 
 ### Fixed
 - List/str/dictionary/tuple indexing no longer returns the value as a reference by default.

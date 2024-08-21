@@ -1,8 +1,8 @@
 module Main
 
-foreach i in "0123456789" {
-    if int(i)%2 != 0 {
-        continue;
+class Test [] {
+    @pub fn test() {
+        return 99;
     }
-    println(i);
 }
+

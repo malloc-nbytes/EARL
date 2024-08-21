@@ -143,6 +143,7 @@ Intrinsics::call_member(const std::string &id,
                         std::shared_ptr<earl::value::Obj> accessor,
                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
                         std::shared_ptr<Ctx> &ctx) {
+
     switch (type) {
     case earl::value::Type::Int: assert(false);
     case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);

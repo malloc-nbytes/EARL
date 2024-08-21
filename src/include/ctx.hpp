@@ -157,6 +157,7 @@ private:
 struct ClassCtx : public Ctx {
     ClassCtx(std::shared_ptr<Ctx> owner);
     ClassCtx(std::shared_ptr<Ctx> owner, SharedScope<std::string, earl::variable::Obj> scope);
+    ClassCtx(std::shared_ptr<Ctx> owner, SharedScope<std::string, earl::variable::Obj> scope, SharedScope<std::string, earl::function::Obj> funcs);
     ~ClassCtx() = default;
 
     std::shared_ptr<Ctx> &get_owner(void);
