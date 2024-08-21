@@ -1,3 +1,8 @@
 module Main
 
-println("args: ", argv());
+foreach i in "0123456789" {
+    if int(i)%2 != 0 {
+        continue;
+    }
+    println(i);
+}

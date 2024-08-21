@@ -790,6 +790,13 @@ parse_stmt_break(Lexer &lexer) {
     return std::make_unique<StmtBreak>(std::move(br));
 }
 
+std::unique_ptr<StmtContinue>
+parse_stmt_continue(Lexer &lexer) {
+    auto tok = lexer.next(); // continue
+    Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtContinue>(tok);
+}
+
 std::unique_ptr<StmtEnum>
 parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
@@ -828,45 +835,34 @@ Parser::parse_stmt(Lexer &lexer) {
 
         switch (tok->type()) {
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_LET) {
+            if (tok->lexeme() == COMMON_EARLKW_LET)
                 return parse_stmt_let(lexer, attrs);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_FN) {
+            if (tok->lexeme() == COMMON_EARLKW_FN)
                 return parse_stmt_def(lexer, attrs);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_IF) {
+            if (tok->lexeme() == COMMON_EARLKW_IF)
                 return parse_stmt_if(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_RETURN) {
+            if (tok->lexeme() == COMMON_EARLKW_RETURN)
                 return parse_stmt_return(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_BREAK) {
+            if (tok->lexeme() == COMMON_EARLKW_BREAK)
                 return parse_stmt_break(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_WHILE) {
+            if (tok->lexeme() == COMMON_EARLKW_WHILE)
                 return parse_stmt_while(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_FOREACH) {
+            if (tok->lexeme() == COMMON_EARLKW_FOREACH)
                 return parse_stmt_foreach(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_FOR) {
+            if (tok->lexeme() == COMMON_EARLKW_FOR)
                 return parse_stmt_for(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_IMPORT) {
+            if (tok->lexeme() == COMMON_EARLKW_IMPORT)
                 return parse_stmt_import(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_MODULE) {
+            if (tok->lexeme() == COMMON_EARLKW_MODULE)
                 return parse_stmt_mod(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_CLASS) {
+            if (tok->lexeme() == COMMON_EARLKW_CLASS)
                 return parse_stmt_class(lexer, attrs);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_MATCH) {
+            if (tok->lexeme() == COMMON_EARLKW_MATCH)
                 return parse_stmt_match(lexer);
-            }
-            if (tok->lexeme() == COMMON_EARLKW_ENUM) {
+            if (tok->lexeme() == COMMON_EARLKW_ENUM)
                 return parse_stmt_enum(lexer, attrs);
-            }
+            if (tok->lexeme() == COMMON_EARLKW_CONTINUE)
+                return parse_stmt_continue(lexer);
             Err::err_wtok(tok);
             std::string msg = "invalid keyword `" + tok->lexeme() + "`";
             throw ParserException(msg);

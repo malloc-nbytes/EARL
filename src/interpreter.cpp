@@ -1378,8 +1378,12 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
         }
 
-        if (result && result->type() != earl::value::Type::Void)
+        if (result && result->type() == earl::value::Type::Continue)
+            continue;
+
+        if (result && result->type() != earl::value::Type::Void) {
             break;
+        }
 
         expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, /*ref=*/false);
         expr_result = unpack_ER(expr_er, ctx, /*ref=*/true);
@@ -1421,6 +1425,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1448,6 +1454,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1475,6 +1483,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1527,6 +1537,14 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
         if (result && result->type() == earl::value::Type::Break) {
             result = nullptr;
             break;
+        }
+
+        if (result && result->type() == earl::value::Type::Continue) {
+            if (lt)
+                start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+            else if (gt)
+                start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+            continue;
         }
 
         if (result && result->type() != earl::value::Type::Void)
@@ -1746,6 +1764,14 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_continue(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+    (void)stmt;
+    (void)ctx;
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Continue>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -1765,6 +1791,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
     case StmtType::Match:     return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
     case StmtType::Enum:      return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
+    case StmtType::Continue:  return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

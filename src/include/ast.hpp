@@ -54,6 +54,7 @@ enum class StmtType {
     Class,
     Match,
     Enum,
+    Continue,
 };
 
 /// The different types an expression can be.
@@ -421,6 +422,12 @@ struct StmtBreak : public Stmt {
     std::shared_ptr<Token> m_tok;
 
     StmtBreak(std::shared_ptr<Token> tok);
+    StmtType stmt_type() const override;
+};
+
+struct StmtContinue : public Stmt {
+    std::shared_ptr<Token> m_tok;
+    StmtContinue(std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
 };
 
