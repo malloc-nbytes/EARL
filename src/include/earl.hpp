@@ -770,8 +770,8 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
         int k = dynamic_cast<earl::value::Int *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
-            return std::make_shared<earl::value::Void>();
-        return value->second;
+            return std::make_shared<earl::value::Option>();
+        return std::make_shared<earl::value::Option>(value->second);
     }
     else if constexpr (std::is_same_v<T, std::string>) {
         if (key->type() != earl::value::Type::Str) {
@@ -782,8 +782,8 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
         std::string k = dynamic_cast<earl::value::Str *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
-            return std::make_shared<earl::value::Void>();
-        return value->second;
+            return std::make_shared<earl::value::Option>();
+        return std::make_shared<earl::value::Option>(value->second);
     }
     else if constexpr (std::is_same_v<T, double>) {
         if (key->type() != earl::value::Type::Float) {
@@ -794,8 +794,8 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
         double k = dynamic_cast<earl::value::Float *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
-            return std::make_shared<earl::value::Void>();
-        return value->second;
+            return std::make_shared<earl::value::Option>();
+        return std::make_shared<earl::value::Option>(value->second);
     }
     else if constexpr (std::is_same_v<T, char>) {
         if (key->type() != earl::value::Type::Char) {
@@ -806,8 +806,8 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
         char k = dynamic_cast<earl::value::Char *>(key.get())->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
-            return std::make_shared<earl::value::Void>();
-        return value->second;
+            return std::make_shared<earl::value::Option>();
+        return std::make_shared<earl::value::Option>(value->second);
     }
     assert(false && "unreachable");
     return nullptr; // unreachable

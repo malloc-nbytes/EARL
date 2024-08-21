@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.3.2] - 2024-20-8
+## [0.3.3] - 2024-20-8
 
 ### Added
 - New flag to watch files for changes and perform hot reloading.
@@ -10,6 +10,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - List/str/dictionary/tuple indexing no longer returns the value as a reference by default.
 - Strings can now have delimiters again.
+
+### Changed
+- Dictionaries now return none if the value does not exist, and some(V) if it does exist.
 
 ## [0.3.1] - 2024-19-8
 

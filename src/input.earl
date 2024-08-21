@@ -1,2 +1,14 @@
 module Main
 
+let d = {1: true, 2: false, 3: true};
+
+let x = 1;
+
+if d[x] {
+    println("contains: ", x, " which is: ", d[1].unwrap());
+}
+else {
+    println("does not contain: ", x);
+}
+
+

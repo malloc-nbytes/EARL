@@ -1063,7 +1063,8 @@ in sum
 
 #+begin_quote
 A =dictionary= is a collection of key-value pairs. Every key has an associated value.
-If a dictionary is indexed with a key that does not exist, it will return a =unit= value.
+If a dictionary is indexed with a key that does not exist, it will return a =none= value.
+If the value _does_ exist, it will return it in a wrapped =option= value.
 They can be created with a brace initializer list where keys and values are separed by a colon =:=
 and entries are separated by a comma =,=.
 
@@ -1078,10 +1079,10 @@ let empty_set = Dict(int);
 # Notice how all keys are strings
 let s = {"foo": 1, "bar", 1..=10, "baz": some('a')};
 
-println(s["foo"]);         # 1
-println(s["bar"])          # [1,2,3,4,5,6,7,8,9,10]
-println(s["baz"].unwrap()) # 'a'
-println(s["invalid"]);     # <unit>
+println(s["foo"]);         # some(1)
+println(s["bar"].unwrap()) # [1,2,3,4,5,6,7,8,9,10]
+println(s["baz"].unwrap().unwrap()) # 'a'
+println(s["invalid"]);     # none
 
 s.insert("hello", 9);
 println(s.has_key("hello") && s.has_key("bar")); # true
