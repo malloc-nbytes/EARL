@@ -1378,8 +1378,12 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
         }
 
-        if (result && result->type() != earl::value::Type::Void)
+        if (result && result->type() == earl::value::Type::Continue)
+            continue;
+
+        if (result && result->type() != earl::value::Type::Void) {
             break;
+        }
 
         expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, /*ref=*/false);
         expr_result = unpack_ER(expr_er, ctx, /*ref=*/true);
@@ -1421,6 +1425,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1448,6 +1454,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1475,6 +1483,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 result = nullptr;
                 break;
             }
+            if (result && result->type() == earl::value::Type::Continue)
+                continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
         }
@@ -1527,6 +1537,14 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
         if (result && result->type() == earl::value::Type::Break) {
             result = nullptr;
             break;
+        }
+
+        if (result && result->type() == earl::value::Type::Continue) {
+            if (lt)
+                start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+            else if (gt)
+                start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+            continue;
         }
 
         if (result && result->type() != earl::value::Type::Void)
@@ -1750,6 +1768,7 @@ static std::shared_ptr<earl::value::Obj>
 eval_stmt_continue(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     (void)stmt;
     (void)ctx;
+    stmt->m_evald = true;
     return std::make_shared<earl::value::Continue>();
 }
 

@@ -1,7 +1,7 @@
 module Main
 
-for i in 0 to 10 {
-    if i % 2 != 0 {
+foreach i in "0123456789" {
+    if int(i)%2 != 0 {
         continue;
     }
     println(i);

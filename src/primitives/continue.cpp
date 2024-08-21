@@ -52,7 +52,18 @@ std::shared_ptr<Obj> Continue::copy(void) {
     UNIMPLEMENTED("Continue::mutate");
 }
 
-bool Continue::eq(std::shared_ptr<Obj> &other)                                          override;
-std::string Continue::to_cxxstring(void)                                                override;
-void Continue::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
-std::shared_ptr<Obj> Continue::unaryop(Token *op)                                       override;
+bool Continue::eq(std::shared_ptr<Obj> &other) {
+    UNIMPLEMENTED("Continue::eq");
+}
+
+std::string Continue::to_cxxstring(void) {
+    UNIMPLEMENTED("Continue::to_cxxstring");
+}
+
+void Continue::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    UNIMPLEMENTED("Continue::spec_mutate");
+}
+
+std::shared_ptr<Obj> Continue::unaryop(Token *op) {
+    UNIMPLEMENTED("Continue::unaryop");
+}
