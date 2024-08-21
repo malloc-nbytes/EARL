@@ -43,6 +43,11 @@ Closure::block(void) {
     return m_expr_closure->m_block.get();
 }
 
+Token *
+Closure::tok(void) const {
+    return m_expr_closure->m_tok.get();
+}
+
 void
 Closure::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<Ctx> ctx) {
     for (size_t i = 0; i < values.size(); ++i) {

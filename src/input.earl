@@ -1,8 +1,7 @@
 module Main
 
-class Test [] {
-    @pub fn test() {
-        return 99;
-    }
+fn test() {
+    println("here");
 }
 
+test();

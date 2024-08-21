@@ -289,9 +289,15 @@ evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
             for (size_t i = 0; i < fun->params_len(); ++i)
                 refs.push_back(static_cast<bool>(fun->param_at_is_ref(i)));
 
+            if (refs.size() != funccall->m_params.size()) {
+                const std::string msg = "function `"+fun->id()+"` expects "+std::to_string(refs.size())+" arguments but got "+std::to_string(funccall->m_params.size());
+                Err::err_wexpr(funccall);
+                throw InterpreterException(msg);
+            }
+
             // Evaluate the parameters based on the reference table
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
-                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs[i]);
+                ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, /*ref=*/refs.at(i));
                 res.push_back(unpack_ER(er, ctx, refs[i]));
             }
         }
@@ -301,6 +307,12 @@ evaluate_function_parameters_wrefs(ExprFuncCall *funccall,
             // Build reference table
             for (size_t i = 0; i < fun->params_len(); ++i)
                 refs.push_back(static_cast<bool>(fun->param_at_is_ref(i)));
+
+            if (refs.size() != funccall->m_params.size()) {
+                const std::string msg = "closure `"+fun->tok()->lexeme()+"` expects "+std::to_string(refs.size())+" arguments but got "+std::to_string(funccall->m_params.size());
+                Err::err_wexpr(funccall);
+                throw InterpreterException(msg);
+            }
 
             // Evaluate the parameters based on the reference table
             for (size_t i = 0; i < funccall->m_params.size(); ++i) {
