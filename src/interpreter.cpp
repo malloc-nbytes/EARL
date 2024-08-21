@@ -1746,6 +1746,13 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_continue(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+    (void)stmt;
+    (void)ctx;
+    return std::make_shared<earl::value::Continue>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -1765,6 +1772,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Class:     return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
     case StmtType::Match:     return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
     case StmtType::Enum:      return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
+    case StmtType::Continue:  return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";
