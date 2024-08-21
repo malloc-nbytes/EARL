@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Using .append() on a list no longer always does an unnecessary copy.
 - Updated class deep copy to now actually copy over methods.
 - Fixed segfault with incorrect function/closure paremeters are provided in evaluate\_function\_parameters\_wrefs.
+- Fixed segfault because function\_exists and function\_get for function context not being the same.
 
 ## [0.3.3] - 2024-20-8
 

@@ -179,6 +179,9 @@ FunctionCtx::function_get(const std::string &id) {
     if (!func && m_owner->type() == CtxType::World)
         func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
 
+    if (!func)
+        func = m_funcs.get(id);
+
     return func;
 }
 

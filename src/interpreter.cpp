@@ -342,6 +342,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         auto func = ctx->function_get(id);
+
         v = func;
         if (from_outside && !func->is_pub()) {
             std::string msg = "function `" + id + "` does not contain the @pub attribute";
