@@ -35,41 +35,7 @@ using namespace earl::value;
 
 Str::Str(std::string value) {
     m_value = value;
-    m_chars = {};
     m_chars = std::vector<std::shared_ptr<Char>>(m_value.size(), nullptr);
-    // for (size_t i = 0; i < m_value.size(); ++i)
-    //     m_chars.push_back(nullptr);
-    // bool escape = false;
-    // for (size_t i = 0; i < value.size(); ++i) {
-    //     char c = value[i];
-    //     if (!escape && c == '\\') {
-    //         escape = true;
-    //         continue;
-    //     }
-    //     if (escape) {
-    //         switch (c) {
-    //         case 'n': {
-    //             m_value.push_back(std::make_shared<Char>(std::string(1, '\n')));
-    //         } break;
-    //         case 't': {
-    //             m_value.push_back(std::make_shared<Char>(std::string(1, '\t')));
-    //         } break;
-    //         case '"': {
-    //             m_value.push_back(std::make_shared<Char>(std::string(1, '"')));
-    //         } break;
-    //         case '\\': {
-    //             m_value.push_back(std::make_shared<Char>(std::string(1, '\\')));
-    //         } break;
-    //         default:
-    //             std::string msg = "unkown escape sequence `\\"+std::to_string(c)+"`";
-    //             throw InterpreterException(msg);
-    //         }
-    //         escape = false;
-    //     }
-    //     else {
-    //         m_value.push_back(std::make_shared<Char>(std::string(1, c)));
-    //     }
-    // }
 }
 
 Str::Str(std::vector<std::shared_ptr<Char>> chars) {
@@ -135,14 +101,24 @@ Str::split(std::shared_ptr<Obj> &delim) {
     return std::make_shared<List>(std::move(splits));
 }
 
-// TODO: Adhere to new string optimization
 std::shared_ptr<Str>
 Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
         const std::string msg = "cannot use member intrinsic `substr` with non-int types";
         throw InterpreterException(msg);
     }
-    std::string sub = m_value.substr(dynamic_cast<Int *>(idx1.get())->value(), dynamic_cast<Int*>(idx2.get())->value());
+
+    std::string sub = "";
+    int i = dynamic_cast<Int *>(idx1.get())->value();
+    int N = dynamic_cast<Int *>(idx2.get())->value();
+
+    for (int i = 0; i < N; ++i) {
+        if (m_value.at(i) != '\0')
+            sub += m_value.at(i);
+        else
+            sub += m_chars.at(i)->value();
+    }
+
     return std::make_shared<Str>(sub);
 }
 
