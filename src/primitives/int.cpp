@@ -224,6 +224,9 @@ Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     case TokenType::Asterisk_Equals: m_value *= prev; break;
     case TokenType::Forwardslash_Equals: m_value /= prev; break;
     case TokenType::Percent_Equals: m_value %= prev; break;
+    case TokenType::Backtick_Pipe_Equals: m_value |= prev; break;
+    case TokenType::Backtick_Ampersand_Equals: m_value &= prev; break;
+    case TokenType::Backtick_Caret_Equals: m_value ^= prev; break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid operator for special mutation `"+op->lexeme()+"`";

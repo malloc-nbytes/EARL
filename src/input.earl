@@ -6,11 +6,4 @@ enum Flag {
     F3 = 1 << 2,
 }
 
-let f = 0;
-
-f = f `| Flag.F3;
-
-println((f `& Flag.F1) != 0);
-
-
-
+println(0 `^ 1);

@@ -137,6 +137,12 @@ tokentype_to_str(TokenType type) {
         return "`BACKTICK_TILDE`";
     case TokenType::Backtick_Caret:
         return "`BACKTICK_CARET`";
+    case TokenType::Backtick_Pipe_Equals:
+        return "`BACKTICK_PIPE_EQUALS`";
+    case TokenType::Backtick_Ampersand_Equals:;
+        return "`BACKTICK_AMPERSAND_EQUALS`";
+    case TokenType::Backtick_Caret_Equals:;
+        return "`BACKTICK_CARET_EQUALS`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:

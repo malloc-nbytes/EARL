@@ -205,6 +205,25 @@ it hits 1MB in file size.
 | none                                    |
 | break                                   |
 
+* Binary Operators
+
+#+begin_quote
+Below is a table of all valid binary operators.
+#+end_quote
+
+| Operator | Description                   |
+|----------+-------------------------------|
+| =+=      | Addition                      |
+| =-=      | Subtraction                   |
+| =*=      | Multiplication                |
+| ///      | Division                      |
+| =%=      | Modulo                        |
+| =`&=     | Bitwise AND (backtick needed) |
+| =`~=     | Bitwise NOT (backtick needed) |
+| =`^=     | Bitwise XOR (backtick needed) |
+
+=`|= Bitwise OR (backtick needed)
+
 * Variable Declarations
 
 ** Grammar
@@ -261,6 +280,9 @@ k -= N # substitutes -> k = k - (N);
 k *= N # substitutes -> k = k * (N);
 k /= N # substitutes -> k = k / (N);
 k %= N # substitutes -> k = k % (N);
+k `|= N # substitutes -> k = k `| (N);
+k `&= N # substitutes -> k = k `& (N);
+k `^= N # substitutes -> k = k `^ (N);
 #+end_example
 #+end_quote
 

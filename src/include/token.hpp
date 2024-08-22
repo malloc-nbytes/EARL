@@ -92,6 +92,10 @@ enum class TokenType {
     Backtick_Tilde,
     Backtick_Caret,
 
+    Backtick_Pipe_Equals,
+    Backtick_Ampersand_Equals,
+    Backtick_Caret_Equals,
+
     // Other
     Eof,
     Intlit,
