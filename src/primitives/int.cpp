@@ -140,7 +140,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
         }
         return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
     } break;
-    case TokenType::Pipe: {
+    case TokenType::Backtick_Pipe: {
         if (other->type() != Type::Int) {
             Err::err_wtok(op);
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
@@ -148,7 +148,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
         }
         return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other.get())->value());
     } break;
-    case TokenType::Caret: {
+    case TokenType::Backtick_Caret: {
         if (other->type() != Type::Int) {
             Err::err_wtok(op);
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
@@ -156,7 +156,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
         }
         return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other.get())->value());
     } break;
-    case TokenType::Ampersand: {
+    case TokenType::Backtick_Ampersand: {
         if (other->type() != Type::Int) {
             Err::err_wtok(op);
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
@@ -237,6 +237,7 @@ Int::unaryop(Token *op) {
     switch (op->type()) {
     case TokenType::Minus: return std::make_shared<Int>(-m_value);
     case TokenType::Bang: return std::make_shared<Bool>(!m_value);
+    case TokenType::Backtick_Tilde: return std::make_shared<Int>(~m_value);
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid unary operator on int type";

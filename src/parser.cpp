@@ -197,7 +197,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     // Unary expressions
     while (lexer.peek(0) && (lexer.peek()->type() == TokenType::Minus
                              || lexer.peek()->type() == TokenType::Bang
-                             || lexer.peek()->type() == TokenType::Tilde)) {
+                             || lexer.peek()->type() == TokenType::Backtick_Tilde)) {
         std::shared_ptr<Token> op = lexer.next();
         Expr *operand = parse_primary_expr(lexer, fail_on);
         left = new ExprUnary(std::move(op), std::unique_ptr<Expr>(operand));
@@ -410,11 +410,11 @@ parse_bitwise_expr(Lexer &lexer, char fail_on = '\0') {
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Double_Greaterthan
                    || cur->type() == TokenType::Double_Lessthan
-                   || cur->type() == TokenType::Caret
-                   || cur->type() == TokenType::Pipe
-                   || cur->type() == TokenType::Ampersand)) {
+                   || cur->type() == TokenType::Backtick_Caret
+                   || cur->type() == TokenType::Backtick_Pipe
+                   || cur->type() == TokenType::Backtick_Ampersand)) {
         std::shared_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_logical_expr(lexer, fail_on);
+        Expr *rhs = parse_logical_expr(lexer);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));

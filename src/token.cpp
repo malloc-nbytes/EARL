@@ -126,9 +126,17 @@ tokentype_to_str(TokenType type) {
     case TokenType::Double_Colon:
         return "`DOUBLE_COLON`";
     case TokenType::Double_Lessthan:
-        return "`Double_Lessthan`";
+        return "`DOUBLE_LESSTHAN`";
     case TokenType::Double_Greaterthan:
-        return "`Double_Greaterthan`";
+        return "`DOUBLE_GREATERTHAN`";
+    case TokenType::Backtick_Pipe:
+        return "`BACKTICK_PIPE`";
+    case TokenType::Backtick_Ampersand:
+        return "`BACKTICK_AMPERSAND`";
+    case TokenType::Backtick_Tilde:
+        return "`BACKTICK_TILDE`";
+    case TokenType::Backtick_Caret:
+        return "`BACKTICK_CARET`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:

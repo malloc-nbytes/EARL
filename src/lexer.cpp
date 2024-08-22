@@ -250,6 +250,10 @@ lex_file(std::string &src,
         {"::", TokenType::Double_Colon},
         {"<<", TokenType::Double_Lessthan},
         {">>", TokenType::Double_Greaterthan},
+        {"`|", TokenType::Backtick_Pipe},
+        {"`&", TokenType::Backtick_Ampersand},
+        {"`~", TokenType::Backtick_Tilde},
+        {"`^", TokenType::Backtick_Caret},
     };
 
     int row = 1, col = 0;
