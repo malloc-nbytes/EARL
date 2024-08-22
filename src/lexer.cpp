@@ -248,6 +248,8 @@ lex_file(std::string &src,
         {"->", TokenType::RightArrow},
         {"..", TokenType::Double_Period},
         {"::", TokenType::Double_Colon},
+        {"<<", TokenType::Double_Lessthan},
+        {">>", TokenType::Double_Greaterthan},
     };
 
     int row = 1, col = 0;

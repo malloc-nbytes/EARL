@@ -1,10 +1,5 @@
 module Main
 
-let cl1 = |x| {
-    if x == 5 {
-        return x;
-    }
-    return cl1(x+1);
-};
-
-println(cl1(0));
+for i in 0 to 5 {
+    println(1 & 2);
+}

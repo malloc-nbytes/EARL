@@ -83,6 +83,8 @@ enum class TokenType {
     RightArrow,
     Double_Period,
     Double_Colon,
+    Double_Lessthan,
+    Double_Greaterthan,
 
     Eof,
     Intlit,

@@ -124,6 +124,46 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             std::make_shared<Bool>(this->value() || dynamic_cast<Float *>(other.get())->value()) :
             std::make_shared<Bool>(this->value() || dynamic_cast<Int *>(other.get())->value());
     } break;
+    case TokenType::Double_Lessthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Double_Greaterthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Pipe: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Caret: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Ampersand: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other.get())->value());
+    } break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid binary operator";

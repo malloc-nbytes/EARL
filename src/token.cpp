@@ -125,6 +125,10 @@ tokentype_to_str(TokenType type) {
         return "`DOUBLE_PERIOD`";
     case TokenType::Double_Colon:
         return "`DOUBLE_COLON`";
+    case TokenType::Double_Lessthan:
+        return "`Double_Lessthan`";
+    case TokenType::Double_Greaterthan:
+        return "`Double_Greaterthan`";
     case TokenType::Eof:
         return "`EOF`";
     case TokenType::Intlit:
