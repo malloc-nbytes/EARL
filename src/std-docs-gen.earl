@@ -30,6 +30,7 @@ enum Keywords {
     DocComm = "###",
     Module = "MODULE",
     Begin = "BEGIN",
+    End = "END",
     Functions = "FUNCTIONS",
     Name = "NAME",
     Parameter = "PARAMETER",
@@ -48,6 +49,24 @@ enum State {
     Module,
 }
 
+class Class [name, members, methods] {
+    @pub let name = name;
+    @pub let members = members;
+    @pub let methods = methods;
+}
+
+class Function [name, params, returns, desc] {
+    @pub let name = name;
+    @pub let params = params;
+    @pub let returns = returns;
+    @pub let desc = desc;
+}
+
+class Enum [name, members] {
+    @pub let name = name;
+    @pub let members = members;
+}
+
 class Entry [filename, module_name, funclst, classlst, enumlst, varlst] {
     @pub let header = filename.split("/")[1].split(".")[0];
     @pub let filename = filename;
@@ -58,44 +77,54 @@ class Entry [filename, module_name, funclst, classlst, enumlst, varlst] {
     @pub let variable_list = varlst;
 }
 
-fn strim(@ref s) {
-    while len(s) > 0 && s[0] == ' ' {
-        break;
-    }
+# fn gen_from_file(content) {
+#     let state = State.None;
 
-    while len(s) > 0 && s[len(s)-1] == ' ' {
-        break;
-    }
-}
+#     let lines = content
+#         .split("\n")
+#         .filter(|line| { return len(line) > 0; });
 
-fn gen_from_file(content) {
-    let lines = content
-        .split("\n")
-        .filter(|line| { return len(line) > 0; });
+#     let module_name = "";
+#     let function_list, class_list, enum_list, variable_list = ([], [], [], []);
 
-    let module_name = "";
-    let function_list, class_list, enum_list, variable_list = ([], [], [], []);
+#     foreach line in lines {
+#         if len(line) > 3 && line.substr(0, 3) == Keywords.DocComm {
+#             let cmd = line
+#                 .substr(3, len(line))                # Move past `###`
+#                 .split(" ")                          # Get the keywords
+#                 .filter(|k| { return len(k) > 0; }); # Remove empty lines
 
-    foreach line in lines {
-        if len(line) > 3 && line.substr(0, 3) == Keywords.DocComm {
-            let cmd = line.substr(3, len(line));
-            strim(cmd);
-            println(cmd.split(" ").filter(|k| { return len(k) > 0; }));
-        }
-    }
+#             match cmd[0] {
+#                 Keywords.Module -> {
+#                     state = State.Module;
+#                 }
+#                 Keywords.Begin when cmd[1] == Keywords.Functions -> {
+#                     state = State.Functions;
+#                 }
+#                 Keywords.End when cmd[1] == Keywords.Functions -> {
+#                     state = State.None;
+#                 }
+#             }
+#         }
+#         else {
+#             match state {
+#                 State.Module -> {
+#                 }
+#             }
+#         }
+#     }
 
-    return (module_name, function_list, class_list, enum_list, variable_list);
-}
+#     return (module_name, function_list, class_list, enum_list, variable_list);
+# }
 
 let entries = [];
 let stdlib = OS::ls("../src/std/");
 foreach file in stdlib {
     if file == "../src/std/os.earl" {
-        let module_name, function_list, class_list, enum_list, variable_list
-            = gen_from_file(IO::file_to_str(file));
+        # let module_name, function_list, class_list, enum_list, variable_list
+        #     = gen_from_file(IO::file_to_str(file));
 
-        entries.append(Entry(file, module_name, function_list, class_list, enum_list, variable_list));
-        println(entries[0]);
+        # entries.append(Entry(file, module_name, function_list, class_list, enum_list, variable_list));
     }
 }
 
