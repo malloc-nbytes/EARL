@@ -584,13 +584,14 @@ Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
 
 std::unique_ptr<StmtReturn>
 parse_stmt_return(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_RETURN);
+    // (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_RETURN);
+    auto tok = lexer.next(); // return
     std::optional<std::unique_ptr<Expr>> value = {};
     Expr *expr = Parser::parse_expr(lexer);
     if (expr)
         value = std::unique_ptr<Expr>(expr);
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtReturn>(std::move(value));
+    return std::make_unique<StmtReturn>(std::move(value), tok);
 }
 
 std::unique_ptr<StmtWhile>

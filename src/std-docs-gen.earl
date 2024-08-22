@@ -59,13 +59,12 @@ class Entry [filename, module_name, funclst, classlst, enumlst, varlst] {
 }
 
 fn strim(@ref s) {
-    return;
-    println("HERE");
     while len(s) > 0 && s[0] == ' ' {
-        # s.pop(0);
+        break;
     }
-    while len(s) > 0 && s.back() == ' ' {
-        # s.pop(len(s)-1);
+
+    while len(s) > 0 && s[len(s)-1] == ' ' {
+        break;
     }
 }
 
@@ -80,8 +79,8 @@ fn gen_from_file(content) {
     foreach line in lines {
         if len(line) > 3 && line.substr(0, 3) == Keywords.DocComm {
             let cmd = line.substr(3, len(line));
-            let _ = strim(cmd);
-            println(cmd.split(" "));
+            strim(cmd);
+            println(cmd.split(" ").filter(|k| { return len(k) > 0; }));
         }
     }
 

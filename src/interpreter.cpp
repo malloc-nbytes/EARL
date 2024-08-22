@@ -1266,7 +1266,12 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     stmt->m_evald = true;
-    return unpack_ER(er, ctx, false);
+    auto value = unpack_ER(er, ctx, false);
+    if (value && value->type() != earl::value::Type::Void && ctx->type() != CtxType::World) {
+        Err::err_wexpr(stmt->m_expr.get());
+        Err::warn("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
+    }
+    return value;
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -1276,7 +1281,8 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     for (size_t i = 0; i < block->m_stmts.size(); ++i) {
         result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
         if (result && result->type() != earl::value::Type::Void)
-            // We hit either a break or return statement.
+            break;
+        if (block->m_stmts.at(i)->stmt_type() == StmtType::Return)
             break;
     }
     ctx->pop_scope();

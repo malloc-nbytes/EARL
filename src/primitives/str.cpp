@@ -47,10 +47,13 @@ std::string
 Str::value(void) {
     std::string actual = "";
     for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_value.at(i) == '\0')
+        if (m_value.at(i) == '\0') {
+            assert(m_chars.at(i));
             actual += m_chars.at(i)->value();
-        else
+        }
+        else {
             actual += m_value.at(i);
+        }
     }
     return actual;
 }
@@ -63,18 +66,19 @@ Str::nth(std::shared_ptr<Obj> &idx) {
     }
 
     auto index = dynamic_cast<Int *>(idx.get());
-    if (index->value() < 0 || static_cast<size_t>(index->value()) >= m_value.size()) {
+    int I = index->value();
+    if (I < 0 || static_cast<size_t>(I) >= m_value.size()) {
         std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
         throw InterpreterException(msg);
     }
 
-    if (m_value.at(index->value()) == '\0')
-        return m_chars.at(index->value());
+    if (m_value.at(I) == '\0')
+        return m_chars.at(I);
 
-    auto c = std::make_shared<Char>(std::string(1, m_value[index->value()]));
-    m_chars.at(index->value()) = std::move(c);
-    m_value.at(index->value()) = '\0';
-    return m_chars.at(index->value());
+    auto c = std::make_shared<Char>(std::string(1, m_value.at(I)));
+    m_chars.at(I) = std::move(c);
+    m_value.at(I) = '\0';
+    return m_chars.at(I);
 }
 
 // TODO: Adhere to new string optimization
@@ -90,13 +94,14 @@ Str::split(std::shared_ptr<Obj> &delim) {
     std::string::size_type start = 0;
 
     auto pos = this->value().find(delim_str);
+    std::string orig_value = this->value();
 
     while (pos != std::string::npos) {
-        splits.push_back(std::make_shared<Str>(m_value.substr(start, pos-start)));
+        splits.push_back(std::make_shared<Str>(orig_value.substr(start, pos-start)));
         start = pos+delim_str.length();
-        pos = m_value.find(delim_str, start);
+        pos = orig_value.find(delim_str, start);
     }
-    splits.push_back(std::make_shared<Str>(m_value.substr(start)));
+    splits.push_back(std::make_shared<Str>(orig_value.substr(start)));
 
     return std::make_shared<List>(std::move(splits));
 }
