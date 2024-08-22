@@ -95,7 +95,7 @@ namespace earl {
             /** EARL option type */
             Option,
             /** EARL This type for getting class members */
-            This,
+            This, // 10
             /** EARL closure type */
             Closure,
             /** EARL OS type */

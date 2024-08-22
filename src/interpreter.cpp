@@ -1414,6 +1414,9 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
     }
 
+    if (result && result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break)
+        result = std::make_shared<earl::value::Void>();
+
     stmt->m_evald = true;
     return result;
 }
@@ -1519,6 +1522,9 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
+    if (result && result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break)
+        result = std::make_shared<earl::value::Void>();
+
     stmt->m_evald = true;
     return result;
 }
@@ -1580,6 +1586,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     ctx->variable_remove(enumerator->id());
+
+    if (result && result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break)
+        result = std::make_shared<earl::value::Void>();
 
     stmt->m_evald = true;
     return result;
