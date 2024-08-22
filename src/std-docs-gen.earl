@@ -1,0 +1,102 @@
+# MIT License
+
+# Copyright (c) 2023 malloc-nbytes
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+module Main
+
+import "std/os.earl"
+import "std/io.earl"
+import "std/str.earl"
+
+enum Keywords {
+    DocComm = "###",
+    Module = "MODULE",
+    Begin = "BEGIN",
+    Functions = "FUNCTIONS",
+    Name = "NAME",
+    Parameter = "PARAMETER",
+    Returns = "RETURNS",
+    Description = "DESCRIPTION",
+    Class = "CLASS",
+    Enum = "ENUM",
+    Variable = "VARIABLE",
+}
+
+enum State {
+    Functions = 0,
+    Class,
+    Enum,
+    None,
+    Module,
+}
+
+class Entry [filename, module_name, funclst, classlst, enumlst, varlst] {
+    @pub let header = filename.split("/")[1].split(".")[0];
+    @pub let filename = filename;
+    @pub let module_name = module_name;
+    @pub let function_list = funclst;
+    @pub let class_list = classlst;
+    @pub let enum_list = enumlst;
+    @pub let variable_list = varlst;
+}
+
+fn strim(@ref s) {
+    return;
+    println("HERE");
+    while len(s) > 0 && s[0] == ' ' {
+        # s.pop(0);
+    }
+    while len(s) > 0 && s.back() == ' ' {
+        # s.pop(len(s)-1);
+    }
+}
+
+fn gen_from_file(content) {
+    let lines = content
+        .split("\n")
+        .filter(|line| { return len(line) > 0; });
+
+    let module_name = "";
+    let function_list, class_list, enum_list, variable_list = ([], [], [], []);
+
+    foreach line in lines {
+        if len(line) > 3 && line.substr(0, 3) == Keywords.DocComm {
+            let cmd = line.substr(3, len(line));
+            let _ = strim(cmd);
+            println(cmd.split(" "));
+        }
+    }
+
+    return (module_name, function_list, class_list, enum_list, variable_list);
+}
+
+let entries = [];
+let stdlib = OS::ls("../src/std/");
+foreach file in stdlib {
+    if file == "../src/std/os.earl" {
+        let module_name, function_list, class_list, enum_list, variable_list
+            = gen_from_file(IO::file_to_str(file));
+
+        entries.append(Entry(file, module_name, function_list, class_list, enum_list, variable_list));
+        println(entries[0]);
+    }
+}
+

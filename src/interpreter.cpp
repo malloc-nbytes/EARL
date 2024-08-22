@@ -464,9 +464,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         if (er.is_intrinsic())
             return Intrinsics::call(er.id, params, ctx);
 
-        // Classes do not implement any member intrinsics, so its ok
-        // to check to make sure that the context is not a class context.
-        if (ctx->type() != CtxType::Class && er.is_member_intrinsic()) {
+        if (er.is_member_intrinsic()) {
             if (!perp || !perp->lhs_getter_accessor) {
                 std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
@@ -495,7 +493,6 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 throw InterpreterException(msg);
             }
 
-            // dynamic_cast<ClassCtx *>(ctx.get())->function_debug_dump();
             return eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
         }
 
@@ -1332,7 +1329,7 @@ eval_stmt_return(StmtReturn *stmt, std::shared_ptr<Ctx> &ctx) {
         return unpack_ER(er, ctx, false);
     }
     stmt->m_evald = true;
-    return std::make_shared<earl::value::Option>();
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

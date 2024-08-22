@@ -20,23 +20,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module OS
 
-# List all items at `path`.
+### BEGIN FUNCTIONS
+
+### NAME ls
+### PARAMETER path: str
+### RETURNS list
+### DESCRIPTION
+###   List all items at the path `path` and return a list of
+###   all elements it contains.
 @pub fn ls(path) {
     return __internal_ls__(path);
 }
 
-# Create a new directory at `path`.
-@pub fn mkdir(path) {
-    __internal_mkdir__(path);
+### NAME mkdir
+### PARAMETER name: str
+### RETURNS unit
+### DESCRIPTION
+###   Create a new directory in the `cwd` called `name`.
+@pub fn mkdir(name) {
+    __internal_mkdir__(name);
 }
 
-# Creates a full path directory as well as a file
-# i.e., ./dir1/dir2/dir3/file.txt. The last entry
-# in the path will be used as the file to be created.
-# It is functionally equivalent to:
-#     mkdir -p <path> && touch <path>/file.txt.
+### NAME fullpath_mkdir
+### PARAMETER fullpath: str
+### RETURNS unit
+### DESCRIPTION
+###   Creates a full path directory as well as a file
+###   i.e., ./dir1/dir2/dir3/file.txt. The last entry
+###   in the path will be used as the file to be created.
+###   It is functionally equivalent to: `mkdir -p <path> && touch <path>/file.txt`.
 @pub fn fullpath_mkdir(fullpath) {
     if len(fullpath) == 0 {
         panic("fullpath_mkdir: the path specified cannot be empty");
@@ -94,3 +109,6 @@ module OS
 @pub fn move(path_from, path_to) {
     __internal_move__(path_from, path_to);
 }
+
+### END FUNCTIONS
+
