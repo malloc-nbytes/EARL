@@ -1,10 +1,9 @@
 module Main
 
-let cl1 = |x| {
-    if x == 5 {
-        return x;
-    }
-    return cl1(x+1);
-};
+enum Flag {
+    F1 = 1 << 0,
+    F2 = 1 << 1,
+    F3 = 1 << 2,
+}
 
-println(cl1(0));
+println(0 `^ 1);

@@ -124,6 +124,46 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             std::make_shared<Bool>(this->value() || dynamic_cast<Float *>(other.get())->value()) :
             std::make_shared<Bool>(this->value() || dynamic_cast<Int *>(other.get())->value());
     } break;
+    case TokenType::Double_Lessthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Double_Greaterthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Backtick_Pipe: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Backtick_Caret: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Backtick_Ampersand: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other.get())->value());
+    } break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid binary operator";
@@ -184,6 +224,9 @@ Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     case TokenType::Asterisk_Equals: m_value *= prev; break;
     case TokenType::Forwardslash_Equals: m_value /= prev; break;
     case TokenType::Percent_Equals: m_value %= prev; break;
+    case TokenType::Backtick_Pipe_Equals: m_value |= prev; break;
+    case TokenType::Backtick_Ampersand_Equals: m_value &= prev; break;
+    case TokenType::Backtick_Caret_Equals: m_value ^= prev; break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid operator for special mutation `"+op->lexeme()+"`";
@@ -197,6 +240,7 @@ Int::unaryop(Token *op) {
     switch (op->type()) {
     case TokenType::Minus: return std::make_shared<Int>(-m_value);
     case TokenType::Bang: return std::make_shared<Bool>(!m_value);
+    case TokenType::Backtick_Tilde: return std::make_shared<Int>(~m_value);
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid unary operator on int type";

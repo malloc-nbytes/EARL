@@ -248,6 +248,15 @@ lex_file(std::string &src,
         {"->", TokenType::RightArrow},
         {"..", TokenType::Double_Period},
         {"::", TokenType::Double_Colon},
+        {"<<", TokenType::Double_Lessthan},
+        {">>", TokenType::Double_Greaterthan},
+        {"`|", TokenType::Backtick_Pipe},
+        {"`&", TokenType::Backtick_Ampersand},
+        {"`~", TokenType::Backtick_Tilde},
+        {"`^", TokenType::Backtick_Caret},
+        {"`|=", TokenType::Backtick_Pipe_Equals},
+        {"`&=", TokenType::Backtick_Ampersand_Equals},
+        {"`^=", TokenType::Backtick_Caret_Equals},
     };
 
     int row = 1, col = 0;

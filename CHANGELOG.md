@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.5] - 2024-22-8
+
+### Added
+- Bitwise operators.
+
 ## [0.3.4] - 2024-21-8
 
 ### Fixed

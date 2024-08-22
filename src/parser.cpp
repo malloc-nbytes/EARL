@@ -195,8 +195,9 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *right = nullptr;
 
     // Unary expressions
-    while (lexer.peek(0) && lexer.peek()->type() == TokenType::Minus ||
-           lexer.peek()->type() == TokenType::Bang) {
+    while (lexer.peek(0) && (lexer.peek()->type() == TokenType::Minus
+                             || lexer.peek()->type() == TokenType::Bang
+                             || lexer.peek()->type() == TokenType::Backtick_Tilde)) {
         std::shared_ptr<Token> op = lexer.next();
         Expr *operand = parse_primary_expr(lexer, fail_on);
         left = new ExprUnary(std::move(op), std::unique_ptr<Expr>(operand));
@@ -404,8 +405,27 @@ parse_logical_expr(Lexer &lexer, char fail_on = '\0') {
 }
 
 static Expr *
-parse_slice_expr(Lexer &lexer, char fail_on = '\0') {
+parse_bitwise_expr(Lexer &lexer, char fail_on = '\0') {
     Expr *lhs = parse_logical_expr(lexer, fail_on);
+    Token *cur = lexer.peek();
+    while (cur && (cur->type() == TokenType::Double_Greaterthan
+                   || cur->type() == TokenType::Double_Lessthan
+                   || cur->type() == TokenType::Backtick_Caret
+                   || cur->type() == TokenType::Backtick_Pipe
+                   || cur->type() == TokenType::Backtick_Ampersand)) {
+        std::shared_ptr<Token> op = lexer.next();
+        Expr *rhs = parse_logical_expr(lexer);
+        lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
+                             std::move(op),
+                             std::unique_ptr<Expr>(rhs));
+        cur = lexer.peek();
+    }
+    return lhs;
+}
+
+static Expr *
+parse_slice_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_bitwise_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (fail_on != ':' && cur && (cur->type() == TokenType::Colon)) {
         auto tok = lexer.next(); // :
@@ -881,7 +901,10 @@ Parser::parse_stmt(Lexer &lexer) {
                      || lexer.peek(i)->type() == TokenType::Plus_Equals
                      || lexer.peek(i)->type() == TokenType::Minus_Equals
                      || lexer.peek(i)->type() == TokenType::Asterisk_Equals
-                     || lexer.peek(i)->type() == TokenType::Forwardslash_Equals)
+                     || lexer.peek(i)->type() == TokenType::Forwardslash_Equals
+                     || lexer.peek(i)->type() == TokenType::Backtick_Pipe_Equals
+                     || lexer.peek(i)->type() == TokenType::Backtick_Ampersand_Equals
+                     || lexer.peek(i)->type() == TokenType::Backtick_Caret_Equals)
                     && paren == 0)
                     return parse_stmt_mut(lexer);
             }
