@@ -412,8 +412,9 @@ struct StmtIf : public Stmt {
 struct StmtReturn : public Stmt {
     /// @brief The expression that the Statement Return is returning
     std::optional<std::unique_ptr<Expr>> m_expr;
+    std::shared_ptr<Token> m_tok;
 
-    StmtReturn(std::optional<std::unique_ptr<Expr>> expr);
+    StmtReturn(std::optional<std::unique_ptr<Expr>> expr, std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
 };
 

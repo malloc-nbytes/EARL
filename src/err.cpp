@@ -63,10 +63,9 @@ Err::err_wconflict(Token *newtok, Token *orig) {
 
 void
 Err::warn(std::string msg, Token *tok) {
-    if (tok) {
+    if (tok)
         err_wtok(tok);
-    }
-    std::cerr << "[WARN] " << msg << std::endl;
+    std::cerr << "warning: " << msg << std::endl;
 }
 
 static void
@@ -310,7 +309,9 @@ err_wletstmt(StmtLet *stmt) {
 
 void
 err_wblockstmt(StmtBlock *stmt) {
-    assert(false);
+    for (auto &s : stmt->m_stmts) {
+        Err::err_wstmt(s.get());
+    }
 }
 
 void
@@ -322,17 +323,17 @@ err_wmutstmt(StmtMut *stmt) {
 
 void
 err_wstmtexpr(StmtExpr *stmt) {
-    assert(false);
+    Err::err_wexpr(stmt->m_expr.get());
 }
 
 void
 err_wstmtif(StmtIf *stmt) {
-    assert(false);
+    Err::err_wstmt(stmt->m_block.get());
 }
 
 void
 err_wstmtreturn(StmtReturn *stmt) {
-    assert(false);
+    Err::err_wtok(stmt->m_tok.get());
 }
 
 void
@@ -385,11 +386,11 @@ Err::err_wstmt(Stmt *stmt) {
     switch (stmt->stmt_type()) {
     case StmtType::Def: assert(false); break;
     case StmtType::Let: assert(false); break;
-    case StmtType::Block: assert(false); break;
+    case StmtType::Block: err_wblockstmt(dynamic_cast<StmtBlock *>(stmt)); break;
     case StmtType::Mut: err_wmutstmt(dynamic_cast<StmtMut *>(stmt)); break;
-    case StmtType::Stmt_Expr: assert(false); break;
-    case StmtType::If: assert(false); break;
-    case StmtType::Return: assert(false); break;
+    case StmtType::Stmt_Expr: err_wstmtexpr(dynamic_cast<StmtExpr *>(stmt)); break;
+    case StmtType::If: err_wstmtif(dynamic_cast<StmtIf *>(stmt)); break;
+    case StmtType::Return: err_wstmtreturn(dynamic_cast<StmtReturn *>(stmt)); break;
     case StmtType::Break: assert(false); break;
     case StmtType::While: assert(false); break;
     case StmtType::For: assert(false); break;
