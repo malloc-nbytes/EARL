@@ -350,6 +350,10 @@ namespace earl {
             /// @brief Reverse a list
             std::shared_ptr<List> rev(void);
 
+            void append_copy(std::shared_ptr<Obj> value);
+
+            void append_copy(std::vector<std::shared_ptr<Obj>> &values);
+
             /// @brief Append a list of values to a list
             /// @param values The values to append
             void append(std::vector<std::shared_ptr<Obj>> &values);

@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -137,6 +138,17 @@ List::append(std::vector<std::shared_ptr<Obj>> &values) {
 void
 List::append(std::shared_ptr<Obj> value) {
     m_value.push_back(value);
+}
+
+void
+List::append_copy(std::vector<std::shared_ptr<Obj>> &values) {
+    for (size_t i = 0; i < values.size(); ++i)
+        m_value.push_back(values.at(i)->copy());
+}
+
+void
+List::append_copy(std::shared_ptr<Obj> value) {
+    m_value.push_back(value->copy());
 }
 
 std::shared_ptr<List>
@@ -271,7 +283,7 @@ List::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
 std::shared_ptr<Obj>
 List::copy(void) {
     auto list = std::make_shared<List>();
-    list->append(this->value());
+    list->append_copy(this->value());
     return list;
 }
 

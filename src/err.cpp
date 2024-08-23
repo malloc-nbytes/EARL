@@ -131,26 +131,26 @@ static void
 err_wmod_access(ExprModAccess *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    std::visit([&](auto &&arg) {
-        using T = std::decay_t<decltype(arg)>;
-        if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-            err_wident(arg.get(), s);
-        else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-            err_wfunccall(arg.get(), s);
-    }, expr->m_right);
+    // std::visit([&](auto &&arg) {
+    //     using T = std::decay_t<decltype(arg)>;
+    //     if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
+    //         err_wident(arg.get(), s);
+    //     else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
+    //         err_wfunccall(arg.get(), s);
+    // }, expr->m_right);
 }
 
 static void
 err_wget(ExprGet *expr, int s) {
     spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    std::visit([&](auto &&arg) {
-        using T = std::decay_t<decltype(arg)>;
-        if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-            err_wident(arg.get(), s);
-        else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-            err_wfunccall(arg.get(), s);
-    }, expr->m_right);
+    // std::visit([&](auto &&arg) {
+    //     using T = std::decay_t<decltype(arg)>;
+    //     if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
+    //         err_wident(arg.get(), s);
+    //     else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
+    //         err_wfunccall(arg.get(), s);
+    // }, expr->m_right);
 }
 
 static void

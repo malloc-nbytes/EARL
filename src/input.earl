@@ -1,9 +1,9 @@
 module Main
 
-enum Flag {
-    F1 = 1 << 0,
-    F2 = 1 << 1,
-    F3 = 1 << 2,
+let lst = 0..=5;
+
+foreach i in lst {
+    i = 9;
 }
 
-println(0 `^ 1);
+println(lst);
