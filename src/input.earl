@@ -1,9 +1,9 @@
 module Main
 
-let lst = 0..=5;
+let x = 1;
+let y = [1, 2, 3];
+let z = (1,2,3);
+let o = none;
 
-foreach i in lst {
-    i = 9;
-}
+println(f"y is {y}");
 
-println(lst);

@@ -83,6 +83,7 @@ enum class ExprTermType {
     Tuple,
     Float_Literal,
     Dict,
+    FStr,
 };
 
 struct StmtDef;
@@ -196,6 +197,14 @@ struct ExprStrLit : public ExprTerm {
     std::shared_ptr<Token> m_tok;
 
     ExprStrLit(std::shared_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprFStr : public ExprTerm {
+    std::shared_ptr<Token> m_tok;
+
+    ExprFStr(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

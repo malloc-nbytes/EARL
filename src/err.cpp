@@ -221,6 +221,11 @@ err_wident(ExprIdent *expr, int s) {
 }
 
 static void
+err_wfstr(ExprFStr *expr, int s) {
+    Err::err_wtok(expr->m_tok.get());
+}
+
+static void
 err_wterm(ExprTerm *expr, int s) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -270,6 +275,9 @@ err_wterm(ExprTerm *expr, int s) {
     } break;
     case ExprTermType::Float_Literal: {
         err_wfloatlit(dynamic_cast<ExprFloatLit *>(expr), s);
+    } break;
+    case ExprTermType::FStr: {
+        err_wfstr(dynamic_cast<ExprFStr *>(expr), s);
     } break;
     default: break;
     }

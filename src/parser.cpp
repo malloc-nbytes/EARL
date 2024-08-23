@@ -251,7 +251,22 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             left = new ExprFloatLit(lexer.next());
         } break;
         case TokenType::Strlit: {
-            left = new ExprStrLit(lexer.next());
+            if (left && left->get_type() == ExprType::Term) {
+                auto left_term = dynamic_cast<ExprTerm *>(left);
+                if (left_term->get_term_type() == ExprTermType::Ident) {
+                    auto left_ident = dynamic_cast<ExprIdent *>(left_term);
+                    if (left_ident->m_tok->lexeme() == "f")
+                        left = new ExprFStr(lexer.next());
+                    else
+                        goto not_fstr;
+                }
+                else
+                    goto not_fstr;
+            }
+            else {
+            not_fstr:
+                left = new ExprStrLit(lexer.next());
+            }
         } break;
         case TokenType::Charlit: {
             left = new ExprCharLit(lexer.next());

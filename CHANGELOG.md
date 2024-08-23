@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.6] - 2024-23-8
+
+### Added
+- Fstrings.
+
+### Fixed
+- Fixed the bug where foreach loops would always take the value that they are iterating over as a reference.
+
 ## [0.3.5] - 2024-22-8
 
 ### Added
