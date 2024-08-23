@@ -160,6 +160,14 @@ Str::rev(void) {
 }
 
 void
+Str::append(const std::string &value) {
+    for (size_t i = 0; i < value.size(); ++i) {
+        m_value.push_back(value.at(i));
+        m_chars.push_back(nullptr);
+    }
+}
+
+void
 Str::append(char c) {
     m_value.push_back(c);
     m_chars.push_back(nullptr);

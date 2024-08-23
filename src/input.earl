@@ -1,7 +1,9 @@
 module Main
 
 let x = 1;
-let y = [1,2,3,4,5];
-let s = f"x is {x} and y is {y}";
+let y = [1, 2, 3];
+let z = (1,2,3);
+let o = none;
 
-println(s);
+println(f"y is {y}");
+

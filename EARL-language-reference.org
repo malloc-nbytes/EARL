@@ -885,6 +885,23 @@ A single character. They are surrounded by single quotes ='=.
 A string is a list of =char='s. They are surrounded with double quotes ="=.
 #+end_quote
 
+*** fstr
+
+#+begin_quote
+=fstr= is syntax sugar to put variables inside of a string literal.
+They start with =f= followed by a string literal. All identifiers enclosed
+with ={ }= will have their value stringified.
+
+*Note*: They currently only work with *identifiers*.
+
+#+begin_example
+let x = [1, 2, 3];
+let y = 3;
+let s = f"x is {x} and y is {y}";
+println(s); # prints "x is [1, 2, 3] and y is 3"
+#+end_example
+#+end_quote
+
 ** =list=
 
 #+begin_quote

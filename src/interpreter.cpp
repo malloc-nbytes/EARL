@@ -1067,6 +1067,41 @@ eval_expr_term_dict(ExprDict *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(nullptr, ERT::None); // unreachable
 }
 
+static ER
+eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    const std::string &str = expr->m_tok->lexeme();
+    auto result = std::make_shared<earl::value::Str>();
+
+    auto until_closing = [](const std::string &s, size_t &it) -> std::string {
+        std::string buf = "";
+        while (it < s.size() && s[it] != '}') {
+            buf.push_back(s.at(it));
+            ++it;
+        }
+        return buf;
+    };
+
+    for (size_t i = 0; i < str.size(); ++i) {
+        char c = str.at(i);
+        if (c == '{') {
+            ++i;
+            std::string id = until_closing(str, i);
+            if (!ctx->variable_exists(id)) {
+                Err::err_wexpr(expr);
+                const std::string msg = "variable `"+id+"` has not been defined";
+                throw InterpreterException(msg);
+            }
+            auto var = ctx->variable_get(id);
+            auto strified = Intrinsics::__intrinsic_print(var->value(), /*stream=*/nullptr, /*as_earlstr=*/true);
+            result->append(strified);
+        }
+        else
+            result->append(c);
+    }
+
+    return ER(result, ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -1087,6 +1122,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Tuple:         return eval_expr_term_tuple(dynamic_cast<ExprTuple *>(expr), ctx, ref);
     case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
     case ExprTermType::Dict:          return eval_expr_term_dict(dynamic_cast<ExprDict *>(expr), ctx, ref);
+    case ExprTermType::FStr:          return eval_expr_term_fstr(dynamic_cast<ExprFStr *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

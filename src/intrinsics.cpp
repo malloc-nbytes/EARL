@@ -504,180 +504,201 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
     return std::make_shared<earl::value::Void>();
 }
 
-static void
-__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
+std::shared_ptr<earl::value::Str>
+Intrinsics::__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream, bool as_earlstr) {
+    std::shared_ptr<earl::value::Str> __earlstr = nullptr;
+    if (as_earlstr)
+        __earlstr = std::make_shared<earl::value::Str>();
+
     if (stream == nullptr)
         stream = &std::cout;
+
+    auto out = [&](std::string content) {
+        if (as_earlstr)
+            __earlstr->append(content);
+        else
+            *stream << content;
+    };
+
+    auto append = [&](std::shared_ptr<earl::value::Str> s) {
+        if (as_earlstr) {
+            __earlstr->append(s);
+        }
+    };
+
     switch (param->type()) {
     case earl::value::Type::Void: {
-        *stream << "<unit>";
+        out("<unit>");
     } break;
     case earl::value::Type::DictInt: {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(param.get());
-        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        out("<" + earl::value::type_to_str(dict->type()) + " { ");
         auto map = dict->extract();
         int i = 0;
         for (auto it = map.begin(); it != map.end(); ++it) {
-            *stream << it->first << ": ";
-            __intrinsic_print(it->second, stream);
+            out(it->first + ": ");
+            append(__intrinsic_print(it->second, stream, as_earlstr));
             if (i != map.size()-1)
-                *stream << ", ";
+                out(", ");
             ++i;
         }
-        *stream << " }>";
+        out(" }>");
     } break;
     case earl::value::Type::DictStr: {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(param.get());
-        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        out("<" + earl::value::type_to_str(dict->type()) + " { ");
         auto map = dict->extract();
         int i = 0;
         for (auto it = map.begin(); it != map.end(); ++it) {
-            *stream << it->first << ": ";
-            __intrinsic_print(it->second, stream);
+            out(it->first + ": ");
+            append(__intrinsic_print(it->second, stream, as_earlstr));
             if (i != map.size()-1)
-                *stream << ", ";
+                out(", ");
             ++i;
         }
-        *stream << " }>";
+        out(" }>");
     } break;
     case earl::value::Type::DictChar: {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(param.get());
-        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        out("<" + earl::value::type_to_str(dict->type()) + " { ");
         auto map = dict->extract();
         int i = 0;
         for (auto it = map.begin(); it != map.end(); ++it) {
-            *stream << it->first << ": ";
-            __intrinsic_print(it->second, stream);
+            out(it->first + ": ");
+            append(__intrinsic_print(it->second, stream, as_earlstr));
             if (i != map.size()-1)
-                *stream << ", ";
+                out(", ");
             ++i;
         }
-        *stream << " }>";
+        out(" }>");
     } break;
     case earl::value::Type::DictFloat: {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(param.get());
-        *stream << "<" << earl::value::type_to_str(dict->type()) << " { ";
+        out("<" + earl::value::type_to_str(dict->type()) + " { ");
         auto map = dict->extract();
         int i = 0;
         for (auto it = map.begin(); it != map.end(); ++it) {
-            *stream << it->first << ": ";
-            __intrinsic_print(it->second, stream);
+            out(std::to_string(it->first) + ": ");
+            append(__intrinsic_print(it->second, stream, as_earlstr));
             if (i != map.size()-1)
-                *stream << ", ";
+                out(", ");
             ++i;
         }
-        *stream << " }>";
+        out(" }>");
     } break;
     case earl::value::Type::TypeKW: {
         auto tkw = dynamic_cast<earl::value::TypeKW *>(param.get());
-        *stream << "<TypeKW: " << earl::value::type_to_str(tkw->ty()) << ">";
+        out("<TypeKW: " + earl::value::type_to_str(tkw->ty()) + ">");
     } break;
     case earl::value::Type::Int: {
         auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
-        *stream << intparam->value();
+        out(std::to_string(intparam->value()));
     } break;
     case earl::value::Type::Float: {
         auto *floatparam = dynamic_cast<earl::value::Float *>(param.get());
-        *stream << floatparam->value();
+        out(std::to_string(floatparam->value()));
     } break;
     case earl::value::Type::Bool: {
         auto *bool_param = dynamic_cast<earl::value::Bool *>(param.get());
-        *stream << (bool_param->value() ? "true" : "false");
+        out(bool_param->value() ? "true" : "false");
     } break;
     case earl::value::Type::Option: {
         auto *option_param = dynamic_cast<earl::value::Option *>(param.get());
 
-        if (option_param->is_none())
-            *stream << "<none>";
+        if (option_param->is_none()) {
+            out("<none>");
+        }
         else {
-            *stream << "some(";
-            __intrinsic_print(option_param->value());
-            *stream << ")";
+            out("some(");
+            append(__intrinsic_print(option_param->value(), stream, as_earlstr));
+            out(")");
         }
 
     } break;
     case earl::value::Type::Str: {
         auto *strparam = dynamic_cast<earl::value::Str *>(param.get());
-        *stream << strparam->value();
+        out(strparam->value());
     } break;
     case earl::value::Type::Char: {
         auto *strparam = dynamic_cast<earl::value::Char *>(param.get());
-        *stream << strparam->value();
+        out(std::string(1, strparam->value()));
     } break;
     case earl::value::Type::List: {
         earl::value::List *listparam = dynamic_cast<earl::value::List *>(param.get());
-        *stream << '[';
+        out("[");
         std::vector<std::shared_ptr<earl::value::Obj>> &list = listparam->value();
 
         for (size_t i = 0; i < list.size(); ++i) {
-            __intrinsic_print(list[i]);
+            append(__intrinsic_print(list[i], stream, as_earlstr));
             if (i != list.size()-1)
-                *stream << ", ";
+                out(", ");
         }
 
-        *stream << ']';
+        out("]");
     } break;
     case earl::value::Type::Tuple: {
         earl::value::Tuple *tupleparam = dynamic_cast<earl::value::Tuple *>(param.get());
-        *stream << '(';
+        out("(");
         auto values = tupleparam->value();
         for (size_t i = 0; i < values.size(); ++i) {
-            __intrinsic_print(values[i]);
+            append(__intrinsic_print(values[i], stream, as_earlstr));
             if (i != values.size()-1)
-                *stream << ", ";
+                out(", ");
         }
-        *stream << ')';
+        out(")");
     } break;
     case earl::value::Type::Slice: {
         auto *sliceparam = dynamic_cast<earl::value::Slice *>(param.get());
-        *stream << "<Slice { ";
+        out("<Slice { ");
         auto &start = sliceparam->start();
         auto &end = sliceparam->end();
-        __intrinsic_print(start);
-        *stream << " : ";
-        __intrinsic_print(end);
-        *stream << " }>";
+        append(__intrinsic_print(start, stream, as_earlstr));
+        out(" : ");
+        append(__intrinsic_print(end, stream, as_earlstr));
+        out(" }>");
     } break;
     case earl::value::Type::Class: {
         auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
-        *stream << "<Class " << classparam->id() << " { ";
+        out("<Class " + classparam->id() + " { ");
 
         auto class_ctx = dynamic_cast<ClassCtx *>(classparam->ctx().get());
         auto members = class_ctx->get_printable_members();
 
         for (size_t i = 0; i < members.size(); ++i) {
             auto &mem = members[i];
-            *stream << mem->id() << " = ";
-            __intrinsic_print(mem->value(), stream);
+            out(mem->id() + " = ");
+            append(__intrinsic_print(mem->value(), stream, as_earlstr));
             if (i != members.size()-1)
-                *stream << ", ";
+                out(", ");
         }
 
-        *stream << " }>";
+        out(" }>");
     } break;
     case earl::value::Type::Closure: {
         auto *closureparam = dynamic_cast<earl::value::Closure *>(param.get());
-        *stream << "<closure>";
+        out("<closure>");
     } break;
     case earl::value::Type::Enum: {
         auto *enumparam = dynamic_cast<earl::value::Enum *>(param.get());
-        *stream << "<Enum " << enumparam->id() << " { ";
+        out("<Enum " + enumparam->id() + " { ");
         auto &elems = enumparam->extract();
         size_t i = 0;
         for (auto &it : elems) {
-            *stream << it.first << " = ";
-            __intrinsic_print(it.second->value(), stream);
+            out(it.first + " = ");
+            append(__intrinsic_print(it.second->value(), stream, as_earlstr));
             if (i != elems.size()-1)
-                *stream << ", ";
+                out(", ");
             ++i;
         }
-        *stream << " }>";
+        out(" }>");
     } break;
     default: {
         std::string msg = "intrinsic_print: unknown parameter type "+std::to_string(static_cast<int>(param->type()));
         throw InterpreterException(msg);
     } break;
     }
+
+    return __earlstr;
 }
 
 std::shared_ptr<earl::value::Obj>
