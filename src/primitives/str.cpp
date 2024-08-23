@@ -248,18 +248,12 @@ Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
     switch (op->type()) {
     case TokenType::Plus: {
-        if (other->type() == Type::Char)
-            return std::make_shared<Str>(this->value() + std::string(1, dynamic_cast<Char *>(other.get())->value()));
         return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
     } break;
     case TokenType::Double_Equals: {
-        if (other->type() == Type::Char)
-            return std::make_shared<Bool>(this->value() == std::string(1, dynamic_cast<Char *>(other.get())->value()));
         return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
     } break;
     case TokenType::Bang_Equals: {
-        if (other->type() == Type::Char)
-            return std::make_shared<Bool>(this->value() != std::string(1, dynamic_cast<Char *>(other.get())->value()));
         return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other.get())->value());
     } break;
     default: {
