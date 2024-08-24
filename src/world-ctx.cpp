@@ -46,8 +46,12 @@ WorldCtx::add_repl_program(std::unique_ptr<Program> program) {
 
 size_t
 WorldCtx::stmts_len(void) const {
-    if (!m_program)
-        return m_repl_programs.back()->m_stmts.size();
+    if (!m_program) {
+        if (m_repl_programs.size() > 0)
+            return m_repl_programs.back()->m_stmts.size();
+        else
+            return 0;
+    }
     return m_program->m_stmts.size();
 }
 
