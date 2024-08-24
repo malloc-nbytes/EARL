@@ -897,7 +897,29 @@ earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
 
 template <typename T> std::string
 earl::value::Dict<T>::to_cxxstring(void) {
-    UNIMPLEMENTED("Dict::to_cxxstring");
+    std::string res = "<" + earl::value::type_to_str(this->type()) + " { ";
+    auto map = this->extract();
+    int i = 0;
+    for (auto it = map.begin(); it != map.end(); ++it) {
+        using Tx = std::decay_t<T>;
+        if constexpr (std::is_same_v<Tx, int>)
+            res += std::to_string(it->first);
+        else if constexpr (std::is_same_v<Tx, double>)
+            res += std::to_string(it->first);
+        else if constexpr (std::is_same_v<Tx, char>)
+            res += std::string(1, it->first);
+        else if constexpr (std::is_same_v<Tx, std::string>)
+            res += it->first;
+        else
+            res += it->first;
+        res += ": ";
+        res += it->second->to_cxxstring();
+        if (i != map.size()-1)
+            res += ", ";
+        ++i;
+    }
+    res += " }>";
+    return res;
 }
 
 template <typename T> void

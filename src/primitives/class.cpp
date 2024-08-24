@@ -100,7 +100,21 @@ Class::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Class::to_cxxstring(void) {
-    return "<Class " + this->id() + ">";
+    std::string res = "<Class " + this->id() + " { ";
+
+    auto class_ctx = dynamic_cast<ClassCtx *>(this->ctx().get());
+    auto members = class_ctx->get_printable_members();
+
+    for (size_t i = 0; i < members.size(); ++i) {
+        auto &mem = members[i];
+        res += mem->id() + " = ";
+        res += mem->value()->to_cxxstring();
+        if (i != members.size()-1)
+            res += ", ";
+    }
+
+    res += " }>";
+    return res;
 }
 
 void

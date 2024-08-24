@@ -81,7 +81,14 @@ Slice::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Slice::to_cxxstring(void) {
-    UNIMPLEMENTED("Slice::to_cxxstring");
+    std::string res = "<Slice { ";
+    auto &start = this->start();
+    auto &end = this->end();
+    res += start->to_cxxstring();
+    res += " : ";
+    res += end->to_cxxstring();
+    res += " }> ";
+    return res;
 }
 
 void

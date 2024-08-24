@@ -312,8 +312,11 @@ List::eq(std::shared_ptr<Obj> &other) {
 std::string
 List::to_cxxstring(void) {
     std::string res = "[";
-    for (auto &el : m_value)
-        res += el->to_cxxstring();
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        res += m_value.at(i)->to_cxxstring();
+        if (i != m_value.size()-1)
+            res += ", ";
+    }
     res += "]";
     return res;
 }
