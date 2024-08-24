@@ -31,8 +31,6 @@
 #include <string.h>
 
 #include "err.hpp"
-#include "utils.hpp"
-#include "arena.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
 
@@ -129,6 +127,8 @@ tokentype_to_str(TokenType type) {
         return "`DOUBLE_LESSTHAN`";
     case TokenType::Double_Greaterthan:
         return "`DOUBLE_GREATERTHAN`";
+    case TokenType::Double_Asterisk:
+        return "DOUBLE_ASTERISK";
     case TokenType::Backtick_Pipe:
         return "`BACKTICK_PIPE`";
     case TokenType::Backtick_Ampersand:

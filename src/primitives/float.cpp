@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <cmath>
 #include <memory>
 
 #include "earl.hpp"
@@ -76,6 +77,18 @@ Float::binop(Token *op, std::shared_ptr<Obj> &other) {
     case TokenType::Percent: {
         std::string msg = "cannot use module `%%` with floating point";
         throw InterpreterException(msg);
+    } break;
+    case TokenType::Double_Asterisk: {
+        float p = 0.;
+        if (other->type() == earl::value::Type::Float) {
+            auto _other = dynamic_cast<earl::value::Float *>(other.get());
+            p = std::pow(static_cast<float>(m_value), static_cast<float>(_other->value()));
+        }
+        else {
+            auto _other = dynamic_cast<earl::value::Int *>(other.get());
+            p = std::pow(static_cast<float>(m_value), static_cast<float>(_other->value()));
+        }
+        return std::make_shared<earl::value::Float>(static_cast<double>(p));
     } break;
     case TokenType::Lessthan: {
         return other->type() == Type::Int ?

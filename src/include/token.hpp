@@ -33,7 +33,7 @@
 #include <string>
 #include <memory>
 
-#include "lexer.hpp"
+//#include "lexer.hpp"
 
 struct Lexer;
 
@@ -85,6 +85,7 @@ enum class TokenType {
     Double_Colon,
     Double_Lessthan,
     Double_Greaterthan,
+    Double_Asterisk,
 
     // Bitwise
     Backtick_Pipe,

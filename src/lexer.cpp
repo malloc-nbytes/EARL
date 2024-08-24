@@ -24,12 +24,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <functional>
-#include <fstream>
-#include <iostream>
-#include <filesystem>
 
 #include "err.hpp"
 #include "token.hpp"
@@ -248,6 +246,7 @@ lex_file(std::string &src,
         {"->", TokenType::RightArrow},
         {"..", TokenType::Double_Period},
         {"::", TokenType::Double_Colon},
+        {"**", TokenType::Double_Asterisk},
         {"<<", TokenType::Double_Lessthan},
         {">>", TokenType::Double_Greaterthan},
         {"`|", TokenType::Backtick_Pipe},
