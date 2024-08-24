@@ -1,7 +1,2 @@
 module Main
 
-import "std/io.earl"
-import "std/list.earl"
-
-let d = {1.: 2};
-println(d);

@@ -504,113 +504,11 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
     return std::make_shared<earl::value::Void>();
 }
 
-std::shared_ptr<earl::value::Str>
-Intrinsics::__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream, bool as_earlstr) {
-    std::shared_ptr<earl::value::Str> __earlstr = nullptr;
-    if (as_earlstr)
-        __earlstr = std::make_shared<earl::value::Str>();
-
+static void
+__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
     if (stream == nullptr)
         stream = &std::cout;
-
-    auto out = [&](std::string content) {
-        if (as_earlstr)
-            __earlstr->append(content);
-        else
-            *stream << content;
-    };
-
-    auto append = [&](std::shared_ptr<earl::value::Str> s) {
-        if (as_earlstr)
-            __earlstr->append(s);
-    };
-
-    switch (param->type()) {
-    case earl::value::Type::Void: {
-        out("<unit>");
-    } break;
-    case earl::value::Type::DictInt: {
-        auto dict = dynamic_cast<earl::value::Dict<int> *>(param.get());
-        out(dict->to_cxxstring());
-    } break;
-    case earl::value::Type::DictStr: {
-        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(param.get());
-        out(dict->to_cxxstring());
-    } break;
-    case earl::value::Type::DictChar: {
-        auto dict = dynamic_cast<earl::value::Dict<char> *>(param.get());
-        out(dict->to_cxxstring());
-    } break;
-    case earl::value::Type::DictFloat: {
-        auto dict = dynamic_cast<earl::value::Dict<double> *>(param.get());
-        out(dict->to_cxxstring());
-    } break;
-    case earl::value::Type::TypeKW: {
-        auto tkw = dynamic_cast<earl::value::TypeKW *>(param.get());
-        out(tkw->to_cxxstring());
-    } break;
-    case earl::value::Type::Int: {
-        auto *intparam = dynamic_cast<earl::value::Int *>(param.get());
-        out(std::to_string(intparam->value()));
-    } break;
-    case earl::value::Type::Float: {
-        auto *floatparam = dynamic_cast<earl::value::Float *>(param.get());
-        out(std::to_string(floatparam->value()));
-    } break;
-    case earl::value::Type::Bool: {
-        auto *bool_param = dynamic_cast<earl::value::Bool *>(param.get());
-        out(bool_param->value() ? "true" : "false");
-    } break;
-    case earl::value::Type::Option: {
-        auto *option_param = dynamic_cast<earl::value::Option *>(param.get());
-        out(option_param->to_cxxstring());
-    } break;
-    case earl::value::Type::Str: {
-        auto *strparam = dynamic_cast<earl::value::Str *>(param.get());
-        out(strparam->to_cxxstring());
-    } break;
-    case earl::value::Type::Char: {
-        auto *charparam = dynamic_cast<earl::value::Char *>(param.get());
-        out(charparam->to_cxxstring());
-    } break;
-    case earl::value::Type::List: {
-        auto *lstparam = dynamic_cast<earl::value::List *>(param.get());
-        out(lstparam->to_cxxstring());
-    } break;
-    case earl::value::Type::Tuple: {
-        earl::value::Tuple *tupleparam = dynamic_cast<earl::value::Tuple *>(param.get());
-        out("(");
-        auto values = tupleparam->value();
-        for (size_t i = 0; i < values.size(); ++i) {
-            append(__intrinsic_print(values[i], stream, as_earlstr));
-            if (i != values.size()-1)
-                out(", ");
-        }
-        out(")");
-    } break;
-    case earl::value::Type::Slice: {
-        auto *sliceparam = dynamic_cast<earl::value::Slice *>(param.get());
-        out(sliceparam->to_cxxstring());
-    } break;
-    case earl::value::Type::Class: {
-        auto *classparam = dynamic_cast<earl::value::Class *>(param.get());
-        out(classparam->to_cxxstring());
-    } break;
-    case earl::value::Type::Closure: {
-        auto *closureparam = dynamic_cast<earl::value::Closure *>(param.get());
-        out("<closure>");
-    } break;
-    case earl::value::Type::Enum: {
-        auto *enumparam = dynamic_cast<earl::value::Enum *>(param.get());
-        out(enumparam->to_cxxstring());
-    } break;
-    default: {
-        std::string msg = "intrinsic_print: unknown parameter type "+std::to_string(static_cast<int>(param->type()));
-        throw InterpreterException(msg);
-    } break;
-    }
-
-    return __earlstr;
+    *stream << param->to_cxxstring();
 }
 
 std::shared_ptr<earl::value::Obj>
