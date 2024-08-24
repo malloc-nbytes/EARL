@@ -122,7 +122,17 @@ Closure::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Closure::to_cxxstring(void) {
-    return "<closure>";
+    // std::vector<std::pair<Token *, uint32_t>> m_params;
+    std::string res = "<Closure { ";
+
+    for (size_t i = 0; i < m_params.size(); ++i) {
+        auto &p = m_params.at(i);
+        res += p.first->lexeme();
+        if (i != m_params.size()-1)
+            res += ", ";
+    }
+    res += " }>";
+    return res;
 }
 
 void

@@ -29,8 +29,6 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
-#include "utils.hpp"
-#include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_char_member_functions = {
@@ -40,11 +38,10 @@ Intrinsics::intrinsic_char_member_functions = {
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                   std::shared_ptr<Ctx> &ctx) {
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
     (void)unused;
     (void)ctx;
-    assert(obj);
-    assert(obj->type() == earl::value::Type::Char);
     auto char_ = dynamic_cast<earl::value::Char *>(obj.get());
     int value = static_cast<int>(char_->value());
     return std::make_shared<earl::value::Int>(value);

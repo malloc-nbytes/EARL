@@ -22,9 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <unordered_map>
 
 #include "intrinsics.hpp"
@@ -32,8 +30,6 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
-#include "utils.hpp"
-#include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_list_member_functions = {
@@ -49,10 +45,11 @@ Intrinsics::intrinsic_list_member_functions = {
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &idx,
-                                 std::shared_ptr<Ctx> &ctx) {
+                                 std::shared_ptr<Ctx> &ctx,
+                                 Expr *expr) {
     (void)ctx;
-    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(idx, "nth", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth", expr);
     if (obj->type() == earl::value::Type::List) {
         earl::value::List *list = dynamic_cast<earl::value::List *>(obj.get());
         return list->nth(idx[0], nullptr);//CHANGEME
@@ -66,6 +63,7 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
         return tuple->nth(idx[0], nullptr);//CHANGEME
     }
     else {
+        Err::err_wexpr(expr);
         std::string msg = "`nth` member intrinsic is only defined for `list` and `str` types";
         throw InterpreterException(msg);
     }
@@ -74,9 +72,10 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                  std::shared_ptr<Ctx> &ctx) {
+                                  std::shared_ptr<Ctx> &ctx,
+                                  Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "back", expr);
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->back();
     else if (obj->type() == earl::value::Type::Tuple)
@@ -89,9 +88,10 @@ Intrinsics::intrinsic_member_back(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &closure,
-                                    std::shared_ptr<Ctx> &ctx) {
-    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter");
+                                    std::shared_ptr<Ctx> &ctx,
+                                    Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter", expr);
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
     else if (obj->type() == earl::value::Type::Tuple)
@@ -103,9 +103,10 @@ Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
                                      std::vector<std::shared_ptr<earl::value::Obj>> &closure,
-                                     std::shared_ptr<Ctx> &ctx) {
-    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "foreach");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach");
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "foreach", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach", expr);
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
     else if (obj->type() == earl::value::Type::Tuple)
@@ -118,9 +119,10 @@ Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                 std::shared_ptr<Ctx> &ctx) {
+                                 std::shared_ptr<Ctx> &ctx,
+                                 Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rev", expr);
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->rev();
     else if (obj->type() == earl::value::Type::Tuple)
@@ -132,9 +134,10 @@ Intrinsics::intrinsic_member_rev(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &values,
-                                    std::shared_ptr<Ctx> &ctx) {
+                                    std::shared_ptr<Ctx> &ctx,
+                                    Expr *expr) {
     (void)ctx;
-    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(values, "append", expr);
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->append(values);
     else
@@ -145,10 +148,11 @@ Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
                                  std::vector<std::shared_ptr<earl::value::Obj>> &values,
-                                 std::shared_ptr<Ctx> &ctx) {
+                                 std::shared_ptr<Ctx> &ctx,
+                                 Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop");
+    __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop", expr);
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else

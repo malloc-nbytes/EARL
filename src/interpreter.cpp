@@ -461,8 +461,12 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     // FUNCTIONS/MEMBERS/INTRINSICS
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
-        if (er.is_intrinsic())
-            return Intrinsics::call(er.id, params, ctx);
+        if (er.is_intrinsic()) {
+            Expr *expr = nullptr;
+            if (er.extra)
+                expr = static_cast<Expr *>(er.extra);
+            return Intrinsics::call(er.id, params, ctx, expr);
+        }
 
         if (er.is_member_intrinsic()) {
             if (!perp || !perp->lhs_getter_accessor) {
@@ -476,11 +480,14 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                     + "` does not implement the member intrinsic `" + er.id + "`";
                 throw InterpreterException(msg);
             }
+            Expr *expr = nullptr;
+            if (er.extra) expr = static_cast<Expr *>(er.extra);
             return Intrinsics::call_member(er.id,
                                            perp->lhs_getter_accessor->type(),
                                            perp->lhs_getter_accessor,
                                            params,
-                                           ctx);
+                                           ctx,
+                                           expr);
         }
 
         if (ctx->type() == CtxType::Class) {
@@ -1135,7 +1142,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 ER
 eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, ref);
-    auto lhs_value = unpack_ER(lhs, ctx, true); // POSSIBLE BREAK, WAS FALSE
+    auto lhs_value = unpack_ER(lhs, ctx, true);
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
