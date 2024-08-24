@@ -526,18 +526,18 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 return var->value()->copy();
             return var->value();
         }
-        // Check if it is an enum
-        WorldCtx *world = ctx->type() == CtxType::World ?
-            dynamic_cast<WorldCtx *>(ctx.get()) :
-            ctx->get_world();
-        if (world->enum_exists(er.id))
-            return world->enum_get(er.id);
         // Check if it is an entry of an enum
         if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
             if (lhs->has_entry(er.id))
                 return lhs->get_entry(er.id)->value()->copy();
         }
+        // Check if it is an enum
+        WorldCtx *world = ctx->type() == CtxType::World ?
+            dynamic_cast<WorldCtx *>(ctx.get()) :
+            ctx->get_world();
+        if (world->enum_exists(er.id))
+            return world->enum_get(er.id);
         if (earl::value::is_typekw(er.id))
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
         if (er.extra)
