@@ -103,7 +103,18 @@ Enum::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Enum::to_cxxstring(void) {
-    return "<Enum " + this->id() + ">";
+    std::string res = "<Enum " + this->id() + " { ";
+    auto &elems = this->extract();
+    size_t i = 0;
+    for (auto &it : elems) {
+        res += it.first + " = ";
+        res += it.second->value()->to_cxxstring();
+        if (i != elems.size()-1)
+            res += ", ";
+        ++i;
+    }
+    res += " }>";
+    return res;
 }
 
 void

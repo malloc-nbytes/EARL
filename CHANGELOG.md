@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.7] - 2024-24-8
+
+### Changed
+- All EARL values now have an appropriate to_cxxstring.
+- Greatly simplified __intrinsic_print.
+
 ## [0.3.6] - 2024-23-8
 
 ### Added

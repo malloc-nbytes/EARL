@@ -177,8 +177,11 @@ Tuple::eq(std::shared_ptr<Obj> &other) {
 std::string
 Tuple::to_cxxstring(void) {
     std::string res = "(";
-    for (auto &el : m_values)
-        res += el->to_cxxstring();
+    for (size_t i = 0; i < m_values.size(); ++i) {
+        res += m_values.at(i)->to_cxxstring();
+        if (i != m_values.size()-1)
+            res += ", ";
+    }
     res += ")";
     return res;
 }

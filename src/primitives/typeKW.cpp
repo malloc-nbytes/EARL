@@ -110,7 +110,7 @@ TypeKW::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 TypeKW::to_cxxstring(void) {
-    UNIMPLEMENTED("TypeKW::to_cxxstring");
+    return "<TypeKW: " + earl::value::type_to_str(this->ty()) + ">";
 }
 
 void

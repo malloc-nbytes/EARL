@@ -1092,7 +1092,7 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
                 throw InterpreterException(msg);
             }
             auto var = ctx->variable_get(id);
-            auto strified = Intrinsics::__intrinsic_print(var->value(), /*stream=*/nullptr, /*as_earlstr=*/true);
+            std::string strified = var->value()->to_cxxstring();
             result->append(strified);
         }
         else
