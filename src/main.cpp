@@ -34,12 +34,12 @@
 #include "lexer.hpp"
 #include "interpreter.hpp"
 #include "repl.hpp"
-#include "ctx.hpp"
 #include "config.h"
 #include "hot-reload.hpp"
 
 std::vector<std::string> earl_argv = {};
 static std::vector<std::string> watch_files = {};
+static size_t run_count = 1;
 
 uint32_t flags = 0x00;
 
@@ -197,6 +197,9 @@ main(int argc, char **argv) {
                 hot_reload::watch();
             else
                 locked = false;
+
+            if ((flags & __WATCH) != 0)
+                std::cout << "=== Run: " << run_count++ << " ======================" << std::endl;
 
             std::unique_ptr<Lexer> lexer = nullptr;
             std::unique_ptr<Program> program = nullptr;
