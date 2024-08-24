@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed segfaulting on parser errors when hot reloading.
+- Fixed the len() unreachable case happening.
 
 ### Changed
 - All EARL values now have an appropriate to_cxxstring.

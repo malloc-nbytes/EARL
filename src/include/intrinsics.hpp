@@ -34,9 +34,7 @@
 #include <unordered_map>
 #include <memory>
 
-#include "interpreter.hpp"
 #include "ctx.hpp"
-#include "ast.hpp"
 #include "earl.hpp"
 
 #define __INTR_ARGS_MUSTBE_SIZE(args, sz, fn)                           \
@@ -92,6 +90,7 @@
         if (!__ok) {                                                    \
             std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type-adjacent `" \
                 +earl::value::type_to_str(tys.at(0))+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+            throw InterpreterException(__Msg); \
         }                                                               \
     } while (0)
 

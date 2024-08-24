@@ -1,5 +1,3 @@
 module Main
 
-let x = 1;
-
-println("hi");
+println(len(3));
