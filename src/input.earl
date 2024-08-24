@@ -1,4 +1,5 @@
 module Main
 
-let x = none;
-x = 2;
+import "std/set.earl"
+
+println(Set::DEFAULT_INT_SET_COMPAR);
