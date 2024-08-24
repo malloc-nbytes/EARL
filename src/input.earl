@@ -1,9 +1,5 @@
 module Main
 
-let x = 1;
-let y = [1, 2, 3];
-let z = (1,2,3);
-let o = none;
-
-println(f"y is {y}");
+import "std/io.earl"
+import "std/list.earl"
 

@@ -55,15 +55,15 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARG_MUSTBE_TYPE_COMPAT(idx[0], earl::value::Type::Int, 1, "nth");
     if (obj->type() == earl::value::Type::List) {
         earl::value::List *list = dynamic_cast<earl::value::List *>(obj.get());
-        return list->nth(idx[0]);
+        return list->nth(idx[0], nullptr);//CHANGEME
     }
     else if (obj->type() == earl::value::Type::Str) {
         earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj.get());
-        return str->nth(idx[0]);
+        return str->nth(idx[0], nullptr);//CHANGEME
     }
     else if (obj->type() == earl::value::Type::Tuple) {
         earl::value::Tuple *tuple = dynamic_cast<earl::value::Tuple *>(obj.get());
-        return tuple->nth(idx[0]);
+        return tuple->nth(idx[0], nullptr);//CHANGEME
     }
     else {
         std::string msg = "`nth` member intrinsic is only defined for `list` and `str` types";

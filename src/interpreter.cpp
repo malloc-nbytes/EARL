@@ -783,15 +783,15 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
 
     if (left_value->type() == earl::value::Type::List) {
         auto list = dynamic_cast<earl::value::List *>(left_value.get());
-        return ER(list->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(list->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Str) {
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
-        return ER(str->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(str->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Tuple) {
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
-        return ER(tuple->nth(idx_value), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
+        return ER(tuple->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());

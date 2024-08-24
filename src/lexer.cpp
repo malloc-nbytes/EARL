@@ -352,10 +352,8 @@ lex_file(std::string &src,
                         lexer->append(buf+digit, TokenType::Floatlit, row, col, fp);
                         col += digit.size()+1;
                     }
-                    else {
+                    else
                         lexer->append(buf, (*it).second, row, col, fp);
-                        col += buf.size();
-                    }
                     break;
                 }
                 else {

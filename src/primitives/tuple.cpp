@@ -40,11 +40,12 @@ Tuple::value(void) {
 }
 
 std::shared_ptr<Obj>
-Tuple::nth(std::shared_ptr<Obj> &idx) {
+Tuple::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
     switch (idx->type()) {
     case Type::Int: {
         auto index = dynamic_cast<Int *>(idx.get());
         if (index->value() < 0 || static_cast<size_t>(index->value()) >= this->value().size()) {
+            Err::err_wexpr(expr);
             std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
             throw InterpreterException(msg);
         }

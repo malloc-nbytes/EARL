@@ -59,15 +59,17 @@ Str::value(void) {
 }
 
 std::shared_ptr<Char>
-Str::nth(std::shared_ptr<Obj> &idx) {
+Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
     if (idx->type() != Type::Int) {
-        std::string msg = "invalid index when accessing value in a list";
+        Err::err_wexpr(expr);
+        std::string msg = "invalid index when accessing value in a str";
         throw InterpreterException(msg);
     }
 
     auto index = dynamic_cast<Int *>(idx.get());
     int I = index->value();
     if (I < 0 || static_cast<size_t>(I) >= m_value.size()) {
+        Err::err_wexpr(expr);
         std::string msg = "index "+std::to_string(index->value())+" is out of str range of length "+std::to_string(this->value().size());
         throw InterpreterException(msg);
     }

@@ -52,12 +52,14 @@ List::type(void) const {
 }
 
 std::vector<std::shared_ptr<Obj>>
-List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end) {
+List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end, Expr *expr) {
     if (start->type() != Type::Void && start->type() != Type::Int) {
+        Err::err_wexpr(expr);
         std::string msg = "invalid slice `start` type: `"+type_to_str(start->type())+"`";
         throw InterpreterException(msg);
     }
     if (end->type() != Type::Void && end->type() != Type::Int) {
+        Err::err_wexpr(expr);
         std::string msg = "invalid slice `end` type: `"+type_to_str(end->type())+"`";
         throw InterpreterException(msg);
     }
@@ -81,6 +83,7 @@ List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end) {
 
     for (; s < e; ++s) {
         if (s >= m_value.size()) {
+            Err::err_wexpr(expr);
             std::string msg = "index "+std::to_string(s)+" is out of range for list of length "+std::to_string(m_value.size());
             throw InterpreterException(msg);
         }
@@ -91,11 +94,12 @@ List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end) {
 }
 
 std::shared_ptr<Obj>
-List::nth(std::shared_ptr<Obj> &idx) {
+List::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
     switch (idx->type()) {
     case Type::Int: {
         auto index = dynamic_cast<Int *>(idx.get());
         if (index->value() < 0 || static_cast<size_t>(index->value()) >= this->value().size()) {
+            Err::err_wexpr(expr);
             std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
             throw InterpreterException(msg);
         }
@@ -104,9 +108,10 @@ List::nth(std::shared_ptr<Obj> &idx) {
     case Type::Slice: {
         auto slice = dynamic_cast<Slice *>(idx.get());
         std::shared_ptr<Obj> &s = slice->start(), &e = slice->end();
-        return std::make_shared<List>(this->slice(s, e));
+        return std::make_shared<List>(this->slice(s, e, expr));
     } break;
     default: {
+        Err::err_wexpr(expr);
         std::string msg = "invalid index value when accessing value in a list";
         throw InterpreterException(msg);
     }

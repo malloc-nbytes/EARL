@@ -339,13 +339,13 @@ namespace earl {
             std::vector<std::shared_ptr<Obj>> &value(void);
 
             /// @brief Get a sublist of the vector from `start` to `finish`
-            std::vector<std::shared_ptr<Obj>> slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end);
+            std::vector<std::shared_ptr<Obj>> slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end, Expr *expr);
 
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
             /// @param idx The object that contains the index
             /// @note `idx` MUST BE an integer value
-            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx, Expr *expr);
 
             /// @brief Reverse a list
             std::shared_ptr<List> rev(void);
@@ -411,7 +411,7 @@ namespace earl {
             Tuple(std::vector<std::shared_ptr<Obj>> values = {});
 
             std::vector<std::shared_ptr<Obj>> &value(void);
-            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx, Expr *expr);
             std::shared_ptr<Obj> back(void);
             std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
@@ -439,7 +439,7 @@ namespace earl {
 
             std::string value(void); // NOTE: needs optimization
             std::vector<std::shared_ptr<Char>> value_as_earlchar(void);
-            std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx);
+            std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx, Expr *expr);
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim);
             std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2);
             void pop(std::shared_ptr<Obj> &idx);

@@ -275,6 +275,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             if (left) {
                 auto tok = lexer.next(); // [
                 Expr *idx = Parser::parse_expr(lexer);
+                if (!idx) {
+                    Err::err_wtok(tok.get());
+                    const std::string msg = "list access requires an index";
+                    throw ParserException(msg);
+                }
                 (void)Parser::parse_expect(lexer, TokenType::Rbracket);
                 left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(idx), tok);
             }
