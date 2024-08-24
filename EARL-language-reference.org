@@ -5,6 +5,22 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+OPTIONS: num:nil
 
+
+
+
+
+
+# ***************************************************************************** #
+# IF YOU CAN SEE THIS TEXT, I SUGGEST OPENING UP THE .html VERSION OF THIS      #
+# FILE THAT IS ALSO IN THE SAME DIRECTORY. IT HAS A MUCH MORE READABLE FORMAT.  #
+# ***************************************************************************** #
+
+
+
+
+
+
+
 _*NOTE for Grammar sections of this document*:_
 
 #+begin_quote
@@ -178,6 +194,7 @@ it hits 1MB in file size.
 
 * Keywords
 
+#+begin_quote
 |-----------------------------------------|
 | let \rightarrow [[Variable Declarations]]   |
 | fn  \rightarrow [[Function Definitions]]    |
@@ -187,7 +204,7 @@ it hits 1MB in file size.
 | for \rightarrow [[For Loops]]               |
 | foreach \rightarrow [[Foreach Loops]]       |
 | in \rightarrow [[For Loops]], [[Foreach Loops]] |
-| to \rightarrow [[For Loops]], [[Foreach Loops]] |
+| to \rightarrow [[For Loops]]                |
 | import \rightarrow [[Imports]]              |
 | almost \rightarrow [[Imports]]              |
 | full \rightarrow [[Imports]]                |
@@ -204,25 +221,38 @@ it hits 1MB in file size.
 | false                                   |
 | none                                    |
 | break                                   |
-
-* Binary Operators
-
-#+begin_quote
-Below is a table of all valid binary operators.
 #+end_quote
 
-| Operator | Description                   |
-|----------+-------------------------------|
-| =+=      | Addition                      |
-| =-=      | Subtraction                   |
-| =*=      | Multiplication                |
-| ///      | Division                      |
-| =%=      | Modulo                        |
-| =`&=     | Bitwise AND (backtick needed) |
-| =`~=     | Bitwise NOT (backtick needed) |
-| =`^=     | Bitwise XOR (backtick needed) |
+* Binary Operations
+
+#+begin_quote
+In the table below, the datatypes section describes which datatypes
+are able to use the binary operations. This does not mean that if an
+entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
+describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
+
+| Symbol | Datatypes                                                                          | Description                      |
+|--------+------------------------------------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                                                      | Adds the elements together       |
+| -      | =int=, =float=                                                                     | Subtracts the elements           |
+| *      | =int=, =float=                                                                     | Multiplies the elements together |
+| ///    | =int=, =float=                                                                     | Divides the elements             |
+| %      | =int=                                                                              | Produces the modulo              |
+| >      | =int=, =float=                                                                     | Greater than                     |
+| <      | =int=, =float=                                                                     | Less than                        |
+| >=     | =int=, =float=                                                                     | Greater than or equal to         |
+| <=     | =int=, =float=                                                                     | Less than or equal to            |
+| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
+| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
+| &&     | =bool=, =option=                                                                   | Logical AND                      |
+| `&     | =int=                                                                              | Bitwise AND (backtick needed)    |
+| `~     | =int=                                                                              | Bitwise NOT (backtick needed)    |
+| `^     | =int=                                                                              | Bitwise XOR (backtick needed)    |
+=||=, =bool=, =option= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
 =`|= Bitwise OR (backtick needed)
+#+end_quote
+
 
 * Variable Declarations
 
@@ -331,6 +361,8 @@ The =when= keyword acts as a /guard/ for the branch. If the pattern matches, onl
 
 And finally, the base case consists of the pattern =_=. If none of the other branches *above* this
 one happens, this one is guaranteed to happen (unless there is a guard).
+
+*Note*: Pattern matching on lists is not yet fully implemented.
 #+end_quote
 
 Grammar TODO
@@ -1174,33 +1206,6 @@ examples of correct usage of it:
 
 =match x { _ -> { print("example"); } }=
 #+end_quote
-
-* Binary Operations
-
-#+begin_quote
-In the table below, the datatypes section describes which datatypes
-are able to use the binary operations. This does not mean that if an
-entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
-describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
-The exception is that you can add a =char= to a =str=.
-#+end_quote
-
-| Symbol | Datatypes                                                                          | Description                      |
-|--------+------------------------------------------------------------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str=                                                      | Adds the elements together       |
-| -      | =int=, =float=                                                                     | Subtracts the elements           |
-| *      | =int=, =float=                                                                     | Multiplies the elements together |
-| ///    | =int=, =float=                                                                     | Divides the elements             |
-| %      | =int=                                                                              | Produces the modulo              |
-| >      | =int=, =float=                                                                     | Greater than                     |
-| <      | =int=, =float=                                                                     | Less than                        |
-| >=     | =int=, =float=                                                                     | Greater than or equal to         |
-| <=     | =int=, =float=                                                                     | Less than or equal to            |
-| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
-| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
-| &&     | =bool=                                                                             | Logical AND                      |
-
-=||=, =bool= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
 * Intrinsics
 
