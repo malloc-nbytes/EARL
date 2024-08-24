@@ -91,6 +91,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
         return std::make_shared<Bool>(!this->value()->eq(other2->value()));
     }
     else {
+        Err::err_wtok(op);
         std::string msg = "invalid operator for binary operation `"+op->lexeme()+"` on option type";
         throw InterpreterException(msg);
     }

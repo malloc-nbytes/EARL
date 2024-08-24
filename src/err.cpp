@@ -23,10 +23,11 @@
 // SOFTWARE.
 
 #include <iostream>
+#include <cassert>
 
+#include "common.hpp"
 #include "err.hpp"
 #include "token.hpp"
-#include "utils.hpp"
 
 void
 Err::err_wtok(Token *tok) {
@@ -49,6 +50,8 @@ Err::err_wtok(Token *tok) {
     std::cerr << std::endl;
 }
 
+static void err_wident(ExprIdent *expr, int s);
+
 void
 Err::err_w2tok(Token *tok1, Token *tok2) {
     std::cerr << tok1->m_fp << ':' << tok1->m_row << ':' << tok1->m_col << ":\n";
@@ -58,7 +61,8 @@ Err::err_w2tok(Token *tok1, Token *tok2) {
 void
 Err::err_wconflict(Token *newtok, Token *orig) {
     err_wtok(newtok);
-    std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << ": <---- conflict\n";
+    if ((flags & __WATCH) == 0)
+        std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << ": <---- conflict\n";
 }
 
 void
@@ -69,154 +73,82 @@ Err::warn(std::string msg, Token *tok) {
 }
 
 static void
-spaces(int s) {
-    return;
-    for (int i = 0; i < s; ++i)
-        std::cout << ' ';
-}
-
-static void err_wident(ExprIdent *expr, int s);
-
-static void
 err_wfloatlit(ExprFloatLit *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wtuple(ExprTuple *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-
-    // if (expr->m_exprs.size() > 0)
-    //     std::cerr << "Ignoring..." << std::endl;
-    // for (auto &e : expr->m_exprs)
-    //     Err::err_wexpr(e.get(), s+2);
 }
 
 static void
 err_wclosure(ExprClosure *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-
-    // if (expr->m_args.size() > 0)
-    //     std::cerr << "Ignoring..." << std::endl;
-    // for (auto &p : expr->m_args)
-    //     Err::err_wtok(p.first.get());
-    // TODO: block
 }
 
 static void
 err_wnone(ExprNone *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wbool(ExprBool *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_warray_access(ExprArrayAccess *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    // std::cerr << "Ignoring..." << std::endl;
-    // Err::err_wexpr(expr->m_left.get(), s+2);
-    // Err::err_wexpr(expr->m_expr.get(), s+2);
 }
 
 static void
 err_wmod_access(ExprModAccess *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    // std::visit([&](auto &&arg) {
-    //     using T = std::decay_t<decltype(arg)>;
-    //     if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-    //         err_wident(arg.get(), s);
-    //     else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-    //         err_wfunccall(arg.get(), s);
-    // }, expr->m_right);
 }
 
 static void
 err_wget(ExprGet *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    // std::visit([&](auto &&arg) {
-    //     using T = std::decay_t<decltype(arg)>;
-    //     if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
-    //         err_wident(arg.get(), s);
-    //     else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
-    //         err_wfunccall(arg.get(), s);
-    // }, expr->m_right);
 }
 
 static void
 err_wslice(ExprSlice *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-    // if (expr->m_start.has_value()) {
-    //     std::cerr << "Ignoring..." << std::endl;
-    //     Err::err_wexpr(expr->m_start.value().get(), s+2);
-    // }
-    // if (expr->m_end.has_value()) {
-    //     std::cerr << "Ignoring..." << std::endl;
-    //     Err::err_wexpr(expr->m_end.value().get(), s+2);
-    // }
 }
 
 static void
 err_wrange(ExprRange *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-
-    // std::cerr << "Ignoring..." << std::endl;
-    // Err::err_wexpr(expr->m_start.get(), s+2);
-    // Err::err_wexpr(expr->m_end.get(), s+2);
 }
 
 static void
 err_wlistlit(ExprListLit *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
-
-    // std::cerr << "Ignoring..." << std::endl;
-    // for (auto &e : expr->m_elems)
-    //     Err::err_wexpr(e.get(), s+2);
 }
 
 static void
 err_wfunccall(ExprFuncCall *expr, int s) {
-    spaces(s);
-    Err::err_wexpr(expr->m_left.get(), s+2);
-    // std::cerr << "Ignoring..." << std::endl;
-    // for (auto &e : expr->m_params)
-    //     Err::err_wexpr(e.get(), s+2);
+    Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wcharlit(ExprCharLit *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wstrlit(ExprStrLit *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wintlit(ExprIntLit *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wident(ExprIdent *expr, int s) {
-    spaces(s);
     Err::err_wtok(expr->m_tok.get());
 }
 

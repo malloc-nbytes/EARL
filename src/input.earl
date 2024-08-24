@@ -1,3 +1,4 @@
 module Main
 
-println(len(3));
+let x = none;
+x = 2;

@@ -25,6 +25,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

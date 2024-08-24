@@ -1142,7 +1142,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 ER
 eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     ER lhs = Interpreter::eval_expr(expr->m_lhs.get(), ctx, ref);
-    auto lhs_value = unpack_ER(lhs, ctx, true); // POSSIBLE BREAK, WAS FALSE
+    auto lhs_value = unpack_ER(lhs, ctx, true);
 
     // Short-circuit evaluation for logical AND (&&)
     if (expr->m_op->type() == TokenType::Double_Ampersand) {
