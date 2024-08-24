@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.3.7] - 2024-24-8
 
+### Fixed
+- Fixed segfaulting on parser errors when hot reloading.
+
 ### Changed
 - All EARL values now have an appropriate to_cxxstring.
 - Greatly simplified __intrinsic_print.
