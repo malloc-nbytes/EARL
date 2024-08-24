@@ -1,25 +1,3 @@
 module Token
 
-@pub enum Keyword {
-    None = "",
-    Module = "MODULE",
-    Begin = "BEGIN",
-    End = "END",
-    Functions = "FUNCTIONS",
-    Name = "NAME",
-    Parameter = "PARAMETER",
-    Returns = "RETURNS",
-    Description = "DESCRIPTION",
-    Classes = "CLASSES",
-    Enums = "ENUMS",
-    Variables = "VARIABLES",
-}
-
-@pub enum TokenType {
-    Documentation = 0,
-    Keyword = Keyword.Module,
-}
-
-println(TokenType.Keyword);
-
 
