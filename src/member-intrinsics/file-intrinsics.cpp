@@ -22,11 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <unordered_map>
-#include <fstream>
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -34,7 +31,6 @@
 #include "ast.hpp"
 #include "earl.hpp"
 #include "utils.hpp"
-#include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_file_member_functions = {
@@ -48,9 +44,10 @@ Intrinsics::intrinsic_file_member_functions = {
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                  std::shared_ptr<Ctx> &ctx) {
+                                  std::shared_ptr<Ctx> &ctx,
+                                  Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "read");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "read", expr);
     auto f = dynamic_cast<earl::value::File *>(obj.get());
     return f->read();
 }
@@ -58,9 +55,10 @@ Intrinsics::intrinsic_member_read(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &param,
-                                   std::shared_ptr<Ctx> &ctx) {
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(param, 1, "write");
+    __INTR_ARGS_MUSTBE_SIZE(param, 1, "write", expr);
     auto f = dynamic_cast<earl::value::File *>(obj.get());
     f->write(param[0]);
     return nullptr;
@@ -69,7 +67,8 @@ Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj,
                                         std::vector<std::shared_ptr<earl::value::Obj>> &param,
-                                        std::shared_ptr<Ctx> &ctx) {
+                                        std::shared_ptr<Ctx> &ctx,
+                                        Expr *expr) {
     (void)ctx;
     (void)obj;
     (void)param;
@@ -79,9 +78,10 @@ Intrinsics::intrinsic_member_writelines(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                  std::shared_ptr<Ctx> &ctx) {
+                                  std::shared_ptr<Ctx> &ctx,
+                                  Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "dump");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "dump", expr);
     auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->dump();
     return nullptr;
@@ -90,9 +90,10 @@ Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                                   std::shared_ptr<Ctx> &ctx) {
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "close");
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "close", expr);
     auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->close();
     return nullptr;

@@ -22,9 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <unordered_map>
 
 #include "intrinsics.hpp"
@@ -32,8 +30,6 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
-#include "utils.hpp"
-#include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_dict_member_functions = {
@@ -45,34 +41,36 @@ Intrinsics::intrinsic_dict_member_functions = {
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_insert(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                    std::shared_ptr<Ctx> &ctx) {
-    __INTR_ARGS_MUSTBE_SIZE(params, 2, "insert");
+                                    std::shared_ptr<Ctx> &ctx,
+                                    Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "insert", expr);
     switch (obj->type()) {
     case earl::value::Type::DictInt: {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert", expr);
         int key = dynamic_cast<earl::value::Int *>(params[0].get())->value();
         dict->insert(key, params[1]);
     } break;
     case earl::value::Type::DictStr: {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert", expr);
         std::string key = dynamic_cast<earl::value::Str *>(params[0].get())->value();
         dict->insert(key, params[1]);
     } break;
     case earl::value::Type::DictChar: {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert", expr);
         char key = dynamic_cast<earl::value::Char *>(params[0].get())->value();
         dict->insert(key, params[1]);
     } break;
     case earl::value::Type::DictFloat: {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], dict->ktype(), 1, "insert", expr);
         double key = dynamic_cast<earl::value::Float *>(params[0].get())->value();
         dict->insert(key, params[1]);
     } break;
     default: {
+        Err::err_wexpr(expr);
         const std::string &msg = "cannot insert value of type `"
             +earl::value::type_to_str(obj->type())
             +"` as the key being inserted into a dictionary must be the same dictionary key type";
@@ -85,34 +83,36 @@ Intrinsics::intrinsic_member_insert(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_has_key(std::shared_ptr<earl::value::Obj> obj,
                                      std::vector<std::shared_ptr<earl::value::Obj>> &key,
-                                     std::shared_ptr<Ctx> &ctx) {
-    __INTR_ARGS_MUSTBE_SIZE(key, 1, "has_key");
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(key, 1, "has_key", expr);
     switch (obj->type()) {
     case earl::value::Type::DictInt: {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key", expr);
         int k = dynamic_cast<earl::value::Int *>(key[0].get())->value();
         return std::make_shared<earl::value::Bool>(dict->has_key(k));
     } break;
     case earl::value::Type::DictStr: {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key", expr);
         std::string k = dynamic_cast<earl::value::Str *>(key[0].get())->value();
         return std::make_shared<earl::value::Bool>(dict->has_key(k));
     } break;
     case earl::value::Type::DictChar: {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key", expr);
         char k = dynamic_cast<earl::value::Char *>(key[0].get())->value();
         return std::make_shared<earl::value::Bool>(dict->has_key(k));
     } break;
     case earl::value::Type::DictFloat: {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(obj.get());
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key");
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(key[0], dict->ktype(), 1, "has_key", expr);
         double k = dynamic_cast<earl::value::Float *>(key[0].get())->value();
         return std::make_shared<earl::value::Bool>(dict->has_key(k));
     } break;
     default: {
+        Err::err_wexpr(expr);
         const std::string &msg = "cannot check if a key exists in a dictionary of type `"
             +earl::value::type_to_str(obj->type())
             +"` as the key being checked must be the same dictionary key type";
@@ -124,8 +124,9 @@ Intrinsics::intrinsic_member_has_key(std::shared_ptr<earl::value::Obj> obj,
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
                             std::vector<std::shared_ptr<earl::value::Obj>> &value,
-                            std::shared_ptr<Ctx> &ctx) {
-    __INTR_ARGS_MUSTBE_SIZE(value, 1, "has_value");
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(value, 1, "has_value", expr);
     switch (obj->type()) {
     case earl::value::Type::DictInt: {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(obj.get());
@@ -144,6 +145,7 @@ Intrinsics::intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
         return std::make_shared<earl::value::Bool>(dict->has_value(value[0]));
     } break;
     default: {
+        Err::err_wexpr(expr);
         const std::string &msg = "cannot check if a value exists in a dictionary of type `"
             +earl::value::type_to_str(obj->type())
             +"` as the value being checked must be the same dictionary value type";

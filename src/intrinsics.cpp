@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <unordered_map>
@@ -30,12 +29,9 @@
 #include <filesystem>
 
 #include "intrinsics.hpp"
-#include "interpreter.hpp"
 #include "err.hpp"
 #include "ctx.hpp"
-#include "ast.hpp"
 #include "earl.hpp"
-#include "utils.hpp"
 #include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
@@ -105,8 +101,9 @@ Intrinsics::intrinsic_member_functions = {
 std::shared_ptr<earl::value::Obj>
 Intrinsics::call(const std::string &id,
                  std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                 std::shared_ptr<Ctx> &ctx) {
-    return intrinsic_functions.at(id)(params, ctx);
+                 std::shared_ptr<Ctx> &ctx,
+                 Expr *expr) {
+    return intrinsic_functions.at(id)(params, ctx, expr);
 }
 
 bool
@@ -142,38 +139,41 @@ Intrinsics::call_member(const std::string &id,
                         earl::value::Type type,
                         std::shared_ptr<earl::value::Obj> accessor,
                         std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                        std::shared_ptr<Ctx> &ctx) {
+                        std::shared_ptr<Ctx> &ctx,
+                        Expr *expr) {
 
     switch (type) {
     case earl::value::Type::Int: assert(false);
-    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::Bool: assert(false);
-    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx);
-    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::DictInt:
     case earl::value::Type::DictStr:
     case earl::value::Type::DictChar:
-    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx);
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx, expr);
     default: assert(false);
     }
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_str(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                          std::shared_ptr<Ctx> &ctx) {
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "str");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "str", expr);
     return std::make_shared<earl::value::Str>(params[0]->to_cxxstring());
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                          std::shared_ptr<Ctx> &ctx) {
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "int");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "int", expr);
     {
         std::vector<earl::value::Type> tys = {
             earl::value::Type::Int,
@@ -181,7 +181,7 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
             earl::value::Type::Str,
             earl::value::Type::Bool,
         };
-        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "int");
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "int", expr);
     }
     switch (params[0]->type()) {
     case earl::value::Type::Int: {
@@ -205,6 +205,7 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
         return std::make_shared<earl::value::Int>(static_cast<int>(b));
     } break;
     default: {
+        Err::err_wexpr(expr);
         std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type int";
         throw InterpreterException(msg);
     } break;
@@ -214,16 +215,17 @@ Intrinsics::intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                            std::shared_ptr<Ctx> &ctx) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "float");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "float", expr);
     {
         std::vector<earl::value::Type> tys = {
             earl::value::Type::Int,
             earl::value::Type::Float,
             earl::value::Type::Str,
         };
-        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "float");
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "float", expr);
     }
     switch (params[0]->type()) {
     case earl::value::Type::Int: {
@@ -239,6 +241,7 @@ Intrinsics::intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &para
         return std::make_shared<earl::value::Float>(std::stof(s));
     } break;
     default: {
+        Err::err_wexpr(expr);
         std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type float";
         throw InterpreterException(msg);
     } break;
@@ -248,16 +251,17 @@ Intrinsics::intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &para
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "bool");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "bool", expr);
     {
         std::vector<earl::value::Type> tys = {
             earl::value::Type::Int,
             earl::value::Type::Float,
             earl::value::Type::Str,
         };
-        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "bool");
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], tys, 1, "bool", expr);
     }
     switch (params[0]->type()) {
     case earl::value::Type::Int: {
@@ -274,10 +278,12 @@ Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &param
             return std::make_shared<earl::value::Bool>(true);
         else if (s == COMMON_EARLKW_FALSE)
             return std::make_shared<earl::value::Bool>(false);
+        Err::err_wexpr(expr);
         std::string msg = "cannot convert str `"+s+"` to type bool";
         throw InterpreterException(msg);
     } break;
     default: {
+        Err::err_wexpr(expr);
         std::string msg = "cannot convert type `"+earl::value::type_to_str(params[0]->type())+"` to type bool";
         throw InterpreterException(msg);
     } break;
@@ -286,21 +292,24 @@ Intrinsics::intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_tuple(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                            std::shared_ptr<Ctx> &ctx) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     (void)ctx;
     return std::make_shared<earl::value::Tuple>(params);
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
     return std::make_shared<earl::value::List>(params);
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
     (void)params;
     return std::make_shared<earl::value::Void>();
@@ -308,10 +317,11 @@ Intrinsics::intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "Dict");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::TypeKW, 1, "Dict");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "Dict", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::TypeKW, 1, "Dict", expr);
 
     auto value = dynamic_cast<earl::value::TypeKW *>(params[0].get());
     earl::value::Type ty = value->ty();
@@ -322,6 +332,7 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
     case earl::value::Type::Char: return std::make_shared<earl::value::Dict<char>>(ty);
     case earl::value::Type::Float: return std::make_shared<earl::value::Dict<float>>(ty);
     default: {
+        Err::err_wexpr(expr);
         const std::string msg = "cannot create an empty dictionary of type `"+earl::value::type_to_str(ty)+"` (unsupported)";
         throw InterpreterException(msg);
     }
@@ -333,12 +344,13 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                          std::shared_ptr<Ctx> &ctx) {
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "len");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "len", expr);
     {
         std::vector<earl::value::Type> lst = {earl::value::Type::List, earl::value::Type::Str, earl::value::Type::Tuple};
-        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], lst, 1, "len");
+        __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(params[0], lst, 1, "len", expr);
     }
     auto &item = params[0];
     if (item->type() == earl::value::Type::List) {
@@ -359,9 +371,10 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 0, "argv");
+    __INTR_ARGS_MUSTBE_SIZE(params, 0, "argv", expr);
     std::vector<std::shared_ptr<earl::value::Obj>> args = {};
     for (size_t i = 0; i < earl_argv.size(); ++i)
         args.push_back(std::make_shared<earl::value::Str>(earl_argv.at(i)));
@@ -370,13 +383,15 @@ Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                         std::shared_ptr<Ctx> &ctx) {
+                                         std::shared_ptr<Ctx> &ctx,
+                                         Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_mkdir__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_mkdir__", expr);
     auto obj = params[0];
     std::string path = obj->to_cxxstring();
     if (!std::filesystem::exists(path))
         if (!std::filesystem::create_directory(path)) {
+            Err::err_wexpr(expr);
             std::string msg = "could not create directory `"+path+"`";
             throw InterpreterException(msg);
         }
@@ -385,11 +400,12 @@ Intrinsics::intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                         std::shared_ptr<Ctx> &ctx) {
+                                         std::shared_ptr<Ctx> &ctx,
+                                         Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_move__");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_move__");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "__internal_move__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "__internal_move__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_move__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "__internal_move__", expr);
 
     auto path_obj = params[0];
     auto to_obj = params[1];
@@ -400,6 +416,7 @@ Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value:
         std::filesystem::rename(path_from, path_to);
     }
     else {
+        Err::err_wexpr(expr);
         std::string msg = "File `"+path_from+"` does not exist";
         throw InterpreterException(msg);
     }
@@ -409,9 +426,10 @@ Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value:
  
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                      std::shared_ptr<Ctx> &ctx) {
+                                      std::shared_ptr<Ctx> &ctx,
+                                      Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_ls__");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_ls__", expr);
 
     auto obj = params[0];
     std::string path = obj->to_cxxstring();
@@ -424,6 +442,7 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
             items.push_back(std::make_shared<earl::value::Str>(entry.path()));
     }
     catch (const std::filesystem::filesystem_error &e) {
+        Err::err_wexpr(expr);
         const char *err = e.what();
         std::string msg = "could not list directory `"+path+"`:"+err;
         throw InterpreterException(msg);
@@ -436,27 +455,30 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "type");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "type", expr);
     return std::make_shared<earl::value::Str>(earl::value::type_to_str(params[0]->type()));
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_typeof(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                             std::shared_ptr<Ctx> &ctx) {
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "typeof");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "typeof", expr);
     return std::make_shared<earl::value::TypeKW>(params[0]->type());
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                                    std::shared_ptr<Ctx> &ctx) {
+                                    std::shared_ptr<Ctx> &ctx,
+                                    Expr *expr) {
     std::cout << "[EARL] UNIMPLEMENTED";
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_println(params, ctx);
+        Intrinsics::intrinsic_println(params, ctx, expr);
     }
     exit(1);
     return nullptr; // unreachable
@@ -464,25 +486,27 @@ Intrinsics::intrinsic_unimplemented(std::vector<std::shared_ptr<earl::value::Obj
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_exit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
     if (params.size() == 0)
         exit(0);
     else {
-        __INTR_ARGS_MUSTBE_SIZE(params, 1, "exit");
-        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "exit");
+        __INTR_ARGS_MUSTBE_SIZE(params, 1, "exit", expr);
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "exit", expr);
         exit(dynamic_cast<earl::value::Int *>(params[0].get())->value());
     }
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_panic(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                            std::shared_ptr<Ctx> &ctx) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     std::cout << "[EARL] PANIC";
 
     if (params.size() != 0) {
         std::cout << ": ";
-        Intrinsics::intrinsic_println(params, ctx);
+        Intrinsics::intrinsic_println(params, ctx, expr);
     }
 
     exit(1);
@@ -492,11 +516,13 @@ Intrinsics::intrinsic_panic(std::vector<std::shared_ptr<earl::value::Obj>> &para
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                             std::shared_ptr<Ctx> &ctx) {
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr) {
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i) {
         earl::value::Obj *param = params.at(i).get();
         if (!param->boolean()) {
+            Err::err_wexpr(expr);
             std::string msg = "assertion failure (expression="+std::to_string(i+1)+") (earl::value::Type="+std::to_string((int)param->type())+")";
             throw InterpreterException(msg);
         }
@@ -513,7 +539,8 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                            std::shared_ptr<Ctx> &ctx) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
@@ -522,7 +549,8 @@ Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &para
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                              std::shared_ptr<Ctx> &ctx) {
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr) {
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);
@@ -532,10 +560,11 @@ Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &pa
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                               std::shared_ptr<Ctx> &ctx) {
+                               std::shared_ptr<Ctx> &ctx,
+                               Expr *expr) {
     (void)ctx;
-    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln", expr);
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln", expr);
     std::ostream *stream = nullptr;
     if (params[0]->type() == earl::value::Type::Int) {
         auto *st = dynamic_cast<earl::value::Int *>(params[0].get());
@@ -564,10 +593,11 @@ Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &p
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                             std::shared_ptr<Ctx> &ctx) {
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr) {
     (void)ctx;
-    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln");
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln");
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln", expr);
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln", expr);
     std::ostream *stream = nullptr;
     if (params[0]->type() == earl::value::Type::Int) {
         auto *st = dynamic_cast<earl::value::Int *>(params[0].get());
@@ -595,9 +625,10 @@ Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &par
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                            std::shared_ptr<Ctx> &ctx) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     (void)ctx;
-    intrinsic_print(params, ctx);
+    intrinsic_print(params, ctx, expr);
     std::string in = "";
     std::getline(std::cin, in);
     return std::make_shared<earl::value::Str>(in);
@@ -605,19 +636,21 @@ Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &para
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_some(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 1, "some");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "some", expr);
     return std::make_shared<earl::value::Option>(params[0]);
 }
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                           std::shared_ptr<Ctx> &ctx) {
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(params, 2, "open");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "open");
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "open");
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "open", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "open", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[1], earl::value::Type::Str, 2, "open", expr);
 
     auto fp = dynamic_cast<earl::value::Str *>(params[0].get());
     auto mode = dynamic_cast<earl::value::Str *>(params[1].get());
@@ -630,6 +663,7 @@ Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &param
         case 'w': om |= std::ios::out; break;
         case 'b': om |= std::ios::binary; break;
         default: {
+            Err::err_wexpr(expr);
             std::string msg = "invalid mode `"+std::to_string(c)+"` for file handler, must be either r|w|b";
             throw InterpreterException(msg);
         } break;
@@ -639,6 +673,7 @@ Intrinsics::intrinsic_open(std::vector<std::shared_ptr<earl::value::Obj>> &param
     stream.open(fp->value(), om);
 
     if (!stream) {
+        Err::err_wexpr(expr);
         std::string msg = "file `"+fp->value()+"` could not be found";
         throw InterpreterException(msg);
     }

@@ -494,7 +494,7 @@ Repl::run(void) {
                     if (val) {
                         std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
                         green();
-                        (void)Intrinsics::intrinsic_print(params, ctx);
+                        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
                         std::cout << " -> ";
                         gray();
                         std::cout << earl::value::type_to_str(val->type()) << std::endl;
