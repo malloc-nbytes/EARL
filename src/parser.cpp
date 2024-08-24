@@ -361,7 +361,8 @@ parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Asterisk
                    || cur->type() == TokenType::Forwardslash
-                   || cur->type() == TokenType::Percent)) {
+                   || cur->type() == TokenType::Percent
+                   || cur->type() == TokenType::Double_Asterisk)) {
         std::shared_ptr<Token> op = lexer.next();
         Expr *rhs = parse_primary_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),

@@ -23,6 +23,7 @@
 // SOFTWARE.
 
 #include <cassert>
+#include <cmath>
 #include <memory>
 
 #include "earl.hpp"
@@ -88,6 +89,16 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             throw InterpreterException(msg);
         }
         return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Double_Asterisk: {
+        if (other->type() == earl::value::Type::Float) {
+            auto _other = dynamic_cast<earl::value::Float *>(other.get());
+            float p = std::pow(static_cast<float>(m_value), static_cast<float>(_other->value()));
+            return std::make_shared<earl::value::Float>(p);
+        }
+        auto _other = dynamic_cast<earl::value::Int *>(other.get());
+        int p = static_cast<int>(std::pow(static_cast<float>(m_value), static_cast<float>(_other->value())));
+        return std::make_shared<earl::value::Int>(p);
     } break;
     case TokenType::Lessthan: {
         return other->type() == Type::Float ?

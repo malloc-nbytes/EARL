@@ -84,6 +84,7 @@ enum class ExprTermType {
     Float_Literal,
     Dict,
     FStr,
+    Power,
 };
 
 struct StmtDef;

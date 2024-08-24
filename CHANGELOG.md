@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.3.7] - 2024-24-8
+## [0.3.8] - 2024-24-8
+
+### Added
+- Power operator `**`.
 
 ### Fixed
 - Fixed segfaulting on parser errors when hot reloading.
