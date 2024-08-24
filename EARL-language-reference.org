@@ -238,6 +238,7 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 | *      | =int=, =float=                                                                     | Multiplies the elements together |
 | ///    | =int=, =float=                                                                     | Divides the elements             |
 | %      | =int=                                                                              | Produces the modulo              |
+| **     | =int=, =float=                                                                     | Produces the power               |
 | >      | =int=, =float=                                                                     | Greater than                     |
 | <      | =int=, =float=                                                                     | Less than                        |
 | >=     | =int=, =float=                                                                     | Greater than or equal to         |
