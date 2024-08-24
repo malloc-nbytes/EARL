@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - All EARL values now have an appropriate to_cxxstring.
 - Greatly simplified __intrinsic_print.
+- Better closure printing.
+- Intrinsics now report better error messages.
 
 ## [0.3.6] - 2024-23-8
 
