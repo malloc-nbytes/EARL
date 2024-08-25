@@ -370,6 +370,8 @@ namespace earl {
 
             std::shared_ptr<Obj> back(void);
 
+            std::shared_ptr<Bool> contains(std::shared_ptr<earl::value::Obj> &value);
+
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
@@ -416,6 +418,7 @@ namespace earl {
             std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Tuple> rev(void);
+            std::shared_ptr<Bool> contains(std::shared_ptr<Obj> &value);
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;
@@ -452,6 +455,7 @@ namespace earl {
             std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void trim(void);
+            std::shared_ptr<Bool> contains(std::shared_ptr<Char> &value);
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;

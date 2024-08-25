@@ -1,7 +1,2 @@
 module Token
 
-class Test [] {
-}
-
-let t = Test();
-

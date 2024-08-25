@@ -127,6 +127,14 @@ List::rev(void) {
     return lst;
 }
 
+std::shared_ptr<Bool>
+List::contains(std::shared_ptr<earl::value::Obj> &value) {
+    for (size_t i = 0; i < m_value.size(); ++i)
+        if (m_value.at(i)->eq(value))
+            return std::make_shared<Bool>(true);
+    return std::make_shared<Bool>(false);
+}
+
 void
 List::pop(std::shared_ptr<Obj> &idx) {
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());

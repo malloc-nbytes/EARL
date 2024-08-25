@@ -93,6 +93,14 @@ Tuple::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     }
 }
 
+std::shared_ptr<Bool>
+Tuple::contains(std::shared_ptr<Obj> &value) {
+    for (size_t i = 0; i < m_values.size(); ++i)
+        if (m_values.at(i)->eq(value))
+            return std::make_shared<Bool>(true);
+    return std::make_shared<Bool>(false);
+}
+
 std::shared_ptr<Tuple>
 Tuple::rev(void) {
     auto tuple = std::make_shared<Tuple>();
