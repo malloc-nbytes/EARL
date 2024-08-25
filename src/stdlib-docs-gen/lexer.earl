@@ -1,0 +1,83 @@
+module Lexer
+
+import "std/char.earl"
+
+@pub enum TokenType {
+    Ident=0,
+    StrLit,
+    IntLit,
+    Hash,
+    LParen,
+    RParen,
+    LCurly,
+    RCurly,
+    LBracket,
+    RBracket,
+    Plus,
+    Minus,
+    Asterisk,
+    ForwardSlash,
+}
+
+@pub class Token [lx, ty, r, c, fp] {
+    @pub let lx = lx;
+    @pub let ty = ty;
+    @pub let r = r;
+    @pub let c = c;
+    @pub let fp = fp;
+}
+
+@pub class T [keywords, comm, mtlcomm_start, mtlcomm_end, ops] {
+    @pub let tokens = [];
+    let kwds, comm, ops = (keywords, comm, ops);
+    let mtlcomm_start, mtlcomm_end = (mtlcomm_start, mtlcomm_end);
+
+    let default_ops = {
+        "+": TokenType.Plus,
+        "-": TokenType.Minus,
+        "*": TokenType.Asterisk,
+        "/": TokenType.ForwardSlash
+    };
+
+    fn consume_until(s, pred) {
+        let buf, i = ("", 0);
+        while i < len(buf) && pred(i) {
+            buf += s[i];
+        }
+        return (buf, i);
+    }
+
+    @pub fn lex(src) {
+        for i in 0 to len(src) {
+            let c = src[i];
+            if Char::isalpha(c) {
+                let lx, dx = consume_until(src, |c| { return !Char::isalpha(c) && c != '_'; });
+                println("consumed: ", lx);
+                i += dx;
+            }
+        }
+    }
+
+    @pub fn next() {
+        if this.sz() == 0 {
+            return none;
+        }
+        let t = this.tokens[0];
+        this.tokens.pop(0);
+        return some(t);
+    }
+
+    @pub fn peek(pk) {
+        if this.sz() == 0 {
+            return none;
+        }
+        assert(pk >= 0 && pk < this.sz());
+        return some(this.tokens[pk]);
+    }
+
+    @pub fn sz() {
+        return len(this.tokens);
+    }
+}
+
+
