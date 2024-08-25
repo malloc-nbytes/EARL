@@ -63,7 +63,7 @@ Intrinsics::intrinsic_member_split(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(delim, 1, "split", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(delim[0], earl::value::Type::Str, 1, "split", expr);
     auto str = dynamic_cast<earl::value::Str *>(obj.get());
-    return str->split(delim[0]);
+    return str->split(delim[0], expr);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -75,7 +75,7 @@ Intrinsics::intrinsic_member_substr(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(idxs, 2, "substr", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(idxs[0], earl::value::Type::Int, 1, "substr", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(idxs[1], earl::value::Type::Int, 2, "substr", expr);
-    return dynamic_cast<earl::value::Str *>(obj.get())->substr(idxs[0], idxs[1]);
+    return dynamic_cast<earl::value::Str *>(obj.get())->substr(idxs[0], idxs[1], expr);
 }
 
 std::shared_ptr<earl::value::Obj>

@@ -28,7 +28,6 @@
 
 #include "earl.hpp"
 #include "err.hpp"
-#include "utils.hpp"
 
 using namespace earl::value;
 
@@ -98,7 +97,7 @@ std::shared_ptr<Tuple>
 Tuple::rev(void) {
     auto tuple = std::make_shared<Tuple>();
     for (int i = m_values.size()-1; i >= 0; --i)
-        tuple->m_values.push_back(m_values[i]->copy());
+        tuple->m_values.push_back(m_values.at(i)->copy());
     return tuple;
 }
 
@@ -147,6 +146,7 @@ Tuple::boolean(void) {
 void
 Tuple::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
+    Err::err_wstmt(stmt);
     std::string msg = "unable to mutate value of type `tuple` as it is immutable";
     throw InterpreterException(msg);
 }

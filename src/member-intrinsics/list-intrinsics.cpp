@@ -141,7 +141,7 @@ Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->append(values);
     else
-        dynamic_cast<earl::value::Str *>(obj.get())->append(values);
+        dynamic_cast<earl::value::Str *>(obj.get())->append(values, expr);
     return nullptr;
 }
 
@@ -156,6 +156,6 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
     if (obj->type() == earl::value::Type::List)
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else
-        dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0]);
+        dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0], expr);
     return nullptr;
 }

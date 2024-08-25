@@ -85,8 +85,9 @@ Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
 
 // TODO: Adhere to new string optimization
 std::shared_ptr<List>
-Str::split(std::shared_ptr<Obj> &delim) {
+Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
     if (delim->type() != Type::Str) {
+        Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `split` with non-str type";
         throw InterpreterException(msg);
     }
@@ -109,8 +110,9 @@ Str::split(std::shared_ptr<Obj> &delim) {
 }
 
 std::shared_ptr<Str>
-Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
+Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
+        Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `substr` with non-int types";
         throw InterpreterException(msg);
     }
@@ -130,13 +132,13 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2) {
 }
 
 void
-Str::pop(std::shared_ptr<Obj> &idx) {
+Str::pop(std::shared_ptr<Obj> &idx, Expr *expr) {
+    (void)expr;
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
     int I = idx1->value();
 
-    if (m_value.at(I) == '\0') {
+    if (m_value.at(I) == '\0')
         m_chars.erase(m_chars.begin() + I);
-    }
     m_value.erase(m_value.begin() + I);
 }
 
@@ -190,9 +192,10 @@ Str::append(std::shared_ptr<Obj> c) {
 }
 
 void
-Str::append(std::vector<std::shared_ptr<Obj>> &values) {
+Str::append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr) {
     for (size_t i = 0; i < values.size(); ++i) {
         if (!type_is_compatable(this, values[i].get())) {
+            Err::err_wexpr(expr);
             const std::string msg = "type str is incompatible with type `"+earl::value::type_to_str(values.at(i)->type())+"`";
             throw InterpreterException(msg);
         }
@@ -331,8 +334,6 @@ Str::to_cxxstring(void) {
 // CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    // std::vector<std::shared_ptr<Char>> prev = {};
-    // std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Char> k) {prev.push_back(k);});
     std::string prev = m_value;
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
