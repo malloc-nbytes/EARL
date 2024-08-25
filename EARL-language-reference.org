@@ -1482,6 +1482,14 @@ foreach(cl: closure) -> unit
 Calls the closure =cl= on each element.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+contains(val: any) -> bool
+#+end_example
+
+Checks to see if =val= is in the =list=.
+#+end_quote
+
 ** =str= Implements
 
 #+begin_quote
@@ -1531,6 +1539,14 @@ split(delim: str) -> list
 #+end_example
 
 Split a string by the delimiter =delim=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+contains(ch: c) -> bool
+#+end_example
+
+Checks to see if =val= is in the =str=.
 #+end_quote
 
 ** =dictionary= Implements
@@ -1584,6 +1600,14 @@ foreach(cl: closure) -> unit
 #+end_example
 
 Calls the closure =cl= on each element.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+contains(val: any) -> bool
+#+end_example
+
+Checks to see if =val= is in the =tuple=.
 #+end_quote
 
 ** =char= Implements
