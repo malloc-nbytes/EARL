@@ -1,3 +1,6 @@
 module Token
 
+let s = "hello";
+s.append('a');
 
+println(s);

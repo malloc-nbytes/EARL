@@ -192,8 +192,10 @@ Str::append(std::shared_ptr<Obj> c) {
 void
 Str::append(std::vector<std::shared_ptr<Obj>> &values) {
     for (size_t i = 0; i < values.size(); ++i) {
-        if (!type_is_compatable(this, values[i].get()))
-            assert(false && "cannot binop (fix this message)");
+        if (!type_is_compatable(this, values[i].get())) {
+            const std::string msg = "type str is incompatible with type `"+earl::value::type_to_str(values.at(i)->type())+"`";
+            throw InterpreterException(msg);
+        }
         this->append(values[i]);
     }
 }

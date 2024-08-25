@@ -39,10 +39,11 @@ import "std/char.earl"
         "/": TokenType.ForwardSlash
     };
 
-    fn consume_until(s, pred) {
+    fn consume_while(s, pred) {
         let buf, i = ("", 0);
-        while i < len(buf) && pred(i) {
-            buf += s[i];
+        while i < len(s) && !pred(s[i]) {
+            buf += str(s[i]);
+            i += 1;
         }
         return (buf, i);
     }
@@ -51,7 +52,7 @@ import "std/char.earl"
         for i in 0 to len(src) {
             let c = src[i];
             if Char::isalpha(c) {
-                let lx, dx = consume_until(src, |c| { return !Char::isalpha(c) && c != '_'; });
+                let lx, dx = consume_while(src, |c| { return Char::isalpha(c) || c == '_'; });
                 println("consumed: ", lx);
                 i += dx;
             }

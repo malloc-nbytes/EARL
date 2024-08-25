@@ -1,0 +1,17 @@
+module Main
+
+import "std/io.earl"
+
+import "lexer.earl"
+
+let comment, multicom_st, multicom_end = ("#", "/*", "*/");
+let keywords = ["int", "void"];
+let ops = Dict(str);
+
+let src = IO::file_to_str("./std-docs-gen.earl");
+
+let lexer = Lexer::T(keywords, comment, multicom_st, multicom_end, ops);
+
+lexer.lex(src);
+
+
