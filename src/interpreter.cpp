@@ -474,20 +474,16 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }
-            if (!Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
-                Err::err_wtok(perp->errtok);
-                std::string msg = "type `" + earl::value::type_to_str(perp->lhs_getter_accessor->type())
-                    + "` does not implement the member intrinsic `" + er.id + "`";
-                throw InterpreterException(msg);
+            if (Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
+                Expr *expr = nullptr;
+                if (er.extra) expr = static_cast<Expr *>(er.extra);
+                return Intrinsics::call_member(er.id,
+                        perp->lhs_getter_accessor->type(),
+                        perp->lhs_getter_accessor,
+                        params,
+                        ctx,
+                        expr);
             }
-            Expr *expr = nullptr;
-            if (er.extra) expr = static_cast<Expr *>(er.extra);
-            return Intrinsics::call_member(er.id,
-                                           perp->lhs_getter_accessor->type(),
-                                           perp->lhs_getter_accessor,
-                                           params,
-                                           ctx,
-                                           expr);
         }
 
         if (ctx->type() == CtxType::Class) {
