@@ -41,20 +41,46 @@ import "std/char.earl"
 
     fn consume_while(s, pred) {
         let buf, i = ("", 0);
-        while i < len(s) && !pred(s[i]) {
+        while i < len(s) && pred(s[i]) {
             buf += str(s[i]);
             i += 1;
         }
         return (buf, i);
     }
 
-    @pub fn lex(src) {
+    @pub fn lex(src, fp) {
+        let r, c = (1, 0);
         for i in 0 to len(src) {
-            let c = src[i];
-            if Char::isalpha(c) {
-                let lx, dx = consume_while(src, |c| { return Char::isalpha(c) || c == '_'; });
-                println("consumed: ", lx);
+            if src[i] == '\n' {
+                r += 1;
+                c = 0;
+            }
+            else if Char::isalpha(src[i]) {
+                let lx, dx = consume_while(src.substr(i, len(src)), |c| {
+                    return Char::isalpha(c) || c == '_';
+                });
+                let t = some(Token(lx, TokenType.Ident, r, c, fp));
+                this.tokens.append(t);
                 i += dx;
+                c += dx;
+            }
+            else if Char::isnum(src[i]) {
+                let lx, dx = consume_while(src.substr(i, len(src)), |c| {
+                    return Char::isnum(c);
+                });
+                let t = some(Token(lx, TokenType.IntLit, r, c, fp));
+                this.tokens.append(t);
+                i += dx;
+                c += dx;
+            }
+            else if src[i] == '"' {
+                let lx, dx = consume_while(src.substr(i+1, len(src)), |c| {
+                    return c != '"';
+                });
+                let t = some(Token(lx, TokenType.StrLit, r, c, fp));
+                this.tokens.append(t);
+                i += dx+1;
+                c += dx+1;
             }
         }
     }
