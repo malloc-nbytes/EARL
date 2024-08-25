@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.3.8] - 2024-25-8
+## [0.3.9] - 2024-25-8
 
 ### Added
 - contains() member intrinsic for lists, tuples, and strs.
