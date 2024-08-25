@@ -55,6 +55,35 @@ ClosureCtx::variable_add(std::shared_ptr<earl::variable::Obj> var) {
 }
 
 bool
+ClosureCtx::in_class(void) const {
+    auto owner = m_owner.get();
+    if (owner && owner->type() == CtxType::Class) {
+        return true;
+    }
+    if (owner && owner->type() == CtxType::Function) {
+        return dynamic_cast<FunctionCtx *>(owner)->in_class();
+    }
+    if (owner && owner->type() == CtxType::Closure) {
+        return dynamic_cast<ClosureCtx *>(owner)->in_class();
+    }
+    return false;
+}
+
+// NOTE: in_class() should be called prior to using
+//       this function.
+std::shared_ptr<Ctx> &
+ClosureCtx::get_outer_class_owner_ctx(void) {
+    if (m_owner && m_owner->type() == CtxType::Class) {
+        return m_owner;
+    }
+    if (m_owner && m_owner->type() == CtxType::Function) {
+        return dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_class_owner_ctx();
+    }
+    assert(m_owner->type() == CtxType::Closure);
+    return dynamic_cast<ClosureCtx *>(m_owner.get())->get_outer_class_owner_ctx();
+}
+
+bool
 ClosureCtx::variable_exists(const std::string &id) {
     bool res = m_scope.contains(id);
 
