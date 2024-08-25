@@ -229,6 +229,22 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     return acc;
 }
 
+std::shared_ptr<Bool>
+Str::contains(std::shared_ptr<Char> &value) {
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        if (m_value.at(i) == '\0') {
+            auto &ch = m_chars.at(i);
+            if (ch->value() == value->value())
+                return std::make_shared<Bool>(true);
+        }
+        else {
+            if (m_value.at(i) == value->value())
+                return std::make_shared<Bool>(true);
+        }
+    }
+    return std::make_shared<Bool>(false);
+}
+
 void
 Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     Closure *cl = dynamic_cast<Closure *>(closure.get());

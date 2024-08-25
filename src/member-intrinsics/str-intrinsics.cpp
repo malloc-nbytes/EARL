@@ -41,6 +41,7 @@ Intrinsics::intrinsic_str_member_functions = {
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},
     {"trim", &Intrinsics::intrinsic_member_trim},
+    {"contains", &Intrinsics::intrinsic_member_contains},
 };
 
 std::shared_ptr<earl::value::Obj>

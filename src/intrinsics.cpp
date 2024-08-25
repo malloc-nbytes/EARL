@@ -75,6 +75,7 @@ Intrinsics::intrinsic_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    {"contains", &Intrinsics::intrinsic_member_contains},
     // Str
     {"split", &Intrinsics::intrinsic_member_split},
     {"substr", &Intrinsics::intrinsic_member_substr},

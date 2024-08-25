@@ -40,6 +40,7 @@ Intrinsics::intrinsic_list_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
+    {"contains", &Intrinsics::intrinsic_member_contains},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -157,5 +158,35 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0], expr);
+    return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
+                                      std::vector<std::shared_ptr<earl::value::Obj>> &value,
+                                      std::shared_ptr<Ctx> &ctx,
+                                      Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(value, 1, "contains", expr);
+
+    if (obj->type() == earl::value::Type::List)
+        return dynamic_cast<earl::value::List *>(obj.get())->contains(value[0]);
+    else if (obj->type() == earl::value::Type::Str) {
+        if (value[0]->type() != earl::value::Type::Char) {
+            Err::err_wexpr(expr);
+            const std::string msg = "cannot use member intrinsic `contains` on type str with a argument other than of type char";
+            throw InterpreterException(msg);
+        }
+        auto ch = std::dynamic_pointer_cast<earl::value::Char>(value[0]);
+        return dynamic_cast<earl::value::Str *>(obj.get())->contains(ch);
+    }
+    else if (obj->type() == earl::value::Type::Tuple)
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->contains(value[0]);
+    else {
+        Err::err_wexpr(expr);
+        const std::string msg = "cannot call intrinsic method `contains` on non list-adjacent type";
+        throw InterpreterException(msg);
+    }
+
     return nullptr;
 }
