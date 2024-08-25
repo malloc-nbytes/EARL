@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.3.8] - 2024-25-8
+
+### Fixed
+- You can now use the 'this' keyword in closures inside of classes.
+
 ## [0.3.8] - 2024-24-8
 
 ### Added
