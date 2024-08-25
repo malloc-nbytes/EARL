@@ -719,22 +719,45 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }, expr->m_right);
 
     if (left_er.id == "this") {
-        if (ctx->type() != CtxType::Function) {
+        if (ctx->type() != CtxType::Function && ctx->type() != CtxType::Closure) {
             std::string msg = "Must be in a function in a class context to use the `this` keyword";
             Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
 
-        auto fctx = dynamic_cast<FunctionCtx *>(ctx.get());
+        std::shared_ptr<earl::value::Obj> value = nullptr;
 
-        if (!fctx->in_class()) {
-            std::string msg = "Must be in a class context when using the `this` keyword";
+        if (ctx->type() == CtxType::Closure) {
+            auto closure_ctx = dynamic_cast<ClosureCtx *>(ctx.get());
+            if (!closure_ctx->in_class()) {
+                std::string msg = "Must be in a class context when using the `this` keyword";
+                Err::err_wexpr(expr);
+                throw InterpreterException(msg);
+            }
+            PackedERPreliminary perp(nullptr, true);
+            value = unpack_ER(right_er, closure_ctx->get_outer_class_owner_ctx(), /*ref=*/true, /*perp=*/&perp);
+        }
+        else if (ctx->type() == CtxType::Class) {
+            PackedERPreliminary perp(nullptr, true);
+            value = unpack_ER(right_er, ctx, /*ref=*/true, /*perp=*/&perp);
+        }
+        else if (ctx->type() == CtxType::Function) {
+            auto fctx = dynamic_cast<FunctionCtx *>(ctx.get());
+
+            if (!fctx->in_class()) {
+                std::string msg = "Must be in a class context when using the `this` keyword";
+                Err::err_wexpr(expr);
+                throw InterpreterException(msg);
+            }
+
+            PackedERPreliminary perp(nullptr, true);
+            value = unpack_ER(right_er, fctx->get_outer_class_owner_ctx(), /*ref=*/true, /*perp=*/&perp);
+        }
+        else {
+            std::string msg = "Must be in a function in a class context to use the `this` keyword";
             Err::err_wexpr(expr);
             throw InterpreterException(msg);
         }
-
-        PackedERPreliminary perp(nullptr, true);
-        auto value = unpack_ER(right_er, fctx->get_outer_class_owner_ctx(), /*ref=*/true, /*perp=*/&perp);
         return ER(value, ERT::Literal);
     }
     else {
