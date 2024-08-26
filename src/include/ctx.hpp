@@ -201,7 +201,7 @@ struct ClosureCtx : public Ctx {
 
     std::shared_ptr<Ctx> &get_owner(void);
     std::shared_ptr<Ctx> &get_outer_world_owner(void);
-    void assert_variable_does_not_exist_for_recursive_cl(const std::string &id) const;
+    void assert_variable_does_not_exist_for_recursive_cl(const std::string &id);
     bool in_class(void) const;
     std::shared_ptr<Ctx> &get_outer_class_owner_ctx(void);
 
