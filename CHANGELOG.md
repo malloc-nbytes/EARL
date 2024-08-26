@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Variable and function caching.
+- List map() member intrinsic
 
 ## [0.3.9] - 2024-25-8
 

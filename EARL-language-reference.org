@@ -1484,6 +1484,14 @@ Calls the closure =cl= on each element.
 
 #+begin_quote
 #+begin_example
+map(cl: closure) -> list
+#+end_example
+
+Calls the closure =cl= on each element and creates a new list on the evaluated results.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 contains(val: any) -> bool
 #+end_example
 

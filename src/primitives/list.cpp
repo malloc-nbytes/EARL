@@ -193,6 +193,17 @@ List::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     }
 }
 
+std::shared_ptr<List>
+List::map(std::shared_ptr<Closure> &closure, std::shared_ptr<Ctx> &ctx) {
+    auto mapped = std::make_shared<List>();
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> params = {m_value.at(i)};
+        auto value = closure->call(params, ctx);
+        mapped->append(value);
+    }
+    return mapped;
+}
+
 std::shared_ptr<Obj>
 List::back(void) {
     if (m_value.size() == 0)
