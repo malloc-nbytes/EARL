@@ -1,2 +1,6 @@
 module Token
 
+let x = 1;
+let s = "hello world";
+
+println(x, ' ', s);
