@@ -1,6 +1,19 @@
-module Token
+module Main
 
+# class T [] {
+#     @pub fn insert() {
+#         println("here");
+#     }
+# }
 
+# fn insert(x) {
+#     println(x);
+# }
+# let init = 1..=100;
+# for i in 0 to len(init) {
+#     insert(init[i]);
+# }
 
-
+let t = T();
+t.insert();
 

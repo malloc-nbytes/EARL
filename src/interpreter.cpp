@@ -468,7 +468,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return Intrinsics::call(er.id, params, ctx, expr);
         }
 
-        if (er.is_member_intrinsic()) {
+        if (er.is_member_intrinsic() && (perp && perp->lhs_getter_accessor)) {
             if (!perp || !perp->lhs_getter_accessor) {
                 std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
