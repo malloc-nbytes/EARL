@@ -4,7 +4,7 @@ import "point-class.1.earl"
 # import "test-std.earl"
 import "other.1.earl" full
 
-let PRINT = false;
+let PRINT = true;
 
 @world fn test_tuple1() {
     if PRINT {
