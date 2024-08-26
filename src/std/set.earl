@@ -22,130 +22,48 @@
 
 module Set
 
-import "std/math.earl"
-
 class Node [value] {
     @pub let value = value;
     @pub let left = none;
     @pub let right = none;
-    @pub let height = 1;
 }
 
-@pub class T [init] {
+@pub
+class T [init, compar] {
     let root = none;
+    let compar = compar;
 
     fn constructor() {
         for i in 0 to len(init) {
-            this.root = this.__insert(this.root, init[i]);
+            insert(init[i]);
         }
     }
 
-    fn __insert(r, value) {
-        if !r {
-            return some(Node(value));
-        }
-        else if value < r.unwrap().value {
-            r.unwrap().left = this.__insert(r.unwrap().left, value);
-        }
-        else {
-            r.unwrap().right = this.__insert(r.unwrap().right, value);
-        }
-
-        r.unwrap().height = 1 + Math::max(this.height(r.unwrap().left), this.height(r.unwrap().right));
-        let balance = this.balance(r);
-
-        # Left rotation
-        if balance > 1 && value < r.unwrap().left.unwrap().value {
-            return this.right_rot(r);
-        }
-
-        # Right rotation
-        if balance < -1 && value > r.unwrap().right.unwrap().value {
-            return this.left_rot(r);
-        }
-
-        # Left-right rotation
-        if balance > 1 && value > r.unwrap().left.unwrap().value {
-            r.unwrap().left = this.left_rot(r.unwrap().left);
-        }
-
-        # Right-left rotation
-        if balance < -1 && value < r.unwrap().right.unwrap().value {
-            r.unwrap().right = this.right_rot(r.unwrap().right);
-            return this.left_rot(r);
-        }
-
-        return r;
+    @pub fn extract() {
+        return this.__extract(this.root);
     }
 
-    fn height(node) {
-        if !node {
-            return 0;
+    fn __extract(cur) {
+        let ret = [];
+        if cur.is_some() {
+            ret = ret
+            + [cur.unwrap().value]
+            + this.__extract(cur.unwrap().left)
+            + this.__extract(cur.unwrap().right);
         }
-        return node.unwrap().height;
-    }
-
-    fn balance(node) {
-        if !node {
-            return 0;
-        }
-        return this.height(node.unwrap().left) - this.height(node.unwrap().right);
-    }
-
-    fn left_rot(z) {
-        assert(z.is_some());
-
-        let y = z.unwrap().right;
-        let T2 = y.unwrap().left;
-
-        y.unwrap().left = z;
-        z.unwrap().right = T2;
-
-        z.unwrap().height = 1 + Math::max(this.height(z.unwrap().left), this.height(z.unwrap().right));
-        y.unwrap().height = 1 + Math::max(this.height(y.unwrap().left), this.height(y.unwrap().right));
-
-        return y;
-    }
-
-    fn right_rot(z) {
-        assert(z.is_some());
-
-        let y = z.unwrap().left;
-        let T3 = y.unwrap().height;
-
-        y.unwrap().right = z;
-        z.unwrap().left = T3;
-
-        z.unwrap().height = 1 + Math::max(this.height(z.unwrap().left), this.height(z.unwrap().right));
-        y.unwrap().height = 1 + Math::max(this.height(y.unwrap().left), this.height(y.unwrap().right));
-
-        return y;
-    }
-
-    fn min_value_node(r) {
-        let current = r;
-        while current.unwrap().left {
-            current = current.unwrap().left;
-        }
-        return current;
-    }
-
-    fn search(r, value) {
-        if !r || r.unwrap().value == value {
-            return r;
-        }
-        if r.unwrap().value < value {
-            return this.search(r.unwrap().right, value);
-        }
-        return this.search(r.unwrap().left, value);
+        return ret;
     }
 
     @pub fn insert(value) {
-        this.root = this.__insert(this.root, value);
+        this.__insert(this.root, value);
     }
 
     @pub fn contains(value) {
-        return this.search(this.root, value).is_some();
+        return this.__contains(this.root, value);
+    }
+
+    @pub fn remove(value) {
+        unimplemented("Set.T.remove");
     }
 
     @pub fn show() {
@@ -157,6 +75,31 @@ class Node [value] {
             __show(cur.unwrap().left);
             println(cur.unwrap().value);
             __show(cur.unwrap().right);
+        }
+    }
+
+    fn __contains(@ref cur, value) {
+        if cur.is_none() {
+            return false;
+        }
+
+        match this.compar(cur.unwrap().value, value) {
+            2 -> { return this.__contains(cur.unwrap().right, value); }
+            1 -> { return this.__contains(cur.unwrap().left, value); }
+            0 -> { return true; }
+        }
+
+        return false;
+    }
+
+    fn __insert(@ref cur, v) {
+        if cur.is_none() {
+            cur = some(Node(v));
+        }
+
+        match this.compar(cur.unwrap().value, v) {
+            2 -> { return this.__insert(cur.unwrap().right, v); }
+            1 -> { return this.__insert(cur.unwrap().left, v); }
         }
     }
 }
