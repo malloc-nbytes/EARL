@@ -36,7 +36,30 @@
  */
 
 template <typename K, typename V> struct SharedScope {
+    struct Cache {
+        std::unordered_map<K, std::weak_ptr<V>> cache;
+
+        void add(K &k, const std::shared_ptr<V> &v) {
+            cache[k] = v;
+        }
+
+        void remove(K &k) {
+            cache.erase(k);
+        }
+
+        std::weak_ptr<V> get(const K &k, bool &found) const {
+            auto it = cache.find(k);
+            if (it != cache.end()) {
+                found = true;
+                return it->second.lock();
+            }
+            found = false;
+            return std::weak_ptr<V>();
+        }
+    };
+
     std::vector<std::unordered_map<K, std::shared_ptr<V>>> m_map;
+    Cache m_cache;
 
     inline SharedScope() {
         m_map.emplace_back();
@@ -81,9 +104,18 @@ template <typename K, typename V> struct SharedScope {
 
     inline void add(K key, std::shared_ptr<V> value) {
         m_map.back().emplace(key, value);
+        m_cache.add(key, value);
     }
 
     inline bool contains(const K key) const {
+        bool found = false;
+        auto cached = m_cache.get(key, found);
+
+        // Cache hit
+        if (!cached.expired())
+            return true;
+
+        // Cache miss
         for (auto &map : m_map) {
             if (map.find(key) != map.end())
                 return true;
@@ -92,9 +124,21 @@ template <typename K, typename V> struct SharedScope {
     }
 
     inline std::shared_ptr<V> get(K key) {
+        bool found = false;
+        auto cached = m_cache.get(key, found);
+
+        if (!cached.expired()) {
+            return cached.lock();
+        }
+
+        if (found) {
+            m_cache.remove(key);
+        }
+
         for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
             auto &map = *it;
             if (map.find(key) != map.end()) {
+                m_cache.add(key, map.at(key));
                 return map.at(key);
             }
         }
@@ -102,6 +146,9 @@ template <typename K, typename V> struct SharedScope {
     }
 
     inline void remove(K key) {
+        // No need to remove from cache because its value
+        // will be set to null.
+
         for (auto it = m_map.rbegin(); it != m_map.rend(); ++it) {
             auto &map = *it;
             auto map_it = map.find(key);
