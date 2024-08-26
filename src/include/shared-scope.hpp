@@ -39,11 +39,11 @@ template <typename K, typename V> struct SharedScope {
     struct Cache {
         std::unordered_map<K, std::weak_ptr<V>> cache;
 
-        void add(K &k, const std::shared_ptr<V> &v) {
+        void add(const K &k, const std::shared_ptr<V> &v) {
             cache[k] = v;
         }
 
-        void remove(K &k) {
+        void remove(const K &k) {
             cache.erase(k);
         }
 
@@ -77,12 +77,12 @@ template <typename K, typename V> struct SharedScope {
         SharedScope copy;
         for (size_t i = 0; i < m_map.size(); ++i) {
             auto el = m_map.at(i);
-            for (auto it = el.begin(); it != el.end(); ++it) {
+            for (auto it = el.begin(); it != el.end(); ++it)
                 copy.add(it->first, it->second);
-            }
             if (i != m_map.size())
                 copy.push();
         }
+        copy.m_cache = m_cache;
         return copy;
     }
 
@@ -107,7 +107,7 @@ template <typename K, typename V> struct SharedScope {
         m_cache.add(key, value);
     }
 
-    inline bool contains(const K key) const {
+    inline bool contains(const K key) {
         bool found = false;
         auto cached = m_cache.get(key, found);
 
@@ -116,10 +116,17 @@ template <typename K, typename V> struct SharedScope {
             return true;
         }
 
+        if (found) {
+            m_cache.remove(key);
+        }
+
         // Cache miss
         for (auto &map : m_map) {
-            if (map.find(key) != map.end())
+            if (map.find(key) != map.end()) {
+                if (cached.expired())
+                    m_cache.add(key, map[key]);
                 return true;
+            }
         }
         return false;
     }

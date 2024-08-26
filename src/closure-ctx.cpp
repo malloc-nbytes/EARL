@@ -217,7 +217,7 @@ ClosureCtx::get_outer_world_owner(void) {
 }
 
 void
-ClosureCtx::assert_variable_does_not_exist_for_recursive_cl(const std::string &id) const {
+ClosureCtx::assert_variable_does_not_exist_for_recursive_cl(const std::string &id) {
     if (m_scope.contains(id))
         goto bad;
     if (m_owner && m_owner->type() == CtxType::Function)
