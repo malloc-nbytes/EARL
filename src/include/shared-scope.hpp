@@ -112,8 +112,9 @@ template <typename K, typename V> struct SharedScope {
         auto cached = m_cache.get(key, found);
 
         // Cache hit
-        if (!cached.expired())
+        if (!cached.expired()) {
             return true;
+        }
 
         // Cache miss
         for (auto &map : m_map) {
