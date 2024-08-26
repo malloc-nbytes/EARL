@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2024-26-8
+
+### Added
+- Variable and function caching.
+
 ## [0.3.9] - 2024-25-8
 
 ### Added

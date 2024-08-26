@@ -9,16 +9,13 @@ def measure_average_runtime(command, iterations=7000):
 
     for i in range(iterations):
         start_time = time.time()
-        # Use subprocess to run the command
         subprocess.run(command, shell=True, check=True)
         end_time = time.time()
 
-        # Calculate the runtime for this iteration
         runtime = end_time - start_time
         total_time += runtime
 
-        # Optional: print progress
-        if (i + 1) % (iterations // 10) == 0:
+        if i >= 10 and (i + 1) % (iterations // 10) == 0:
             print(f"Progress: {i + 1} / {iterations}")
 
     average_runtime = total_time / iterations
