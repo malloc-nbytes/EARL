@@ -41,6 +41,7 @@ Intrinsics::intrinsic_list_member_functions = {
     {"append", &Intrinsics::intrinsic_member_append},
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"contains", &Intrinsics::intrinsic_member_contains},
+    {"map", &Intrinsics::intrinsic_member_map},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -189,4 +190,15 @@ Intrinsics::intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
     }
 
     return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_map(std::shared_ptr<earl::value::Obj> obj,
+                              std::vector<std::shared_ptr<earl::value::Obj>> &closure,
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(closure, 1, "map", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "map", expr);
+    auto cl = std::dynamic_pointer_cast<earl::value::Closure>(closure[0]);
+    return dynamic_cast<earl::value::List *>(obj.get())->map(cl, ctx);
 }

@@ -469,11 +469,6 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         }
 
         if (er.is_member_intrinsic() && (perp && perp->lhs_getter_accessor)) {
-            if (!perp || !perp->lhs_getter_accessor) {
-                std::string msg = "invalid left hand side getter object with dot notation (did you forget `(expr)`?)";
-                if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
-                throw InterpreterException(msg);
-            }
             if (Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
                 Expr *expr = nullptr;
                 if (er.extra) expr = static_cast<Expr *>(er.extra);

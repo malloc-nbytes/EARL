@@ -1,19 +1,5 @@
 module Main
 
-# class T [] {
-#     @pub fn insert() {
-#         println("here");
-#     }
-# }
+let lst = (0..=10).map(|x| { return x*100; });
 
-# fn insert(x) {
-#     println(x);
-# }
-# let init = 1..=100;
-# for i in 0 to len(init) {
-#     insert(init[i]);
-# }
-
-let t = T();
-t.insert();
-
+println(lst);
