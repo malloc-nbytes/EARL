@@ -76,6 +76,7 @@ eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
                                              std::shared_ptr<Ctx> &ctx,
                                              bool ref) {
     bool _ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    bool _const = (stmt->m_attrs & static_cast<uint32_t>(Attr::Const)) != 0;
     std::shared_ptr<earl::value::Obj> value = nullptr;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, _ref);
 
@@ -127,6 +128,9 @@ eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
     for (auto &tok : stmt->m_ids) {
         if (tok->lexeme() == "_")
             continue;
+
+        if (_const)
+            tuple->value().at(i)->set_const();
 
         std::shared_ptr<earl::variable::Obj> var
             = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
@@ -1228,6 +1232,7 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    bool _const = (stmt->m_attrs & static_cast<uint32_t>(Attr::Const)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
 
     std::shared_ptr<earl::value::Obj> value = nullptr;
@@ -1263,6 +1268,9 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         if (tok->lexeme() == "_")
             continue;
 
+        if (_const)
+            tuple->value().at(i)->set_const();
+
         std::shared_ptr<earl::variable::Obj> var
             = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
         ctx->variable_add(var);
@@ -1293,6 +1301,7 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
+    bool _const = (stmt->m_attrs & static_cast<uint32_t>(Attr::Const)) != 0;
     ER rhs = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
 
     std::shared_ptr<earl::value::Obj> value = nullptr;
@@ -1311,6 +1320,9 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     if (id == "_")
         return std::make_shared<earl::value::Void>();
+
+    if (_const || value->type() == earl::value::Type::Tuple)
+        value->set_const();
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);

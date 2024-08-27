@@ -191,6 +191,7 @@ Int::boolean(void) {
 void
 Int::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
 
     switch (other->type()) {
     case Type::Int: {
@@ -227,6 +228,7 @@ Int::to_cxxstring(void) {
 
 void
 Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_CONSTNESS(this, stmt);
     int prev = m_value;
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
@@ -260,3 +262,9 @@ Int::unaryop(Token *op) {
     }
     return nullptr; // unreachable
 }
+
+void
+Int::set_const(void) {
+    m_const = true;
+}
+

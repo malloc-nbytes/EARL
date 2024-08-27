@@ -209,3 +209,10 @@ Tuple::unaryop(Token *op) {
     std::string msg = "invalid unary operator for type `tuple`";
     throw InterpreterException(msg);
 }
+
+void
+Tuple::set_const(void) {
+    m_const = true;
+}
+
+

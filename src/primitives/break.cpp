@@ -82,3 +82,10 @@ Break::unaryop(Token *op) {
     (void)op;
     assert(false && "unreachable");
 }
+
+void
+Break::set_const(void) {
+    m_const = true;
+}
+
+

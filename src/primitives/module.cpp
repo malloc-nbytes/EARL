@@ -93,3 +93,9 @@ Module::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Module::set_const(void) {
+    m_const = true;
+}
+

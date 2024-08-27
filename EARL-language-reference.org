@@ -501,38 +501,38 @@ This means that $i$ will be take the reference of each iterated value in the lis
 ** Examples
 
 #+begin_example
-for i in 0..5 {
+foreach i in 0..5 {
     print(i);
 } # prints 12345
 
 let iterable = [9,4,2];
-for i in iterable {
+foreach i in iterable {
     print(i);
 } # prints 942
 
-for i in (0..5).rev() {
+foreach i in (0..5).rev() {
     print(i);
 } # prints 43210
 
-for i in 0..len(iterable) {
+foreach i in 0..len(iterable) {
     print(i);
 } # prints 012
 
-for @ref i in iterable { # REF EXAMPLE
+foreach @ref i in iterable { # REF EXAMPLE
     i = 9;
 }
 println(iterable); # prints [9, 9, 9]
 
-for i in "foo" {
+foreach i in "foo" {
     print(i);
 } # prints foo
 
-for i in 'a'..'d' {
+foreach i in 'a'..'d' {
     print(i);
 } # prints abc
 
 let s = "bar";
-for i in s {
+foreach i in s {
     print(i);
 } # prints bar
 #+end_example
@@ -668,7 +668,7 @@ Attributes embeds meta information into identifiers. You can have none, one, or 
 | =@pub=   | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
 | =@world= | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
 | =@ref=   | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
-
+| =@const= | YES       | NO        | NO            | NO            | Declares the variable as constant                            |
 
 *NOTE:* =@ref= can be used in a function parameter and that function will
 take a reference to the value passed to it.
@@ -2116,7 +2116,7 @@ class MyClass [] {
 }
 #+end_example
 
-** Attributes
+** Attrs
 
 #+begin_quote
 If a function/variable/class has _one_ attribute, then it should be put

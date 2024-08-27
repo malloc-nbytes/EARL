@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] - 2024-27-8
+
+### Added
+- @const attribute.
+
 ## [0.4.0] - 2024-26-8
 
 ### Added

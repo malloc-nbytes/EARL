@@ -141,6 +141,7 @@ Float::boolean(void) {
 void
 Float::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
 
     switch (other->type()) {
     case Type::Float: {
@@ -177,6 +178,7 @@ Float::to_cxxstring(void) {
 
 void
 Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_CONSTNESS(this, stmt);
     double prev = m_value;
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
@@ -209,3 +211,10 @@ Float::unaryop(Token *op) {
     }
     return nullptr; // unreachable
 }
+
+void
+Float::set_const(void) {
+    m_const = true;
+}
+
+

@@ -57,6 +57,7 @@ Void::boolean(void) {
 void
 Void::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
 }
 
 std::shared_ptr<Obj>
@@ -90,3 +91,10 @@ Void::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Void::set_const(void) {
+    m_const = true;
+}
+
+

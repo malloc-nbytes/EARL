@@ -86,6 +86,7 @@ Bool::boolean(void) {
 void
 Bool::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     m_value = dynamic_cast<Bool *>(other.get())->m_value;
 }
 
@@ -124,4 +125,9 @@ Bool::unaryop(Token *op) {
     }
     }
     return nullptr; // unreachable
+}
+
+void
+Bool::set_const(void) {
+    m_const = true;
 }

@@ -54,11 +54,13 @@ extern uint32_t flags;
 #define COMMON_EARLATTR_WORLD "world"
 #define COMMON_EARLATTR_PUB   "pub"
 #define COMMON_EARLATTR_REF   "ref"
+#define COMMON_EARLATTR_CONST "const"
 
 enum class Attr {
     World = 1 << 0,
     Pub = 1 << 1,
     Ref = 1 << 2,
+    Const = 1 << 3,
 };
 
 // Keywords

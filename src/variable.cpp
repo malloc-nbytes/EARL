@@ -29,7 +29,9 @@
 using namespace earl::variable;
 
 Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
-    : m_id(id), m_value(value), m_attrs(attrs) {}
+    : m_id(id), m_value(value), m_attrs(attrs) {
+    m_constness = (attrs & static_cast<uint32_t>(Attr::Const)) != 0 ? true : false;
+}
 
 Token *
 Obj::gettok(void) {

@@ -155,8 +155,9 @@ List::append(std::shared_ptr<Obj> value) {
 
 void
 List::append_copy(std::vector<std::shared_ptr<Obj>> &values) {
-    for (size_t i = 0; i < values.size(); ++i)
+    for (size_t i = 0; i < values.size(); ++i) {
         m_value.push_back(values.at(i)->copy());
+    }
 }
 
 void
@@ -300,6 +301,7 @@ List::boolean(void) {
 void
 List::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     auto *lst = dynamic_cast<List *>(other.get());
     m_value = lst->value();
 }
@@ -342,6 +344,7 @@ List::to_cxxstring(void) {
 
 void
 List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_CONSTNESS(this, stmt);
     std::vector<std::shared_ptr<Obj>> prev = {};
     std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Obj> k) {prev.push_back(k);});
     this->mutate(other, stmt); // does type checking
@@ -366,3 +369,10 @@ List::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+List::set_const(void) {
+    m_const = true;
+}
+
+

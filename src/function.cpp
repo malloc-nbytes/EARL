@@ -67,6 +67,8 @@ Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
             var = std::make_shared<earl::variable::Obj>(id, value);
         else
             var = std::make_shared<earl::variable::Obj>(id, value->copy());
+        if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Const)) != 0)
+            var->value()->set_const();
         new_ctx->variable_add(var);
     }
 }

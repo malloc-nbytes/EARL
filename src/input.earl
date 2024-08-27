@@ -1,5 +1,6 @@
 module Main
 
-let lst = (0..=10).map(|x| { return x*100; });
 
-println(lst);
+
+
+

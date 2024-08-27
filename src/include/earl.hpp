@@ -54,6 +54,15 @@
         }                                                                       \
     } while (0)
 
+#define ASSERT_CONSTNESS(obj, stmt)                                     \
+    do {                                                                \
+        if (obj->is_const()) {                                          \
+            Err::err_wstmt(stmt);                                       \
+            const std::string __Msg = "cannot mutate value with attribute @const"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
+    } while (0)
+
 struct Ctx;
 struct FunctionCtx;
 
@@ -159,6 +168,15 @@ namespace earl {
             virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) = 0;
 
             virtual std::shared_ptr<Obj> unaryop(Token *op) = 0;
+
+            virtual void set_const(void) = 0;
+
+            virtual bool is_const(void) const {
+                return m_const;
+            }
+
+        protected:
+            bool m_const = false;
         };
 
         struct TypeKW : public Obj {
@@ -176,6 +194,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             Type m_ty;
@@ -204,6 +223,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             int m_value;
@@ -229,6 +249,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             double m_value;
@@ -251,6 +272,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             bool m_value;
@@ -272,6 +294,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             char m_value;
@@ -291,6 +314,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             void *m_value;
@@ -318,6 +342,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             ExprClosure *m_expr_closure;
@@ -383,6 +408,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
@@ -404,6 +430,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::shared_ptr<Obj> m_start;
@@ -431,6 +458,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_values;
@@ -468,6 +496,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::string m_value;
@@ -490,6 +519,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::shared_ptr<Ctx> m_value;
@@ -527,6 +557,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             StmtClass *m_stmtclass;
@@ -558,6 +589,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::unordered_map<T, std::shared_ptr<Obj>> m_map;
@@ -586,6 +618,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             StmtEnum *m_stmt;
@@ -622,6 +655,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::shared_ptr<Str> m_fp;
@@ -649,6 +683,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
 
         private:
             std::shared_ptr<Obj> m_value;
@@ -667,6 +702,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
         };
 
         struct Continue : public Obj {
@@ -682,6 +718,7 @@ namespace earl {
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
+            void set_const(void)                                                          override;
         };
 
         std::string type_to_str(earl::value::Type ty);
@@ -735,6 +772,7 @@ namespace earl {
             Token *m_id;
             std::shared_ptr<value::Obj> m_value;
             uint32_t m_attrs;
+            bool m_constness;
         };
     };
 
@@ -935,6 +973,11 @@ earl::value::Dict<T>::spec_mutate(Token *op, const std::shared_ptr<earl::value::
 template <typename T> std::shared_ptr<earl::value::Obj>
 earl::value::Dict<T>::unaryop(Token *op) {
     UNIMPLEMENTED("Dict::unaryop");
+}
+
+template <typename T> void
+earl::value::Dict<T>::set_const(void) {
+    m_const = true;
 }
 
 #endif // EARL_H

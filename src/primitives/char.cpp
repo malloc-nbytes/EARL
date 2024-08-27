@@ -87,6 +87,7 @@ Char::boolean(void) {
 void
 Char::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     auto c = dynamic_cast<Char *>(other.get());
     m_value = c->value();
 }
@@ -124,3 +125,9 @@ Char::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Char::set_const(void) {
+    m_const = true;
+}
+
