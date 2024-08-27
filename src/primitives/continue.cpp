@@ -67,3 +67,9 @@ void Continue::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut
 std::shared_ptr<Obj> Continue::unaryop(Token *op) {
     UNIMPLEMENTED("Continue::unaryop");
 }
+
+void
+Continue::set_const(void) {
+    m_const = true;
+}
+

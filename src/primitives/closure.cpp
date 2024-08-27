@@ -103,6 +103,7 @@ Closure::boolean(void) {
 void
 Closure::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
+    ASSERT_CONSTNESS(this, stmt);
     UNIMPLEMENTED("Closure::mutate");
 }
 
@@ -151,3 +152,9 @@ Closure::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Closure::set_const(void) {
+    m_const = true;
+}
+

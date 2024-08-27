@@ -81,6 +81,7 @@ Class::boolean(void) {
 void
 Class::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
+    ASSERT_CONSTNESS(this, stmt);
     UNIMPLEMENTED("Class::mutate");
 }
 
@@ -133,3 +134,9 @@ Class::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Class::set_const(void) {
+    m_const = true;
+}
+

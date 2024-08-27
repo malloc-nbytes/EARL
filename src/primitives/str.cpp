@@ -314,6 +314,7 @@ Str::value_as_earlchar(void) {
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     if (other->type() == Type::Str) {
         Str *otherstr = dynamic_cast<Str *>(other.get());
         //m_value = otherstr->value();
@@ -350,6 +351,7 @@ Str::to_cxxstring(void) {
 // CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_CONSTNESS(this, stmt);
     std::string prev = m_value;
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
@@ -373,3 +375,9 @@ Str::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Str::set_const(void) {
+    m_const = true;
+}
+

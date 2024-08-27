@@ -64,6 +64,7 @@ Slice::boolean(void) {
 void
 Slice::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     auto othersl = dynamic_cast<Slice *>(other.get());
     m_start = othersl->start();
     m_end = othersl->end();
@@ -101,4 +102,7 @@ Slice::unaryop(Token *op) {
     UNIMPLEMENTED("Slice::unaryop");
 }
 
-
+void
+Slice::set_const(void) {
+    m_const = true;
+}

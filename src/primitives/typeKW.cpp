@@ -93,6 +93,7 @@ TypeKW::boolean(void) {
 void
 TypeKW::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
     m_ty = dynamic_cast<TypeKW *>(other.get())->ty();
 }
 
@@ -126,3 +127,10 @@ TypeKW::unaryop(Token *op) {
     const std::string msg = "Invalid unary operation for type " + earl::value::type_to_str(m_ty);
     throw InterpreterException(msg);
 }
+
+void
+TypeKW::set_const(void) {
+    m_const = true;
+}
+
+

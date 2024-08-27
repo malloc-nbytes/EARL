@@ -161,6 +161,7 @@ File::boolean(void) {
 void
 File::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
+    ASSERT_CONSTNESS(this, stmt);
     UNIMPLEMENTED("File::mutate");
 }
 
@@ -197,3 +198,9 @@ File::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+File::set_const(void) {
+    m_const = true;
+}
+

@@ -1,5 +1,8 @@
 module Main
 
-let lst = (0..=10).map(|x| { return x*100; });
+@const let lst = [1,2,3,4,5];
 
-println(lst);
+lst[0] = 1;
+
+
+

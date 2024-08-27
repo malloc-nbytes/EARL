@@ -133,3 +133,9 @@ Enum::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Enum::set_const(void) {
+    m_const = true;
+}
+

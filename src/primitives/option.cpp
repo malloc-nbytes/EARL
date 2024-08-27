@@ -105,6 +105,7 @@ Option::boolean(void) {
 void
 Option::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+    ASSERT_CONSTNESS(this, stmt);
 
     auto *other2 = dynamic_cast<Option *>(other.get());
 
@@ -158,4 +159,10 @@ Option::unaryop(Token *op) {
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
+
+void
+Option::set_const(void) {
+    m_const = true;
+}
+
 
