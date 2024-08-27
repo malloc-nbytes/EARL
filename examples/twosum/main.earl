@@ -14,14 +14,13 @@ fn two_sum(nums, target) {
     return none;
 }
 
-let lst, t = ([1,2,3,4,5], 1);
+let lst, t = ([1,2,3,4,5], 4);
+let res = two_sum(lst, t);
 
-match two_sum(lst, t) {
-    some(k) -> {
-        let x, y = k;
-        println(f"the target {t} is at location {x} {y}");
-    }
-    none -> {
-        println("here");
-    }
+if res {
+    let x, y = res.unwrap();
+    println(f"the target {t} is at location {x} {y}");
+}
+else {
+    println(f"the target {t} is not in the list");
 }
