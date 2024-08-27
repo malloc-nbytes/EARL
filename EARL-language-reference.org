@@ -72,6 +72,8 @@ dynamic types are desired, see the =option= datatype in [[Datatypes][Datatypes]]
 let x = 1; # x is an int
 let y = 1.2 # y is a float
 let z = [1, 2, 3] # z is a list
+
+x = "not allowed"; # results in an error because `x` is an integer.
 #+end_example
 #+end_quote
 
@@ -195,32 +197,33 @@ it hits 1MB in file size.
 * Keywords
 
 #+begin_quote
-|-----------------------------------------|
-| let \rightarrow [[Variable Declarations]]   |
-| fn  \rightarrow [[Function Definitions]]    |
-| if \rightarrow [[Conditionals]]             |
-| else \rightarrow [[Conditionals]]           |
-| while \rightarrow [[While Loops]]           |
-| for \rightarrow [[For Loops]]               |
-| foreach \rightarrow [[Foreach Loops]]       |
-| in \rightarrow [[For Loops]], [[Foreach Loops]] |
-| to \rightarrow [[For Loops]]                |
-| import \rightarrow [[Imports]]              |
-| almost \rightarrow [[Imports]]              |
-| full \rightarrow [[Imports]]                |
-| module \rightarrow [[Modules]]              |
-| class \rightarrow [[Classes]]               |
-| match \rightarrow [[Pattern Matching]]      |
-| when  \rightarrow [[Pattern Matching]]      |
-| enum \rightarrow [[Enumerations]]           |
-| @ref \rightarrow [[Attributes]]             |
-| @pub \rightarrow [[Attributes]]             |
-| @world \rightarrow [[Attributes]]           |
-| return                                  |
-| true                                    |
-| false                                   |
-| none                                    |
-| break                                   |
+|------------------------------------------------------------|
+| let \rightarrow [[Variable Declarations]]                      |
+| fn  \rightarrow [[Function Definitions]]                       |
+| if \rightarrow [[Conditionals]]                                |
+| else \rightarrow [[Conditionals]]                              |
+| while \rightarrow [[While Loops]]                              |
+| for \rightarrow [[For Loops]]                                  |
+| foreach \rightarrow [[Foreach Loops]]                          |
+| in \rightarrow [[For Loops]], [[Foreach Loops]]                    |
+| to \rightarrow [[For Loops]]                                   |
+| break \rightarrow [[While Loops]], [[For Loops]], [[Foreach Loops]]    |
+| continue \rightarrow [[While Loops]], [[For Loops]], [[Foreach Loops]] |
+| import \rightarrow [[Imports]]                                 |
+| almost \rightarrow [[Imports]]                                 |
+| full \rightarrow [[Imports]]                                   |
+| module \rightarrow [[Modules]]                                 |
+| class \rightarrow [[Classes]]                                  |
+| match \rightarrow [[Pattern Matching]]                         |
+| when  \rightarrow [[Pattern Matching]]                         |
+| enum \rightarrow [[Enumerations]]                              |
+| @ref \rightarrow [[Attributes]]                                |
+| @pub \rightarrow [[Attributes]]                                |
+| @world \rightarrow [[Attributes]]                              |
+| return                                                     |
+| true                                                       |
+| false                                                      |
+| none                                                       |
 #+end_quote
 
 * Binary Operations
@@ -259,6 +262,7 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 
 ** Grammar
 
+#+begin_quote
 =let= <id> = /expr/;
 
 or
@@ -266,6 +270,7 @@ or
 =let= <id0>, <id1>, <id2>, ..., <idN> = /tuple/
 
 where |tuple| $=$ number of ids.
+#+end_quote
 
 ** Examples
 
@@ -288,7 +293,9 @@ Mutation describes changing a variables value in memory.
 
 ** Grammar
 
+#+begin_quote
 /expr/ = /expr/;
+#+end_quote
 
 ** Examples
 
@@ -326,11 +333,13 @@ If the expression is true, that branch will occur.
 
 ** Grammar
 
+#+begin_quote
 =if= /expr/ *{* [stmt] *}*
 
 =else if= /expr/ *{* [stmt] *}*
 
 =else= *{* [stmt] *}*
+#+end_quote
 
 ** Examples
 
@@ -349,6 +358,10 @@ else {
 * Pattern Matching
 
 #+begin_quote
+*Note*: Pattern matching is still a work in progress and may be buggy.
+
+*Note*: Pattern matching on lists is not yet fully implemented.
+
 Pattern matching allows you to match on some pattern. This is
 the case for all primitives =int=, =str=, =list= etc.
 
@@ -362,8 +375,6 @@ The =when= keyword acts as a /guard/ for the branch. If the pattern matches, onl
 
 And finally, the base case consists of the pattern =_=. If none of the other branches *above* this
 one happens, this one is guaranteed to happen (unless there is a guard).
-
-*Note*: Pattern matching on lists is not yet fully implemented.
 #+end_quote
 
 Grammar TODO
@@ -377,7 +388,7 @@ let msg = "foo";
 match x {
     1 -> { println("x is 1"); }
     2 | 3 -> { println("x is two or three"); }
-    [1,2,3] when type(x) == "list" -> { println(x is a list and is [1,2,3]") };
+    [1,2,3] when type(x) == "list" -> { println(x is a list and is [1,2,3]"); }
     4 when msg = "bar" -> { println("x is 4 with msg = bar"); }
     4 when msg = "foo" -> { println("x is 4 with msg = foo"); }
     _ when msg = "hello" -> { println("base case, 4 is something else and msg = hello"); }
@@ -439,7 +450,9 @@ For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
 
 ** Grammar
 
+#+begin_quote
 =while= /expr/ *{* [stmt] *}*
+#+end_quote
 
 ** Examples
 
@@ -457,11 +470,17 @@ while i < 3 {
 For loops will enumerate over a range of numbers, with the enumerator being assigned the current number.
 If the enumerator is less than the initial destination value, it will be incremented. If it is less than the
 initial destination value, it will decrement.
+
+*Note*: There is a special extra step that is taken if enumerating down. Let $i$ be the enumerator and $e$ be the
+end where $i >= e$. The loop will stop when $i < e$. This makes it so that if enumerating from =10 to 0=, it will stop
+at $-1$. This is not the case if we are enumerating upwards.
 #+end_quote
 
 ** Grammar
 
+#+begin_quote
 =for= <id> =in= /expr/ =to= /expr/ *{* [stmt] *}*
+#+end_quote
 
 ** Examples
 
@@ -472,7 +491,7 @@ for i in 0 to 5 {
 
 for i in 5 to 0 {
     print(i);
-} # prints 54321
+} # prints 543210
 
 let lst = [1,2,3];
 for i in 0 to len(lst) {
@@ -496,7 +515,9 @@ This means that $i$ will be take the reference of each iterated value in the lis
 
 ** Grammar
 
-=for= ?(=@= =ref=) <id> =in= /expr/ *{* [stmt] *}*
+#+begin_quote
+=foreach= ?(=@= =ref=) <id> =in= /expr/ *{* [stmt] *}*
+#+end_quote
 
 ** Examples
 
@@ -548,14 +569,14 @@ This is how to create a function. The =@world=, =@pub= and =@ref= are attributes
 #+begin_quote
 *( =@= [ =pub= | =world= ])
 
-=fn= <id> *(* [ * ( =@ref= ) <id> ] *)* *{* [stmt] *}*
+=fn= <id> *(* [ * ( =@ref= | =@const= ) <id> ] *)* *{* [stmt] *}*
 #+end_quote
 
 ** Examples
 
 #+begin_example
 @world @pub
-fn func1(@ref x, y, @ref z) {
+fn func1(@ref x, y, @ref @const z) {
     ...
 }
 
@@ -677,7 +698,7 @@ take a reference to the value passed to it.
 ** Grammar
 
 #+begin_quote
-=@= *(pub | world | ref)
+=@= *(pub | world | ref | const)
 #+end_quote
 
 ** Examples
@@ -780,15 +801,15 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 ** Grammar
 
 #+begin_quote
-=@= *(pub | world | ref)
+*( =@= pub | world | ref)
 
-=class= <id> ?(=[= <arg1>, <arg2>,..., <argN> =]=) ={=
+=class= <id> =[= *(<arg>) =]= ={=
 
-    =@= *(pub | world | ref) let <member1> = <id> | /expr/ =;=
+    *(<let stmt>)
 
-    =@= *(pub | world | ref) let <member2> = <id> | /expr/ =;=
+    ?(fn constructor() {})
 
-    <methods>
+    *(<function definitions>)
 
 =}=
 #+end_quote
@@ -817,13 +838,12 @@ class NoPassesArgs [] {
 # This class is marked as @pub, so it is
 # visible to other modules.
 @pub class Point [x, y, name] {
-    @pub let x = x;
-    @pub let y = y;
-    let name = name;
-
     # Because this is public, you can access
     # it directly from outside the class.
+    @pub let x, y = (x, y);
     @pub let desc = "A point class"
+
+    let name = name;
 
     # Function not marked as @pub so
     # it does is not visible outside
@@ -950,10 +970,10 @@ println(lst1); # prints [1, 2, 3]
 
 let lst2 = 1..3;
 let lst3 = (1..3).rev();
-let lst4 = 'a'..'c';
+let lst4 = 'a'..='c';
 println(lst2); # prints [1, 2];
 println(lst3); # prints [2, 1];
-println(lst4); # prints ['a', 'b'];
+println(lst4); # prints ['a', 'b', 'c'];
 #+end_example
 #+end_quote
 
@@ -980,10 +1000,12 @@ Currently, =slice= types are only useful for indexing a =list=. They allow you t
 take a slice of the list and create a new list of those elements. They are two expressions
 separated by a colon =:=.
 
-A =slice= is defined as:
+A =slice= is defined by:
 
-Let $S$ be a "starting" expression, $E$ be an "ending" expression, and L be some nonempty list of elements
-and $S \le E$ in
+# Let $S$ be a "starting" expression, $E$ be an "ending" expression, and L be some nonempty list of elements
+# and $S \le E$ in
+
+Given a "starting" and "ending" expression $S, E \in \mathbb{Z} \text{ where } S \le E$ and some nonempty list of elements $L$ then
 
 $L_{S : E} = [L_{S}, L_{S+1}, L_{S+2}, ..., L_{E-1}]$
 
@@ -1136,7 +1158,7 @@ in sum
 #+begin_quote
 A =dictionary= is a collection of key-value pairs. Every key has an associated value.
 If a dictionary is indexed with a key that does not exist, it will return a =none= value.
-If the value _does_ exist, it will return it in a wrapped =option= value.
+If the value _does_ exist, it will return it in a wrapped =some= value.
 They can be created with a brace initializer list where keys and values are separed by a colon =:=
 and entries are separated by a comma =,=.
 
@@ -1435,7 +1457,7 @@ You access these with the dot `.` notation i.e.,
 
 #+begin_example
 let lst = [1,2,3];
-lst.rev();
+lst = lst.rev();
 #+end_example
 #+end_quote
 
@@ -1702,8 +1724,8 @@ At the end of each value, a newline is added.
 
 #+begin_quote
 Upon installing EARL, the standard library is installed into
-=/usr/local/include/EARL/std=. The first place that EARL looks
-when evaluating an =import= statement is =/usr/local/include/EARL/=.
+=-DINSTALL_PREFIX= (=/usr/local/include/= by default. The first place that EARL looks
+when evaluating an =import= statement is =-DINSTALL_PREFIX=.
 This means that all you need to do to import these files is do:
 =import "std/<file>.earl"= <depth>.
 #+end_quote
@@ -1877,7 +1899,7 @@ Time complexity: $O(\log n)$ where $n = |$ =T= $|$.
 
 #+begin_quote
 #+begin_example
-DEFAULT_INT_SET_COMPAR: closure(any, any) -> int
+DEFAULT_INT_SET_COMPAR: closure(x: int, y: int) -> int
 #+end_example
 
 The default integer comparison function.
@@ -2134,7 +2156,7 @@ _directly above_ the declaration.
 }
 
 @pub @ref
-let ptr = @ref my_var;
+let ptr = my_var;
 
 @pub @world
 fn my_fun2() {
