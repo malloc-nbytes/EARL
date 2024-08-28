@@ -3,16 +3,24 @@ module Main
 import "std/io.earl"
 import "lexer.earl"
 
-let comment, multicom_st, multicom_end = ("#", "/*", "*/");
-let keywords = ["int", "void"];
-let ops = Dict(str);
+fn parse(@const @ref lexer) {
+    let cur = lexer.next();
+    while cur {
+        if lexer.sz() >= 4
+        && cur.unwrap().ty == Lexer::TokenType.Hash
+        && lexer.peek(0).unwrap().ty == Lexer::TokenType.Hash
+        && lexer.peek(1).unwrap().ty == Lexer::TokenType.Hash {
+            let _, _, _ = (lexer.next(), lexer.next(), lexer.next());
+            let kw = lexer.next().unwrap();
+        }
+        cur = lexer.next();
+    }
+}
 
-let fp = "./std-docs-gen.earl";
+let fp = "../std/os.earl";
 let src = IO::file_to_str(fp);
 
-let lexer = Lexer::T(keywords, comment, multicom_st, multicom_end, ops);
+let lexer = Lexer::T(("int", "void"));
 
 lexer.lex(src, fp);
-println(lexer);
-
-
+parse(lexer);
