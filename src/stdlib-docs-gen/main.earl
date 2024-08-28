@@ -10,17 +10,31 @@ fn parse(@const @ref lexer) {
         && cur.unwrap().ty == BasicLexer::TokenType.Hash
         && lexer.peek(0).unwrap().ty == BasicLexer::TokenType.Hash
         && lexer.peek(1).unwrap().ty == BasicLexer::TokenType.Hash {
-            let _, _, kw = (lexer.next(), lexer.next(), lexer.next());
-            println(kw.unwrap());
+            let _, _, kw = (lexer.next(), lexer.next(), lexer.next().unwrap());
+            if kw.ty != BasicLexer::TokenType.Keyword {
+                panic("Token: " + kw.lx + " of type: ", kw.ty, " is not a keyword");
+            }
         }
         cur = lexer.next();
     }
 }
 
-let fp = "../std/os.earl";
-let src = IO::file_to_str(fp);
+fn main() {
+    let fp = "../std/os.earl";
+    let src = IO::file_to_str(fp);
 
-let lexer = BasicLexer::T(("int", "void"));
+    let keywords = (
+        "BEGIN",
+        "MODULE",
+        "NAME",
+        "PARAMETER",
+        "RETURNS",
+        "DESCRIPTION",
+    );
+    let lexer = BasicLexer::T(keywords);
 
-lexer.lex(src, fp);
-parse(lexer);
+    lexer.lex(src, fp);
+    parse(lexer);
+}
+
+main();

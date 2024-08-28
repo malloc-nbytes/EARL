@@ -35,6 +35,7 @@ import "std/char.earl"
     Caret,
     DollarSign,
     Tilde,
+    Keyword,
 }
 
 @pub class Token [lx, ty, r, c, fp] {
@@ -112,16 +113,28 @@ import "std/char.earl"
             else if Char::isalpha(src[i]) || src[i] == '_' {
                 let lx, dx = consume_while(src.substr(i, len(src)), |c| {
                         return Char::isalnum(c) || c == '_';
-                    });
-                let t = Token(lx, TokenType.Ident, r, c, fp);
-                this.tokens.append(t);
+                });
+
+                let t = none;
+
+                foreach @ref @const kw in this.kwds {
+                    if lx == kw {
+                        t = some(Token(lx, TokenType.Keyword, r, c, fp));
+                        break;
+                    }
+                }
+
+                if !t {
+                    t = some(Token(lx, TokenType.Ident, r, c, fp));
+                }
+                this.tokens.append(t.unwrap());
                 i += dx;
                 c += dx;
             }
             else if Char::isnum(src[i]) {
                 let lx, dx = consume_while(src.substr(i, len(src)), |c| {
                         return Char::isnum(c);
-                    });
+                });
                 let t = Token(lx, TokenType.IntLit, r, c, fp);
                 this.tokens.append(t);
                 i += dx;
@@ -139,7 +152,7 @@ import "std/char.earl"
             else if src[i] == '\'' {
                 let lx, dx = consume_while(src.substr(i+1, len(src)), |c| {
                         return c != '\'';
-                    });
+                });
                 let t = Token(lx, TokenType.CharLit, r, c, fp);
                 this.tokens.append(t);
                 i += dx+1;
@@ -148,7 +161,7 @@ import "std/char.earl"
             else {
                 let potential_op, _ = consume_while(src.substr(i, len(src)), |c| {
                         return !Char::isalnum(c) && c != ' ' && c != '\n' && c != '\t'  && c != '\r';
-                    });
+                });
                 let t, dx = handleop(potential_op, r, c, fp);
                 this.tokens.append(t);
                 i += dx-1;
