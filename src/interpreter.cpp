@@ -126,15 +126,14 @@ eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
 
     int i = 0;
     for (auto &tok : stmt->m_ids) {
-        if (tok->lexeme() == "_")
-            continue;
+        if (tok->lexeme() != "_") {
+            if (_const)
+                tuple->value().at(i)->set_const();
 
-        if (_const)
-            tuple->value().at(i)->set_const();
-
-        std::shared_ptr<earl::variable::Obj> var
-            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
-        ctx->variable_add(var);
+            std::shared_ptr<earl::variable::Obj> var
+                = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
+            ctx->variable_add(var);
+        }
         ++i;
     }
 
@@ -1265,15 +1264,14 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     int i = 0;
     for (auto &tok : stmt->m_ids) {
-        if (tok->lexeme() == "_")
-            continue;
+        if (tok->lexeme() != "_") {
+            if (_const)
+                tuple->value().at(i)->set_const();
 
-        if (_const)
-            tuple->value().at(i)->set_const();
-
-        std::shared_ptr<earl::variable::Obj> var
-            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
-        ctx->variable_add(var);
+            std::shared_ptr<earl::variable::Obj> var
+                = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
+            ctx->variable_add(var);
+        }
         ++i;
     }
 

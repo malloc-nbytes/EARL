@@ -1,17 +1,17 @@
 module Main
 
 import "std/io.earl"
-import "lexer.earl"
+import "std/basic-lexer.earl"
 
 fn parse(@const @ref lexer) {
     let cur = lexer.next();
     while cur {
         if lexer.sz() >= 4
-        && cur.unwrap().ty == Lexer::TokenType.Hash
-        && lexer.peek(0).unwrap().ty == Lexer::TokenType.Hash
-        && lexer.peek(1).unwrap().ty == Lexer::TokenType.Hash {
-            let _, _, _ = (lexer.next(), lexer.next(), lexer.next());
-            let kw = lexer.next().unwrap();
+        && cur.unwrap().ty == BasicLexer::TokenType.Hash
+        && lexer.peek(0).unwrap().ty == BasicLexer::TokenType.Hash
+        && lexer.peek(1).unwrap().ty == BasicLexer::TokenType.Hash {
+            let _, _, kw = (lexer.next(), lexer.next(), lexer.next());
+            println(kw.unwrap());
         }
         cur = lexer.next();
     }
@@ -20,7 +20,7 @@ fn parse(@const @ref lexer) {
 let fp = "../std/os.earl";
 let src = IO::file_to_str(fp);
 
-let lexer = Lexer::T(("int", "void"));
+let lexer = BasicLexer::T(("int", "void"));
 
 lexer.lex(src, fp);
 parse(lexer);
