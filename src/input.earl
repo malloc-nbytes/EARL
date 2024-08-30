@@ -1,26 +1,8 @@
 module Main
 
-import "std/io.earl"
-import "std/basic-lexer.earl"
-
-fn parse(@const @ref lexer) {
-    let cur = lexer.next();
-    while cur {
-        if lexer.sz() >= 4
-        && cur.unwrap().ty == BasicLexer::TokenType.Hash
-        && lexer.peek(0).unwrap().ty == BasicLexer::TokenType.Hash
-        && lexer.peek(1).unwrap().ty == BasicLexer::TokenType.Hash {
-            let _, _, kw = (lexer.next(), lexer.next(), lexer.next().unwrap());
-            println(kw);
-        }
-        cur = lexer.next();
-    }
+enum T {
+    I = "hi",
+    X = 2
 }
 
-let fp = "../src/std/os.earl";
-let src = IO::file_to_str(fp);
-
-let lexer = BasicLexer::T(("int", "void"));
-
-lexer.lex(src, fp);
-parse(lexer);
+println(x);

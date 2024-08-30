@@ -38,11 +38,9 @@ import "std/char.earl"
     Keyword,
 }
 
-@pub class Token [lx, ty, r, c, fp] {
-    @pub let lx = lx;
-    @pub let ty = ty;
-    @pub let r = r;
-    @pub let c = c;
+class Token [lx, ty, r, c, fp] {
+    @pub let lx, ty = (lx, ty);
+    @pub let r, c = (r, c);
     @pub let fp = fp;
 }
 
@@ -112,7 +110,7 @@ import "std/char.earl"
             }
             else if Char::isalpha(src[i]) || src[i] == '_' {
                 let lx, dx = consume_while(src.substr(i, len(src)), |c| {
-                        return Char::isalnum(c) || c == '_';
+                    return Char::isalnum(c) || c == '_';
                 });
 
                 let t = none;
@@ -133,7 +131,7 @@ import "std/char.earl"
             }
             else if Char::isnum(src[i]) {
                 let lx, dx = consume_while(src.substr(i, len(src)), |c| {
-                        return Char::isnum(c);
+                    return Char::isnum(c);
                 });
                 let t = Token(lx, TokenType.IntLit, r, c, fp);
                 this.tokens.append(t);
@@ -142,8 +140,8 @@ import "std/char.earl"
             }
             else if src[i] == '"' {
                 let lx, dx = consume_while(src.substr(i+1, len(src)), |c| {
-                        return c != '"';
-                    });
+                    return c != '"';
+                });
                 let t = Token(lx, TokenType.StrLit, r, c, fp);
                 this.tokens.append(t);
                 i += dx+1;
@@ -151,7 +149,7 @@ import "std/char.earl"
             }
             else if src[i] == '\'' {
                 let lx, dx = consume_while(src.substr(i+1, len(src)), |c| {
-                        return c != '\'';
+                    return c != '\'';
                 });
                 let t = Token(lx, TokenType.CharLit, r, c, fp);
                 this.tokens.append(t);
@@ -160,7 +158,7 @@ import "std/char.earl"
             }
             else {
                 let potential_op, _ = consume_while(src.substr(i, len(src)), |c| {
-                        return !Char::isalnum(c) && c != ' ' && c != '\n' && c != '\t'  && c != '\r';
+                    return !Char::isalnum(c) && c != ' ' && c != '\n' && c != '\t'  && c != '\r';
                 });
                 let t, dx = handleop(potential_op, r, c, fp);
                 this.tokens.append(t);
