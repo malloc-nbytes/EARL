@@ -29,3 +29,26 @@ module Str
     }
     return lst;
 }
+
+@pub fn find(@ref s, t) {
+    for i in 0 to len(s) {
+        if s[i] == t { return some(i); }
+    }
+    return none;
+}
+
+@pub fn trim(@ref s) {
+    while len(s) > 0 && (s[0] == ' '
+        || s[0] == '\n'
+        || s[0] == '\t'
+        || s[0] == '\r') {
+        s.pop(0);
+    }
+    while len(s) > 0 && (s.back() == ' '
+        || s.back() == '\n'
+        || s.back() == '\t'
+        || s.back() == '\r') {
+        s.pop(len(s)-1);
+    }
+}
+

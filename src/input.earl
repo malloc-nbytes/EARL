@@ -1,12 +1,2 @@
 module Main
 
-import "std/io.earl"
-
-let lst = IO::file_to_str("std/os.earl").split("###").foreach(|s| {
-    println(s);
-    if len(s) == 0 { return; }
-    while len(s) > 0 && s[0] == ' ' { s.pop(0); }
-});
-
-println(lst);
-
