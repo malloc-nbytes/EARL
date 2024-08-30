@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.2] - 2024-30-8
+
+### Added
+- You can now mutate classes.
+- Added better error message with malformed classes.
+
+### Fixed
+- Various segfault bugs.
+
 ## [0.4.1] - 2024-27-8
 
 ### Added

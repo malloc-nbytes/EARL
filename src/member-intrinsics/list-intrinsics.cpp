@@ -115,7 +115,7 @@ Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
         dynamic_cast<earl::value::Tuple *>(obj.get())->foreach(closure.at(0), ctx);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->foreach(closure.at(0), ctx);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -144,7 +144,7 @@ Intrinsics::intrinsic_member_append(std::shared_ptr<earl::value::Obj> obj,
         dynamic_cast<earl::value::List *>(obj.get())->append(values);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->append(values, expr);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -159,7 +159,7 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
         dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0], expr);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -189,7 +189,7 @@ Intrinsics::intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
         throw InterpreterException(msg);
     }
 
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

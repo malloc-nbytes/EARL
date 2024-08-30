@@ -61,7 +61,7 @@ Intrinsics::intrinsic_member_write(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(param, 1, "write", expr);
     auto f = dynamic_cast<earl::value::File *>(obj.get());
     f->write(param[0]);
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -84,7 +84,7 @@ Intrinsics::intrinsic_member_dump(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "dump", expr);
     auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->dump();
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -96,5 +96,5 @@ Intrinsics::intrinsic_member_close(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "close", expr);
     auto *f = dynamic_cast<earl::value::File *>(obj.get());
     f->close();
-    return nullptr;
+    return std::make_shared<earl::value::Void>();
 }

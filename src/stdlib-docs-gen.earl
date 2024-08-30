@@ -1,5 +1,6 @@
 module Main
 
+import "std/os.earl"
 import "std/io.earl"
 import "std/basic-lexer.earl"
 
@@ -13,12 +14,27 @@ enum MainState {
 }
 
 enum SubState {
-    None        = 0,
-    Module      = 1 << 0,
-    Parameter   = 1 << 1,
-    Name        = 1 << 2,
-    Returns     = 1 << 3,
-    Description = 1 << 4,
+    None=0,
+    Module,
+    Parameter,
+    Name,
+    Returns,
+    Description,
+}
+
+enum Keyword {
+    Begin       = "BEGIN",
+    End         = "END",
+    Module      = "MODULE",
+    Name        = "NAME",
+    Parameter   = "PARAMETER",
+    Returns     = "RETURNS",
+    Description = "DESCRIPTION",
+    Classes     = "CLASSES",
+    Enums       = "ENUMS",
+    Methods     = "METHODS",
+    Functions   = "FUNCTIONS",
+    Variables   = "VARIABLES",
 }
 
 class State [] {
@@ -41,34 +57,74 @@ class State [] {
     }
 }
 
-enum Keyword {
-    Begin       = "BEGIN",
-    End         = "END",
-    Module      = "MODULE",
-    Name        = "NAME",
-    Parameter   = "PARAMETER",
-    Returns     = "RETURNS",
-    Description = "DESCRIPTION",
-    Classes     = "CLASSES",
-    Enums       = "ENUMS",
-    Methods     = "METHODS",
-    Functions   = "FUNCTIONS",
-    Variables   = "VARIABLES",
+class Parameter [] {
+    @pub let name, ty = ("", "");
+
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_ty(ty) {
+        this.ty = ty;
+    }
 }
 
-fn expect(lexer, ty) {
+class Class [] {
+    let _ = unimplemented();
+}
+
+class Enum [] {
+    let _ = unimplemented();
+}
+
+class Function [] {
+    @pub let name, returns, description = ("", "", "");
+    @pub let parameters = [];
+
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_param(param) {
+        this.parameters.append(param);
+    }
+
+    @pub fn add_returns(returns) {
+        this.returns = returns;
+    }
+
+    @pub fn add_description(desc) {
+        this.description = description;
+    }
+}
+
+class Variable [] {
+    let _ = unimplemented();
+}
+
+class Document [mod, variables, functions, enums, classes] {
+    @pub let mod = mod;
+    @pub let variables = variables;
+    @pub let functions = functions;
+    @pub let enums = enums;
+    @pub let classes = classes;
+}
+
+fn expect(@const @ref lexer, ty) {
     let t = lexer.next();
     if !t {
         panic("out of tokens");
     }
-    let tx = t.unwrap();
-    if tx.ty != ty {
-        panic("expected type ", ty, " but got ", tx.ty);
+    let tu = t.unwrap();
+    if tu.ty != ty {
+        panic("expected type ", ty, " but got ", tu.ty);
     }
-    return tx;
+    return tu;
 }
 
 fn parse(@const @ref lexer) {
+    let mod, variables, functions, enums, classes = ("", [], [], [], []);
+    let curfunc = Function();
     let cur = lexer.next();
     let state = State();
     while cur {
@@ -77,23 +133,14 @@ fn parse(@const @ref lexer) {
             && lexer.peek(0).unwrap().ty == BasicLexer::TokenType.Hash
             && lexer.peek(1).unwrap().ty == BasicLexer::TokenType.Hash
         {
-            let _, _, kw = (lexer.next(), lexer.next(), lexer.next().unwrap());
-            if kw.ty != BasicLexer::TokenType.Keyword {
-                match kw.lx {
-                    Keyword.Module -> { state.add_sub(SubState.Module); }
-                    Keyword.Name -> { state.add_sub(SubState.Name); }
-                    Keyword.Parameter -> { state.add_sub(SubState.Parameter); }
-                    Keyword.Returns -> { state.add_sub(SubState.Returns); }
-                    Keyword.Description -> { state.add_sub(SubState.Description); }
-                }
-            }
-            else if kw.lx == Keyword.Begin {
+            let t, _, kw = (lexer.next(), lexer.next(), lexer.next().unwrap());
+            if kw.lx == Keyword.Begin {
                 let section = expect(lexer, BasicLexer::TokenType.Keyword);
                 match section.lx {
                     Keyword.Functions -> { state.add_main(MainState.Functions); }
-                    Keyword.Classes -> { state.add_main(MainState.Classes); }
+                    Keyword.Classes   -> { state.add_main(MainState.Classes); }
                     Keyword.Variables -> { state.add_main(MainState.Variables); }
-                    Keyword.Enums -> { state.add_main(MainState.Enums); }
+                    Keyword.Enums     -> { state.add_main(MainState.Enums); }
                     _ -> { panic("unknown " + Keyword.Begin + " section: " + section.lx); }
                 }
             }
@@ -101,23 +148,66 @@ fn parse(@const @ref lexer) {
                 let section = expect(lexer, BasicLexer::TokenType.Keyword);
                 match section.lx {
                     Keyword.Functions -> { state.remove_main(MainState.Functions); }
-                    Keyword.Classes -> { state.remove_main(MainState.Classes); }
+                    Keyword.Classes   -> { state.remove_main(MainState.Classes); }
                     Keyword.Variables -> { state.remove_main(MainState.Variables); }
-                    Keyword.Enums -> { state.remove_main(MainState.Enums); }
+                    Keyword.Enums     -> { state.remove_main(MainState.Enums); }
                     _ -> { panic("unknown " + Keyword.End + " section: " + section.lx); }
                 }
             }
-            else {
+            else if kw.ty == BasicLexer::TokenType.Keyword {
+                match kw.lx {
+                    Keyword.Module      -> { state.add_sub(SubState.Module); }
+                    Keyword.Name        -> { state.add_sub(SubState.Name); }
+                    Keyword.Parameter   -> { state.add_sub(SubState.Parameter); }
+                    Keyword.Returns     -> { state.add_sub(SubState.Returns); }
+                    Keyword.Description -> { state.add_sub(SubState.Description); }
+                }
+            }
+
+            if (state.main_state `& MainState.Functions) != 0 {
+                if state.sub_state == SubState.Name {
+                    if curfunc.name != "" {
+                        functions.append(curfunc);
+                        curfunc = Function();
+                    }
+                    let n = lexer.next().unwrap().lx;
+                    curfunc.add_name(n);
+                }
+                else if state.sub_state == SubState.Returns {
+                    if curfunc.returns != "" {
+                        functions.append(curfunc);
+                        curfunc = Function();
+                    }
+                    let n = lexer.next().unwrap().lx;
+                    curfunc.add_returns(n);
+                }
+                else if state.sub_state == SubState.Description {
+                    if curfunc.description != "" {
+                        functions.append(curfunc);
+                        curfunc = Function();
+                    }
+                    let _, _, _ = (lexer.next(), lexer.next(), lexer.next());
+                    let s = "";
+                    cur = lexer.next();
+                    while cur && cur.unwrap().ty != BasicLexer::TokenType.Hash {
+                        s += cur.unwrap().lx + " ";
+                        cur = lexer.next();
+                    }
+                    println(s);
+                    curfunc.add_description(s);
+                }
+                else if state.sub_state == SubState.Parameter {
+                }
             }
         }
         cur = lexer.next();
     }
+
+    return (mod, variables, functions, enums, classes);
 }
 
 fn main() {
-    let fp = "./std/os.earl";
-    let src = IO::file_to_str(fp);
-
+    let documents = [];
     let keywords = (
         Keyword.Begin,
         Keyword.Module,
@@ -132,10 +222,24 @@ fn main() {
         Keyword.Variables,
         Keyword.End
     );
-    let lexer = BasicLexer::T(keywords);
 
-    lexer.lex(src, fp);
-    parse(lexer);
+    # Temporary filter for testing purposes
+    let stdlib = OS::ls("./std/").filter(|s| { return s == "./std/os.earl"; });
+
+    foreach fp in stdlib {
+        let src = IO::file_to_str(fp);
+
+        let lexer = BasicLexer::T(keywords);
+
+        lexer.lex(src, fp);
+        let mod, variables, functions, enums, classes = parse(lexer);
+        documents.append(Document(mod, variables, functions, enums, classes));
+
+        break;
+    }
+
+    return documents;
 }
 
-main();
+let docs = main();
+println(docs);

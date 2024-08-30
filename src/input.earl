@@ -1,8 +1,12 @@
 module Main
 
-enum T {
-    I = "hi",
-    X = 2
-}
+import "std/io.earl"
 
-println(x);
+let lst = IO::file_to_str("std/os.earl").split("###").foreach(|s| {
+    println(s);
+    if len(s) == 0 { return; }
+    while len(s) > 0 && s[0] == ' ' { s.pop(0); }
+});
+
+println(lst);
+

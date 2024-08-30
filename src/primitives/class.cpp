@@ -80,9 +80,15 @@ Class::boolean(void) {
 
 void
 Class::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
-    UNIMPLEMENTED("Class::mutate");
+
+    auto other0 = dynamic_cast<Class *>(other.get());
+    m_stmtclass = other0->m_stmtclass;
+    m_ctx = other0->m_ctx;
+    m_members = other0->m_members;
+    m_methods = other0->m_methods;
+    m_member_assignees = other0->m_member_assignees;
 }
 
 std::shared_ptr<Obj>

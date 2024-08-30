@@ -761,6 +761,7 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
             }
         } break;
         default: {
+            Err::err_wtok(tok);
             std::string msg = "invalid token type (" + std::to_string((int)tok->type()) + ") in class declaration";
             throw ParserException(msg);
         } break;
