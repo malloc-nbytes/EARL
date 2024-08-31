@@ -48,7 +48,6 @@ Str::value(void) {
     std::string actual = "";
     for (size_t i = 0; i < m_value.size(); ++i) {
         if (m_value.at(i) == '\0') {
-            assert(m_chars.at(i));
             actual += m_chars.at(i)->value();
         }
         else {
@@ -139,6 +138,7 @@ Str::pop(std::shared_ptr<Obj> &idx, Expr *expr) {
 
     if (m_value.at(I) == '\0')
         m_chars.erase(m_chars.begin() + I);
+
     m_value.erase(m_value.begin() + I);
 }
 
@@ -317,8 +317,7 @@ Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
     if (other->type() == Type::Str) {
         Str *otherstr = dynamic_cast<Str *>(other.get());
-        //m_value = otherstr->value();
-        m_value = otherstr->value();
+        m_value = otherstr->m_value;
         m_chars = otherstr->m_chars;
     }
     else {
@@ -352,12 +351,17 @@ Str::to_cxxstring(void) {
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
-    std::string prev = m_value;
+
+    auto value = m_value;
+    auto chars = m_chars;
+
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        for (int i = prev.size()-1; i >= 0; --i)
-            m_value.insert(m_value.begin(), prev.at(i));
+        for (int i = (int)value.size()-1; i >= 0; --i) {
+            m_value.insert(m_value.begin(), value.at(i));
+            m_chars.insert(m_chars.begin(), chars.at(i));
+        }
     } break;
     default: {
         Err::err_wtok(op);

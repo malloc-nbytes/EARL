@@ -20,16 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module IO
 
+### BEGIN ENUMS
+
+### NAME Fd
+### PARAMETER In: int
+### PARAMETER Out: int
+### PARAMETER Err: int
+### DESCRIPTION:
+###   The integer codes for `stdin`, `stdout`, and `stderr` for
+###   `In`, `Out`, and `Err` respectively.
 @pub enum Fd {
     In = 0,
     Out,
     Err,
 }
 
-# Get the contents of a file and
-# put it into a string.
+### END ENUMS
+
+### BEGIN FUNCTIONS
+
+### NAME file_to_str
+### PARAMETER fp: str
+### RETURNS str
+### DESCRIPTION
+###   Get the contents of a file `fp` and put it into a string.
 @pub fn file_to_str(fp) {
     let f = open(fp, "r");
     let s = f.read();
@@ -37,11 +54,26 @@ module IO
     return s;
 }
 
+### NAME read_lines
+### PARAMETER fp: str
+### RETURNS list
+### DESCRIPTION
+###   Read the lines of the file `fp` and get
+###   each line as a list.
 @pub fn read_lines(fp) {
     let content = file_to_str(fp);
     return content.split("\n");
 }
 
+### NAME rename
+### PARAMETER path_from: str
+### PARAMETER path_to: str
+### RETURNS unit
+### DESCRIPTION
+###   Rename the file `path_from` to `path_to`.
 @pub fn rename(path_from, path_to) {
     __internal_move__(path_from, path_to);
 }
+
+### END FUNCTIONS
+

@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.3] - 2024-31-8
+
+### Fixed
+- spec_mutate() for str did not copy over the allocated characters.
+
 ## [0.4.2] - 2024-30-8
 
 ### Added
