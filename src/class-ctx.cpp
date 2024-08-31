@@ -113,21 +113,21 @@ ClassCtx::function_add(std::shared_ptr<earl::function::Obj> func) {
 
 bool
 ClassCtx::function_exists(const std::string &id) {
-    bool res = false;
-    if (m_owner && m_owner->type() == CtxType::World)
+    bool res = m_funcs.contains(id);
+    if (!res && m_owner && m_owner->type() == CtxType::World)
         res = dynamic_cast<WorldCtx *>(m_owner.get())->function_exists(id);
-    if (!res)
-        res = m_funcs.contains(id);
+    else if (!res && m_owner && m_owner->type() == CtxType::Function)
+        res = dynamic_cast<FunctionCtx *>(m_owner.get())->function_exists(id);
     return res;
 }
 
 std::shared_ptr<earl::function::Obj>
 ClassCtx::function_get(const std::string &id) {
-    std::shared_ptr<earl::function::Obj> func = nullptr;
-    if (m_owner && m_owner->type() == CtxType::World)
+    std::shared_ptr<earl::function::Obj> func = m_funcs.get(id);
+    if (!func && m_owner && m_owner->type() == CtxType::World)
         func = dynamic_cast<WorldCtx *>(m_owner.get())->function_get(id);
-    if (!func)
-        func = m_funcs.get(id);
+    else if (!func && m_owner && m_owner->type() == CtxType::Function)
+        func = dynamic_cast<FunctionCtx *>(m_owner.get())->function_get(id);
     return func;
 }
 

@@ -34,11 +34,33 @@ enum State {
     Enums     = 1 << Utils::iota(),
 }
 
+fn replace_backticks(@ref desc) {
+    let backtick = -1;
+    for i in 0 to len(desc) {
+        let c = desc[i];
+        if c == '`' {
+            if backtick != -1 {
+                desc[backtick] = '=';
+                desc[i] = '=';
+                backtick = -1;
+            }
+            else {
+                backtick = i;
+            }
+        }
+    }
+}
+
+fn test(s) {
+    println("HERE: " + s);
+}
+
 class Parameter [name, ty] {
     @pub let name, ty = (name, ty);
     @pub fn add_name(name) {this.name = name;}
     @pub fn add_ty(ty) {this.ty = ty;}
 }
+
 class Function [] {
     @pub let name, returns, description = ("", "", "");
     @pub let parameters = [];
@@ -57,22 +79,7 @@ class Function [] {
         }
         s += ") -> " + this.returns + "\n";
         s += "#+end_example\n\n";
-
-        let backtick = -1;
-        for i in 0 to len(this.description) {
-            let c = this.description[i];
-            if c == '`' {
-                if backtick != -1 {
-                    this.description[backtick] = '=';
-                    this.description[i] = '=';
-                    backtick = -1;
-                }
-                else {
-                    backtick = i;
-                }
-            }
-        }
-
+        replace_backticks(this.description);
         s += this.description + "\n";
         return s;
     }
@@ -83,8 +90,26 @@ class Class [] {let _ = unimplemented();}
 class Enum [] {
     @pub let name = "";
     @pub let items = [];
+
     @pub fn add_name(name) {this.name = name;}
     @pub fn add_item(item) {this.items.append(item);}
+    @pub fn to_org_mode() {
+        let s = "#+begin_example\n";
+        s += this.name + " {\n";
+        for i in 0 to len(this.items) {
+            let di = this.items[i];
+            s += "    " + di.name + " -> " + di.ty;
+            if i != len(this.items)-1 {
+                s += ",";
+            }
+            s += "\n";
+        }
+        s += "}\n";
+        s += "#+end_example\n\n";
+
+
+        return s;
+    }
 }
 
 class Entry [import_, mod, classes, functions, enums, variables] {
@@ -106,6 +131,17 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         return result;
     }
 
+    fn enums_to_org_mode() {
+        let result = "";
+        foreach e in this.enums {
+            let s = "#+begin_quote\n";
+            s += e.to_org_mode();
+            s += "#+end_quote\n";
+            result += s + "\n";
+        }
+        return result;
+    }
+
     @pub fn to_org_mode() {
         let s = "** " + this.mod + "\n\n";
         s += "*** *Import*: =\""+ this.import_ +"\"=\n\n";
@@ -116,9 +152,12 @@ class Entry [import_, mod, classes, functions, enums, variables] {
             s += " /None/\n\n";
         }
 
-        s += "*** *Enum List*:";
+        s += "*** *Enum List*:\n";
         if len(this.enums) == 0 {
             s += " /None/\n\n";
+        }
+        else {
+            s += enums_to_org_mode();
         }
 
         s += "*** *Function List*:\n";
@@ -133,7 +172,7 @@ class Entry [import_, mod, classes, functions, enums, variables] {
     }
 }
 
-let filepath = "std/io.earl";
+let filepath = "../src/std/io.earl";
 let lst = IO::file_to_str(filepath).split("###");
 lst.foreach(|@ref el| { Str::trim(el); });
 lst.pop(0); # pop MIT License
@@ -160,6 +199,12 @@ let desc = false;
                 cur_item = some(Function());
             }
         }
+        else if (state `& State.Enums) != 0 {
+            if cur_item.unwrap().name != "" {
+                enums.append(cur_item.unwrap());
+                cur_item = some(Enum());
+            }
+        }
     }
     else if parts2[0] == "RETURNS" {
         if (state `& State.Functions) != 0 {
@@ -183,8 +228,11 @@ let desc = false;
 
 @world fn absolute_commit() {
     assert(cur_item != none);
-    if (state `& State.Functions) {
+    if (state `& State.Functions) != 0 {
         funcs.append(cur_item.unwrap());
+    }
+    else if (state `& State.Enums) != 0 {
+        enums.append(cur_item.unwrap());
     }
 }
 
@@ -247,6 +295,9 @@ foreach el in lst {
         if (state `& State.Functions) != 0 {
             cur_item.unwrap().add_name(parts2[1]);
         }
+        if (state `& State.Enums) != 0 {
+            cur_item.unwrap().add_name(parts2[1]);
+        }
     }
     else if parts2[0] == "RETURNS" {
         try_commit();
@@ -262,6 +313,9 @@ foreach el in lst {
         let ty = parts2[2];
         if (state `& State.Functions) != 0 {
             cur_item.unwrap().add_param(Parameter(name, ty));
+        }
+        else if (state `& State.Enums) != 0 {
+            cur_item.unwrap().add_item(Parameter(name, ty));
         }
     }
     else if parts2[0] == "DESCRIPTION" {
