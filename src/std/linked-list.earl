@@ -30,6 +30,11 @@ class Node [value] {
 
 ### BEGIN CLASSES
 
+### NAME T
+### PARAMETER init: list
+### DESCRIPTION
+###   Takes the initializer list `init` and creates a linked list
+###   of the elements if they exist.
 @pub class T [init] {
     let hd = none;
 

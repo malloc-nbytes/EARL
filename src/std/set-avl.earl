@@ -158,6 +158,7 @@ class Node [value] {
     ### BEGIN METHODS
 
     ### NAME insert
+    ### PARAMETER value: int
     ### RETURNS unit
     ### DESCRIPTION
     ###   Insert `value` into the `set`.
@@ -166,6 +167,7 @@ class Node [value] {
     }
 
     ### NAME contains
+    ### PARAMETER value: any
     ### RETURNS bool
     ### DESCRIPTION
     ###   Returns `true` if `value` is in the `set` or `false` if not found.

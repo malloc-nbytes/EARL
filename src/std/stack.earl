@@ -25,6 +25,11 @@ module Stack
 
 ### BEGIN CLASSES
 
+### NAME T
+### PARAMETER init: list
+### DESCRIPTION
+###   Create a stack based off of the initializer list `init`
+###   if it contains any elements.
 @pub class T [init] {
     @ref let lst = init;
 
@@ -40,7 +45,7 @@ module Stack
     }
 
     ### NAME pop
-    ### RETURN unit
+    ### RETURNS unit
     ### DESCRIPTION
     ###   Pops last element on the `stack`.
     @pub fn pop() {

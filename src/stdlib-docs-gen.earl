@@ -92,7 +92,7 @@ class Class [] {
     @pub fn addto_description(s) {this.description += s;}
     @pub fn add_method(m) {this.methods.append(m);}
     @pub fn to_org_mode() {
-        let s = "#+begin_example\n";
+        let s = "#+begin_quote\n#+begin_example\n";
         s += this.name + " [";
         for i in 0 to len(this.params) {
             s += this.params[i].name + ": " + this.params[i].ty;
@@ -101,12 +101,16 @@ class Class [] {
         s += "] -> " + this.name + "\n";
         s += "#+end_example\n";
         replace_backticks(this.description);
-        s += this.description + "\n";
+        s += this.description + "\n#+end_quote\n";
 
-        s += "\n*** *Implements*\n\n";
+        if len(this.methods) != 0 {
+            s += "\n*** *=" + this.name + "= Implements*\n\n";
+        }
 
         foreach m in this.methods {
+            s += "#+begin_quote\n";
             s += m.to_org_mode() + "\n";
+            s += "#+end_quote\n";
         }
 
         return s;
@@ -175,9 +179,8 @@ class Entry [import_, mod, classes, functions, enums, variables] {
     fn classes_to_org_mode() {
         let result = "";
         foreach c in this.classes {
-            let s = "#+begin_quote\n";
-            s += c.to_org_mode();
-            s += "#+end_quote\n";
+            # Quotes are handled in the classes.
+            let s = c.to_org_mode();
             result += s + "\n";
         }
         return result;
@@ -187,14 +190,6 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         let s = "** " + this.mod + "\n\n";
         s += "*** *Import*: =\""+ this.import_ +"\"=\n\n";
         s += "*** *Module*: =" + this.mod + "=\n\n";
-
-        s += "*** *Class List*:";
-        if len(this.classes) == 0 {
-            s += " /None/\n\n";
-        }
-        else {
-            s += "\n" + classes_to_org_mode();
-        }
 
         s += "*** *Enum List*:";
         if len(this.enums) == 0 {
@@ -210,6 +205,14 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         }
         else {
             s += "\n" + functions_to_org_mode();
+        }
+
+        s += "*** *Class List*:";
+        if len(this.classes) == 0 {
+            s += " /None/\n\n";
+        }
+        else {
+            s += "\n" + classes_to_org_mode();
         }
 
         return s;
@@ -317,7 +320,7 @@ fn commit(@ref cur_item,
     }
 }
 
-fn main(filepath) {
+fn index(filepath) {
     let lst = ready_input(filepath);
 
     let state = State.None;
@@ -331,7 +334,6 @@ fn main(filepath) {
         let parts = el.split("\n");
         if parts[0] == "MODULE" {
             mod = parts[1].split(" ")[1];
-            println(f"MODULE: {mod}");
             continue;
         }
         let splits = parts[0].split(" ");
@@ -447,14 +449,23 @@ fn main(filepath) {
     return e.to_org_mode();
 }
 
-let stdlib = OS::ls("./std/");
-let result = "";
+fn main() {
+    let stdlib = OS::ls("std/");
+    let result = "#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+OPTIONS: num:nil
+";
+    let resfp = "out.org";
 
-foreach f in stdlib {
-    result.append(main(f));
-    # result += main(f);
+    foreach f in stdlib {
+        println(f"Indexing {f}");
+        result.append(index(f));
+    }
+
+    let outfp = open(resfp, "w");
+    outfp.write(result);
+    outfp.close();
+
+    println(f"Wrote to: {resfp}");
 }
 
-let outfp = open("out.org", "w");
-outfp.write(result);
-outfp.close();
+main();
