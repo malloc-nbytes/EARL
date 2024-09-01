@@ -2048,6 +2048,25 @@ Prints all elements in the list to =stdout=.
 
 #+end_quote
 
+** Encryption
+
+*** *Import*: ="std/encryption.earl"=
+
+*** *Module*: =Encryption=
+
+*** *Enum List*: /None/
+
+*** *Function List*:
+#+begin_quote
+#+begin_example
+rle(src: str) -> str
+#+end_example
+
+Performs Run Length Encoding on =src=. 
+#+end_quote
+
+*** *Class List*: /None/
+
 ** IO
 
 *** *Import*: ="std/io.earl"=
@@ -2064,7 +2083,7 @@ Fd {
 }
 #+end_example
 
-The integer codes for `stdin`, `stdout`, and `stderr` for `In`, `Out`, and `Err` respectively. 
+The integer codes for =stdin=, =stdout=, and =stderr= for =In=, =Out=, and =Err= respectively. 
 #+end_quote
 
 *** *Function List*:

@@ -1,26 +1,6 @@
 module Main
 
-fn outer(s) {
-    println(s);
-}
+import "std/encryption.earl"
 
-class T2 [] {
-    @pub let s = "hello";
-}
-
-class T [t1] {
-    let lst = t1;
-    @pub fn test() {
-        foreach t in this.lst {
-            outer(t.s);
-        }
-    }
-}
-
-let t1 = T2();
-let t2 = T2();
-let t3 = T2();
-
-let t = T([t1, t2, t3]);
-t.test();
-
+let s = "aaaaaaaaaaaabbbcdddddddcdeeeeeeeeeffgge";
+println(Encryption::rle(s));

@@ -140,6 +140,7 @@ class Enum [] {
 
         s += "}\n";
         s += "#+end_example\n\n";
+        replace_backticks(this.description);
         s += this.description + "\n";
 
         return s;
@@ -299,23 +300,28 @@ fn commit(@ref cur_item,
     assert(cur_item.is_some());
     if (state `& State.Functions) != 0 {
         funcs.append(cur_item.unwrap());
+        println("**********FUNCTION**********\n", cur_item.unwrap());
         cur_item = some(Function());
     }
     else if (state `& State.Methods) != 0 {
         assert(cur_method.is_some());
         cur_item.unwrap().add_method(cur_method.unwrap());
+        println("**********METHOD**********\n", cur_item.unwrap());
         cur_method = some(Function());
     }
     else if (state `& State.Classes) != 0 {
         classes.append(cur_item.unwrap());
+        println("**********CLASS**********\n", cur_item.unwrap());
         cur_item = some(Class());
     }
     else if (state `& State.Enums) != 0 {
         enums.append(cur_item.unwrap());
+        println("**********ENUM**********\n", cur_item.unwrap());
         cur_item = some(Enum());
     }
     else if (state `& State.Variables) != 0 {
         vars.append(cur_item.unwrap());
+        println("**********VARIABLE**********\n", cur_item.unwrap());
         cur_item = some(Enum());
     }
 }
@@ -446,24 +452,33 @@ fn index(filepath) {
         panic("missing module for file: " + filepath);
     }
     let e = Entry(filepath, mod, classes, funcs, enums, vars);
-    return e.to_org_mode();
+    return (e.to_org_mode(), mod);
 }
 
 fn main() {
     let stdlib = OS::ls("std/");
     let autogen = "";
     let docsfp = "../EARL-language-reference.org";
+    let modules = [];
 
     foreach f in stdlib {
-        println(f"Indexing {f}");
-        autogen.append(index(f));
+        println(f"**********Indexing {f}**********");
+        let content, mod = index(f);
+        autogen.append(content);
+        modules.append(mod);
     }
 
     let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0]+"# BEGIN_AUTOGEN\n";
 
     let f2 = open(docsfp, "w");
-    f2.write(orig_content+autogen);
+    let content = orig_content+autogen;
+    f2.write(content);
     f2.close();
+
+    println(f"The following modules were to {docsfp}");
+    foreach m in modules {
+        println(f"    {m}");
+    }
 }
 
 main();
