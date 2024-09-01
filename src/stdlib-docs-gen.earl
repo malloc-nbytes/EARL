@@ -451,21 +451,19 @@ fn index(filepath) {
 
 fn main() {
     let stdlib = OS::ls("std/");
-    let result = "#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
-#+OPTIONS: num:nil
-";
-    let resfp = "out.org";
+    let autogen = "";
+    let docsfp = "../EARL-language-reference.org";
 
     foreach f in stdlib {
         println(f"Indexing {f}");
-        result.append(index(f));
+        autogen.append(index(f));
     }
 
-    let outfp = open(resfp, "w");
-    outfp.write(result);
-    outfp.close();
+    let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0]+"# BEGIN_AUTOGEN\n";
 
-    println(f"Wrote to: {resfp}");
+    let f2 = open(docsfp, "w");
+    f2.write(orig_content+autogen);
+    f2.close();
 }
 
 main();

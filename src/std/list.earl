@@ -136,10 +136,24 @@ import "std/utils.earl" full
 
 ### NAME quicksort
 ### PARAMETER lst: @ref list
-### PARAMETER compar: closure(x1: any, x2: type(x1)) -> int
+### PARAMETER compar: closure(x1: any, x2: type(x1)) -> bool|int
 ### RETURNS unit
 ### DESCRIPTION
-###   Quicksorts `lst` in-place based on the comparison closure `compar`.
+###   where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$
+###
+###   and $F$ is defined by
+###
+###   \[
+###   F(x_1, x_2) = \begin{cases}
+###         true & \text{if } R(x_1) \ge R(x_2) \\
+###         false & \text{if } R(x_1) < R(x_2)
+###      \end{cases}
+###   \]
+###
+###   and $R(x)$ is some ranking function that produces a rank of $x$.
+###
+###   Performs the quicksort sorting algorithm on =lst= and
+###   sorts by the comparison closure =compar=.
 @pub fn quicksort(@ref lst, compar) {
     let __quicksort = |@ref lst, low, high, @ref compar| {
         let partition = |@ref lst, low, high| {

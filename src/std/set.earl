@@ -34,8 +34,26 @@ class Node [value] {
 ### NAME T
 ### PARAMETER init: list
 ### PARAMETER compar: closure(x1: any, x2: type(x1)) -> int
-### 
-###   The class for a set.
+### DESCRIPTION
+###   where =compar= is some ordering function $F(x_1, x_2) \rightarrow k \in \{2,1,0\}$
+###
+###   and $F$ is defined by
+###
+###   \[
+###   F(x_1, x_2) = \begin{cases}
+###         2 & \text{if } R(x_1) > R(x_2) \\
+###         1 & \text{if } R(x_2) > R(x_1) \\
+###         0 & \text{if } R(x_1) = R(x_2)
+###      \end{cases}
+###   \]
+###   and $R(x)$ is some ranking function that produces a rank of $x$.
+###
+###   Creates a =Set= container with the initializer list =init= and the
+###   comparison function =compar=. This container stores the values
+###   in a binary search tree, so it needs to know how to compare the values
+###   and decide which is bigger and which isn't.
+###
+###   Time complexity: $O(n \log n)$ where $n = |$ =init= $|$.
 @pub class T [init, compar] {
     let root = none;
     let compar = compar;
