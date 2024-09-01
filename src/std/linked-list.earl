@@ -20,12 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module SinglyLL
 
 class Node [value] {
     @pub let value = value;
     @pub let next = none;
 }
+
+### BEGIN CLASSES
 
 @pub class T [init] {
     let hd = none;
@@ -36,6 +39,13 @@ class Node [value] {
         }
     }
 
+    ### BEGIN METHODS
+
+    ### NAME insert
+    ### PARAMETER value: any
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Inserts `value` into the list.
     @pub fn insert(value) {
         let n = some(Node(value));
 
@@ -48,6 +58,11 @@ class Node [value] {
         }
     }
 
+    ### NAME contains
+    ### PARAMETER value: any
+    ### RETURNS bool
+    ### DESCRIPTION
+    ###   Checks to see if `value` is in the list. Returns `true` if so, else `false`.
     @pub fn contains(value) {
         let it = hd;
         while it.is_some() && it.unwrap().value != value{
@@ -59,6 +74,10 @@ class Node [value] {
         return false;
     }
 
+    ### NAME show
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Prints all elements in the list to `stdout`.
     @pub fn show() {
         let it = hd;
         while it.is_some() {
@@ -66,4 +85,9 @@ class Node [value] {
             it = it.unwrap().next;
         }
     }
+
+    ### END METHODS
+
 }
+
+### END CLASSES

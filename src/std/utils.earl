@@ -22,12 +22,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Utils
 
+### BEGIN FUNCTIONS
+
+### NAME is_even
+### PARAMETER n: int
+### RETURNS bool
+### DESCRIPTION
+###   Retruns `true` if `n` is even, or `false` if otherwise.
 @pub fn is_even(n) {
     return n%2 == 0;
 }
 
+### NAME swap
+### PARAMETER x1: @ref any
+### PARAMETER x2: @ref type(x1)
+### RETURNS unit
+### DESCRIPTION
+###   Swap `x1` and `x2` in-place.
 @pub fn swap(@ref x1, @ref x2) {
     let t = x1;
     x1 = x2;
@@ -36,6 +50,10 @@ module Utils
 
 let iota_N = 0;
 
+### NAME iota
+### RETURNS int
+### DESCRIPTION
+###   Returns 0 on first call, then 0+1 on second, then 0+1+1 on third etc.
 @pub @world
 fn iota() {
     let res = iota_N;
@@ -43,7 +61,4 @@ fn iota() {
     return res;
 }
 
-# @pub fn renamef(@ref oldf, @ref newf) 
-    # int save = 0;
-
-# for i in 0..len(lst)
+### END FUNCTIONS

@@ -72,6 +72,12 @@ module OS
     f.close();
 }
 
+### NAME name_and_ext
+### PARAMETER filepath: str
+### RETURNS tuple
+### DESCRIPTION
+###   Returns a tuple of filename and extension. If either the name or extension
+###   cannot be found, the respective one will be set to `none`.
 @pub fn name_and_ext(filepath) {
     assert(len(filepath) > 0);
 
@@ -106,9 +112,14 @@ module OS
     return (name, ext);
 }
 
+### NAME move
+### PARAMETER path_from: str
+### PARAMETER path_to: str
+### RETURNS unit
+### DESCRIPTION
+###   Move the file `path_from` to `path_to`.
 @pub fn move(path_from, path_to) {
     __internal_move__(path_from, path_to);
 }
 
 ### END FUNCTIONS
-

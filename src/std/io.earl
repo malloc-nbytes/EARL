@@ -29,7 +29,7 @@ module IO
 ### PARAMETER In: int
 ### PARAMETER Out: int
 ### PARAMETER Err: int
-### DESCRIPTION:
+### DESCRIPTION
 ###   The integer codes for `stdin`, `stdout`, and `stderr` for
 ###   `In`, `Out`, and `Err` respectively.
 @pub enum Fd {
@@ -76,4 +76,3 @@ module IO
 }
 
 ### END FUNCTIONS
-

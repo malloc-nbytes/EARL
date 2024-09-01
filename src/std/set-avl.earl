@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module AVL
 
 import "std/math.earl"
@@ -31,6 +32,12 @@ class Node [value] {
     @pub let height = 1;
 }
 
+### BEGIN CLASSES
+
+### NAME T
+### PARAMETER init: list
+### DESCRIPTION
+###   The class for a set-avl.
 @pub class T [init] {
     let root = none;
 
@@ -140,18 +147,6 @@ class Node [value] {
         return this.search(r.unwrap().left, value);
     }
 
-    @pub fn insert(value) {
-        this.root = this.__insert(this.root, value);
-    }
-
-    @pub fn contains(value) {
-        return this.search(this.root, value).is_some();
-    }
-
-    @pub fn show() {
-        this.__show(this.root);
-    }
-
     fn __show(@ref cur) {
         if cur.is_some() {
             __show(cur.unwrap().left);
@@ -159,7 +154,37 @@ class Node [value] {
             __show(cur.unwrap().right);
         }
     }
+
+    ### BEGIN METHODS
+
+    ### NAME insert
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Insert `value` into the `set`.
+    @pub fn insert(value) {
+        this.root = this.__insert(this.root, value);
+    }
+
+    ### NAME contains
+    ### RETURNS bool
+    ### DESCRIPTION
+    ###   Returns `true` if `value` is in the `set` or `false` if not found.
+    @pub fn contains(value) {
+        return this.search(this.root, value).is_some();
+    }
+
+    ### NAME show
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Prints all values in the `set`.
+    @pub fn show() {
+        this.__show(this.root);
+    }
+
+    ### END METHODS
 }
+
+### END CLASSES
 
 # The default closure that the set can use
 # when dealing with integers.

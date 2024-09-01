@@ -20,8 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Str
 
+### BEGIN FUNCTIONS
+
+### NAME to_list
+### PARAMETER s: str
+### RETURNS list
+### DESCRIPTION
+###   Convert the string `s` to a `list`.
 @pub fn to_list(@ref s) {
     let lst = [];
     foreach c in s {
@@ -30,6 +38,12 @@ module Str
     return lst;
 }
 
+### NAME find
+### PARAMETER s: @ref str
+### PARAMETER t: char
+### RETURNS int
+### DESCRIPTION
+###   Returns the index of target `t` in a `some` value or `none` if not found.
 @pub fn find(@ref s, t) {
     for i in 0 to len(s) {
         if s[i] == t { return some(i); }
@@ -37,6 +51,11 @@ module Str
     return none;
 }
 
+### NAME trim
+### PARAMETER s: @ref str
+### RETURNS unit
+### DESCRIPTION
+###   Trims all whitespace (spaces, tabs, newlines etc.) from `s` in-place.
 @pub fn trim(@ref s) {
     while len(s) > 0 && (s[0] == ' '
         || s[0] == '\n'
@@ -52,3 +71,4 @@ module Str
     }
 }
 
+### END FUNCTIONS

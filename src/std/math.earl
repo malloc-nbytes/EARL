@@ -20,10 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Math
 
 import "std/list.earl"
 
+### BEGIN FUNCTIONS
+
+### NAME max
+### PARAMETER x: int|float
+### PARAMETER y: int|float
+### RETURNS int|float
+### DESCRIPTION
+###   Returns the greater of `x` and `y`.
 @pub fn max(x, y) {
     if x >= y {
         return x;
@@ -31,6 +40,12 @@ import "std/list.earl"
     return y;
 }
 
+### NAME max
+### PARAMETER x: int|float
+### PARAMETER y: int|float
+### RETURNS int|float
+### DESCRIPTION
+###   Returns the minimum of `x` and `y`.
 @pub fn min(x, y) {
     if x <= y {
         return x;
@@ -38,6 +53,11 @@ import "std/list.earl"
     return y;
 }
 
+### NAME max
+### PARAMETER x: int|float
+### RETURNS int|float
+### DESCRIPTION
+###   Returns the absolute value of `x`.
 @pub fn abs(x) {
     if x < 0 {
         return x * (0-1);
@@ -45,11 +65,14 @@ import "std/list.earl"
     return x;
 }
 
-# Statistical Functions
+# Statistical Functions #
 
-# Mode
-# This function returns a list of all modes that appear at the
-# highest frequency in the given list in the order modes are found.
+### NAME mode
+### PARAMETER lst: list
+### RETURNS list
+### DESCRIPTION
+###   This function returns a list of all modes that appear at the
+###   highest frequency in the given list in the order modes are found.
 @pub fn mode(lst) {
 
     if len(lst) == 0 {
@@ -81,14 +104,20 @@ import "std/list.earl"
     return lst_modes;
 }
 
-# Mean
-# This function returns the mean (Average in a dataset) of a given list
+### NAME mean
+### PARAMETER lst: list
+### RETURNS float
+### DESCRIPTION
+###   Returns the mean (average in a dataset) of a given list.
 @pub fn mean(lst) {
     return List::sumf(lst) / len(lst);
 }
 
-# Median
-# This function sorts and then returns the middle number of a given list
+### NAME median
+### PARAMETER lst: list
+### RETURNS int
+### DESCRIPTION
+###   This function sorts and then returns the middle number of a given list
 @pub fn median(lst) {
     List::quicksort(lst, List::DEFAULT_INT_ASCEND_QUICKSORT);
 
@@ -101,8 +130,11 @@ import "std/list.earl"
     return lst[middle];
 }
 
-# list min
-# This function finds the smallest element in a list
+### NAME list_min
+### PARAMETER lst: list
+### RETURNS int|float
+### DESCRIPTION
+###   Returns the smallest element `lst`.
 @pub fn list_min(lst) {
     if len(lst) == 0 {
         return none;
@@ -119,8 +151,11 @@ import "std/list.earl"
     return min;
 }
 
-# list max
-# This function finds the largest element in a list
+### NAME list_max
+### PARAMETER lst: list
+### RETURNS int|float
+### DESCRIPTION
+###   Returns the largest element `lst`.
 @pub fn list_max(lst) {
     if len(lst) == 0 {
         return none;
@@ -137,9 +172,43 @@ import "std/list.earl"
     return max;
 }
 
+### NAME area_of_circle
+### PARAMETER r: float|int
+### RETURNS float|int
+### DESCRIPTION
+###   Returns the area of a circle with radius `r`.
+@pub @world
+fn area_of_circle(r) {
+    return PI * (r**2);
+}
+
+### NAME area_of_cylinder
+### PARAMETER r: float|int
+### PARAMETER h: float|int
+### RETURNS float|int
+### DESCRIPTION
+###   Returns the area of a cylinder with radius `r` and height `h`.
+@pub @world
+fn area_of_cylinder(r, h) {
+    return h * PI * (r**2);
+}
+
+### NAME area_of_cone
+### PARAMETER r: float|int
+### PARAMETER h: float|int
+### RETURNS float|int
+### DESCRIPTION
+###   Returns the area of a cone with radius `r` and height `h`.
+@pub @world
+fn area_of_cone(r, h) {
+    return (1/3) * h * PI * (r**2);
+}
+
+### END FUNCTIONS
+
 # Mathematical Constants
 # pi
-@pub let pi = 3.141592653589793;
+@pub @const let PI = 3.141592653589793;
 
 # Euler's number
-@pub let euler = 2.718281828459045;
+@pub @const let EULER = 2.718281828459045;

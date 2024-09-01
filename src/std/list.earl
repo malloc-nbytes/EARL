@@ -20,10 +20,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module List
 
 import "std/utils.earl" full
 
+### BEGIN FUNCTIONS
+
+### NAME preset
+### PARAMETER elem: any
+### PARAMETER cap: int
+### RETURNS str
+### DESCRIPTION
+###   Creates a list with elements `elem` of size `cap`.
 @pub fn preset(elem, cap) {
     let lst = [];
     for i in 0 to cap {
@@ -32,6 +41,13 @@ import "std/utils.earl" full
     return lst;
 }
 
+### NAME from_range
+### PARAMETER start: int
+### PARAMETER stop: int
+### PARAMETER stride: int
+### RETURNS list
+### DESCRIPTION
+###   Takes a list and then returns element within range specified by the parameters `start`, `stop`, `stride`.
 @pub fn from_range(start, stop, stride) {
     assert(stride != 0);
 
@@ -46,12 +62,23 @@ import "std/utils.earl" full
     return lst;
 }
 
+### NAME fill
+### PARAMETER lst: @ref list
+### PARAMETER k : any
+### RETURNS unit
+### DESCRIPTION
+###   Fills the given list `lst` with element `k`.
 @pub fn fill(@ref lst, k) {
     for i in 0 to len(lst) {
         lst[i] = k;
     }
 }
 
+### NAME sumf
+### PARAMETER lst: @ref lst
+### RETURNS float
+### DESCRIPTION
+###   Returns the sum all elements in `lst` as a float.
 @pub fn sumf(@ref lst) {
     let s = 0.0;
     for i in 0 to len(lst) {
@@ -60,6 +87,11 @@ import "std/utils.earl" full
     return s;
 }
 
+### NAME sumf
+### PARAMETER lst: @ref lst
+### RETURNS int
+### DESCRIPTION
+###   Returns the sum all elements in `lst` as an integer.
 @pub fn sum(@ref lst) {
     let s = 0;
     for i in 0 to len(lst) {
@@ -68,17 +100,30 @@ import "std/utils.earl" full
     return s;
 }
 
+### NAME find
+### PARAMETER lst: @ref lst
+### PARAMETER elem: @ref any
+### RETURNS any
+### DESCRIPTION
+###   Takes a reference to a list and a reference to an element and looks for the element find in the given list
+###   Returns the index of the first occurrence that `elem` appears in `lst` wrapped in `some`, or `none` if not found.
 @pub fn find(@ref lst, @ref elem) {
     let i = 0;
     while i < len(lst) {
         if elem == lst[i] {
-            return i;
+            return some(i);
         }
-        i = i+1;
+        i += 1;
     }
-    return 0-1;
+    return none;
 }
 
+### NAME count
+### PARAMETER lst: @ref list
+### PARAMETER elem: @ref any
+### RETURNS int
+### DESCRIPTION
+###   Counts the number of occurrences that `elem` appears in `lst`.
 @pub fn count(@ref lst, @ref elem) {
     let c = 0;
     for i in 0 to len(lst) {
@@ -89,6 +134,12 @@ import "std/utils.earl" full
     return c;
 }
 
+### NAME quicksort
+### PARAMETER lst: @ref list
+### PARAMETER compar: closure(x1: any, x2: type(x1)) -> int
+### RETURNS unit
+### DESCRIPTION
+###   Quicksorts `lst` in-place based on the comparison closure `compar`.
 @pub fn quicksort(@ref lst, compar) {
     let __quicksort = |@ref lst, low, high, @ref compar| {
         let partition = |@ref lst, low, high| {
@@ -114,8 +165,12 @@ import "std/utils.earl" full
         }
     };
 
-    return __quicksort(lst, 0, len(lst)-1, compar);
+    __quicksort(lst, 0, len(lst)-1, compar);
 }
 
+### END FUNCTIONS
+
+# autodoc comments todo
 @pub let DEFAULT_INT_ASCEND_QUICKSORT = |x, y| { return y > x; };
+
 @pub let DEFAULT_INT_DESCEND_QUICKSORT = |x, y| { return x > y; };

@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Set
 
 class Node [value] {
@@ -28,8 +29,14 @@ class Node [value] {
     @pub let right = none;
 }
 
-@pub
-class T [init, compar] {
+### BEGIN CLASSES
+
+### NAME T
+### PARAMETER init: list
+### PARAMETER compar: closure(x1: any, x2: type(x1)) -> int
+### 
+###   The class for a set.
+@pub class T [init, compar] {
     let root = none;
     let compar = compar;
 
@@ -37,10 +44,6 @@ class T [init, compar] {
         for i in 0 to len(init) {
             insert(init[i]);
         }
-    }
-
-    @pub fn extract() {
-        return this.__extract(this.root);
     }
 
     fn __extract(cur) {
@@ -54,14 +57,39 @@ class T [init, compar] {
         return ret;
     }
 
+    ### BEGIN METHODS
+
+    ### NAME extract
+    ### RETURNS list
+    ### DESCRIPTION
+    ###   Retrieve all elements in the `set` as a `list`.
+    @pub fn extract() {
+        return this.__extract(this.root);
+    }
+
+    ### NAME insert
+    ### PARAMETER value: any
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Insert `value` into the set.
     @pub fn insert(value) {
         this.__insert(this.root, value);
     }
 
+    ### NAME contains
+    ### PARAMETER value: any
+    ### RETURNS bool
+    ### DESCRIPTION
+    ###   Returns `true` if `value` is in the set, or `false` otherwise.
     @pub fn contains(value) {
         return this.__contains(this.root, value);
     }
 
+    ### NAME remove
+    ### PARAMETER value: any
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Remove `value` from the set.
     @pub fn remove(value) {
         unimplemented("Set.T.remove");
     }
@@ -69,6 +97,8 @@ class T [init, compar] {
     @pub fn show() {
         this.__show(this.root);
     }
+
+    ### END METHODS
 
     fn __show(@ref cur) {
         if cur.is_some() {
@@ -103,6 +133,8 @@ class T [init, compar] {
         }
     }
 }
+
+### END CLASSES
 
 # The default closure that the set can use
 # when dealing with integers.

@@ -20,30 +20,60 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Stack
+
+### BEGIN CLASSES
 
 @pub class T [init] {
     @ref let lst = init;
 
+    ### BEGIN METHODS
+
+    ### NAME push
+    ### PARAMETER x: any
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Pushes `x` onto the `stack`.
     @pub fn push(x) {
         this.lst.append(x);
     }
 
-    @pub fn spop() {
+    ### NAME pop
+    ### RETURN unit
+    ### DESCRIPTION
+    ###   Pops last element on the `stack`.
+    @pub fn pop() {
         this.lst.pop(len(this.lst)-1);
     }
 
+    ### NAME empty
+    ### RETURNS bool
+    ### DESCRIPTION
+    ###   Return `true` if the `stack` is empty or `false` if otherwise.
     @pub fn empty() {
         return len(this.lst) == 0;
     }
 
+    ### NAME top
+    ### RETURNS any
+    ### DESCRIPTION
+    ###   Returns the element at the top of the `stack`.
     @pub fn top() {
         return this.lst[len(this.lst)-1];
     }
 
+    ### NAME show
+    ### RETURN unit
+    ### DESCRIPTION
+    ###   Prints the entire `stack`.
     @pub fn show() {
         for i in 0 to len(lst) {
             println(lst[i]);
         }
     }
+
+    ### END METHODS
 }
+
+### END CLASSES

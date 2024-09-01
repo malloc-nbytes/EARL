@@ -20,30 +20,64 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### MODULE
 module Queue
 
+### BEGIN CLASSES
+
+### NAME T
+### PARAMETER init: list
+### DESCRIPTION
+###   Provides a class for the `queue` data structure.
 @pub class T [init] {
     let m_lst = init;
 
+    ### BEGIN METHODS
+
+    ### NAME empty
+    ### RETURNS bool
+    ### DESCRIPTION
+    ###   Returns `true` if the `queue` is empty, or `false` if otherwise.
     @pub fn empty() {
         return len(m_lst) == 0;
     }
 
+    ### NAME enqueue
+    ### PARAMETER value: any
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Inserts `value` into the `queue`.
     @pub fn enqueue(value) {
         m_lst.append(value);
     }
 
+    ### NAME dequeue
+    ### RETURNS unit
+    ### DESCRIPTION
+    ###   Pops the element in the font of the `queue`.
     @pub fn dequeue() {
         assert(empty() == false);
         m_lst.pop(0);
     }
 
+    ### NAME peek
+    ### RETURNS any
+    ### DESCRIPTION
+    ###   Returns the element in the font of the `queue`.
     @pub fn peek() {
         assert(empty() == false);
         return m_lst[0];
     }
 
+    ### NAME size
+    ### RETURNS int
+    ### DESCRIPTION
+    ###   Returns the size of the `queue`.
     @pub fn size() {
         return len(m_lst);
     }
+
+    ### END METHODS
 }
+
+### END CLASSES
