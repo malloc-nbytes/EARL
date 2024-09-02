@@ -312,6 +312,35 @@ Str::value_as_earlchar(void) {
     return values;
 }
 
+std::shared_ptr<Char>
+Str::__get_elem(size_t idx) {
+    // if (!m_chars.at(idx)) {
+    //     auto c = std::make_shared<Char>(std::string(1, m_value.at(idx)));
+    //     m_value.at(idx) = '\0';
+    //     m_chars.at(idx) = c;
+
+    //     for (size_t i = idx; i < idx+10; ++i) {
+    //         if (!m_chars.at(i)) {
+    //             auto cx = std::make_shared<Char>(std::string(1, m_value.at(i)));
+    //             m_chars.at(i) = cx;
+    //             m_value.at(i) = '\0';
+    //         }
+    //     }
+
+    //     return c;
+    // }
+    // return m_chars.at(idx);
+
+    int I = idx;
+    if (m_value.at(I) == '\0')
+        return m_chars.at(I);
+
+    auto c = std::make_shared<Char>(std::string(1, m_value.at(I)));
+    m_chars.at(I) = std::move(c);
+    m_value.at(I) = '\0';
+    return m_chars.at(I);
+}
+
 // TODO: Adhere to new string optimization
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {

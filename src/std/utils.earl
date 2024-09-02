@@ -31,7 +31,7 @@ module Utils
 ### PARAMETER n: int
 ### RETURNS bool
 ### DESCRIPTION
-###   Retruns `true` if `n` is even, or `false` if otherwise.
+###   Returns `true` if `n` is even, or `false` if otherwise.
 @pub fn is_even(n) {
     return n%2 == 0;
 }

@@ -117,9 +117,38 @@ import "std/char.earl" full
 ###     `c`  -> column,
 ###     `fp` -> filepath
 @pub class Token [lx, ty, r, c, fp] {
-    @pub let lx, ty = (lx, ty);
-    @pub let r, c = (r, c);
+    ### BEGIN MEMBERS
+    ### NAME lx
+    ### TYPE str
+    ### DESCRIPTION
+    ###   The `lexeme` of the token.
+    @pub let lx = lx;
+
+    ### NAME ty
+    ### TYPE TokenType
+    ### DESCRIPTION
+    ###   The type of the token.
+    @pub let ty = ty;
+
+    ### NAME r
+    ### TYPE int
+    ### DESCRIPTION
+    ###   The row that the token is located at.
+    @pub let r = r;
+
+    ### NAME c
+    ### TYPE int
+    ### DESCRIPTION
+    ###   The column that the token is located at.
+    @pub let c = c;
+
+    ### NAME fp
+    ### TYPE int
+    ### DESCRIPTION
+    ###   The filepath that the token is located at.
     @pub let fp = fp;
+
+    ### END MEMBERS
 }
 
 ### NAME T
@@ -127,9 +156,20 @@ import "std/char.earl" full
 ### DESCRIPTION
 ###   Creates a new Basic Lexer class with the keywords set to `keywords`.
 @pub class T [keywords] {
-    @pub let tokens = [];
     let kwds = keywords;
 
+    ### BEGIN MEMBERS
+
+    ### NAME tokens
+    ### TYPE list<Token>
+    ### DESCRIPTION
+    ###   The list of tokens that the lexer currently holds.
+    @pub let tokens = [];
+
+    ### NAME default_ops
+    ### TYPE Dict<str>
+    ### DESCRIPTION
+    ###   The default operators and symbols.
     @pub let default_ops = {
         "+": TokenType.Plus,
         "-": TokenType.Minus,
@@ -159,6 +199,8 @@ import "std/char.earl" full
         "#": TokenType.Hash,
         "~": TokenType.Tilde
     };
+
+    ### END MEMBERS
 
     fn consume_while(s, pred) {
         let buf, i = ("", 0);

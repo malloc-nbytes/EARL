@@ -315,7 +315,7 @@ lex_file(std::string &src,
                 lexer->append(ident, TokenType::Keyword, row, col+1, fp);
             else
                 lexer->append(ident, TokenType::Ident, row, col+1, fp);
-            col += ident.size();
+            col += ident.size()+1;
         }
 
         else if (isdigit(src[i])) {

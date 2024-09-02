@@ -26,14 +26,14 @@ module Str
 ### BEGIN FUNCTIONS
 
 ### NAME to_list
-### PARAMETER s: str
+### PARAMETER s: @ref str
 ### RETURNS list
 ### DESCRIPTION
 ###   Convert the string `s` to a `list`.
 @pub fn to_list(@ref s) {
     let lst = [];
-    foreach c in s {
-        lst.append(c);
+    for i in 0 to len(s) {
+        lst.append(s[i]);
     }
     return lst;
 }

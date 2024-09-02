@@ -340,6 +340,7 @@ eval_user_defined_function_wo_params(const std::string &id,
                                      std::shared_ptr<Ctx> &ctx,
                                      bool from_outside = false) {
     std::vector<std::shared_ptr<earl::value::Obj>> params = {};
+    std::vector<bool> originally_was_const = {};
     std::vector<int> refs = {};
     std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
 
@@ -354,6 +355,12 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         params = evaluate_function_parameters_wrefs(funccall, v, funccall_ctx);
+        for (auto &p : params) {
+            if (p->is_const())
+                originally_was_const.push_back(true);
+            else
+                originally_was_const.push_back(false);
+        }
 
         if (func->params_len() != params.size()) {
             const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
@@ -373,7 +380,14 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         std::shared_ptr<Ctx> mask = fctx;
-        return Interpreter::eval_stmt_block(func->block(), mask);
+        auto res = Interpreter::eval_stmt_block(func->block(), mask);
+
+        for (size_t i = 0; i < originally_was_const.size(); ++i) {
+            if (!originally_was_const[i])
+                params[i]->unset_const();
+        }
+
+        return res;
     }
     else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
@@ -1560,7 +1574,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             stmt->m_evald = true;
             return result;
         }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), str->value_as_earlchar()[0]);
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), nullptr);
         if (ctx->variable_exists(enumerator->id())) {
             std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
             auto conflict = ctx->variable_get(enumerator->id());
@@ -1569,8 +1583,7 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
         ctx->variable_add(enumerator);
         for (size_t i = 0; i < str->value().size(); ++i) {
-            if (i != 0)
-                enumerator->reset(str->value_as_earlchar()[i]);
+            enumerator->reset(str->__get_elem(i));
             result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
             if (result && result->type() == earl::value::Type::Break) {
                 result = nullptr;

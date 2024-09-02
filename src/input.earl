@@ -1,11 +1,2 @@
 module Main
 
-let lst = 1..1000;
-
-for i in 0 to len(lst) {
-    for j in i to len(lst) {
-        println(f"{i} {j}");
-    }
-}
-
-

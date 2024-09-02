@@ -171,6 +171,10 @@ namespace earl {
 
             virtual void set_const(void) = 0;
 
+            virtual void unset_const(void) {
+                m_const = false;
+            }
+
             virtual bool is_const(void) const {
                 return m_const;
             }
@@ -471,6 +475,7 @@ namespace earl {
 
             std::string value(void); // NOTE: needs optimization
             std::vector<std::shared_ptr<Char>> value_as_earlchar(void);
+            std::shared_ptr<Char> __get_elem(size_t idx);
             std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx, Expr *expr);
             std::shared_ptr<List> split(std::shared_ptr<Obj> &delim, Expr *expr);
             std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr);

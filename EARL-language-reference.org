@@ -1799,7 +1799,7 @@ Move the file =path_from= to =path_to=.
 *** *Function List*:
 #+begin_quote
 #+begin_example
-to_list(s: str) -> list
+to_list(s: @ref str) -> list
 #+end_example
 
 Convert the string =s= to a =list=.
@@ -2017,7 +2017,7 @@ where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$  and 
 is_even(n: int) -> bool
 #+end_example
 
-Retruns =true= if =n= is even, or =false= if otherwise.
+Returns =true= if =n= is even, or =false= if otherwise.
 #+end_quote
 
 #+begin_quote
@@ -2058,14 +2058,15 @@ The default closure that the set can use when dealing with integers.
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list, compar: closure(x1: any, x2: type(x1)) -> int] -> T
+T [init: list, compar: closure(x1: any, x2: type(x1)) -> int]
 #+end_example
 where =compar= is some ordering function $F(x_1, x_2) \rightarrow k \in \{2,1,0\}$  and $F$ is defined by  \[ F(x_1, x_2) = \begin{cases} 2 & \text{if } R(x_1) > R(x_2) \\ 1 & \text{if } R(x_2) > R(x_1) \\ 0 & \text{if } R(x_1) = R(x_2) \end{cases} \] and $R(x)$ is some ranking function that produces a rank of $x$.  Creates a =Set= container with the initializer list =init= and the comparison function =compar=. This container stores the values in a binary search tree, so it needs to know how to compare the values and decide which is bigger and which isn't.  Time complexity: $O(n \log n)$ where $n = |$ =init= $|$.
 #+end_quote
 
-*** *=T= Implements*
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
@@ -2175,21 +2176,83 @@ Individual identifiers for each token type.
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=Token=*
 #+begin_quote
 #+begin_example
-Token [lx: str, ty: TokenType, r: int, c: int, fp: str] -> Token
+Token [lx: str, ty: TokenType, r: int, c: int, fp: str]
 #+end_example
-A token class that constists of: =lx= -> lexeme, =ty= -> token type, =r=  -> row, =c=  -> column, =fp= -> filepath
+A token class that constists of: =lx= -> lexeme, =ty= -> token type, =r=  -> row, =c=  -> column, =fp= -> filepath The =lexeme= of the token. The type of the token. The row that the token is located at. The column that the token is located at. The filepath that the token is located at.
 #+end_quote
+**** *=Token= Members*:
 
 #+begin_quote
 #+begin_example
-T [keywords: tuple<str>|list<str>] -> T
+lx: str
 #+end_example
-Creates a new Basic Lexer class with the keywords set to =keywords=.
+
+The =lexeme= of the token. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+ty: TokenType
+#+end_example
+
+The type of the token. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+r: int
+#+end_example
+
+The row that the token is located at. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+c: int
+#+end_example
+
+The column that the token is located at. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+fp: int
+#+end_example
+
+The filepath that the token is located at. 
+
 #+end_quote
 
-*** *=T= Implements*
+*** *=T=*
+#+begin_quote
+#+begin_example
+T [keywords: tuple<str>|list<str>]
+#+end_example
+Creates a new Basic Lexer class with the keywords set to =keywords=. The list of tokens that the lexer currently holds. The default operators and symbols.
+#+end_quote
+**** *=T= Members*:
+
+#+begin_quote
+#+begin_example
+tokens: list<Token>
+#+end_example
+
+The list of tokens that the lexer currently holds. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+default_ops: Dict<str>
+#+end_example
+
+The default operators and symbols. 
+
+#+end_quote
+
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
@@ -2353,14 +2416,15 @@ Returns the area of a cone with radius =r= and height =h=.
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list] -> T
+T [init: list]
 #+end_example
 Takes the initializer list =init= and creates a linked list of the elements if they exist.
 #+end_quote
 
-*** *=T= Implements*
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
@@ -2400,14 +2464,15 @@ Prints all elements in the list to =stdout=.
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list] -> T
+T [init: list]
 #+end_example
 Create a stack based off of the initializer list =init= if it contains any elements.
 #+end_quote
 
-*** *=T= Implements*
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
@@ -2484,14 +2549,15 @@ Takes src file path of csv file and parses it
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list] -> T
+T [init: list]
 #+end_example
 Provides a class for the =queue= data structure.
 #+end_quote
 
-*** *=T= Implements*
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
@@ -2547,14 +2613,15 @@ Returns the size of the =queue=.
 *** *Function List*: /None/
 
 *** *Class List*:
+*** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list] -> T
+T [init: list]
 #+end_example
 The class for a set-avl.
 #+end_quote
 
-*** *=T= Implements*
+**** *=T= Implements*
 
 #+begin_quote
 #+begin_example
