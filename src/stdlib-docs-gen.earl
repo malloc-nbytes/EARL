@@ -464,7 +464,7 @@ fn main() {
     foreach f in stdlib {
         println(f"**********Indexing {f}**********");
         let content, mod = index(f);
-        autogen.append(content);
+        autogen += content;
         modules.append(mod);
     }
 

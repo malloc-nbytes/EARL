@@ -186,8 +186,10 @@ Str::append(std::shared_ptr<Obj> c) {
     }
     else {
         auto s = dynamic_cast<Str *>(c.get());
-        for (auto &cx : s->value())
+        for (auto &cx : s->value()) {
             m_value.push_back(cx);
+            m_chars.push_back(nullptr);
+        }
     }
 }
 
@@ -350,18 +352,20 @@ Str::to_cxxstring(void) {
 // CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto value = m_value;
-    auto chars = m_chars;
+    // auto value = m_value;
+    // auto chars = m_chars;
 
-    this->mutate(other, stmt); // does type checking
+    // this->mutate(other, stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        for (int i = (int)value.size()-1; i >= 0; --i) {
-            m_value.insert(m_value.begin(), value.at(i));
-            m_chars.insert(m_chars.begin(), chars.at(i));
-        }
+        // for (int i = (int)value.size()-1; i >= 0; --i) {
+        //     m_value.insert(m_value.begin(), value.at(i));
+        //     m_chars.insert(m_chars.begin(), chars.at(i));
+        // }
+        this->append(other);
     } break;
     default: {
         Err::err_wtok(op);
