@@ -25,7 +25,7 @@
 
 module Main
 
-import "std/os.earl"
+import "std/system.earl"
 import "std/io.earl"
 import "std/str.earl"
 import "std/utils.earl"
@@ -674,7 +674,7 @@ fn index(filepath) {
 }
 
 fn main() {
-    let stdlib = OS::ls("std/");
+    let stdlib = System::ls("std/");
     let autogen = "";
     let docsfp = "../EARL-language-reference.org";
     let modules = [];

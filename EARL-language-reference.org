@@ -2318,11 +2318,11 @@ Remove =value= from the set.
 
 #+end_quote
 
-** OS
+** System
 
-*** *Import*: ="std/os.earl"=
+*** *Import*: ="std/sytem.earl"=
 
-*** *Module*: =OS=
+*** *Module*: =System=
 
 *** *Variable List*: /None/
 
@@ -2434,6 +2434,59 @@ show() -> unit
 Prints the entire =stack=. 
 
 #+end_quote
+
+** System
+
+*** *Import*: ="std/system.earl"=
+
+*** *Module*: =System=
+
+*** *Variable List*: /None/
+
+*** *Enum List*: /None/
+
+*** *Function List*:
+#+begin_quote
+#+begin_example
+ls(path: str) -> list
+#+end_example
+
+List all items at the path =path= and return a list of all elements it contains.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+mkdir(name: str) -> unit
+#+end_example
+
+Create a new directory in the =cwd= called =name=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+fullpath_mkdir(fullpath: str) -> unit
+#+end_example
+
+Creates a full path directory as well as a file i.e., ./dir1/dir2/dir3/file.txt. The last entry in the path will be used as the file to be created. It is functionally equivalent to: =mkdir -p <path> && touch <path>/file.txt=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+name_and_ext(filepath: str) -> tuple
+#+end_example
+
+Returns a tuple of filename and extension. If either the name or extension cannot be found, the respective one will be set to =none=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+move(path_from: str, path_to: str) -> unit
+#+end_example
+
+Move the file =path_from= to =path_to=.
+#+end_quote
+
+*** *Class List*: /None/
 
 ** BasicLexer
 

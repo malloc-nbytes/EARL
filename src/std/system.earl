@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 ### MODULE
-module OS
+module System
 
 ### BEGIN FUNCTIONS
 
