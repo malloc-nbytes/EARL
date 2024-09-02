@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.4] - 2024-1-9
+
+### Added
+- += operations on strs and lists are now optimized.
+- StdLib docs generator.
+
 ## [0.4.3] - 2024-31-8
 
 ### Fixed

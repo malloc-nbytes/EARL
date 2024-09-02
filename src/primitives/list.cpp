@@ -302,6 +302,7 @@ void
 List::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
+
     auto *lst = dynamic_cast<List *>(other.get());
     m_value = lst->value();
 }
@@ -344,14 +345,13 @@ List::to_cxxstring(void) {
 
 void
 List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
-    std::vector<std::shared_ptr<Obj>> prev = {};
-    std::for_each(m_value.begin(), m_value.end(), [&](std::shared_ptr<Obj> k) {prev.push_back(k);});
-    this->mutate(other, stmt); // does type checking
+
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        for (int i = prev.size()-1; i >= 0; --i)
-            m_value.insert(m_value.begin(), prev.at(i));
+        auto otherlst = dynamic_cast<const List *>(other.get());
+        m_value.insert(m_value.end(), otherlst->m_value.begin(), otherlst->m_value.end());
     } break;
     default: {
         Err::err_wtok(op);
