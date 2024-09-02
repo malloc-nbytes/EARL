@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - += operations on strs and lists are now optimized.
 - StdLib docs generator.
+- Levenshtein distance algorithm for interpreter flags.
 
 ## [0.4.3] - 2024-31-8
 
