@@ -1,1 +1,11 @@
 module Main
+
+class T [] {
+    @pub fn test() {
+        println("here");
+    }
+}
+
+let t = some(T());
+
+println(t.test());

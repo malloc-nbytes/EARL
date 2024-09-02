@@ -696,7 +696,7 @@ fn main() {
     f.write(content);
     f.close();
 
-    println(f"The following modules were to {docsfp}");
+    println(f"The following modules were written to {docsfp}");
     println(modules);
 }
 
