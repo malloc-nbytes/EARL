@@ -1,11 +1,8 @@
 module Main
 
-class T [] {
-    @pub fn test() {
-        println("here");
-    }
-}
+let x = some(1);
+let y = x;
 
-let s = some(T());
+y.unwrap() = 9;
 
-s.unwrap().test();
+println(f"x: {x}, y: {y}");

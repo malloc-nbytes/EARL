@@ -640,7 +640,9 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
         std::string msg = "variable `" + er.id + "` has not been defined\n";
         auto avail = ctx->get_available_variable_names();
-        msg += "did you mean: " + identifier_not_declared(er.id, avail) + "?";
+
+        if (avail.size() != 0)
+            msg += "did you mean: " + identifier_not_declared(er.id, avail, /*include_intrinsics=*/false) + "?";
 
         throw InterpreterException(msg);
     }
@@ -1220,7 +1222,8 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
                 std::string msg = "variable `" + id + "` has not been defined\n";
                 auto avail = ctx->get_available_variable_names();
-                msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
+                if (avail.size() != 0)
+                    msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
 
                 throw InterpreterException(msg);
             }
