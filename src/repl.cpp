@@ -32,7 +32,6 @@
 
 #include "repl.hpp"
 #include "parser.hpp"
-#include "utils.hpp"
 #include "interpreter.hpp"
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -63,6 +62,8 @@
 #define IMPORT ":i"
 #define DISCARD ":d"
 #define EE ":q!"
+#define VARS ":vars"
+#define FUNCS ":funcs"
 
 static std::string REPL_HIST = "";
 
@@ -190,6 +191,8 @@ void
 help(void) {
     log(HELP " -> show this message\n");
     log(QUIT " -> quit the session\n");
+    log(VARS " -> show current variables in scope\n");
+    log(FUNCS " -> show current functions in scope\n");
     log(SKIP " -> skip current action\n");
     log(CLEAR " -> clear the screen\n");
     log(IMPORT " [files...] -> import local EARL files\n");
@@ -407,7 +410,19 @@ ee(void) {
 }
 
 void
-handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
+show_vars(std::shared_ptr<Ctx> &ctx) {
+    for (auto &v : ctx->get_available_variable_names())
+        std::cout << v << std::endl;
+}
+
+void
+show_funcs(std::shared_ptr<Ctx> &ctx) {
+    for (auto &v : ctx->get_available_function_names())
+        std::cout << v << std::endl;
+}
+
+void
+handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
@@ -429,6 +444,10 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines) {
         discard(lines);
     else if (lst[0] == EE)
         ee();
+    else if (lst[0] == VARS)
+        show_vars(ctx);
+    else if (lst[0] == FUNCS)
+        show_funcs(ctx);
     else if (lst[0] == HELP)
         help();
     else
@@ -457,7 +476,7 @@ Repl::run(void) {
                 std::exit(0);
             }
             if (line.size() > 0 && (line[0] == ':' || line[0] == '$')) {
-                handle_repl_arg(line, lines);
+                handle_repl_arg(line, lines, ctx);
             }
             else {
                 analyze_new_line(line);

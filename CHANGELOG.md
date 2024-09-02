@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Levenshtein distance algorithm on function names and misspelled interpreter flags.
+- You can now see functions and variables in scope in the repl.
 
 ## [0.4.4] - 2024-1-9
 

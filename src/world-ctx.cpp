@@ -34,6 +34,18 @@ WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> progra
 
 WorldCtx::WorldCtx() : m_lexer(nullptr), m_program(nullptr) {}
 
+Program *
+WorldCtx::get_repl_program(size_t i) {
+    if (i >= m_repl_programs.size())
+        return nullptr;
+    return m_repl_programs.at(i).get();
+}
+
+size_t
+WorldCtx::get_repl_programs_len(void) const {
+    return m_repl_programs.size();
+}
+
 void
 WorldCtx::add_repl_lexer(std::unique_ptr<Lexer> lexer) {
     m_repl_lexers.push_back(std::move(lexer));

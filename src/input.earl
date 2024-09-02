@@ -1,8 +1,15 @@
 module Main
 
-let x = some(1);
-let y = x;
+fn test2() {
+    fn test3() {
+    }
+    test3();
+}
 
-y.unwrap() = 9;
+fn test() {
+    test2();
+}
 
-println(f"x: {x}, y: {y}");
+test();
+
+

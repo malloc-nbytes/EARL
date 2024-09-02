@@ -109,6 +109,8 @@ struct WorldCtx : public Ctx {
     // REPL
     void add_repl_lexer(std::unique_ptr<Lexer> lexer);
     void add_repl_program(std::unique_ptr<Program> program);
+    Program *get_repl_program(size_t i);
+    size_t get_repl_programs_len(void) const;
 
 private:
     std::string m_mod;
