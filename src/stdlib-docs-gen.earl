@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#--- This file is used to generate the Stdlib variables, functions, ---#
+#--- classes, and enums in the EARL-language-reference.org.         ---#
+
 module Main
 
 import "std/os.earl"
@@ -65,12 +68,28 @@ class Function [] {
     @pub let name, returns, description = ("", "", "");
     @pub let parameters = [];
 
-    @pub fn add_name(name) {this.name = name;}
-    @pub fn add_param(param) {this.parameters.append(param);}
-    @pub fn add_returns(returns) {this.returns = returns;}
-    @pub fn add_description(desc) {this.description = description;}
-    @pub fn addto_description(s) {this.description += s;}
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_param(param) {
+        this.parameters.append(param);
+    }
+
+    @pub fn add_returns(returns) {
+        this.returns = returns;
+    }
+
+    @pub fn add_description(desc) {
+        this.description = description;
+    }
+
+    @pub fn addto_description(s) {
+        this.description += s;
+    }
+
     @pub fn dump() {
+        this.description.pop(len(this.description)-1);
         print(this.name, "(");
         for i in 0 to len(this.parameters) {
             print(this.parameters[i].tostr());
@@ -79,8 +98,9 @@ class Function [] {
             }
         }
         println(") -> ", this.returns);
-        println("    ", this.description, "\n");
+        println("└──", this.description, "\n");
     }
+
     @pub fn to_org_mode() {
         let s = "#+begin_example\n";
         s += this.name + "(";
@@ -102,11 +122,24 @@ class Class [] {
     @pub let params = [];
     @pub let methods = [];
 
-    @pub fn add_name(name) {this.name = name;}
-    @pub fn add_param(param) {this.params.append(param);}
-    @pub fn addto_description(s) {this.description += s;}
-    @pub fn add_method(m) {this.methods.append(m);}
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_param(param) {
+        this.params.append(param);
+    }
+
+    @pub fn addto_description(s) {
+        this.description += s;
+    }
+
+    @pub fn add_method(m) {
+        this.methods.append(m);
+    }
+
     @pub fn dump() {
+        this.description.pop(len(this.description)-1);
         print(this.name, "[");
         for i in 0 to len(this.params) {
             print(this.params[i].tostr());
@@ -115,8 +148,9 @@ class Class [] {
             }
         }
         println("]");
-        println("    ", this.description, "\n");
+        println("└──", this.description, "\n");
     }
+
     @pub fn to_org_mode() {
         let s = "#+begin_quote\n#+begin_example\n";
         s += this.name + " [";
@@ -143,15 +177,58 @@ class Class [] {
     }
 }
 
+class Variable [] {
+    @pub let name = "";
+    @pub let ty = "";
+    @pub let description = "";
+
+    @pub fn dump() {
+        this.description.pop(len(this.description)-1);
+        println(this.name, ": ", this.ty);
+        println("└──", this.description, "\n");
+    }
+
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_type(ty) {
+        this.ty = ty;
+    }
+
+    @pub fn addto_description(s) {
+        this.description += s;
+    }
+
+    @pub fn to_org_mode() {
+        let s = "#+begin_example\n";
+        s += this.name + ": " + this.ty + "\n";
+        s += "#+end_example\n\n";
+        replace_backticks(this.description);
+        s += this.description + "\n";
+        return s;
+    }
+}
+
 class Enum [] {
     @pub let name = "";
     @pub let items = [];
     @pub let description = "";
 
-    @pub fn add_name(name) {this.name = name;}
-    @pub fn add_param(item) {this.items.append(item);}
-    @pub fn addto_description(s) {this.description += s;}
+    @pub fn add_name(name) {
+        this.name = name;
+    }
+
+    @pub fn add_param(item) {
+        this.items.append(item);
+    }
+
+    @pub fn addto_description(s) {
+        this.description += s;
+    }
+
     @pub fn dump() {
+        this.description.pop(len(this.description)-1);
         println(this.name, " {");
         for i in 0 to len(this.items) {
             print("    ", this.items[i].tostr());
@@ -161,7 +238,9 @@ class Enum [] {
             println();
         }
         println("}");
+        println("└──", this.description, "\n");
     }
+
     @pub fn to_org_mode() {
         let s = "#+begin_example\n";
         s += this.name + " {\n";
@@ -224,10 +303,31 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         return result;
     }
 
+    fn variables_to_org_mode() {
+        let result = "";
+
+        foreach v in this.variables {
+            let s = "#+begin_quote\n";
+            s += v.to_org_mode();
+            s += "#+end_quote\n";
+            result += s + "\n";
+        }
+
+        return result;
+    }
+
     @pub fn to_org_mode() {
         let s = "** " + this.mod + "\n\n";
         s += "*** *Import*: =\""+ this.import_ +"\"=\n\n";
         s += "*** *Module*: =" + this.mod + "=\n\n";
+
+        s += "*** *Variable List*:";
+        if len(this.variables) == 0 {
+            s += " /None/\n\n";
+        }
+        else {
+            s += "\n" + variables_to_org_mode();
+        }
 
         s += "*** *Enum List*:";
         if len(this.enums) == 0 {
@@ -363,8 +463,9 @@ fn commit(@ref cur_item,
     }
     else if (state `& State.Variables) != 0 {
         vars.append(cur_item.unwrap());
-        println("**********VARIABLE**********\n", cur_item.unwrap().dump());
-        cur_item = some(Enum());
+        print("(Variable) ", f"{mod}::");
+        cur_item.unwrap().dump();
+        cur_item = some(Variable());
     }
 }
 
@@ -422,6 +523,9 @@ fn index(filepath) {
             else if (state `& State.Classes) != 0 {
                 cur_item.unwrap().add_name(splits[1]);
             }
+            else if (state `& State.Variables) != 0 {
+                cur_item.unwrap().add_name(splits[1]);
+            }
             else {
                 panic(f"unknown state: {state}");
             }
@@ -475,6 +579,19 @@ fn index(filepath) {
             in_desc = true;
         }
 
+        else if splits[0] == "TYPE" {
+            assert(cur_item.is_some());
+            assert((state `& State.Variables) != 0);
+            let ty = "";
+            for i in 1 to len(splits) {
+                ty += splits[i];
+                if i != len(splits)-1 {
+                    ty += " ";
+                }
+            }
+            cur_item.unwrap().add_type(ty);
+        }
+
         else if in_desc {
             if (state `& State.Methods) != 0 {
                 cur_method
@@ -504,13 +621,16 @@ fn main() {
     let modules = [];
 
     foreach f in stdlib {
-        println(f"**********Indexing {f}**********");
+        println("############################################################");
+        println(f"# Indexing {f}");
+        println("############################################################\n");
         let content, mod = index(f);
         autogen += content;
         modules.append(mod);
     }
 
-    let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0]+"# BEGIN_AUTOGEN\n";
+    let orig_content = IO::file_to_str(docsfp)
+                           .split("# BEGIN_AUTOGEN")[0]+"# BEGIN_AUTOGEN\n";
 
     let f2 = open(docsfp, "w");
     let content = orig_content+autogen;
@@ -518,9 +638,7 @@ fn main() {
     f2.close();
 
     println(f"The following modules were to {docsfp}");
-    foreach m in modules {
-        println(f"    {m}");
-    }
+    println(modules);
 }
 
 main();

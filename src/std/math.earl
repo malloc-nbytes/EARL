@@ -206,9 +206,18 @@ fn area_of_cone(r, h) {
 
 ### END FUNCTIONS
 
-# Mathematical Constants
-# pi
+### BEGIN VARIABLES
+
+### NAME PI
+### TYPE float
+### DESCRIPTION
+###   The mathematical constant for pi.
 @pub @const let PI = 3.141592653589793;
 
-# Euler's number
+### NAME EULER
+### TYPE float
+### DESCRIPTION
+###   The mathematical constant for Euler's number
 @pub @const let EULER = 2.718281828459045;
+
+### END VARIABLES

@@ -69,7 +69,7 @@ module Stack
     }
 
     ### NAME show
-    ### RETURN unit
+    ### RETURNS unit
     ### DESCRIPTION
     ###   Prints the entire `stack`.
     @pub fn show() {

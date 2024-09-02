@@ -1,6 +1,11 @@
 module Main
 
-import "std/encryption.earl"
+let lst = 1..1000;
 
-let s = "aaaaaaaaaaaabbbcdddddddcdeeeeeeeeeffgge";
-println(Encryption::rle(s));
+for i in 0 to len(lst) {
+    for j in i to len(lst) {
+        println(f"{i} {j}");
+    }
+}
+
+

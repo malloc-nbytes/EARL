@@ -154,10 +154,17 @@ class Node [value] {
 
 ### END CLASSES
 
-# The default closure that the set can use
-# when dealing with integers.
+### BEGIN VARIABLES
+
+### NAME DEFAULT_INT_SET_COMPAR
+### TYPE closure(x1: int, x2: int) -> int
+### DESCRIPTION
+###   The default closure that the set can use
+###   when dealing with integers.
 @pub let DEFAULT_INT_SET_COMPAR = |x0, x1| {
     if x0 > x1 { return 2; }
     if x1 > x0 { return 1; }
     return 0;
 };
+
+### END VARIABLES
