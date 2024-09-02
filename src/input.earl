@@ -1,15 +1,9 @@
 module Main
 
-fn test2() {
-    fn test3() {
-    }
-    test3();
-}
+import "std/io.earl"
 
-fn test() {
-    test2();
-}
+let s = IO::file_to_str("../src/include/common.hpp");
 
-test();
-
+# for i in 0 to len(s) { print(s[i]); }
+foreach c in s { print(c); }
 

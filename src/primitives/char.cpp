@@ -24,6 +24,7 @@
 
 #include <cassert>
 #include <memory>
+#include <iostream>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -31,23 +32,8 @@
 
 using namespace earl::value;
 
-Char::Char(std::string value) {
-    if (value.size() == 0)
-        m_value = '\0';
-    else if (value[0] == '\\' && value.size() > 1) {
-        switch (value[1]) {
-        case 'n': m_value = '\n'; break;
-        case 't': m_value = '\t'; break;
-        case 'r': m_value = '\r'; break;
-        case '\'': m_value = '\''; break;
-        default: {
-            std::string msg = "Unknown escape sequence `"+value+"`";
-            throw InterpreterException(msg);
-        }
-        }
-    }
-    else
-        m_value = value[0];
+Char::Char(char value) {
+    m_value = value;
 }
 
 char
@@ -94,7 +80,7 @@ Char::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Char::copy(void) {
-    return std::make_shared<Char>(std::string(1, m_value));
+    return std::make_shared<Char>(m_value);
 }
 
 bool

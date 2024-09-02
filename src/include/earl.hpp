@@ -283,7 +283,8 @@ namespace earl {
         };
 
         struct Char : public Obj {
-            Char(std::string value = "");
+            // Char(std::string value = "");
+            Char(char value = '\0');
 
             /// @brief Get the underlying string value
             char value(void);

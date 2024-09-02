@@ -22,7 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -39,7 +38,6 @@ Str::Str(std::string value) {
 }
 
 Str::Str(std::vector<std::shared_ptr<Char>> chars) {
-    // std::for_each(chars.begin(), chars.end(), [&](auto &c){m_value.push_back(c);});
     assert(false && "unimplemented");
 }
 
@@ -47,12 +45,10 @@ std::string
 Str::value(void) {
     std::string actual = "";
     for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_value.at(i) == '\0') {
+        if (m_value.at(i) == '\0')
             actual += m_chars.at(i)->value();
-        }
-        else {
+        else
             actual += m_value.at(i);
-        }
     }
     return actual;
 }
@@ -76,7 +72,7 @@ Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
     if (m_value.at(I) == '\0')
         return m_chars.at(I);
 
-    auto c = std::make_shared<Char>(std::string(1, m_value.at(I)));
+    auto c = std::make_shared<Char>(m_value.at(I));
     m_chars.at(I) = std::move(c);
     m_value.at(I) = '\0';
     return m_chars.at(I);
@@ -149,7 +145,7 @@ Str::back(void) {
     if (m_value.back() == '\0')
         return m_chars.back();
 
-    auto c = std::make_shared<Char>(std::string(1, m_value.back()));
+    auto c = std::make_shared<Char>(m_value.back());
     m_chars.at(m_chars.size()-1) = std::move(c);
     m_value.at(m_value.size()-1) = '\0';
     return m_chars.at(m_chars.size()-1);
@@ -217,7 +213,7 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
         if (c == '\0')
             cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
         else {
-            cx = std::make_shared<Char>(std::string(1, c));
+            cx = std::make_shared<Char>(c);
             m_value.at(i) = '\0';
             m_chars.at(i) = cx;
         }
@@ -255,7 +251,7 @@ Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
         if (m_value.at(i) == '\0')
             cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
         else {
-            cx = std::make_shared<Char>(std::string(1, m_value.at(i)));
+            cx = std::make_shared<Char>(m_value.at(i));
             m_value.at(i) = '\0';
             m_chars.at(i) = cx;
         }
@@ -306,7 +302,7 @@ std::vector<std::shared_ptr<Char>>
 Str::value_as_earlchar(void) {
     std::vector<std::shared_ptr<Char>> values = {};
     std::for_each(m_value.begin(), m_value.end(), [&](char c){
-        auto cx = std::make_shared<Char>(std::string(1, c));
+        auto cx = std::make_shared<Char>(c);
         values.push_back(std::move(cx));
     });
     return values;
@@ -335,7 +331,7 @@ Str::__get_elem(size_t idx) {
     if (m_value.at(I) == '\0')
         return m_chars.at(I);
 
-    auto c = std::make_shared<Char>(std::string(1, m_value.at(I)));
+    auto c = std::make_shared<Char>(m_value.at(I));
     m_chars.at(I) = std::move(c);
     m_value.at(I) = '\0';
     return m_chars.at(I);

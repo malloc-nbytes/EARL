@@ -889,7 +889,19 @@ eval_expr_term_get(ExprGet *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
 static ER
 eval_expr_term_charlit(ExprCharLit *expr) {
-    auto value = std::make_shared<earl::value::Char>(expr->m_tok->lexeme());
+    std::shared_ptr<earl::value::Char> value = nullptr;
+    if (expr->m_tok->lexeme() == "\\n")
+        value = std::make_shared<earl::value::Char>('\n');
+    else if (expr->m_tok->lexeme() == "\\t")
+        value = std::make_shared<earl::value::Char>('\t');
+    else if (expr->m_tok->lexeme() == "\\r")
+        value = std::make_shared<earl::value::Char>('\r');
+    else if (expr->m_tok->lexeme() == "\\0")
+        value = std::make_shared<earl::value::Char>('\0');
+    else if (expr->m_tok->lexeme() == "\\\\")
+        value = std::make_shared<earl::value::Char>('\\');
+    else
+        value = std::make_shared<earl::value::Char>(expr->m_tok->lexeme()[0]);
     return ER(value, ERT::Literal);
 }
 
@@ -1013,11 +1025,11 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         char end = dynamic_cast<earl::value::Char *>(rvalue.get())->value();
         if (expr->m_inclusive) {
             while (start <= end)
-                values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+                values.push_back(std::make_shared<earl::value::Char>(start++));
         }
         else {
             while (start < end)
-                values.push_back(std::make_shared<earl::value::Char>(std::string(1, start++)));
+                values.push_back(std::make_shared<earl::value::Char>(start++));
         }
         return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
     }
