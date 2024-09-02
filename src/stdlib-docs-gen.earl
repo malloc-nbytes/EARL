@@ -513,7 +513,6 @@ fn index(filepath) {
     let cur_item, cur_method, cur_member = (none, none, none);
     let mod, import_ = ("", "");
     let in_desc = false;
-    let entries = [];
 
     foreach el in lst {
         let parts = el.split("\n");

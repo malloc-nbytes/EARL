@@ -71,9 +71,10 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::string
-identifier_not_declared(std::string given, std::vector<std::string> possible) {
-    if (possible.size() == 0)
-        return "";
+identifier_not_declared(std::string given, std::vector<std::string> possible, bool include_intrinsics=true) {
+    if (include_intrinsics)
+        for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it)
+            possible.push_back(it->first);
 
     std::vector<int> ranks = {};
     int min = 1e9;
@@ -87,7 +88,50 @@ identifier_not_declared(std::string given, std::vector<std::string> possible) {
         }
     }
 
-    return possible[min_idx];
+    return possible.at(min_idx);
+}
+
+static std::string
+method_not_declared(std::string given, std::shared_ptr<earl::value::Obj> accessor) {
+    std::vector<std::string> possible = {};
+    switch (accessor->type()) {
+    case earl::value::Type::List: {
+        for (auto it = Intrinsics::intrinsic_list_member_functions.begin(); it != Intrinsics::intrinsic_list_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::Str: {
+        for (auto it = Intrinsics::intrinsic_str_member_functions.begin(); it != Intrinsics::intrinsic_str_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::Char: {
+        for (auto it = Intrinsics::intrinsic_char_member_functions.begin(); it != Intrinsics::intrinsic_char_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::Option: {
+        for (auto it = Intrinsics::intrinsic_option_member_functions.begin(); it != Intrinsics::intrinsic_option_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::File: {
+        for (auto it = Intrinsics::intrinsic_file_member_functions.begin(); it != Intrinsics::intrinsic_file_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::Tuple: {
+        for (auto it = Intrinsics::intrinsic_tuple_member_functions.begin(); it != Intrinsics::intrinsic_tuple_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    case earl::value::Type::DictInt:
+    case earl::value::Type::DictStr:
+    case earl::value::Type::DictFloat:
+    case earl::value::Type::DictChar: {
+        for (auto it = Intrinsics::intrinsic_dict_member_functions.begin(); it != Intrinsics::intrinsic_dict_member_functions.end(); ++it)
+            possible.push_back(it->first);
+    } break;
+    default: {
+        return identifier_not_declared(given, possible);
+    } break;
+    }
+
+    return identifier_not_declared(given, possible, /*include_intrinsics=*/false);
 }
 
 static std::shared_ptr<earl::value::Obj>
@@ -432,9 +476,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     std::string msg = "function `" + id + "` has not been defined\n";
     auto avail = ctx->get_available_function_names();
-    if (avail.size() != 0) {
-        msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
-    }
+    msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
 
     throw InterpreterException(msg);
     return nullptr; // unreachable
@@ -494,9 +536,7 @@ eval_user_defined_function(ExprFuncCall *expr,
 
     std::string msg = "function `" + id + "` has not been defined\n";
     auto avail = ctx->get_available_function_names();
-    if (avail.size() != 0) {
-        msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
-    }
+    msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
 
     throw InterpreterException(msg);
     return nullptr; // unreachable
@@ -548,6 +588,15 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
         }
 
+        // Method does not exist
+        if (perp && perp->lhs_getter_accessor) {
+            if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
+            std::string msg = "method `" + er.id + "` is not a part of the given type `"+earl::value::type_to_str(perp->lhs_getter_accessor->type())+"`\n";
+            // auto avail = ctx->get_available_function_names();
+            msg += "did you mean: " + method_not_declared(er.id, perp->lhs_getter_accessor) + "?";
+            throw InterpreterException(msg);
+        }
+
         // We need to have this function to gen the parameters so we
         // know which ones need to be taken as a reference. NOTE: The
         // routine(s) above this may need this change as well.
@@ -591,9 +640,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
         std::string msg = "variable `" + er.id + "` has not been defined\n";
         auto avail = ctx->get_available_variable_names();
-        if (avail.size() != 0) {
-            msg += "did you mean: " + identifier_not_declared(er.id, avail) + "?";
-        }
+        msg += "did you mean: " + identifier_not_declared(er.id, avail) + "?";
 
         throw InterpreterException(msg);
     }
@@ -1173,9 +1220,7 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
                 std::string msg = "variable `" + id + "` has not been defined\n";
                 auto avail = ctx->get_available_variable_names();
-                if (avail.size() != 0) {
-                    msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
-                }
+                msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
 
                 throw InterpreterException(msg);
             }

@@ -6,6 +6,6 @@ class T [] {
     }
 }
 
-let t = some(T());
+let s = some(T());
 
-println(t.test());
+s.unwrap().test();
