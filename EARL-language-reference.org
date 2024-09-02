@@ -1883,7 +1883,7 @@ Returns the sum all elements in =lst= as an integer.
 
 #+begin_quote
 #+begin_example
-find(lst: @ref lst, elem: @ref any) -> any
+find(lst: @ref lst, elem: @ref any) -> option<int>
 #+end_example
 
 Takes a reference to a list and a reference to an element and looks for the element find in the given list Returns the index of the first occurrence that =elem= appears in =lst= wrapped in =some=, or =none= if not found. 
@@ -2444,7 +2444,7 @@ A token class that constists of: =lx= -> lexeme, =ty= -> token type, =r=  -> row
 
 #+begin_quote
 #+begin_example
-T [keywords: tuple|list] -> T
+T [keywords: tuple<str>|list<str>] -> T
 #+end_example
 Creates a new Basic Lexer class with the keywords set to =keywords=. 
 #+end_quote
@@ -2461,7 +2461,7 @@ Performs basic lexical analysis on the source code =src= at the filepath =fp=.
 #+end_quote
 #+begin_quote
 #+begin_example
-next() -> option
+next() -> option<Token>
 #+end_example
 
 Returns =some(token)= if the lexer is not empty and pops it from the lexer, or =none= if no tokens exist. 
@@ -2469,7 +2469,7 @@ Returns =some(token)= if the lexer is not empty and pops it from the lexer, or =
 #+end_quote
 #+begin_quote
 #+begin_example
-peek(pk: int) -> option
+peek(pk: int) -> option<Token>
 #+end_example
 
 Returns the token at location =pk= wrapped in =some= or =none= if not found. 

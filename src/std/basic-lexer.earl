@@ -23,7 +23,7 @@
 ### MODULE
 module BasicLexer
 
-import "std/char.earl"
+import "std/char.earl" full
 
 ### BEGIN ENUMS
 
@@ -123,7 +123,7 @@ import "std/char.earl"
 }
 
 ### NAME T
-### PARAMETER keywords: tuple|list
+### PARAMETER keywords: tuple<str>|list<str>
 ### DESCRIPTION
 ###   Creates a new Basic Lexer class with the keywords set to `keywords`.
 @pub class T [keywords] {
@@ -260,7 +260,7 @@ import "std/char.earl"
     }
 
     ### NAME next
-    ### RETURNS option
+    ### RETURNS option<Token>
     ### DESCRIPTION
     ###   Returns `some(token)` if the lexer is not empty and pops it
     ###   from the lexer, or `none` if no tokens exist.
@@ -275,7 +275,7 @@ import "std/char.earl"
 
     ### NAME peek
     ### PARAMETER pk: int
-    ### RETURNS option
+    ### RETURNS option<Token>
     ### DESCRIPTION
     ###   Returns the token at location `pk` wrapped in `some` or `none` if not found.
     @pub fn peek(pk) {

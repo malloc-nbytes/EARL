@@ -55,6 +55,10 @@ fn replace_backticks(@ref desc) {
 
 class Parameter [name, ty] {
     @pub let name, ty = (name, ty);
+
+    @pub fn tostr() {
+        return this.name + ": " + this.ty;
+    }
 }
 
 class Function [] {
@@ -66,6 +70,17 @@ class Function [] {
     @pub fn add_returns(returns) {this.returns = returns;}
     @pub fn add_description(desc) {this.description = description;}
     @pub fn addto_description(s) {this.description += s;}
+    @pub fn dump() {
+        print(this.name, "(");
+        for i in 0 to len(this.parameters) {
+            print(this.parameters[i].tostr());
+            if i != len(this.parameters)-1 {
+                print(", ");
+            }
+        }
+        println(") -> ", this.returns);
+        println("    ", this.description, "\n");
+    }
     @pub fn to_org_mode() {
         let s = "#+begin_example\n";
         s += this.name + "(";
@@ -91,6 +106,17 @@ class Class [] {
     @pub fn add_param(param) {this.params.append(param);}
     @pub fn addto_description(s) {this.description += s;}
     @pub fn add_method(m) {this.methods.append(m);}
+    @pub fn dump() {
+        print(this.name, "[");
+        for i in 0 to len(this.params) {
+            print(this.params[i].tostr());
+            if i != len(this.params)-1 {
+                print(", ");
+            }
+        }
+        println("]");
+        println("    ", this.description, "\n");
+    }
     @pub fn to_org_mode() {
         let s = "#+begin_quote\n#+begin_example\n";
         s += this.name + " [";
@@ -125,6 +151,17 @@ class Enum [] {
     @pub fn add_name(name) {this.name = name;}
     @pub fn add_param(item) {this.items.append(item);}
     @pub fn addto_description(s) {this.description += s;}
+    @pub fn dump() {
+        println(this.name, " {");
+        for i in 0 to len(this.items) {
+            print("    ", this.items[i].tostr());
+            if i != len(this.items)-1 {
+                print(",");
+            }
+            println();
+        }
+        println("}");
+    }
     @pub fn to_org_mode() {
         let s = "#+begin_example\n";
         s += this.name + " {\n";
@@ -296,32 +333,37 @@ fn commit(@ref cur_item,
           @ref methods,
           @ref classes,
           @ref enums,
-          @ref vars) {
+          @ref vars
+               mod) {
     assert(cur_item.is_some());
     if (state `& State.Functions) != 0 {
         funcs.append(cur_item.unwrap());
-        println("**********FUNCTION**********\n", cur_item.unwrap());
+        print("(Function) ", f"{mod}::");
+        cur_item.unwrap().dump();
         cur_item = some(Function());
     }
     else if (state `& State.Methods) != 0 {
         assert(cur_method.is_some());
         cur_item.unwrap().add_method(cur_method.unwrap());
-        println("**********METHOD**********\n", cur_item.unwrap());
+        print("(Method) ", f"{mod}::", cur_item.unwrap().name, ".");
+        cur_method.unwrap().dump();
         cur_method = some(Function());
     }
     else if (state `& State.Classes) != 0 {
         classes.append(cur_item.unwrap());
-        println("**********CLASS**********\n", cur_item.unwrap());
+        print("(Class) ", f"{mod}::");
+        cur_item.unwrap().dump();
         cur_item = some(Class());
     }
     else if (state `& State.Enums) != 0 {
         enums.append(cur_item.unwrap());
-        println("**********ENUM**********\n", cur_item.unwrap());
+        print("(Enum) ", f"{mod}::");
+        cur_item.unwrap().dump();
         cur_item = some(Enum());
     }
     else if (state `& State.Variables) != 0 {
         vars.append(cur_item.unwrap());
-        println("**********VARIABLE**********\n", cur_item.unwrap());
+        println("**********VARIABLE**********\n", cur_item.unwrap().dump());
         cur_item = some(Enum());
     }
 }
@@ -350,7 +392,7 @@ fn index(filepath) {
         }
         else if splits[0] == "END" {
             in_desc = false;
-            commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars);
+            commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars, mod);
             handle_end(state, splits, cur_item, cur_method);
         }
 
@@ -361,11 +403,11 @@ fn index(filepath) {
             if (state `& State.Methods) != 0 {
                 assert(cur_method.is_some());
                 if cur_method.unwrap().name != "" {
-                    commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars);
+                    commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars, mod);
                 }
             }
             else if cur_item.unwrap().name != "" {
-                commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars);
+                commit(cur_item, cur_method, state, funcs, methods, classes, enums, vars, mod);
             }
 
             if (state `& State.Functions) != 0 {

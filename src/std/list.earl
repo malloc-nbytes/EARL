@@ -103,7 +103,7 @@ import "std/utils.earl" full
 ### NAME find
 ### PARAMETER lst: @ref lst
 ### PARAMETER elem: @ref any
-### RETURNS any
+### RETURNS option<int>
 ### DESCRIPTION
 ###   Takes a reference to a list and a reference to an element and looks for the element find in the given list
 ###   Returns the index of the first occurrence that `elem` appears in `lst` wrapped in `some`, or `none` if not found.
