@@ -345,6 +345,9 @@ eval_user_defined_function_wo_params(const std::string &id,
     std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
 
     if (ctx->function_exists(id)) {
+        if ((flags & __SHOWFUNS) != 0)
+            std::cout << "[EARL show-fun] " << id << '\n';
+
         auto func = ctx->function_get(id);
 
         v = func;
@@ -418,6 +421,9 @@ eval_user_defined_function(ExprFuncCall *expr,
                            std::shared_ptr<Ctx> &ctx,
                            bool from_outside) {
     if (ctx->function_exists(id)) {
+        if ((flags & __SHOWFUNS) != 0)
+            std::cout << "[EARL show-fun] " << id << '\n';
+
         auto func = ctx->function_get(id);
         if (func->params_len() != params.size()) {
             const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());

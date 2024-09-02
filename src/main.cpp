@@ -60,6 +60,7 @@ usage(void) {
     std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
     std::cerr << "      --watch [files...]  Watch files for changes and hot reload" << std::endl;
+    std::cerr << "      --show-funs         Print every function call evaluated" << std::endl;
 
     std::exit(0);
 }
@@ -81,6 +82,11 @@ gather_watch_files(std::vector<std::string> &args) {
     }
 }
 
+static std::string
+try_guess_wrong_arg(std::string &arg) {
+    assert(false && "unimplemented");
+}
+
 static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
@@ -95,8 +101,11 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         gather_watch_files(args);
         flags |= __WATCH;
     }
+    else if (arg == COMMON_EARL2ARG_SHOWFUNS)
+        flags |= __SHOWFUNS;
     else {
-        ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%s`", arg.c_str());
+        std::cerr << "Unrecognised argument: " << arg << std::endl;
+        std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
     }
 }
 

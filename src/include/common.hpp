@@ -41,12 +41,14 @@ extern uint32_t flags;
 #define __REPL 1 << 1
 #define __REPL_NOCOLOR 1 << 2
 #define __WATCH 1 << 3
+#define __SHOWFUNS 1 << 4
 
 #define COMMON_EARL2ARG_HELP           "help"
 #define COMMON_EARL2ARG_WITHOUT_STDLIB "without-stdlib"
 #define COMMON_EARL2ARG_VERSION        "version"
 #define COMMON_EARL2ARG_REPL_NOCOLOR   "repl-nocolor"
 #define COMMON_EARL2ARG_WATCH          "watch"
+#define COMMON_EARL2ARG_SHOWFUNS       "show-funs"
 
 #define COMMON_EARL1ARG_HELP     'h'
 #define COMMON_EARL1ARG_VERSTION 'v'
