@@ -208,3 +208,20 @@ WorldCtx::strip_funs_and_classes(void) {
     m_defined_classes.clear();
 }
 
+std::vector<std::string>
+WorldCtx::get_available_function_names(void) {
+    std::vector<std::shared_ptr<earl::function::Obj>> funcs = m_funcs.extract_tovec();
+    std::vector<std::string> ids = {};
+    for (auto &f : funcs)
+        ids.push_back(f->id());
+    return ids;
+}
+
+std::vector<std::string>
+WorldCtx::get_available_variable_names(void) {
+    std::vector<std::shared_ptr<earl::variable::Obj>> vars = m_scope.extract_tovec();
+    std::vector<std::string> ids = {};
+    for (auto &v : vars)
+        ids.push_back(v->id());
+    return ids;
+}

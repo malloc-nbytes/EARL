@@ -217,3 +217,31 @@ ClassCtx::get_world(void) {
         return dynamic_cast<WorldCtx *>(dynamic_cast<FunctionCtx *>(m_owner.get())->get_outer_world_owner().get());
     return dynamic_cast<WorldCtx *>(this->get_owner().get());
 }
+
+std::vector<std::string>
+ClassCtx::get_available_function_names(void) {
+    std::vector<std::shared_ptr<earl::function::Obj>> funcs = m_funcs.extract_tovec();
+    std::vector<std::string> ids = {};
+    for (auto &f : funcs)
+        ids.push_back(f->id());
+    if (m_owner) {
+        auto others = m_owner->get_available_function_names();
+        for (auto &o : others)
+            ids.push_back(o);
+    }
+    return ids;
+}
+
+std::vector<std::string>
+ClassCtx::get_available_variable_names(void) {
+    std::vector<std::shared_ptr<earl::variable::Obj>> vars = m_scope.extract_tovec();
+    std::vector<std::string> ids = {};
+    for (auto &v : vars)
+        ids.push_back(v->id());
+    if (m_owner) {
+        auto others = m_owner->get_available_variable_names();
+        for (auto &o : others)
+            ids.push_back(o);
+    }
+    return ids;
+}

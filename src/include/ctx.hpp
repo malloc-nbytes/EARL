@@ -63,6 +63,8 @@ struct Ctx {
     virtual std::shared_ptr<earl::function::Obj> function_get(const std::string &id) = 0;
     virtual bool closure_exists(const std::string &id) = 0;
     virtual WorldCtx *get_world(void) = 0;
+    virtual std::vector<std::string> get_available_function_names(void) = 0; // for errors
+    virtual std::vector<std::string> get_available_variable_names(void) = 0; // for errors
 
     SharedScope<std::string, earl::variable::Obj> m_scope;
     SharedScope<std::string, earl::function::Obj> m_funcs;
@@ -101,6 +103,8 @@ struct WorldCtx : public Ctx {
     bool closure_exists(const std::string &id) override;
     void enum_add(std::shared_ptr<earl::value::Enum> _enum);
     WorldCtx *get_world(void) override;
+    std::vector<std::string> get_available_function_names(void) override; // for errors
+    std::vector<std::string> get_available_variable_names(void) override; // for errors
 
     // REPL
     void add_repl_lexer(std::unique_ptr<Lexer> lexer);
@@ -141,6 +145,8 @@ struct FunctionCtx : public Ctx {
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
     WorldCtx *get_world(void) override;
+    std::vector<std::string> get_available_function_names(void) override; // for errors
+    std::vector<std::string> get_available_variable_names(void) override; // for errors
 
     void setrec(void);
     void set_curfunc(const std::string &id);
@@ -184,6 +190,8 @@ struct ClassCtx : public Ctx {
     bool closure_exists(const std::string &id) override;
     WorldCtx *get_world(void) override;
     std::shared_ptr<Ctx> &get_world_owner(void);
+    std::vector<std::string> get_available_function_names(void) override; // for errors
+    std::vector<std::string> get_available_variable_names(void) override; // for errors
 
 private:
     std::shared_ptr<Ctx> m_owner;
@@ -217,6 +225,8 @@ struct ClosureCtx : public Ctx {
     std::shared_ptr<earl::function::Obj> function_get(const std::string &id) override;
     bool closure_exists(const std::string &id) override;
     WorldCtx *get_world(void) override;
+    std::vector<std::string> get_available_function_names(void) override; // for errors
+    std::vector<std::string> get_available_variable_names(void) override; // for errors
 
 private:
     std::shared_ptr<Ctx> m_owner;

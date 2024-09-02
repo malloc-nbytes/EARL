@@ -82,18 +82,6 @@ gather_watch_files(std::vector<std::string> &args) {
     }
 }
 
-static int
-levenshtein_distance(std::string a, std::string b) {
-    if (!b.size())
-        return a.size();
-    if (!a.size())
-        return b.size();
-    if (a[0] == b[0])
-        return levenshtein_distance(a.substr(1), b.substr(1));
-    return 1+std::min(levenshtein_distance(a.substr(1), b), 
-                        std::min(levenshtein_distance(a, b.substr(1)), levenshtein_distance(a.substr(1), b.substr(1))));
-}
-
 static std::string
 try_guess_wrong_arg(std::string &arg) {
     std::vector<std::string> possible = COMMON_EARL2ARG_ASCPL;
@@ -130,6 +118,7 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
+        exit(1);
     }
 }
 

@@ -28,9 +28,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <assert.h>
-#include <stddef.h>
-#include <stdio.h>
+#include <string>
 
 // Debug assertions that are taken out
 // when compiling in "release" mode.
@@ -60,22 +58,6 @@
 
 #define TODO(msg) fprintf(stderr, "[EARL TODO]: " msg "\n")
 
-[[deprecated]]
-#define CPL(ty, x) ((void *)&(ty){(x)})
-
-// A malloc wrapper that checks if
-// malloc failed. Allocates `bytes` number of bytes.
-[[deprecated]]
-void *utils_safe_malloc(size_t bytes);
-
-// A wrapper for strcmp that checks if the
-// strings are equal. Returns 1 on success,
-// and 0 on failure.
-[[deprecated]]
-int utils_streq(const char *s1, const char *s2);
-
-// Fill an array from 0..len with values 0..len.
-[[deprecated]]
-void utils_iota_array(int *arr, size_t len);
+int levenshtein_distance(std::string &s, std::string &t);
 
 #endif // UTILS_H

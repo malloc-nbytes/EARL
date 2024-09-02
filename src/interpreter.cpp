@@ -70,6 +70,23 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
+static std::string
+identifier_not_declared(std::string given, std::vector<std::string> possible) {
+    std::vector<int> ranks = {};
+    int min = 1e9;
+    int min_idx = 0;
+
+    for (size_t i = 0; i < possible.size(); ++i) {
+        int rank = levenshtein_distance(given, possible[i]);
+        if (rank < min) {
+            min = rank;
+            min_idx = i;
+        }
+    }
+
+    return possible[min_idx];
+}
+
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
                                              std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
@@ -409,7 +426,8 @@ eval_user_defined_function_wo_params(const std::string &id,
     }
 
     Err::err_wexpr(funccall);
-    std::string msg = "function `" + id + "` has not been defined";
+    std::string msg = "function `" + id + "` has not been defined\n";
+    msg += "did you mean: " + identifier_not_declared(id, ctx->get_available_function_names()) + "?";
     throw InterpreterException(msg);
     return nullptr; // unreachable
 }
@@ -465,6 +483,7 @@ eval_user_defined_function(ExprFuncCall *expr,
     }
 
     std::string msg = "function `" + id + "` has not been defined";
+    msg += "did you mean: " + identifier_not_declared(id, ctx->get_available_function_names()) + "?";
     throw InterpreterException(msg);
     if (expr)
         Err::err_wexpr(expr);
@@ -552,11 +571,13 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             ctx->get_world();
         if (world->enum_exists(er.id))
             return world->enum_get(er.id);
+        // Check if it is a type as a value
         if (earl::value::is_typekw(er.id))
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
         if (er.extra)
             Err::err_wexpr(static_cast<Expr *>(er.extra));
-        std::string msg = "variable `"+er.id+"` has not been declared";
+        std::string msg = "variable `"+er.id+"` has not been declared\n";
+        msg += "did you mean: " + identifier_not_declared(er.id, ctx->get_available_variable_names()) + "?";
         throw InterpreterException(msg);
     }
 
@@ -1132,7 +1153,8 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             std::string id = until_closing(str, i);
             if (!ctx->variable_exists(id)) {
                 Err::err_wexpr(expr);
-                const std::string msg = "variable `"+id+"` has not been defined";
+                std::string msg = "variable `"+id+"` has not been defined";
+                msg += "did you mean: " + identifier_not_declared(id, ctx->get_available_variable_names()) + "?";
                 throw InterpreterException(msg);
             }
             auto var = ctx->variable_get(id);

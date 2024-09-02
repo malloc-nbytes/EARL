@@ -1,13 +1,1 @@
 module Main
-
-fn test2() {
-    fn test3() {
-    }
-    test3();
-}
-
-fn test() {
-    test2();
-}
-
-test();
