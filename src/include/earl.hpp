@@ -507,6 +507,7 @@ namespace earl {
         private:
             std::string m_value;
             std::vector<std::shared_ptr<Char>> m_chars;
+            bool m_updated;
         };
 
         struct Module : public Obj {
