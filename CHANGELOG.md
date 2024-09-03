@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.7] - 2024-3-9
+
+### Added
+- New repl command :reset that will clear all declared identifiers.
+
 ## [0.4.6] - 2024-2-9
 
 ### Added

@@ -64,6 +64,7 @@
 #define EE ":q!"
 #define VARS ":vars"
 #define FUNCS ":funcs"
+#define RESET ":reset"
 
 static std::string REPL_HIST = "";
 
@@ -193,13 +194,13 @@ help(void) {
     log(QUIT " -> quit the session\n");
     log(VARS " -> show current variables in scope\n");
     log(FUNCS " -> show current functions in scope\n");
-    log(SKIP " -> skip current action\n");
     log(CLEAR " -> clear the screen\n");
     log(IMPORT " [files...] -> import local EARL files\n");
     log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
     log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
     log(LIST_ENTRIES " -> list all entries in the current session\n");
     log(DISCARD " -> discard the current session\n");
+    log(RESET " -> reset all identifiers\n");
     log("You can also issue bash commands by typing `$` followed by the command\n");
 }
 
@@ -448,6 +449,8 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
         show_vars(ctx);
     else if (lst[0] == FUNCS)
         show_funcs(ctx);
+    else if (lst[0] == RESET)
+        ctx = std::make_shared<WorldCtx>();
     else if (lst[0] == HELP)
         help();
     else
