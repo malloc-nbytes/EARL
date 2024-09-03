@@ -423,6 +423,48 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
 }
 
 void
+reset(std::shared_ptr<Ctx> &ctx) {
+    std::vector<std::string> vars = ctx->get_available_variable_names();
+    std::vector<std::string> funcs = ctx->get_available_function_names();
+
+    log("Removing: [", gray);
+
+    for (int i = 0; i < vars.size(); ++i) {
+        red();
+        std::cout << vars[i];
+        noc();
+        if (i != vars.size()-1) {
+            gray();
+            std::cout << ", ";
+            noc();
+        }
+    }
+
+    if (funcs.size() > 0 && vars.size() > 0) {
+        gray();
+        std::cout << ", ";
+        noc();
+    }
+
+    for (int i = 0; i < funcs.size(); ++i) {
+        red();
+        std::cout << funcs[i];
+        noc();
+        if (i != funcs.size()-1) {
+            gray();
+            std::cout << ", ";
+            noc();
+        }
+    }
+
+    gray();
+    std::cout << "]" << std::endl;
+    noc();
+
+    ctx = std::make_shared<WorldCtx>();
+}
+
+void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
@@ -450,7 +492,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
     else if (lst[0] == FUNCS)
         show_funcs(ctx);
     else if (lst[0] == RESET)
-        ctx = std::make_shared<WorldCtx>();
+        reset(ctx);
     else if (lst[0] == HELP)
         help();
     else
