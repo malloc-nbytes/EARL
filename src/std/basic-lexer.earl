@@ -97,6 +97,7 @@ import "std/char.earl" full
     DollarSign,
     Tilde,
     Keyword,
+    Bang,
 }
 
 ### END ENUMS
@@ -197,7 +198,8 @@ import "std/char.earl" full
         "|": TokenType.Pipe,
         "&": TokenType.Ampersand,
         "#": TokenType.Hash,
-        "~": TokenType.Tilde
+        "~": TokenType.Tilde,
+        "!": TokenType.Bang
     };
 
     ### END MEMBERS
