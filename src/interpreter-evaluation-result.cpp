@@ -91,6 +91,11 @@ Interpreter::ER::is_list_access(void) {
 }
 
 bool
+Interpreter::ER::is_from_str(void) {
+    return (this->rt & ERT::FromStr) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

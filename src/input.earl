@@ -1,9 +1,1 @@
 module Main
-
-import "std/io.earl"
-
-let s = IO::file_to_str("../src/include/common.hpp");
-
-# for i in 0 to len(s) { print(s[i]); }
-foreach c in s { print(c); }
-

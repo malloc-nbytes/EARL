@@ -30,7 +30,6 @@
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
-#include "utils.hpp"
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {
@@ -46,7 +45,8 @@ namespace Interpreter {
         TupleAccess = 1 << 8,
         Type = 1 << 9,
         ListAccess = 1 << 10,
-        None = 1 << 11,
+        FromStr = 1 << 11,
+        None = 1 << 12,
     };
 
     struct ER {
@@ -66,6 +66,7 @@ namespace Interpreter {
         bool is_tuple_access(void);
         bool is_type(void);
         bool is_list_access(void);
+        bool is_from_str(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;

@@ -34,23 +34,25 @@ using namespace earl::value;
 
 Str::Str(std::string value) {
     m_value = value;
-    m_chars = std::vector<std::shared_ptr<Char>>(m_value.size(), nullptr);
+    m_chars = std::vector<std::shared_ptr<Char>>(value.size(), nullptr);
+    m_changed = {};
 }
 
 Str::Str(std::vector<std::shared_ptr<Char>> chars) {
     assert(false && "unimplemented");
 }
 
+void
+Str::update_changed(void) {
+    for (int i : m_changed)
+        m_value[i] = m_chars[i]->value();
+    m_changed.clear();
+}
+
 std::string
 Str::value(void) {
-    std::string actual = "";
-    for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_value.at(i) == '\0')
-            actual += m_chars.at(i)->value();
-        else
-            actual += m_value.at(i);
-    }
-    return actual;
+    this->update_changed();
+    return m_value;
 }
 
 std::shared_ptr<Char>
@@ -69,12 +71,15 @@ Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
         throw InterpreterException(msg);
     }
 
-    if (m_value.at(I) == '\0')
+    if (m_chars.at(I)) {
+        m_value.at(I) = m_chars.at(I)->value();
         return m_chars.at(I);
+    }
 
     auto c = std::make_shared<Char>(m_value.at(I));
     m_chars.at(I) = std::move(c);
-    m_value.at(I) = '\0';
+    m_changed.push_back(I);
+
     return m_chars.at(I);
 }
 
@@ -86,6 +91,8 @@ Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
         const std::string msg = "cannot use member intrinsic `split` with non-str type";
         throw InterpreterException(msg);
     }
+
+    this->update_changed();
 
     std::vector<std::shared_ptr<Obj>> splits = {};
     std::string delim_str = dynamic_cast<Str *>(delim.get())->value();
@@ -112,18 +119,12 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) 
         throw InterpreterException(msg);
     }
 
-    std::string sub = "";
+    this->update_changed();
+
     int S = dynamic_cast<Int *>(idx1.get())->value();
     int N = dynamic_cast<Int *>(idx2.get())->value();
 
-    for (int i = S; i < N; ++i) {
-        if (m_value.at(i) != '\0')
-            sub += m_value.at(i);
-        else
-            sub += m_chars.at(i)->value();
-    }
-
-    return std::make_shared<Str>(sub);
+    return std::make_shared<Str>(m_value.substr(S, N));
 }
 
 void
@@ -131,28 +132,31 @@ Str::pop(std::shared_ptr<Obj> &idx, Expr *expr) {
     (void)expr;
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
     int I = idx1->value();
-
-    if (m_value.at(I) == '\0')
-        m_chars.erase(m_chars.begin() + I);
-
+    this->update_changed();
     m_value.erase(m_value.begin() + I);
+    m_chars.erase(m_chars.begin() + I);
 }
 
 std::shared_ptr<Obj>
 Str::back(void) {
+    this->update_changed();
+
     if (m_value.size() == 0)
         return std::make_shared<Option>();
-    if (m_value.back() == '\0')
+
+    if (m_chars.back()) {
+        m_value.back() = m_chars.back()->value();
         return m_chars.back();
+    }
 
     auto c = std::make_shared<Char>(m_value.back());
-    m_chars.at(m_chars.size()-1) = std::move(c);
-    m_value.at(m_value.size()-1) = '\0';
-    return m_chars.at(m_chars.size()-1);
+    m_chars.back() = std::move(c);
+    return m_chars.back();
 }
 
 std::shared_ptr<Str>
 Str::rev(void) {
+    this->update_changed();
     auto str = std::make_shared<Str>();
     for (int i = m_value.size()-1; i >= 0; --i)
         str->append(m_value[i]);
@@ -176,16 +180,15 @@ Str::append(char c) {
 void
 Str::append(std::shared_ptr<Obj> c) {
     if (c->type() == Type::Char) {
-        auto cx = std::dynamic_pointer_cast<Char>(c);
-        m_chars.push_back(cx);
-        m_value.push_back('\0');
+        auto cx = dynamic_cast<Char*>(c.get());
+        m_value.push_back(cx->value());
+        m_chars.push_back(nullptr);
     }
     else {
         auto s = dynamic_cast<Str *>(c.get());
-        for (auto &cx : s->value()) {
-            m_value.push_back(cx);
+        m_value += s->value();
+        for (int i=0; i < s->value().size(); ++i)
             m_chars.push_back(nullptr);
-        }
     }
 }
 
@@ -203,25 +206,28 @@ Str::append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr) {
 
 std::shared_ptr<Str>
 Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+    this->update_changed();
+
     Closure *cl = dynamic_cast<Closure *>(closure.get());
 
     auto acc = std::make_shared<Str>();
 
-    int i = 0;
-    for (auto &c : m_value) {
+    for (int i = 0; i < m_value.size(); ++i) {
         std::shared_ptr<Char> cx = nullptr;
-        if (c == '\0')
-            cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
+        if (m_chars.at(i)) {
+            m_value.at(i) = m_chars.at(i)->value();
+            cx = m_chars.at(i);
+        }
         else {
-            cx = std::make_shared<Char>(c);
-            m_value.at(i) = '\0';
-            m_chars.at(i) = cx;
+            auto tmpc = std::make_shared<Char>(m_value.at(i));
+            m_chars.at(i) = std::move(tmpc);
+            cx = m_chars.at(i);
+            m_changed.push_back(i);
         }
         std::vector<std::shared_ptr<Obj>> values = {cx};
         std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
         if (dynamic_cast<Bool *>(filter_result.get())->boolean())
             acc->append(cx);
-        ++i;
     }
 
     return acc;
@@ -230,32 +236,31 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<Bool>
 Str::contains(std::shared_ptr<Char> &value) {
     for (size_t i = 0; i < m_value.size(); ++i) {
-        if (m_value.at(i) == '\0') {
-            auto &ch = m_chars.at(i);
-            if (ch->value() == value->value())
-                return std::make_shared<Bool>(true);
-        }
-        else {
-            if (m_value.at(i) == value->value())
-                return std::make_shared<Bool>(true);
-        }
+        if (m_chars.at(i) && m_chars.at(i)->value() != m_value.at(i))
+            m_value.at(i) = m_chars.at(i)->value();
+
+        if (m_value.at(i) == value->value())
+            return std::make_shared<Bool>(true);
     }
     return std::make_shared<Bool>(false);
 }
 
 void
 Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+    this->update_changed();
     Closure *cl = dynamic_cast<Closure *>(closure.get());
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::shared_ptr<Char> cx = nullptr;
-        if (m_value.at(i) == '\0')
-            cx = std::dynamic_pointer_cast<Char>(m_chars.at(i)->copy());
-        else {
-            cx = std::make_shared<Char>(m_value.at(i));
-            m_value.at(i) = '\0';
-            m_chars.at(i) = cx;
+        if (m_chars.at(i)) {
+            m_value.at(i) = m_chars.at(i)->value();
+            cx = m_chars.at(i);
         }
-
+        else {
+            auto tmpc = std::make_shared<Char>(m_value.at(i));
+            m_chars.at(i) = std::move(tmpc);
+            cx = m_chars.at(i);
+            m_changed.push_back(i);
+        }
         std::vector<std::shared_ptr<Obj>> values = {cx};
         cl->call(values, ctx);
     }
@@ -275,6 +280,7 @@ Str::type(void) const {
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
+    this->update_changed();
     switch (op->type()) {
     case TokenType::Plus: {
         return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
@@ -310,31 +316,20 @@ Str::value_as_earlchar(void) {
 
 std::shared_ptr<Char>
 Str::__get_elem(size_t idx) {
-    // if (!m_chars.at(idx)) {
-    //     auto c = std::make_shared<Char>(std::string(1, m_value.at(idx)));
-    //     m_value.at(idx) = '\0';
-    //     m_chars.at(idx) = c;
-
-    //     for (size_t i = idx; i < idx+10; ++i) {
-    //         if (!m_chars.at(i)) {
-    //             auto cx = std::make_shared<Char>(std::string(1, m_value.at(i)));
-    //             m_chars.at(i) = cx;
-    //             m_value.at(i) = '\0';
-    //         }
-    //     }
-
-    //     return c;
-    // }
-    // return m_chars.at(idx);
-
+    this->update_changed();
     int I = idx;
-    if (m_value.at(I) == '\0')
-        return m_chars.at(I);
-
-    auto c = std::make_shared<Char>(m_value.at(I));
-    m_chars.at(I) = std::move(c);
-    m_value.at(I) = '\0';
-    return m_chars.at(I);
+    std::shared_ptr<Char> c = nullptr;
+    if (m_chars.at(I)) {
+        m_value.at(I) = m_chars.at(I)->value();
+        c = m_chars.at(I);
+    }
+    else {
+        auto tmpc = std::make_shared<Char>(m_value.at(I));
+        m_chars.at(I) = std::move(tmpc);
+        c = m_chars.at(I);
+        m_changed.push_back(I);
+    }
+    return c;
 }
 
 // TODO: Adhere to new string optimization
@@ -342,24 +337,16 @@ void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
-    if (other->type() == Type::Str) {
-        Str *otherstr = dynamic_cast<Str *>(other.get());
-        m_value = otherstr->m_value;
-        m_chars = otherstr->m_chars;
-    }
-    else {
-        m_value.clear();
-        m_value.push_back(dynamic_cast<Char *>(other.get())->value());
-    }
+
+    Str *otherstr = dynamic_cast<Str *>(other.get());
+    m_value = otherstr->m_value;
+    m_chars = otherstr->m_chars;
 }
 
-// CHANGME
 std::shared_ptr<Obj>
 Str::copy(void) {
-    auto copy = std::make_shared<Str>();
-    copy->m_value = m_value;
-    copy->m_chars = m_chars;
-    return copy;
+    this->update_changed();
+    return std::make_shared<Str>(m_value);
 }
 
 bool
@@ -380,16 +367,10 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    // auto value = m_value;
-    // auto chars = m_chars;
+    this->update_changed();
 
-    // this->mutate(other, stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        // for (int i = (int)value.size()-1; i >= 0; --i) {
-        //     m_value.insert(m_value.begin(), value.at(i));
-        //     m_chars.insert(m_chars.begin(), chars.at(i));
-        // }
         this->append(other);
     } break;
     default: {
