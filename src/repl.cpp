@@ -29,6 +29,8 @@
 #include <vector>
 #include <iostream>
 #include <memory>
+#include <unistd.h>
+#include <termios.h>
 
 #include "repl.hpp"
 #include "parser.hpp"
@@ -71,6 +73,28 @@ static std::string REPL_HIST = "";
 static int g_brace = 0;
 static int g_bracket = 0;
 static int g_paren = 0;
+
+struct RawInput {
+    RawInput() {
+        tcgetattr(STDIN_FILENO, &old_termios);
+        termios raw = old_termios;
+        raw.c_lflag &= ~(ECHO | ICANON);
+        tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+    }
+
+    ~RawInput() {
+        tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+    }
+
+    char get_char() {
+        char ch;
+        read(STDIN_FILENO, &ch, 1);
+        return ch;
+    }
+
+private:
+    struct termios old_termios;
+};
 
 void
 try_clear_repl_history() {
@@ -499,79 +523,33 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
         log("unknown command sequence `" + lst[0] + "`\n", gray);
 }
 
+#define ENTER(ch) ch == '\n'
+#define BACKSPACE(ch) ch == 8 || ch == 127
+
+void
+handle_backspace(char ch, std::string &line) {
+    std::cout << "\r";
+    std::cout << std::string(80, ' ');
+    std::cout << "\r";
+    for (int i = 0; i < (int)line.size()-1; ++i)
+        std::cout << line.at(i);
+    line.pop_back();
+    std::cout.flush();
+}
+
 std::shared_ptr<Ctx>
 Repl::run(void) {
-    try_clear_repl_history();
 
-    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
-    std::vector<std::string> types    = {};
-    std::string comment               = COMMON_EARL_COMMENT;
-
-    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
+    RawInput raw_input;
+    std::string current_input = "";
 
     while (true) {
         std::string line;
         std::vector<std::string> lines;
-        int i = 0;
 
         while (1) {
-            std::cout << lines.size() << ": ";
-            if (!std::getline(std::cin, line)) {
-                std::cout << std::endl;
-                std::exit(0);
-            }
-            if (line.size() > 0 && (line[0] == ':' || line[0] == '$')) {
-                handle_repl_arg(line, lines, ctx);
-            }
-            else {
-                analyze_new_line(line);
-                if (line.size() == 0 && !g_brace && !g_bracket && !g_paren)
-                    break;
-                lines.push_back(line);
-            }
+            char ch = raw_input.get_char();
         }
-
-        std::string combined = "";
-        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
-        REPL_HIST += combined;
-
-        std::unique_ptr<Program> program = nullptr;
-        std::unique_ptr<Lexer> lexer = nullptr;
-        lexer = lex_file(combined, "", keywords, types, comment);
-
-        try {
-            program = Parser::parse_program(*lexer.get());
-        } catch (const ParserException &e) {
-            std::cerr << "Parser error: " << e.what() << std::endl;
-            continue;
-        }
-
-        WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
-        wctx->add_repl_lexer(std::move(lexer));
-        wctx->add_repl_program(std::move(program));
-
-        for (size_t i = 0; i < wctx->stmts_len(); ++i) {
-            Stmt *stmt = wctx->stmt_at(i);
-            if (!stmt->m_evald) {
-                try {
-                    auto val = Interpreter::eval_stmt(stmt, ctx);
-                    if (val) {
-                        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                        green();
-                        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
-                        std::cout << " -> ";
-                        gray();
-                        std::cout << earl::value::type_to_str(val->type()) << std::endl;
-                        noc();
-                    }
-                }
-                catch (InterpreterException &e) {
-                    std::cerr << "Interpreter error: " << e.what() << std::endl;
-                }
-            }
-        }
-
-        save_repl_history();
     }
 
     return nullptr;
