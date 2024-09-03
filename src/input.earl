@@ -1,13 +1,10 @@
 module Main
 
-import "std/io.earl"
-let s = IO::file_to_str("../src/interpreter.cpp");
+# import "std/io.earl"
+# let s = IO::file_to_str("../src/interpreter.cpp");
 # for i in 0 to len(s) { print(s[i]); }
-foreach c in s { print(c); }
+# foreach c in s { print(c); }
 
-# let s = "hello";
-# s[0] = 'z';
-# println(s == "zello");
-
-
-
+let s = "foo";
+s += " bar";
+println(s);

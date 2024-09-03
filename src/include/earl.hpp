@@ -503,11 +503,12 @@ namespace earl {
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
             void set_const(void)                                                          override;
+            void update_changed(void);
 
         private:
             std::string m_value;
             std::vector<std::shared_ptr<Char>> m_chars;
-            bool m_updated;
+            std::vector<unsigned> m_changed;
         };
 
         struct Module : public Obj {
