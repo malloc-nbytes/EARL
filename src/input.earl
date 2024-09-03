@@ -1,5 +1,8 @@
 module Main
 
+import "std/dict-set.earl"
+let s = DictSet::T(1..1000);
 
+println(s.contains("hello"));
 
 

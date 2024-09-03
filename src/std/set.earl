@@ -23,148 +23,78 @@
 ### MODULE
 module Set
 
-class Node [value] {
-    @pub let value = value;
-    @pub let left = none;
-    @pub let right = none;
-}
-
 ### BEGIN CLASSES
 
 ### NAME T
-### PARAMETER init: list
-### PARAMETER compar: closure(x1: any, x2: type(x1)) -> int
+### PARAMETER init: list<x0: any, x1: type(x0), ..., xN: type(x0)>
 ### DESCRIPTION
-###   where =compar= is some ordering function $F(x_1, x_2) \rightarrow k \in \{2,1,0\}$
-###
-###   and $F$ is defined by
-###
-###   \[
-###   F(x_1, x_2) = \begin{cases}
-###         2 & \text{if } R(x_1) > R(x_2) \\
-###         1 & \text{if } R(x_2) > R(x_1) \\
-###         0 & \text{if } R(x_1) = R(x_2)
-###      \end{cases}
-###   \]
-###   and $R(x)$ is some ranking function that produces a rank of $x$.
-###
-###   Creates a =Set= container with the initializer list =init= and the
-###   comparison function =compar=. This container stores the values
-###   in a binary search tree, so it needs to know how to compare the values
-###   and decide which is bigger and which isn't.
-###
-###   Time complexity: $O(n \log n)$ where $n = |$ =init= $|$.
-@pub class T [init, compar] {
-    let root = none;
-    let compar = compar;
+###   Creates a new Set container with the initializer list `init`.
+@pub class T [init] {
+    let items = none;
+    let type_ = int;
 
-    fn constructor() {
-        for i in 0 to len(init) {
-            insert(init[i]);
-        }
+    fn init(value) {
+        this.type_ = typeof(value);
+        items = some(Dict(this.type_));
     }
 
-    fn __extract(cur) {
-        let ret = [];
-        if cur.is_some() {
-            ret = ret
-            + [cur.unwrap().value]
-            + this.__extract(cur.unwrap().left)
-            + this.__extract(cur.unwrap().right);
+    fn constructor() {
+        if len(init) != 0 {
+            this.init(init[0]);
+            for i in 0 to len(init) {
+                this.insert(init[i]);
+            }
         }
-        return ret;
     }
 
     ### BEGIN METHODS
-
-    ### NAME extract
-    ### RETURNS list
-    ### DESCRIPTION
-    ###   Retrieve all elements in the `set` as a `list`.
-    @pub fn extract() {
-        return this.__extract(this.root);
-    }
 
     ### NAME insert
     ### PARAMETER value: any
     ### RETURNS unit
     ### DESCRIPTION
-    ###   Insert `value` into the set.
+    ###  Insert `value` into the `set`. A panic will occur
+    ###  if the `typeof(value)` is not the same as the other
+    ###  values in the `set`.
     @pub fn insert(value) {
-        this.__insert(this.root, value);
+        if !items {
+            this.init(value);
+        }
+
+        if typeof(value) != type_ {
+            panic(f"Set::T expected value `{type_}` but got: ", typeof(value));
+        }
+
+        if !this.items.unwrap()[value] {
+            this.items
+                    .unwrap()
+                    .insert(value, _);
+        }
     }
 
     ### NAME contains
     ### PARAMETER value: any
     ### RETURNS bool
     ### DESCRIPTION
-    ###   Returns `true` if `value` is in the set, or `false` otherwise.
+    ###   Returns `true` if `value` is in the `set`, or `false` if it is not.
+    ###   A panic will occur if the `typeof(value)` is not the same as the other
+    ###   values in the `set`.
     @pub fn contains(value) {
-        return this.__contains(this.root, value);
-    }
-
-    ### NAME remove
-    ### PARAMETER value: any
-    ### RETURNS unit
-    ### DESCRIPTION
-    ###   Remove `value` from the set.
-    @pub fn remove(value) {
-        unimplemented("Set.T.remove");
-    }
-
-    @pub fn show() {
-        this.__show(this.root);
-    }
-
-    ### END METHODS
-
-    fn __show(@ref cur) {
-        if cur.is_some() {
-            __show(cur.unwrap().left);
-            println(cur.unwrap().value);
-            __show(cur.unwrap().right);
+        if typeof(value) != type_ {
+            panic(f"Set::T expected value  `{type_}` but got: ", typeof(value));
         }
-    }
 
-    fn __contains(@ref cur, value) {
-        if cur.is_none() {
+        if !this.items {
             return false;
         }
 
-        match this.compar(cur.unwrap().value, value) {
-            2 -> { return this.__contains(cur.unwrap().right, value); }
-            1 -> { return this.__contains(cur.unwrap().left, value); }
-            0 -> { return true; }
-        }
-
-        return false;
+        return this.items
+                       .unwrap()[value]
+                       .is_some();
     }
 
-    fn __insert(@ref cur, v) {
-        if cur.is_none() {
-            cur = some(Node(v));
-        }
-
-        match this.compar(cur.unwrap().value, v) {
-            2 -> { return this.__insert(cur.unwrap().right, v); }
-            1 -> { return this.__insert(cur.unwrap().left, v); }
-        }
-    }
+    ### END METHODS
 }
 
 ### END CLASSES
 
-### BEGIN VARIABLES
-
-### NAME DEFAULT_INT_SET_COMPAR
-### TYPE closure(x1: int, x2: int) -> int
-### DESCRIPTION
-###   The default closure that the set can use
-###   when dealing with integers.
-@pub let DEFAULT_INT_SET_COMPAR = |x0, x1| {
-    if x0 > x1 { return 2; }
-    if x1 > x0 { return 1; }
-    return 0;
-};
-
-### END VARIABLES

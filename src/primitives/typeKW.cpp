@@ -111,7 +111,7 @@ TypeKW::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 TypeKW::to_cxxstring(void) {
-    return "<TypeKW: " + earl::value::type_to_str(this->ty()) + ">";
+    return "<Type: " + earl::value::type_to_str(this->ty()) + ">";
 }
 
 void

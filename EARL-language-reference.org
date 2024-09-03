@@ -2261,14 +2261,7 @@ Takes the char =c= and returns a uppercase character version of the latin alphab
 
 *** *Module*: =Set=
 
-*** *Variable List*:
-#+begin_quote
-#+begin_example
-DEFAULT_INT_SET_COMPAR: closure(x1: int, x2: int) -> int
-#+end_example
-
-The default closure that the set can use when dealing with integers.
-#+end_quote
+*** *Variable List*: /None/
 
 *** *Enum List*: /None/
 
@@ -2278,27 +2271,19 @@ The default closure that the set can use when dealing with integers.
 *** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list, compar: closure(x1: any, x2: type(x1)) -> int]
+T [init: list<x0: any, x1: type(x0), ..., xN: type(x0)>]
 #+end_example
-where =compar= is some ordering function $F(x_1, x_2) \rightarrow k \in \{2,1,0\}$  and $F$ is defined by  \[ F(x_1, x_2) = \begin{cases} 2 & \text{if } R(x_1) > R(x_2) \\ 1 & \text{if } R(x_2) > R(x_1) \\ 0 & \text{if } R(x_1) = R(x_2) \end{cases} \] and $R(x)$ is some ranking function that produces a rank of $x$.  Creates a =Set= container with the initializer list =init= and the comparison function =compar=. This container stores the values in a binary search tree, so it needs to know how to compare the values and decide which is bigger and which isn't.  Time complexity: $O(n \log n)$ where $n = |$ =init= $|$.
+Creates a new Set container with the initializer list =init=.
 #+end_quote
 
 **** *=T= Implements*
 
 #+begin_quote
 #+begin_example
-extract() -> list
-#+end_example
-
-Retrieve all elements in the =set= as a =list=. 
-
-#+end_quote
-#+begin_quote
-#+begin_example
 insert(value: any) -> unit
 #+end_example
 
-Insert =value= into the set. 
+Insert =value= into the =set=. A panic will occur if the =typeof(value)= is not the same as the other values in the =set=. 
 
 #+end_quote
 #+begin_quote
@@ -2306,70 +2291,9 @@ Insert =value= into the set.
 contains(value: any) -> bool
 #+end_example
 
-Returns =true= if =value= is in the set, or =false= otherwise. 
+Returns =true= if =value= is in the =set=, or =false= if it is not. A panic will occur if the =typeof(value)= is not the same as the other values in the =set=. 
 
 #+end_quote
-#+begin_quote
-#+begin_example
-remove(value: any) -> unit
-#+end_example
-
-Remove =value= from the set. 
-
-#+end_quote
-
-** System
-
-*** *Import*: ="std/sytem.earl"=
-
-*** *Module*: =System=
-
-*** *Variable List*: /None/
-
-*** *Enum List*: /None/
-
-*** *Function List*:
-#+begin_quote
-#+begin_example
-ls(path: str) -> list
-#+end_example
-
-List all items at the path =path= and return a list of all elements it contains.
-#+end_quote
-
-#+begin_quote
-#+begin_example
-mkdir(name: str) -> unit
-#+end_example
-
-Create a new directory in the =cwd= called =name=.
-#+end_quote
-
-#+begin_quote
-#+begin_example
-fullpath_mkdir(fullpath: str) -> unit
-#+end_example
-
-Creates a full path directory as well as a file i.e., ./dir1/dir2/dir3/file.txt. The last entry in the path will be used as the file to be created. It is functionally equivalent to: =mkdir -p <path> && touch <path>/file.txt=.
-#+end_quote
-
-#+begin_quote
-#+begin_example
-name_and_ext(filepath: str) -> tuple
-#+end_example
-
-Returns a tuple of filename and extension. If either the name or extension cannot be found, the respective one will be set to =none=.
-#+end_quote
-
-#+begin_quote
-#+begin_example
-move(path_from: str, path_to: str) -> unit
-#+end_example
-
-Move the file =path_from= to =path_to=.
-#+end_quote
-
-*** *Class List*: /None/
 
 ** Stack
 
@@ -2650,54 +2574,6 @@ sz() -> int
 #+end_example
 
 Return the number of tokens the lexer currently holds. 
-
-#+end_quote
-
-** AVL
-
-*** *Import*: ="std/set-avl.earl"=
-
-*** *Module*: =AVL=
-
-*** *Variable List*: /None/
-
-*** *Enum List*: /None/
-
-*** *Function List*: /None/
-
-*** *Class List*:
-*** *=T=*
-#+begin_quote
-#+begin_example
-T [init: list]
-#+end_example
-The class for a set-avl.
-#+end_quote
-
-**** *=T= Implements*
-
-#+begin_quote
-#+begin_example
-insert(value: int) -> unit
-#+end_example
-
-Insert =value= into the =set=. 
-
-#+end_quote
-#+begin_quote
-#+begin_example
-contains(value: any) -> bool
-#+end_example
-
-Returns =true= if =value= is in the =set= or =false= if not found. 
-
-#+end_quote
-#+begin_quote
-#+begin_example
-show() -> unit
-#+end_example
-
-Prints all values in the =set=. 
 
 #+end_quote
 
