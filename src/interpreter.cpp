@@ -1994,6 +1994,33 @@ eval_stmt_continue(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Continue>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+
+    while (1) {
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+
+        if (result && result->type() == earl::value::Type::Continue)
+            continue;
+
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+    }
+
+    if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break))
+        result = std::make_shared<earl::value::Void>();
+
+    stmt->m_evald = true;
+
+    return result;
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -2014,6 +2041,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Match:     return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
     case StmtType::Enum:      return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
     case StmtType::Continue:  return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
+    case StmtType::Loop:      return eval_stmt_loop(dynamic_cast<StmtLoop *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

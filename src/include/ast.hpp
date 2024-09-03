@@ -47,6 +47,7 @@ enum class StmtType {
     Return,
     Break,
     While,
+    Loop,
     For,
     Foreach,
     Import,
@@ -451,6 +452,14 @@ struct StmtWhile : public Stmt {
     std::unique_ptr<StmtBlock> m_block;
 
     StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block);
+    StmtType stmt_type() const override;
+};
+
+struct StmtLoop : public Stmt {
+    std::shared_ptr<Token> m_tok;
+    std::unique_ptr<StmtBlock> m_block;
+
+    StmtLoop(std::shared_ptr<Token> tok, std::unique_ptr<StmtBlock> block);
     StmtType stmt_type() const override;
 };
 

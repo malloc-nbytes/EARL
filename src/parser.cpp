@@ -889,6 +889,15 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
     return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs);
 }
 
+static std::unique_ptr<StmtLoop>
+parse_stmt_loop(Lexer &lexer) {
+    auto tok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LOOP);
+
+    auto block = Parser::parse_stmt_block(lexer);
+
+    return std::make_unique<StmtLoop>(std::move(tok), std::move(block));
+}
+
 std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
@@ -927,6 +936,8 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_enum(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_CONTINUE)
                 return parse_stmt_continue(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_LOOP)
+                return parse_stmt_loop(lexer);
             Err::err_wtok(tok);
             std::string msg = "invalid keyword `" + tok->lexeme() + "`";
             throw ParserException(msg);
