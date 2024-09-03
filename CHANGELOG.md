@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.4.5] - 2024-2-9
+## [0.4.6] - 2024-2-9
 
 ### Added
 - Levenshtein distance algorithm on function names and misspelled interpreter flags.
