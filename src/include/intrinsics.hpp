@@ -262,6 +262,11 @@ namespace Intrinsics {
                    Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_warn(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                   std::shared_ptr<Ctx> &ctx,
+                   Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_panic(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);

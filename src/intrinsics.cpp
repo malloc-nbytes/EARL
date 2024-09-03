@@ -45,6 +45,7 @@ Intrinsics::intrinsic_functions = {
     {"typeof", &Intrinsics::intrinsic_typeof},
     {"unimplemented", &Intrinsics::intrinsic_unimplemented},
     {"exit", &Intrinsics::intrinsic_exit},
+    {"warn", &Intrinsics::intrinsic_warn},
     {"panic", &Intrinsics::intrinsic_panic},
     {"some", &Intrinsics::intrinsic_some},
     {"argv", &Intrinsics::intrinsic_argv},
@@ -498,6 +499,18 @@ Intrinsics::intrinsic_exit(std::vector<std::shared_ptr<earl::value::Obj>> &param
         __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "exit", expr);
         exit(dynamic_cast<earl::value::Int *>(params[0].get())->value());
     }
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_warn(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
+    (void)ctx;
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "warn", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "warn", expr);
+    std::cout << "[EARL] WARN: ";
+    Intrinsics::intrinsic_println(params, ctx, expr);
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
