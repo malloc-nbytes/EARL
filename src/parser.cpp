@@ -243,6 +243,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 left = std::move(tuple[0]);
         } break;
         case TokenType::Period: {
+            if (!left) {
+                Err::err_wtok(lexer.peek(0));
+                const std::string msg = "cannot use dot notation `.` with no lhs";
+                throw ParserException(msg);
+            }
             auto tok = lexer.next();
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer), tok);
         } break;
@@ -358,15 +363,29 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
 }
 
 static Expr *
-parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
+parse_power_expr(Lexer &lexer, char fail_on='\0') {
     Expr *lhs = parse_primary_expr(lexer, fail_on);
+    Token *cur = lexer.peek();
+    while (cur && (cur->type() == TokenType::Double_Asterisk)) {
+        std::shared_ptr<Token> op = lexer.next();
+        Expr *rhs = parse_primary_expr(lexer, fail_on);
+        lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
+                             std::move(op),
+                             std::unique_ptr<Expr>(rhs));
+        cur = lexer.peek();
+    }
+    return lhs;
+}
+
+static Expr *
+parse_multiplicative_expr(Lexer &lexer, char fail_on = '\0') {
+    Expr *lhs = parse_power_expr(lexer, fail_on);
     Token *cur = lexer.peek();
     while (cur && (cur->type() == TokenType::Asterisk
                    || cur->type() == TokenType::Forwardslash
-                   || cur->type() == TokenType::Percent
-                   || cur->type() == TokenType::Double_Asterisk)) {
+                   || cur->type() == TokenType::Percent)) {
         std::shared_ptr<Token> op = lexer.next();
-        Expr *rhs = parse_primary_expr(lexer, fail_on);
+        Expr *rhs = parse_power_expr(lexer, fail_on);
         lhs = new ExprBinary(std::unique_ptr<Expr>(lhs),
                              std::move(op),
                              std::unique_ptr<Expr>(rhs));
