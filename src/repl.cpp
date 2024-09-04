@@ -542,18 +542,26 @@ clearln(bool flush=false) {
 
 static size_t lineno = 0;
 
-void
-out_lineno() {
+#define PAD (std::to_string(lineno).size()+2)
+// #define PAD 2
 
+void
+out_lineno(bool flush=false) {
+    clearln();
+    std::cout << lineno << ": ";
+    if (flush)
+        std::cout.flush();
 }
 
 void
 handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c <= 2)
+    if (c <= PAD)
         return;
     clearln();
-    line.erase(c-1-2, 1);
-    std::cout << "> " << line;
+    line.erase(c-1-PAD, 1);
+    // std::cout << "> " << line;
+    out_lineno();
+    std::cout << line;
     std::cout << "\033[" << c << "G";
     --c;
     std::cout.flush();
@@ -571,12 +579,12 @@ handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &line
 
 void
 handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    if (lines_idx == 0)
+    if (lines_idx <= 0)
         return;
     --lines_idx;
     std::string &histline = lines[lines_idx];
     clearln();
-    std::cout << "> ";
+    out_lineno();
     std::cout << histline;
     line = histline;
     std::cout.flush();
@@ -589,6 +597,7 @@ handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &l
     ++lines_idx;
     std::string &histline = lines[lines_idx];
     clearln();
+    out_lineno();
     std::cout << histline;
     line = histline;
     std::cout.flush();
@@ -596,7 +605,7 @@ handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &l
 
 void
 handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c <= 2)
+    if (c <= PAD)
         return;
     std::cout << "\033[" << c << "G";
     std::cout.flush();
@@ -605,7 +614,7 @@ handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
 
 void
 handle_right_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c-2 >= line.size())
+    if (c-PAD >= line.size())
         return;
     std::cout << "\033[" << 1 << "C";
     ++c;
@@ -636,10 +645,10 @@ Repl::run(void) {
     std::string line;
     std::vector<std::string> lines;
     int lines_idx = 0;
-    int c = 2;
+    int c = PAD;
 
     while (true) {
-        std::cout << "> " << std::flush;
+        out_lineno(true);
 
         while (1) {
             char ch = ri.get_char();
@@ -653,8 +662,8 @@ Repl::run(void) {
                 }
                 else
                     handle_newline(lines_idx, line, lines);
-                c = 2;
-                std::cout << "> " << std::flush;
+                c = PAD;
+                out_lineno(true);
             }
 
             else if (TAB(ch)) {
@@ -668,11 +677,11 @@ Repl::run(void) {
                     switch (next1) {
                     case UP_ARROW: {
                         handle_up_arrow(lines_idx, line, lines);
-                        c = line.size()+2;
+                        c = line.size()+PAD;
                     } break;
                     case DOWN_ARROW: {
                         handle_down_arrow(lines_idx, line, lines);
-                        c = line.size()+2;
+                        c = line.size()+PAD;
                     } break;
                     case RIGHT_ARROW: {
                         handle_right_arrow(c, line, lines);
@@ -688,14 +697,11 @@ Repl::run(void) {
                 handle_backspace(ch, c, line, lines);
             }
             else {
-                if (c != line.size()) {
-                    line.insert(line.begin()+c-2, ch);
-                    std::cout << "\r";
-                    std::cout << std::string(64, ' ');
-                    clearln();
-                    std::cout << "> ";
+                if (c != line.size()-PAD) {
+                    line.insert(line.begin()+c-PAD, ch);
+                    out_lineno();
                     std::cout << line;
-                    std::cout << "\033[" << c+2 << "G";
+                    std::cout << "\033[" << c+PAD-1 << "G";
                 }
                 else {
                     line.push_back(ch);
@@ -711,7 +717,7 @@ Repl::run(void) {
         REPL_HIST += combined;
         lines.clear();
         lines_idx = 0;
-        c = 2;
+        c = PAD;
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
