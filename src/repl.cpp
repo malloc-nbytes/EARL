@@ -527,6 +527,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 #define BACKSPACE(ch) (ch) == 8 || (ch) == 127
 #define ESCAPESEQ(ch) (ch) == 27
 #define CSI(ch) (ch) == '['
+#define TAB(ch) (ch) == '\t'
 #define UP_ARROW 'A'
 #define DOWN_ARROW 'B'
 #define RIGHT_ARROW 'C'
@@ -534,13 +535,13 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 
 void
 handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c == 0)
+    if (c <= 2)
         return;
     std::cout << "\r";
     std::cout << std::string(64, ' ');
     std::cout << "\r";
-    line.erase(c-1, 1);
-    std::cout << line;
+    line.erase(c-1-2, 1);
+    std::cout << "> " << line;
     std::cout << "\033[" << c << "G";
     --c;
     std::cout.flush();
@@ -565,6 +566,7 @@ handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lin
     std::cout << "\r";
     std::cout << std::string(64, ' ');
     std::cout << "\r";
+    std::cout << "> ";
     std::cout << histline;
     line = histline;
     std::cout.flush();
@@ -586,7 +588,7 @@ handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &l
 
 void
 handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c == 0)
+    if (c <= 2)
         return;
     std::cout << "\033[" << c << "G";
     std::cout.flush();
@@ -595,11 +597,20 @@ handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
 
 void
 handle_right_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c >= line.size())
+    if (c-2 >= line.size())
         return;
     std::cout << "\033[" << 1 << "C";
     ++c;
     std::cout.flush();
+}
+
+void
+handle_tab(int &c, std::string &line, std::vector<std::string> &lines) {
+    std::cout << std::string(2, ' ');
+    std::cout.flush();
+    line.push_back(' ');
+    line.push_back(' ');
+    c += 2;
 }
 
 std::shared_ptr<Ctx>
@@ -617,23 +628,31 @@ Repl::run(void) {
     std::string line;
     std::vector<std::string> lines;
     int lines_idx = 0;
-    int c = 0;
+    int c = 2;
 
     while (true) {
+        std::cout << "> " << std::flush;
+
         while (1) {
             char ch = ri.get_char();
+
             if (ENTER(ch)) {
-                if (line == "") {
+                if (line == "")
                     break;
-                }
                 else if (line[0] == ':') {
                     handle_repl_arg(line, lines, ctx);
                     line.clear();
                 }
                 else
                     handle_newline(lines_idx, line, lines);
-                c = 0;
+                c = 2;
+                std::cout << "> " << std::flush;
             }
+
+            else if (TAB(ch)) {
+                handle_tab(c, line, lines);
+            }
+
             else if (ESCAPESEQ(ch)) {
                 int next0 = ri.get_char();
                 if (CSI(next0)) {
@@ -641,11 +660,11 @@ Repl::run(void) {
                     switch (next1) {
                     case UP_ARROW: {
                         handle_up_arrow(lines_idx, line, lines);
-                        c = line.size();
+                        c = line.size()+2;
                     } break;
                     case DOWN_ARROW: {
                         handle_down_arrow(lines_idx, line, lines);
-                        c = line.size();
+                        c = line.size()+2;
                     } break;
                     case RIGHT_ARROW: {
                         handle_right_arrow(c, line, lines);
@@ -662,10 +681,10 @@ Repl::run(void) {
             }
             else {
                 if (c != line.size()) {
-                    line.insert(line.begin()+c, ch);
+                    line.insert(line.begin()+c-2, ch);
                     std::cout << "\r";
                     std::cout << std::string(64, ' ');
-                    std::cout << "\r";
+                    std::cout << "\r" << "> ";
                     std::cout << line;
                     std::cout << "\033[" << c+2 << "G";
                 }
@@ -678,11 +697,12 @@ Repl::run(void) {
             }
         }
 
-
         std::string combined = "";
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
         REPL_HIST += combined;
         lines.clear();
+        lines_idx = 0;
+        c = 2;
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
