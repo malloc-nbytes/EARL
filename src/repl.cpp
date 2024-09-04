@@ -523,11 +523,17 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
         log("unknown command sequence `" + lst[0] + "`\n", gray);
 }
 
-#define ENTER(ch) ch == '\n'
-#define BACKSPACE(ch) ch == 8 || ch == 127
+#define ENTER(ch) (ch)=='\n'
+#define BACKSPACE(ch) (ch) == 8 || (ch) == 127
+#define ESCAPESEQ(ch) (ch) == 27
+#define CSI(ch) (ch) == '['
+#define UP_ARROW 'A'
+#define DOWN_ARROW 'B'
+#define RIGHT_ARROW 'C'
+#define LEFT_ARROW 'D'
 
 void
-handle_backspace(char ch, std::string &line) {
+handle_backspace(char ch, std::string &line, std::vector<std::string> &lines) {
     std::cout << "\r";
     std::cout << std::string(80, ' ');
     std::cout << "\r";
@@ -537,18 +543,121 @@ handle_backspace(char ch, std::string &line) {
     std::cout.flush();
 }
 
+void
+handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    std::cout << std::endl;
+    if (line != "") {
+        lines.push_back(line);
+        line.clear();
+        lines_idx = lines.size();
+    }
+}
+
+void
+handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    if (lines_idx == 0)
+        return;
+    --lines_idx;
+    std::string &histline = lines[lines_idx];
+    std::cout << "\r";
+    std::cout << std::string(64, ' ');
+    std::cout << "\r";
+    std::cout << histline;
+    line = histline;
+    std::cout.flush();
+}
+
+void
+handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    if (lines_idx == lines.size()-1)
+        return;
+    ++lines_idx;
+    std::string &histline = lines[lines_idx];
+    std::cout << "\r";
+    std::cout << std::string(64, ' ');
+    std::cout << "\r";
+    std::cout << histline;
+    line = histline;
+    std::cout.flush();
+}
+
+void
+handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
+    if (c == 0)
+        return;
+    std::cout << "\033[" << c << "G";
+    std::cout.flush();
+    --c;
+}
+
+void
+handle_right_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
+    if (c >= line.size())
+        return;
+    std::cout << "\033[" << 1 << "C";
+    ++c;
+    std::cout.flush();
+}
+
 std::shared_ptr<Ctx>
 Repl::run(void) {
+    RawInput ri;
 
-    RawInput raw_input;
-    std::string current_input = "";
+    std::string line;
+    std::vector<std::string> lines;
+    int lines_idx = 0;
+    int c = 0;
 
     while (true) {
-        std::string line;
-        std::vector<std::string> lines;
-
         while (1) {
-            char ch = raw_input.get_char();
+            char ch = ri.get_char();
+            if (ENTER(ch)) {
+                handle_newline(lines_idx, line, lines);
+                c = 0;
+            }
+            else if (ESCAPESEQ(ch)) {
+
+                int next0 = ri.get_char();
+                if (CSI(next0)) {
+                    int next1 = ri.get_char();
+                    switch (next1) {
+                    case UP_ARROW: {
+                        handle_up_arrow(lines_idx, line, lines);
+                        c = line.size();
+                    } break;
+                    case DOWN_ARROW: {
+                        handle_down_arrow(lines_idx, line, lines);
+                        c = line.size();
+                    } break;
+                    case RIGHT_ARROW: {
+                        handle_right_arrow(c, line, lines);
+                    } break;
+                    case LEFT_ARROW: {
+                        handle_left_arrow(c, line, lines);
+                    } break;
+                    default: break;
+                    }
+                }
+            }
+            else if (BACKSPACE(ch)) {
+                handle_backspace(ch, line, lines);
+            }
+            else {
+                if (c != line.size()) {
+                    line.insert(line.begin()+c, ch);
+                    std::cout << "\r";
+                    std::cout << std::string(64, ' ');
+                    std::cout << "\r";
+                    std::cout << line;
+                    std::cout << "\033[" << c+2 << "G";
+                }
+                else {
+                    line.push_back(ch);
+                    std::cout << ch;
+                }
+                std::cout.flush();
+                ++c;
+            }
         }
     }
 
