@@ -533,13 +533,16 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 #define LEFT_ARROW 'D'
 
 void
-handle_backspace(char ch, std::string &line, std::vector<std::string> &lines) {
+handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &lines) {
+    if (c == 0)
+        return;
     std::cout << "\r";
-    std::cout << std::string(80, ' ');
+    std::cout << std::string(64, ' ');
     std::cout << "\r";
-    for (int i = 0; i < (int)line.size()-1; ++i)
-        std::cout << line.at(i);
-    line.pop_back();
+    line.erase(c-1, 1);
+    std::cout << line;
+    std::cout << "\033[" << c << "G";
+    --c;
     std::cout.flush();
 }
 
@@ -569,7 +572,7 @@ handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lin
 
 void
 handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    if (lines_idx == lines.size()-1)
+    if (lines_idx >= lines.size())
         return;
     ++lines_idx;
     std::string &histline = lines[lines_idx];
@@ -601,6 +604,14 @@ handle_right_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
 
 std::shared_ptr<Ctx>
 Repl::run(void) {
+    //try_clear_repl_history();
+
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types    = {};
+    std::string comment               = COMMON_EARL_COMMENT;
+
+    std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
+
     RawInput ri;
 
     std::string line;
@@ -612,11 +623,18 @@ Repl::run(void) {
         while (1) {
             char ch = ri.get_char();
             if (ENTER(ch)) {
-                handle_newline(lines_idx, line, lines);
+                if (line == "") {
+                    break;
+                }
+                else if (line[0] == ':') {
+                    handle_repl_arg(line, lines, ctx);
+                    line.clear();
+                }
+                else
+                    handle_newline(lines_idx, line, lines);
                 c = 0;
             }
             else if (ESCAPESEQ(ch)) {
-
                 int next0 = ri.get_char();
                 if (CSI(next0)) {
                     int next1 = ri.get_char();
@@ -640,7 +658,7 @@ Repl::run(void) {
                 }
             }
             else if (BACKSPACE(ch)) {
-                handle_backspace(ch, line, lines);
+                handle_backspace(ch, c, line, lines);
             }
             else {
                 if (c != line.size()) {
@@ -659,6 +677,51 @@ Repl::run(void) {
                 ++c;
             }
         }
+
+
+        std::string combined = "";
+        std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
+        REPL_HIST += combined;
+        lines.clear();
+
+        std::unique_ptr<Program> program = nullptr;
+        std::unique_ptr<Lexer> lexer = nullptr;
+        lexer = lex_file(combined, "", keywords, types, comment);
+
+        try {
+            program = Parser::parse_program(*lexer.get());
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+            continue;
+        }
+
+        WorldCtx *wctx = dynamic_cast<WorldCtx*>(ctx.get());
+        wctx->add_repl_lexer(std::move(lexer));
+        wctx->add_repl_program(std::move(program));
+
+        for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+            Stmt *stmt = wctx->stmt_at(i);
+            if (!stmt->m_evald) {
+                try {
+                    auto val = Interpreter::eval_stmt(stmt, ctx);
+                    if (val) {
+                        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+                        green();
+                        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
+                        std::cout << " -> ";
+                        gray();
+                        std::cout << earl::value::type_to_str(val->type()) << std::endl;
+                        noc();
+                    }
+                }
+                catch (InterpreterException &e) {
+                    std::cerr << "Interpreter error: " << e.what() << std::endl;
+                }
+            }
+        }
+
+        // save_repl_history();
+
     }
 
     return nullptr;
