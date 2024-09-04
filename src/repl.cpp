@@ -534,12 +534,24 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 #define LEFT_ARROW 'D'
 
 void
+clearln(bool flush=false) {
+    std::cout << "\r" << std::string(64, ' ') << "\r";
+    if (flush)
+        std::cout.flush();
+}
+
+static size_t lineno = 0;
+
+void
+out_lineno() {
+
+}
+
+void
 handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &lines) {
     if (c <= 2)
         return;
-    std::cout << "\r";
-    std::cout << std::string(64, ' ');
-    std::cout << "\r";
+    clearln();
     line.erase(c-1-2, 1);
     std::cout << "> " << line;
     std::cout << "\033[" << c << "G";
@@ -563,9 +575,7 @@ handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lin
         return;
     --lines_idx;
     std::string &histline = lines[lines_idx];
-    std::cout << "\r";
-    std::cout << std::string(64, ' ');
-    std::cout << "\r";
+    clearln();
     std::cout << "> ";
     std::cout << histline;
     line = histline;
@@ -578,9 +588,7 @@ handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &l
         return;
     ++lines_idx;
     std::string &histline = lines[lines_idx];
-    std::cout << "\r";
-    std::cout << std::string(64, ' ');
-    std::cout << "\r";
+    clearln();
     std::cout << histline;
     line = histline;
     std::cout.flush();
@@ -684,7 +692,8 @@ Repl::run(void) {
                     line.insert(line.begin()+c-2, ch);
                     std::cout << "\r";
                     std::cout << std::string(64, ' ');
-                    std::cout << "\r" << "> ";
+                    clearln();
+                    std::cout << "> ";
                     std::cout << line;
                     std::cout << "\033[" << c+2 << "G";
                 }
