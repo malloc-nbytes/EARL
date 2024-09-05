@@ -688,7 +688,7 @@ fn main() {
         modules.append(mod);
     }
 
-    let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0]+"# BEGIN_AUTOGEN\n";
+    let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";
 
     let f = open(docsfp, "w");
     let content = orig_content+autogen;

@@ -2059,7 +2059,7 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
         if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0))
-            WARN("A `mod` statement is expected to be the first statement. "
+            WARN("A `module` statement is expected to be the first statement. "
                  "This may lead to undefined behavior and break functionality.");
         if (stmt->stmt_type() == StmtType::Def
             || stmt->stmt_type() == StmtType::Class

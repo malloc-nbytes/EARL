@@ -29,7 +29,7 @@
 
 #define ENTER(ch) (ch)=='\n'
 #define BACKSPACE(ch) (ch) == 8 || (ch) == 127
-#define ESCAPESEQ(ch) (ch) == 27
+#define ESCSEQ(ch) (ch) == 27
 #define CSI(ch) (ch) == '['
 #define TAB(ch) (ch) == '\t'
 #define UP_ARROW 'A'

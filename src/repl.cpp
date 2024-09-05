@@ -77,6 +77,7 @@ static int g_paren = 0;
 
 static repled::RawInput RI;
 static size_t lineno = 0;
+static std::vector<std::string> HIST = {};
 
 void
 try_clear_repl_history() {
@@ -107,6 +108,35 @@ try_clear_repl_history() {
         file.close();
         std::cout << "REPL history file cleared." << std::endl;
     }
+}
+
+void
+save_repl_history() {
+    const char *home_dir = std::getenv("HOME");
+    if (home_dir == nullptr)
+        std::cerr << "Unable to get home directory path. Will not save REPL history." << std::endl;
+    std::string fp = std::string(home_dir) + "/" EARL_REPL_HISTORY_FILENAME;
+    std::ofstream of(fp, std::ios::app);
+    if (!of)
+        std::cerr << "Unable to open file for writing. Will not save REPL history." << std::endl;
+    of << REPL_HIST;
+    of.close();
+}
+
+void
+read_repl_history() {
+    const char *home_dir = std::getenv("HOME");
+    if (home_dir == nullptr)
+        return;
+
+    std::string fp = std::string(home_dir) + "/" EARL_REPL_HISTORY_FILENAME;
+    std::ifstream ifs(fp, std::ios::app);
+    if (!ifs)
+        return;
+
+    std::string line = "";
+    while (std::getline(ifs, line))
+        HIST.push_back(line);
 }
 
 void
@@ -143,19 +173,6 @@ void
 noc(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << NOC;
-}
-
-void
-save_repl_history() {
-    const char *home_dir = std::getenv("HOME");
-    if (home_dir == nullptr)
-        std::cerr << "Unable to get home directory path. Will not save REPL history." << std::endl;
-    std::string fp = std::string(home_dir) + "/" EARL_REPL_HISTORY_FILENAME;
-    std::ofstream of(fp, std::ios::app);
-    if (!of)
-        std::cerr << "Unable to open file for writing. Will not save REPL history." << std::endl;
-    of << REPL_HIST;
-    of.close();
 }
 
 void
@@ -220,8 +237,8 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
         const char *src_c = read_file(f.c_str());
         std::string src = std::string(src_c);
         auto src_lines = split_on_newline(src);
+        lineno += src_lines.size();
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
-        // green();
         log("Imported " + f + "\n", green);
         noc();
     }
@@ -229,9 +246,8 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
 
 std::string
 get_special_input(void) {
-    std::cout << ">>> ";
-    std::string line;
-    std::getline(std::cin, line);
+    auto line = repled::getln(RI, ">>> ", HIST);
+    std::cout << std::endl;
     return line;
 }
 
@@ -300,12 +316,12 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         std::cout << h;
         noc();
         std::cout << std::endl;
+        --lineno;
     }
 }
 
 void
 edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
-    std::cout << std::endl;
     log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
     if (args.size() > 0) {
         for (auto arg : args) {
@@ -397,18 +413,24 @@ discard(std::vector<std::string> &lines) {
 
     std::string line = "";
     while (true) {
-        log("Discard the current session? [Y/n]: ", red);
-        std::getline(std::cin, line);
+        red();
+        std::string line = repled::getln(RI, "Discard the current session? [Y/n]: ", HIST);
+        noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
             lines.clear();
+            break;
+        }
+        else if (line == "n" || line == "no") {
+            std::cout << std::endl;
             return;
         }
-        else if (line == "n" || line == "no")
-            return;
         else
             log("invalid input\n");
     }
+
+    lineno = 0;
+    std::cout << std::endl;
 }
 
 void
@@ -508,26 +530,37 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 
 std::shared_ptr<Ctx>
 Repl::run(void) {
+    try_clear_repl_history();
+
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
 
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
+    read_repl_history();
 
     while (true) {
         std::vector<std::string> lines = {};
         while (true) {
-            std::string prompt = std::to_string(lineno)+": ";
-            auto line = repled::getln(RI, prompt, lines);
-            if (line == "")
+            auto line = repled::getln(RI, std::to_string(lineno)+": ", HIST);
+            analyze_new_line(line);
+
+            if (line == "" && !g_brace && !g_bracket && !g_paren)
                 break;
             else if (line[0] == ':') {
                 repled::clearln();
                 handle_repl_arg(line, lines, ctx);
             }
+            else if (line[0] == '$') {
+                repled::clearln(true);
+                bash(line);
+            }
             else {
+                if (line != "") {
+                    lines.push_back(line);
+                    HIST.push_back(line);
+                }
                 ++lineno;
-                lines.push_back(line);
                 std::cout << std::endl;
             }
         }
@@ -575,6 +608,8 @@ Repl::run(void) {
                 }
             }
         }
+
+        save_repl_history();
     }
 
     return nullptr;

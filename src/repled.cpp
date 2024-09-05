@@ -59,17 +59,15 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
     if (c <= 0)
         return;
 
-    std::cout << "\033[D";
-    std::cout.flush();
+    std::cout << "\033[D" << std::flush;
 
     line.erase(c-1, 1);
 
     clearln();
     std::cout << prompt << line;
     // std::cout << "\033[" << (line.size() - (c-1)) << "D";
-    std::cout << "\033[" << c+pad << "G";
+    std::cout << "\033[" << c+pad << "G" << std::flush;
     --c;
-    std::cout.flush();
 }
 
 void
@@ -92,9 +90,8 @@ repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, s
     --lines_idx;
     std::string &histline = lines[lines_idx];
     clearln();
-    std::cout << prompt << histline;
+    std::cout << prompt << histline << std::flush;
     line = histline;
-    std::cout.flush();
 }
 
 void
@@ -117,8 +114,7 @@ repled::handle_left_arrow(int &c, int pad, std::string &line, std::vector<std::s
     if (c <= 0)
         return;
     --c;
-    std::cout << "\033[D";
-    std::cout.flush();
+    std::cout << "\033[D" << std::flush;
 }
 
 void
@@ -126,8 +122,7 @@ repled::handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::
     if (c >= static_cast<int>(line.size()))
         return;
     ++c;
-    std::cout << "\033[C";
-    std::cout.flush();
+    std::cout << "\033[C" << std::flush;
 }
 
 void
@@ -146,8 +141,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
     int lines_idx = history.size();
     int c = 0;
 
-    std::cout << prompt;
-    std::cout.flush();
+    std::cout << prompt << std::flush;
 
     while (1) {
         char ch = RI.get_char();
@@ -158,7 +152,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         else if (TAB(ch))
             handle_tab(c, line, history);
 
-        else if (ESCAPESEQ(ch)) {
+        else if (ESCSEQ(ch)) {
             int next0 = RI.get_char();
             if (CSI(next0)) {
                 int next1 = RI.get_char();
@@ -205,6 +199,3 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
 
     return line;
 }
-
-
-

@@ -1,5 +1,10 @@
 module Main
 
-loop {
-    println("here");
+fn test(i) {
+    if i >= 100 {
+        return _;
+    }
+    return test(i+.8);
 }
+
+test(0);
