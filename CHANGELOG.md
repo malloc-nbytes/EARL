@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.8] - 2024-5-9
+
+### Added
+- [MAJOR] New REPL functionality.
+
 ## [0.4.7] - 2024-3-9
 
 ### Added
