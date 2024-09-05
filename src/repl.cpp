@@ -96,6 +96,186 @@ private:
     struct termios old_termios;
 };
 
+static RawInput RI;
+
+
+#define ENTER(ch) (ch)=='\n'
+#define BACKSPACE(ch) (ch) == 8 || (ch) == 127
+#define ESCAPESEQ(ch) (ch) == 27
+#define CSI(ch) (ch) == '['
+#define TAB(ch) (ch) == '\t'
+#define UP_ARROW 'A'
+#define DOWN_ARROW 'B'
+#define RIGHT_ARROW 'C'
+#define LEFT_ARROW 'D'
+
+void
+clearln(bool flush=false) {
+    std::cout << "\r" << std::string(64, ' ') << "\r";
+    if (flush)
+        std::cout.flush();
+}
+
+static size_t lineno = 0;
+
+void
+out_lineno(bool flush=false) {
+    clearln();
+    std::cout << lineno << ": ";
+    if (flush)
+        std::cout.flush();
+}
+
+void
+handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    if (c <= 0)
+        return;
+
+    std::cout << "\033[D";
+    std::cout.flush();
+
+    line.erase(c-1, 1);
+
+    clearln();
+    std::cout << prompt << line;
+    // std::cout << "\033[" << (line.size() - (c-1)) << "D";
+    std::cout << "\033[" << c+pad << "G";
+    --c;
+    std::cout.flush();
+}
+
+void
+handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    std::cout << std::endl;
+    if (line != "") {
+        lines.push_back(line);
+        line.clear();
+        lines_idx = lines.size()-1;
+    }
+}
+
+void handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    if (lines.size() == 0)
+        return;
+    if (lines_idx <= 0)
+        return;
+
+    --lines_idx;
+    std::string &histline = lines[lines_idx];
+    clearln();
+    std::cout << prompt << histline;
+    line = histline;
+    std::cout.flush();
+}
+
+void handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+    if (lines.size() == 0)
+        return;
+    if (lines_idx >= static_cast<int>(lines.size()) - 1)
+        return;
+
+    ++lines_idx;
+    std::string &histline = lines[lines_idx];
+    clearln();
+    std::cout << prompt << histline;
+    line = histline;
+    std::cout.flush();
+}
+
+void
+handle_left_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    if (c <= 0)
+        return;
+    --c;
+    std::cout << "\033[D";
+    std::cout.flush();
+}
+
+void
+handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    if (c >= static_cast<int>(line.size()))
+        return;
+    ++c;
+    std::cout << "\033[C";
+    std::cout.flush();
+}
+
+void
+handle_tab(int &c, std::string &line, std::vector<std::string> &lines) {
+    std::cout << std::string(2, ' ');
+    std::cout.flush();
+    line.push_back(' ');
+    line.push_back(' ');
+    c += 2;
+}
+
+std::string
+getln(std::string prompt, std::vector<std::string> &history) {
+    const int PAD = prompt.size();
+    std::string line = "";
+    int lines_idx = history.size();
+    int c = 0;
+
+    std::cout << prompt;
+    std::cout.flush();
+
+    while (1) {
+        char ch = RI.get_char();
+
+        if (ENTER(ch))
+            break;
+
+        else if (TAB(ch))
+            handle_tab(c, line, history);
+
+        else if (ESCAPESEQ(ch)) {
+            int next0 = RI.get_char();
+            if (CSI(next0)) {
+                int next1 = RI.get_char();
+                switch (next1) {
+                case UP_ARROW: {
+                    handle_up_arrow(prompt, lines_idx, line, history);
+                    c = line.size();
+                    std::cout << "\033[" << PAD+c+1 << "G";
+                } break;
+                case DOWN_ARROW: {
+                    handle_down_arrow(prompt, lines_idx, line, history);
+                    c = line.size();
+                    std::cout << "\033[" << PAD+c+1 << "G";
+                } break;
+                case RIGHT_ARROW: {
+                    handle_right_arrow(c, PAD, line, history);
+                } break;
+                case LEFT_ARROW: {
+                    handle_left_arrow(c, PAD, line, history);
+                } break;
+                default: break;
+                }
+            }
+        }
+        else if (BACKSPACE(ch)) {
+            handle_backspace(prompt, ch, c, PAD, line, history);
+        }
+        else {
+            if (c != line.size()) {
+                clearln();
+                line.insert(line.begin()+c, ch);
+                std::cout << prompt;
+                std::cout << line;
+                std::cout << "\033[" << c+PAD+2 << "G";
+            }
+            else {
+                line.push_back(ch);
+                std::cout << ch;
+            }
+            ++c;
+            std::cout.flush();
+        }
+    }
+
+    return line;
+}
+
 void
 try_clear_repl_history() {
     const char* home_dir = std::getenv("HOME");
@@ -437,14 +617,12 @@ ee(void) {
 
 void
 show_vars(std::shared_ptr<Ctx> &ctx) {
-    std::cout << std::endl;
     for (auto &v : ctx->get_available_variable_names())
         std::cout << v << std::endl;
 }
 
 void
 show_funcs(std::shared_ptr<Ctx> &ctx) {
-    std::cout << std::endl;
     for (auto &v : ctx->get_available_function_names())
         std::cout << v << std::endl;
 }
@@ -526,211 +704,39 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
         log("unknown command sequence `" + lst[0] + "`\n", gray);
 }
 
-#define ENTER(ch) (ch)=='\n'
-#define BACKSPACE(ch) (ch) == 8 || (ch) == 127
-#define ESCAPESEQ(ch) (ch) == 27
-#define CSI(ch) (ch) == '['
-#define TAB(ch) (ch) == '\t'
-#define UP_ARROW 'A'
-#define DOWN_ARROW 'B'
-#define RIGHT_ARROW 'C'
-#define LEFT_ARROW 'D'
-
-void
-clearln(bool flush=false) {
-    std::cout << "\r" << std::string(64, ' ') << "\r";
-    if (flush)
-        std::cout.flush();
-}
-
-static size_t lineno = 0;
-
-#define PAD (std::to_string(lineno).size()+2)
-// #define PAD 2
-
-void
-out_lineno(bool flush=false) {
-    clearln();
-    std::cout << lineno << ": ";
-    if (flush)
-        std::cout.flush();
-}
-
-void
-handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c <= PAD)
-        return;
-    clearln();
-    line.erase(c-1-PAD, 1);
-    out_lineno();
-    std::cout << line;
-    std::cout << "\033[" << c << "G";
-    --c;
-    std::cout.flush();
-}
-
-void
-handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    std::cout << std::endl;
-    if (line != "") {
-        lines.push_back(line);
-        line.clear();
-        lines_idx = lines.size();
-    }
-}
-
-void
-handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    if (lines_idx <= 0)
-        return;
-    --lines_idx;
-    std::string &histline = lines[lines_idx];
-    clearln();
-    out_lineno();
-    std::cout << histline;
-    line = histline;
-    std::cout.flush();
-}
-
-void
-handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    if (lines_idx >= lines.size()-1) {
-        line = "";
-        clearln();
-        out_lineno();
-        std::cout << line;
-        std::cout.flush();
-        return;
-    }
-    ++lines_idx;
-    std::string &histline = lines[lines_idx];
-    clearln();
-    out_lineno();
-    std::cout << histline;
-    line = histline;
-    std::cout.flush();
-}
-
-void
-handle_left_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c <= PAD)
-        return;
-    std::cout << "\033[" << c << "G";
-    std::cout.flush();
-    --c;
-}
-
-void
-handle_right_arrow(int &c, std::string &line, std::vector<std::string> &lines) {
-    if (c-PAD >= line.size())
-        return;
-    std::cout << "\033[" << 1 << "C";
-    ++c;
-    std::cout.flush();
-}
-
-void
-handle_tab(int &c, std::string &line, std::vector<std::string> &lines) {
-    std::cout << std::string(2, ' ');
-    std::cout.flush();
-    line.push_back(' ');
-    line.push_back(' ');
-    c += 2;
-}
-
 std::shared_ptr<Ctx>
 Repl::run(void) {
-    //try_clear_repl_history();
-
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
 
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
 
-    RawInput ri;
-
-    std::string line;
-    std::vector<std::string> lines;
-    int lines_idx = 0;
-    int c = PAD;
-
     while (true) {
-        out_lineno(true);
-
-        while (1) {
-            char ch = ri.get_char();
-
-            if (ENTER(ch)) {
-                if (line == "") {
-                    clearln();
-                    break;
-                }
-                else if (line[0] == ':') {
-                    handle_repl_arg(line, lines, ctx);
-                    line.clear();
-                }
-                else {
-                    handle_newline(lines_idx, line, lines);
-                    ++lineno;
-                }
-                c = PAD;
-                out_lineno(true);
-            }
-
-            else if (TAB(ch)) {
-                handle_tab(c, line, lines);
-            }
-
-            else if (ESCAPESEQ(ch)) {
-                int next0 = ri.get_char();
-                if (CSI(next0)) {
-                    int next1 = ri.get_char();
-                    switch (next1) {
-                    case UP_ARROW: {
-                        handle_up_arrow(lines_idx, line, lines);
-                        c = line.size()+PAD;
-                    } break;
-                    case DOWN_ARROW: {
-                        handle_down_arrow(lines_idx, line, lines);
-                        c = line.size()+PAD;
-                    } break;
-                    case RIGHT_ARROW: {
-                        handle_right_arrow(c, line, lines);
-                    } break;
-                    case LEFT_ARROW: {
-                        handle_left_arrow(c, line, lines);
-                    } break;
-                    default: break;
-                    }
-                }
-            }
-            else if (BACKSPACE(ch)) {
-                handle_backspace(ch, c, line, lines);
+        std::vector<std::string> lines = {};
+        while (true) {
+            std::string prompt = std::to_string(lineno)+": ";
+            auto line = getln(prompt, lines);
+            if (line == "")
+                break;
+            else if (line[0] == ':') {
+                clearln();
+                handle_repl_arg(line, lines, ctx);
             }
             else {
-                if (c != line.size()-PAD) {
-                    line.insert(line.begin()+c-PAD, ch);
-                    out_lineno();
-                    std::cout << line;
-                    std::cout << "\033[" << (c+PAD-std::to_string(lineno).size()) << "G";
-                }
-                else {
-                    line.push_back(ch);
-                    std::cout << ch;
-                }
-                std::cout.flush();
-                ++c;
+                ++lineno;
+                lines.push_back(line);
+                std::cout << std::endl;
             }
         }
 
+        clearln();
         std::string combined = "";
+
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
         REPL_HIST += combined;
         lines.clear();
-        lines_idx = 0;
         lineno = 0;
-        c = PAD;
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
@@ -767,9 +773,6 @@ Repl::run(void) {
                 }
             }
         }
-
-        // save_repl_history();
-
     }
 
     return nullptr;
