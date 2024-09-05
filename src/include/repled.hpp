@@ -46,7 +46,7 @@ namespace repled {
         struct termios old_termios;
     };
 
-    void clearln(bool flush=false);
+    void clearln(int sz, bool flush=false);
     void out_lineno(bool flush=false);
     void handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines);
     void handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines);

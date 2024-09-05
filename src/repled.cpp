@@ -48,8 +48,8 @@ repled::RawInput::get_char() {
 }
 
 void
-repled::clearln(bool flush) {
-    std::cout << "\r" << std::string(64, ' ') << "\r";
+repled::clearln(int sz, bool flush) {
+    std::cout << "\r" << std::string(sz+8, ' ') << "\r";
     if (flush)
         std::cout.flush();
 }
@@ -63,7 +63,7 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
 
     line.erase(c-1, 1);
 
-    clearln();
+    clearln(line.size()+pad);
     std::cout << prompt << line;
     // std::cout << "\033[" << (line.size() - (c-1)) << "D";
     std::cout << "\033[" << c+pad << "G" << std::flush;
@@ -89,7 +89,7 @@ repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, s
 
     --lines_idx;
     std::string &histline = lines[lines_idx];
-    clearln();
+    clearln(line.size());
     std::cout << prompt << histline << std::flush;
     line = histline;
 }
@@ -103,7 +103,7 @@ repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line,
 
     ++lines_idx;
     std::string &histline = lines[lines_idx];
-    clearln();
+    clearln(line.size());
     std::cout << prompt << histline;
     line = histline;
     std::cout.flush();
@@ -182,7 +182,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         }
         else {
             if (c != line.size()) {
-                clearln();
+                clearln(line.size());
                 line.insert(line.begin()+c, ch);
                 std::cout << prompt;
                 std::cout << line;

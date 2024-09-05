@@ -548,7 +548,7 @@ Repl::run(void) {
             if (line == "" && !g_brace && !g_bracket && !g_paren)
                 break;
             else if (line[0] == ':') {
-                repled::clearln();
+                repled::clearln(line.size());
                 handle_repl_arg(line, lines, ctx);
             }
             else if (line[0] == '$') {
@@ -565,7 +565,7 @@ Repl::run(void) {
             }
         }
 
-        repled::clearln();
+        repled::clearln(lines.back().size());
         std::string combined = "";
 
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
