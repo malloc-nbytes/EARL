@@ -323,6 +323,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
 
 void
 edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
+    std::cout << std::endl;
     log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
     if (args.size() > 0) {
         for (auto arg : args) {
@@ -436,12 +437,14 @@ ee(void) {
 
 void
 show_vars(std::shared_ptr<Ctx> &ctx) {
+    std::cout << std::endl;
     for (auto &v : ctx->get_available_variable_names())
         std::cout << v << std::endl;
 }
 
 void
 show_funcs(std::shared_ptr<Ctx> &ctx) {
+    std::cout << std::endl;
     for (auto &v : ctx->get_available_function_names())
         std::cout << v << std::endl;
 }
@@ -559,7 +562,6 @@ handle_backspace(char ch, int &c, std::string &line, std::vector<std::string> &l
         return;
     clearln();
     line.erase(c-1-PAD, 1);
-    // std::cout << "> " << line;
     out_lineno();
     std::cout << line;
     std::cout << "\033[" << c << "G";
@@ -592,8 +594,14 @@ handle_up_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lin
 
 void
 handle_down_arrow(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
-    if (lines_idx >= lines.size())
+    if (lines_idx >= lines.size()-1) {
+        line = "";
+        clearln();
+        out_lineno();
+        std::cout << line;
+        std::cout.flush();
         return;
+    }
     ++lines_idx;
     std::string &histline = lines[lines_idx];
     clearln();
@@ -654,14 +662,18 @@ Repl::run(void) {
             char ch = ri.get_char();
 
             if (ENTER(ch)) {
-                if (line == "")
+                if (line == "") {
+                    clearln();
                     break;
+                }
                 else if (line[0] == ':') {
                     handle_repl_arg(line, lines, ctx);
                     line.clear();
                 }
-                else
+                else {
                     handle_newline(lines_idx, line, lines);
+                    ++lineno;
+                }
                 c = PAD;
                 out_lineno(true);
             }
@@ -701,7 +713,7 @@ Repl::run(void) {
                     line.insert(line.begin()+c-PAD, ch);
                     out_lineno();
                     std::cout << line;
-                    std::cout << "\033[" << c+PAD-1 << "G";
+                    std::cout << "\033[" << (c+PAD-std::to_string(lineno).size()) << "G";
                 }
                 else {
                     line.push_back(ch);
@@ -717,6 +729,7 @@ Repl::run(void) {
         REPL_HIST += combined;
         lines.clear();
         lines_idx = 0;
+        lineno = 0;
         c = PAD;
 
         std::unique_ptr<Program> program = nullptr;
