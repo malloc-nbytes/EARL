@@ -168,12 +168,12 @@ For example:
 5:      return fib(n-1)+fib(n-2);
 6: }
 7: class Point [x, y] {
-8:      @pub x = x;
+8:      @pub let x = x;
 9:
-10:     @pub y = y;
+10:     @pub let y = y;
 11:
 12:     @pub fn sumxy() {
-13:             return this.x + this.y;
+13:         return this.x + this.y;
 14:     }
 15: }
 16:                      [ENTER TO EVAL]
@@ -261,6 +261,8 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 | ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
 | !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
 | &&     | =bool=, =option=                                                                   | Logical AND                      |
+| <<     | =int=                                                                              | Bit shift left                   |
+| >>     | =int=                                                                              | Bit shift right                  |
 | `&     | =int=                                                                              | Bitwise AND (backtick needed)    |
 | `~     | =int=                                                                              | Bitwise NOT (backtick needed)    |
 | `^     | =int=                                                                              | Bitwise XOR (backtick needed)    |
@@ -528,7 +530,7 @@ This means that $i$ will be take the reference of each iterated value in the lis
 ** Grammar
 
 #+begin_quote
-=foreach= ?(=@= =ref=) <id> =in= /expr/ *{* [stmt] *}*
+=foreach= * (=@= =ref= | =const=) <id> =in= /expr/ *{* [stmt] *}*
 #+end_quote
 
 ** Examples
@@ -556,7 +558,7 @@ foreach @ref i in iterable { # REF EXAMPLE
 }
 println(iterable); # prints [9, 9, 9]
 
-foreach i in "foo" {
+foreach @const @ref i in "foo" {
     print(i);
 } # prints foo
 
@@ -1900,7 +1902,22 @@ Returns the area of a cone with radius =r= and height =h=.
 
 *** *Module*: =List=
 
-*** *Variable List*: /None/
+*** *Variable List*:
+#+begin_quote
+#+begin_example
+DEFAULT_INT_ASCEND_QUICKSORT: closure(int, int) -> bool
+#+end_example
+
+The default comparison function for ascending sort.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+DEFAULT_INT_DESCEND_QUICKSORT: closure(int, int) -> bool
+#+end_example
+
+The default comparison function for descending sort.
+#+end_quote
 
 *** *Enum List*: /None/
 
@@ -1915,7 +1932,7 @@ Creates a list with elements =elem= of size =cap=.
 
 #+begin_quote
 #+begin_example
-from_range(start: int, stop: int, stride: int) -> list
+from_range(start: int, stop: int, stride: int) -> list<int|float>
 #+end_example
 
 Takes a list and then returns element within range specified by the parameters =start=, =stop=, =stride=.
@@ -1923,7 +1940,7 @@ Takes a list and then returns element within range specified by the parameters =
 
 #+begin_quote
 #+begin_example
-fill(lst: @ref list, : : any) -> unit
+fill(lst: @ref list<any>, : : any) -> unit
 #+end_example
 
 Fills the given list =lst= with element =k=.
@@ -1931,7 +1948,7 @@ Fills the given list =lst= with element =k=.
 
 #+begin_quote
 #+begin_example
-sumf(lst: @ref lst) -> float
+sumf(lst: @const @ref list<float|int>) -> float
 #+end_example
 
 Returns the sum all elements in =lst= as a float.
@@ -1939,7 +1956,7 @@ Returns the sum all elements in =lst= as a float.
 
 #+begin_quote
 #+begin_example
-sumf(lst: @ref lst) -> int
+sum(lst: @const @ref list<int|float>) -> int
 #+end_example
 
 Returns the sum all elements in =lst= as an integer.
@@ -1947,7 +1964,7 @@ Returns the sum all elements in =lst= as an integer.
 
 #+begin_quote
 #+begin_example
-find(lst: @ref lst, elem: @ref any) -> option<int>
+find(lst: @const @ref list<any>, elem: @const @ref any) -> option<int>
 #+end_example
 
 Takes a reference to a list and a reference to an element and looks for the element find in the given list Returns the index of the first occurrence that =elem= appears in =lst= wrapped in =some=, or =none= if not found.
@@ -1955,7 +1972,7 @@ Takes a reference to a list and a reference to an element and looks for the elem
 
 #+begin_quote
 #+begin_example
-count(lst: @ref list, elem: @ref any) -> int
+count(lst: @const @ref list<any>, elem: @const @ref any) -> int
 #+end_example
 
 Counts the number of occurrences that =elem= appears in =lst=.
@@ -1963,7 +1980,7 @@ Counts the number of occurrences that =elem= appears in =lst=.
 
 #+begin_quote
 #+begin_example
-quicksort(lst: @ref list, compar: closure(x1: any, x2: type(x1)) -> bool|int) -> unit
+quicksort(lst: @ref list<any>, compar: @const closure(x1: any, x2: type(x1)) -> bool|int) -> unit
 #+end_example
 
 where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$  and $F$ is defined by  \[ F(x_1, x_2) = \begin{cases} true & \text{if } R(x_1) \ge R(x_2) \\ false & \text{if } R(x_1) < R(x_2) \end{cases} \]  and $R(x)$ is some ranking function that produces a rank of $x$.  Performs the quicksort sorting algorithm on =lst= and sorts by the comparison closure =compar=.

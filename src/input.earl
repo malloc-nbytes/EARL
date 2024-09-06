@@ -1,9 +1,7 @@
 module Main
 
-fn test() {
-    println(__FUNC__);
-    println(__FILE__);
-}
+import "std/list.earl"
+let lst = List::from_range(1, 10, 0);
 
-test();
+
 

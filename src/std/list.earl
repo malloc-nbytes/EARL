@@ -30,7 +30,7 @@ import "std/utils.earl" full
 ### NAME preset
 ### PARAMETER elem: any
 ### PARAMETER cap: int
-### RETURNS str
+### RETURNS list
 ### DESCRIPTION
 ###   Creates a list with elements `elem` of size `cap`.
 @pub fn preset(elem, cap) {
@@ -45,11 +45,13 @@ import "std/utils.earl" full
 ### PARAMETER start: int
 ### PARAMETER stop: int
 ### PARAMETER stride: int
-### RETURNS list
+### RETURNS list<int|float>
 ### DESCRIPTION
 ###   Takes a list and then returns element within range specified by the parameters `start`, `stop`, `stride`.
 @pub fn from_range(start, stop, stride) {
-    assert(stride != 0);
+    if stride == 0 {
+        panic(__FILE__, ":", __FUNC__, ": parameter `stride` must not be 0");
+    }
 
     let lst = [];
     let i = start;
@@ -63,8 +65,8 @@ import "std/utils.earl" full
 }
 
 ### NAME fill
-### PARAMETER lst: @ref list
-### PARAMETER k : any
+### PARAMETER lst: @ref list<any>
+### PARAMETER k: any
 ### RETURNS unit
 ### DESCRIPTION
 ###   Fills the given list `lst` with element `k`.
@@ -75,39 +77,39 @@ import "std/utils.earl" full
 }
 
 ### NAME sumf
-### PARAMETER lst: @ref lst
+### PARAMETER lst: @const @ref list<float|int>
 ### RETURNS float
 ### DESCRIPTION
 ###   Returns the sum all elements in `lst` as a float.
-@pub fn sumf(@ref lst) {
-    let s = 0.0;
+@pub fn sumf(@const @ref lst) {
+    let s = 0.;
     for i in 0 to len(lst) {
-        s = s + lst[i];
+        s += lst[i];
     }
     return s;
 }
 
-### NAME sumf
-### PARAMETER lst: @ref lst
+### NAME sum
+### PARAMETER lst: @const @ref list<int|float>
 ### RETURNS int
 ### DESCRIPTION
 ###   Returns the sum all elements in `lst` as an integer.
-@pub fn sum(@ref lst) {
+@pub fn sum(@const @ref lst) {
     let s = 0;
     for i in 0 to len(lst) {
-        s = s + lst[i];
+        s += lst[i];
     }
     return s;
 }
 
 ### NAME find
-### PARAMETER lst: @ref lst
-### PARAMETER elem: @ref any
+### PARAMETER lst: @const @ref list<any>
+### PARAMETER elem: @const @ref any
 ### RETURNS option<int>
 ### DESCRIPTION
 ###   Takes a reference to a list and a reference to an element and looks for the element find in the given list
 ###   Returns the index of the first occurrence that `elem` appears in `lst` wrapped in `some`, or `none` if not found.
-@pub fn find(@ref lst, @ref elem) {
+@pub fn find(@const @ref lst, @const @ref elem) {
     let i = 0;
     while i < len(lst) {
         if elem == lst[i] {
@@ -119,12 +121,12 @@ import "std/utils.earl" full
 }
 
 ### NAME count
-### PARAMETER lst: @ref list
-### PARAMETER elem: @ref any
+### PARAMETER lst: @const @ref list<any>
+### PARAMETER elem: @const @ref any
 ### RETURNS int
 ### DESCRIPTION
 ###   Counts the number of occurrences that `elem` appears in `lst`.
-@pub fn count(@ref lst, @ref elem) {
+@pub fn count(@const @ref lst, @const @ref elem) {
     let c = 0;
     for i in 0 to len(lst) {
         if elem == lst[i] {
@@ -135,8 +137,8 @@ import "std/utils.earl" full
 }
 
 ### NAME quicksort
-### PARAMETER lst: @ref list
-### PARAMETER compar: closure(x1: any, x2: type(x1)) -> bool|int
+### PARAMETER lst: @ref list<any>
+### PARAMETER compar: @const closure(x1: any, x2: type(x1)) -> bool|int
 ### RETURNS unit
 ### DESCRIPTION
 ###   where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$
@@ -154,7 +156,7 @@ import "std/utils.earl" full
 ###
 ###   Performs the quicksort sorting algorithm on =lst= and
 ###   sorts by the comparison closure =compar=.
-@pub fn quicksort(@ref lst, compar) {
+@pub fn quicksort(@ref lst, @const compar) {
     let __quicksort = |@ref lst, low, high, @ref compar| {
         let partition = |@ref lst, low, high| {
             let pivot = lst[high];
@@ -184,7 +186,19 @@ import "std/utils.earl" full
 
 ### END FUNCTIONS
 
-# autodoc comments todo
+### BEGIN VARIABLES
+
+### NAME DEFAULT_INT_ASCEND_QUICKSORT
+### TYPE closure(int, int) -> bool
+### DESCRIPTION
+###   The default comparison function for ascending sort.
 @pub let DEFAULT_INT_ASCEND_QUICKSORT = |x, y| { return y > x; };
 
+### NAME DEFAULT_INT_DESCEND_QUICKSORT
+### TYPE closure(int, int) -> bool
+### DESCRIPTION
+###   The default comparison function for descending sort.
 @pub let DEFAULT_INT_DESCEND_QUICKSORT = |x, y| { return x > y; };
+
+### END VARIABLES
+
