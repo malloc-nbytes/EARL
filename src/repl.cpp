@@ -79,7 +79,7 @@ static repled::RawInput RI;
 static size_t lineno = 0;
 static std::vector<std::string> HIST = {};
 
-void
+static void
 try_clear_repl_history() {
     const char* home_dir = std::getenv("HOME");
     if (home_dir == nullptr) {
@@ -110,7 +110,7 @@ try_clear_repl_history() {
     }
 }
 
-void
+static void
 save_repl_history() {
     const char *home_dir = std::getenv("HOME");
     if (home_dir == nullptr)
@@ -123,7 +123,7 @@ save_repl_history() {
     of.close();
 }
 
-void
+static void
 read_repl_history() {
     const char *home_dir = std::getenv("HOME");
     if (home_dir == nullptr)
@@ -142,43 +142,43 @@ read_repl_history() {
     }
 }
 
-void
+static void
 yellow(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << YELLOW;
 }
 
-void
+static void
 blue(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << BLUE;
 }
 
-void
+static void
 green(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << GREEN;
 }
 
-void
+static void
 gray(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << GRAY;
 }
 
-void
+static void
 red(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << RED;
 }
 
-void
+static void
 noc(void) {
     if ((flags & __REPL_NOCOLOR) == 0)
         std::cout << NOC;
 }
 
-void
+static void
 log(std::string msg, void(*color)(void) = nullptr) {
     blue();
     std::cout << "[EARL] ";
@@ -189,7 +189,7 @@ log(std::string msg, void(*color)(void) = nullptr) {
     noc();
 }
 
-std::vector<std::string>
+static std::vector<std::string>
 split_on_space(std::string &line) {
     std::vector<std::string> res = {};
     std::stringstream ss(line);
@@ -199,7 +199,7 @@ split_on_space(std::string &line) {
     return res;
 }
 
-std::vector<std::string>
+static std::vector<std::string>
 split_on_newline(std::string &line) {
     std::vector<std::string> res = {};
     std::string buf = "";
@@ -214,7 +214,7 @@ split_on_newline(std::string &line) {
     return res;
 }
 
-void
+static void
 help(void) {
     log(HELP " -> show this message\n");
     log(QUIT " -> quit the session\n");
@@ -230,7 +230,7 @@ help(void) {
     log("You can also issue bash commands by typing `$` followed by the command\n");
 }
 
-void
+static void
 import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (args.size() == 0) {
         log("No files supplied\n");
@@ -247,14 +247,14 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     }
 }
 
-std::string
+static std::string
 get_special_input(void) {
-    auto line = repled::getln(RI, ">>> ", HIST);
+    auto line = repled::getln(RI, ">>> ", HIST, true);
     std::cout << std::endl;
     return line;
 }
 
-void
+static void
 analyze_new_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
@@ -270,7 +270,7 @@ analyze_new_line(std::string &line) {
     }
 }
 
-void
+static void
 manage_removed_or_edited_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
@@ -284,7 +284,7 @@ manage_removed_or_edited_line(std::string &line) {
     }
 }
 
-void
+static void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         log("No previous entry exists\n");
@@ -323,7 +323,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     }
 }
 
-void
+static void
 edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
     log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
     if (args.size() > 0) {
@@ -379,13 +379,13 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
     }
 }
 
-void
+static void
 clearscrn(void) {
     if (system("clear") != 0)
         log("warning: failed to clearscrn\n", yellow);
 }
 
-void
+static void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         log("Nothing appropriate\n", gray);
@@ -400,14 +400,14 @@ ls_entries(std::vector<std::string> &lines) {
     }
 }
 
-void
+static void
 bash(std::string &line) {
     std::string cmd = line.substr(1, line.size());
     if (system(cmd.c_str()) != 0)
         log("warning: failed to ls\n", yellow);
 }
 
-void
+static void
 discard(std::vector<std::string> &lines) {
     auto to_lower = [](std::string &str) {
         for (char& c : str)
@@ -417,7 +417,7 @@ discard(std::vector<std::string> &lines) {
     std::string line = "";
     while (true) {
         red();
-        std::string line = repled::getln(RI, "Discard the current session? [Y/n]: ", HIST);
+        std::string line = repled::getln(RI, "Discard the current session? [Y/n]: ", HIST, true);
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
@@ -436,13 +436,13 @@ discard(std::vector<std::string> &lines) {
     std::cout << std::endl;
 }
 
-void
+static void
 ee(void) {
     log("Hey! This is not vim! D:\n", red);
     log("Did you mean " QUIT "\n", gray);
 }
 
-void
+static void
 show_vars(std::shared_ptr<Ctx> &ctx) {
     auto vars = ctx->get_available_variable_names();
 
@@ -453,7 +453,7 @@ show_vars(std::shared_ptr<Ctx> &ctx) {
         std::cout << v << std::endl;
 }
 
-void
+static void
 show_funcs(std::shared_ptr<Ctx> &ctx) {
     auto funcs = ctx->get_available_function_names();
 
@@ -464,7 +464,7 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
         std::cout << v << std::endl;
 }
 
-void
+static void
 reset(std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> vars = ctx->get_available_variable_names();
     std::vector<std::string> funcs = ctx->get_available_function_names();
@@ -506,7 +506,7 @@ reset(std::shared_ptr<Ctx> &ctx) {
     ctx = std::make_shared<WorldCtx>();
 }
 
-void
+static void
 handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
@@ -542,7 +542,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
 }
 
 std::shared_ptr<Ctx>
-Repl::run(void) {
+repl::run(void) {
     try_clear_repl_history();
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
@@ -553,12 +553,15 @@ Repl::run(void) {
     read_repl_history();
 
     while (true) {
+        bool ready = false;
         std::vector<std::string> lines = {};
         while (true) {
-            auto line = repled::getln(RI, std::to_string(lineno)+": ", HIST);
+            bool closed_braces = !g_brace && !g_bracket && !g_paren;
+
+            auto line = repled::getln(RI, std::to_string(lineno)+": ", HIST, !closed_braces);
             analyze_new_line(line);
 
-            if (line == "" && !g_brace && !g_bracket && !g_paren)
+            if (line == "" && closed_braces)
                 break;
             else if (line[0] == ':') {
                 repled::clearln(line.size());
@@ -566,12 +569,14 @@ Repl::run(void) {
             }
             else if (line[0] == '$') {
                 repled::clearln(true);
+                std::cout << std::flush;
                 bash(line);
             }
             else {
                 if (line != "") {
                     lines.push_back(line);
                     HIST.push_back(line);
+                    ready = true;
                 }
                 ++lineno;
                 std::cout << std::endl;

@@ -254,7 +254,7 @@ main(int argc, char **argv) {
         flags |= __REPL;
         std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help" << std::endl;
-        Repl::run();
+        repl::run();
     }
 
     return 0;

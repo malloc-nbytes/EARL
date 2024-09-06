@@ -102,6 +102,7 @@ repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line,
         clearln(line.size());
         std::cout << prompt << std::flush;
         lines_idx = lines.size();
+        line = "";
         return;
     }
 
@@ -141,16 +142,33 @@ repled::handle_tab(std::string prompt, int &c, int pad, std::string &line, std::
 }
 
 std::string
-repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history) {
+repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass) {
     const int PAD = prompt.size();
     std::string line = "";
     int lines_idx = history.size();
     int c = 0;
 
-    std::cout << prompt << std::flush;
+    bool ready = prompt[0] != '0' && !bypass;
+
+    if (ready) {
+        std::cout << prompt << std::string(64, ' ');
+        std::cout << "[";
+        std::cout << "\033[32m";
+        std::cout << "ENTER TO EVAL";
+        std::cout << "\033[0m";
+        std::cout << "]" << "\033[" << PAD+1 << "G" << std::flush;
+    }
+    else
+        std::cout << prompt << std::flush;
 
     while (1) {
         char ch = RI.get_char();
+
+        if (ready) {
+            repled::clearln(line.size()+75);
+            std::cout << prompt << std::flush;
+            ready = false;
+        }
 
         if (ENTER(ch))
             break;

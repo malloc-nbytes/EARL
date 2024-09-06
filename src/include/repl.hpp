@@ -5,7 +5,7 @@
 
 #include "ctx.hpp"
 
-namespace Repl {
+namespace repl {
     std::shared_ptr<Ctx> run(void);
 };
 
