@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.4.8] - 2024-6-9
+
+### Added
+- Builtin Identifiers __FILE__ and __FUNC__.
+
 ## [0.4.8] - 2024-5-9
 
 ### Added
