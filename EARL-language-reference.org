@@ -115,10 +115,14 @@ This means that if =1 + 2;= is typed into the REPL followed by =<enter><enter>=,
 
 *Note*: The line numbers are provided from the REPL and you do not type these in.
 
+*Note*: Some things will vanish while using the REPL to keep everything
+clean looking, but I am unable to demonstrate it in text, so it will
+be more verbose than it actually is i.e., (=[ENTER TO EVAL]=).
+
 #+begin_example
 0: let x = 1;
 1: x;
-2:
+2:                      [ENTER TO EVAL]
 <unit> -> unit
 1 -> int
 0:
@@ -131,10 +135,10 @@ Starting a new session does not remove variables that were created. That means t
 
 #+begin_example
 0: let x = 1;
-1:
+1:                      [ENTER TO EVAL]
 <unit> -> unit
 0: x;
-1:
+1:                      [ENTER TO EVAL]
 1 -> int
 0:
 #+end_example
@@ -143,7 +147,7 @@ If you just want to do some quick math and use EARL as a calculator, here is ano
 
 #+begin_example
 0: -(3 * (0.5 / float(2)) - 1);
-1:
+1:                      [ENTER TO EVAL]
 0.25 -> float
 0:
 #+end_example
@@ -172,11 +176,11 @@ For example:
 13:             return this.x + this.y;
 14:     }
 15: }
-16:
+16:                      [ENTER TO EVAL]
 <unit> -> unit
 <unit> -> unit
 0: Point(fib(10), fib(15));
-1:
+1:                      [ENTER TO EVAL]
 <Class Point { y = 610, x = 55 }> -> class
 0:
 #+end_example
@@ -192,6 +196,13 @@ the REPL.
 
 *Note*: The REPL saves your history and stores it in =~/.earl_history= and will be cleared every time
 it hits 1MB in file size.
+
+*Note*: You can use left and right arrow keys to navigate back and forth in the text and the up and down arrows
+to navigate through history. The stored history in =~/.earl_history= is what initializes this, so as soon
+as you launch the REPL, it gives you the ability to hit the up arrow to get code from other sessions.
+
+*Note*: Hitting =<tab>= will insert two spaces.
+
 #+end_quote
 
 * Keywords

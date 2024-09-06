@@ -165,7 +165,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         char ch = RI.get_char();
 
         if (ready) {
-            repled::clearln(line.size()+75);
+            repled::clearln(line.size()+76);
             std::cout << prompt << std::flush;
             ready = false;
         }
