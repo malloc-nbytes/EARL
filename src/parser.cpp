@@ -938,6 +938,10 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_continue(lexer);
             if (tok->lexeme() == COMMON_EARLKW_LOOP)
                 return parse_stmt_loop(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_NONE
+                    || tok->lexeme() == COMMON_EARLKW_TRUE
+                    || tok->lexeme() == COMMON_EARLKW_FALSE)
+                return parse_stmt_expr(lexer);
             Err::err_wtok(tok);
             std::string msg = "invalid keyword `" + tok->lexeme() + "`";
             throw ParserException(msg);
