@@ -1,10 +1,6 @@
 module Main
 
-fn test(i) {
-    if i >= 100 {
-        return _;
-    }
-    return test(i+.8);
-}
+import "std/io.earl"
 
-test(0);
+
+

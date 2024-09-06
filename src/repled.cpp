@@ -98,8 +98,12 @@ void
 repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines) {
     if (lines.size() == 0)
         return;
-    if (lines_idx >= static_cast<int>(lines.size()) - 1)
+    if (lines_idx >= static_cast<int>(lines.size()) - 1) {
+        clearln(line.size());
+        std::cout << prompt << std::flush;
+        lines_idx = lines.size();
         return;
+    }
 
     ++lines_idx;
     std::string &histline = lines[lines_idx];
@@ -126,11 +130,13 @@ repled::handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::
 }
 
 void
-repled::handle_tab(int &c, std::string &line, std::vector<std::string> &lines) {
-    std::cout << std::string(2, ' ');
-    std::cout.flush();
-    line.push_back(' ');
-    line.push_back(' ');
+repled::handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    clearln(line.size());
+    line.insert(line.begin()+c, ' ');
+    line.insert(line.begin()+c, ' ');
+    std::cout << prompt;
+    std::cout << line;
+    std::cout << "\033[" << c+pad+3 << "G" << std::flush;
     c += 2;
 }
 
@@ -150,7 +156,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             break;
 
         else if (TAB(ch))
-            handle_tab(c, line, history);
+            handle_tab(prompt, c, PAD, line, history);
 
         else if (ESCSEQ(ch)) {
             int next0 = RI.get_char();

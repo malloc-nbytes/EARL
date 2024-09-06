@@ -135,8 +135,11 @@ read_repl_history() {
         return;
 
     std::string line = "";
-    while (std::getline(ifs, line))
-        HIST.push_back(line);
+    while (std::getline(ifs, line)) {
+        if (line != "") {
+            HIST.push_back(line);
+        }
+    }
 }
 
 void
@@ -441,13 +444,23 @@ ee(void) {
 
 void
 show_vars(std::shared_ptr<Ctx> &ctx) {
-    for (auto &v : ctx->get_available_variable_names())
+    auto vars = ctx->get_available_variable_names();
+
+    if (vars.size() == 0)
+        log("Nothing appropriate\n", gray);
+
+    for (auto &v : vars)
         std::cout << v << std::endl;
 }
 
 void
 show_funcs(std::shared_ptr<Ctx> &ctx) {
-    for (auto &v : ctx->get_available_function_names())
+    auto funcs = ctx->get_available_function_names();
+
+    if (funcs.size() == 0)
+        log("Nothing appropriate\n", gray);
+
+    for (auto &v : funcs)
         std::cout << v << std::endl;
 }
 
@@ -565,7 +578,11 @@ Repl::run(void) {
             }
         }
 
-        repled::clearln(lines.back().size());
+        if (lines.size() != 0)
+            repled::clearln(lines.back().size());
+        else
+            std::cout << std::endl;
+
         std::string combined = "";
 
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});

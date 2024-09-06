@@ -54,7 +54,7 @@ namespace repled {
     void handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines);
     void handle_left_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines);
     void handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines);
-    void handle_tab(int &c, std::string &line, std::vector<std::string> &lines);
+    void handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines);
     std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history);
 };
 
