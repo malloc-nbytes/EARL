@@ -234,7 +234,7 @@ main(int argc, char **argv) {
                     return 1;
             }
             try {
-                program = Parser::parse_program(*lexer.get());
+                program = Parser::parse_program(*lexer.get(), filepath);
             } catch (const ParserException &e) {
                 std::cerr << "Parser error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)

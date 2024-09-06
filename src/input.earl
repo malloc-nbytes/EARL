@@ -1,6 +1,9 @@
 module Main
 
-import "std/io.earl"
+fn test() {
+    println(__FUNC__);
+    println(__FILE__);
+}
 
-
+test();
 

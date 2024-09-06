@@ -576,8 +576,9 @@ struct StmtEnum : public Stmt {
 struct Program {
     /// @brief A vector of statement to evaluate
     std::vector<std::unique_ptr<Stmt>> m_stmts;
+    const std::string m_filepath;
 
-    Program(std::vector<std::unique_ptr<Stmt>> stmts);
+    Program(std::vector<std::unique_ptr<Stmt>> stmts, const std::string filepath);
 };
 
 #endif // AST_H

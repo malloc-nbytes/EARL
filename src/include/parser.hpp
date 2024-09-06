@@ -35,7 +35,7 @@ namespace Parser {
     /// @brief The entrypoint to parsing.
     /// @param lexer The lexer that has
     /// the linked list of tokens to parse
-    std::unique_ptr<Program> parse_program(Lexer &lexer);
+    std::unique_ptr<Program> parse_program(Lexer &lexer, const std::string filepath);
 
     /// @brief Parses a statement.
     /// @param lexer The lexer with the linked list

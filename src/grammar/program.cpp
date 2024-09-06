@@ -27,6 +27,6 @@
 
 #include "ast.hpp"
 
-Program::Program(std::vector<std::unique_ptr<Stmt>> stmts)
-    : m_stmts(std::move(stmts)) {}
+Program::Program(std::vector<std::unique_ptr<Stmt>> stmts, const std::string filepath)
+    : m_stmts(std::move(stmts)), m_filepath(filepath) {}
 

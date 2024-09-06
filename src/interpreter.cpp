@@ -72,9 +72,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
 
 static std::string
 identifier_not_declared(std::string given, std::vector<std::string> possible, bool include_intrinsics=true) {
-    if (include_intrinsics)
+    if (include_intrinsics) {
         for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it)
             possible.push_back(it->first);
+    }
 
     std::vector<int> ranks = {};
     int min = 1e9;
@@ -632,9 +633,13 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             ctx->get_world();
         if (world->enum_exists(er.id))
             return world->enum_get(er.id);
+
         // Check if it is a type as a value
         if (earl::value::is_typekw(er.id))
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
+
+        if (earl::value::is_builtin_ident(er.id))
+            return earl::value::get_builtin_ident(er.id, ctx);
 
         Err::err_wexpr(static_cast<Expr *>(er.extra));
 
@@ -1816,7 +1821,7 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
                                                  keywords,
                                                  types,
                                                  comment);
-    std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get());
+    std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme());
 
     std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
     assert(child_ctx->type() == CtxType::World);

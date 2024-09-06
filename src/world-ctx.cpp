@@ -30,7 +30,9 @@
 #include "err.hpp"
 
 WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program)
-    : m_lexer(std::move(lexer)), m_program(std::move(program)) {}
+    : m_lexer(std::move(lexer)), m_program(std::move(program)) {
+    m_filepath = m_program->m_filepath;
+}
 
 WorldCtx::WorldCtx() : m_lexer(nullptr), m_program(nullptr) {}
 
@@ -236,4 +238,9 @@ WorldCtx::get_available_variable_names(void) {
     for (auto &v : vars)
         ids.push_back(v->id());
     return ids;
+}
+
+std::string
+WorldCtx::get_filepath(void) const {
+    return m_filepath;
 }

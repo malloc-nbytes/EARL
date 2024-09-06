@@ -21,7 +21,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
 #include <cstdlib>
 #include <sstream>
 #include <algorithm>
@@ -32,6 +31,7 @@
 #include <unistd.h>
 #include <termios.h>
 
+#include "config.h"
 #include "repl.hpp"
 #include "repled.hpp"
 #include "parser.hpp"
@@ -600,7 +600,7 @@ repl::run(void) {
         lexer = lex_file(combined, "", keywords, types, comment);
 
         try {
-            program = Parser::parse_program(*lexer.get());
+            program = Parser::parse_program(*lexer.get(), "EARL-Builtin-REPLv" VERSION);
         } catch (const ParserException &e) {
             std::cerr << "Parser error: " << e.what() << std::endl;
             continue;

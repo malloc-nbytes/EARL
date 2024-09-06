@@ -748,6 +748,11 @@ namespace earl {
 
         bool is_typekw(const std::string &id);
         Type get_typekw_proper(const std::string &id);
+
+        [[nodiscard]]
+        bool is_builtin_ident(const std::string &id);
+
+        std::shared_ptr<Obj> get_builtin_ident(const std::string &id, std::shared_ptr<Ctx> &ctx);
     };
 
     /**
