@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 
+#include "common.hpp"
 #include "repled.hpp"
 
 repled::RawInput::RawInput() {
@@ -153,9 +154,11 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
     if (ready) {
         std::cout << prompt << std::string(64, ' ');
         std::cout << "[";
-        std::cout << "\033[32m";
+        if (flags & __REPL_NOCOLOR == 0)
+            std::cout << "\033[32m";
         std::cout << "ENTER TO EVAL";
-        std::cout << "\033[0m";
+        if (flags & __REPL_NOCOLOR == 0)
+            std::cout << "\033[0m";
         std::cout << "]" << "\033[" << PAD+1 << "G" << std::flush;
     }
     else
