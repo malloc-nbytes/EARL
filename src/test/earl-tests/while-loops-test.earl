@@ -1,6 +1,6 @@
 module WhileLoopTests
 
-# import "asserts.earl"
+import "std/asserts.earl"
 
 fn log(out, file, fun) {
     if out {

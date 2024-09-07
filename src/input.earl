@@ -1,5 +1,11 @@
 module Main
 
-let i = 10;
-i %= 2;
-println(i);
+import "std/asserts.earl"
+Assert::FILE = __FILE__;
+
+fn test() {
+    Assert::FUNC = __FUNC__;
+    Assert::eq(none, false);
+}
+
+test();

@@ -2639,3 +2639,79 @@ Return the number of tokens the lexer currently holds.
 
 #+end_quote
 
+** Assert
+
+*** *Import*: ="std/assert.earl"=
+
+*** *Module*: =Assert=
+
+*** *Variable List*:
+#+begin_quote
+#+begin_example
+CRASH_ON_FAILURE: bool
+#+end_example
+
+Will crash the program on assertion failures if set to =true=. Otherwise will print failures to =stderr=. By default, it is set to =true=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+FILE: str
+#+end_example
+
+Should be set in the caller file to set the file location that the assertions are being called from using =__FILE__=. *Note*: This variable must be set manually.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+FUNC: str
+#+end_example
+
+Should be set in the caller file in the function that the assertions are being called from using =__FUNC__=. *Note*: This variable must be set manually.
+#+end_quote
+
+*** *Enum List*: /None/
+
+*** *Function List*:
+#+begin_quote
+#+begin_example
+is_true(cond: bool) -> unit
+#+end_example
+
+Tests =cond= for =true=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+is_false(cond: bool) -> unit
+#+end_example
+
+Tests =cond= for =false=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+eq(l: any, r: any) -> unit
+#+end_example
+
+Tests for =l= equal to =r=. *Note*: this function is type safe to it will not panic with differing types.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+not_none(k: any) -> unit
+#+end_example
+
+Tests for =k= being not =none=. *Note*: this function is type safe so it will not panic with differing types.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+is_none(k: any) -> unit
+#+end_example
+
+Tests for =k= being =none=. *Note*: this function is type safe so it will not panic with differing types.
+#+end_quote
+
+*** *Class List*: /None/
+

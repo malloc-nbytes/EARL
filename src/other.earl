@@ -1,6 +1,2 @@
 module Other
 
-@pub let X = 9900;
-
-
-
