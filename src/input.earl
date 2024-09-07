@@ -1,7 +1,11 @@
 module Main
 
-import "std/list.earl"
-let lst = List::from_range(1, 10, 0);
+fn test2(i) {
+    println(i);
+    if i == 5 {
+        return;
+    }
+    return test2(i+1);
+}
 
-
-
+println(test2(0) == _);

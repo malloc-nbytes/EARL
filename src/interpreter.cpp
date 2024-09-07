@@ -545,7 +545,6 @@ eval_user_defined_function(ExprFuncCall *expr,
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
-
     // CLASSES
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
@@ -560,7 +559,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             Expr *expr = nullptr;
             if (er.extra)
                 expr = static_cast<Expr *>(er.extra);
-            return Intrinsics::call(er.id, params, ctx, expr);
+            auto call = Intrinsics::call(er.id, params, ctx, expr);
+            return call;
         }
 
         if (er.is_member_intrinsic() && (perp && perp->lhs_getter_accessor)) {
@@ -601,12 +601,16 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         // We need to have this function to gen the parameters so we
         // know which ones need to be taken as a reference. NOTE: The
         // routine(s) above this may need this change as well.
-        return eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
+        auto call = eval_user_defined_function_wo_params(er.id, static_cast<ExprFuncCall *>(er.extra), er.ctx, ctx);
+        if (call->type() == earl::value::Type::Return)
+            call = std::make_shared<earl::value::Void>();
+        return call;
     }
 
     // LITERAL
-    else if (er.is_literal())
+    else if (er.is_literal()) {
         return er.value;
+    }
 
     // IDENTIFIER
     else if (er.is_ident()) {
@@ -1326,8 +1330,7 @@ ER
 Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_type()) {
     case ExprType::Term: {
-        auto result = eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, ref);
-        return result;
+        return eval_expr_term(dynamic_cast<ExprTerm *>(expr), ctx, ref);
     } break;
     case ExprType::Binary: {
         return eval_expr_bin(dynamic_cast<ExprBinary *>(expr), ctx, ref);
@@ -1445,6 +1448,9 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         value = unpack_ER(rhs, ctx, ref);
 
+    if (value->type() == earl::value::Type::Return) {
+    }
+
     if (id == "_")
         return std::make_shared<earl::value::Void>();
 
@@ -1463,6 +1469,8 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     stmt->m_evald = true;
     auto value = unpack_ER(er, ctx, false);
+    if (value->type() == earl::value::Type::Return)
+        std::cout << "HERE" << std::endl;
     if (value && value->type() != earl::value::Type::Void && ctx->type() != CtxType::World) {
         Err::err_wexpr(stmt->m_expr.get());
         Err::warn("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
@@ -1474,13 +1482,21 @@ std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
     std::shared_ptr<earl::value::Obj> result = nullptr;
     ctx->push_scope();
+
     for (size_t i = 0; i < block->m_stmts.size(); ++i) {
         result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
         if (result && result->type() != earl::value::Type::Void)
             break;
-        if (block->m_stmts.at(i)->stmt_type() == StmtType::Return)
+        // if (block->m_stmts.at(i)->stmt_type() == StmtType::Return)
+        //     break;
+        if (block->m_stmts.at(i)->stmt_type() == StmtType::Return) {
+            if (!result || result->type() == earl::value::Type::Void) {
+                result = std::make_shared<earl::value::Return>();
+            }
             break;
+        }
     }
+
     ctx->pop_scope();
     block->m_evald = true;
     if (!result)
