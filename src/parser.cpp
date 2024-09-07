@@ -960,6 +960,7 @@ Parser::parse_stmt(Lexer &lexer) {
                      || lexer.peek(i)->type() == TokenType::Minus_Equals
                      || lexer.peek(i)->type() == TokenType::Asterisk_Equals
                      || lexer.peek(i)->type() == TokenType::Forwardslash_Equals
+                     || lexer.peek(i)->type() == TokenType::Percent_Equals
                      || lexer.peek(i)->type() == TokenType::Backtick_Pipe_Equals
                      || lexer.peek(i)->type() == TokenType::Backtick_Ampersand_Equals
                      || lexer.peek(i)->type() == TokenType::Backtick_Caret_Equals)

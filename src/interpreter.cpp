@@ -1584,6 +1584,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     case TokenType::Minus_Equals:
     case TokenType::Asterisk_Equals:
     case TokenType::Forwardslash_Equals:
+    case TokenType::Percent_Equals:
     case TokenType::Backtick_Pipe_Equals:
     case TokenType::Backtick_Ampersand_Equals:
     case TokenType::Backtick_Caret_Equals: {

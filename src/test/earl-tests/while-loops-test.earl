@@ -1,7 +1,63 @@
 module WhileLoopTests
 
-fn test_basic_while_loop_up(out) {
+# import "asserts.earl"
+
+fn log(out, file, fun) {
     if out {
-        print("test_basic_while_loop_up");
+        print("running test: ", file,':', fun);
     }
 }
+
+fn ok() {
+    println(" :: ok");
+}
+
+fn fail(expected, actual) {
+    println(" :: FAIL");
+    println(f"  expected {expected}, actual {actual}");
+    exit(1);
+}
+
+fn test_assert_true(cond) {
+    if !cond {
+        fail(true, cond);
+    }
+}
+
+fn test_assert_eq(l, r) {
+    if l != r {
+        fail(l, r);
+    }
+}
+
+fn test_basic_while_loop_down(out) {
+    log(out, __FILE__, __FUNC__);
+
+    let i = 10;
+    while i > 0 {
+        i -= 1;
+    }
+
+    test_assert_eq(i, 1);
+
+    ok();
+}
+
+fn test_basic_while_loop_up(out) {
+    log(out, __FILE__, __FUNC__);
+
+    let i = 0;
+    while i < 10 {
+        i += 1;
+    }
+
+    assert(i == 10);
+    ok();
+}
+
+fn main() {
+    test_basic_while_loop_up(true);
+    test_basic_while_loop_down(true);
+}
+
+main();

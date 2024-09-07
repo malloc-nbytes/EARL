@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <cassert>
 #include <cmath>
 #include <memory>
@@ -229,8 +230,26 @@ Int::to_cxxstring(void) {
 void
 Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
-    int prev = m_value;
-    this->mutate(other, stmt); // does type checking
+    int prev;
+
+    if (op->type() == TokenType::Minus_Equals
+        || op->type() == TokenType::Forwardslash_Equals
+        || op->type() == TokenType::Percent_Equals) {
+        if (other->type() == Type::Int)
+            prev = dynamic_cast<Int *>(other.get())->value();
+        else if (other->type() == Type::Float)
+            prev = dynamic_cast<Float *>(other.get())->value();
+        else {
+            const std::string msg = "invalid type for spec_mutate";
+            Err::err_wtok(op);
+            throw InterpreterException(msg);
+        }
+    }
+    else {
+        prev = m_value;
+        this->mutate(other, stmt); // does type checking
+    }
+
     switch (op->type()) {
     case TokenType::Plus_Equals: m_value += prev; break;
     case TokenType::Minus_Equals: m_value -= prev; break;

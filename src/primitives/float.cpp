@@ -179,7 +179,26 @@ Float::to_cxxstring(void) {
 void
 Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
-    double prev = m_value;
+    double prev;
+
+    if (op->type() == TokenType::Minus_Equals
+        || op->type() == TokenType::Forwardslash_Equals
+        || op->type() == TokenType::Percent_Equals) {
+        if (other->type() == Type::Int)
+            prev = static_cast<int>(dynamic_cast<Int *>(other.get())->value());
+        else if (other->type() == Type::Float)
+            prev = dynamic_cast<Float *>(other.get())->value();
+        else {
+            const std::string msg = "invalid type for spec_mutate";
+            Err::err_wtok(op);
+            throw InterpreterException(msg);
+        }
+    }
+    else {
+        prev = m_value;
+        this->mutate(other, stmt); // does type checking
+    }
+
     this->mutate(other, stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: m_value += prev; break;

@@ -529,6 +529,13 @@ Intrinsics::intrinsic_panic(std::vector<std::shared_ptr<earl::value::Obj>> &para
     return nullptr; // unreachable
 }
 
+static void
+__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
+    if (stream == nullptr)
+        stream = &std::cout;
+    *stream << param->to_cxxstring();
+}
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                              std::shared_ptr<Ctx> &ctx,
@@ -538,18 +545,11 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
         earl::value::Obj *param = params.at(i).get();
         if (!param->boolean()) {
             Err::err_wexpr(expr);
-            std::string msg = "assertion failure (expression="+std::to_string(i+1)+") (earl::value::Type="+std::to_string((int)param->type())+")";
+            std::string msg = "assertion failure (" + param->to_cxxstring() + ") (with expression_index="+std::to_string(i)+")";
             throw InterpreterException(msg);
         }
     }
     return std::make_shared<earl::value::Void>();
-}
-
-static void
-__intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
-    if (stream == nullptr)
-        stream = &std::cout;
-    *stream << param->to_cxxstring();
 }
 
 std::shared_ptr<earl::value::Obj>
