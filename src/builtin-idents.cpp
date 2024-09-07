@@ -44,7 +44,7 @@ static const std::unordered_map<std::string, BuiltinIdentSig> builtin_idents = {
 std::shared_ptr<earl::value::Obj>
 builtin__FILE__(std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() == CtxType::World) {
-        const std::string &id = dynamic_cast<WorldCtx *>(ctx.get())->get_repl_program(0)->m_filepath;
+        const std::string &id = dynamic_cast<WorldCtx *>(ctx.get())->get_filepath();
         return std::make_shared<earl::value::Str>(id);
     }
     if (ctx->type() == CtxType::Function) {
