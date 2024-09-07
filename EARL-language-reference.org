@@ -1924,7 +1924,7 @@ The default comparison function for descending sort.
 *** *Function List*:
 #+begin_quote
 #+begin_example
-preset(elem: any, cap: int) -> str
+preset(elem: any, cap: int) -> list
 #+end_example
 
 Creates a list with elements =elem= of size =cap=.
@@ -1940,7 +1940,7 @@ Takes a list and then returns element within range specified by the parameters =
 
 #+begin_quote
 #+begin_example
-fill(lst: @ref list<any>, : : any) -> unit
+fill(lst: @ref list<any>, k: any) -> unit
 #+end_example
 
 Fills the given list =lst= with element =k=.
