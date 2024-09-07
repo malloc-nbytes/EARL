@@ -586,7 +586,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 throw InterpreterException(msg);
             }
 
-            return eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
+            auto call = eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
+            if (call->type() == earl::value::Type::Return)
+                call = std::make_shared<earl::value::Void>();
+            return call;
         }
 
         // Method does not exist
