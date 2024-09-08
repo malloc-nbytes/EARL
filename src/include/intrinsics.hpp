@@ -303,6 +303,11 @@ namespace Intrinsics {
                               std::shared_ptr<Ctx> &ctx,
                               Expr *expr);
 
+    std::shared_ptr<earl::value::Obj>
+    intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                       std::shared_ptr<Ctx> &ctx,
+                                       Expr *expr);
+
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>

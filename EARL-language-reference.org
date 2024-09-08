@@ -2241,6 +2241,22 @@ trim(s: @ref str) -> unit
 Trims all whitespace (spaces, tabs, newlines etc.) from =s= in-place.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+find_first_of(s: @const @ref str, t: char) -> option<int>
+#+end_example
+
+Finds the first ocurrence of =t= in =s=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+find_last_of(s: @const @ref str, t: char) -> option<int>
+#+end_example
+
+Finds the last ocurrence of =t= in =s=.
+#+end_quote
+
 *** *Class List*: /None/
 
 ** CSV
@@ -2470,6 +2486,14 @@ move(path_from: str, path_to: str) -> unit
 #+end_example
 
 Move the file =path_from= to =path_to=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+unix_cmd(cmd: str) -> int
+#+end_example
+
+Run the bash command =cmd=. Returns the exit code.
 #+end_quote
 
 *** *Class List*: /None/

@@ -53,6 +53,7 @@ Intrinsics::intrinsic_functions = {
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
+    {"__internal_unix_system__", &Intrinsics::intrinsic___internal_unix_system__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
     {"fprint", &Intrinsics::intrinsic_fprint},
     // Casting Functions
@@ -426,7 +427,7 @@ Intrinsics::intrinsic___internal_move__(std::vector<std::shared_ptr<earl::value:
 
     return std::make_shared<earl::value::Void>();
 }
- 
+
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                       std::shared_ptr<Ctx> &ctx,
@@ -454,6 +455,22 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
     lst->append(items);
 
     return lst;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                               std::shared_ptr<Ctx> &ctx,
+                                               Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_unix_system__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_unix_system__", expr);
+    const std::string cmd = params[0]->to_cxxstring();
+    int exitcode = system(cmd.c_str());
+    if (exitcode == -1) {
+        Err::err_wexpr(expr);
+        const std::string msg = "failed to execute system command `"+cmd+"`";
+        throw InterpreterException(msg);
+    }
+    return std::make_shared<earl::value::Int>(exitcode);
 }
 
 std::shared_ptr<earl::value::Obj>

@@ -46,7 +46,9 @@ module Str
 ###   Returns the index of target `t` in a `some` value or `none` if not found.
 @pub fn find(@ref s, t) {
     for i in 0 to len(s) {
-        if s[i] == t { return some(i); }
+        if s[i] == t {
+            return some(i);
+        }
     }
     return none;
 }
@@ -57,18 +59,51 @@ module Str
 ### DESCRIPTION
 ###   Trims all whitespace (spaces, tabs, newlines etc.) from `s` in-place.
 @pub fn trim(@ref s) {
-    while len(s) > 0 && (s[0] == ' '
+    while len(s) > 0 &&
+        (s[0] == ' '
         || s[0] == '\n'
         || s[0] == '\t'
         || s[0] == '\r') {
         s.pop(0);
     }
-    while len(s) > 0 && (s.back() == ' '
+    while len(s) > 0 &&
+        (s.back() == ' '
         || s.back() == '\n'
         || s.back() == '\t'
         || s.back() == '\r') {
         s.pop(len(s)-1);
     }
+}
+
+### NAME find_first_of
+### PARAMETER s: @const @ref str
+### PARAMETER t: char
+### RETURNS option<int>
+### DESCRIPTION
+###   Finds the first ocurrence of `t` in `s`.
+@pub fn find_first_of(@const @ref s, t) {
+    for i in 0 to len(s) {
+        if s[i] == t {
+            return some(i);
+        }
+    }
+    return none;
+}
+
+### NAME find_last_of
+### PARAMETER s: @const @ref str
+### PARAMETER t: char
+### RETURNS option<int>
+### DESCRIPTION
+###   Finds the last ocurrence of `t` in `s`.
+@pub fn find_last_of(@const @ref s, @const @ref t) {
+    let idx = none;
+    for i in 0 to len(s) {
+        if s[i] == t {
+            idx = some(i);
+        }
+    }
+    return idx;
 }
 
 ### END FUNCTIONS

@@ -2,5 +2,8 @@ module Main
 
 import "std/system.earl"
 
-println(System::fullpath_mkdir());
+fn test() {
+    let _ = System::unix_cmd("ls -lah");
+}
 
+test();
