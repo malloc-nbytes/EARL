@@ -1,11 +1,6 @@
 module Main
 
-import "std/asserts.earl"
-Assert::FILE = __FILE__;
+import "std/system.earl"
 
-fn test() {
-    Assert::FUNC = __FUNC__;
-    Assert::eq(none, false);
-}
+println(System::fullpath_mkdir());
 
-test();

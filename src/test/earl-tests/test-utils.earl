@@ -2,7 +2,7 @@ module TestUtils
 
 @pub fn log(out, file, fun, @ref af) {
     if out {
-        println("running test: ", file,':', fun);
+        println("[TEST] ", file,':', fun);
     }
     af = fun;
 }

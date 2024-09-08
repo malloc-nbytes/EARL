@@ -5,6 +5,22 @@ import "test-utils.earl"
 
 Assert::FILE = __FILE__;
 
+fn test_while_loop_return(out) {
+    TestUtils::log(out, __FILE__, __FUNC__, Assert::FUNC);
+
+    fn aux(@ref i) {
+        while i < 100 {
+            if i == 50 { return; }
+            i += 1;
+        }
+    }
+
+    let i = 0;
+    aux(i);
+
+    Assert::eq(i, 50);
+}
+
 fn test_while_loop_count(out) {
     TestUtils::log(out, __FILE__, __FUNC__, Assert::FUNC);
 
@@ -117,4 +133,5 @@ fn run(should_print, crash_on_failure) {
     test_while_loop_break(out);
     test_while_loop_continue(out);
     test_while_loop_count(out);
+    test_while_loop_return(out);
 }

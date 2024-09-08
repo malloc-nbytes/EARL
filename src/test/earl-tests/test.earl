@@ -1,15 +1,21 @@
 module Test
 
 import "./while-loops-tests.earl"
+import "./int-tests.earl"
+import "./char-tests.earl"
 import "./for-loops-tests.earl"
-import "./my-file.earl"
+import "./foreach-loop-tests.earl"
+import "./if-tests.earl"
 
 fn main() {
     let should_print = true;
     let crash_on_failure = false;
     WhileLoopTests::run(should_print, crash_on_failure);
+    IntTests::run(should_print, crash_on_failure);
+    CharTests::run(should_print, crash_on_failure);
     ForLoopTests::run(should_print, crash_on_failure);
-    MyModule::run(should_print, crash_on_failure);
+    ForeachLoopTests::run(should_print, crash_on_failure);
+    IfTests::run(should_print, crash_on_failure);
 }
 
 main();

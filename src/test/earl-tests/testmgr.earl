@@ -7,7 +7,7 @@ import "std/str.earl"
 fn help() {
     println("Usage");
     println("    new <filename> <modname>", "  Creates a new test template");
-    println("    gen <print> <crash>", "       Generate the test template");
+    println("    gen <print> <crash>", "       Generate the test entrypoint");
     exit(0);
 }
 
@@ -21,12 +21,19 @@ fn gen(should_print, crash_on_failure) {
 
     let blacklisted_files = (
         __FILE__,
+        "./testmgr.earl",
         "./test.earl",
         "./test-utils.earl",
     );
 
     let tests = System::ls(".").filter(|s| {
-        return !blacklisted_files.contains(s);
+        foreach file in blacklisted_files {
+            if s == file {
+                println("FILTERED: ", s);
+                return false;
+            }
+        }
+        return true;
     });
 
     foreach test in tests {
@@ -38,6 +45,7 @@ fn gen(should_print, crash_on_failure) {
     src += "    let crash_on_failure = " + str(crash_on_failure) + ";\n";
 
     foreach test in tests {
+        println(test);
         let test_code = IO::file_to_str(test);
         let mod = test_code
             .split("\n")[0]
