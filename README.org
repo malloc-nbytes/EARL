@@ -75,8 +75,8 @@ Once the configuration step in [[Compiling][Compiling]] is done, use the followi
 #+begin_src bash
   cd build
   make
-  sudo make install (currently broken)
-  make test
+  sudo make install
+  make test (currently broken, do not use)
 #+end_src
 
 To uninstall, simply do =sudo make uninstall=.
