@@ -1,0 +1,24 @@
+module ForLoopTests
+
+import "test-utils.earl"
+import "std/assert.earl"
+
+Assert::FILE = __FILE__;
+
+fn test_basic_for_loop_up(out) {
+    TestUtils::log(out, __FILE__, __FUNC__, Assert::FUNC);
+    let c = 0;
+    for i in 0 to 10 {
+        # Assert::eq(c, i);
+        i += 1;
+    }
+}
+
+# ENTRYPOINT
+@pub @world
+fn run(should_print, crash_on_failure) {
+    let out = should_print;
+    Assert::CRASH_ON_FAILURE = crash_on_failure;
+
+    test_basic_for_loop_up(out);
+}

@@ -1,0 +1,15 @@
+module Test
+
+import "./while-loops-tests.earl"
+import "./for-loops-tests.earl"
+import "./my-file.earl"
+
+fn main() {
+    let should_print = true;
+    let crash_on_failure = false;
+    WhileLoopTests::run(should_print, crash_on_failure);
+    ForLoopTests::run(should_print, crash_on_failure);
+    MyModule::run(should_print, crash_on_failure);
+}
+
+main();
