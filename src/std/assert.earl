@@ -103,9 +103,22 @@ fn fail(msg) {
 ###   Tests for `l` equal to `r`. *Note*: this function
 ###   is type safe to it will not panic with differing types.
 @pub fn eq(l, r) {
-    match l {
-        r -> {}
-        _ -> {fail(f"left = {l}, right = {r}");}
+    if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
+        if l.is_none() && r.is_some() {
+            fail(f"left = {l}, right = {r}");
+        }
+        else if l.is_some() && r.is_none() {
+            fail(f"left = {l}, right = {r}");
+        }
+        else if l.is_some() && r.is_some() {
+            eq(l.unwrap(), r.unwrap());
+        }
+    }
+    else {
+        match l {
+            r -> {}
+            _ -> {fail(f"left = {l}, right = {r}");}
+        }
     }
 }
 

@@ -81,7 +81,8 @@ endif()
 
 # Add a custom target for testing
 add_custom_target(test
-    COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/src/test/earl-tests ${PROJECT_BINARY_DIR}/earl ./main.earl
+    COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/src/test/earl-tests ${PROJECT_BINARY_DIR}/earl ./testmgr.earl -- gen true false
+    COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/src/test/earl-tests ${PROJECT_BINARY_DIR}/earl ./test.earl
     COMMENT "Running tests"
 )
 

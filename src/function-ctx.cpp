@@ -40,6 +40,7 @@ FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner, uint32_t attrs)
             return;
         } break;
         case CtxType::Function: it = dynamic_cast<FunctionCtx *>(it.get())->m_owner; break;
+        case CtxType::Closure: it = dynamic_cast<ClosureCtx *>(it.get())->get_owner(); break;
         default: assert(false && "unreachable");
         }
     }

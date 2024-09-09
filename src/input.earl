@@ -2,8 +2,4 @@ module Main
 
 import "std/system.earl"
 
-fn test() {
-    let _ = System::unix_cmd("ls -lah");
-}
 
-test();

@@ -1,26 +1,58 @@
 module Main
 
-fn two_sum(nums, target) {
-    let num_to_idx = Dict(int);
+fn twosum_optimized(lst, t) {
+    # Create an empty dictionary that holds
+    # keys of type int.
+    let found = Dict(int);
 
-    for i in 0 to len(nums) {
-        let compliment = target-nums[i];
-        if num_to_idx[compliment] {
-            return some((num_to_idx[compliment].unwrap(), i));
+    for i in 0 to len(lst) {
+        let compliment = t - lst[i];
+
+        # Dictionaries will return `none` if not
+        # found, and `none` results to false if
+        # used in a boolean context. If the item
+        # is found, it will return `some(value)`
+        # which results to true in a boolean context.
+        if found[compliment] {
+            return some((found[compliment].unwrap(), i));
         }
-        num_to_idx.insert(nums[i], i);
+
+        # Insert the pair into the dictionary.
+        found.insert(lst[i], i);
     }
 
     return none;
 }
 
-let lst, t = ([1,2,3,4,5], 4);
-let res = two_sum(lst, t);
+fn twosum_brute_force(lst, t) {
+    for i in 0 to len(lst)-1 {
+        for j in i to len(lst) {
+            if lst[i] + lst[j] == t {
+                # Returning `some(tuple<int, int>)` to keep
+                # this function's return types consistent.
+                return some((i, j));
+            }
+        }
+    }
 
-if res {
-    let x, y = res.unwrap();
-    println(f"the target {t} is at location {x} {y}");
+    return none;
+}
+
+let lst, t = (1..=5, 4);
+
+let result1 = twosum_brute_force(lst, t);
+let result2 = twosum_optimized(lst, t);
+
+if result1 {
+    println(f"found {t} in twosum_brute_force at: ", result1.unwrap());
 }
 else {
-    println(f"the target {t} is not in the list");
+    println(f"could not find {t} in twosum_brute_force");
+}
+
+if result2 {
+    println(f"found {t} in twosum_optimized at: ", result2.unwrap());
+}
+else {
+    println(f"could not find {t} in twosum_optimized");
 }

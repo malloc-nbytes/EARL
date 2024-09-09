@@ -65,7 +65,7 @@ This will create the Makefile. Use =make <opt>= where =<opt>= is one of,
 #+begin_quote
 - =make= \rightarrow builds the project
 - =make clean= \rightarrow cleans the project
-- =make test= \rightarrow build the project and runs tests (stdlib *must* be installed, see [[Installation][Installation]]) (currently broken)
+- =make test= \rightarrow build the project and runs tests (stdlib *must* be installed, see [[Installation][Installation]])
 - =make docs= \rightarrow generate the c++ source code documentation (*[[https://doxygen.nl/][Doxygen]] is required*)
 #+end_quote
 
@@ -76,7 +76,7 @@ Once the configuration step in [[Compiling][Compiling]] is done, use the followi
   cd build
   make
   sudo make install
-  make test (currently broken, do not use)
+  make test
 #+end_src
 
 To uninstall, simply do =sudo make uninstall=.

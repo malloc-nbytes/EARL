@@ -12,6 +12,8 @@ fn help() {
 }
 
 fn gen(should_print, crash_on_failure) {
+    println("--- GENERATING TEST ENTRYPOINT ---");
+
     let main_test_filepath = "./test.earl";
     let function_splitter_id = "ENTRYPOINT";
 
@@ -21,10 +23,13 @@ fn gen(should_print, crash_on_failure) {
 
     let blacklisted_files = (
         __FILE__,
+        "./imports",
         "./testmgr.earl",
         "./test.earl",
         "./test-utils.earl",
     );
+
+    println(f"Blacklisted files: {blacklisted_files}");
 
     let tests = System::ls(".").filter(|s| {
         foreach file in blacklisted_files {
@@ -45,7 +50,7 @@ fn gen(should_print, crash_on_failure) {
     src += "    let crash_on_failure = " + str(crash_on_failure) + ";\n";
 
     foreach test in tests {
-        println(test);
+        println(f"Gathered test file: {test}");
         let test_code = IO::file_to_str(test);
         let mod = test_code
             .split("\n")[0]
@@ -72,6 +77,9 @@ fn gen(should_print, crash_on_failure) {
     let f = open(main_test_filepath, "w");
     f.write(src);
     f.close();
+
+    println("--- GENERATED TEST ENTRYPOINT ---");
+    println(src);
 }
 
 fn create_test_file(filename, modname) {
