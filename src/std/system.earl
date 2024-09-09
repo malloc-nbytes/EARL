@@ -122,12 +122,12 @@ module System
     __internal_move__(path_from, path_to);
 }
 
-### NAME unix_cmd
+### NAME cmd
 ### PARAMETER cmd: str
 ### RETURNS int
 ### DESCRIPTION
 ###   Run the bash command `cmd`. Returns the exit code.
-@pub fn unix_cmd(cmd) {
+@pub fn cmd(cmd) {
     if typeof(cmd) != str {
         panic(__FILE__,
             ':',

@@ -1,5 +1,9 @@
 module Main
 
-import "std/system.earl"
+foreach i in 1..10 {
+    println(i);
+}
+
+
 
 

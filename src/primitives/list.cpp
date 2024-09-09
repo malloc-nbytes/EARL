@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iterator>
 #include <iostream>
 #include <algorithm>
 #include <cassert>
@@ -210,6 +211,21 @@ List::back(void) {
     if (m_value.size() == 0)
         return std::make_shared<Option>();
     return m_value.back()->copy();
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+List::get_iter_begin(void) {
+    return m_value.begin();
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+List::get_iter_end(void) {
+    return m_value.end();
+}
+
+void
+List::iter(std::vector<std::shared_ptr<Obj>>::iterator &it) {
+    std::advance(it, 1);
 }
 
 std::shared_ptr<Obj>

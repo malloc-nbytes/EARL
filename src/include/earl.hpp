@@ -182,7 +182,16 @@ namespace earl {
 
         protected:
             bool m_const = false;
+            bool m_iterable = false;
         };
+
+        // struct Iterable : public Obj {
+        //     Iterable() { m_iterable = true; }
+
+        //     // virtual std::vector<std::shared_ptr<Obj>> begin_iter(void) = 0;
+        //     // virtual std::vector<std::shared_ptr<Obj>> end_iter(void) = 0;
+        //     // virtual void iter_next(std::vector<std::shared_ptr<Obj>> &it) = 0;
+        // };
 
         struct TypeKW : public Obj {
             TypeKW(Type ty);
@@ -380,29 +389,25 @@ namespace earl {
 
             /// @brief Reverse a list
             std::shared_ptr<List> rev(void);
-
             void append_copy(std::shared_ptr<Obj> value);
-
             void append_copy(std::vector<std::shared_ptr<Obj>> &values);
 
             /// @brief Append a list of values to a list
             /// @param values The values to append
             void append(std::vector<std::shared_ptr<Obj>> &values);
-
             void append(std::shared_ptr<Obj> value);
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
             void pop(std::shared_ptr<Obj> &idx);
-
             std::shared_ptr<List> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<List> map(std::shared_ptr<Closure> &closure, std::shared_ptr<Ctx> &ctx);
-
             std::shared_ptr<Obj> back(void);
-
             std::shared_ptr<Bool> contains(std::shared_ptr<earl::value::Obj> &value);
+            std::vector<std::shared_ptr<Obj>>::iterator get_iter_begin(void);
+            std::vector<std::shared_ptr<Obj>>::iterator get_iter_end(void);
+            void iter(std::vector<std::shared_ptr<Obj>>::iterator &it);
 
             /*** OVERRIDES ***/
             Type type(void) const                                                         override;

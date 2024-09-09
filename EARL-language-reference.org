@@ -2490,7 +2490,7 @@ Move the file =path_from= to =path_to=.
 
 #+begin_quote
 #+begin_example
-unix_cmd(cmd: str) -> int
+cmd(cmd: str) -> int
 #+end_example
 
 Run the bash command =cmd=. Returns the exit code.
