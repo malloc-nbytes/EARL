@@ -189,18 +189,19 @@ Tuple::to_cxxstring(void) {
     return res;
 }
 
-std::vector<std::shared_ptr<Obj>>::iterator
+std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
 Tuple::iter_begin(void) {
     return m_values.begin();
 }
 
-std::vector<std::shared_ptr<Obj>>::iterator
+std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
 Tuple::iter_end(void) {
     return m_values.end();
 }
 
 void
-Tuple::iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
-                 typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) {
-    it += n;
+Tuple::iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) {
+    std::visit([&](auto &iter) {
+        std::advance(iter, 1);
+    }, it);
 }

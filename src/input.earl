@@ -1,7 +1,6 @@
 module Main
 
-foreach i in "hello world" {
-    println(i);
+let s = ["hello world", "foo", "bar"];
+
+foreach i in s {
 }
-
-

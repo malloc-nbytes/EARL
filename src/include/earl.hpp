@@ -131,6 +131,8 @@ namespace earl {
             Return,
         };
 
+        struct Char;
+
         /// @brief The base abstract class that all
         /// EARL values inherit from
         struct Obj {
@@ -172,10 +174,9 @@ namespace earl {
             virtual void unset_const(void);
             virtual bool is_const(void) const;
             virtual bool is_iterable(void) const;
-            virtual std::vector<std::shared_ptr<Obj>>::iterator iter_begin(void);
-            virtual std::vector<std::shared_ptr<Obj>>::iterator iter_end(void);
-            virtual void iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
-                                   typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n);
+            virtual std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void);
+            virtual std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void);
+            virtual void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it);
 
         protected:
             bool m_const = false;
@@ -378,11 +379,9 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
-            std::vector<std::shared_ptr<Obj>>::iterator iter_begin(void)                  override;
-            std::vector<std::shared_ptr<Obj>>::iterator iter_end(void)                    override;
-            void iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
-                           typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) override;
-
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
+            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
@@ -424,10 +423,9 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
-            std::vector<std::shared_ptr<Obj>>::iterator iter_begin(void)                  override;
-            std::vector<std::shared_ptr<Obj>>::iterator iter_end(void)                    override;
-            void iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
-                           typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
+            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_values;
@@ -465,6 +463,9 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
+            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
 
         private:
             std::string m_value;

@@ -1652,123 +1652,54 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
-    auto it = expr->iter_begin();
-    auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), *it);
+    std::shared_ptr<earl::variable::Obj> enumerator = nullptr;
+
+    auto wrapped_iterator_begin = expr->iter_begin();
+    auto wrapped_iterator_end = expr->iter_end();
+    std::visit([&](const auto &it) {
+        enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), *it);
+    }, wrapped_iterator_begin);
+
     ctx->variable_add(enumerator);
 
-    while (it != expr->iter_end()) {
-        if (it != expr->iter_begin())
+    auto is_equal = [](const auto &it1, const auto &it2) {
+        return it1 == it2;
+    };
+
+    auto advance_iterator = [&]() {
+        expr->iter_next(wrapped_iterator_begin);
+    };
+
+    while (true) {
+        if (std::visit([&](const auto &it) {
+            return is_equal(it, std::get<std::decay_t<decltype(it)>>(wrapped_iterator_end));
+        }, wrapped_iterator_begin)) {
+            break;
+        }
+
+        std::visit([&](const auto& it) {
             enumerator->reset(*it);
+        }, wrapped_iterator_begin);
 
-        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-        if (result && result->type() == earl::value::Type::Break) {
-            result = nullptr;
-            break;
+        auto result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result) {
+            if (result->type() == earl::value::Type::Break) {
+                result = nullptr;
+                break;
+            }
+            if (result->type() == earl::value::Type::Continue) {
+                advance_iterator();
+                continue;
+            }
+            if (result->type() != earl::value::Type::Void)
+                break;
         }
-        if (result && result->type() == earl::value::Type::Continue) {
-            expr->iter_next(it, 1);
-            continue;
-        }
 
-        if (result && result->type() != earl::value::Type::Void)
-            break;
-
-        expr->iter_next(it, 1);
+        advance_iterator();
     }
 
     ctx->variable_remove(enumerator->id());
-
-    // if (expr->type() == earl::value::Type::List) {
-    //     auto lst = dynamic_cast<earl::value::List *>(expr.get());
-    //     if (lst->value().size() == 0) {
-    //         stmt->m_evald = true;
-    //         return result;
-    //     }
-    //     auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
-    //     if (ctx->variable_exists(enumerator->id())) {
-    //         std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-    //         auto conflict = ctx->variable_get(enumerator->id());
-    //         Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-    //         throw InterpreterException(msg);
-    //     }
-    //     ctx->variable_add(enumerator);
-    //     for (size_t i = 0; i < lst->value().size(); ++i) {
-    //         if (i != 0)
-    //             enumerator->reset(lst->value()[i]);
-    //         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-    //         if (result && result->type() == earl::value::Type::Break) {
-    //             result = nullptr;
-    //             break;
-    //         }
-    //         if (result && result->type() == earl::value::Type::Continue)
-    //             continue;
-    //         if (result && result->type() != earl::value::Type::Void)
-    //             break;
-    //     }
-    //     ctx->variable_remove(enumerator->id());
-    // }
-    // else if (expr->type() == earl::value::Type::Tuple) {
-    //     auto tuple = dynamic_cast<earl::value::Tuple *>(expr.get());
-    //     if (tuple->value().size() == 0) {
-    //         stmt->m_evald = true;
-    //         return result;
-    //     }
-    //     auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
-    //     if (ctx->variable_exists(enumerator->id())) {
-    //         std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-    //         auto conflict = ctx->variable_get(enumerator->id());
-    //         Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-    //         throw InterpreterException(msg);
-    //     }
-    //     ctx->variable_add(enumerator);
-    //     for (size_t i = 0; i < tuple->value().size(); ++i) {
-    //         if (i != 0)
-    //             enumerator->reset(tuple->value()[i]);
-    //         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-    //         if (result && result->type() == earl::value::Type::Break) {
-    //             result = nullptr;
-    //             break;
-    //         }
-    //         if (result && result->type() == earl::value::Type::Continue)
-    //             continue;
-    //         if (result && result->type() != earl::value::Type::Void)
-    //             break;
-    //     }
-    //     ctx->variable_remove(enumerator->id());
-    // }
-    // else if (expr->type() == earl::value::Type::Str) {
-    //     auto str = dynamic_cast<earl::value::Str *>(expr.get());
-    //     if (str->value().size() == 0) {
-    //         stmt->m_evald = true;
-    //         return result;
-    //     }
-    //     auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), nullptr);
-    //     if (ctx->variable_exists(enumerator->id())) {
-    //         std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-    //         auto conflict = ctx->variable_get(enumerator->id());
-    //         Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-    //         throw InterpreterException(msg);
-    //     }
-    //     ctx->variable_add(enumerator);
-    //     for (size_t i = 0; i < str->value().size(); ++i) {
-    //         enumerator->reset(str->__get_elem(i));
-    //         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-    //         if (result && result->type() == earl::value::Type::Break) {
-    //             result = nullptr;
-    //             break;
-    //         }
-    //         if (result && result->type() == earl::value::Type::Continue)
-    //             continue;
-    //         if (result && result->type() != earl::value::Type::Void)
-    //             break;
-    //     }
-    //     ctx->variable_remove(enumerator->id());
-    // }
-    // else {
-    //     std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
-    //     Err::err_wexpr(stmt->m_expr.get());
-    //     throw InterpreterException(msg);
-    // }
 
     if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break))
         result = std::make_shared<earl::value::Void>();

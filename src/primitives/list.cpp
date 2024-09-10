@@ -359,18 +359,19 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
-std::vector<std::shared_ptr<Obj>>::iterator
+std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
 List::iter_begin(void) {
     return m_value.begin();
 }
 
-std::vector<std::shared_ptr<Obj>>::iterator
+std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
 List::iter_end(void) {
     return m_value.end();
 }
 
 void
-List::iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
-               typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) {
-    it += n;
+List::iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) {
+    std::visit([&](auto &iter) {
+        std::advance(iter, 1);
+    }, it);
 }
