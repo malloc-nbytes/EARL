@@ -107,20 +107,20 @@ Obj::is_iterable(void) const {
     return m_iterable;
 }
 
-std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
+Iterator
 Obj::iter_begin(void) {
     const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
     throw InterpreterException(msg);
 }
 
-std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
+Iterator
 Obj::iter_end(void) {
     const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
     throw InterpreterException(msg);
 }
 
 void
-Obj::iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) {
+Obj::iter_next(Iterator &it) {
     const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
     throw InterpreterException(msg);
 }

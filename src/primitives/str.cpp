@@ -374,7 +374,7 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
-std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
+Iterator
 Str::iter_begin(void) {
     auto it = m_chars.begin();
 
@@ -387,13 +387,13 @@ Str::iter_begin(void) {
     return it;
 }
 
-std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator>
+Iterator
 Str::iter_end(void) {
     return m_chars.end();
 }
 
 void
-Str::iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) {
+Str::iter_next(Iterator &it) {
     std::visit([&](auto &iter) {
         using IteratorType = std::decay_t<decltype(iter)>;
 

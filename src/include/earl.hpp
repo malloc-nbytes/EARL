@@ -134,12 +134,13 @@ namespace earl {
         struct Obj;
         struct Char;
 
-        using Iterator = std::variant<std::vector<std::shared_ptr<Obj>>::iterator,
-                                      std::vector<std::shared_ptr<Char>>::iterator,
-                                      std::unordered_map<int, std::shared_ptr<Obj>>::iterator,
-                                      std::unordered_map<double, std::shared_ptr<Obj>>::iterator,
-                                      std::unordered_map<char, std::shared_ptr<Obj>>::iterator,
-                                      std::unordered_map<std::string, std::shared_ptr<Obj>>::iterator>;
+        using ListIterator = std::vector<std::shared_ptr<Obj>>::iterator;
+        using StrIterator = std::vector<std::shared_ptr<Char>>::iterator;
+        using DictIntIterator = std::unordered_map<int, std::shared_ptr<Obj>>::iterator;
+        using DictCharIterator = std::unordered_map<char, std::shared_ptr<Obj>>::iterator;
+        using DictFloatIterator = std::unordered_map<double, std::shared_ptr<Obj>>::iterator;
+        using DictStrIterator = std::unordered_map<std::string, std::shared_ptr<Obj>>::iterator;
+        using Iterator = std::variant<ListIterator, StrIterator, DictIntIterator, DictCharIterator, DictFloatIterator, DictStrIterator>;
 
         /// @brief The base abstract class that all
         /// EARL values inherit from
@@ -182,9 +183,9 @@ namespace earl {
             virtual void unset_const(void);
             virtual bool is_const(void) const;
             virtual bool is_iterable(void) const;
-            virtual std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void);
-            virtual std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void);
-            virtual void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it);
+            virtual Iterator iter_begin(void);
+            virtual Iterator iter_end(void);
+            virtual void iter_next(Iterator &it);
 
         protected:
             bool m_const = false;
@@ -387,9 +388,9 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
-            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
+            Iterator iter_begin(void)    override;
+            Iterator iter_end(void)      override;
+            void iter_next(Iterator &it) override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_value;
@@ -431,9 +432,9 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
-            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
+            Iterator iter_begin(void)    override;
+            Iterator iter_end(void)      override;
+            void iter_next(Iterator &it) override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_values;
@@ -471,9 +472,9 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
-            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
+            Iterator iter_begin(void)    override;
+            Iterator iter_end(void)      override;
+            void iter_next(Iterator &it) override;
 
         private:
             std::string m_value;
@@ -542,9 +543,9 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
-            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
-            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
+            Iterator iter_begin(void)    override;
+            Iterator iter_end(void)      override;
+            void iter_next(Iterator &it) override;
 
         private:
             std::unordered_map<T, std::shared_ptr<Obj>> m_map;
@@ -887,28 +888,37 @@ earl::value::Dict<T>::to_cxxstring(void) {
 }
 
 template <typename T>
-std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator>
+earl::value::Iterator
 earl::value::Dict<T>::iter_begin(void) {
-    assert(false);
-    // return m_map.begin();
-    // return m_value.begin();
+    if constexpr (std::is_same_v<std::decay_t<T>, int> ||
+                  std::is_same_v<std::decay_t<T>, double> ||
+                  std::is_same_v<std::decay_t<T>, char> ||
+                  std::is_same_v<std::decay_t<T>, std::string>)
+        return m_map.begin();
+    else
+        static_assert("Dictionary Iterator: Unsupported BEGIN type");
+    return {}; // unreachable
 }
 
 template <typename T>
-std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator>
+earl::value::Iterator
 earl::value::Dict<T>::iter_end(void) {
-    assert(false);
-    // return m_map.end();
-    // return m_value.end();
+    if constexpr (std::is_same_v<std::decay_t<T>, int> ||
+                  std::is_same_v<std::decay_t<T>, double> ||
+                  std::is_same_v<std::decay_t<T>, char> ||
+                  std::is_same_v<std::decay_t<T>, std::string>)
+        return m_map.end();
+    else
+        static_assert("Dictionary Iterator: Unsupported END type");
+    return {}; // unreachable
 }
 
 template <typename T>
 void
-earl::value::Dict<T>::iter_next(std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator> &it) {
+earl::value::Dict<T>::iter_next(earl::value::Iterator &it) {
     std::visit([&](auto &iter) {
         std::advance(iter, 1);
     }, it);
 }
-
 
 #endif // EARL_H

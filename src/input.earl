@@ -1,7 +1,13 @@
 module Main
 
-let d = {1: 2, 3: 4, 5: 6};
+let dict = {
+    1: 'a',
+    2: none,
+    3: true
+};
 
-foreach p in d {
-    println(p);
+foreach key, value in d {
+    println(f"key: {key}, value: {value}");
 }
+
+

@@ -1652,23 +1652,56 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
-    std::shared_ptr<earl::variable::Obj> enumerator = nullptr;
-
-    auto wrapped_iterator_begin = expr->iter_begin();
-    auto wrapped_iterator_end = expr->iter_end();
-    std::visit([&](const auto &it) {
-        enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), *it);
-    }, wrapped_iterator_begin);
-
-    ctx->variable_add(enumerator);
-
     auto is_equal = [](const auto &it1, const auto &it2) {
         return it1 == it2;
     };
 
+    std::shared_ptr<earl::variable::Obj> enumerator = nullptr;
+
+    auto wrapped_iterator_begin = expr->iter_begin();
+    auto wrapped_iterator_end = expr->iter_end();
+
     auto advance_iterator = [&]() {
         expr->iter_next(wrapped_iterator_begin);
     };
+
+    if (is_equal(wrapped_iterator_begin, wrapped_iterator_end)) {
+        goto done;
+    }
+
+    std::visit([&](const auto &it) {
+        using T = std::decay_t<decltype(it)>;
+
+        if constexpr (std::is_same_v<T, earl::value::ListIterator> ||
+                      std::is_same_v<T, earl::value::StrIterator>) {
+            enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), *it);
+        }
+        else {
+            static_assert(std::is_same_v<T, earl::value::DictIntIterator> ||
+                          std::is_same_v<T, earl::value::DictCharIterator> ||
+                          std::is_same_v<T, earl::value::DictFloatIterator> ||
+                          std::is_same_v<T, earl::value::DictStrIterator>);
+            std::vector<std::shared_ptr<earl::value::Obj>> elements = {};
+            if constexpr (std::is_same_v<T, earl::value::DictIntIterator>)
+                elements.push_back(std::make_shared<earl::value::Int>(it->first));
+            else if constexpr (std::is_same_v<T, earl::value::DictCharIterator>)
+                elements.push_back(std::make_shared<earl::value::Char>(it->first));
+            else if constexpr (std::is_same_v<T, earl::value::DictFloatIterator>)
+                elements.push_back(std::make_shared<earl::value::Float>(it->first));
+            else if constexpr (std::is_same_v<T, earl::value::DictStrIterator>)
+                elements.push_back(std::make_shared<earl::value::Str>(it->first));
+            else {
+                Err::err_wexpr(stmt->m_expr.get());
+                const std::string msg = "unknown dictionary iterator type";
+                throw InterpreterException(msg);
+            }
+            elements.push_back(it->second);
+            auto tuple = std::make_shared<earl::value::Tuple>(elements);
+            enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple);
+        }
+    }, wrapped_iterator_begin);
+
+    ctx->variable_add(enumerator);
 
     while (true) {
         if (std::visit([&](const auto &it) {
@@ -1678,7 +1711,30 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         }
 
         std::visit([&](const auto& it) {
-            enumerator->reset(*it);
+            using T = std::decay_t<decltype(it)>;
+            if constexpr (std::is_same_v<T, earl::value::ListIterator> ||
+                          std::is_same_v<T, earl::value::StrIterator>) {
+                enumerator->reset(*it);
+            }
+            else {
+                std::vector<std::shared_ptr<earl::value::Obj>> elements = {};
+                if constexpr (std::is_same_v<T, earl::value::DictIntIterator>)
+                    elements.push_back(std::make_shared<earl::value::Int>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictCharIterator>)
+                    elements.push_back(std::make_shared<earl::value::Char>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictFloatIterator>)
+                    elements.push_back(std::make_shared<earl::value::Float>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictStrIterator>)
+                    elements.push_back(std::make_shared<earl::value::Str>(it->first));
+                else {
+                    Err::err_wexpr(stmt->m_expr.get());
+                    const std::string msg = "unknown dictionary iterator type";
+                    throw InterpreterException(msg);
+                }
+                elements.push_back(it->second);
+                auto tuple = std::make_shared<earl::value::Tuple>(elements);
+                enumerator->reset(tuple);
+            }
         }, wrapped_iterator_begin);
 
         result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
@@ -1698,6 +1754,8 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     }
 
     ctx->variable_remove(enumerator->id());
+
+ done:
 
     if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break)) {
         result = std::make_shared<earl::value::Void>();
