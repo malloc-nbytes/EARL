@@ -41,6 +41,8 @@ fn gen(should_print, crash_on_failure) {
         return true;
     });
 
+    println("TESTS: ", tests);
+
     foreach test in tests {
         src += f"import \"{test}\"\n";
     }

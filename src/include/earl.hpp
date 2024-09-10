@@ -131,7 +131,15 @@ namespace earl {
             Return,
         };
 
+        struct Obj;
         struct Char;
+
+        using Iterator = std::variant<std::vector<std::shared_ptr<Obj>>::iterator,
+                                      std::vector<std::shared_ptr<Char>>::iterator,
+                                      std::unordered_map<int, std::shared_ptr<Obj>>::iterator,
+                                      std::unordered_map<double, std::shared_ptr<Obj>>::iterator,
+                                      std::unordered_map<char, std::shared_ptr<Obj>>::iterator,
+                                      std::unordered_map<std::string, std::shared_ptr<Obj>>::iterator>;
 
         /// @brief The base abstract class that all
         /// EARL values inherit from
@@ -534,6 +542,9 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_begin(void)    override;
+            std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> iter_end(void)      override;
+            void iter_next(std::variant<std::vector<std::shared_ptr<Obj>>::iterator, std::vector<std::shared_ptr<Char>>::iterator> &it) override;
 
         private:
             std::unordered_map<T, std::shared_ptr<Obj>> m_map;
@@ -874,5 +885,30 @@ earl::value::Dict<T>::to_cxxstring(void) {
     res += " }>";
     return res;
 }
+
+template <typename T>
+std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator>
+earl::value::Dict<T>::iter_begin(void) {
+    assert(false);
+    // return m_map.begin();
+    // return m_value.begin();
+}
+
+template <typename T>
+std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator>
+earl::value::Dict<T>::iter_end(void) {
+    assert(false);
+    // return m_map.end();
+    // return m_value.end();
+}
+
+template <typename T>
+void
+earl::value::Dict<T>::iter_next(std::variant<std::vector<std::shared_ptr<earl::value::Obj>>::iterator, std::vector<std::shared_ptr<earl::value::Char>>::iterator> &it) {
+    std::visit([&](auto &iter) {
+        std::advance(iter, 1);
+    }, it);
+}
+
 
 #endif // EARL_H

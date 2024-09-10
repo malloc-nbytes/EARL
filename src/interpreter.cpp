@@ -1681,28 +1681,27 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
             enumerator->reset(*it);
         }, wrapped_iterator_begin);
 
-        auto result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
 
-        if (result) {
-            if (result->type() == earl::value::Type::Break) {
-                result = nullptr;
-                break;
-            }
-            if (result->type() == earl::value::Type::Continue) {
-                advance_iterator();
-                continue;
-            }
-            if (result->type() != earl::value::Type::Void)
-                break;
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
         }
+        if (result && result->type() == earl::value::Type::Continue) {
+            advance_iterator();
+            continue;
+        }
+        if (result && result->type() != earl::value::Type::Void)
+            break;
 
         advance_iterator();
     }
 
     ctx->variable_remove(enumerator->id());
 
-    if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break))
+    if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break)) {
         result = std::make_shared<earl::value::Void>();
+    }
 
     stmt->m_evald = true;
     return result;

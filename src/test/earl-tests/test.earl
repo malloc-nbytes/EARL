@@ -1,5 +1,6 @@
 module Test
 
+import "./my-new-tests.earl"
 import "./enum-tests.earl"
 import "./import-tests.earl"
 import "./while-loops-tests.earl"
@@ -17,6 +18,7 @@ import "./fn-test.earl"
 fn main() {
     let should_print = true;
     let crash_on_failure = false;
+    MyNewTests::run(should_print, crash_on_failure);
     EnumTests::run(should_print, crash_on_failure);
     ImportTests::run(should_print, crash_on_failure);
     WhileLoopTests::run(should_print, crash_on_failure);

@@ -1,6 +1,7 @@
 module Main
 
-let s = ["hello world", "foo", "bar"];
+let d = {1: 2, 3: 4, 5: 6};
 
-foreach i in s {
+foreach p in d {
+    println(p);
 }
