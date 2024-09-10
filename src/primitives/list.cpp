@@ -37,11 +37,6 @@ using namespace earl::value;
 List::List(std::vector<std::shared_ptr<Obj>> value)
     : m_value(value) {}
 
-void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
-    (void)value;
-    UNIMPLEMENTED("List::fill");
-}
-
 std::vector<std::shared_ptr<Obj>> &
 List::value(void) {
     return m_value;
@@ -376,19 +371,4 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     } break;
     }
 }
-
-std::shared_ptr<Obj>
-List::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on list type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-List::set_const(void) {
-    m_const = true;
-}
-
 

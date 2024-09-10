@@ -1,9 +1,11 @@
 module Main
 
-foreach i in 1..10 {
-    println(i);
-}
+# foreach i in 1..10 {
+#     println(i);
+# }
 
-
+let i = 1;
+i = 9;
+println(i);
 
 

@@ -148,15 +148,7 @@ Tuple::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Tuple::boolean(void) {
-    return true;
-}
-
-void
-Tuple::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wstmt(stmt);
-    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
-    throw InterpreterException(msg);
+    return m_values.size() > 0;
 }
 
 std::shared_ptr<Obj>
@@ -193,26 +185,4 @@ Tuple::to_cxxstring(void) {
     res += ")";
     return res;
 }
-
-void
-Tuple::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Tuple::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator for type `tuple`";
-    throw InterpreterException(msg);
-}
-
-void
-Tuple::set_const(void) {
-    m_const = true;
-}
-
 

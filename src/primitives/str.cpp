@@ -266,17 +266,11 @@ Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     }
 }
 
-void
-Str::trim(void) {
-    UNIMPLEMENTED("Str::trim");
-}
-
 Type
 Str::type(void) const {
     return Type::Str;
 }
 
-// TODO: Adhere to new string optimization
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
@@ -301,7 +295,7 @@ Str::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Str::boolean(void) {
-    return true;
+    return m_value.size() > 0;
 }
 
 std::vector<std::shared_ptr<Char>>
@@ -332,7 +326,6 @@ Str::__get_elem(size_t idx) {
     return c;
 }
 
-// TODO: Adhere to new string optimization
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -361,7 +354,6 @@ Str::to_cxxstring(void) {
     return this->value();
 }
 
-// CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -379,19 +371,5 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
         throw InterpreterException(msg);
     } break;
     }
-}
-
-std::shared_ptr<Obj>
-Str::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on str type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Str::set_const(void) {
-    m_const = true;
 }
 

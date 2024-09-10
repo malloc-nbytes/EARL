@@ -51,8 +51,7 @@ Intrinsics::intrinsic_member_trim(std::shared_ptr<earl::value::Obj> obj,
                                   Expr *expr) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "trim", expr);
-    dynamic_cast<earl::value::Str *>(obj.get())->trim();
-    return std::make_shared<earl::value::Void>();
+    UNIMPLEMENTED("Intrinsics::intrinsic_member_trim");
 }
 
 std::shared_ptr<earl::value::Obj>

@@ -146,18 +146,6 @@ File::type(void) const {
     return Type::File;
 }
 
-std::shared_ptr<Obj>
-File::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("File::binop");
-}
-
-bool
-File::boolean(void) {
-    UNIMPLEMENTED("File::boolean");
-}
-
 void
 File::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
@@ -170,37 +158,8 @@ File::copy(void) {
     UNIMPLEMENTED("File::copy");
 }
 
-bool
-File::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("File::eq");
-}
-
 std::string
 File::to_cxxstring(void) {
-    std::string msg = "unable to convert `file` type to a string";
-    throw InterpreterException(msg);
-}
-
-void
-File::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on file type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-File::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on file type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-File::set_const(void) {
-    m_const = true;
+    UNIMPLEMENTED("File::to_cxxstring");
 }
 

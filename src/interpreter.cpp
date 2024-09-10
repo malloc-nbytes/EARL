@@ -1645,33 +1645,23 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
     auto expr = unpack_ER(expr_er, ctx, ref);
 
-    auto check_if_var_exists = [&](const std::string &id) {
-        if (ctx->variable_exists(id)) {
-            std::string msg = "variable `"+id+"` is already declared";
-            auto conflict = ctx->variable_get(id);
-            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-            throw InterpreterException(msg);
-        }
-    };
-
     if (expr->type() == earl::value::Type::List) {
-        auto lst = dynamic_cast<earl::value::List *>(expr.get());
-
+        auto lst = std::dynamic_pointer_cast<earl::value::List>(expr);
         if (lst->value().size() == 0) {
             stmt->m_evald = true;
             return result;
         }
-
-        auto it = lst->get_iter_begin();
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), *it);
-
-        check_if_var_exists(enumerator->id());
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
+            throw InterpreterException(msg);
+        }
         ctx->variable_add(enumerator);
-
-        while (it != lst->get_iter_end()) {
-            if (it != lst->get_iter_begin()) {
-                enumerator->reset(*it);
-            }
+        for (size_t i = 0; i < lst->value().size(); ++i) {
+            if (i != 0)
+                enumerator->reset(lst->value()[i]);
             result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
             if (result && result->type() == earl::value::Type::Break) {
                 result = nullptr;
@@ -1681,24 +1671,23 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
                 continue;
             if (result && result->type() != earl::value::Type::Void)
                 break;
-            lst->iter(it);
         }
         ctx->variable_remove(enumerator->id());
     }
     else if (expr->type() == earl::value::Type::Tuple) {
-        auto tuple = dynamic_cast<earl::value::Tuple *>(expr.get());
-
+        auto tuple = std::dynamic_pointer_cast<earl::value::Tuple>(expr);
         if (tuple->value().size() == 0) {
             stmt->m_evald = true;
             return result;
         }
-
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(),
-                                                                tuple->value()[0]);
-
-        check_if_var_exists(enumerator->id());
+        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
+        if (ctx->variable_exists(enumerator->id())) {
+            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
+            throw InterpreterException(msg);
+        }
         ctx->variable_add(enumerator);
-
         for (size_t i = 0; i < tuple->value().size(); ++i) {
             if (i != 0)
                 enumerator->reset(tuple->value()[i]);
@@ -1715,18 +1704,19 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         ctx->variable_remove(enumerator->id());
     }
     else if (expr->type() == earl::value::Type::Str) {
-        auto str = dynamic_cast<earl::value::Str *>(expr.get());
-
+        auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
         if (str->value().size() == 0) {
             stmt->m_evald = true;
             return result;
         }
-
         auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), nullptr);
-
-        check_if_var_exists(enumerator->id());
+        if (ctx->variable_exists(enumerator->id())) {
+            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
+            auto conflict = ctx->variable_get(enumerator->id());
+            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
+            throw InterpreterException(msg);
+        }
         ctx->variable_add(enumerator);
-
         for (size_t i = 0; i < str->value().size(); ++i) {
             enumerator->reset(str->__get_elem(i));
             result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
@@ -1742,13 +1732,12 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         ctx->variable_remove(enumerator->id());
     }
     else {
-        std::string msg = "unable to perform a `foreach` loop with an expression that is not iterable";
+        std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
         Err::err_wexpr(stmt->m_expr.get());
         throw InterpreterException(msg);
     }
 
-    if (result && (result->type() == earl::value::Type::Continue
-                   || result->type() == earl::value::Type::Break))
+    if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break))
         result = std::make_shared<earl::value::Void>();
 
     stmt->m_evald = true;

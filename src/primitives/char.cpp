@@ -65,11 +65,6 @@ Char::binop(Token *op, std::shared_ptr<Obj> &other) {
     }
 }
 
-bool
-Char::boolean(void) {
-    UNIMPLEMENTED("Char::boolean");
-}
-
 void
 Char::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -93,27 +88,5 @@ Char::eq(std::shared_ptr<Obj> &other) {
 std::string
 Char::to_cxxstring(void) {
     return std::string(1, m_value);
-}
-
-void
-Char::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on char type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Char::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on char type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Char::set_const(void) {
-    m_const = true;
 }
 

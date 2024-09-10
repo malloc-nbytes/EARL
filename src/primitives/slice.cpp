@@ -50,17 +50,6 @@ Slice::type(void) const {
     return Type::Slice;
 }
 
-std::shared_ptr<Obj>
-Slice::binop(Token *op, std::shared_ptr<Obj> &other) {
-    std::string msg = "cannot perform binary operations on slice types";
-    throw InterpreterException(msg);
-}
-
-bool
-Slice::boolean(void) {
-    return true;
-}
-
 void
 Slice::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -77,7 +66,10 @@ Slice::copy(void) {
 
 bool
 Slice::eq(std::shared_ptr<Obj> &other) {
-    UNIMPLEMENTED("Slice::eq");
+    if (other->type() != Type::Slice)
+        return false;
+    auto __other = dynamic_cast<Slice *>(other.get());
+    return m_start->eq(__other->start()) && m_end->eq(__other->end());
 }
 
 std::string
@@ -90,19 +82,4 @@ Slice::to_cxxstring(void) {
     res += end->to_cxxstring();
     res += " }> ";
     return res;
-}
-
-void
-Slice::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    UNIMPLEMENTED("Slice::spec_mutate");
-}
-
-std::shared_ptr<Obj>
-Slice::unaryop(Token *op) {
-    UNIMPLEMENTED("Slice::unaryop");
-}
-
-void
-Slice::set_const(void) {
-    m_const = true;
 }
