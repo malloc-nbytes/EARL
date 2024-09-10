@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -31,7 +32,9 @@
 
 using namespace earl::value;
 
-Tuple::Tuple(std::vector<std::shared_ptr<Obj>> values) : m_values(values) {}
+Tuple::Tuple(std::vector<std::shared_ptr<Obj>> values) : m_values(values) {
+    m_iterable = true;
+}
 
 std::vector<std::shared_ptr<Obj>> &
 Tuple::value(void) {
@@ -186,3 +189,18 @@ Tuple::to_cxxstring(void) {
     return res;
 }
 
+std::vector<std::shared_ptr<Obj>>::iterator
+Tuple::iter_begin(void) {
+    return m_values.begin();
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+Tuple::iter_end(void) {
+    return m_values.end();
+}
+
+void
+Tuple::iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
+                 typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) {
+    it += n;
+}

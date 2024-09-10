@@ -36,6 +36,7 @@ Str::Str(std::string value) {
     m_value = value;
     m_chars = std::vector<std::shared_ptr<Char>>(value.size(), nullptr);
     m_changed = {};
+    m_iterable = true;
 }
 
 Str::Str(std::vector<std::shared_ptr<Char>> chars) {

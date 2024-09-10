@@ -102,3 +102,26 @@ Obj::set_const(void) {
     m_const = true;
 }
 
+bool
+Obj::is_iterable(void) const {
+    return m_iterable;
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+Obj::iter_begin(void) {
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
+    throw InterpreterException(msg);
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+Obj::iter_end(void) {
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
+    throw InterpreterException(msg);
+}
+
+void
+Obj::iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
+               typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) {
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
+    throw InterpreterException(msg);
+}

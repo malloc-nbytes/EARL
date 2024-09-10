@@ -35,7 +35,9 @@
 using namespace earl::value;
 
 List::List(std::vector<std::shared_ptr<Obj>> value)
-    : m_value(value) {}
+    : m_value(value) {
+    m_iterable = true;
+}
 
 std::vector<std::shared_ptr<Obj>> &
 List::value(void) {
@@ -208,21 +210,6 @@ List::back(void) {
     return m_value.back()->copy();
 }
 
-std::vector<std::shared_ptr<Obj>>::iterator
-List::get_iter_begin(void) {
-    return m_value.begin();
-}
-
-std::vector<std::shared_ptr<Obj>>::iterator
-List::get_iter_end(void) {
-    return m_value.end();
-}
-
-void
-List::iter(std::vector<std::shared_ptr<Obj>>::iterator &it) {
-    std::advance(it, 1);
-}
-
 std::shared_ptr<Obj>
 List::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
@@ -372,3 +359,18 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
+std::vector<std::shared_ptr<Obj>>::iterator
+List::iter_begin(void) {
+    return m_value.begin();
+}
+
+std::vector<std::shared_ptr<Obj>>::iterator
+List::iter_end(void) {
+    return m_value.end();
+}
+
+void
+List::iter_next(std::vector<std::shared_ptr<Obj>>::iterator& it,
+               typename std::iterator_traits<std::vector<std::shared_ptr<Obj>>::iterator>::difference_type n) {
+    it += n;
+}
