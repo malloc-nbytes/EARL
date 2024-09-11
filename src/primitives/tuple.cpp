@@ -205,3 +205,41 @@ Tuple::iter_next(Iterator &it) {
         std::advance(iter, 1);
     }, it);
 }
+
+std::shared_ptr<Obj>
+Tuple::add(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+    std::vector<std::shared_ptr<Obj>> values = {};
+    std::for_each(m_values.begin(), m_values.end(), [&](auto &v){values.push_back(v);});
+    std::for_each(other_tuple->value().begin(), other_tuple->value().end(), [&](auto &v){values.push_back(v);});
+    return std::make_shared<Tuple>(values);
+}
+
+std::shared_ptr<Obj>
+Tuple::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+    switch (op->type()) {
+    case TokenType::Double_Equals: {
+        if (m_values.size() != other_tuple->value().size())
+            return std::make_shared<Bool>(false);
+        for (size_t i = 0; i < m_values.size(); ++i) {
+            if (!m_values[i]->eq(other_tuple->value()[i]))
+                return std::make_shared<Bool>(false);
+        }
+        return std::make_shared<Bool>(true);
+    } break;
+    case TokenType::Bang_Equals: {
+        UNIMPLEMENTED("Tuple::equality:TokenType::Bang_Equals");
+    } break;
+    default: {
+        Err::err_wtok(op);
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
+    }
+    return nullptr; // unreachable
+}
+
+

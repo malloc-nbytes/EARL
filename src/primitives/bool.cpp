@@ -54,14 +54,14 @@ Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
     case TokenType::Greaterthan: {
         return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other.get())->value());
     } break;
-    case TokenType::Double_Equals: {
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
-    } break;
     case TokenType::Greaterthan_Equals: {
         return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other.get())->value());
     } break;
     case TokenType::Lessthan_Equals: {
         return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other.get())->value());
+    } break;
+    case TokenType::Double_Equals: {
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
     } break;
     case TokenType::Bang_Equals: {
         return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
@@ -116,6 +116,21 @@ Bool::unaryop(Token *op) {
         std::string msg = "invalid unary operator on bool type";
         throw InterpreterException(msg);
     }
+    }
+    return nullptr; // unreachable
+}
+
+std::shared_ptr<Obj>
+Bool::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    switch (op->type()) {
+    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
+    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
+    default: {
+        Err::err_wtok(op);
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
     }
     return nullptr; // unreachable
 }

@@ -142,3 +142,40 @@ Option::to_cxxstring(void) {
         return COMMON_EARLKW_NONE;
     return "some(" + m_value->to_cxxstring() + ")";
 }
+
+std::shared_ptr<Obj>
+Option::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    auto other2 = dynamic_cast<Option *>(other.get());
+
+    if (op->type() == TokenType::Double_Equals) {
+        if (this->is_none() && other2->is_none())
+            return std::make_shared<Bool>(true);
+
+        if (this->is_some() && other2->is_none())
+            return std::make_shared<Bool>(false);
+
+        if (this->is_none() && other2->is_some())
+            return std::make_shared<Bool>(false);
+
+        return std::make_shared<Bool>(this->value()->eq(other2->value()));
+    }
+    else if (op->type() == TokenType::Bang_Equals) {
+        if (this->is_none() && other2->is_none())
+            return std::make_shared<Bool>(false);
+
+        if (this->is_some() && other2->is_none())
+            return std::make_shared<Bool>(true);
+
+        if (this->is_none() && other2->is_some())
+            return std::make_shared<Bool>(true);
+
+        return std::make_shared<Bool>(!this->value()->eq(other2->value()));
+    }
+    else {
+        Err::err_wtok(op);
+        std::string msg = "invalid operator for binary operation `"+op->lexeme()+"` on option type";
+        throw InterpreterException(msg);
+    }
+    return nullptr; // unreachable
+}

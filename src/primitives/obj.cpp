@@ -124,3 +124,84 @@ Obj::iter_next(Iterator &it) {
     const std::string msg = "value of type: `"+type_to_str(this->type())+"` is not iterable";
     throw InterpreterException(msg);
 }
+
+std::shared_ptr<Obj>
+Obj::add(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be added";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::sub(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be subtracted";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::multiply(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be multiplied";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::divide(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be divided";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::modulo(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be modded";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::power(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be set to a power";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::gtequality(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be greaterthan/lessthan compared";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::equality(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be checked for equality";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::bitwise(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot use bitwise operators";
+    throw InterpreterException(msg);
+}
+
+std::shared_ptr<Obj>
+Obj::bitshift(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be bit shifted";
+    throw InterpreterException(msg);
+}
+
