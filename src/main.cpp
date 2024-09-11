@@ -208,6 +208,9 @@ main(int argc, char **argv) {
         hot_reload::register_watch_files(watch_files);
     }
 
+    if ((flags & __WATCH) != 0)
+        std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
+
     bool locked = true;
 
     if (filepath != "") {

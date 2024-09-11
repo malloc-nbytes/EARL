@@ -1,3 +1,5 @@
 module Main
 
-import "../src/std/assert.earl"
+
+println("world");
+
