@@ -1,5 +1,12 @@
 module Main
 
-let s = input("enter: ");
+import "../src/std/assert.earl"
 
-println(s);
+Assert::FILE = __FILE__;
+
+fn test() {
+    Assert::FUNC = __FUNC__;
+    Assert::eq(none, none);
+}
+
+test();

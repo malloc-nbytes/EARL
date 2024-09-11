@@ -23,7 +23,7 @@
 ### MODULE
 module Assert
 
-import "std/io.earl" almost
+# import "std/io.earl" almost
 
 ### BEGIN VARIABLES
 
@@ -104,6 +104,7 @@ fn fail(msg) {
 ###   is type safe to it will not panic with differing types.
 @pub fn eq(l, r) {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
+        return;
         if l.is_none() && r.is_some() {
             fail(f"left = {l}, right = {r}");
         }

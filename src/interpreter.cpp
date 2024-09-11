@@ -545,6 +545,9 @@ eval_user_defined_function(ExprFuncCall *expr,
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp) {
+    if (er.value && er.value->type() == earl::value::Type::Return)
+        er.value = std::make_shared<earl::value::Void>();
+
     // CLASSES
     if (er.is_class_instant()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), ctx, ref);
@@ -560,6 +563,8 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (er.extra)
                 expr = static_cast<Expr *>(er.extra);
             auto call = Intrinsics::call(er.id, params, ctx, expr);
+            if (call->type() == earl::value::Type::Return)
+                call = std::make_shared<earl::value::Void>();
             return call;
         }
 
@@ -567,12 +572,13 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (Intrinsics::is_member_intrinsic(er.id, static_cast<int>(perp->lhs_getter_accessor->type()))) {
                 Expr *expr = nullptr;
                 if (er.extra) expr = static_cast<Expr *>(er.extra);
-                return Intrinsics::call_member(er.id,
-                        perp->lhs_getter_accessor->type(),
-                        perp->lhs_getter_accessor,
-                        params,
-                        ctx,
-                        expr);
+                auto res = Intrinsics::call_member(er.id,
+                                                   perp->lhs_getter_accessor->type(),
+                                                   perp->lhs_getter_accessor,
+                                                   params,
+                                                   ctx,
+                                                   expr);
+                return res;
             }
         }
 
@@ -611,17 +617,17 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     }
 
     // LITERAL
-    else if (er.is_literal()) {
+    else if (er.is_literal())
         return er.value;
-    }
 
     // IDENTIFIER
     else if (er.is_ident()) {
         // Check if it is an entry of an enum
         if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
-            if (lhs->has_entry(er.id))
+            if (lhs->has_entry(er.id)) {
                 return lhs->get_entry(er.id)->value()->copy();
+            }
         }
         if (ctx->variable_exists(er.id)) {
             auto var = ctx->variable_get(er.id);
@@ -638,15 +644,18 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         WorldCtx *world = ctx->type() == CtxType::World ?
             dynamic_cast<WorldCtx *>(ctx.get()) :
             ctx->get_world();
-        if (world->enum_exists(er.id))
+        if (world->enum_exists(er.id)) {
             return world->enum_get(er.id);
+        }
 
         // Check if it is a type as a value
-        if (earl::value::is_typekw(er.id))
+        if (earl::value::is_typekw(er.id)) {
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
+        }
 
-        if (earl::value::is_builtin_ident(er.id))
+        if (earl::value::is_builtin_ident(er.id)) {
             return earl::value::get_builtin_ident(er.id, ctx);
+        }
 
         Err::err_wexpr(static_cast<Expr *>(er.extra));
 
@@ -1517,8 +1526,6 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     stmt->m_evald = true;
     auto value = unpack_ER(er, ctx, false);
-    if (value->type() == earl::value::Type::Return)
-        std::cout << "HERE" << std::endl;
     if (value && value->type() != earl::value::Type::Void && ctx->type() != CtxType::World) {
         Err::err_wexpr(stmt->m_expr.get());
         Err::warn("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
