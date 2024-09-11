@@ -1,2 +1,8 @@
 module Other
 
+import "std/utils.earl"
+
+println("OTHER: ", Utils::iota());
+println("OTHER: ", Utils::iota());
+println("OTHER: ", Utils::iota());
+

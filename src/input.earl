@@ -1,5 +1,28 @@
 module Main
 
-import "std/system.earl"
+let dict = {
+    "foo": 'a',
+    "bar": none,
+    "baz": true
+};
 
+foreach key, value in dict {
+    println(f"key: {key}, value: {value}");
+}
+
+let lst = [(1,2), (3,4), (5,6)];
+# let lst = "hello";
+
+foreach fst, snd in lst {
+    println(f"fst: {fst}, snd: {snd}");
+}
+
+foreach tup in lst {
+    println(tup);
+}
+
+let s = "hello world";
+foreach c in s {
+    println(c);
+}
 

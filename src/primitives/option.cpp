@@ -142,29 +142,3 @@ Option::to_cxxstring(void) {
         return COMMON_EARLKW_NONE;
     return "some(" + m_value->to_cxxstring() + ")";
 }
-
-void
-Option::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on option type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Option::unaryop(Token *op) {
-    if (op->type() == TokenType::Bang) {
-        return std::make_shared<Bool>(this->is_none());
-    }
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on option type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Option::set_const(void) {
-    m_const = true;
-}
-
-

@@ -72,35 +72,6 @@ Enum::type(void) const  {
     return Type::Enum;
 }
 
-std::shared_ptr<Obj>
-Enum::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Enum::binop");
-}
-
-bool
-Enum::boolean(void) {
-    UNIMPLEMENTED("Enum::boolean");
-}
-
-void
-Enum::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    UNIMPLEMENTED("Enum::mutate");
-}
-
-std::shared_ptr<Obj>
-Enum::copy(void) {
-    UNIMPLEMENTED("Enum::copy");
-}
-
-bool
-Enum::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Enum::eq");
-}
-
 std::string
 Enum::to_cxxstring(void) {
     std::string res = "<Enum " + this->id() + " { ";
@@ -115,27 +86,5 @@ Enum::to_cxxstring(void) {
     }
     res += " }>";
     return res;
-}
-
-void
-Enum::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on enum type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Enum::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on enum type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Enum::set_const(void) {
-    m_const = true;
 }
 

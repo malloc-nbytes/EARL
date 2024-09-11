@@ -30,8 +30,6 @@
 
 using namespace earl::value;
 
-Void::Void(void *value) : m_value(value) {}
-
 Type
 Void::type(void) const {
     return Type::Void;
@@ -54,12 +52,6 @@ Void::boolean(void) {
     return false;
 }
 
-void
-Void::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
-    ASSERT_CONSTNESS(this, stmt);
-}
-
 std::shared_ptr<Obj>
 Void::copy(void) {
     return std::make_shared<Void>();
@@ -73,28 +65,6 @@ Void::eq(std::shared_ptr<Obj> &other) {
 std::string
 Void::to_cxxstring(void) {
     return "<unit>";
-}
-
-void
-Void::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on unit type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Void::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on unit type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Void::set_const(void) {
-    m_const = true;
 }
 
 

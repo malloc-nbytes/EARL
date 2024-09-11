@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <memory>
@@ -31,7 +32,9 @@
 
 using namespace earl::value;
 
-Tuple::Tuple(std::vector<std::shared_ptr<Obj>> values) : m_values(values) {}
+Tuple::Tuple(std::vector<std::shared_ptr<Obj>> values) : m_values(values) {
+    m_iterable = true;
+}
 
 std::vector<std::shared_ptr<Obj>> &
 Tuple::value(void) {
@@ -148,15 +151,7 @@ Tuple::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Tuple::boolean(void) {
-    return true;
-}
-
-void
-Tuple::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wstmt(stmt);
-    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
-    throw InterpreterException(msg);
+    return m_values.size() > 0;
 }
 
 std::shared_ptr<Obj>
@@ -194,25 +189,19 @@ Tuple::to_cxxstring(void) {
     return res;
 }
 
-void
-Tuple::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "unable to mutate value of type `tuple` as it is immutable";
-    throw InterpreterException(msg);
+Iterator
+Tuple::iter_begin(void) {
+    return m_values.begin();
 }
 
-std::shared_ptr<Obj>
-Tuple::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator for type `tuple`";
-    throw InterpreterException(msg);
+Iterator
+Tuple::iter_end(void) {
+    return m_values.end();
 }
 
 void
-Tuple::set_const(void) {
-    m_const = true;
+Tuple::iter_next(Iterator &it) {
+    std::visit([&](auto &iter) {
+        std::advance(iter, 1);
+    }, it);
 }
-
-

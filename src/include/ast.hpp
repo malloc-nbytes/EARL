@@ -466,7 +466,7 @@ struct StmtLoop : public Stmt {
 /// @brief The Statement For class
 struct StmtForeach : public Stmt {
     /// @brief The identifier of the enumerator variable
-    std::shared_ptr<Token> m_enumerator;
+    std::vector<std::shared_ptr<Token>> m_enumerators;
 
     std::unique_ptr<Expr> m_expr;
 
@@ -475,7 +475,7 @@ struct StmtForeach : public Stmt {
 
     uint32_t m_attrs;
 
-    StmtForeach(std::shared_ptr<Token> enumerator,
+    StmtForeach(std::vector<std::shared_ptr<Token>> enumerators,
                 std::unique_ptr<Expr> expr,
                 std::unique_ptr<StmtBlock> block,
                 uint32_t attrs);

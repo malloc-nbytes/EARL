@@ -36,6 +36,7 @@ Str::Str(std::string value) {
     m_value = value;
     m_chars = std::vector<std::shared_ptr<Char>>(value.size(), nullptr);
     m_changed = {};
+    m_iterable = true;
 }
 
 Str::Str(std::vector<std::shared_ptr<Char>> chars) {
@@ -266,17 +267,11 @@ Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
     }
 }
 
-void
-Str::trim(void) {
-    UNIMPLEMENTED("Str::trim");
-}
-
 Type
 Str::type(void) const {
     return Type::Str;
 }
 
-// TODO: Adhere to new string optimization
 std::shared_ptr<Obj>
 Str::binop(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
@@ -301,7 +296,7 @@ Str::binop(Token *op, std::shared_ptr<Obj> &other) {
 
 bool
 Str::boolean(void) {
-    return true;
+    return m_value.size() > 0;
 }
 
 std::vector<std::shared_ptr<Char>>
@@ -332,7 +327,6 @@ Str::__get_elem(size_t idx) {
     return c;
 }
 
-// TODO: Adhere to new string optimization
 void
 Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -361,7 +355,6 @@ Str::to_cxxstring(void) {
     return this->value();
 }
 
-// CHANGME
 void
 Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -381,17 +374,43 @@ Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
-std::shared_ptr<Obj>
-Str::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on str type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
+Iterator
+Str::iter_begin(void) {
+    auto it = m_chars.begin();
+
+    if (!*it) {
+        auto c = std::make_shared<Char>(m_value.at(0));
+        *it = std::move(c);
+        m_changed.push_back(0);
+    }
+
+    return it;
+}
+
+Iterator
+Str::iter_end(void) {
+    return m_chars.end();
 }
 
 void
-Str::set_const(void) {
-    m_const = true;
-}
+Str::iter_next(Iterator &it) {
+    std::visit([&](auto &iter) {
+        using IteratorType = std::decay_t<decltype(iter)>;
 
+        if constexpr (std::is_same_v<IteratorType, std::vector<std::shared_ptr<Char>>::iterator>) {
+            std::advance(iter, 1);
+
+            if (iter == m_chars.end())
+                return;
+
+            size_t index = std::distance(m_chars.begin(), iter);
+
+            if (index < m_value.size()) {
+                auto c = std::make_shared<Char>(m_value.at(index));
+                *iter = std::move(c);
+                m_changed.push_back(index);
+            }
+        }
+        // No else case needed since we only handle std::vector<std::shared_ptr<Char>>::iterator
+    }, it);
+}

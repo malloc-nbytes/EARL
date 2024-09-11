@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iterator>
 #include <iostream>
 #include <algorithm>
 #include <cassert>
@@ -34,11 +35,8 @@
 using namespace earl::value;
 
 List::List(std::vector<std::shared_ptr<Obj>> value)
-    : m_value(value) {}
-
-void List::fill(std::vector<std::shared_ptr<Obj>> &value) {
-    (void)value;
-    UNIMPLEMENTED("List::fill");
+    : m_value(value) {
+    m_iterable = true;
 }
 
 std::vector<std::shared_ptr<Obj>> &
@@ -361,18 +359,19 @@ List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
 }
 
-std::shared_ptr<Obj>
-List::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on list type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
+Iterator
+List::iter_begin(void) {
+    return m_value.begin();
+}
+
+Iterator
+List::iter_end(void) {
+    return m_value.end();
 }
 
 void
-List::set_const(void) {
-    m_const = true;
+List::iter_next(Iterator &it) {
+    std::visit([&](auto &iter) {
+        std::advance(iter, 1);
+    }, it);
 }
-
-

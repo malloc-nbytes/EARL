@@ -66,18 +66,6 @@ Class::type(void) const {
     return Type::Class;
 }
 
-std::shared_ptr<Obj>
-Class::binop(Token *op, std::shared_ptr<Obj> &other) {
-    Err::err_wtok(op);
-    std::string msg = "unable to perform binary operation on class type";
-    throw InterpreterException(msg);
-}
-
-bool
-Class::boolean(void) {
-    return true;
-}
-
 void
 Class::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -99,12 +87,6 @@ Class::copy(void) {
     return class_copy;
 }
 
-bool
-Class::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Class::eq");
-}
-
 std::string
 Class::to_cxxstring(void) {
     std::string res = "<Class " + this->id() + " { ";
@@ -123,26 +105,3 @@ Class::to_cxxstring(void) {
     res += " }>";
     return res;
 }
-
-void
-Class::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on class type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Class::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on class type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Class::set_const(void) {
-    m_const = true;
-}
-

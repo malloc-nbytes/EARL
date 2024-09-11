@@ -1637,6 +1637,68 @@ eval_stmt_while(StmtWhile *stmt, std::shared_ptr<Ctx> &ctx) {
     return result;
 }
 
+// This function is only used for eval_stmt_foreach() for creating enumerators from a tuple.
+static void
+destructure_enumerators(std::vector<std::shared_ptr<Token>> &named_ids,
+                        std::vector<std::shared_ptr<earl::variable::Obj>> &vars,
+                        const std::shared_ptr<earl::value::Obj> &values,
+                        Expr *expr) {
+    if (vars.size() == 1)
+        vars[0] = std::make_shared<earl::variable::Obj>(named_ids[0].get(), values);
+    else if (values->type() == earl::value::Type::Tuple) {
+        auto tuple = dynamic_cast<earl::value::Tuple *>(values.get());
+
+        if (vars.size() != tuple->value().size()) {
+            Err::err_wexpr(expr);
+            const std::string msg = "the number of enumerators ("
+                +std::to_string(vars.size())
+                +") does not match the expected number of expressions from the tuple ("
+                +std::to_string(tuple->value().size())
+                +")";
+            throw InterpreterException(msg);
+        }
+
+        for (size_t i = 0; i < vars.size(); ++i)
+            vars[i] = std::make_shared<earl::variable::Obj>(named_ids[i].get(), tuple->value()[i]);
+    }
+    else {
+        Err::err_wexpr(expr);
+        const std::string msg = "unable to destructure a non-tuple type";
+        throw InterpreterException(msg);
+    }
+}
+
+// This function is only used for eval_stmt_foreach() for resetting the enumerators values.
+static void
+reset_enumerators(std::vector<std::shared_ptr<earl::variable::Obj>> &vars,
+                  const std::shared_ptr<earl::value::Obj> &values,
+                  Expr *expr) {
+    if (vars.size() == 1) {
+        vars[0]->reset(values);
+    }
+    else if (values->type() == earl::value::Type::Tuple) {
+        auto tuple = dynamic_cast<earl::value::Tuple *>(values.get());
+
+        if (vars.size() != tuple->value().size()) {
+            Err::err_wexpr(expr);
+            const std::string msg = "the number of enumerators ("
+                +std::to_string(vars.size())
+                +") does not match the expected number of expressions from the tuple ("
+                +std::to_string(tuple->value().size())
+                +")";
+            throw InterpreterException(msg);
+        }
+
+        for (size_t i = 0; i < vars.size(); ++i)
+            vars[i]->reset(tuple->value()[i]);
+    }
+    else {
+        Err::err_wexpr(expr);
+        const std::string msg = "unable to destructure a non-tuple type";
+        throw InterpreterException(msg);
+    }
+}
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     bool ref = (stmt->m_attrs & static_cast<uint32_t>(Attr::Ref)) != 0;
@@ -1645,97 +1707,96 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
     ER expr_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, ref);
     auto expr = unpack_ER(expr_er, ctx, ref);
 
-    if (expr->type() == earl::value::Type::List) {
-        auto lst = std::dynamic_pointer_cast<earl::value::List>(expr);
-        if (lst->value().size() == 0) {
-            stmt->m_evald = true;
-            return result;
-        }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), lst->value()[0]);
-        if (ctx->variable_exists(enumerator->id())) {
-            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-            auto conflict = ctx->variable_get(enumerator->id());
-            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
+    for (auto &enumer : stmt->m_enumerators) {
+        const std::string &id = enumer->lexeme();
+        if (ctx->variable_exists(id)) {
+            std::string msg = "variable `"+id+"` is already declared";
+            auto conflict = ctx->variable_get(id);
+            Err::err_wconflict(enumer.get(), conflict->gettok());
             throw InterpreterException(msg);
         }
-        ctx->variable_add(enumerator);
-        for (size_t i = 0; i < lst->value().size(); ++i) {
-            if (i != 0)
-                enumerator->reset(lst->value()[i]);
-            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-            if (result && result->type() == earl::value::Type::Break) {
-                result = nullptr;
-                break;
+    }
+
+    std::vector<std::shared_ptr<earl::variable::Obj>> enumerators(stmt->m_enumerators.size(), nullptr);
+    auto wrapped_iterator = expr->iter_begin(), wrapped_iterator_end = expr->iter_end();
+
+    // Will reduce the type of the current iterator and will
+    // call handle_enumerators() on the enumerators of the foreach loop.
+    auto iterator_reduce = [&](const auto &it, auto handle_enumerators) {
+        std::visit([&](const auto &it){
+            using T = std::decay_t<decltype(it)>;
+
+            if constexpr (std::is_same_v<T, earl::value::ListIterator> ||
+                          std::is_same_v<T, earl::value::StrIterator>) {
+                handle_enumerators(*it);
             }
-            if (result && result->type() == earl::value::Type::Continue)
-                continue;
-            if (result && result->type() != earl::value::Type::Void)
-                break;
-        }
-        ctx->variable_remove(enumerator->id());
-    }
-    else if (expr->type() == earl::value::Type::Tuple) {
-        auto tuple = std::dynamic_pointer_cast<earl::value::Tuple>(expr);
-        if (tuple->value().size() == 0) {
-            stmt->m_evald = true;
-            return result;
-        }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), tuple->value()[0]);
-        if (ctx->variable_exists(enumerator->id())) {
-            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-            auto conflict = ctx->variable_get(enumerator->id());
-            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-            throw InterpreterException(msg);
-        }
-        ctx->variable_add(enumerator);
-        for (size_t i = 0; i < tuple->value().size(); ++i) {
-            if (i != 0)
-                enumerator->reset(tuple->value()[i]);
-            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-            if (result && result->type() == earl::value::Type::Break) {
-                result = nullptr;
-                break;
+            else {
+                static_assert(std::is_same_v<T, earl::value::DictIntIterator> ||
+                              std::is_same_v<T, earl::value::DictCharIterator> ||
+                              std::is_same_v<T, earl::value::DictFloatIterator> ||
+                              std::is_same_v<T, earl::value::DictStrIterator>);
+                std::vector<std::shared_ptr<earl::value::Obj>> elements = {};
+                if constexpr (std::is_same_v<T, earl::value::DictIntIterator>)
+                    elements.push_back(std::make_shared<earl::value::Int>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictCharIterator>)
+                    elements.push_back(std::make_shared<earl::value::Char>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictFloatIterator>)
+                    elements.push_back(std::make_shared<earl::value::Float>(it->first));
+                else if constexpr (std::is_same_v<T, earl::value::DictStrIterator>)
+                    elements.push_back(std::make_shared<earl::value::Str>(it->first));
+                else {
+                    Err::err_wexpr(stmt->m_expr.get());
+                    const std::string msg = "unknown dictionary iterator type";
+                    throw InterpreterException(msg);
+                }
+                elements.push_back(it->second);
+                auto tuple = std::make_shared<earl::value::Tuple>(elements);
+                handle_enumerators(tuple);
             }
-            if (result && result->type() == earl::value::Type::Continue)
-                continue;
-            if (result && result->type() != earl::value::Type::Void)
-                break;
+        }, it);
+    };
+
+    // The container we are iterating over is empty, nothing to do.
+    if (wrapped_iterator == wrapped_iterator_end)
+        goto done;
+
+    // Setup starting enumerators
+    iterator_reduce(wrapped_iterator, [&](auto &tuple){destructure_enumerators(stmt->m_enumerators, enumerators, tuple, stmt->m_expr.get());});
+    for (size_t i = 0; i < enumerators.size(); ++i)
+        ctx->variable_add(enumerators[i]);
+
+    // Main loop
+    while (true) {
+
+        // Have we enumerated over all elements?
+        if (std::visit([&](const auto &it) {
+            return it == std::get<std::decay_t<decltype(it)>>(wrapped_iterator_end);
+        }, wrapped_iterator)) {
+            break;
         }
-        ctx->variable_remove(enumerator->id());
+
+        // Get new values into the enumerators.
+        iterator_reduce(wrapped_iterator, [&](auto &tuple){reset_enumerators(enumerators, tuple, stmt->m_expr.get());});
+        result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
+
+        if (result && result->type() == earl::value::Type::Break) {
+            result = nullptr;
+            break;
+        }
+        if (result && result->type() == earl::value::Type::Continue) {
+            expr->iter_next(wrapped_iterator);
+            continue;
+        }
+        if (result && result->type() != earl::value::Type::Void)
+            break;
+
+        expr->iter_next(wrapped_iterator);
     }
-    else if (expr->type() == earl::value::Type::Str) {
-        auto str = std::dynamic_pointer_cast<earl::value::Str>(expr);
-        if (str->value().size() == 0) {
-            stmt->m_evald = true;
-            return result;
-        }
-        auto enumerator = std::make_shared<earl::variable::Obj>(stmt->m_enumerator.get(), nullptr);
-        if (ctx->variable_exists(enumerator->id())) {
-            std::string msg = "variable `"+stmt->m_enumerator->lexeme()+"` is already declared";
-            auto conflict = ctx->variable_get(enumerator->id());
-            Err::err_wconflict(stmt->m_enumerator.get(), conflict->gettok());
-            throw InterpreterException(msg);
-        }
-        ctx->variable_add(enumerator);
-        for (size_t i = 0; i < str->value().size(); ++i) {
-            enumerator->reset(str->__get_elem(i));
-            result = Interpreter::eval_stmt_block(stmt->m_block.get(), ctx);
-            if (result && result->type() == earl::value::Type::Break) {
-                result = nullptr;
-                break;
-            }
-            if (result && result->type() == earl::value::Type::Continue)
-                continue;
-            if (result && result->type() != earl::value::Type::Void)
-                break;
-        }
-        ctx->variable_remove(enumerator->id());
-    }
-    else {
-        std::string msg = "unable to perform a `for` loop with an expression other than a list, str, or tuple type";
-        Err::err_wexpr(stmt->m_expr.get());
-        throw InterpreterException(msg);
-    }
+
+    for (size_t i = 0; i < enumerators.size(); ++i)
+        ctx->variable_remove(enumerators[i]->id());
+
+ done:
 
     if (result && (result->type() == earl::value::Type::Continue || result->type() == earl::value::Type::Break))
         result = std::make_shared<earl::value::Void>();

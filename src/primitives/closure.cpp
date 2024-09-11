@@ -88,18 +88,6 @@ Closure::type(void) const {
     return Type::Closure;
 }
 
-std::shared_ptr<Obj>
-Closure::binop(Token *op, std::shared_ptr<Obj> &other) {
-    (void)op;
-    (void)other;
-    UNIMPLEMENTED("Closure::binop");
-}
-
-bool
-Closure::boolean(void) {
-    UNIMPLEMENTED("Closure::boolean");
-}
-
 void
 Closure::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     (void)other;
@@ -123,7 +111,6 @@ Closure::eq(std::shared_ptr<Obj> &other) {
 
 std::string
 Closure::to_cxxstring(void) {
-    // std::vector<std::pair<Token *, uint32_t>> m_params;
     std::string res = "<Closure { ";
 
     for (size_t i = 0; i < m_params.size(); ++i) {
@@ -134,27 +121,5 @@ Closure::to_cxxstring(void) {
     }
     res += " }>";
     return res;
-}
-
-void
-Closure::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on closure type";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-Closure::unaryop(Token *op) {
-    (void)op;
-    Err::err_wtok(op);
-    std::string msg = "invalid unary operator on closure type";
-    throw InterpreterException(msg);
-    return nullptr; // unreachable
-}
-
-void
-Closure::set_const(void) {
-    m_const = true;
 }
 

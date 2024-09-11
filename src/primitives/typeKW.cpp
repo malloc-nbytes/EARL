@@ -85,11 +85,6 @@ TypeKW::binop(Token *op, std::shared_ptr<Obj> &other) {
     throw InterpreterException(msg);
 }
 
-bool
-TypeKW::boolean(void) {
-    return true;
-}
-
 void
 TypeKW::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
@@ -113,24 +108,3 @@ std::string
 TypeKW::to_cxxstring(void) {
     return "<Type: " + earl::value::type_to_str(this->ty()) + ">";
 }
-
-void
-TypeKW::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    Err::err_wstmt(stmt);
-    const std::string msg = "cannot special mutate type keyword";
-    throw InterpreterException(msg);
-}
-
-std::shared_ptr<Obj>
-TypeKW::unaryop(Token *op) {
-    Err::err_wtok(op);
-    const std::string msg = "Invalid unary operation for type " + earl::value::type_to_str(m_ty);
-    throw InterpreterException(msg);
-}
-
-void
-TypeKW::set_const(void) {
-    m_const = true;
-}
-
-

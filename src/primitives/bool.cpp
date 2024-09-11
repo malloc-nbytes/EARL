@@ -97,21 +97,14 @@ Bool::copy(void) {
 
 bool
 Bool::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Bool::eq");
+    if (other->type() != Type::Bool)
+        return false;
+    return m_value == dynamic_cast<Bool *>(other.get())->value();
 }
 
 std::string
 Bool::to_cxxstring(void) {
     return m_value ? "true" : "false";
-}
-
-void
-Bool::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    (void)other;
-    Err::err_wtok(op);
-    std::string msg = "invalid operator for special mutation `"+op->lexeme()+"` on bool type";
-    throw InterpreterException(msg);
 }
 
 std::shared_ptr<Obj>
@@ -125,9 +118,4 @@ Bool::unaryop(Token *op) {
     }
     }
     return nullptr; // unreachable
-}
-
-void
-Bool::set_const(void) {
-    m_const = true;
 }
