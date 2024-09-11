@@ -80,7 +80,7 @@ fn fail(msg) {
 ###   Tests `cond` for `true`.
 @pub fn is_true(cond) {
     if !cond {
-        fail("expected `true` but got `false`");
+        fail(__FUNC__ + f"() expected `true` but got `false`");
     }
 }
 
@@ -91,7 +91,7 @@ fn fail(msg) {
 ###   Tests `cond` for `false`.
 @pub fn is_false(cond) {
     if cond {
-        fail("expected `false` but got `true`");
+        fail(__FUNC__ + f"() expected `false` but got `true`");
     }
 }
 
@@ -104,12 +104,11 @@ fn fail(msg) {
 ###   is type safe to it will not panic with differing types.
 @pub fn eq(l, r) {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
-        return;
         if l.is_none() && r.is_some() {
-            fail(f"left = {l}, right = {r}");
+            fail(__FUNC__ + f"() left = {l}, right = {r}");
         }
         else if l.is_some() && r.is_none() {
-            fail(f"left = {l}, right = {r}");
+            fail(__FUNC__ + f"() left = {l}, right = {r}");
         }
         else if l.is_some() && r.is_some() {
             eq(l.unwrap(), r.unwrap());
@@ -118,8 +117,29 @@ fn fail(msg) {
     else {
         match l {
             r -> {}
-            _ -> {fail(f"left = {l}, right = {r}");}
+            _ -> {fail(__FUNC__ + f"() left = {l}, right = {r}");}
         }
+    }
+}
+
+### NAME neq
+### PARAMETER l: any
+### PARAMETER r: any
+### RETURNS unit
+### DESCRIPTION
+###   Tests for `l` not equal to `r`. *Note*: this function
+###   is type safe to it will not panic with differing types.
+@pub fn neq(l, r) {
+    if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
+        if l.is_none() && r.is_none() {
+            fail(__FUNC__ + "() left = {l}, right = {r}");
+        }
+        else if l.is_some() && r.is_some() {
+            neq(l.unwrap(), r.unwrap());
+        }
+    }
+    else {
+        match l {r -> {fail(__FUNC__ + "() left = {l}, right = {r}");}}
     }
 }
 
@@ -130,7 +150,7 @@ fn fail(msg) {
 ###   Tests for `k` being not `none`. *Note*: this function
 ###   is type safe so it will not panic with differing types.
 @pub fn not_none(k) {
-    match k {none -> {fail("expected not `none` but got `none`");}}
+    match k {none -> {fail(__FUNC__ + "() expected not `none` but got `none`");}}
 }
 
 ### NAME is_none
@@ -143,7 +163,7 @@ fn fail(msg) {
     match k {
         none -> {}
         _ -> {
-            fail("expected `none` but got `" + str(k) + ": " + str(typeof(k)) + "`");
+            fail(__FUNC__ + "() expected `none` but got `" + str(k) + ": " + str(typeof(k)) + "`");
         }
     }
 }

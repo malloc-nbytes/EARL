@@ -1924,6 +1924,14 @@ Tests for =l= equal to =r=. *Note*: this function is type safe to it will not pa
 
 #+begin_quote
 #+begin_example
+neq(l: any, r: any) -> unit
+#+end_example
+
+Tests for =l= not equal to =r=. *Note*: this function is type safe to it will not panic with differing types.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 not_none(k: any) -> unit
 #+end_example
 
