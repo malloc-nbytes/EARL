@@ -375,3 +375,76 @@ List::iter_next(Iterator &it) {
         std::advance(iter, 1);
     }, it);
 }
+
+std::shared_ptr<Obj>
+List::add(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    auto other_casted = dynamic_cast<List *>(other.get());
+    auto list = std::make_shared<List>(this->value());
+    list->value().insert(list->value().end(),
+                         other_casted->value().begin(),
+                         other_casted->value().end());
+    return list;
+}
+
+std::shared_ptr<Obj>
+List::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    auto other_casted = dynamic_cast<List *>(other.get());
+    int res = 0;
+    if (m_value.size() == other_casted->value().size()) {
+        res = 1;
+        for (size_t i = 0; i < m_value.size(); ++i) {
+            auto o1 = this->value()[i];
+            auto o2 = other_casted->value()[i];
+            if (!type_is_compatable(o1.get(), o2.get())) {
+                res = 0;
+                break;
+            }
+            if (o1->type() == Type::Int) {
+                if (dynamic_cast<Int *>(o1.get())->value() != dynamic_cast<Int *>(o2.get())->value()) {
+                    res = 0;
+                    break;
+                }
+            }
+            else if (o1->type() == Type::Str) {
+                if (dynamic_cast<Str *>(o1.get())->value() != dynamic_cast<Str *>(o2.get())->value()) {
+                    res = 0;
+                    break;
+                }
+            }
+            else if (o1->type() == Type::Char) {
+                if (dynamic_cast<Char *>(o1.get())->value() != dynamic_cast<Char *>(o2.get())->value()) {
+                    res = 0;
+                    break;
+                }
+            }
+            else if (o1->type() == Type::Bool) {
+                if (dynamic_cast<Bool *>(o1.get())->value() != dynamic_cast<Bool *>(o2.get())->value()) {
+                    res = 0;
+                    break;
+                }
+            }
+            else if (o1->type() == Type::Option) {
+                auto option1 = dynamic_cast<Option *>(o1.get());
+                auto option2 = dynamic_cast<Option *>(o1.get());
+                if ((!option1 && option2) || (option1 && !option2)) {
+                    res = 0;
+                    break;
+                }
+                if ((option1 && option2) && (option1->value() != option2->value())) {
+                    res = 0;
+                    break;
+                }
+            }
+            else {
+                assert(false && "unreachable");
+
+                // res = 0;
+                // break;
+            }
+        }
+    }
+    return std::make_shared<Int>(res);
+}
+

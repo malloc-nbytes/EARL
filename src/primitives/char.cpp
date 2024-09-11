@@ -90,3 +90,17 @@ Char::to_cxxstring(void) {
     return std::string(1, m_value);
 }
 
+std::shared_ptr<Obj>
+Char::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    switch (op->type()) {
+    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
+    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
+    default: {
+        Err::err_wtok(op);
+        std::string msg = "invalid binary operator";
+        throw InterpreterException(msg);
+    } break;
+    }
+    return nullptr; // unreachable
+}
