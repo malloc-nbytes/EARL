@@ -403,3 +403,31 @@ Int::bitwise(Token *op, std::shared_ptr<Obj> &other) {
     }
 }
 
+std::shared_ptr<Obj>
+Int::bitshift(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_EXACT(this, other.get(), op);
+    switch (op->type()) {
+    case TokenType::Double_Lessthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other.get())->value());
+    } break;
+    case TokenType::Double_Greaterthan: {
+        if (other->type() != Type::Int) {
+            Err::err_wtok(op);
+            const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
+    } break;
+    default: {
+        Err::err_wtok(op);
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
+    }
+    return nullptr; // unreachable
+}

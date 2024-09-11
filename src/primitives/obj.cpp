@@ -197,3 +197,10 @@ Obj::bitwise(Token *op, std::shared_ptr<Obj> &other) {
     throw InterpreterException(msg);
 }
 
+std::shared_ptr<Obj>
+Obj::bitshift(Token *op, std::shared_ptr<Obj> &other) {
+    (void)other;
+    Err::err_wtok(op);
+    const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be bit shifted";
+    throw InterpreterException(msg);
+}

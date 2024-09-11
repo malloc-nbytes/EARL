@@ -206,6 +206,7 @@ namespace earl {
             virtual std::shared_ptr<Obj> gtequality(Token *op, std::shared_ptr<Obj> &other);
             virtual std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other);
             virtual std::shared_ptr<Obj> bitwise(Token *op, std::shared_ptr<Obj> &other);
+            virtual std::shared_ptr<Obj> bitshift(Token *op, std::shared_ptr<Obj> &other);
 
         protected:
             bool m_const = false;
@@ -224,6 +225,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
+            std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
         private:
             Type m_ty;
@@ -262,6 +264,7 @@ namespace earl {
             std::shared_ptr<Obj> gtequality(Token *op, std::shared_ptr<Obj> &other)       override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
             std::shared_ptr<Obj> bitwise(Token *op, std::shared_ptr<Obj> &other)          override;
+            std::shared_ptr<Obj> bitshift(Token *op, std::shared_ptr<Obj> &other)         override;
 
         private:
             int m_value;
@@ -472,9 +475,11 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
-            Iterator iter_begin(void)    override;
-            Iterator iter_end(void)      override;
-            void iter_next(Iterator &it) override;
+            Iterator iter_begin(void)                                                     override;
+            Iterator iter_end(void)                                                       override;
+            void iter_next(Iterator &it)                                                  override;
+            std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
+            std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
         private:
             std::vector<std::shared_ptr<Obj>> m_values;
@@ -515,6 +520,8 @@ namespace earl {
             Iterator iter_begin(void)    override;
             Iterator iter_end(void)      override;
             void iter_next(Iterator &it) override;
+            std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
+            std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
         private:
             std::string m_value;
@@ -663,6 +670,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
+            std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
         private:
             std::shared_ptr<Obj> m_value;

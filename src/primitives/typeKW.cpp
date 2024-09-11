@@ -108,3 +108,17 @@ std::string
 TypeKW::to_cxxstring(void) {
     return "<Type: " + earl::value::type_to_str(this->ty()) + ">";
 }
+
+std::shared_ptr<Obj>
+TypeKW::equality(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+
+    if (op->type() == TokenType::Double_Equals)
+        return std::make_shared<Bool>(m_ty == std::static_pointer_cast<TypeKW>(other)->ty());
+    else if (op->type() == TokenType::Bang_Equals)
+        return std::make_shared<Bool>(m_ty != std::static_pointer_cast<TypeKW>(other)->ty());
+
+    Err::err_wtok(op);
+    const std::string msg = "Invalid binary operation for type " + earl::value::type_to_str(m_ty);
+    throw InterpreterException(msg);
+}

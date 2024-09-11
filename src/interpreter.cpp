@@ -1317,7 +1317,48 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 
     ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
     auto rhs_value = unpack_ER(rhs, ctx, ref);
-    auto result = lhs_value->binop(expr->m_op.get(), rhs_value);
+    // auto result = lhs_value->binop(expr->m_op.get(), rhs_value);
+    std::shared_ptr<earl::value::Obj> result = nullptr;
+    switch (expr->m_op.get()->type()) {
+    case TokenType::Plus: {
+        result = lhs_value->add(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Minus: {
+        result = lhs_value->sub(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Asterisk: {
+        result = lhs_value->multiply(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Forwardslash: {
+        result = lhs_value->divide(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Percent: {
+        result = lhs_value->modulo(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Double_Asterisk: {
+        result = lhs_value->power(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Greaterthan:
+    case TokenType::Lessthan:
+    case TokenType::Greaterthan_Equals:
+    case TokenType::Lessthan_Equals: {
+        result = lhs_value->gtequality(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Double_Equals:
+    case TokenType::Bang_Equals: {
+        result = lhs_value->equality(expr->m_op.get(), rhs_value);
+    } break;
+    case TokenType::Backtick_Pipe:
+    case TokenType::Backtick_Caret:
+    case TokenType::Backtick_Ampersand: {
+        result = lhs_value->bitwise(expr->m_op.get(), rhs_value);
+    } break;
+    default: {
+        Err::err_wtok(expr->m_op.get());
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
+    }
     return ER(result, ERT::Literal);
 }
 
