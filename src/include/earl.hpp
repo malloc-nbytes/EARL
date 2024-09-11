@@ -144,21 +144,26 @@ namespace earl {
         struct Obj;
         struct Char;
 
-        using ListIterator = std::vector<std::shared_ptr<Obj>>::iterator;
-        using StrIterator = std::vector<std::shared_ptr<Char>>::iterator;
-        using DictIntIterator = std::unordered_map<int, std::shared_ptr<Obj>>::iterator;
-        using DictCharIterator = std::unordered_map<char, std::shared_ptr<Obj>>::iterator;
+        using ListIterator      = std::vector<std::shared_ptr<Obj>>::iterator;
+        using StrIterator       = std::vector<std::shared_ptr<Char>>::iterator;
+        using DictIntIterator   = std::unordered_map<int, std::shared_ptr<Obj>>::iterator;
+        using DictCharIterator  = std::unordered_map<char, std::shared_ptr<Obj>>::iterator;
         using DictFloatIterator = std::unordered_map<double, std::shared_ptr<Obj>>::iterator;
-        using DictStrIterator = std::unordered_map<std::string, std::shared_ptr<Obj>>::iterator;
-        using Iterator = std::variant<ListIterator, StrIterator, DictIntIterator, DictCharIterator, DictFloatIterator, DictStrIterator>;
+        using DictStrIterator   = std::unordered_map<std::string, std::shared_ptr<Obj>>::iterator;
+        using Iterator          = std::variant<ListIterator, StrIterator, DictIntIterator, DictCharIterator, DictFloatIterator, DictStrIterator>;
 
         /// @brief The base abstract class that all
         /// EARL values inherit from
         struct Obj {
             virtual ~Obj() {}
 
+            /// @brief Set this value as constant
             virtual void set_const(void);
+
+            /// @brief Unset this value as constant
             virtual void unset_const(void);
+
+            /// @brief Check if this value is constant
             virtual bool is_const(void) const;
 
             /// @brief Get the type of the value
@@ -191,11 +196,31 @@ namespace earl {
             /// @return The stringified version of the value
             virtual std::string to_cxxstring(void);
 
+            /// @brief Handles special mutation operators such as +=, -=, /= etc.
+            /// @param op The binary operator
+            /// @param other The right-hand-side of the operator
+            /// @param stmt The statement that is being evaluated, used for error reporing
             virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt);
+
+            /// @brief Handles a unary operator (!, `~, etc.)
+            /// @param op The unary operator
+            /// @return The result of the unary operator on the this value
             virtual std::shared_ptr<Obj> unaryop(Token *op);
+
+            /// @brief Check if this value is iterable
+            /// @return True if it is, false if otherwise
             virtual bool is_iterable(void) const;
+
+            /// @brief Retrieve the iterator of this value
+            /// @return This value's iterator
             virtual Iterator iter_begin(void);
+
+            /// @brief Retrieve the end iterator of this value
+            /// @return This value's end iterator
             virtual Iterator iter_end(void);
+
+            /// @brief Advance the iterator
+            /// @param it The iterator to advance
             virtual void iter_next(Iterator &it);
             virtual std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other);
             virtual std::shared_ptr<Obj> sub(Token *op, std::shared_ptr<Obj> &other);
@@ -218,7 +243,7 @@ namespace earl {
 
             Type ty(void) const;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
@@ -244,7 +269,7 @@ namespace earl {
 
             void incr(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -280,7 +305,7 @@ namespace earl {
             /// @brief Get the underlying integer value
             double value(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -310,7 +335,7 @@ namespace earl {
             /// @brief Get the underlying integer value
             bool value(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -332,7 +357,7 @@ namespace earl {
             /// @brief Get the underlying string value
             char value(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
@@ -349,7 +374,7 @@ namespace earl {
         struct Void : public Obj {
             Void() = default;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -370,7 +395,7 @@ namespace earl {
             bool param_at_is_ref(size_t i) const;
             Token *tok(void) const;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
@@ -420,7 +445,7 @@ namespace earl {
             std::shared_ptr<Obj> back(void);
             std::shared_ptr<Bool> contains(std::shared_ptr<earl::value::Obj> &value);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -445,7 +470,7 @@ namespace earl {
             std::shared_ptr<Obj> &start(void);
             std::shared_ptr<Obj> &end(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
@@ -468,7 +493,7 @@ namespace earl {
             std::shared_ptr<Tuple> rev(void);
             std::shared_ptr<Bool> contains(std::shared_ptr<Obj> &value);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -508,7 +533,7 @@ namespace earl {
             std::shared_ptr<Bool> contains(std::shared_ptr<Char> &value);
             void update_changed(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -535,7 +560,7 @@ namespace earl {
             /// @brief Get the module context
             std::shared_ptr<Ctx> &value(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
 
         private:
@@ -558,7 +583,7 @@ namespace earl {
 
             std::shared_ptr<Ctx> &ctx(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
@@ -584,7 +609,7 @@ namespace earl {
             bool has_key(T key) const;
             bool has_value(std::shared_ptr<Obj> &value) const;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
@@ -610,7 +635,7 @@ namespace earl {
             bool is_pub(void) const;
             std::unordered_map<std::string, std::shared_ptr<variable::Obj>> &extract(void);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::string to_cxxstring(void)                                                override;
 
@@ -640,7 +665,7 @@ namespace earl {
             void write(std::shared_ptr<Obj> value);
             void writelines(std::shared_ptr<List> &value);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
@@ -662,7 +687,7 @@ namespace earl {
             bool is_none(void) const;
             void set_value(std::shared_ptr<Obj> other);
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
             bool boolean(void)                                                            override;
@@ -679,21 +704,21 @@ namespace earl {
         struct Break : public Obj {
             Break() = default;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
         };
 
         struct Continue : public Obj {
             Continue() = default;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
         };
 
         struct Return : public Obj {
             Return() = default;
 
-            /*** OVERRIDES ***/
+            // Implements
             Type type(void) const                                                         override;
             std::shared_ptr<Obj> copy(void)                                               override;
         };
@@ -877,7 +902,7 @@ earl::value::Dict<T>::has_value(std::shared_ptr<earl::value::Obj> &value) const 
     return false;
 }
 
-/*** OVERRIDES ***/
+// Implements
 template <typename T> earl::value::Type
 earl::value::Dict<T>::type(void) const {
     switch (m_kty) {
@@ -935,8 +960,7 @@ earl::value::Dict<T>::to_cxxstring(void) {
     return res;
 }
 
-template <typename T>
-earl::value::Iterator
+template <typename T> earl::value::Iterator
 earl::value::Dict<T>::iter_begin(void) {
     if constexpr (std::is_same_v<std::decay_t<T>, int> ||
                   std::is_same_v<std::decay_t<T>, double> ||
@@ -948,8 +972,7 @@ earl::value::Dict<T>::iter_begin(void) {
     return {}; // unreachable
 }
 
-template <typename T>
-earl::value::Iterator
+template <typename T> earl::value::Iterator
 earl::value::Dict<T>::iter_end(void) {
     if constexpr (std::is_same_v<std::decay_t<T>, int> ||
                   std::is_same_v<std::decay_t<T>, double> ||

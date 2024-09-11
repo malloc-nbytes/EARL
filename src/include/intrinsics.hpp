@@ -38,6 +38,21 @@
 #include "ctx.hpp"
 #include "earl.hpp"
 
+////////////////////////////////////////////
+// To add a new intrinsic, do the following:
+// 1. Add the function signature to this file.
+// 2. In intrinsics.cpp, add the name and the address
+//    of the function in the intrinsic_functions map.
+// 3. In intrinsics.cpp, implement the function.
+
+////////////////////////////////////////////
+// To add a new member intrinsic, do the following:
+// 1. Add the function signature to this file.
+// 2. In intrinsics.cpp, add the name and the address
+//    of the function in the intrinsic_member_functions map.
+// 3. Add the implementation(s) for the appropriate type(s)
+//    in primitives/.
+
 #define __INTR_ARGS_MUSTBE_SIZE(args, sz, fn, expr)                     \
     do {                                                                \
         if (args.size() != sz) {                                        \
@@ -47,57 +62,57 @@
         }                                                               \
     } while (0)
 
-#define __MEMBER_INTR_ARGS_MUSTNOT_BE_0(args, fn, expr)                                            \
-    do {                                                                                               \
+#define __MEMBER_INTR_ARGS_MUSTNOT_BE_0(args, fn, expr)                 \
+    do {                                                                \
         if (args.size() == 0) {                                         \
-            Err::err_wexpr(expr); \
+            Err::err_wexpr(expr);                                       \
             std::string __Msg = "member intrinsic `" fn "` expects grater than 0 arguments"; \
             throw InterpreterException(__Msg);                          \
         }                                                               \
     } while (0)
 
-#define __MEMBER_INTR_ARGS_MUSTBE_GTSIZE(args, sz, fn, expr)                                                                       \
-    do {                                                                                                                     \
+#define __MEMBER_INTR_ARGS_MUSTBE_GTSIZE(args, sz, fn, expr)            \
+    do {                                                                \
         if (args.size() < sz) {                                         \
-            Err::err_wexpr(expr); \
+            Err::err_wexpr(expr);                                       \
             std::string __Msg = "member intrinsic `" fn "` expects greater than "+std::to_string(sz)+" arguments but " \
                 +std::to_string(args.size())+" were supplied";          \
             throw InterpreterException(__Msg);                          \
         }                                                               \
     } while (0)
 
-#define __INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn, expr)                                                        \
-    do {                                                                                                              \
+#define __INTR_ARG_MUSTBE_TYPE_COMPAT(arg, ty, loc, fn, expr)           \
+    do {                                                                \
         if (!earl::value::type_is_compatable(arg->type(), ty)) {        \
-            Err::err_wexpr(expr); \
+            Err::err_wexpr(expr);                                       \
             std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type `" \
                 +earl::value::type_to_str(ty)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
             throw InterpreterException(__Msg);                          \
         }                                                               \
     } while (0)
 
-#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn, expr)                                               \
-    do {                                                                                                              \
+#define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn, expr) \
+    do {                                                                \
         if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) { \
-            Err::err_wexpr(expr); \
+            Err::err_wexpr(expr);                                       \
             std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects either type `" \
                 +earl::value::type_to_str(ty1)+"` or `"+earl::value::type_to_str(ty2)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
             throw InterpreterException(__Msg);                          \
-        } \
+        }                                                               \
     } while (0)
 
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR_LST(arg, tys, loc, fn, expr) \
-    do { \
-        bool __ok = false;     \
-        for (auto &ty : tys) { \
-            if (earl::value::type_is_compatable(arg->type(), ty)) \
-                __ok = true; \
-        } \
+    do {                                                                \
+        bool __ok = false;                                              \
+        for (auto &ty : tys) {                                          \
+            if (earl::value::type_is_compatable(arg->type(), ty))       \
+                __ok = true;                                            \
+        }                                                               \
         if (!__ok) {                                                    \
-            Err::err_wexpr(expr); \
+            Err::err_wexpr(expr);                                       \
             std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type-adjacent `" \
                 +earl::value::type_to_str(tys.at(0))+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
-            throw InterpreterException(__Msg); \
+            throw InterpreterException(__Msg);                          \
         }                                                               \
     } while (0)
 
@@ -145,6 +160,7 @@ namespace Intrinsics {
     /// @param expr The AST node of the function call
     /// @param params value objects to pass to the function
     /// @param ctx The current global context
+    /// @param expr The original expression, used only for error reporting
     std::shared_ptr<earl::value::Obj> call(const std::string &id,
                                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                            std::shared_ptr<Ctx> &ctx,
@@ -157,6 +173,7 @@ namespace Intrinsics {
     /// @param params value objects to pass to the function
     /// @note it is often expected that `params` has the size of 1 or 0
     /// @param ctx The current global context
+    /// @param expr The original expression, used only for error reporting
     std::shared_ptr<earl::value::Obj> call_member(const std::string &id,
                                                   earl::value::Type type,
                                                   std::shared_ptr<earl::value::Obj> accessor,
