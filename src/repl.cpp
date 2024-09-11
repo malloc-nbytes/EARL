@@ -523,8 +523,10 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
         import_file(args, lines);
     else if (lst[0] == CLEAR)
         clearscrn();
-    else if (lst[0] == QUIT)
+    else if (lst[0] == QUIT) {
+        ri.~RawInput();
         exit(0);
+    }
     else if (lst[0] == DISCARD)
         discard(ri, lines);
     else if (lst[0] == EE)

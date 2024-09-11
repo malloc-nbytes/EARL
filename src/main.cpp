@@ -253,7 +253,7 @@ main(int argc, char **argv) {
     else {
         flags |= __REPL;
         std::cout << "EARL REPL v" << VERSION << '\n';
-        std::cout << "Use `:help` for help" << std::endl;
+        std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
         repl::run();
     }
 
