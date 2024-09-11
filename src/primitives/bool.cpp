@@ -134,4 +134,3 @@ Bool::equality(Token *op, std::shared_ptr<Obj> &other) {
     }
     return nullptr; // unreachable
 }
-

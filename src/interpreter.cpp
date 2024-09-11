@@ -1353,6 +1353,10 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case TokenType::Backtick_Ampersand: {
         result = lhs_value->bitwise(expr->m_op.get(), rhs_value);
     } break;
+    case TokenType::Double_Lessthan:
+    case TokenType::Double_Greaterthan: {
+        result = lhs_value->bitshift(expr->m_op.get(), rhs_value);
+    } break;
     default: {
         Err::err_wtok(expr->m_op.get());
         const std::string msg = "invalid operator";

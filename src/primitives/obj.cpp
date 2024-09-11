@@ -204,3 +204,4 @@ Obj::bitshift(Token *op, std::shared_ptr<Obj> &other) {
     const std::string msg = "value of type: `"+type_to_str(this->type())+"` cannot be bit shifted";
     throw InterpreterException(msg);
 }
+
