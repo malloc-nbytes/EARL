@@ -94,6 +94,27 @@ Parser::parse_expect_keyword(Lexer &lexer, std::string expected) {
     return tok;
 }
 
+static std::vector<std::shared_ptr<Token>>
+parse_comma_sep_idents_as_toks(Lexer &lexer) {
+    std::vector<std::shared_ptr<Token>> ids = {};
+
+    while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Ident) {
+        ids.push_back(lexer.next());
+        if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma) {
+            lexer.discard(); // ,
+        }
+        else {
+            if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Ident) {
+                Err::err_wtok(lexer.peek(0));
+                const std::string msg = "missing comma after identifer";
+                throw ParserException(msg);
+            }
+        }
+    }
+
+    return ids;
+}
+
 // NOTE: It is up to the calling function to consume the '()' or '[]' or '{}' etc.
 // This makes this function more reusable.
 static std::vector<Expr *>
@@ -668,11 +689,11 @@ std::unique_ptr<StmtForeach>
 parse_stmt_foreach(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOREACH);
     uint32_t attrs = gather_attrs(lexer);
-    std::shared_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
+    auto enumerators = parse_comma_sep_idents_as_toks(lexer);
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
     Expr *expr = Parser::parse_expr(lexer, /*fail_on=*/'{');
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
-    return std::make_unique<StmtForeach>(std::move(enumerator),
+    return std::make_unique<StmtForeach>(std::move(enumerators),
                                          std::unique_ptr<Expr>(expr),
                                          std::move(block),
                                          attrs);
