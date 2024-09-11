@@ -525,12 +525,15 @@ The most common way to use these loops is with a =range= (see [[Ranges][Ranges]]
 (usually the variable labeled as $i$), can be set as a reference (see [[Attributes]]) to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
 (see /ref example/ below).
+
+You can also destructure the value being enumerated over by providing more ids.
+This is also true for dictionaries (see dictionary example below).
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=foreach= * (=@= =ref= | =const=) <id> =in= /expr/ *{* [stmt] *}*
+=foreach= * (=@= =ref= | =const=) <id> *(, id) =in= /expr/ *{* [stmt] *}*
 #+end_quote
 
 ** Examples
@@ -552,6 +555,16 @@ foreach i in (0..5).rev() {
 foreach i in 0..len(iterable) {
     print(i);
 } # prints 012
+
+foreach i, j in [(1,2), (3,4), (5,6)] {
+    print(i, ' ', j);
+}
+
+# DICTIONARY EXAMPLE
+let dict = {"foo": 1, "bar": true, "baz": 3.2};
+foreach key, value in dict {
+    print(f"key: {key}, value: {value}");
+}
 
 foreach @ref i in iterable { # REF EXAMPLE
     i = 9;
@@ -1984,6 +1997,14 @@ quicksort(lst: @ref list<any>, compar: @const closure(x1: any, x2: type(x1)) -> 
 #+end_example
 
 where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$  and $F$ is defined by  \[ F(x_1, x_2) = \begin{cases} true & \text{if } R(x_1) \ge R(x_2) \\ false & \text{if } R(x_1) < R(x_2) \end{cases} \]  and $R(x)$ is some ranking function that produces a rank of $x$.  Performs the quicksort sorting algorithm on =lst= and sorts by the comparison closure =compar=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+dict_to_list(dict: @const @ref dict<any, any>) -> list<tuple<any,any>>
+#+end_example
+
+Converts the dictionary =dict= to a list.
 #+end_quote
 
 *** *Class List*: /None/

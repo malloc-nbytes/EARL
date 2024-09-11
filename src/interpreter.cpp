@@ -1642,6 +1642,7 @@ static void
 destructure_enumerators(std::vector<std::shared_ptr<Token>> &named_ids,
                         std::vector<std::shared_ptr<earl::variable::Obj>> &vars,
                         const std::shared_ptr<earl::value::Obj> &values,
+                        uint32_t attrs,
                         Expr *expr) {
     if (vars.size() == 1)
         vars[0] = std::make_shared<earl::variable::Obj>(named_ids[0].get(), values);
@@ -1658,8 +1659,12 @@ destructure_enumerators(std::vector<std::shared_ptr<Token>> &named_ids,
             throw InterpreterException(msg);
         }
 
-        for (size_t i = 0; i < vars.size(); ++i)
-            vars[i] = std::make_shared<earl::variable::Obj>(named_ids[i].get(), tuple->value()[i]);
+        for (size_t i = 0; i < vars.size(); ++i) {
+            auto value = tuple->value()[i];
+            if ((attrs & static_cast<uint32_t>(Attr::Const)) != 0)
+                value->set_const();
+            vars[i] = std::make_shared<earl::variable::Obj>(named_ids[i].get(), tuple->value()[i], attrs);
+        }
     }
     else {
         Err::err_wexpr(expr);
@@ -1761,7 +1766,9 @@ eval_stmt_foreach(StmtForeach *stmt, std::shared_ptr<Ctx> &ctx) {
         goto done;
 
     // Setup starting enumerators
-    iterator_reduce(wrapped_iterator, [&](auto &tuple){destructure_enumerators(stmt->m_enumerators, enumerators, tuple, stmt->m_expr.get());});
+    iterator_reduce(wrapped_iterator, [&](auto &tuple){
+        destructure_enumerators(stmt->m_enumerators, enumerators, tuple, stmt->m_attrs, stmt->m_expr.get());
+    });
     for (size_t i = 0; i < enumerators.size(); ++i)
         ctx->variable_add(enumerators[i]);
 

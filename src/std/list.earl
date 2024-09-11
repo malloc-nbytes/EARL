@@ -184,6 +184,21 @@ import "std/utils.earl" full
     __quicksort(lst, 0, len(lst)-1, compar);
 }
 
+### NAME dict_to_list
+### PARAMETER dict: @const @ref dict<any, any>
+### RETURNS list<tuple<any, any>>
+### DESCRIPTION
+###   Converts the dictionary `dict` to a list.
+@pub fn dict_to_list(@const @ref dict) {
+    let lst = [];
+
+    foreach @const key, value in dict {
+        lst.append((key, value));
+    }
+
+    return lst;
+}
+
 ### END FUNCTIONS
 
 ### BEGIN VARIABLES
