@@ -21,6 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 #include <cstdlib>
 #include <sstream>
 #include <algorithm>
@@ -75,7 +76,6 @@ static int g_brace = 0;
 static int g_bracket = 0;
 static int g_paren = 0;
 
-static repled::RawInput RI;
 static size_t lineno = 0;
 static std::vector<std::string> HIST = {};
 
@@ -248,8 +248,8 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
 }
 
 static std::string
-get_special_input(void) {
-    auto line = repled::getln(RI, ">>> ", HIST, true);
+get_special_input(repled::RawInput &ri) {
+    auto line = repled::getln(ri, ">>> ", HIST, true);
     std::cout << std::endl;
     return line;
 }
@@ -324,7 +324,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
 }
 
 static void
-edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
+edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std::string> &lines) {
     log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
     if (args.size() > 0) {
         for (auto arg : args) {
@@ -339,7 +339,7 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
             gray();
             std::cout << "]" << std::endl;
             noc();
-            std::string newline = get_special_input();
+            std::string newline = get_special_input(ri);
             if (newline == QUIT) {
                 log("Quitting session editor\n", gray);
                 return;
@@ -368,7 +368,7 @@ edit_entry(std::vector<std::string> &args, std::vector<std::string> &lines) {
         gray();
         std::cout << "]" << std::endl;
         noc();
-        std::string newline = get_special_input();
+        std::string newline = get_special_input(ri);
         manage_removed_or_edited_line(lines.at(lines.size()-1));
         if (newline == "")
             lines.erase(lines.end()-1);
@@ -408,7 +408,7 @@ bash(std::string &line) {
 }
 
 static void
-discard(std::vector<std::string> &lines) {
+discard(repled::RawInput &ri, std::vector<std::string> &lines) {
     auto to_lower = [](std::string &str) {
         for (char& c : str)
             c = std::tolower(static_cast<unsigned char>(c));
@@ -417,7 +417,7 @@ discard(std::vector<std::string> &lines) {
     std::string line = "";
     while (true) {
         red();
-        std::string line = repled::getln(RI, "Discard the current session? [Y/n]: ", HIST, true);
+        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true);
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
@@ -507,7 +507,7 @@ reset(std::shared_ptr<Ctx> &ctx) {
 }
 
 static void
-handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
+handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
@@ -516,7 +516,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
     else if (lst[0] == RM_ENTRY)
         rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
-        edit_entry(args, lines);
+        edit_entry(ri, args, lines);
     else if (lst[0] == LIST_ENTRIES)
         ls_entries(lines);
     else if (lst[0] == IMPORT)
@@ -526,7 +526,7 @@ handle_repl_arg(std::string &line, std::vector<std::string> &lines, std::shared_
     else if (lst[0] == QUIT)
         exit(0);
     else if (lst[0] == DISCARD)
-        discard(lines);
+        discard(ri, lines);
     else if (lst[0] == EE)
         ee();
     else if (lst[0] == VARS)
@@ -545,6 +545,8 @@ std::shared_ptr<Ctx>
 repl::run(void) {
     try_clear_repl_history();
 
+    repled::RawInput ri;
+
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
@@ -558,14 +560,14 @@ repl::run(void) {
         while (true) {
             bool closed_braces = !g_brace && !g_bracket && !g_paren;
 
-            auto line = repled::getln(RI, std::to_string(lineno)+": ", HIST, !closed_braces);
+            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces);
             analyze_new_line(line);
 
             if (line == "" && closed_braces)
                 break;
             else if (line[0] == ':') {
                 repled::clearln(line.size());
-                handle_repl_arg(line, lines, ctx);
+                handle_repl_arg(ri, line, lines, ctx);
             }
             else if (line[0] == '$') {
                 repled::clearln(true);

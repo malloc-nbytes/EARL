@@ -1,11 +1,5 @@
 module Main
 
-let dict = {
-    "foo": 1,
-    "bar": true,
-    "baz": 1..=10
-};
+let s = input("enter: ");
 
-foreach key in dict {
-    println(f"key: {key}");
-}
+println(s);
