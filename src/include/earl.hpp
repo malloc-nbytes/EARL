@@ -365,6 +365,7 @@ namespace earl {
             bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
+            std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
 
         private:
             char m_value;

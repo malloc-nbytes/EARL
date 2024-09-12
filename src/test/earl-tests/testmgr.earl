@@ -33,6 +33,7 @@ fn gen(should_print, crash_on_failure) {
         "./testmgr.earl",
         "./test.earl",
         "./test-utils.earl",
+        "./other-files",
     );
 
     println(f"Blacklisted files: {blacklisted_files}");

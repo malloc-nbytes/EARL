@@ -94,8 +94,24 @@ std::shared_ptr<Obj>
 Char::equality(Token *op, std::shared_ptr<Obj> &other) {
     ASSERT_BINOP_COMPAT(this, other.get(), op);
     switch (op->type()) {
-    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
-    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
+    case TokenType::Double_Equals: {
+        if (other->type() == Type::Str) {
+            auto str = dynamic_cast<Str *>(other.get());
+            if (str->value().size() != 1)
+                return std::make_shared<Bool>(false);
+            return std::make_shared<Bool>(this->value() == str->value()[0]);
+        }
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
+    } break;
+    case TokenType::Bang_Equals: {
+        if (other->type() == Type::Str) {
+            auto str = dynamic_cast<Str *>(other.get());
+            if (str->value().size() != 1)
+                return std::make_shared<Bool>(true);
+            return std::make_shared<Bool>(this->value() != str->value()[0]);
+        }
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
+    } break;
     default: {
         Err::err_wtok(op);
         std::string msg = "invalid binary operator";
@@ -103,4 +119,15 @@ Char::equality(Token *op, std::shared_ptr<Obj> &other) {
     } break;
     }
     return nullptr; // unreachable
+}
+
+std::shared_ptr<Obj>
+Char::add(Token *op, std::shared_ptr<Obj> &other) {
+    ASSERT_BINOP_COMPAT(this, other.get(), op);
+    if (other->type() == Type::Char) {
+        return std::make_shared<Str>(std::string(1, this->value())
+                                     + std::string(1, dynamic_cast<Char *>(other.get())->value()));
+    }
+    return std::make_shared<Str>(std::string(1, this->value())
+                                 + dynamic_cast<Str *>(other.get())->value());
 }
