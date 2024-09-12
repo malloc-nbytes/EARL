@@ -96,13 +96,19 @@ enum class Attr {
 
 // Types
 #define COMMON_EARLTY_INT32   "int"
+#define COMMON_EARLTY_FLOAT   "float"
 #define COMMON_EARLTY_STR     "str"
-#define COMMON_EARLTY_UNIT    "void"
+#define COMMON_EARLTY_UNIT    "unit"
 #define COMMON_EARLTY_CHAR    "char"
 #define COMMON_EARLTY_BOOL    "bool"
 #define COMMON_EARLTY_LIST    "list"
+#define COMMON_EARLTY_TUPLE   "tuple"
 #define COMMON_EARLTY_FILE    "file"
 #define COMMON_EARLTY_CLOSURE "closure"
+#define COMMON_EARLTY_OPTION  "option"
+#define COMMON_EARLTY_SLICE   "slice"
+#define COMMON_EARLTY_DICT    "dictionary"
+#define COMMON_EARLTY_TYPE    "type"
 #define COMMON_EARLTY_ASCPL {COMMON_EARLTY_INT32, COMMON_EARLTY_STR, COMMON_EARLTY_UNIT, COMMON_EARLTY_CHAR, COMMON_EARLTY_BOOL, COMMON_EARLTY_LIST, COMMON_EARLTY_FILE, COMMON_EARLTY_CLOSURE}
 
 #define COMMON_EARL_COMMENT "#"

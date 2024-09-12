@@ -579,15 +579,39 @@ Parser::parse_stmt_if(Lexer &lexer) {
                                     std::move(else_));
 }
 
+static bool
+is_ty(Lexer &lexer) {
+    if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Colon
+        && lexer.peek(1) && lexer.peek(1)->type() == TokenType::Ident)
+        return true;
+    return false;
+}
+
 std::unique_ptr<StmtLet>
 Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
+    auto errtok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
 
     std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
+    std::vector<std::shared_ptr<Token>> tys = {};
+
+    if (is_ty(lexer)) {
+        lexer.discard(); // :
+        tys.push_back(lexer.next());
+    }
 
     while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma) {
         lexer.discard(); // ,
         ids.push_back(parse_expect(lexer, TokenType::Ident));
+        if (is_ty(lexer)) {
+            lexer.discard(); // :
+            tys.push_back(lexer.next());
+        }
+    }
+
+    if (tys.size() > 0 && ids.size() != tys.size()) {
+        Err::err_wtok(errtok.get());
+        const std::string msg = "when declaring multiple variables with explicit types, all variables must have a type";
+        throw ParserException(msg);
     }
 
     (void)parse_expect(lexer, TokenType::Equals);
@@ -600,7 +624,7 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(ids), std::unique_ptr<Expr>(expr), attrs);
+    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs);
 }
 
 std::unique_ptr<StmtExpr>
@@ -634,9 +658,8 @@ parse_stmt_def_args(Lexer &lexer) {
     while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rparen) {
         uint32_t attr = 0;
 
-        while (lexer.peek(0) && lexer.peek()->type() == TokenType::At) {
+        while (lexer.peek(0) && lexer.peek()->type() == TokenType::At)
             attr |= static_cast<uint32_t>(translate_attr(lexer));
-        }
 
         std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
         std::shared_ptr<Token> var = std::move(id);

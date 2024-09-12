@@ -1400,6 +1400,36 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
 }
 
+static void
+typecheck(Token *ty, earl::value::Obj *value) {
+    if (ty->lexeme() == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)            return;
+    else if (ty->lexeme() == COMMON_EARLTY_FLOAT && value->type() == earl::value::Type::Float)     return;
+    else if (ty->lexeme() == COMMON_EARLTY_STR && value->type() == earl::value::Type::Str)         return;
+    else if (ty->lexeme() == COMMON_EARLTY_UNIT && value->type() == earl::value::Type::Void)       return;
+    else if (ty->lexeme() == COMMON_EARLTY_CHAR && value->type() == earl::value::Type::Char)       return;
+    else if (ty->lexeme() == COMMON_EARLTY_BOOL && value->type() == earl::value::Type::Bool)       return;
+    else if (ty->lexeme() == COMMON_EARLTY_LIST && value->type() == earl::value::Type::List)       return;
+    else if (ty->lexeme() == COMMON_EARLTY_TUPLE && value->type() == earl::value::Type::Tuple)     return;
+    else if (ty->lexeme() == COMMON_EARLTY_FILE && value->type() == earl::value::Type::File)       return;
+    else if (ty->lexeme() == COMMON_EARLTY_CLOSURE && value->type() == earl::value::Type::Closure) return;
+    else if (ty->lexeme() == COMMON_EARLTY_OPTION && value->type() == earl::value::Type::Option)   return;
+    else if (ty->lexeme() == COMMON_EARLTY_SLICE && value->type() == earl::value::Type::Slice)     return;
+    else if (ty->lexeme() == COMMON_EARLTY_DICT
+             && (value->type() == earl::value::Type::DictInt
+                 || value->type() == earl::value::Type::DictStr
+                 || value->type() == earl::value::Type::DictFloat
+                 || value->type() == earl::value::Type::DictChar))                                 return;
+    else if (ty->lexeme() == COMMON_EARLTY_TYPE && value->type() == earl::value::Type::TypeKW)     return;
+    else if (value->type() == earl::value::Type::Class) {
+        auto klass = dynamic_cast<earl::value::Class *>(value);
+        if (klass->id() == ty->lexeme())
+            return;
+    }
+    Err::err_wtok(ty);
+    const std::string msg = "explicit type of `"+ty->lexeme()+"` does not match what was given `"+type_to_str(value->type())+"`";
+    throw InterpreterException(msg);
+}
+
 std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() == CtxType::Closure)
@@ -1457,6 +1487,10 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
             if (_const)
                 tuple->value().at(i)->set_const();
 
+            if (stmt->m_tys.size() != 0) {
+                typecheck(stmt->m_tys.at(i).get(), tuple->value().at(i).get());
+            }
+
             std::shared_ptr<earl::variable::Obj> var
                 = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
             ctx->variable_add(var);
@@ -1505,14 +1539,14 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         value = unpack_ER(rhs, ctx, ref);
 
-    if (value->type() == earl::value::Type::Return) {
-    }
-
     if (id == "_")
         return std::make_shared<earl::value::Void>();
 
     if (_const || value->type() == earl::value::Type::Tuple)
         value->set_const();
+
+    if (stmt->m_tys.size() > 0)
+        typecheck(stmt->m_tys[0].get(), value.get());
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);

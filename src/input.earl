@@ -1,3 +1,7 @@
 module Main
 
+fn test(x: int) {
+}
+
+
 
