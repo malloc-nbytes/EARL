@@ -80,6 +80,7 @@ namespace Interpreter {
     ER eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref);
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
+    void typecheck(Token *ty, earl::value::Obj *value);
 };
 
 #endif // INTERPRETER_H

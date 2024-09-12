@@ -1400,8 +1400,8 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
 }
 
-static void
-typecheck(Token *ty, earl::value::Obj *value) {
+void
+Interpreter::typecheck(Token *ty, earl::value::Obj *value) {
     if (ty->lexeme() == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)            return;
     else if (ty->lexeme() == COMMON_EARLTY_FLOAT && value->type() == earl::value::Type::Float)     return;
     else if (ty->lexeme() == COMMON_EARLTY_STR && value->type() == earl::value::Type::Str)         return;
@@ -1603,9 +1603,13 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
-    std::vector<std::pair<Token *, uint32_t>> args;
-    for (auto &entry : stmt->m_args)
-        args.push_back(std::make_pair(entry.first.get(), entry.second));
+    std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> args;
+    for (auto &entry : stmt->m_args) {
+        Token *ty = nullptr;
+        if (entry.first.second.has_value())
+            ty = entry.first.second.value().get();
+        args.push_back(std::make_pair(std::make_pair(entry.first.first.get(), ty), entry.second));
+    }
 
     auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get());
     ctx->function_add(func);

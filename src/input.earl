@@ -1,7 +1,10 @@
 module Main
 
 fn test(x: int) {
+    println(x);
 }
 
-
+let s: str = "hi";
+let x: int = 3;
+test(x);
 

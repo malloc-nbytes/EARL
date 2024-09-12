@@ -786,7 +786,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params, Token *tok);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> params, Token *tok);
             ~Obj() = default;
 
             Token *gettok(void);
@@ -802,7 +802,7 @@ namespace earl {
 
         private:
             StmtDef *m_stmtdef;
-            std::vector<std::pair<Token *, uint32_t>> m_params;
+            std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> m_params;
             Token *m_tok;
         };
     };
