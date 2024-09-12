@@ -530,7 +530,7 @@ for i in len(lst)-1 to 0 {
 * Foreach Loops
 
 #+begin_quote
-Foreach loops take a list, string, or tuple and will iterate over the elements.
+Foreach loops take a list, string, tuple, or a dictionary and will iterate over the elements.
 The most common way to use these loops is with a =range= (see [[Ranges][Ranges]]). Also, the iterator
 (usually the variable labeled as $i$), can be set as a reference (see [[Attributes]]) to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
@@ -543,7 +543,7 @@ This is also true for dictionaries (see dictionary example below).
 ** Grammar
 
 #+begin_quote
-=foreach= * (=@= =ref= | =const=) <id> * (, id) =in= /expr/ *{* [stmt] *}*
+=foreach= * (=@= [ =ref= | =const= ]) <id> * (=,= <id>) =in= /expr/ *{* [stmt] *}*
 #+end_quote
 
 ** Examples
@@ -644,12 +644,22 @@ This is how to create a function. The =@world=, =@pub= and =@ref= are attributes
 #+begin_example
 @world @pub
 fn func1(@ref x, y, @ref @const z) {
-    ...
+    x += 9; # x will be modified also outside of this function because of @ref
+    return x + y + z;
 }
 
 fn func2() {
-    ...
+    return 1;
 }
+
+fn rev(@ref lst) {
+    for i in 0 to len(lst)/2 {
+        let t = lst[i];
+        lst[len(lst)-i-1] = lst[i];
+        lst[len(lst)-i-1] = t;
+    }
+}
+
 #+end_example
 
 * Imports
@@ -868,7 +878,7 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 ** Grammar
 
 #+begin_quote
-*( =@= pub | world | ref)
+*( =@= pub | world)
 
 =class= <id> =[= *(<arg>) =]= ={=
 
@@ -1054,7 +1064,7 @@ Ranges are not their own datatype, they are just syntax sugar for a list. For ex
 1..=5 # expands to [1, 2, 3, 4, 5]
 'a'..'d' # expands to ['a', 'b', 'c'];
 'a'..='d' # expands to ['a', 'b', 'c', 'd'];
-(1..=10).rev().filter(|x| { x%2 == 0; }); # expands to [10, 8, 6, 4, 2]
+(1..=10).rev().filter(|x| { return x%2 == 0; }); # expands to [10, 8, 6, 4, 2]
 #+end_example
 
 Currently they only work with =int= and =char=.
@@ -1116,7 +1126,7 @@ println(single_elem_tuple[0]);
 #+end_example
 
 *Note*: If an empty =tuple= is desired (why would you ever want this?) you can use the intrinsic casting
-function =tuple()= i.e., =let empty_tuple = tuple()=.
+function =tuple()= i.e., =let empty_tuple = tuple();=.
 #+end_quote
 
 ** =option=
@@ -1231,7 +1241,7 @@ and entries are separated by a comma =,=.
 
 The keys in dictionaries must be uniform throughout, although the values can be of any type.
 They must also be initalized with data so it can infer the type of the keys, however you may want
-an empty set. This can be done by using the =Dict(type: TypeKW) -> Dict<type>= function which will
+an empty dictionary. This can be done by using the =Dict(type: TypeKW) -> Dict<type>= function which will
 produce an empty dictionary that holds keys of type =type=.
 
 #+begin_example
@@ -1252,7 +1262,7 @@ println(s.has_value(1))        # true
 println(empty_set.has_key(3)); # false
 empty_set.insert(3, [1,2,3]);
 println(empty_set.has_key(3)); # true
-println(empty_set[3]); # [1,2,3]
+println(empty_set[3]); # some([1,2,3])
 #+end_example
 #+end_quote
 
@@ -2138,7 +2148,7 @@ Creates a list with elements =elem= of size =cap=.
 
 #+begin_quote
 #+begin_example
-from_range(start: int, stop: int, stride: int) -> list<int|float>
+from_range(start: int|float, stop: int|float, stride: int) -> list<int|float>
 #+end_example
 
 Takes a list and then returns element within range specified by the parameters =start=, =stop=, =stride=.
