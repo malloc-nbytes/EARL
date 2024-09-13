@@ -786,14 +786,16 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> params, Token *tok);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok);
             ~Obj() = default;
 
             Token *gettok(void);
             const std::string &id(void) const;
             size_t params_len(void) const;
             StmtBlock *block(void) const;
-            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values, std::shared_ptr<FunctionCtx> &new_ctx);
+            void load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
+                                 std::shared_ptr<FunctionCtx> &new_ctx,
+                                 std::shared_ptr<Ctx> &old_ctx);
             bool is_world(void) const;
             bool is_pub(void) const;
             Obj *copy(void);
@@ -802,7 +804,7 @@ namespace earl {
 
         private:
             StmtDef *m_stmtdef;
-            std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> m_params;
+            std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> m_params;
             Token *m_tok;
         };
     };

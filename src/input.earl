@@ -1,13 +1,12 @@
 module Main
 
-class Point [x, y] {
-    @pub let x: int, y: int = (x, y);
+import "../src/other.earl"
+
+class Test [] {}
+
+fn test(p: Other::Point) {
+    println(p);
 }
 
-let p: Point = Point(3, 2);
-
-let x: int = 1;
-let a: int, b: str, c: type = (1, "hi", int);
-
-println(f"{x} {a} {b} {c}");
-println(p);
+let p: Point = Other::Point(1, 2, "hi");
+test(p);

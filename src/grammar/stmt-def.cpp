@@ -28,7 +28,7 @@
 #include "ast.hpp"
 
 StmtDef::StmtDef(std::shared_ptr<Token> id,
-                 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>> args,
+                 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
                  std::unique_ptr<StmtBlock> block,
                  uint32_t attrs) :
     m_id(id), m_args(args),

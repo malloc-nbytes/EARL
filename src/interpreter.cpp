@@ -191,6 +191,9 @@ eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
 
     int i = 0;
     for (auto &tok : stmt->m_ids) {
+        if (stmt->m_tys.size() != 0)
+            typecheck(stmt->m_tys.at(i).get(), tuple->value().at(i).get(), ctx);
+
         if (tok->lexeme() != "_") {
             if (_const)
                 tuple->value().at(i)->set_const();
@@ -238,6 +241,9 @@ eval_stmt_let_wcustom_buffer_in_class(StmtLet *stmt,
     }
     else
         value = unpack_ER(rhs, ctx, _ref);
+
+    if (stmt->m_tys.size() > 0)
+        typecheck(stmt->m_tys[0].get(), value.get(), ctx);
 
     if (id == "_")
         return std::make_shared<earl::value::Void>();
@@ -297,14 +303,13 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     // Add the constructor arguments to a temporary pushed scope
     for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
-        Token *ty = nullptr;
+        __Type *ty = nullptr;
 
         if (class_stmt->m_constructor_args[i].second.has_value())
             ty = class_stmt->m_constructor_args[i].second.value().get();
 
         if (ty) {
-            // Interpreter::typecheck(ty, params[i].get(), ctx);
-            assert(false);
+            Interpreter::typecheck(ty, params[i].get(), ctx);
         }
 
         auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].first.get(), params[i]);
@@ -448,7 +453,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
         fctx->set_curfunc(id);
-        func->load_parameters(params, fctx);
+        func->load_parameters(params, fctx, ctx);
 
         // Recursion optimization
         if (ctx->type() == CtxType::Function) {
@@ -516,9 +521,9 @@ eval_user_defined_function(ExprFuncCall *expr,
             throw InterpreterException(msg);
         }
         auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
-        func->load_parameters(params, fctx);
+        func->load_parameters(params, fctx, ctx);
         fctx->set_curfunc(id);
-        func->load_parameters(params, fctx);
+        func->load_parameters(params, fctx, ctx);
 
         if (ctx->type() == CtxType::Function) {
             if (fctx->get_curfuncid() == dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid()) {
@@ -1476,7 +1481,12 @@ Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx>
             return;
     }
     Err::err_wtok(ty->m_main_ty.get());
-    const std::string msg = "explicit type of `"+tyname+"` does not match what was given `"+type_to_str(value->type())+"`";
+
+    std::string msg = "";
+    if (value->type() == earl::value::Type::Class)
+        msg = "explicit type of `"+tyname+"` does not match what was given `"+dynamic_cast<earl::value::Class *>(value)->id()+"`";
+    else
+        msg = "explicit type of `"+tyname+"` does not match what was given `"+type_to_str(value->type())+"`";
     throw InterpreterException(msg);
 }
 
@@ -1537,9 +1547,8 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
             if (_const)
                 tuple->value().at(i)->set_const();
 
-            if (stmt->m_tys.size() != 0) {
+            if (stmt->m_tys.size() != 0)
                 typecheck(stmt->m_tys.at(i).get(), tuple->value().at(i).get(), ctx);
-            }
 
             std::shared_ptr<earl::variable::Obj> var
                 = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), tuple->value().at(i), stmt->m_attrs);
@@ -1653,11 +1662,12 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
-    std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> args;
+    std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> args;
     for (auto &entry : stmt->m_args) {
-        Token *ty = nullptr;
-        if (entry.first.second.has_value())
+        __Type *ty = nullptr;
+        if (entry.first.second.has_value()) {
             ty = entry.first.second.value().get();
+        }
         args.push_back(std::make_pair(std::make_pair(entry.first.first.get(), ty), entry.second));
     }
 

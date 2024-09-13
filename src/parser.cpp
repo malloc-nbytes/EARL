@@ -33,7 +33,7 @@
 #include "common.hpp"
 #include "parser.hpp"
 
-std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>>
+std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>>
 parse_stmt_def_args(Lexer &lexer);
 
 static Attr
@@ -664,9 +664,9 @@ Parser::parse_stmt_block(Lexer &lexer) {
     return std::make_unique<StmtBlock>(std::move(stmts));
 }
 
-std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>>
+std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>>
 parse_stmt_def_args(Lexer &lexer) {
-    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>>
+    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>>
         args = {};
 
     (void)Parser::parse_expect(lexer, TokenType::Lparen);
@@ -678,12 +678,10 @@ parse_stmt_def_args(Lexer &lexer) {
 
         std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
         std::shared_ptr<Token> var = std::move(id);
-        std::optional<std::shared_ptr<Token>> ty = {};
+        std::optional<std::shared_ptr<__Type>> ty = {};
 
-        if (is_ty(lexer)) {
-            lexer.discard(); // :
-            ty = lexer.next();
-        }
+        if (is_ty(lexer))
+            ty = get_ty(lexer);
 
         args.push_back(std::make_pair(std::make_pair(std::move(var), std::move(ty)), attr));
 
@@ -782,9 +780,9 @@ parse_stmt_mod(Lexer &lexer) {
     return std::make_unique<StmtMod>(std::move(id));
 }
 
-static std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>>
+static std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>>
 parse_stmt_class_constructor_arguments(Lexer &lexer) {
-    std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>> ids;
+    std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> ids;
 
     if (lexer.peek(0) && lexer.peek()->type() == TokenType::Lbracket) {
         lexer.discard();
@@ -797,11 +795,10 @@ parse_stmt_class_constructor_arguments(Lexer &lexer) {
             }
 
             auto id = Parser::parse_expect(lexer, TokenType::Ident);
-            std::optional<std::shared_ptr<Token>> ty = {};
+            std::optional<std::shared_ptr<__Type>> ty = {};
 
             if (is_ty(lexer)) {
-                lexer.discard(); // :
-                ty = lexer.next();
+                ty = get_ty(lexer);
             }
 
             ids.push_back(std::make_pair(id, ty));

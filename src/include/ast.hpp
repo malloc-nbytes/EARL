@@ -347,7 +347,7 @@ struct StmtDef : public Stmt {
     std::shared_ptr<Token> m_id;
 
     // the type below is: pair(pair(id, type), attr)
-    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>> m_args;
+    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> m_args;
 
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
@@ -355,7 +355,7 @@ struct StmtDef : public Stmt {
     uint32_t m_attrs;
 
     StmtDef(std::shared_ptr<Token> id,
-            std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>, uint32_t>> args,
+            std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 
@@ -534,7 +534,7 @@ struct StmtClass : public Stmt {
     std::shared_ptr<Token> m_id;
     uint32_t m_attrs;
     std::vector<std::pair<std::shared_ptr<Token>,
-                          std::optional<std::shared_ptr<Token>>>>
+                          std::optional<std::shared_ptr<__Type>>>>
     m_constructor_args;
 
     std::vector<std::unique_ptr<StmtLet>> m_members;
@@ -542,7 +542,7 @@ struct StmtClass : public Stmt {
 
     StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
-              std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>> constructor_args,
+              std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
               std::vector<std::unique_ptr<StmtDef>> methods);
 

@@ -34,7 +34,7 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, Token *>, uint32_t>> params, Token *tok)
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok)
     : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok) {}
 
 Token *
@@ -59,15 +59,15 @@ Obj::block(void) const {
 
 void
 Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
-                     std::shared_ptr<FunctionCtx> &new_ctx) {
+                     std::shared_ptr<FunctionCtx> &new_ctx,
+                     std::shared_ptr<Ctx> &old_ctx) {
     for (size_t i = 0; i < values.size(); ++i) {
         auto value = values[i];
         Token *id = m_params.at(i).first.first;
-        Token *ty = m_params.at(i).first.second;
+        __Type *ty = m_params.at(i).first.second;
 
         if (ty) {
-            assert(false);
-            //Interpreter::typecheck(ty, value.get());
+            Interpreter::typecheck(ty, value.get(), old_ctx);
         }
 
         std::shared_ptr<earl::variable::Obj> var = nullptr;
