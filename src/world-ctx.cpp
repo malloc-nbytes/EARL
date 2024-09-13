@@ -91,6 +91,14 @@ WorldCtx::get_mod(void) const {
     return m_mod;
 }
 
+bool
+WorldCtx::import_is_defined(const std::string &id) {
+    for (auto &im : m_imports)
+        if (dynamic_cast<WorldCtx *>(im.get())->get_mod() == id)
+            return true;
+    return false;
+}
+
 std::shared_ptr<Ctx> *
 WorldCtx::get_import(const std::string &id) {
     for (auto &im : m_imports)

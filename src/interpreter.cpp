@@ -297,7 +297,17 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     // Add the constructor arguments to a temporary pushed scope
     for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
-        auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].get(), params[i]);
+        Token *ty = nullptr;
+
+        if (class_stmt->m_constructor_args[i].second.has_value())
+            ty = class_stmt->m_constructor_args[i].second.value().get();
+
+        if (ty) {
+            // Interpreter::typecheck(ty, params[i].get(), ctx);
+            assert(false);
+        }
+
+        auto var = std::make_shared<earl::variable::Obj>(class_stmt->m_constructor_args[i].first.get(), params[i]);
 
         // MAKE SURE TO CLEAR AT THE END OF THIS FUNC!
         class_ctx->fill___m_class_constructor_tmp_args(var);
@@ -1401,32 +1411,72 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 }
 
 void
-Interpreter::typecheck(Token *ty, earl::value::Obj *value) {
-    if (ty->lexeme() == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)            return;
-    else if (ty->lexeme() == COMMON_EARLTY_FLOAT && value->type() == earl::value::Type::Float)     return;
-    else if (ty->lexeme() == COMMON_EARLTY_STR && value->type() == earl::value::Type::Str)         return;
-    else if (ty->lexeme() == COMMON_EARLTY_UNIT && value->type() == earl::value::Type::Void)       return;
-    else if (ty->lexeme() == COMMON_EARLTY_CHAR && value->type() == earl::value::Type::Char)       return;
-    else if (ty->lexeme() == COMMON_EARLTY_BOOL && value->type() == earl::value::Type::Bool)       return;
-    else if (ty->lexeme() == COMMON_EARLTY_LIST && value->type() == earl::value::Type::List)       return;
-    else if (ty->lexeme() == COMMON_EARLTY_TUPLE && value->type() == earl::value::Type::Tuple)     return;
-    else if (ty->lexeme() == COMMON_EARLTY_FILE && value->type() == earl::value::Type::File)       return;
-    else if (ty->lexeme() == COMMON_EARLTY_CLOSURE && value->type() == earl::value::Type::Closure) return;
-    else if (ty->lexeme() == COMMON_EARLTY_OPTION && value->type() == earl::value::Type::Option)   return;
-    else if (ty->lexeme() == COMMON_EARLTY_SLICE && value->type() == earl::value::Type::Slice)     return;
-    else if (ty->lexeme() == COMMON_EARLTY_DICT
+Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx> &ctx) {
+    if (ty->m_sub_ty.has_value()) {
+        const std::string &modulename = ty->m_main_ty->lexeme();
+        const std::string &classname = ty->m_sub_ty.value()->lexeme();
+        WorldCtx *wctx = nullptr;
+
+        if (ctx->type() == CtxType::World) {
+            wctx = dynamic_cast<WorldCtx *>(ctx.get());
+        }
+        else if (ctx->type() == CtxType::Function) {
+            auto fctx = dynamic_cast<FunctionCtx *>(ctx.get());
+            wctx = fctx->get_world();
+        }
+        else if (ctx->type() == CtxType::Class) {
+            auto cctx = dynamic_cast<ClassCtx *>(ctx.get());
+            wctx = cctx->get_world();
+        }
+        else {
+            // closure
+            auto clctx = dynamic_cast<ClosureCtx *>(ctx.get());
+            wctx = clctx->get_world();
+        }
+
+        if (!wctx->import_is_defined(modulename)) {
+            Err::err_wtok(ty->m_main_ty.get());
+            const std::string msg = "module `"+modulename+"` does not exist";
+            throw InterpreterException(msg);
+        }
+
+        auto modctx = dynamic_cast<WorldCtx *>(wctx->get_import(modulename)->get());
+        if (!modctx->class_is_defined(classname)) {
+            Err::err_wtok(ty->m_sub_ty.value().get());
+            const std::string msg = "class `"+classname+"` does not exist in module `"+modulename+"`";
+            throw InterpreterException(msg);
+        }
+
+        assert(false);
+    }
+
+    const std::string &tyname = ty->m_main_ty->lexeme();
+
+    if (tyname == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)            return;
+    else if (tyname == COMMON_EARLTY_FLOAT && value->type() == earl::value::Type::Float)     return;
+    else if (tyname == COMMON_EARLTY_STR && value->type() == earl::value::Type::Str)         return;
+    else if (tyname == COMMON_EARLTY_UNIT && value->type() == earl::value::Type::Void)       return;
+    else if (tyname == COMMON_EARLTY_CHAR && value->type() == earl::value::Type::Char)       return;
+    else if (tyname == COMMON_EARLTY_BOOL && value->type() == earl::value::Type::Bool)       return;
+    else if (tyname == COMMON_EARLTY_LIST && value->type() == earl::value::Type::List)       return;
+    else if (tyname == COMMON_EARLTY_TUPLE && value->type() == earl::value::Type::Tuple)     return;
+    else if (tyname == COMMON_EARLTY_FILE && value->type() == earl::value::Type::File)       return;
+    else if (tyname == COMMON_EARLTY_CLOSURE && value->type() == earl::value::Type::Closure) return;
+    else if (tyname == COMMON_EARLTY_OPTION && value->type() == earl::value::Type::Option)   return;
+    else if (tyname == COMMON_EARLTY_SLICE && value->type() == earl::value::Type::Slice)     return;
+    else if (tyname == COMMON_EARLTY_DICT
              && (value->type() == earl::value::Type::DictInt
                  || value->type() == earl::value::Type::DictStr
                  || value->type() == earl::value::Type::DictFloat
                  || value->type() == earl::value::Type::DictChar))                                 return;
-    else if (ty->lexeme() == COMMON_EARLTY_TYPE && value->type() == earl::value::Type::TypeKW)     return;
+    else if (tyname == COMMON_EARLTY_TYPE && value->type() == earl::value::Type::TypeKW)     return;
     else if (value->type() == earl::value::Type::Class) {
         auto klass = dynamic_cast<earl::value::Class *>(value);
-        if (klass->id() == ty->lexeme())
+        if (klass->id() == tyname)
             return;
     }
-    Err::err_wtok(ty);
-    const std::string msg = "explicit type of `"+ty->lexeme()+"` does not match what was given `"+type_to_str(value->type())+"`";
+    Err::err_wtok(ty->m_main_ty.get());
+    const std::string msg = "explicit type of `"+tyname+"` does not match what was given `"+type_to_str(value->type())+"`";
     throw InterpreterException(msg);
 }
 
@@ -1488,7 +1538,7 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
                 tuple->value().at(i)->set_const();
 
             if (stmt->m_tys.size() != 0) {
-                typecheck(stmt->m_tys.at(i).get(), tuple->value().at(i).get());
+                typecheck(stmt->m_tys.at(i).get(), tuple->value().at(i).get(), ctx);
             }
 
             std::shared_ptr<earl::variable::Obj> var
@@ -1546,7 +1596,7 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         value->set_const();
 
     if (stmt->m_tys.size() > 0)
-        typecheck(stmt->m_tys[0].get(), value.get());
+        typecheck(stmt->m_tys[0].get(), value.get(), ctx);
 
     std::shared_ptr<earl::variable::Obj> var
         = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);

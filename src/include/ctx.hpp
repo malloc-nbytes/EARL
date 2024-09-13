@@ -81,6 +81,7 @@ struct WorldCtx : public Ctx {
     const std::string &get_mod(void) const;
     void add_import(std::shared_ptr<Ctx> ctx);
     std::shared_ptr<Ctx> *get_import(const std::string &id);
+    bool import_is_defined(const std::string &id);
     void define_class(StmtClass *klass);
     bool class_is_defined(const std::string &id) const;
     StmtClass *class_get(const std::string &id);

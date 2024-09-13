@@ -1,10 +1,13 @@
 module Main
 
-fn test(x: int) {
-    println(x);
+class Point [x, y] {
+    @pub let x: int, y: int = (x, y);
 }
 
-let s: str = "hi";
-let x: int = 3;
-test(x);
+let p: Point = Point(3, 2);
 
+let x: int = 1;
+let a: int, b: str, c: type = (1, "hi", int);
+
+println(f"{x} {a} {b} {c}");
+println(p);

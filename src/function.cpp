@@ -65,8 +65,10 @@ Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
         Token *id = m_params.at(i).first.first;
         Token *ty = m_params.at(i).first.second;
 
-        if (ty)
-            Interpreter::typecheck(ty, value.get());
+        if (ty) {
+            assert(false);
+            //Interpreter::typecheck(ty, value.get());
+        }
 
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)

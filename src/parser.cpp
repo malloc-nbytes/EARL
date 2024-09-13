@@ -72,6 +72,22 @@ is_ty(Lexer &lexer) {
     return false;
 }
 
+static std::shared_ptr<__Type>
+get_ty(Lexer &lexer) {
+    std::shared_ptr<Token> main_ty = nullptr;
+    std::optional<std::shared_ptr<Token>> sub_ty = {};
+
+    lexer.discard(); // :
+    main_ty = lexer.next();
+
+    if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Double_Colon) {
+        lexer.discard();
+        main_ty = Parser::parse_expect(lexer, TokenType::Ident);
+    }
+
+    return std::make_shared<__Type>(main_ty, sub_ty);
+}
+
 std::shared_ptr<Token>
 Parser::parse_expect(Lexer &lexer, TokenType expected) {
     std::shared_ptr<Token> tok = lexer.next();
@@ -593,20 +609,17 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     auto errtok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
 
     std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
-    std::vector<std::shared_ptr<Token>> tys = {};
+    std::vector<std::shared_ptr<__Type>> tys = {};
 
     if (is_ty(lexer)) {
-        lexer.discard(); // :
-        tys.push_back(lexer.next());
+        tys.push_back(get_ty(lexer));
     }
 
     while (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Comma) {
         lexer.discard(); // ,
         ids.push_back(parse_expect(lexer, TokenType::Ident));
-        if (is_ty(lexer)) {
-            lexer.discard(); // :
-            tys.push_back(lexer.next());
-        }
+        if (is_ty(lexer))
+            tys.push_back(get_ty(lexer));
     }
 
     if (tys.size() > 0 && ids.size() != tys.size()) {
@@ -769,9 +782,9 @@ parse_stmt_mod(Lexer &lexer) {
     return std::make_unique<StmtMod>(std::move(id));
 }
 
-static std::vector<std::shared_ptr<Token>>
+static std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>>
 parse_stmt_class_constructor_arguments(Lexer &lexer) {
-    std::vector<std::shared_ptr<Token>> ids;
+    std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<Token>>>> ids;
 
     if (lexer.peek(0) && lexer.peek()->type() == TokenType::Lbracket) {
         lexer.discard();
@@ -782,7 +795,17 @@ parse_stmt_class_constructor_arguments(Lexer &lexer) {
                 lexer.discard();
                 break;
             }
-            ids.push_back(Parser::parse_expect(lexer, TokenType::Ident));
+
+            auto id = Parser::parse_expect(lexer, TokenType::Ident);
+            std::optional<std::shared_ptr<Token>> ty = {};
+
+            if (is_ty(lexer)) {
+                lexer.discard(); // :
+                ty = lexer.next();
+            }
+
+            ids.push_back(std::make_pair(id, ty));
+
             if (lexer.peek(0) && lexer.peek()->type() == TokenType::Comma)
                 (void)Parser::parse_expect(lexer, TokenType::Comma);
         }
