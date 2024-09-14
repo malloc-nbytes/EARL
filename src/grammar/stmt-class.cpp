@@ -29,7 +29,7 @@
 
 StmtClass::StmtClass(std::shared_ptr<Token> id,
                      uint32_t attrs,
-                     std::vector<std::shared_ptr<Token>> constructor_args,
+                     std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
                      std::vector<std::unique_ptr<StmtLet>> members,
                      std::vector<std::unique_ptr<StmtDef>> methods)
     : m_id(id), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),

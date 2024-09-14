@@ -30,11 +30,27 @@
 #include "common.hpp"
 #include "utils.hpp"
 #include "ctx.hpp"
+#include "interpreter.hpp"
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<Token *, uint32_t>> params, Token *tok)
-    : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok) {}
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok, std::optional<__Type *> explicit_type)
+    : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok), m_explicit_type(explicit_type) {}
+
+bool
+Obj::is_explicit_typed(void) const {
+    return m_explicit_type.has_value();
+}
+
+__Type *
+Obj::get_explicit_type(void) {
+    return m_explicit_type.value();
+}
+
+StmtDef *
+Obj::get_stmtdef(void) {
+    return m_stmtdef;
+}
 
 Token *
 Obj::gettok(void) {
@@ -58,10 +74,17 @@ Obj::block(void) const {
 
 void
 Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
-                     std::shared_ptr<FunctionCtx> &new_ctx) {
+                     std::shared_ptr<FunctionCtx> &new_ctx,
+                     std::shared_ptr<Ctx> &old_ctx) {
     for (size_t i = 0; i < values.size(); ++i) {
         auto value = values[i];
-        Token *id = m_params.at(i).first;
+        Token *id = m_params.at(i).first.first;
+        __Type *ty = m_params.at(i).first.second;
+
+        if (ty) {
+            Interpreter::typecheck(ty, value.get(), old_ctx);
+        }
+
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)
             var = std::make_shared<earl::variable::Obj>(id, value);

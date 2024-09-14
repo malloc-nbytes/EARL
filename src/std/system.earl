@@ -103,13 +103,13 @@ module System
         return (none, none);
     }
     if name == "" {
-        return (ext, none);
+        return (none, some(ext));
     }
     if ext == "" {
-        return (name, none);
+        return (some(name), none);
     }
 
-    return (name, ext);
+    return (some(name), some(ext));
 }
 
 ### NAME move

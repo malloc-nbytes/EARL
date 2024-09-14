@@ -46,7 +46,8 @@ namespace Interpreter {
         Type = 1 << 9,
         ListAccess = 1 << 10,
         FromStr = 1 << 11,
-        None = 1 << 12,
+        FromEnum = 1 << 12,
+        None = 1 << 13,
     };
 
     struct ER {
@@ -67,6 +68,7 @@ namespace Interpreter {
         bool is_type(void);
         bool is_list_access(void);
         bool is_from_str(void);
+        bool is_from_enum(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;
@@ -80,6 +82,7 @@ namespace Interpreter {
     ER eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref);
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
+    void typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTERPRETER_H

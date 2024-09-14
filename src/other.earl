@@ -1,8 +1,8 @@
 module Other
 
-import "std/utils.earl"
-
-println("OTHER: ", Utils::iota());
-println("OTHER: ", Utils::iota());
-println("OTHER: ", Utils::iota());
-
+@pub class Point [x: int, y: int, s: str] {
+    @pub let x: int = x;
+    @pub let y: int = y;
+    @pub let z: str = s;
+    @pub let a: str, b: type = ("hi", int);
+}

@@ -92,6 +92,13 @@ struct StmtDef;
 struct StmtBlock;
 struct ExprFuncCall;
 
+struct __Type {
+    std::shared_ptr<Token> m_main_ty;
+    std::optional<std::shared_ptr<Token>> m_sub_ty;
+
+    __Type(std::shared_ptr<Token> main_ty, std::optional<std::shared_ptr<Token>> sub_ty);
+};
+
 /// @brief Base class for an expression
 struct Expr {
     virtual ~Expr() = default;
@@ -339,7 +346,10 @@ struct StmtDef : public Stmt {
     /// @brief The token of the function name
     std::shared_ptr<Token> m_id;
 
-    std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> m_args;
+    // the type below is: pair(pair(id, type), attr)
+    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> m_args;
+
+    std::optional<std::shared_ptr<__Type>> m_ty;
 
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
@@ -347,7 +357,8 @@ struct StmtDef : public Stmt {
     uint32_t m_attrs;
 
     StmtDef(std::shared_ptr<Token> id,
-            std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args,
+            std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
+            std::optional<std::shared_ptr<__Type>> ty,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 
@@ -359,12 +370,14 @@ struct StmtLet : public Stmt {
     /// @brief The token of the identifer
     std::vector<std::shared_ptr<Token>> m_ids;
 
+    std::vector<std::shared_ptr<__Type>> m_tys;
+
     /// @brief The expression of the Let Statement
     std::unique_ptr<Expr> m_expr;
 
     uint32_t m_attrs;
 
-    StmtLet(std::vector<std::shared_ptr<Token>> ids, std::unique_ptr<Expr> expr, uint32_t attrs);
+    StmtLet(std::vector<std::shared_ptr<Token>> ids, std::vector<std::shared_ptr<__Type>> tys, std::unique_ptr<Expr> expr, uint32_t attrs);
     StmtType stmt_type() const override;
 };
 
@@ -523,14 +536,16 @@ struct StmtMod : public Stmt {
 struct StmtClass : public Stmt {
     std::shared_ptr<Token> m_id;
     uint32_t m_attrs;
-    std::vector<std::shared_ptr<Token>> m_constructor_args;
+    std::vector<std::pair<std::shared_ptr<Token>,
+                          std::optional<std::shared_ptr<__Type>>>>
+    m_constructor_args;
 
     std::vector<std::unique_ptr<StmtLet>> m_members;
     std::vector<std::unique_ptr<StmtDef>> m_methods;
 
     StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
-              std::vector<std::shared_ptr<Token>> constructor_args,
+              std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
               std::vector<std::unique_ptr<StmtDef>> methods);
 

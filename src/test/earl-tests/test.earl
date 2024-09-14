@@ -15,6 +15,7 @@ import "./list-tests.earl"
 import "./for-loops-tests.earl"
 import "./foreach-loop-tests.earl"
 import "./if-tests.earl"
+import "./type-tests.earl"
 import "./class-tests.earl"
 import "./fn-test.earl"
 
@@ -34,6 +35,7 @@ fn main() {
     ForLoopTests::run(should_print, crash_on_failure);
     ForeachLoopTests::run(should_print, crash_on_failure);
     IfTests::run(should_print, crash_on_failure);
+    TypeTests::run(should_print, crash_on_failure);
     ClassTests::run(should_print, crash_on_failure);
     FnTests::run(should_print, crash_on_failure);
 }

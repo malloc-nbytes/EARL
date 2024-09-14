@@ -27,11 +27,5 @@
 
 #include "ast.hpp"
 
-StmtLet::StmtLet(std::vector<std::shared_ptr<Token>> ids, std::vector<std::shared_ptr<__Type>> tys, std::unique_ptr<Expr> expr, uint32_t attrs)
-    : m_ids(ids), m_tys(tys), m_expr(std::move(expr)), m_attrs(attrs) {}
-
-StmtType
-StmtLet::stmt_type() const {
-    return StmtType::Let;
-}
-
+__Type::__Type(std::shared_ptr<Token> main_ty, std::optional<std::shared_ptr<Token>> sub_ty)
+    : m_main_ty(main_ty), m_sub_ty(sub_ty) {}
