@@ -1,12 +1,2 @@
 module Main
 
-import "../src/other.earl"
-
-class Test [] {}
-
-fn test(p: Other::Point) {
-    println(p);
-}
-
-let p: Point = Other::Point(1, 2, "hi");
-test(p);

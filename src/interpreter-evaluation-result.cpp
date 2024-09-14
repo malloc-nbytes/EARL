@@ -96,6 +96,11 @@ Interpreter::ER::is_from_str(void) {
 }
 
 bool
+Interpreter::ER::is_from_enum(void) {
+    return (this->rt & ERT::FromEnum) != 0;
+}
+
+bool
 Interpreter::ER::is_none(void) {
     return (this->rt & ERT::None) != 0;
 }

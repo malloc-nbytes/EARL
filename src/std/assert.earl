@@ -78,7 +78,7 @@ fn fail(msg) {
 ### RETURNS unit
 ### DESCRIPTION
 ###   Tests `cond` for `true`.
-@pub fn is_true(cond) {
+@pub fn is_true(cond: bool): unit {
     if !cond {
         fail(__FUNC__ + f"() expected `true` but got `false`");
     }
@@ -89,9 +89,9 @@ fn fail(msg) {
 ### RETURNS unit
 ### DESCRIPTION
 ###   Tests `cond` for `false`.
-@pub fn is_false(cond) {
+@pub fn is_false(cond: bool): unit {
     if cond {
-        fail(__FUNC__ + f"() expected `false` but got `true`");
+        fail(__FUNC__ + "() expected `false` but got `true`");
     }
 }
 
@@ -102,7 +102,7 @@ fn fail(msg) {
 ### DESCRIPTION
 ###   Tests for `l` equal to `r`. *Note*: this function
 ###   is type safe to it will not panic with differing types.
-@pub fn eq(l, r) {
+@pub fn eq(l: any, r: any): unit {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
         if l.is_none() && r.is_some() {
             fail(__FUNC__ + f"() left = {l}, right = {r}");
@@ -129,7 +129,7 @@ fn fail(msg) {
 ### DESCRIPTION
 ###   Tests for `l` not equal to `r`. *Note*: this function
 ###   is type safe to it will not panic with differing types.
-@pub fn neq(l, r) {
+@pub fn neq(l: any, r: any): unit {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
         if l.is_none() && r.is_none() {
             fail(__FUNC__ + "() left = {l}, right = {r}");
@@ -149,7 +149,7 @@ fn fail(msg) {
 ### DESCRIPTION
 ###   Tests for `k` being not `none`. *Note*: this function
 ###   is type safe so it will not panic with differing types.
-@pub fn not_none(k) {
+@pub fn not_none(k: any): unit {
     match k {none -> {fail(__FUNC__ + "() expected not `none` but got `none`");}}
 }
 
@@ -159,7 +159,7 @@ fn fail(msg) {
 ### DESCRIPTION
 ###   Tests for `k` being `none`. *Note*: this function
 ###   is type safe so it will not panic with differing types.
-@pub fn is_none(k) {
+@pub fn is_none(k: any): unit {
     match k {
         none -> {}
         _ -> {

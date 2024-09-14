@@ -29,9 +29,12 @@
 
 StmtDef::StmtDef(std::shared_ptr<Token> id,
                  std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
+                 std::optional<std::shared_ptr<__Type>> ty,
                  std::unique_ptr<StmtBlock> block,
                  uint32_t attrs) :
-    m_id(id), m_args(args),
+    m_id(id),
+    m_args(args),
+    m_ty(ty),
     m_block(std::move(block)),
     m_attrs(attrs) {}
 

@@ -698,12 +698,17 @@ Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
+    std::optional<std::shared_ptr<__Type>> ty = {};
 
     auto args = parse_stmt_def_args(lexer);
+
+    if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Colon)
+        ty = get_ty(lexer);
 
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
     return std::make_unique<StmtDef>(std::move(id),
                                      std::move(args),
+                                     std::move(ty),
                                      std::move(block),
                                      attrs);
 }

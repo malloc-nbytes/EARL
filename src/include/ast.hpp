@@ -349,6 +349,8 @@ struct StmtDef : public Stmt {
     // the type below is: pair(pair(id, type), attr)
     std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> m_args;
 
+    std::optional<std::shared_ptr<__Type>> m_ty;
+
     /// @brief The Statement Block of the Statement Definition
     std::unique_ptr<StmtBlock> m_block;
 
@@ -356,6 +358,7 @@ struct StmtDef : public Stmt {
 
     StmtDef(std::shared_ptr<Token> id,
             std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
+            std::optional<std::shared_ptr<__Type>> ty,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs);
 

@@ -786,9 +786,12 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok);
+            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok, std::optional<__Type *> explicit_type);
             ~Obj() = default;
 
+            bool is_explicit_typed(void) const;
+            __Type *get_explicit_type(void);
+            StmtDef *get_stmtdef(void);
             Token *gettok(void);
             const std::string &id(void) const;
             size_t params_len(void) const;
@@ -806,6 +809,7 @@ namespace earl {
             StmtDef *m_stmtdef;
             std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> m_params;
             Token *m_tok;
+            std::optional<__Type *> m_explicit_type;
         };
     };
 };

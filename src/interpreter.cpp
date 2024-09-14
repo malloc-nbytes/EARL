@@ -470,6 +470,11 @@ eval_user_defined_function_wo_params(const std::string &id,
                 params[i]->unset_const();
         }
 
+        if (func->is_explicit_typed()) {
+            auto ty = func->get_explicit_type();
+            Interpreter::typecheck(ty, res.get(), ctx);
+        }
+
         return res;
     }
     else if (ctx->closure_exists(id)) {
@@ -532,7 +537,14 @@ eval_user_defined_function(ExprFuncCall *expr,
         }
 
         std::shared_ptr<Ctx> mask = fctx;
-        return Interpreter::eval_stmt_block(func->block(), mask);
+        auto res = Interpreter::eval_stmt_block(func->block(), mask);
+
+        if (func->is_explicit_typed()) {
+            auto ty = func->get_explicit_type();
+            Interpreter::typecheck(ty, res.get(), ctx);
+        }
+
+        return res;
     }
     else if (ctx->closure_exists(id)) {
         auto cl = ctx->variable_get(id);
@@ -1415,6 +1427,7 @@ Interpreter::eval_expr(Expr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     }
 }
 
+// TODO: optimize types by using numbers instead of std::strings.
 void
 Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx> &ctx) {
     if (ty->m_sub_ty.has_value()) {
@@ -1457,10 +1470,13 @@ Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx>
 
     const std::string &tyname = ty->m_main_ty->lexeme();
 
-    if (tyname == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)            return;
+    if (tyname == COMMON_EARLTY_ANY)                                                         return;
+    else if (tyname == COMMON_EARLTY_INT32 && value->type() == earl::value::Type::Int)       return;
     else if (tyname == COMMON_EARLTY_FLOAT && value->type() == earl::value::Type::Float)     return;
     else if (tyname == COMMON_EARLTY_STR && value->type() == earl::value::Type::Str)         return;
-    else if (tyname == COMMON_EARLTY_UNIT && value->type() == earl::value::Type::Void)       return;
+    else if (tyname == COMMON_EARLTY_UNIT
+             && (value->type() == earl::value::Type::Void
+                 || value->type() == earl::value::Type::Return))                             return;
     else if (tyname == COMMON_EARLTY_CHAR && value->type() == earl::value::Type::Char)       return;
     else if (tyname == COMMON_EARLTY_BOOL && value->type() == earl::value::Type::Bool)       return;
     else if (tyname == COMMON_EARLTY_LIST && value->type() == earl::value::Type::List)       return;
@@ -1473,15 +1489,18 @@ Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx>
              && (value->type() == earl::value::Type::DictInt
                  || value->type() == earl::value::Type::DictStr
                  || value->type() == earl::value::Type::DictFloat
-                 || value->type() == earl::value::Type::DictChar))                                 return;
+                 || value->type() == earl::value::Type::DictChar))                           return;
     else if (tyname == COMMON_EARLTY_TYPE && value->type() == earl::value::Type::TypeKW)     return;
+    else if (tyname == COMMON_EARLTY_REAL
+             && (value->type() == earl::value::Type::Int
+                 || value->type() == earl::value::Type::Float))                              return;
     else if (value->type() == earl::value::Type::Class) {
         auto klass = dynamic_cast<earl::value::Class *>(value);
         if (klass->id() == tyname)
             return;
     }
-    Err::err_wtok(ty->m_main_ty.get());
 
+    Err::err_wtok(ty->m_main_ty.get());
     std::string msg = "";
     if (value->type() == earl::value::Type::Class)
         msg = "explicit type of `"+tyname+"` does not match what was given `"+dynamic_cast<earl::value::Class *>(value)->id()+"`";
@@ -1671,7 +1690,11 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
         args.push_back(std::make_pair(std::make_pair(entry.first.first.get(), ty), entry.second));
     }
 
-    auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get());
+    std::optional<__Type *> explicit_type = {};
+    if (stmt->m_ty.has_value())
+        explicit_type = stmt->m_ty.value().get();
+
+    auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get(), explicit_type);
     ctx->function_add(func);
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();

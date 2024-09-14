@@ -46,7 +46,8 @@ namespace Interpreter {
         Type = 1 << 9,
         ListAccess = 1 << 10,
         FromStr = 1 << 11,
-        None = 1 << 12,
+        FromEnum = 1 << 12,
+        None = 1 << 13,
     };
 
     struct ER {
@@ -67,6 +68,7 @@ namespace Interpreter {
         bool is_type(void);
         bool is_list_access(void);
         bool is_from_str(void);
+        bool is_from_enum(void);
         bool is_none(void);
 
         std::shared_ptr<earl::value::Obj> value;

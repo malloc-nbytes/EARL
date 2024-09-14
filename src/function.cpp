@@ -34,8 +34,23 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok)
-    : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok) {}
+Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok, std::optional<__Type *> explicit_type)
+    : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok), m_explicit_type(explicit_type) {}
+
+bool
+Obj::is_explicit_typed(void) const {
+    return m_explicit_type.has_value();
+}
+
+__Type *
+Obj::get_explicit_type(void) {
+    return m_explicit_type.value();
+}
+
+StmtDef *
+Obj::get_stmtdef(void) {
+    return m_stmtdef;
+}
 
 Token *
 Obj::gettok(void) {
