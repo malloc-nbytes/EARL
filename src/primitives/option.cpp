@@ -62,10 +62,10 @@ Option::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Option::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Option::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
-    auto other2 = dynamic_cast<Option *>(other.get());
+    auto other2 = dynamic_cast<Option *>(other);
     if (op->type() == TokenType::Double_Equals) {
         if (this->is_none() && other2->is_none())
             return std::make_shared<Bool>(true);
@@ -76,7 +76,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(false);
 
-        return std::make_shared<Bool>(this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(this->value()->eq(other2->value().get()));
     }
     else if (op->type() == TokenType::Bang_Equals) {
         if (this->is_none() && other2->is_none())
@@ -88,7 +88,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(true);
 
-        return std::make_shared<Bool>(!this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(!this->value()->eq(other2->value().get()));
     }
     else {
         Err::err_wtok(op);
@@ -103,11 +103,11 @@ Option::boolean(void) {
 }
 
 void
-Option::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Option::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto *other2 = dynamic_cast<Option *>(other.get());
+    auto *other2 = dynamic_cast<Option *>(other);
 
     if (other2->is_none())
         m_value = nullptr;
@@ -123,10 +123,10 @@ Option::copy(void) {
 }
 
 bool
-Option::eq(std::shared_ptr<Obj> &other) {
+Option::eq(Obj *other) {
     if (other->type() != Type::Option)
         return false;
-    auto other_option = dynamic_cast<Option *>(other.get());
+    auto other_option = dynamic_cast<Option *>(other);
     if (this->is_none() && other_option->is_some())
         return false;
     if (this->is_some() && other_option->is_none())
@@ -134,6 +134,19 @@ Option::eq(std::shared_ptr<Obj> &other) {
     if (this->is_none() && other_option->is_none())
         return true;
     return m_value->eq(other);
+}
+
+std::shared_ptr<Obj>
+Option::unaryop(Token *op) {
+    switch (op->type()) {
+    case TokenType::Bang: return std::make_shared<Bool>(this->is_none());
+    default: {
+        Err::err_wtok(op);
+        std::string msg = "invalid unary operator on option type";
+        throw InterpreterException(msg);
+    }
+    }
+    return nullptr; // unreachable
 }
 
 std::string
@@ -144,9 +157,9 @@ Option::to_cxxstring(void) {
 }
 
 std::shared_ptr<Obj>
-Option::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other2 = dynamic_cast<Option *>(other.get());
+Option::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other2 = dynamic_cast<Option *>(other);
 
     if (op->type() == TokenType::Double_Equals) {
         if (this->is_none() && other2->is_none())
@@ -158,7 +171,7 @@ Option::equality(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(false);
 
-        return std::make_shared<Bool>(this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(this->value()->eq(other2->value().get()));
     }
     else if (op->type() == TokenType::Bang_Equals) {
         if (this->is_none() && other2->is_none())
@@ -170,7 +183,7 @@ Option::equality(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(true);
 
-        return std::make_shared<Bool>(!this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(!this->value()->eq(other2->value().get()));
     }
     else {
         Err::err_wtok(op);

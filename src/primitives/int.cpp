@@ -56,85 +56,85 @@ Int::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Int::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     switch (op->type()) {
     case TokenType::Plus: {
         if (other->type() == Type::Float)
-            return std::make_shared<Float>(this->value() + dynamic_cast<Float *>(other.get())->value());
+            return std::make_shared<Float>(this->value() + dynamic_cast<Float *>(other)->value());
         else
-            return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
+            return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Minus: {
         if (other->type() == Type::Float)
-            return std::make_shared<Float>(this->value() - dynamic_cast<Float *>(other.get())->value());
+            return std::make_shared<Float>(this->value() - dynamic_cast<Float *>(other)->value());
         else
-            return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
+            return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Asterisk: {
         if (other->type() == Type::Float)
-            return std::make_shared<Float>(this->value() * dynamic_cast<Float *>(other.get())->value());
+            return std::make_shared<Float>(this->value() * dynamic_cast<Float *>(other)->value());
         else
-            return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
+            return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Forwardslash: {
         if (other->type() == Type::Float)
-            return std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other.get())->value());
+            return std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other)->value());
         else
-            return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
+            return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Percent: {
         if (other->type() == Type::Float) {
             std::string msg = "cannot use module `%%` with floating point";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Asterisk: {
         if (other->type() == earl::value::Type::Float) {
-            auto _other = dynamic_cast<earl::value::Float *>(other.get());
+            auto _other = dynamic_cast<earl::value::Float *>(other);
             float p = std::pow(static_cast<float>(m_value), static_cast<float>(_other->value()));
             return std::make_shared<earl::value::Float>(p);
         }
-        auto _other = dynamic_cast<earl::value::Int *>(other.get());
+        auto _other = dynamic_cast<earl::value::Int *>(other);
         int p = static_cast<int>(std::pow(static_cast<float>(m_value), static_cast<float>(_other->value())));
         return std::make_shared<earl::value::Int>(p);
     } break;
     case TokenType::Lessthan: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() < dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() < dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() < dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() < dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Greaterthan: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() > dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() > dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() > dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() > dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() == dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() == dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() == dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() == dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Greaterthan_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() >= dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() >= dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() >= dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() >= dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Lessthan_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() <= dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() <= dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() <= dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() <= dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() != dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() != dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() != dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() != dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Pipe: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() || dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() || dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() || dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() || dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Lessthan: {
         if (other->type() != Type::Int) {
@@ -142,7 +142,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Greaterthan: {
         if (other->type() != Type::Int) {
@@ -150,7 +150,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Backtick_Pipe: {
         if (other->type() != Type::Int) {
@@ -158,7 +158,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Backtick_Caret: {
         if (other->type() != Type::Int) {
@@ -166,7 +166,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Backtick_Ampersand: {
         if (other->type() != Type::Int) {
@@ -174,7 +174,7 @@ Int::binop(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -190,16 +190,16 @@ Int::boolean(void) {
 }
 
 void
-Int::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Int::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     switch (other->type()) {
     case Type::Int: {
-        m_value = dynamic_cast<Int *>(other.get())->value();
+        m_value = dynamic_cast<Int *>(other)->value();
     } break;
     case Type::Float: {
-        m_value = static_cast<int>(dynamic_cast<Float *>(other.get())->value());
+        m_value = static_cast<int>(dynamic_cast<Float *>(other)->value());
     } break;
     default: {
         assert(false && "unreachable");
@@ -213,13 +213,13 @@ Int::copy(void) {
 }
 
 bool
-Int::eq(std::shared_ptr<Obj> &other) {
+Int::eq(Obj *other) {
     if (other->type() == Type::Void)
         return true;
 
     if (other->type() != Type::Int)
         return false;
-    return this->value() == dynamic_cast<Int *>(other.get())->value();
+    return this->value() == dynamic_cast<Int *>(other)->value();
 }
 
 std::string
@@ -228,7 +228,7 @@ Int::to_cxxstring(void) {
 }
 
 void
-Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Int::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
     int prev;
 
@@ -236,9 +236,9 @@ Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
         || op->type() == TokenType::Forwardslash_Equals
         || op->type() == TokenType::Percent_Equals) {
         if (other->type() == Type::Int)
-            prev = dynamic_cast<Int *>(other.get())->value();
+            prev = dynamic_cast<Int *>(other)->value();
         else if (other->type() == Type::Float)
-            prev = dynamic_cast<Float *>(other.get())->value();
+            prev = dynamic_cast<Float *>(other)->value();
         else {
             const std::string msg = "invalid type for spec_mutate";
             Err::err_wtok(op);
@@ -288,75 +288,75 @@ Int::set_const(void) {
 }
 
 std::shared_ptr<Obj>
-Int::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     if (other->type() == Type::Float)
-        return std::make_shared<Float>(this->value() + dynamic_cast<Float *>(other.get())->value());
-    return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Float>(this->value() + dynamic_cast<Float *>(other)->value());
+    return std::make_shared<Int>(this->value() + dynamic_cast<Int *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Int::sub(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::sub(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     if (other->type() == Type::Float)
-        return std::make_shared<Float>(this->value() - dynamic_cast<Float *>(other.get())->value());
-    return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Float>(this->value() - dynamic_cast<Float *>(other)->value());
+    return std::make_shared<Int>(this->value() - dynamic_cast<Int *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Int::multiply(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::multiply(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     if (other->type() == Type::Float)
-        return std::make_shared<Float>(this->value() * dynamic_cast<Float *>(other.get())->value());
-    return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Float>(this->value() * dynamic_cast<Float *>(other)->value());
+    return std::make_shared<Int>(this->value() * dynamic_cast<Int *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Int::divide(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::divide(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     if (other->type() == Type::Float)
-        return std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other.get())->value());
-    return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Float>(this->value() / dynamic_cast<Float *>(other)->value());
+    return std::make_shared<Int>(this->value() / dynamic_cast<Int *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Int::modulo(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_EXACT(this, other.get(), op);
-    return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other.get())->value());
+Int::modulo(Token *op, Obj *other) {
+    ASSERT_BINOP_EXACT(this, other, op);
+    return std::make_shared<Int>(this->value() % dynamic_cast<Int *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Int::power(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_EXACT(this, other.get(), op);
-    auto _other = dynamic_cast<earl::value::Int *>(other.get());
+Int::power(Token *op, Obj *other) {
+    ASSERT_BINOP_EXACT(this, other, op);
+    auto _other = dynamic_cast<earl::value::Int *>(other);
     int p = static_cast<int>(std::pow(static_cast<float>(m_value), static_cast<float>(_other->value())));
     return std::make_shared<earl::value::Int>(p);
 }
 
 std::shared_ptr<Obj>
-Int::gtequality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::gtequality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
     case TokenType::Lessthan: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() < dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() < dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() < dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() < dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Greaterthan: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() > dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() > dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() > dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() > dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Greaterthan_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() >= dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() >= dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() >= dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() >= dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Lessthan_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() <= dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() <= dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() <= dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() <= dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -367,18 +367,18 @@ Int::gtequality(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-Int::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Int::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
     case TokenType::Double_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() == dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() == dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() == dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() == dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
         return other->type() == Type::Float ?
-            std::make_shared<Bool>(this->value() != dynamic_cast<Float *>(other.get())->value()) :
-            std::make_shared<Bool>(this->value() != dynamic_cast<Int *>(other.get())->value());
+            std::make_shared<Bool>(this->value() != dynamic_cast<Float *>(other)->value()) :
+            std::make_shared<Bool>(this->value() != dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -389,12 +389,12 @@ Int::equality(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-Int::bitwise(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_EXACT(this, other.get(), op);
+Int::bitwise(Token *op, Obj *other) {
+    ASSERT_BINOP_EXACT(this, other, op);
     switch (op->type()) {
-    case TokenType::Backtick_Pipe:      return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other.get())->value());
-    case TokenType::Backtick_Caret:     return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other.get())->value());
-    case TokenType::Backtick_Ampersand: return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other.get())->value());
+    case TokenType::Backtick_Pipe:      return std::make_shared<Int>(this->value() | dynamic_cast<Int *>(other)->value());
+    case TokenType::Backtick_Caret:     return std::make_shared<Int>(this->value() ^ dynamic_cast<Int *>(other)->value());
+    case TokenType::Backtick_Ampersand: return std::make_shared<Int>(this->value() & dynamic_cast<Int *>(other)->value());
     default: {
         Err::err_wtok(op);
         const std::string msg = "invalid operator";
@@ -404,8 +404,8 @@ Int::bitwise(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-Int::bitshift(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_EXACT(this, other.get(), op);
+Int::bitshift(Token *op, Obj *other) {
+    ASSERT_BINOP_EXACT(this, other, op);
     switch (op->type()) {
     case TokenType::Double_Lessthan: {
         if (other->type() != Type::Int) {
@@ -413,7 +413,7 @@ Int::bitshift(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() << dynamic_cast<Int *>(other)->value());
     } break;
     case TokenType::Double_Greaterthan: {
         if (other->type() != Type::Int) {
@@ -421,7 +421,7 @@ Int::bitshift(Token *op, std::shared_ptr<Obj> &other) {
             const std::string msg = "cannot perform `"+op->lexeme()+"` with a float as the expression";
             throw InterpreterException(msg);
         }
-        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other.get())->value());
+        return std::make_shared<Int>(this->value() >> dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);

@@ -44,30 +44,30 @@ Bool::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Bool::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     switch (op->type()) {
     case TokenType::Lessthan: {
-        return std::make_shared<Bool>(this->value() < dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() < dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Greaterthan: {
-        return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Greaterthan_Equals: {
-        return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Lessthan_Equals: {
-        return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Double_Pipe: {
-        return std::make_shared<Bool>(this->value() || dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() || dynamic_cast<Bool *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -84,10 +84,10 @@ Bool::boolean(void) {
 }
 
 void
-Bool::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Bool::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    m_value = dynamic_cast<Bool *>(other.get())->m_value;
+    m_value = dynamic_cast<Bool *>(other)->m_value;
 }
 
 std::shared_ptr<Obj>
@@ -96,10 +96,10 @@ Bool::copy(void) {
 }
 
 bool
-Bool::eq(std::shared_ptr<Obj> &other) {
+Bool::eq(Obj *other) {
     if (other->type() != Type::Bool)
         return false;
-    return m_value == dynamic_cast<Bool *>(other.get())->value();
+    return m_value == dynamic_cast<Bool *>(other)->value();
 }
 
 std::string
@@ -121,11 +121,11 @@ Bool::unaryop(Token *op) {
 }
 
 std::shared_ptr<Obj>
-Bool::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Bool::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
-    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
-    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
+    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other)->value());
+    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other)->value());
     default: {
         Err::err_wtok(op);
         const std::string msg = "invalid operator";

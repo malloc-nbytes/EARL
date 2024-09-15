@@ -67,11 +67,11 @@ Class::type(void) const {
 }
 
 void
-Class::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Class::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto other0 = dynamic_cast<Class *>(other.get());
+    auto other0 = dynamic_cast<Class *>(other);
     m_stmtclass = other0->m_stmtclass;
     m_ctx = other0->m_ctx;
     m_members = other0->m_members;

@@ -89,7 +89,7 @@ Closure::type(void) const {
 }
 
 void
-Closure::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Closure::mutate(Obj *other, StmtMut *stmt) {
     (void)other;
     ASSERT_CONSTNESS(this, stmt);
     UNIMPLEMENTED("Closure::mutate");
@@ -100,13 +100,6 @@ Closure::copy(void) {
     std::vector<std::pair<Token *, uint32_t>> params = {};
     auto copy = std::make_shared<Closure>(m_expr_closure, m_params, m_owner);
     return copy;
-}
-
-bool
-Closure::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Closure::eq");
-    return true;
 }
 
 std::string

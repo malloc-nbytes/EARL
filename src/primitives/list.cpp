@@ -50,7 +50,7 @@ List::type(void) const {
 }
 
 std::vector<std::shared_ptr<Obj>>
-List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end, Expr *expr) {
+List::slice(Obj *start, Obj *end, Expr *expr) {
     if (start->type() != Type::Void && start->type() != Type::Int) {
         Err::err_wexpr(expr);
         std::string msg = "invalid slice `start` type: `"+type_to_str(start->type())+"`";
@@ -72,12 +72,12 @@ List::slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end, Expr *expr) 
     if (start->type() == Type::Void)
         s = 0;
     else
-        s = dynamic_cast<Int *>(start.get())->value();
+        s = dynamic_cast<Int *>(start)->value();
 
     if (end->type() == Type::Void)
         e = m_value.size();
     else
-        e = dynamic_cast<Int *>(end.get())->value();
+        e = dynamic_cast<Int *>(end)->value();
 
     for (; s < e; ++s) {
         if (s >= m_value.size()) {
@@ -106,7 +106,7 @@ List::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
     case Type::Slice: {
         auto slice = dynamic_cast<Slice *>(idx.get());
         std::shared_ptr<Obj> &s = slice->start(), &e = slice->end();
-        return std::make_shared<List>(this->slice(s, e, expr));
+        return std::make_shared<List>(this->slice(s.get(), e.get(), expr));
     } break;
     default: {
         Err::err_wexpr(expr);
@@ -126,7 +126,7 @@ List::rev(void) {
 }
 
 std::shared_ptr<Bool>
-List::contains(std::shared_ptr<earl::value::Obj> &value) {
+List::contains(Obj *value) {
     for (size_t i = 0; i < m_value.size(); ++i)
         if (m_value.at(i)->eq(value))
             return std::make_shared<Bool>(true);
@@ -134,8 +134,8 @@ List::contains(std::shared_ptr<earl::value::Obj> &value) {
 }
 
 void
-List::pop(std::shared_ptr<Obj> &idx) {
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+List::pop(Obj *idx) {
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
     m_value.erase(m_value.begin() + idx1->value());
 }
 
@@ -164,8 +164,8 @@ List::append_copy(std::shared_ptr<Obj> value) {
 }
 
 std::shared_ptr<List>
-List::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+List::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure);
 
     auto copy = std::make_shared<List>();
     std::vector<std::shared_ptr<Obj>> keep_values={};
@@ -184,8 +184,8 @@ List::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 void
-List::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+List::foreach(Obj *closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure);
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::vector<std::shared_ptr<Obj>> values = {m_value[i]};
         cl->call(values, ctx);
@@ -193,7 +193,7 @@ List::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<List>
-List::map(std::shared_ptr<Closure> &closure, std::shared_ptr<Ctx> &ctx) {
+List::map(Closure *closure, std::shared_ptr<Ctx> &ctx) {
     auto mapped = std::make_shared<List>();
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::vector<std::shared_ptr<Obj>> params = {m_value.at(i)};
@@ -211,10 +211,10 @@ List::back(void) {
 }
 
 std::shared_ptr<Obj>
-List::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+List::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
-    auto other_casted = dynamic_cast<List *>(other.get());
+    auto other_casted = dynamic_cast<List *>(other);
 
     switch (op->type()) {
     case TokenType::Plus: {
@@ -297,11 +297,11 @@ List::boolean(void) {
 }
 
 void
-List::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+List::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto *lst = dynamic_cast<List *>(other.get());
+    auto *lst = dynamic_cast<List *>(other);
     m_value = lst->value();
 }
 
@@ -313,17 +313,17 @@ List::copy(void) {
 }
 
 bool
-List::eq(std::shared_ptr<Obj> &other) {
+List::eq(Obj *other) {
     if (other->type() != Type::List)
         return false;
 
-    auto *lst = dynamic_cast<List *>(other.get());
+    auto *lst = dynamic_cast<List *>(other);
 
     if (lst->value().size() != this->value().size())
         return false;
 
     for (size_t i = 0; i < lst->value().size(); ++i)
-        if (!this->value()[i]->eq(lst->value()[i]))
+        if (!this->value()[i]->eq(lst->value()[i].get()))
             return false;
 
     return true;
@@ -342,13 +342,13 @@ List::to_cxxstring(void) {
 }
 
 void
-List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+List::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        auto otherlst = dynamic_cast<const List *>(other.get());
+        auto otherlst = dynamic_cast<const List *>(other);
         m_value.insert(m_value.end(), otherlst->m_value.begin(), otherlst->m_value.end());
     } break;
     default: {
@@ -377,9 +377,9 @@ List::iter_next(Iterator &it) {
 }
 
 std::shared_ptr<Obj>
-List::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_casted = dynamic_cast<List *>(other.get());
+List::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_casted = dynamic_cast<List *>(other);
     auto list = std::make_shared<List>(this->value());
     list->value().insert(list->value().end(),
                          other_casted->value().begin(),
@@ -388,9 +388,9 @@ List::add(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-List::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_casted = dynamic_cast<List *>(other.get());
+List::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_casted = dynamic_cast<List *>(other);
     int res = 0;
     if (m_value.size() == other_casted->value().size()) {
         res = 1;

@@ -426,7 +426,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         if ((flags & __SHOWFUNS) != 0)
-            std::cout << "[EARL show-fun] " << id << '\n';
+            std::cout << "[EARL show-fun] " << id << std::endl;
 
         auto func = ctx->function_get(id);
 
@@ -978,27 +978,27 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else if (left_value->type() == earl::value::Type::Str) {
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
-        return ER(str->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(str->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Tuple) {
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
-        return ER(tuple->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
+        return ER(tuple->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictStr) {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictChar) {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictFloat) {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";
@@ -1066,7 +1066,7 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             while (start < end)
                 values.push_back(std::make_shared<earl::value::Int>(start++));
         }
-        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+        return ER(std::make_shared<earl::value::List>(std::move(values)), ERT::Literal);
     } break;
     case earl::value::Type::Char: {
         char start = dynamic_cast<earl::value::Char *>(lvalue.get())->value();
@@ -1079,7 +1079,7 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             while (start < end)
                 values.push_back(std::make_shared<earl::value::Char>(start++));
         }
-        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+        return ER(std::make_shared<earl::value::List>(std::move(values)), ERT::Literal);
     }
     default: {
         std::string msg = "invalid type "+earl::value::type_to_str(lvalue->type())+"` for type range";
@@ -1357,41 +1357,41 @@ eval_expr_bin(ExprBinary *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     std::shared_ptr<earl::value::Obj> result = nullptr;
     switch (expr->m_op.get()->type()) {
     case TokenType::Plus: {
-        result = lhs_value->add(expr->m_op.get(), rhs_value);
+        result = lhs_value->add(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Minus: {
-        result = lhs_value->sub(expr->m_op.get(), rhs_value);
+        result = lhs_value->sub(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Asterisk: {
-        result = lhs_value->multiply(expr->m_op.get(), rhs_value);
+        result = lhs_value->multiply(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Forwardslash: {
-        result = lhs_value->divide(expr->m_op.get(), rhs_value);
+        result = lhs_value->divide(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Percent: {
-        result = lhs_value->modulo(expr->m_op.get(), rhs_value);
+        result = lhs_value->modulo(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Double_Asterisk: {
-        result = lhs_value->power(expr->m_op.get(), rhs_value);
+        result = lhs_value->power(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Greaterthan:
     case TokenType::Lessthan:
     case TokenType::Greaterthan_Equals:
     case TokenType::Lessthan_Equals: {
-        result = lhs_value->gtequality(expr->m_op.get(), rhs_value);
+        result = lhs_value->gtequality(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Double_Equals:
     case TokenType::Bang_Equals: {
-        result = lhs_value->equality(expr->m_op.get(), rhs_value);
+        result = lhs_value->equality(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Backtick_Pipe:
     case TokenType::Backtick_Caret:
     case TokenType::Backtick_Ampersand: {
-        result = lhs_value->bitwise(expr->m_op.get(), rhs_value);
+        result = lhs_value->bitwise(expr->m_op.get(), rhs_value.get());
     } break;
     case TokenType::Double_Lessthan:
     case TokenType::Double_Greaterthan: {
-        result = lhs_value->bitshift(expr->m_op.get(), rhs_value);
+        result = lhs_value->bitshift(expr->m_op.get(), rhs_value.get());
     } break;
     default: {
         Err::err_wtok(expr->m_op.get());
@@ -1751,7 +1751,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
 
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
-        l->mutate(r, stmt);
+        l->mutate(r.get(), stmt);
     } break;
     case TokenType::Plus_Equals:
     case TokenType::Minus_Equals:
@@ -1761,7 +1761,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     case TokenType::Backtick_Pipe_Equals:
     case TokenType::Backtick_Ampersand_Equals:
     case TokenType::Backtick_Caret_Equals: {
-        l->spec_mutate(stmt->m_equals.get(), r, stmt);
+        l->spec_mutate(stmt->m_equals.get(), r.get(), stmt);
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());
@@ -2026,9 +2026,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
         if (result && result->type() == earl::value::Type::Continue) {
             if (lt)
-                start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+                start->mutate(std::make_shared<earl::value::Int>(start->value()+1).get(), nullptr);
             else if (gt)
-                start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+                start->mutate(std::make_shared<earl::value::Int>(start->value()-1).get(), nullptr);
             continue;
         }
 
@@ -2036,9 +2036,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
 
         if (lt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+            start->mutate(std::make_shared<earl::value::Int>(start->value()+1).get(), nullptr);
         else if (gt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+            start->mutate(std::make_shared<earl::value::Int>(start->value()-1).get(), nullptr);
     }
 
     ctx->variable_remove(enumerator->id());
@@ -2172,7 +2172,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
             not_some:
                 ER _potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx, true);
                 potential_match = unpack_ER(_potential_match, ctx, true);
-                if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
+                if (match_value->eq(potential_match.get()) || potential_match->type() == earl::value::Type::Void) {
                     if (branch->m_when.has_value()) {
                         ER _guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx, true);
                         guard = unpack_ER(_guard, ctx, true);

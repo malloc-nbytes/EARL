@@ -72,13 +72,13 @@ TypeKW::type(void) const {
 }
 
 std::shared_ptr<Obj>
-TypeKW::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+TypeKW::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     if (op->type() == TokenType::Double_Equals)
-        return std::make_shared<Bool>(m_ty == std::static_pointer_cast<TypeKW>(other)->ty());
+        return std::make_shared<Bool>(m_ty == dynamic_cast<TypeKW *>(other)->ty());
     else if (op->type() == TokenType::Bang_Equals)
-        return std::make_shared<Bool>(m_ty != std::static_pointer_cast<TypeKW>(other)->ty());
+        return std::make_shared<Bool>(m_ty != dynamic_cast<TypeKW *>(other)->ty());
 
     Err::err_wtok(op);
     const std::string msg = "Invalid binary operation for type " + earl::value::type_to_str(m_ty);
@@ -86,10 +86,10 @@ TypeKW::binop(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 void
-TypeKW::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+TypeKW::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    m_ty = dynamic_cast<TypeKW *>(other.get())->ty();
+    m_ty = dynamic_cast<TypeKW *>(other)->ty();
 }
 
 std::shared_ptr<Obj>
@@ -98,10 +98,10 @@ TypeKW::copy(void) {
 }
 
 bool
-TypeKW::eq(std::shared_ptr<Obj> &other) {
+TypeKW::eq(Obj *other) {
     if (other->type() != Type::TypeKW)
         return false;
-    return m_ty == dynamic_cast<TypeKW *>(other.get())->ty();
+    return m_ty == dynamic_cast<TypeKW *>(other)->ty();
 }
 
 std::string
@@ -110,13 +110,13 @@ TypeKW::to_cxxstring(void) {
 }
 
 std::shared_ptr<Obj>
-TypeKW::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+TypeKW::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     if (op->type() == TokenType::Double_Equals)
-        return std::make_shared<Bool>(m_ty == std::static_pointer_cast<TypeKW>(other)->ty());
+        return std::make_shared<Bool>(m_ty == dynamic_cast<TypeKW *>(other)->ty());
     else if (op->type() == TokenType::Bang_Equals)
-        return std::make_shared<Bool>(m_ty != std::static_pointer_cast<TypeKW>(other)->ty());
+        return std::make_shared<Bool>(m_ty != dynamic_cast<TypeKW *>(other)->ty());
 
     Err::err_wtok(op);
     const std::string msg = "Invalid binary operation for type " + earl::value::type_to_str(m_ty);

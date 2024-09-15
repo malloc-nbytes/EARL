@@ -57,14 +57,14 @@ Str::value(void) {
 }
 
 std::shared_ptr<Char>
-Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
+Str::nth(Obj *idx, Expr *expr) {
     if (idx->type() != Type::Int) {
         Err::err_wexpr(expr);
         std::string msg = "invalid index when accessing value in a str";
         throw InterpreterException(msg);
     }
 
-    auto index = dynamic_cast<Int *>(idx.get());
+    auto index = dynamic_cast<Int *>(idx);
     int I = index->value();
     if (I < 0 || static_cast<size_t>(I) >= m_value.size()) {
         Err::err_wexpr(expr);
@@ -86,7 +86,7 @@ Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
 
 // TODO: Adhere to new string optimization
 std::shared_ptr<List>
-Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
+Str::split(Obj *delim, Expr *expr) {
     if (delim->type() != Type::Str) {
         Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `split` with non-str type";
@@ -96,7 +96,7 @@ Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
     this->update_changed();
 
     std::vector<std::shared_ptr<Obj>> splits = {};
-    std::string delim_str = dynamic_cast<Str *>(delim.get())->value();
+    std::string delim_str = dynamic_cast<Str *>(delim)->value();
     std::string::size_type start = 0;
 
     auto pos = this->value().find(delim_str);
@@ -113,7 +113,7 @@ Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
 }
 
 std::shared_ptr<Str>
-Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) {
+Str::substr(Obj *idx1, Obj *idx2, Expr *expr) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
         Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `substr` with non-int types";
@@ -122,16 +122,16 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) 
 
     this->update_changed();
 
-    int S = dynamic_cast<Int *>(idx1.get())->value();
-    int N = dynamic_cast<Int *>(idx2.get())->value();
+    int S = dynamic_cast<Int *>(idx1)->value();
+    int N = dynamic_cast<Int *>(idx2)->value();
 
     return std::make_shared<Str>(m_value.substr(S, N));
 }
 
 void
-Str::pop(std::shared_ptr<Obj> &idx, Expr *expr) {
+Str::pop(Obj *idx, Expr *expr) {
     (void)expr;
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
     int I = idx1->value();
     this->update_changed();
     m_value.erase(m_value.begin() + I);
@@ -179,14 +179,14 @@ Str::append(char c) {
 }
 
 void
-Str::append(std::shared_ptr<Obj> c) {
+Str::append(Obj *c) {
     if (c->type() == Type::Char) {
-        auto cx = dynamic_cast<Char*>(c.get());
+        auto cx = dynamic_cast<Char *>(c);
         m_value.push_back(cx->value());
         m_chars.push_back(nullptr);
     }
     else {
-        auto s = dynamic_cast<Str *>(c.get());
+        auto s = dynamic_cast<Str *>(c);
         m_value += s->value();
         for (int i=0; i < s->value().size(); ++i)
             m_chars.push_back(nullptr);
@@ -201,15 +201,15 @@ Str::append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr) {
             const std::string msg = "type str is incompatible with type `"+earl::value::type_to_str(values.at(i)->type())+"`";
             throw InterpreterException(msg);
         }
-        this->append(values[i]);
+        this->append(values[i].get());
     }
 }
 
 std::shared_ptr<Str>
-Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+Str::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     this->update_changed();
 
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+    Closure *cl = dynamic_cast<Closure *>(closure);
 
     auto acc = std::make_shared<Str>();
 
@@ -228,14 +228,14 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
         std::vector<std::shared_ptr<Obj>> values = {cx};
         std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
         if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-            acc->append(cx);
+            acc->append(cx.get());
     }
 
     return acc;
 }
 
 std::shared_ptr<Bool>
-Str::contains(std::shared_ptr<Char> &value) {
+Str::contains(Char *value) {
     for (size_t i = 0; i < m_value.size(); ++i) {
         if (m_chars.at(i) && m_chars.at(i)->value() != m_value.at(i))
             m_value.at(i) = m_chars.at(i)->value();
@@ -247,9 +247,9 @@ Str::contains(std::shared_ptr<Char> &value) {
 }
 
 void
-Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+Str::foreach(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     this->update_changed();
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+    Closure *cl = dynamic_cast<Closure *>(closure);
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::shared_ptr<Char> cx = nullptr;
         if (m_chars.at(i)) {
@@ -273,18 +273,18 @@ Str::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Str::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Str::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     this->update_changed();
     switch (op->type()) {
     case TokenType::Plus: {
-        return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -328,11 +328,11 @@ Str::__get_elem(size_t idx) {
 }
 
 void
-Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Str::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    Str *otherstr = dynamic_cast<Str *>(other.get());
+    Str *otherstr = dynamic_cast<Str *>(other);
     m_value = otherstr->m_value;
     m_chars = otherstr->m_chars;
 }
@@ -344,10 +344,10 @@ Str::copy(void) {
 }
 
 bool
-Str::eq(std::shared_ptr<Obj> &other) {
+Str::eq(Obj *other) {
     if (other->type() != Type::Str)
         return false;
-    return this->value() == dynamic_cast<Str *>(other.get())->value();
+    return this->value() == dynamic_cast<Str *>(other)->value();
 }
 
 std::string
@@ -356,8 +356,8 @@ Str::to_cxxstring(void) {
 }
 
 void
-Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Str::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     this->update_changed();
@@ -416,34 +416,34 @@ Str::iter_next(Iterator &it) {
 }
 
 std::shared_ptr<Obj>
-Str::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Str::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     if (other->type() == Type::Char)
-        return std::make_shared<Str>(this->value() + dynamic_cast<Char *>(other.get())->value());
-    return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Str>(this->value() + dynamic_cast<Char *>(other)->value());
+    return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other)->value());
 }
 
 std::shared_ptr<Obj>
-Str::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Str::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
     case TokenType::Double_Equals: {
         if (other->type() == Type::Char) {
-            auto ch = dynamic_cast<Char *>(other.get());
+            auto ch = dynamic_cast<Char *>(other);
             if (this->value().size() != 1)
                 return std::make_shared<Bool>(false);
             return std::make_shared<Bool>(this->value()[0] == ch->value());
         }
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
         if (other->type() == Type::Char) {
-            auto ch = dynamic_cast<Char *>(other.get());
+            auto ch = dynamic_cast<Char *>(other);
             if (this->value().size() != 1)
                 return std::make_shared<Bool>(true);
             return std::make_shared<Bool>(this->value()[0] != ch->value());
         }
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
