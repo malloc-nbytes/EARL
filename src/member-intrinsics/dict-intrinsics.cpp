@@ -130,19 +130,19 @@ Intrinsics::intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
     switch (obj->type()) {
     case earl::value::Type::DictInt: {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(obj.get());
-        return std::make_shared<earl::value::Bool>(dict->has_value(value[0]));
+        return std::make_shared<earl::value::Bool>(dict->has_value(value[0].get()));
     } break;
     case earl::value::Type::DictStr: {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(obj.get());
-        return std::make_shared<earl::value::Bool>(dict->has_value(value[0]));
+        return std::make_shared<earl::value::Bool>(dict->has_value(value[0].get()));
     } break;
     case earl::value::Type::DictChar: {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(obj.get());
-        return std::make_shared<earl::value::Bool>(dict->has_value(value[0]));
+        return std::make_shared<earl::value::Bool>(dict->has_value(value[0].get()));
     } break;
     case earl::value::Type::DictFloat: {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(obj.get());
-        return std::make_shared<earl::value::Bool>(dict->has_value(value[0]));
+        return std::make_shared<earl::value::Bool>(dict->has_value(value[0].get()));
     } break;
     default: {
         Err::err_wexpr(expr);

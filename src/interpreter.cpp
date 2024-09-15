@@ -978,27 +978,27 @@ eval_expr_term_array_access(ExprArrayAccess *expr, std::shared_ptr<Ctx> &ctx, bo
     }
     else if (left_value->type() == earl::value::Type::Str) {
         auto str = dynamic_cast<earl::value::Str *>(left_value.get());
-        return ER(str->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(str->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::Tuple) {
         auto tuple = dynamic_cast<earl::value::Tuple *>(left_value.get());
-        return ER(tuple->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
+        return ER(tuple->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::TupleAccess));
     }
     else if (left_value->type() == earl::value::Type::DictInt) {
         auto dict = dynamic_cast<earl::value::Dict<int> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictStr) {
         auto dict = dynamic_cast<earl::value::Dict<std::string> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictChar) {
         auto dict = dynamic_cast<earl::value::Dict<char> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else if (left_value->type() == earl::value::Type::DictFloat) {
         auto dict = dynamic_cast<earl::value::Dict<double> *>(left_value.get());
-        return ER(dict->nth(idx_value, expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
+        return ER(dict->nth(idx_value.get(), expr), static_cast<ERT>(ERT::Literal|ERT::ListAccess));
     }
     else {
         std::string msg = "cannot use `[]` on non-list, non-tuple, non-dict, or non-str type";

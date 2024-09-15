@@ -418,7 +418,7 @@ namespace earl {
             std::vector<std::shared_ptr<Obj>> &value(void);
 
             /// @brief Get a sublist of the vector from `start` to `finish`
-            std::vector<std::shared_ptr<Obj>> slice(std::shared_ptr<Obj> &start, std::shared_ptr<Obj> &end, Expr *expr);
+            std::vector<std::shared_ptr<Obj>> slice(Obj *start, Obj *end, Expr *expr);
 
             /// @brief Get the `nth` element from the list
             /// @note This is called from the intrinsic `nth` member function
@@ -438,12 +438,12 @@ namespace earl {
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
-            void pop(std::shared_ptr<Obj> &idx);
-            std::shared_ptr<List> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-            std::shared_ptr<List> map(std::shared_ptr<Closure> &closure, std::shared_ptr<Ctx> &ctx);
+            void pop(Obj *idx);
+            std::shared_ptr<List> filter(Obj *closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<List> map(Closure *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Obj> back(void);
-            std::shared_ptr<Bool> contains(std::shared_ptr<earl::value::Obj> &value);
+            std::shared_ptr<Bool> contains(Obj *value);
 
             // Implements
             Type type(void) const                                                         override;
@@ -486,12 +486,12 @@ namespace earl {
             Tuple(std::vector<std::shared_ptr<Obj>> values = {});
 
             std::vector<std::shared_ptr<Obj>> &value(void);
-            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &idx, Expr *expr);
+            std::shared_ptr<Obj> nth(Obj *idx, Expr *expr);
             std::shared_ptr<Obj> back(void);
-            std::shared_ptr<Tuple> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<Tuple> filter(Obj *closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Tuple> rev(void);
-            std::shared_ptr<Bool> contains(std::shared_ptr<Obj> &value);
+            std::shared_ptr<Bool> contains(Obj *value);
 
             // Implements
             Type type(void) const                                                         override;
@@ -515,22 +515,22 @@ namespace earl {
             Str(std::string value = "");
             Str(std::vector<std::shared_ptr<Char>> chars);
 
-            std::string value(void); // NOTE: needs optimization
+            std::string value(void);
             std::vector<std::shared_ptr<Char>> value_as_earlchar(void);
             std::shared_ptr<Char> __get_elem(size_t idx);
-            std::shared_ptr<Char> nth(std::shared_ptr<Obj> &idx, Expr *expr);
-            std::shared_ptr<List> split(std::shared_ptr<Obj> &delim, Expr *expr);
-            std::shared_ptr<Str> substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr);
-            void pop(std::shared_ptr<Obj> &idx, Expr *expr);
+            std::shared_ptr<Char> nth(Obj *idx, Expr *expr);
+            std::shared_ptr<List> split(Obj *delim, Expr *expr);
+            std::shared_ptr<Str> substr(Obj *idx1, Obj *idx2, Expr *expr);
+            void pop(Obj *idx, Expr *expr);
             std::shared_ptr<Obj> back(void);
             std::shared_ptr<Str> rev(void);
             void append(char c);
             void append(const std::string &value);
             void append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr);
             void append(Obj *c);
-            std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-            void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
-            std::shared_ptr<Bool> contains(std::shared_ptr<Char> &value);
+            std::shared_ptr<Str> filter(Obj *closure, std::shared_ptr<Ctx> &ctx);
+            void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
+            std::shared_ptr<Bool> contains(Char *value);
             void update_changed(void);
 
             // Implements
@@ -604,10 +604,10 @@ namespace earl {
 
             void insert(T key, std::shared_ptr<Obj> value);
             Type ktype(void) const;
-            std::shared_ptr<Obj> nth(std::shared_ptr<Obj> &key, Expr *expr);
+            std::shared_ptr<Obj> nth(Obj *key, Expr *expr);
             std::unordered_map<T, std::shared_ptr<Obj>> &extract(void);
             bool has_key(T key) const;
-            bool has_value(std::shared_ptr<Obj> &value) const;
+            bool has_value(Obj *value) const;
 
             // Implements
             Type type(void) const                                                         override;
@@ -837,14 +837,14 @@ earl::value::Dict<T>::ktype(void) const {
 }
 
 template <typename T> std::shared_ptr<earl::value::Obj>
-earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
+earl::value::Dict<T>::nth(earl::value::Obj *key, Expr *expr) {
     if constexpr (std::is_same_v<T, int>) {
         if (key->type() != earl::value::Type::Int) {
             Err::err_wexpr(expr);
             const std::string msg = "key must be of type int";
             throw InterpreterException(msg);
         }
-        int k = dynamic_cast<earl::value::Int *>(key.get())->value();
+        int k = dynamic_cast<earl::value::Int *>(key)->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
             return std::make_shared<earl::value::Option>();
@@ -856,7 +856,7 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
             const std::string msg = "key must be of type str";
             throw InterpreterException(msg);
         }
-        std::string k = dynamic_cast<earl::value::Str *>(key.get())->value();
+        std::string k = dynamic_cast<earl::value::Str *>(key)->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
             return std::make_shared<earl::value::Option>();
@@ -868,7 +868,7 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
             const std::string msg = "key must be of type float";
             throw InterpreterException(msg);
         }
-        double k = dynamic_cast<earl::value::Float *>(key.get())->value();
+        double k = dynamic_cast<earl::value::Float *>(key)->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
             return std::make_shared<earl::value::Option>();
@@ -880,7 +880,7 @@ earl::value::Dict<T>::nth(std::shared_ptr<earl::value::Obj> &key, Expr *expr) {
             const std::string msg = "key must be of type char";
             throw InterpreterException(msg);
         }
-        char k = dynamic_cast<earl::value::Char *>(key.get())->value();
+        char k = dynamic_cast<earl::value::Char *>(key)->value();
         auto value = m_map.find(k);
         if (value == m_map.end())
             return std::make_shared<earl::value::Option>();
@@ -901,9 +901,9 @@ earl::value::Dict<T>::has_key(T key) const {
 }
 
 template <typename T> bool
-earl::value::Dict<T>::has_value(std::shared_ptr<earl::value::Obj> &value) const {
+earl::value::Dict<T>::has_value(earl::value::Obj *value) const {
     for (auto &pair : m_map)
-        if (pair.second->eq(value.get()))
+        if (pair.second->eq(value))
             return true;
     return false;
 }

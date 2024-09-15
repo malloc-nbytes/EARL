@@ -57,14 +57,14 @@ Str::value(void) {
 }
 
 std::shared_ptr<Char>
-Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
+Str::nth(Obj *idx, Expr *expr) {
     if (idx->type() != Type::Int) {
         Err::err_wexpr(expr);
         std::string msg = "invalid index when accessing value in a str";
         throw InterpreterException(msg);
     }
 
-    auto index = dynamic_cast<Int *>(idx.get());
+    auto index = dynamic_cast<Int *>(idx);
     int I = index->value();
     if (I < 0 || static_cast<size_t>(I) >= m_value.size()) {
         Err::err_wexpr(expr);
@@ -86,7 +86,7 @@ Str::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
 
 // TODO: Adhere to new string optimization
 std::shared_ptr<List>
-Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
+Str::split(Obj *delim, Expr *expr) {
     if (delim->type() != Type::Str) {
         Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `split` with non-str type";
@@ -96,7 +96,7 @@ Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
     this->update_changed();
 
     std::vector<std::shared_ptr<Obj>> splits = {};
-    std::string delim_str = dynamic_cast<Str *>(delim.get())->value();
+    std::string delim_str = dynamic_cast<Str *>(delim)->value();
     std::string::size_type start = 0;
 
     auto pos = this->value().find(delim_str);
@@ -113,7 +113,7 @@ Str::split(std::shared_ptr<Obj> &delim, Expr *expr) {
 }
 
 std::shared_ptr<Str>
-Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) {
+Str::substr(Obj *idx1, Obj *idx2, Expr *expr) {
     if (idx1->type() != Type::Int || idx2->type() != Type::Int) {
         Err::err_wexpr(expr);
         const std::string msg = "cannot use member intrinsic `substr` with non-int types";
@@ -122,16 +122,16 @@ Str::substr(std::shared_ptr<Obj> &idx1, std::shared_ptr<Obj> &idx2, Expr *expr) 
 
     this->update_changed();
 
-    int S = dynamic_cast<Int *>(idx1.get())->value();
-    int N = dynamic_cast<Int *>(idx2.get())->value();
+    int S = dynamic_cast<Int *>(idx1)->value();
+    int N = dynamic_cast<Int *>(idx2)->value();
 
     return std::make_shared<Str>(m_value.substr(S, N));
 }
 
 void
-Str::pop(std::shared_ptr<Obj> &idx, Expr *expr) {
+Str::pop(Obj *idx, Expr *expr) {
     (void)expr;
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idx.get());
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
     int I = idx1->value();
     this->update_changed();
     m_value.erase(m_value.begin() + I);
@@ -206,10 +206,10 @@ Str::append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr) {
 }
 
 std::shared_ptr<Str>
-Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+Str::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     this->update_changed();
 
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+    Closure *cl = dynamic_cast<Closure *>(closure);
 
     auto acc = std::make_shared<Str>();
 
@@ -235,7 +235,7 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Bool>
-Str::contains(std::shared_ptr<Char> &value) {
+Str::contains(Char *value) {
     for (size_t i = 0; i < m_value.size(); ++i) {
         if (m_chars.at(i) && m_chars.at(i)->value() != m_value.at(i))
             m_value.at(i) = m_chars.at(i)->value();
@@ -247,9 +247,9 @@ Str::contains(std::shared_ptr<Char> &value) {
 }
 
 void
-Str::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
+Str::foreach(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     this->update_changed();
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+    Closure *cl = dynamic_cast<Closure *>(closure);
     for (size_t i = 0; i < m_value.size(); ++i) {
         std::shared_ptr<Char> cx = nullptr;
         if (m_chars.at(i)) {

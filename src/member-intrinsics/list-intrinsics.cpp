@@ -58,11 +58,11 @@ Intrinsics::intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,
     }
     else if (obj->type() == earl::value::Type::Str) {
         earl::value::Str *str = dynamic_cast<earl::value::Str *>(obj.get());
-        return str->nth(idx[0], nullptr);//CHANGEME
+        return str->nth(idx[0].get(), nullptr);//CHANGEME
     }
     else if (obj->type() == earl::value::Type::Tuple) {
         earl::value::Tuple *tuple = dynamic_cast<earl::value::Tuple *>(obj.get());
-        return tuple->nth(idx[0], nullptr);//CHANGEME
+        return tuple->nth(idx[0].get(), nullptr);//CHANGEME
     }
     else {
         Err::err_wexpr(expr);
@@ -95,11 +95,11 @@ Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter", expr);
     if (obj->type() == earl::value::Type::List)
-        return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0), ctx);
+        return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0).get(), ctx);
     else if (obj->type() == earl::value::Type::Tuple)
-        return dynamic_cast<earl::value::Tuple *>(obj.get())->filter(closure.at(0), ctx);
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->filter(closure.at(0).get(), ctx);
     else
-        return dynamic_cast<earl::value::Str *>(obj.get())->filter(closure.at(0), ctx);
+        return dynamic_cast<earl::value::Str *>(obj.get())->filter(closure.at(0).get(), ctx);
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -110,11 +110,11 @@ Intrinsics::intrinsic_member_foreach(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "foreach", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "foreach", expr);
     if (obj->type() == earl::value::Type::List)
-        dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0), ctx);
+        dynamic_cast<earl::value::List *>(obj.get())->foreach(closure.at(0).get(), ctx);
     else if (obj->type() == earl::value::Type::Tuple)
-        dynamic_cast<earl::value::Tuple *>(obj.get())->foreach(closure.at(0), ctx);
+        dynamic_cast<earl::value::Tuple *>(obj.get())->foreach(closure.at(0).get(), ctx);
     else
-        dynamic_cast<earl::value::Str *>(obj.get())->foreach(closure.at(0), ctx);
+        dynamic_cast<earl::value::Str *>(obj.get())->foreach(closure.at(0).get(), ctx);
     return std::make_shared<earl::value::Void>();
 }
 
@@ -156,9 +156,9 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop", expr);
     if (obj->type() == earl::value::Type::List)
-        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0]);
+        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0].get());
     else
-        dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0], expr);
+        dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0].get(), expr);
     return std::make_shared<earl::value::Void>();
 }
 
@@ -171,7 +171,7 @@ Intrinsics::intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(value, 1, "contains", expr);
 
     if (obj->type() == earl::value::Type::List)
-        return dynamic_cast<earl::value::List *>(obj.get())->contains(value[0]);
+        return dynamic_cast<earl::value::List *>(obj.get())->contains(value[0].get());
     else if (obj->type() == earl::value::Type::Str) {
         if (value[0]->type() != earl::value::Type::Char) {
             Err::err_wexpr(expr);
@@ -179,10 +179,10 @@ Intrinsics::intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
             throw InterpreterException(msg);
         }
         auto ch = std::dynamic_pointer_cast<earl::value::Char>(value[0]);
-        return dynamic_cast<earl::value::Str *>(obj.get())->contains(ch);
+        return dynamic_cast<earl::value::Str *>(obj.get())->contains(ch.get());
     }
     else if (obj->type() == earl::value::Type::Tuple)
-        return dynamic_cast<earl::value::Tuple *>(obj.get())->contains(value[0]);
+        return dynamic_cast<earl::value::Tuple *>(obj.get())->contains(value[0].get());
     else {
         Err::err_wexpr(expr);
         const std::string msg = "cannot call intrinsic method `contains` on non list-adjacent type";
@@ -200,5 +200,5 @@ Intrinsics::intrinsic_member_map(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "map", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "map", expr);
     auto cl = std::dynamic_pointer_cast<earl::value::Closure>(closure[0]);
-    return dynamic_cast<earl::value::List *>(obj.get())->map(cl, ctx);
+    return dynamic_cast<earl::value::List *>(obj.get())->map(cl.get(), ctx);
 }

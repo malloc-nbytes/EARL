@@ -42,10 +42,10 @@ Tuple::value(void) {
 }
 
 std::shared_ptr<Obj>
-Tuple::nth(std::shared_ptr<Obj> &idx, Expr *expr) {
+Tuple::nth(Obj *idx, Expr *expr) {
     switch (idx->type()) {
     case Type::Int: {
-        auto index = dynamic_cast<Int *>(idx.get());
+        auto index = dynamic_cast<Int *>(idx);
         if (index->value() < 0 || static_cast<size_t>(index->value()) >= this->value().size()) {
             Err::err_wexpr(expr);
             std::string msg = "index "+std::to_string(index->value())+" is out of range of length "+std::to_string(this->value().size());
@@ -69,8 +69,8 @@ Tuple::back(void) {
 }
 
 std::shared_ptr<Tuple>
-Tuple::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+Tuple::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure);
 
     auto copy = std::make_shared<Tuple>();
     std::vector<std::shared_ptr<Obj>> keep_values = {};
@@ -88,8 +88,8 @@ Tuple::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 void
-Tuple::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
-    Closure *cl = dynamic_cast<Closure *>(closure.get());
+Tuple::foreach(Obj *closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure);
     for (size_t i = 0; i < m_values.size(); ++i) {
         std::vector<std::shared_ptr<Obj>> values = {m_values[i]};
         cl->call(values, ctx);
@@ -97,9 +97,9 @@ Tuple::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<Bool>
-Tuple::contains(std::shared_ptr<Obj> &value) {
+Tuple::contains(Obj *value) {
     for (size_t i = 0; i < m_values.size(); ++i)
-        if (m_values.at(i)->eq(value.get()))
+        if (m_values.at(i)->eq(value))
             return std::make_shared<Bool>(true);
     return std::make_shared<Bool>(false);
 }
