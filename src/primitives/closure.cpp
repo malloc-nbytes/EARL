@@ -102,13 +102,6 @@ Closure::copy(void) {
     return copy;
 }
 
-bool
-Closure::eq(std::shared_ptr<Obj> &other) {
-    (void)other;
-    UNIMPLEMENTED("Closure::eq");
-    return true;
-}
-
 std::string
 Closure::to_cxxstring(void) {
     std::string res = "<Closure { ";

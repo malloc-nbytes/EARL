@@ -65,11 +65,11 @@ Slice::copy(void) {
 }
 
 bool
-Slice::eq(std::shared_ptr<Obj> &other) {
+Slice::eq(Obj *other) {
     if (other->type() != Type::Slice)
         return false;
-    auto __other = dynamic_cast<Slice *>(other.get());
-    return m_start->eq(__other->start()) && m_end->eq(__other->end());
+    auto __other = dynamic_cast<Slice *>(other);
+    return m_start->eq(__other->start().get()) && m_end->eq(__other->end().get());
 }
 
 std::string

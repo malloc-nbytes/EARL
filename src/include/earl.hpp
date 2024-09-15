@@ -173,7 +173,7 @@ namespace earl {
             /// value with another value
             /// @param op The binary operator
             /// @param other The object to perform the binop with
-            virtual std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other);
+            virtual std::shared_ptr<Obj> binop(Token *op, Obj *other);
 
             /// @brief Get the evaluation when put into
             /// a conditional to evaluate to either true or false
@@ -190,7 +190,7 @@ namespace earl {
             /// @brief Check the equality of two objects, not just by their values.
             /// @param other The object to compare
             /// @return true on equal, false otherwise
-            virtual bool eq(std::shared_ptr<Obj> &other);
+            virtual bool eq(Obj *other);
 
             /// @brief Convert the value of an object to a cxx std::string
             /// @return The stringified version of the value
@@ -245,10 +245,10 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
@@ -271,11 +271,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
@@ -307,11 +307,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
@@ -337,11 +337,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
@@ -359,10 +359,10 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
             std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
@@ -377,10 +377,10 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
         };
 
@@ -400,7 +400,6 @@ namespace earl {
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
             std::string to_cxxstring(void)                                                override;
 
         private:
@@ -448,11 +447,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             Iterator iter_begin(void)                                                     override;
@@ -475,7 +474,7 @@ namespace earl {
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
 
         private:
@@ -496,10 +495,10 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             Iterator iter_begin(void)                                                     override;
             Iterator iter_end(void)                                                       override;
@@ -536,11 +535,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
             Iterator iter_begin(void)    override;
@@ -614,7 +613,7 @@ namespace earl {
             Type type(void) const                                                         override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             Iterator iter_begin(void)    override;
             Iterator iter_end(void)      override;
@@ -690,11 +689,11 @@ namespace earl {
 
             // Implements
             Type type(void) const                                                         override;
-            std::shared_ptr<Obj> binop(Token *op, std::shared_ptr<Obj> &other)            override;
+            std::shared_ptr<Obj> binop(Token *op, Obj *other)                             override;
             bool boolean(void)                                                            override;
             void mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt)                 override;
             std::shared_ptr<Obj> copy(void)                                               override;
-            bool eq(std::shared_ptr<Obj> &other)                                          override;
+            bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
@@ -904,7 +903,7 @@ earl::value::Dict<T>::has_key(T key) const {
 template <typename T> bool
 earl::value::Dict<T>::has_value(std::shared_ptr<earl::value::Obj> &value) const {
     for (auto &pair : m_map)
-        if (pair.second->eq(value))
+        if (pair.second->eq(value.get()))
             return true;
     return false;
 }
@@ -936,7 +935,7 @@ earl::value::Dict<T>::copy(void) {
 }
 
 template <typename T> bool
-earl::value::Dict<T>::eq(std::shared_ptr<earl::value::Obj> &other) {
+earl::value::Dict<T>::eq(earl::value::Obj *other) {
     UNIMPLEMENTED("Dict::eq");
 }
 

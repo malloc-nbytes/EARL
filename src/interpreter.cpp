@@ -2172,7 +2172,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
             not_some:
                 ER _potential_match = Interpreter::eval_expr(branch->m_expr[j].get(), ctx, true);
                 potential_match = unpack_ER(_potential_match, ctx, true);
-                if (match_value->eq(potential_match) || potential_match->type() == earl::value::Type::Void) {
+                if (match_value->eq(potential_match.get()) || potential_match->type() == earl::value::Type::Void) {
                     if (branch->m_when.has_value()) {
                         ER _guard = Interpreter::eval_expr(branch->m_when.value().get(), ctx, true);
                         guard = unpack_ER(_guard, ctx, true);

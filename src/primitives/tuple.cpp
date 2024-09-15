@@ -99,7 +99,7 @@ Tuple::foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<Bool>
 Tuple::contains(std::shared_ptr<Obj> &value) {
     for (size_t i = 0; i < m_values.size(); ++i)
-        if (m_values.at(i)->eq(value))
+        if (m_values.at(i)->eq(value.get()))
             return std::make_shared<Bool>(true);
     return std::make_shared<Bool>(false);
 }
@@ -119,10 +119,10 @@ Tuple::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Tuple::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Tuple::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
-    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+    auto other_tuple = dynamic_cast<Tuple *>(other);
     switch (op->type()) {
     case TokenType::Plus: {
         std::vector<std::shared_ptr<Obj>> values = {};
@@ -134,7 +134,7 @@ Tuple::binop(Token *op, std::shared_ptr<Obj> &other) {
         if (m_values.size() != other_tuple->value().size())
             return std::make_shared<Bool>(false);
         for (size_t i = 0; i < m_values.size(); ++i) {
-            if (!m_values[i]->eq(other_tuple->value()[i]))
+            if (!m_values[i]->eq(other_tuple->value()[i].get()))
                 return std::make_shared<Bool>(false);
         }
         return std::make_shared<Bool>(true);
@@ -162,16 +162,16 @@ Tuple::copy(void) {
 }
 
 bool
-Tuple::eq(std::shared_ptr<Obj> &other) {
+Tuple::eq(Obj *other) {
     if (this->type() != other->type())
         return false;
 
-    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+    auto other_tuple = dynamic_cast<Tuple *>(other);
     if (m_values.size() != other_tuple->value().size())
         return false;
 
     for (size_t i = 0; i < m_values.size(); ++i) {
-        if (!m_values[i]->eq(other_tuple->value()[i]))
+        if (!m_values[i]->eq(other_tuple->value()[i].get()))
             return false;
     }
     return true;
@@ -225,7 +225,7 @@ Tuple::equality(Token *op, std::shared_ptr<Obj> &other) {
         if (m_values.size() != other_tuple->value().size())
             return std::make_shared<Bool>(false);
         for (size_t i = 0; i < m_values.size(); ++i) {
-            if (!m_values[i]->eq(other_tuple->value()[i]))
+            if (!m_values[i]->eq(other_tuple->value()[i].get()))
                 return std::make_shared<Bool>(false);
         }
         return std::make_shared<Bool>(true);

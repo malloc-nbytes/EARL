@@ -128,7 +128,7 @@ List::rev(void) {
 std::shared_ptr<Bool>
 List::contains(std::shared_ptr<earl::value::Obj> &value) {
     for (size_t i = 0; i < m_value.size(); ++i)
-        if (m_value.at(i)->eq(value))
+        if (m_value.at(i)->eq(value.get()))
             return std::make_shared<Bool>(true);
     return std::make_shared<Bool>(false);
 }
@@ -211,10 +211,10 @@ List::back(void) {
 }
 
 std::shared_ptr<Obj>
-List::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+List::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
-    auto other_casted = dynamic_cast<List *>(other.get());
+    auto other_casted = dynamic_cast<List *>(other);
 
     switch (op->type()) {
     case TokenType::Plus: {
@@ -313,17 +313,17 @@ List::copy(void) {
 }
 
 bool
-List::eq(std::shared_ptr<Obj> &other) {
+List::eq(Obj *other) {
     if (other->type() != Type::List)
         return false;
 
-    auto *lst = dynamic_cast<List *>(other.get());
+    auto *lst = dynamic_cast<List *>(other);
 
     if (lst->value().size() != this->value().size())
         return false;
 
     for (size_t i = 0; i < lst->value().size(); ++i)
-        if (!this->value()[i]->eq(lst->value()[i]))
+        if (!this->value()[i]->eq(lst->value()[i].get()))
             return false;
 
     return true;

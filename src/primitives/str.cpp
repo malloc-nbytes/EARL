@@ -273,18 +273,18 @@ Str::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Str::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Str::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     this->update_changed();
     switch (op->type()) {
     case TokenType::Plus: {
-        return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Str>(this->value() + dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Str *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Str *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -344,10 +344,10 @@ Str::copy(void) {
 }
 
 bool
-Str::eq(std::shared_ptr<Obj> &other) {
+Str::eq(Obj *other) {
     if (other->type() != Type::Str)
         return false;
-    return this->value() == dynamic_cast<Str *>(other.get())->value();
+    return this->value() == dynamic_cast<Str *>(other)->value();
 }
 
 std::string

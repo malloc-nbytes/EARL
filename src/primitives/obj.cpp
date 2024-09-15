@@ -32,7 +32,7 @@
 using namespace earl::value;
 
 std::shared_ptr<Obj>
-Obj::binop(Token *op, std::shared_ptr<Obj> &other) {
+Obj::binop(Token *op, Obj *other) {
     Err::err_wtok(op);
     const std::string msg = "cannot perform binary operator on type: `"+type_to_str(this->type())+"`";
     throw InterpreterException(msg);
@@ -59,7 +59,7 @@ Obj::copy(void) {
 }
 
 bool
-Obj::eq(std::shared_ptr<Obj> &other) {
+Obj::eq(Obj *other) {
     (void)other;
     const std::string msg = "unable to perform deep-equality check on type: `"+type_to_str(this->type())+"`";
     throw InterpreterException(msg);

@@ -44,30 +44,30 @@ Bool::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Bool::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Bool::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
     switch (op->type()) {
     case TokenType::Lessthan: {
-        return std::make_shared<Bool>(this->value() < dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() < dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Greaterthan: {
-        return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() > dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Greaterthan_Equals: {
-        return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() >= dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Lessthan_Equals: {
-        return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() <= dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Double_Equals: {
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other)->value());
     } break;
     case TokenType::Double_Pipe: {
-        return std::make_shared<Bool>(this->value() || dynamic_cast<Bool *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() || dynamic_cast<Bool *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -96,10 +96,10 @@ Bool::copy(void) {
 }
 
 bool
-Bool::eq(std::shared_ptr<Obj> &other) {
+Bool::eq(Obj *other) {
     if (other->type() != Type::Bool)
         return false;
-    return m_value == dynamic_cast<Bool *>(other.get())->value();
+    return m_value == dynamic_cast<Bool *>(other)->value();
 }
 
 std::string

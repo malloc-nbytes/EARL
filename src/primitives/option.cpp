@@ -62,10 +62,10 @@ Option::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Option::binop(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Option::binop(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
 
-    auto other2 = dynamic_cast<Option *>(other.get());
+    auto other2 = dynamic_cast<Option *>(other);
     if (op->type() == TokenType::Double_Equals) {
         if (this->is_none() && other2->is_none())
             return std::make_shared<Bool>(true);
@@ -76,7 +76,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(false);
 
-        return std::make_shared<Bool>(this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(this->value()->eq(other2->value().get()));
     }
     else if (op->type() == TokenType::Bang_Equals) {
         if (this->is_none() && other2->is_none())
@@ -88,7 +88,7 @@ Option::binop(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(true);
 
-        return std::make_shared<Bool>(!this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(!this->value()->eq(other2->value().get()));
     }
     else {
         Err::err_wtok(op);
@@ -123,10 +123,10 @@ Option::copy(void) {
 }
 
 bool
-Option::eq(std::shared_ptr<Obj> &other) {
+Option::eq(Obj *other) {
     if (other->type() != Type::Option)
         return false;
-    auto other_option = dynamic_cast<Option *>(other.get());
+    auto other_option = dynamic_cast<Option *>(other);
     if (this->is_none() && other_option->is_some())
         return false;
     if (this->is_some() && other_option->is_none())
@@ -158,7 +158,7 @@ Option::equality(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(false);
 
-        return std::make_shared<Bool>(this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(this->value()->eq(other2->value().get()));
     }
     else if (op->type() == TokenType::Bang_Equals) {
         if (this->is_none() && other2->is_none())
@@ -170,7 +170,7 @@ Option::equality(Token *op, std::shared_ptr<Obj> &other) {
         if (this->is_none() && other2->is_some())
             return std::make_shared<Bool>(true);
 
-        return std::make_shared<Bool>(!this->value()->eq(other2->value()));
+        return std::make_shared<Bool>(!this->value()->eq(other2->value().get()));
     }
     else {
         Err::err_wtok(op);

@@ -36,7 +36,7 @@ Void::type(void) const {
 }
 
 std::shared_ptr<Obj>
-Void::binop(Token *op, std::shared_ptr<Obj> &other) {
+Void::binop(Token *op, Obj *other) {
     switch (op->type()) {
     case TokenType::Double_Equals: return std::make_shared<Bool>(this->eq(other));
     case TokenType::Bang_Equals: return std::make_shared<Bool>(!this->eq(other));
@@ -58,7 +58,7 @@ Void::copy(void) {
 }
 
 bool
-Void::eq(std::shared_ptr<Obj> &other) {
+Void::eq(Obj *other) {
     return other->type() == Type::Void;
 }
 
