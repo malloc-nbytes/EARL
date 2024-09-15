@@ -179,14 +179,14 @@ Str::append(char c) {
 }
 
 void
-Str::append(std::shared_ptr<Obj> c) {
+Str::append(Obj *c) {
     if (c->type() == Type::Char) {
-        auto cx = dynamic_cast<Char*>(c.get());
+        auto cx = dynamic_cast<Char *>(c);
         m_value.push_back(cx->value());
         m_chars.push_back(nullptr);
     }
     else {
-        auto s = dynamic_cast<Str *>(c.get());
+        auto s = dynamic_cast<Str *>(c);
         m_value += s->value();
         for (int i=0; i < s->value().size(); ++i)
             m_chars.push_back(nullptr);
@@ -201,7 +201,7 @@ Str::append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr) {
             const std::string msg = "type str is incompatible with type `"+earl::value::type_to_str(values.at(i)->type())+"`";
             throw InterpreterException(msg);
         }
-        this->append(values[i]);
+        this->append(values[i].get());
     }
 }
 
@@ -228,7 +228,7 @@ Str::filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx) {
         std::vector<std::shared_ptr<Obj>> values = {cx};
         std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
         if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-            acc->append(cx);
+            acc->append(cx.get());
     }
 
     return acc;
@@ -356,8 +356,8 @@ Str::to_cxxstring(void) {
 }
 
 void
-Str::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Str::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     this->update_changed();

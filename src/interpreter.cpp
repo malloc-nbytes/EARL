@@ -1761,7 +1761,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     case TokenType::Backtick_Pipe_Equals:
     case TokenType::Backtick_Ampersand_Equals:
     case TokenType::Backtick_Caret_Equals: {
-        l->spec_mutate(stmt->m_equals.get(), r, stmt);
+        l->spec_mutate(stmt->m_equals.get(), r.get(), stmt);
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());

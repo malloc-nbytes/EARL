@@ -342,13 +342,13 @@ List::to_cxxstring(void) {
 }
 
 void
-List::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+List::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     switch (op->type()) {
     case TokenType::Plus_Equals: {
-        auto otherlst = dynamic_cast<const List *>(other.get());
+        auto otherlst = dynamic_cast<const List *>(other);
         m_value.insert(m_value.end(), otherlst->m_value.begin(), otherlst->m_value.end());
     } break;
     default: {

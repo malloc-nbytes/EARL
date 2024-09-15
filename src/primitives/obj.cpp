@@ -72,7 +72,7 @@ Obj::to_cxxstring(void) {
 }
 
 void
-Obj::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Obj::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
     (void)other;
     (void)stmt;
     Err::err_wtok(op);

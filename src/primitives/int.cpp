@@ -228,7 +228,7 @@ Int::to_cxxstring(void) {
 }
 
 void
-Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Int::spec_mutate(Token *op, Obj *other, StmtMut *stmt) {
     ASSERT_CONSTNESS(this, stmt);
     int prev;
 
@@ -236,9 +236,9 @@ Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
         || op->type() == TokenType::Forwardslash_Equals
         || op->type() == TokenType::Percent_Equals) {
         if (other->type() == Type::Int)
-            prev = dynamic_cast<Int *>(other.get())->value();
+            prev = dynamic_cast<Int *>(other)->value();
         else if (other->type() == Type::Float)
-            prev = dynamic_cast<Float *>(other.get())->value();
+            prev = dynamic_cast<Float *>(other)->value();
         else {
             const std::string msg = "invalid type for spec_mutate";
             Err::err_wtok(op);
@@ -247,7 +247,7 @@ Int::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) {
     }
     else {
         prev = m_value;
-        this->mutate(other.get(), stmt); // does type checking
+        this->mutate(other, stmt); // does type checking
     }
 
     switch (op->type()) {

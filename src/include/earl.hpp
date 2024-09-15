@@ -200,7 +200,7 @@ namespace earl {
             /// @param op The binary operator
             /// @param other The right-hand-side of the operator
             /// @param stmt The statement that is being evaluated, used for error reporing
-            virtual void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt);
+            virtual void spec_mutate(Token *op, Obj *other, StmtMut *stmt);
 
             /// @brief Handles a unary operator (!, `~, etc.)
             /// @param op The unary operator
@@ -277,7 +277,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
-            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            void spec_mutate(Token *op, Obj *other, StmtMut *stmt)                        override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
             void set_const(void)                                                          override;
             std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
@@ -313,7 +313,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
-            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            void spec_mutate(Token *op, Obj *other, StmtMut *stmt)                        override;
             std::shared_ptr<Obj> unaryop(Token *op)                                       override;
             void set_const(void)                                                          override;
             std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
@@ -453,7 +453,7 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
-            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
+            void spec_mutate(Token *op, Obj *other, StmtMut *stmt)                        override;
             Iterator iter_begin(void)                                                     override;
             Iterator iter_end(void)                                                       override;
             void iter_next(Iterator &it)                                                  override;
@@ -527,7 +527,7 @@ namespace earl {
             void append(char c);
             void append(const std::string &value);
             void append(std::vector<std::shared_ptr<Obj>> &values, Expr *expr);
-            void append(std::shared_ptr<Obj> c);
+            void append(Obj *c);
             std::shared_ptr<Str> filter(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             void foreach(std::shared_ptr<Obj> &closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Bool> contains(std::shared_ptr<Char> &value);
@@ -541,10 +541,10 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(Obj *other)                                                           override;
             std::string to_cxxstring(void)                                                override;
-            void spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) override;
-            Iterator iter_begin(void)    override;
-            Iterator iter_end(void)      override;
-            void iter_next(Iterator &it) override;
+            void spec_mutate(Token *op, Obj *other, StmtMut *stmt)                        override;
+            Iterator iter_begin(void)                                                     override;
+            Iterator iter_end(void)                                                       override;
+            void iter_next(Iterator &it)                                                  override;
             std::shared_ptr<Obj> add(Token *op, std::shared_ptr<Obj> &other)              override;
             std::shared_ptr<Obj> equality(Token *op, std::shared_ptr<Obj> &other)         override;
 
