@@ -91,26 +91,26 @@ Char::to_cxxstring(void) {
 }
 
 std::shared_ptr<Obj>
-Char::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Char::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
     case TokenType::Double_Equals: {
         if (other->type() == Type::Str) {
-            auto str = dynamic_cast<Str *>(other.get());
+            auto str = dynamic_cast<Str *>(other);
             if (str->value().size() != 1)
                 return std::make_shared<Bool>(false);
             return std::make_shared<Bool>(this->value() == str->value()[0]);
         }
-        return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() == dynamic_cast<Char *>(other)->value());
     } break;
     case TokenType::Bang_Equals: {
         if (other->type() == Type::Str) {
-            auto str = dynamic_cast<Str *>(other.get());
+            auto str = dynamic_cast<Str *>(other);
             if (str->value().size() != 1)
                 return std::make_shared<Bool>(true);
             return std::make_shared<Bool>(this->value() != str->value()[0]);
         }
-        return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other.get())->value());
+        return std::make_shared<Bool>(this->value() != dynamic_cast<Char *>(other)->value());
     } break;
     default: {
         Err::err_wtok(op);
@@ -122,12 +122,12 @@ Char::equality(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-Char::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Char::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     if (other->type() == Type::Char) {
         return std::make_shared<Str>(std::string(1, this->value())
-                                     + std::string(1, dynamic_cast<Char *>(other.get())->value()));
+                                     + std::string(1, dynamic_cast<Char *>(other)->value()));
     }
     return std::make_shared<Str>(std::string(1, this->value())
-                                 + dynamic_cast<Str *>(other.get())->value());
+                                 + dynamic_cast<Str *>(other)->value());
 }

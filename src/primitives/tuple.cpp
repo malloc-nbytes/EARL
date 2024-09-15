@@ -207,9 +207,9 @@ Tuple::iter_next(Iterator &it) {
 }
 
 std::shared_ptr<Obj>
-Tuple::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+Tuple::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_tuple = dynamic_cast<Tuple *>(other);
     std::vector<std::shared_ptr<Obj>> values = {};
     std::for_each(m_values.begin(), m_values.end(), [&](auto &v){values.push_back(v);});
     std::for_each(other_tuple->value().begin(), other_tuple->value().end(), [&](auto &v){values.push_back(v);});
@@ -217,9 +217,9 @@ Tuple::add(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-Tuple::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_tuple = dynamic_cast<Tuple *>(other.get());
+Tuple::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_tuple = dynamic_cast<Tuple *>(other);
     switch (op->type()) {
     case TokenType::Double_Equals: {
         if (m_values.size() != other_tuple->value().size())

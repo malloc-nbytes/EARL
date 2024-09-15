@@ -121,11 +121,11 @@ Bool::unaryop(Token *op) {
 }
 
 std::shared_ptr<Obj>
-Bool::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
+Bool::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
     switch (op->type()) {
-    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other.get())->value());
-    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other.get())->value());
+    case TokenType::Double_Equals: return std::make_shared<Bool>(this->value() == dynamic_cast<Bool *>(other)->value());
+    case TokenType::Bang_Equals:   return std::make_shared<Bool>(this->value() != dynamic_cast<Bool *>(other)->value());
     default: {
         Err::err_wtok(op);
         const std::string msg = "invalid operator";

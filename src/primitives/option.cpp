@@ -144,9 +144,9 @@ Option::to_cxxstring(void) {
 }
 
 std::shared_ptr<Obj>
-Option::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other2 = dynamic_cast<Option *>(other.get());
+Option::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other2 = dynamic_cast<Option *>(other);
 
     if (op->type() == TokenType::Double_Equals) {
         if (this->is_none() && other2->is_none())

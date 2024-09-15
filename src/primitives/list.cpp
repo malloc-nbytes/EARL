@@ -377,9 +377,9 @@ List::iter_next(Iterator &it) {
 }
 
 std::shared_ptr<Obj>
-List::add(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_casted = dynamic_cast<List *>(other.get());
+List::add(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_casted = dynamic_cast<List *>(other);
     auto list = std::make_shared<List>(this->value());
     list->value().insert(list->value().end(),
                          other_casted->value().begin(),
@@ -388,9 +388,9 @@ List::add(Token *op, std::shared_ptr<Obj> &other) {
 }
 
 std::shared_ptr<Obj>
-List::equality(Token *op, std::shared_ptr<Obj> &other) {
-    ASSERT_BINOP_COMPAT(this, other.get(), op);
-    auto other_casted = dynamic_cast<List *>(other.get());
+List::equality(Token *op, Obj *other) {
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto other_casted = dynamic_cast<List *>(other);
     int res = 0;
     if (m_value.size() == other_casted->value().size()) {
         res = 1;
