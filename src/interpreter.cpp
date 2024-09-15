@@ -426,7 +426,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         if ((flags & __SHOWFUNS) != 0)
-            std::cout << "[EARL show-fun] " << id << '\n';
+            std::cout << "[EARL show-fun] " << id << std::endl;
 
         auto func = ctx->function_get(id);
 
@@ -1066,7 +1066,7 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             while (start < end)
                 values.push_back(std::make_shared<earl::value::Int>(start++));
         }
-        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+        return ER(std::make_shared<earl::value::List>(std::move(values)), ERT::Literal);
     } break;
     case earl::value::Type::Char: {
         char start = dynamic_cast<earl::value::Char *>(lvalue.get())->value();
@@ -1079,7 +1079,7 @@ eval_expr_term_range(ExprRange *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
             while (start < end)
                 values.push_back(std::make_shared<earl::value::Char>(start++));
         }
-        return ER(std::make_shared<earl::value::List>(values), ERT::Literal);
+        return ER(std::make_shared<earl::value::List>(std::move(values)), ERT::Literal);
     }
     default: {
         std::string msg = "invalid type "+earl::value::type_to_str(lvalue->type())+"` for type range";

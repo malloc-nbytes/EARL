@@ -694,6 +694,7 @@ namespace earl {
             void mutate(Obj *other, StmtMut *stmt)                                        override;
             std::shared_ptr<Obj> copy(void)                                               override;
             bool eq(Obj *other)                                                           override;
+            std::shared_ptr<Obj> unaryop(Token *op)                                       override;
             std::string to_cxxstring(void)                                                override;
             std::shared_ptr<Obj> equality(Token *op, Obj *other)                          override;
 

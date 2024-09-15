@@ -136,6 +136,19 @@ Option::eq(Obj *other) {
     return m_value->eq(other);
 }
 
+std::shared_ptr<Obj>
+Option::unaryop(Token *op) {
+    switch (op->type()) {
+    case TokenType::Bang: return std::make_shared<Bool>(this->is_none());
+    default: {
+        Err::err_wtok(op);
+        std::string msg = "invalid unary operator on option type";
+        throw InterpreterException(msg);
+    }
+    }
+    return nullptr; // unreachable
+}
+
 std::string
 Option::to_cxxstring(void) {
     if (this->is_none())

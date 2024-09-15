@@ -1,5 +1,11 @@
 module Main
 
+import "std/set.earl"
 
+let s = Set::T([]);
 
+for i in 0 to 1000 {
+    s.insert(i);
+}
 
+println(s);
