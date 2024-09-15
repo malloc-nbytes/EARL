@@ -1751,7 +1751,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
 
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
-        l->mutate(r, stmt);
+        l->mutate(r.get(), stmt);
     } break;
     case TokenType::Plus_Equals:
     case TokenType::Minus_Equals:
@@ -2026,9 +2026,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
         if (result && result->type() == earl::value::Type::Continue) {
             if (lt)
-                start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+                start->mutate(std::make_shared<earl::value::Int>(start->value()+1).get(), nullptr);
             else if (gt)
-                start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+                start->mutate(std::make_shared<earl::value::Int>(start->value()-1).get(), nullptr);
             continue;
         }
 
@@ -2036,9 +2036,9 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
             break;
 
         if (lt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()+1), nullptr);
+            start->mutate(std::make_shared<earl::value::Int>(start->value()+1).get(), nullptr);
         else if (gt)
-            start->mutate(std::make_shared<earl::value::Int>(start->value()-1), nullptr);
+            start->mutate(std::make_shared<earl::value::Int>(start->value()-1).get(), nullptr);
     }
 
     ctx->variable_remove(enumerator->id());

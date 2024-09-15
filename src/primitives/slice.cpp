@@ -51,10 +51,10 @@ Slice::type(void) const {
 }
 
 void
-Slice::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Slice::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    auto othersl = dynamic_cast<Slice *>(other.get());
+    auto othersl = dynamic_cast<Slice *>(other);
     m_start = othersl->start();
     m_end = othersl->end();
 }

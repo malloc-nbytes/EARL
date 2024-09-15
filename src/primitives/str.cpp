@@ -328,11 +328,11 @@ Str::__get_elem(size_t idx) {
 }
 
 void
-Str::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Str::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    Str *otherstr = dynamic_cast<Str *>(other.get());
+    Str *otherstr = dynamic_cast<Str *>(other);
     m_value = otherstr->m_value;
     m_chars = otherstr->m_chars;
 }

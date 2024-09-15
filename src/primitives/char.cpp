@@ -66,10 +66,10 @@ Char::binop(Token *op, Obj *other) {
 }
 
 void
-Char::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Char::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    auto c = dynamic_cast<Char *>(other.get());
+    auto c = dynamic_cast<Char *>(other);
     m_value = c->value();
 }
 

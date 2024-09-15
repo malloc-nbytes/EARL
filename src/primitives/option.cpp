@@ -103,11 +103,11 @@ Option::boolean(void) {
 }
 
 void
-Option::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Option::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto *other2 = dynamic_cast<Option *>(other.get());
+    auto *other2 = dynamic_cast<Option *>(other);
 
     if (other2->is_none())
         m_value = nullptr;

@@ -89,7 +89,7 @@ Closure::type(void) const {
 }
 
 void
-Closure::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Closure::mutate(Obj *other, StmtMut *stmt) {
     (void)other;
     ASSERT_CONSTNESS(this, stmt);
     UNIMPLEMENTED("Closure::mutate");

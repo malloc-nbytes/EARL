@@ -84,10 +84,10 @@ Bool::boolean(void) {
 }
 
 void
-Bool::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Bool::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    m_value = dynamic_cast<Bool *>(other.get())->m_value;
+    m_value = dynamic_cast<Bool *>(other)->m_value;
 }
 
 std::shared_ptr<Obj>

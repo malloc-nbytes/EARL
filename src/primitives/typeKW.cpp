@@ -86,10 +86,10 @@ TypeKW::binop(Token *op, Obj *other) {
 }
 
 void
-TypeKW::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+TypeKW::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
-    m_ty = dynamic_cast<TypeKW *>(other.get())->ty();
+    m_ty = dynamic_cast<TypeKW *>(other)->ty();
 }
 
 std::shared_ptr<Obj>

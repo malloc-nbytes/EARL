@@ -45,7 +45,7 @@ Obj::boolean(void) {
 }
 
 void
-Obj::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
+Obj::mutate(Obj *other, StmtMut *stmt) {
     (void)other;
     Err::err_wstmt(stmt);
     const std::string msg = "unable to mutate value of type: `"+type_to_str(this->type())+"`";

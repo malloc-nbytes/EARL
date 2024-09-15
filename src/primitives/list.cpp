@@ -297,11 +297,11 @@ List::boolean(void) {
 }
 
 void
-List::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+List::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    auto *lst = dynamic_cast<List *>(other.get());
+    auto *lst = dynamic_cast<List *>(other);
     m_value = lst->value();
 }
 

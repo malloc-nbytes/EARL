@@ -139,16 +139,16 @@ Float::boolean(void) {
 }
 
 void
-Float::mutate(const std::shared_ptr<Obj> &other, StmtMut *stmt) {
-    ASSERT_MUTATE_COMPAT(this, other.get(), stmt);
+Float::mutate(Obj *other, StmtMut *stmt) {
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
     switch (other->type()) {
     case Type::Float: {
-        m_value = dynamic_cast<Float *>(other.get())->value();
+        m_value = dynamic_cast<Float *>(other)->value();
     } break;
     case Type::Int: {
-        m_value = static_cast<double>(dynamic_cast<Int *>(other.get())->value());
+        m_value = static_cast<double>(dynamic_cast<Int *>(other)->value());
     } break;
     default: {
         assert(false && "unreachable");
@@ -196,10 +196,10 @@ Float::spec_mutate(Token *op, const std::shared_ptr<Obj> &other, StmtMut *stmt) 
     }
     else {
         prev = m_value;
-        this->mutate(other, stmt); // does type checking
+        this->mutate(other.get(), stmt); // does type checking
     }
 
-    this->mutate(other, stmt); // does type checking
+    this->mutate(other.get(), stmt); // does type checking
     switch (op->type()) {
     case TokenType::Plus_Equals: m_value += prev; break;
     case TokenType::Minus_Equals: m_value -= prev; break;
