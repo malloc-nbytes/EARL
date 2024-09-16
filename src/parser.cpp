@@ -1066,11 +1066,20 @@ Parser::parse_stmt(Lexer &lexer) {
     return nullptr;
 }
 
-std::unique_ptr<Program> Parser::parse_program(Lexer &lexer, const std::string filepath) {
+std::unique_ptr<Program>
+Parser::parse_program(Lexer &lexer, const std::string filepath, std::string from) {
     std::vector<std::unique_ptr<Stmt>> stmts;
 
     while (lexer.peek(0) && lexer.peek()->type() != TokenType::Eof)
         stmts.push_back(parse_stmt(lexer));
+
+    if ((flags & __CHECK) != 0) {
+        if (from != "")
+            std::cout << "[EARL] (src=" << from << ") ";
+        else
+            std::cout << "[EARL] ";
+        std::cout << filepath << " .. ok" << std::endl;
+    }
 
     return std::make_unique<Program>(std::move(stmts), filepath);
 }

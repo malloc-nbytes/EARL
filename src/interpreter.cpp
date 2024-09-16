@@ -2082,12 +2082,17 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
                                                  keywords,
                                                  types,
                                                  comment);
-    std::unique_ptr<Program> program  = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme());
+    std::unique_ptr<Program> program = nullptr;
+    if ((flags & __CHECK) != 0)
+        program = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme(), /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
+    else
+        program = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme());
 
     std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
-    assert(child_ctx->type() == CtxType::World);
+
     if (stmt->__m_depth == COMMON_DEPTH_ALMOST)
         dynamic_cast<WorldCtx *>(child_ctx.get())->strip_funs_and_classes();
+
     dynamic_cast<WorldCtx *>(ctx.get())->add_import(std::move(child_ctx));
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2319,6 +2324,15 @@ std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
+
+    if ((flags & __CHECK) != 0) {
+        for (size_t i = 0; i < wctx->stmts_len(); ++i) {
+            Stmt *stmt = wctx->stmt_at(i);
+            if (stmt->stmt_type() == StmtType::Import)
+                (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
+        }
+        return ctx;
+    }
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.

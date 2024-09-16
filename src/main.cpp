@@ -53,10 +53,11 @@ usage(void) {
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [options...] <file> -- [args...]" << std::endl << std::endl;
+    std::cerr << "Usage: earl <script> | [options...] -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -v, --version           Print version information" << std::endl;
     std::cerr << "  -h, --help              Print this help message" << std::endl;
+    std::cerr << "  -c, --check             Only parse the file given" << std::endl;
     std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
     std::cerr << "      --watch [files...]  Watch files for changes and hot reload" << std::endl;
@@ -115,6 +116,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     }
     else if (arg == COMMON_EARL2ARG_SHOWFUNS)
         flags |= __SHOWFUNS;
+    else if (arg == COMMON_EARL2ARG_CHECK)
+        flags |= __CHECK;
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -129,8 +132,11 @@ parse_1hypharg(std::string arg) {
         case COMMON_EARL1ARG_HELP: {
             usage();
         } break;
-        case COMMON_EARL1ARG_VERSTION: {
+        case COMMON_EARL1ARG_VERSION: {
             version();
+        } break;
+        case COMMON_EARL1ARG_CHECK: {
+            flags |= __CHECK;
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
@@ -146,6 +152,7 @@ parsearg(std::string line, std::vector<std::string> &args) {
         parse_2hypharg(line.substr(2), args);
     }
     else if (line[0] == '-') {
+        args.erase(args.begin());
         parse_1hypharg(line.substr(1));
     }
     else {
@@ -250,7 +257,6 @@ main(int argc, char **argv) {
                 if ((flags & __WATCH) == 0)
                     return 1;
             }
-
         } while ((flags & __WATCH) != 0);
     }
     else {

@@ -1,11 +1,12 @@
 module Main
 
-import "std/set.earl"
+import "std/basic-lexer.earl"
+import "std/io.earl"
 
-let s = Set::T([]);
+let fp = "./stdlib-docs-gen.earl";
+let src = IO::file_to_str(fp);
+let lexer = BasicLexer::T(tuple());
+lexer.lex(src, fp);
 
-for i in 0 to 1000 {
-    s.insert(i);
-}
 
-println(s);
+
