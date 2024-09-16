@@ -1,0 +1,86 @@
+# MIT License
+
+# Copyright (c) 2023 malloc-nbytes
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+### MODULE
+module Logging
+
+### BEGIN ENUMS
+
+@pub enum Level {
+    Info = 0,
+    Warn,
+    Err,
+}
+
+### END ENUMS
+
+### BEGIN VARIABLES
+
+@pub let logging_filepath: str = "";
+
+let logging_fd = none;
+
+### END VARIABLES
+
+### BEGIN FUNCTIONS
+
+@world fn __log(msg) {
+    if !logging_fd {
+        panic(f"The logging filepath has not been set up. Set the variable `{logging_filepath}` before logging.");
+    }
+    logging_fd.unwrap().write(msg+'\n');
+}
+
+@pub @world
+fn init_filepath(fp: str): unit {
+    logging_filepath = fp;
+    logging_fd = some(open(logging_filepath, "w"));
+}
+
+@pub @world
+fn close_filepath(): unit {
+    if logging_fd {
+        logging_fd.unwrap().close();
+    }
+    else {
+        panic(__FILE__, ':', __FUNC__, f": The logging filepath has not been set up. Set the variable `{logging_filepath}` before closing logging.");
+    }
+}
+
+@pub fn log(loglvl: int, @const @ref msg: str): unit {
+    match loglvl {
+        Level.Info -> {
+            __log(f"[INFO] {msg}");
+        }
+        Level.Warn -> {
+            __log(f"[WARN] {msg}");
+        }
+        Level.Err -> {
+            __log(f"[ERR] {msg}");
+        }
+        _ -> {
+            panic(__FILE__, ':', __FUNC__, f": invalid log level {loglvl}");
+        }
+    }
+}
+
+### END FUNCTIONS

@@ -1,12 +1,11 @@
 module Main
 
-import "std/basic-lexer.earl"
-import "std/io.earl"
+import "std/logging.earl"
 
-let fp = "./stdlib-docs-gen.earl";
-let src = IO::file_to_str(fp);
-let lexer = BasicLexer::T(tuple());
-lexer.lex(src, fp);
+Logging::init_filepath("log.txt");
 
+Logging::log(Logging::Level.Info, "this is an info test");
+Logging::log(Logging::Level.Warn, "this is an warn test");
+Logging::log(Logging::Level.Err, "this is an err test");
 
-
+Logging::close_filepath();

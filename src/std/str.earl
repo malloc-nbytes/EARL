@@ -96,7 +96,7 @@ module Str
 ### RETURNS option<int>
 ### DESCRIPTION
 ###   Finds the last ocurrence of `t` in `s`.
-@pub fn find_last_of(@const @ref s, @const @ref t) {
+@pub fn find_last_of(@const @ref s: str, t: char) {
     let idx = none;
     for i in 0 to len(s) {
         if s[i] == t {
@@ -104,6 +104,22 @@ module Str
         }
     }
     return idx;
+}
+
+### NAME find_all_of
+### PARAMETER s: @const @ref str
+### PARAMETER t: char
+### RETURNS list<int>
+### DESCRIPTION
+###   Find all indices of ocurrences of `t` in `s`.
+@pub fn find_all_of(@const @ref s: str, t: char): list {
+    let idxs = [];
+    for i in 0 to len(s) {
+        if s[i] == t {
+            idxs.append(i);
+        }
+    }
+    return idxs;
 }
 
 ### END FUNCTIONS
