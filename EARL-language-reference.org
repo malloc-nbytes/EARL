@@ -1868,7 +1868,7 @@ Returns the greater of =x= and =y=.
 
 #+begin_quote
 #+begin_example
-max(x: int|float, y: int|float) -> int|float
+min(x: int|float, y: int|float) -> int|float
 #+end_example
 
 Returns the minimum of =x= and =y=.
@@ -1876,7 +1876,7 @@ Returns the minimum of =x= and =y=.
 
 #+begin_quote
 #+begin_example
-max(x: int|float) -> int|float
+abs(x: int|float) -> int|float
 #+end_example
 
 Returns the absolute value of =x=.
@@ -1944,6 +1944,22 @@ area_of_cone(r: float|int, h: float|int) -> float|int
 #+end_example
 
 Returns the area of a cone with radius =r= and height =h=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+floor(f: float) -> int
+#+end_example
+
+Returns the floor of =f=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+ceil(f: float) -> int
+#+end_example
+
+Returns the ceil of =f=.
 #+end_quote
 
 *** *Class List*: /None/

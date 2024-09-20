@@ -40,7 +40,7 @@ import "std/list.earl"
     return y;
 }
 
-### NAME max
+### NAME min
 ### PARAMETER x: int|float
 ### PARAMETER y: int|float
 ### RETURNS int|float
@@ -53,7 +53,7 @@ import "std/list.earl"
     return y;
 }
 
-### NAME max
+### NAME abs
 ### PARAMETER x: int|float
 ### RETURNS int|float
 ### DESCRIPTION
@@ -202,6 +202,26 @@ fn area_of_cylinder(r, h) {
 @pub @world
 fn area_of_cone(r, h) {
     return (1/3) * h * PI * (r**2);
+}
+
+### NAME floor
+### PARAMETER f: float
+### RETURNS int
+### DESCRIPTION
+###   Returns the floor of `f`.
+@pub
+fn floor(f: float): int {
+    return int(f);
+}
+
+### NAME ceil
+### PARAMETER f: float
+### RETURNS int
+### DESCRIPTION
+###   Returns the ceil of `f`.
+@pub
+fn ceil(f: float): int {
+    return floor(1+f);
 }
 
 ### END FUNCTIONS
