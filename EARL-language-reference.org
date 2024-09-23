@@ -2580,6 +2580,14 @@ cmd_wcheck(cmd: str) -> unit
 Run the bash command =cmd= and checks the exit code. Will print a warning if the exit code is not zero.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+cmd_onfail(cmd: str, onfail: closure) -> unit
+#+end_example
+
+Run the bash command =cmd= and checks the exit code. Will run =onfail= if the exit code is not 0.
+#+end_quote
+
 *** *Class List*: /None/
 
 ** BasicLexer
