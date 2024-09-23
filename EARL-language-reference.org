@@ -2572,6 +2572,14 @@ cmd(cmd: str) -> int
 Run the bash command =cmd=. Returns the exit code.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+cmd_wcheck(cmd: str) -> unit
+#+end_example
+
+Run the bash command =cmd= and checks the exit code. Will print a warning if the exit code is not zero.
+#+end_quote
+
 *** *Class List*: /None/
 
 ** BasicLexer

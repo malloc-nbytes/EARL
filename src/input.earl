@@ -1,12 +1,7 @@
 module Main
 
-import "std/basic-lexer.earl"
-import "std/io.earl"
+import "std/system.earl"
 
-let fp = "./stdlib-docs-gen.earl";
-let src = IO::file_to_str(fp);
-let lexer = BasicLexer::T(tuple());
-lexer.lex(src, fp);
 
 
 

@@ -127,17 +127,21 @@ module System
 ### RETURNS int
 ### DESCRIPTION
 ###   Run the bash command `cmd`. Returns the exit code.
-@pub fn cmd(cmd) {
-    if typeof(cmd) != str {
-        panic(__FILE__,
-            ':',
-            __FUNC__,
-            ": the first argument `cmd` is expected to by of type ",
-            str,
-            " but is ",
-            typeof(cmd));
-    }
+@pub fn cmd(cmd: str) {
     return __internal_unix_system__(cmd);
+}
+
+### NAME cmd_wcheck
+### PARAMETER cmd: str
+### RETURNS unit
+### DESCRIPTION
+###   Run the bash command `cmd` and checks the exit code.
+###   Will print a warning if the exit code is not zero.
+@pub fn cmd_wcheck(cmd: str) {
+    let status = cmd(cmd);
+    if status != 0 {
+        warn(f"command `{cmd}` failed with exit code {status}");
+    }
 }
 
 ### END FUNCTIONS
