@@ -518,7 +518,7 @@ namespace earl {
             Time(std::time_t now);
 
             void update(void);
-            std::shared_ptr<Tuple> pretty(void);
+            std::shared_ptr<Tuple> readable(void);
             std::shared_ptr<Int> years(void);
             std::shared_ptr<Int> months(void);
             std::shared_ptr<Int> days(void);

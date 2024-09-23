@@ -66,7 +66,7 @@ Intrinsics::intrinsic_functions = {
     {"list", &Intrinsics::intrinsic_list},
     {"unit", &Intrinsics::intrinsic_unit},
     {"Dict", &Intrinsics::intrinsic_Dict},
-    {"date", &Intrinsics::intrinsic_date},
+    {"datetime", &Intrinsics::intrinsic_datetime},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -103,7 +103,13 @@ Intrinsics::intrinsic_member_functions = {
     {"has_key", &Intrinsics::intrinsic_member_has_key},
     {"has_value", &Intrinsics::intrinsic_member_has_value},
     // Time
-    {"pretty", &Intrinsics::intrinsic_member_pretty},
+    {"readable", &Intrinsics::intrinsic_member_readable},
+    {"years", &Intrinsics::intrinsic_member_years},
+    {"months", &Intrinsics::intrinsic_member_months},
+    {"days", &Intrinsics::intrinsic_member_days},
+    {"hours", &Intrinsics::intrinsic_member_hours},
+    {"minutes", &Intrinsics::intrinsic_member_minutes},
+    {"seconds", &Intrinsics::intrinsic_member_seconds},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -673,11 +679,11 @@ Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &para
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_date(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                           std::shared_ptr<Ctx> &ctx,
-                           Expr *expr) {
+Intrinsics::intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                               std::shared_ptr<Ctx> &ctx,
+                               Expr *expr) {
     (void)ctx;
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "date", expr);
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "datetime", expr);
     return std::make_shared<earl::value::Time>(std::time(nullptr));
 }
 

@@ -39,23 +39,52 @@ Time::Time(void) : m_now(std::time(nullptr)) {}
 Time::Time(std::time_t now) : m_now(now) {}
 
 std::shared_ptr<Tuple>
-Time::pretty(void) {
+Time::readable(void) {
     std::tm *local = std::localtime(&m_now);
-    int year = local->tm_year + 1900,
-        month = local->tm_mon + 1,
-        day = local->tm_mday,
-        hour = local->tm_hour,
-        min = local->tm_min,
-        second = local->tm_sec;
     std::vector<std::shared_ptr<Obj>> values = {
-        std::make_shared<Int>(year),
-        std::make_shared<Int>(month),
-        std::make_shared<Int>(day),
-        std::make_shared<Int>(hour),
-        std::make_shared<Int>(min),
-        std::make_shared<Int>(second),
+        this->years(),
+        this->months(),
+        this->days(),
+        this->hours(),
+        this->minutes(),
+        this->seconds(),
     };
     return std::make_shared<Tuple>(std::move(values));
+}
+
+void
+Time::update(void) {
+    m_now = std::time(nullptr);
+}
+
+std::shared_ptr<Int>
+Time::years(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_year+1900);
+}
+
+std::shared_ptr<Int>
+Time::months(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_mon+1);
+}
+
+std::shared_ptr<Int>
+Time::days(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_mday);
+}
+
+std::shared_ptr<Int>
+Time::hours(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_hour);
+}
+
+std::shared_ptr<Int>
+Time::minutes(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_min);
+}
+
+std::shared_ptr<Int>
+Time::seconds(void) {
+    return std::make_shared<Int>(std::localtime(&m_now)->tm_sec);
 }
 
 // Implements

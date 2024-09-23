@@ -32,14 +32,75 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_time_member_functions = {
-    {"pretty", &Intrinsics::intrinsic_member_pretty},
+    {"readable", &Intrinsics::intrinsic_member_readable},
+    {"years", &Intrinsics::intrinsic_member_years},
+    {"months", &Intrinsics::intrinsic_member_months},
+    {"days", &Intrinsics::intrinsic_member_days},
+    {"hours", &Intrinsics::intrinsic_member_hours},
+    {"minutes", &Intrinsics::intrinsic_member_minutes},
+    {"seconds", &Intrinsics::intrinsic_member_seconds},
 };
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_member_pretty(std::shared_ptr<earl::value::Obj> obj,
+Intrinsics::intrinsic_member_readable(std::shared_ptr<earl::value::Obj> obj,
+                                      std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                      std::shared_ptr<Ctx> &ctx,
+                                      Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "pretty", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->readable();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_years(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "years", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->years();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_months(std::shared_ptr<earl::value::Obj> obj,
                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                                     std::shared_ptr<Ctx> &ctx,
                                     Expr *expr) {
-    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "pretty", expr);
-    return dynamic_cast<earl::value::Time *>(obj.get())->pretty();
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "months", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->months();
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_days(std::shared_ptr<earl::value::Obj> obj,
+                                  std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                  std::shared_ptr<Ctx> &ctx,
+                                  Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "days", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->days();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_hours(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "hours", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->hours();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_minutes(std::shared_ptr<earl::value::Obj> obj,
+                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "minutes", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->minutes();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_seconds(std::shared_ptr<earl::value::Obj> obj,
+                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "seconds", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->seconds();
+}
+
