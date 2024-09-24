@@ -242,6 +242,7 @@ main(int argc, char **argv) {
                 std::cerr << "Lexer error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)
                     return 1;
+                continue;
             }
             try {
                 program = Parser::parse_program(*lexer.get(), filepath);
@@ -249,6 +250,7 @@ main(int argc, char **argv) {
                 std::cerr << "Parser error: " << e.what() << std::endl;
                 if ((flags & __WATCH) == 0)
                     return 1;
+                continue;
             }
             try {
                 (void)Interpreter::interpret(std::move(program), std::move(lexer));

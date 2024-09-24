@@ -1,5 +1,5 @@
 module Main
 
-import "std/math.earl"
-
-println(Math::lerp(1., 2., 3));
+if true {
+    println("hi");
+}
