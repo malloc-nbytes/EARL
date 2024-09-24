@@ -1,8 +1,6 @@
 :i test.earl
 :show
 
-# sleep(1000000);
-
 main();
 
 :reset
@@ -11,7 +9,7 @@ import "std/system.earl"
 import "std/list.earl"
 import "std/math.earl"
 
-# sleep(1000000/2);
+sleep(1000000/2);
 
 class Matrix [init, r, c] {
     let lst = init;
@@ -23,18 +21,18 @@ class Matrix [init, r, c] {
     }
 }
 
-# sleep(1000000/2);
+sleep(1000000/2);
 
-let speed = 100;
+let speed = 80;
 let x, y = (3., 3.);
 let dx, dy = (.77*speed/100, 1.*speed/100);
-let width, height = (20, 20);
+let width, height = (10, 10);
 let not_draws_per_sec = 1;
 let current_not_draws_per_sec = 0;
 
-# sleep(1000000/2);
+sleep(1000000/2);
 
-let faces = [".", "O"];
+let faces = ['.', 'O', '#', 'X'];
 let current_face = 0;
 let emoji_screen = "";
 
@@ -42,7 +40,7 @@ let board = Matrix(List::preset(0, height*width), height, width);
 let int_y = int(y);
 let int_x = int(x);
 
-# sleep(1000000/2);
+sleep(1000000/2);
 
 @world fn draw() {
     let _ = System::cmd("clear");
@@ -59,10 +57,9 @@ let int_x = int(x);
 
 let counter = 0;
 
-# sleep(1000000/2);
+sleep(1000000/2);
 
 loop {
-    if counter == 144 { break; }
 
     sleep(900);
 
@@ -110,5 +107,7 @@ let _ = System::cmd("clear");
 #  |        \/    |    \    |   \    |___
 # /_______  /\____|__  /____|_  /_______ \
 #         \/         \/       \/        \/
+
+#--- Invoke EARL with `earl` to start the REPL! ---#
 
 :q
