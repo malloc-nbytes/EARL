@@ -144,4 +144,18 @@ module System
     }
 }
 
+### NAME cmd_onfail
+### PARAMETER cmd: str
+### PARAMETER onfail: closure
+### RETURNS unit
+### DESCRIPTION
+###   Run the bash command `cmd` and checks the exit code.
+###   Will run `onfail` if the exit code is not 0.
+@pub fn cmd_onfail(cmd: str, onfail: closure): unit {
+    let status = cmd(cmd);
+    if status != 0 {
+        onfail();
+    }
+}
+
 ### END FUNCTIONS
