@@ -27,6 +27,8 @@
 #include <unordered_map>
 #include <fstream>
 #include <filesystem>
+#include <ctime>
+#include <unistd.h>
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -65,6 +67,8 @@ Intrinsics::intrinsic_functions = {
     {"list", &Intrinsics::intrinsic_list},
     {"unit", &Intrinsics::intrinsic_unit},
     {"Dict", &Intrinsics::intrinsic_Dict},
+    {"datetime", &Intrinsics::intrinsic_datetime},
+    {"sleep", &Intrinsics::intrinsic_sleep},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -100,6 +104,14 @@ Intrinsics::intrinsic_member_functions = {
     {"insert", &Intrinsics::intrinsic_member_insert},
     {"has_key", &Intrinsics::intrinsic_member_has_key},
     {"has_value", &Intrinsics::intrinsic_member_has_value},
+    // Time
+    {"readable", &Intrinsics::intrinsic_member_readable},
+    {"years", &Intrinsics::intrinsic_member_years},
+    {"months", &Intrinsics::intrinsic_member_months},
+    {"days", &Intrinsics::intrinsic_member_days},
+    {"hours", &Intrinsics::intrinsic_member_hours},
+    {"minutes", &Intrinsics::intrinsic_member_minutes},
+    {"seconds", &Intrinsics::intrinsic_member_seconds},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -133,6 +145,7 @@ Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
     case earl::value::Type::DictStr:
     case earl::value::Type::DictChar:
     case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.find(id) != Intrinsics::intrinsic_dict_member_functions.end();
+    case earl::value::Type::Time: return Intrinsics::intrinsic_time_member_functions.find(id) != Intrinsics::intrinsic_time_member_functions.end();
     default: return false;
     }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
@@ -159,6 +172,7 @@ Intrinsics::call_member(const std::string &id,
     case earl::value::Type::DictStr:
     case earl::value::Type::DictChar:
     case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Time: return Intrinsics::intrinsic_time_member_functions.at(id)(accessor, params, ctx, expr);
     default: assert(false);
     }
 }
@@ -664,6 +678,26 @@ Intrinsics::intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &para
     std::string in = "";
     std::getline(std::cin, in);
     return std::make_shared<earl::value::Str>(in);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                               std::shared_ptr<Ctx> &ctx,
+                               Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "datetime", expr);
+    return std::make_shared<earl::value::Time>(std::time(nullptr));
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &time,
+                std::shared_ptr<Ctx> &ctx,
+                Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(time, 1, "sleep", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(time[0], earl::value::Type::Int, 1, "sleep", expr);
+    usleep(dynamic_cast<earl::value::Int *>(time[0].get())->value());
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

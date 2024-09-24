@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <ctime>
 
 #include "ast.hpp"
 #include "token.hpp"
@@ -134,8 +135,10 @@ namespace earl {
             DictStr,
             DictFloat,
             DictChar,
-            /** EARL type keyword */
+            /** EARL type keyword type */
             TypeKW,
+            /** EARL date type */
+            Time,
             /** EARL continue keyword */
             Continue,
             Return,
@@ -508,6 +511,32 @@ namespace earl {
 
         private:
             std::vector<std::shared_ptr<Obj>> m_values;
+        };
+
+        struct Time : public Obj {
+            Time(void);
+            Time(std::time_t now);
+
+            std::shared_ptr<Time> update(void);
+            std::shared_ptr<Tuple> readable(void);
+            std::shared_ptr<Int> years(void);
+            std::shared_ptr<Int> months(void);
+            std::shared_ptr<Int> days(void);
+            std::shared_ptr<Int> hours(void);
+            std::shared_ptr<Int> minutes(void);
+            std::shared_ptr<Int> seconds(void);
+
+            // Implements
+            Type type(void) const override;
+            void mutate(Obj *other, StmtMut *stmt) override;
+            std::shared_ptr<Obj> copy(void) override;
+            bool eq(Obj *other) override;
+            std::string to_cxxstring(void) override;
+            std::shared_ptr<Obj> gtequality(Token *op, Obj *other) override;
+            std::shared_ptr<Obj> equality(Token *op, Obj *other) override;
+
+        private:
+            std::time_t m_now;
         };
 
         /// @brief The structure that represents EARL strings

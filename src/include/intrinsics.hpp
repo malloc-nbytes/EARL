@@ -91,6 +91,16 @@
         }                                                               \
     } while (0)
 
+#define __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(arg, ty, loc, fn, expr)     \
+    do {                                                                \
+        if (arg->type() != ty) {                                        \
+            Err::err_wexpr(expr);                                       \
+            std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type `" \
+                +earl::value::type_to_str(ty)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
+    } while (0)
+
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn, expr) \
     do {                                                                \
         if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) { \
@@ -144,6 +154,7 @@ namespace Intrinsics {
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_tuple_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_dict_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_time_member_functions;
 
     /// @brief Check if an identifier is the name of an intrinsic function
     /// @param id The identifier to check
@@ -302,6 +313,16 @@ namespace Intrinsics {
     intrinsic_input(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                       std::shared_ptr<Ctx> &ctx,
+                       Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                       std::shared_ptr<Ctx> &ctx,
+                       Expr *expr);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
@@ -476,6 +497,48 @@ namespace Intrinsics {
                                std::vector<std::shared_ptr<earl::value::Obj>> &value,
                                std::shared_ptr<Ctx> &ctx,
                                Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_readable(std::shared_ptr<earl::value::Obj> obj,
+                              std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_years(std::shared_ptr<earl::value::Obj> obj,
+                           std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_months(std::shared_ptr<earl::value::Obj> obj,
+                            std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_days(std::shared_ptr<earl::value::Obj> obj,
+                          std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_hours(std::shared_ptr<earl::value::Obj> obj,
+                           std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_minutes(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_seconds(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr);
 };
 
 #endif // INTRINSICS_H

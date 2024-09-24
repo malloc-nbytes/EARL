@@ -1,7 +1,5 @@
 module Main
 
-import "std/system.earl"
-
 
 
 
