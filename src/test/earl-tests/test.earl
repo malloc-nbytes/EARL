@@ -21,7 +21,7 @@ import "./fn-test.earl"
 
 fn main() {
     let should_print = true;
-    let crash_on_failure = false;
+    let crash_on_failure = true;
     EnumTests::run(should_print, crash_on_failure);
     IntrinsicsTests::run(should_print, crash_on_failure);
     ImportTests::run(should_print, crash_on_failure);
