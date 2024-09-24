@@ -1,6 +1,5 @@
 module Main
 
-println(datetime() / datetime());
 
 
 

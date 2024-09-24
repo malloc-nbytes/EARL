@@ -517,7 +517,7 @@ namespace earl {
             Time(void);
             Time(std::time_t now);
 
-            void update(void);
+            std::shared_ptr<Time> update(void);
             std::shared_ptr<Tuple> readable(void);
             std::shared_ptr<Int> years(void);
             std::shared_ptr<Int> months(void);
@@ -532,8 +532,6 @@ namespace earl {
             std::shared_ptr<Obj> copy(void) override;
             bool eq(Obj *other) override;
             std::string to_cxxstring(void) override;
-            std::shared_ptr<Obj> add(Token *op, Obj *other) override;
-            std::shared_ptr<Obj> sub(Token *op, Obj *other) override;
             std::shared_ptr<Obj> gtequality(Token *op, Obj *other) override;
             std::shared_ptr<Obj> equality(Token *op, Obj *other) override;
 

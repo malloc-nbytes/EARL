@@ -52,9 +52,9 @@ Time::readable(void) {
     return std::make_shared<Tuple>(std::move(values));
 }
 
-void
+std::shared_ptr<Time>
 Time::update(void) {
-    m_now = std::time(nullptr);
+    return std::make_shared<Time>(m_now);
 }
 
 std::shared_ptr<Int>
@@ -94,7 +94,9 @@ Time::type(void) const {
 }
 
 void Time::mutate(Obj *other, StmtMut *stmt) {
-    UNIMPLEMENTED("Time::mutate");
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
+    ASSERT_CONSTNESS(this, stmt);
+    m_now = dynamic_cast<Time *>(other)->m_now;
 }
 
 std::shared_ptr<Obj>
@@ -104,7 +106,9 @@ Time::copy(void) {
 
 bool
 Time::eq(Obj *other) {
-    UNIMPLEMENTED("Time::eq");
+    if (other->type() != Type::Time)
+        return false;
+    return m_now == dynamic_cast<Time *>(other)->m_now;
 }
 
 std::string
@@ -113,21 +117,33 @@ Time::to_cxxstring(void) {
 }
 
 std::shared_ptr<Obj>
-Time::add(Token *op, Obj *other) {
-    UNIMPLEMENTED("Time::add");
-}
-
-std::shared_ptr<Obj>
-Time::sub(Token *op, Obj *other) {
-    UNIMPLEMENTED("Time::sub");
-}
-
-std::shared_ptr<Obj>
 Time::gtequality(Token *op, Obj *other) {
-    UNIMPLEMENTED("Time::gtequality");
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto time2 = dynamic_cast<Time *>(other);
+    switch (op->type()) {
+    case TokenType::Lessthan: return std::make_shared<Bool>(m_now < time2->m_now);
+    case TokenType::Greaterthan: return std::make_shared<Bool>(m_now > time2->m_now);
+    case TokenType::Greaterthan_Equals: return std::make_shared<Bool>(m_now >= time2->m_now);
+    case TokenType::Lessthan_Equals: return std::make_shared<Bool>(m_now <= time2->m_now);
+    default: {
+        Err::err_wtok(op);
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
+    }
 }
 
 std::shared_ptr<Obj>
 Time::equality(Token *op, Obj *other) {
-    UNIMPLEMENTED("Time::equality");
+    ASSERT_BINOP_COMPAT(this, other, op);
+    auto time2 = dynamic_cast<Time *>(other);
+    switch (op->type()) {
+    case TokenType::Double_Equals: return std::make_shared<Bool>(m_now == time2->m_now);
+    case TokenType::Bang_Equals: return std::make_shared<Bool>(m_now != time2->m_now);
+    default: {
+        Err::err_wtok(op);
+        const std::string msg = "invalid operator";
+        throw InterpreterException(msg);
+    } break;
+    }
 }

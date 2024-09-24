@@ -274,26 +274,26 @@ are able to use the binary operations. This does not mean that if an
 entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
 describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
 
-| Symbol | Datatypes                                                                          | Description                      |
-|--------+------------------------------------------------------------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str=                                                      | Adds the elements together       |
-| -      | =int=, =float=                                                                     | Subtracts the elements           |
-| *      | =int=, =float=                                                                     | Multiplies the elements together |
-| ///    | =int=, =float=                                                                     | Divides the elements             |
-| %      | =int=                                                                              | Produces the modulo              |
-| **     | =int=, =float=                                                                     | Produces the power               |
-| >      | =int=, =float=                                                                     | Greater than                     |
-| <      | =int=, =float=                                                                     | Less than                        |
-| >=     | =int=, =float=                                                                     | Greater than or equal to         |
-| <=     | =int=, =float=                                                                     | Less than or equal to            |
-| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
-| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
-| &&     | =bool=, =option=                                                                   | Logical AND                      |
-| <<     | =int=                                                                              | Bit shift left                   |
-| >>     | =int=                                                                              | Bit shift right                  |
-| `&     | =int=                                                                              | Bitwise AND (backtick needed)    |
-| `~     | =int=                                                                              | Bitwise NOT (backtick needed)    |
-| `^     | =int=                                                                              | Bitwise XOR (backtick needed)    |
+| Symbol | Datatypes                                                                                  | Description                      |
+|--------+--------------------------------------------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                                                              | Adds the elements together       |
+| -      | =int=, =float=                                                                             | Subtracts the elements           |
+| *      | =int=, =float=                                                                             | Multiplies the elements together |
+| ///    | =int=, =float=                                                                             | Divides the elements             |
+| %      | =int=                                                                                      | Produces the modulo              |
+| **     | =int=, =float=                                                                             | Produces the power               |
+| >      | =int=, =float=, =time=                                                                     | Greater than                     |
+| <      | =int=, =float=, =time=                                                                     | Less than                        |
+| >=     | =int=, =float=, =time=                                                                     | Greater than or equal to         |
+| <=     | =int=, =float=, =time=                                                                     | Less than or equal to            |
+| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit=, =time= | Equal to                         |
+| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit=, =time= | Not equal to                     |
+| &&     | =bool=, =option=                                                                           | Logical AND                      |
+| <<     | =int=                                                                                      | Bit shift left                   |
+| >>     | =int=                                                                                      | Bit shift right                  |
+| `&     | =int=                                                                                      | Bitwise AND (backtick needed)    |
+| `~     | =int=                                                                                      | Bitwise NOT (backtick needed)    |
+| `^     | =int=                                                                                      | Bitwise XOR (backtick needed)    |
 =||=, =bool=, =option= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
 =`|= Bitwise OR (backtick needed)
@@ -1310,6 +1310,13 @@ to files. The way to get a file handler is by using the intrinsic function =open
 *Note*: It is up to the user to =close()= the file handle.
 #+end_quote
 
+** =time=
+
+#+begin_qutoe
+This is a datatype representing time. It contains the values of
+the years, months, days, hours, minutes, and seconds of the current date.
+#+end_qutoe
+
 ** =unit=
 
 #+begin_quote
@@ -1538,11 +1545,32 @@ i.e., ="wrb"=.
 
 #+begin_quote
 #+begin_example
-unimplemented(arg1, arg2, ..., argN)
+unimplemented(arg1, arg2, ..., argN) -> unit
 #+end_example
 
 Prints "UNIMPLEMENTED" arg1..arg$N$ to =stderr= and exits with non-zero exit code.
 #+end_quote
+
+** =datetime=
+
+#+begin_quote
+#+begin_example
+datetime() -> time
+#+end_example
+
+Returns the current date as a `time` type.
+#+end_quote
+
+** =sleep=
+
+#+begin_quote
+#+begin_example
+sleep(milli: int) -> unit
+#+end_example
+
+Sleep for `milli` milliseconds.
+#+end_quote
+
 
 * Member Intrinsics
 
@@ -1814,6 +1842,65 @@ writelines(msg: list) -> unit
 
 Writes all elements in the list =msg= to the opened file.
 At the end of each value, a newline is added.
+#+end_quote
+
+** =time= Implements
+
+#+begin_quote
+#+begin_example
+readable() -> tuple<int>
+#+end_example
+
+Returns the current value of the time object as a tuple of
+=(years, months, days, hours, minutes, seconds)=
+#+end_quote
+
+#+begin_quote
+#+begin_example
+years() -> int
+#+end_example
+
+Returns the number of years in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+months() -> int
+#+end_example
+
+Returns the number of months in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+days() -> int
+#+end_example
+
+Returns the number of days in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+hours() -> int
+#+end_example
+
+Returns the number of hours in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+minutes() -> int
+#+end_example
+
+Returns the number of minutes in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+seconds() -> int
+#+end_example
+
+Returns the number of seconds in the time object.
 #+end_quote
 
 * StdLib
