@@ -60,7 +60,7 @@ usage(void) {
     std::cerr << "  -c, --check             Only parse the file given" << std::endl;
     std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
-    std::cerr << "      --watch [files...]  Watch files for changes and hot reload" << std::endl;
+    std::cerr << "  -w, --watch [files...]  Watch files for changes and hot reload" << std::endl;
     std::cerr << "      --show-funs         Print every function call evaluated" << std::endl;
 
     std::exit(0);
@@ -126,7 +126,7 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
 }
 
 static void
-parse_1hypharg(std::string arg) {
+parse_1hypharg(std::string arg, std::vector<std::string> &args) {
     for (size_t i = 0; i < arg.size(); ++i) {
         switch (arg[i]) {
         case COMMON_EARL1ARG_HELP: {
@@ -137,6 +137,10 @@ parse_1hypharg(std::string arg) {
         } break;
         case COMMON_EARL1ARG_CHECK: {
             flags |= __CHECK;
+        } break;
+        case COMMON_EARL1ARG_WATCH: {
+            gather_watch_files(args);
+            flags |= __WATCH;
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
@@ -153,7 +157,7 @@ parsearg(std::string line, std::vector<std::string> &args) {
     }
     else if (line[0] == '-') {
         args.erase(args.begin());
-        parse_1hypharg(line.substr(1));
+        parse_1hypharg(line.substr(1), args);
     }
     else {
         UNIMPLEMENTED("parsearg: last case");
