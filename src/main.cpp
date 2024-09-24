@@ -58,9 +58,9 @@ usage(void) {
     std::cerr << "  -v, --version           Print version information" << std::endl;
     std::cerr << "  -h, --help              Print this help message" << std::endl;
     std::cerr << "  -c, --check             Only parse the file given" << std::endl;
+    std::cerr << "  -w, --watch [files...]  Watch files for changes and hot reload" << std::endl;
     std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
-    std::cerr << "  -w, --watch [files...]  Watch files for changes and hot reload" << std::endl;
     std::cerr << "      --show-funs         Print every function call evaluated" << std::endl;
 
     std::exit(0);
