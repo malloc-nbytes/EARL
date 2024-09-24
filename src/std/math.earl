@@ -209,8 +209,7 @@ fn area_of_cone(r, h) {
 ### RETURNS int
 ### DESCRIPTION
 ###   Returns the floor of `f`.
-@pub
-fn floor(f: float): int {
+@pub fn floor(f: float): int {
     return int(f);
 }
 
@@ -219,9 +218,41 @@ fn floor(f: float): int {
 ### RETURNS int
 ### DESCRIPTION
 ###   Returns the ceil of `f`.
-@pub
-fn ceil(f: float): int {
+@pub fn ceil(f: float): int {
     return floor(1+f);
+}
+
+### NAME lerp
+### PARAMETER a: real
+### PARAMETER b: real
+### PARAMETER f: real
+### RETURNS real
+### DESCRIPTION
+###   Performs the lerp algorithm from `a` to `b` by `f`.
+@pub fn lerp(a: real, b: real, f: real): float {
+    return a*(1.-f)+(b*f);
+}
+
+### NAME normalize
+### PARAMETER x: real
+### PARAMETER min: float
+### PARAMETER max: float
+### RETURNS float
+### DESCRIPTION
+###   Normalizes `x` to the range of `min` .. `max`.
+@pub fn normalize(x: real, min: float, max: float): float {
+    return (x-min)/(1-max);
+}
+
+### NAME clamp
+### PARAMETER value: real
+### PARAMETER min: real
+### PARAMETER max: real
+### RETURNS real
+### DESCRIPTION
+###   Performs clamp on `value` with `min` and `max`.
+@pub fn clamp(value: real, min: real, max: real): real {
+    return max(min, min(value, max));
 }
 
 ### END FUNCTIONS

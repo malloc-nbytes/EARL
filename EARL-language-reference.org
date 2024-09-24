@@ -2049,6 +2049,30 @@ ceil(f: float) -> int
 Returns the ceil of =f=.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+lerp(a: real, b: real, f: real) -> real
+#+end_example
+
+Performs the lerp algorithm from =a= to =b= by =f=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+normalize(x: real, min: float, max: float) -> float
+#+end_example
+
+Normalizes =x= to the range of =min= .. =max=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+clamp(value: real, min: real, max: real) -> real
+#+end_example
+
+Performs clamp on =value= with =min= and =max=.
+#+end_quote
+
 *** *Class List*: /None/
 
 ** List
@@ -2320,6 +2344,69 @@ Performs Run Length Encoding on =src=.
 #+end_quote
 
 *** *Class List*: /None/
+
+** Matrix
+
+*** *Import*: ="std/matrix.earl"=
+
+*** *Module*: =Matrix=
+
+*** *Variable List*: /None/
+
+*** *Enum List*: /None/
+
+*** *Function List*:
+#+begin_quote
+#+begin_example
+identity() -> T
+#+end_example
+
+Creates the identity matrix.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+from1d(data: list<any>, rows: int, cols: int) -> T
+#+end_example
+
+Creates a =rows= x =cols= matrix from a 1d list.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+from2d(data: list<list<any>>) -> T
+#+end_example
+
+Creates a matrix from a 2d list.
+#+end_quote
+
+*** *Class List*:
+*** *=T=*
+#+begin_quote
+#+begin_example
+T [init: list<any>, rows: int, cols: int]
+#+end_example
+Creates a new matrix with the initial dataset =init= with =rows= rows and =cols= columns.
+#+end_quote
+
+**** *=T= Implements*
+
+#+begin_quote
+#+begin_example
+at(i: int, j: int) -> any
+#+end_example
+
+Returns the element at [ =i= ][ =j= ] in the matrix. 
+
+#+end_quote
+#+begin_quote
+#+begin_example
+show() -> unit
+#+end_example
+
+Prints all elements in the matrix. 
+
+#+end_quote
 
 ** IO
 
