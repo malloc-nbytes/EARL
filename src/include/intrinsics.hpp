@@ -91,6 +91,16 @@
         }                                                               \
     } while (0)
 
+#define __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(arg, ty, loc, fn, expr)     \
+    do {                                                                \
+        if (arg->type() != ty) {                                        \
+            Err::err_wexpr(expr);                                       \
+            std::string __Msg = "the "+std::to_string(loc)+" argument of function `" fn "` expects type `" \
+                +earl::value::type_to_str(ty)+"` but got `"+earl::value::type_to_str(arg->type())+"`"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
+    } while (0)
+
 #define __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(arg, ty1, ty2, loc, fn, expr) \
     do {                                                                \
         if (!earl::value::type_is_compatable(arg->type(), ty1) && !earl::value::type_is_compatable(arg->type(), ty2)) { \
@@ -306,6 +316,11 @@ namespace Intrinsics {
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                       std::shared_ptr<Ctx> &ctx,
+                       Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                        std::shared_ptr<Ctx> &ctx,
                        Expr *expr);
 

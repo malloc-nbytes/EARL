@@ -28,6 +28,7 @@
 #include <fstream>
 #include <filesystem>
 #include <ctime>
+#include <unistd.h>
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -67,6 +68,7 @@ Intrinsics::intrinsic_functions = {
     {"unit", &Intrinsics::intrinsic_unit},
     {"Dict", &Intrinsics::intrinsic_Dict},
     {"datetime", &Intrinsics::intrinsic_datetime},
+    {"sleep", &Intrinsics::intrinsic_sleep},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -685,6 +687,17 @@ Intrinsics::intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &u
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "datetime", expr);
     return std::make_shared<earl::value::Time>(std::time(nullptr));
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &time,
+                std::shared_ptr<Ctx> &ctx,
+                Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(time, 1, "sleep", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(time[0], earl::value::Type::Int, 1, "sleep", expr);
+    usleep(dynamic_cast<earl::value::Int *>(time[0].get())->value());
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
