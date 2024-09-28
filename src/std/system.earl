@@ -158,4 +158,24 @@ module System
     }
 }
 
+### NAME cmdstr
+### PARAMETER cmd: str
+### RETURNS str
+### DESCRIPTION
+###   Run the bash command `cmd` and return the
+###   output as a `str`.
+@pub fn cmdstr(cmd: str): str {
+    return __internal_unix_system_woutput__(cmd)[1];
+}
+
+### NAME cmdstr_wexitcode
+### PARAMETER cmd: str
+### RETURNS tuple<int, str>
+### DESCRIPTION
+###   Run the bash command `cmd` and return the
+###   output as a tuple of `(exit_code, output)`.
+@pub fn cmdstr_wexitcode(cmd: str): tuple {
+    return __internal_unix_system_woutput__(cmd);
+}
+
 ### END FUNCTIONS

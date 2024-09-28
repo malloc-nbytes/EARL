@@ -22,7 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <array>
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <unordered_map>
 #include <fstream>
@@ -56,6 +58,7 @@ Intrinsics::intrinsic_functions = {
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
     {"__internal_unix_system__", &Intrinsics::intrinsic___internal_unix_system__},
+    {"__internal_unix_system_woutput__", &Intrinsics::intrinsic___internal_unix_system_woutput__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
     {"fprint", &Intrinsics::intrinsic_fprint},
     // Casting Functions
@@ -69,6 +72,7 @@ Intrinsics::intrinsic_functions = {
     {"Dict", &Intrinsics::intrinsic_Dict},
     {"datetime", &Intrinsics::intrinsic_datetime},
     {"sleep", &Intrinsics::intrinsic_sleep},
+    {"env", &Intrinsics::intrinsic_env},
 };
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
@@ -488,6 +492,43 @@ Intrinsics::intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl:
 }
 
 std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic___internal_unix_system_woutput__(
+    std::vector<std::shared_ptr<earl::value::Obj>> &params,
+    std::shared_ptr<Ctx> &ctx, Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_unix_system__woutput_", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_unix_system__woutput_", expr);
+    const std::string cmd = params[0]->to_cxxstring();
+
+    std::array<char, 128> buffer;
+    std::string output = "";
+
+    FILE *pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+        Err::err_wexpr(expr);
+        const std::string msg = "failed to execute system command `" + cmd + "`";
+        throw InterpreterException(msg);
+    }
+
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+        output += buffer.data();
+    }
+
+    int ec = pclose(pipe);
+    if (ec == -1) {
+        Err::err_wexpr(expr);
+        const std::string msg = "failed to execute system command `" + cmd + "`";
+        throw InterpreterException(msg);
+    }
+
+    std::vector<std::shared_ptr<earl::value::Obj>> res = {
+        std::make_shared<earl::value::Int>(ec),
+        std::make_shared<earl::value::Str>(output),
+    };
+    return std::make_shared<earl::value::Tuple>(std::move(res));
+}
+
+
+std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx,
                            Expr *expr) {
@@ -691,13 +732,27 @@ Intrinsics::intrinsic_datetime(std::vector<std::shared_ptr<earl::value::Obj>> &u
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &time,
-                std::shared_ptr<Ctx> &ctx,
-                Expr *expr) {
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(time, 1, "sleep", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(time[0], earl::value::Type::Int, 1, "sleep", expr);
     usleep(dynamic_cast<earl::value::Int *>(time[0].get())->value());
     return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_env(std::vector<std::shared_ptr<earl::value::Obj>> &var,
+                          std::shared_ptr<Ctx> &ctx, Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(var, 1, "env", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(var[0], earl::value::Type::Str, 1,
+                                        "env", expr);
+    auto str = dynamic_cast<earl::value::Str *>(var[0].get());
+    const char *env = getenv(str->value().c_str());
+    return env
+        ? std::make_shared<earl::value::Str>(std::string(env))
+        : std::make_shared<earl::value::Str>("");
 }
 
 std::shared_ptr<earl::value::Obj>

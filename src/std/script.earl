@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 ### MODULE
-module Scripting
+module Script
 
 import "std/system.earl"
 
@@ -33,5 +33,66 @@ import "std/system.earl"
 ###   machine or `false` if otherwise.
 @pub fn program_exists(progname: str): bool {
     return System::cmd(f"which {progname} > /dev/null 2>&1") == 0;
+}
+
+### NAME get_pid
+### PARAMETER proc: str
+### RETURNS list<tuple<int, str>>
+### DESCRIPTION
+###   Returns a list of pids and the process associated
+###   with it in the form of `[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]`.
+@pub fn get_pid(proc: str): list {
+    let output = System::cmdstr(f"ps aux | grep {proc}").split("\n");
+    let res = [];
+
+    let last_idx = 10;
+
+    foreach o in output {
+        let parts = o.split(" ").filter(|k|{return k != "";});
+        if len(parts) < 10 {
+            continue;
+        }
+
+        let pid = parts[1];
+        let cmd_parts = parts[last_idx:];
+        let cmd = "";
+
+        for i in 0 to len(cmd_parts) {
+            cmd += cmd_parts[i];
+            if i != len(cmd_parts)-1 {
+                cmd += ' ';
+            }
+        }
+
+        res.append((int(pid), cmd));
+    }
+
+    # Remove grep entries
+    if len(res) > 2 {
+        res.pop(len(res)-1);
+        res.pop(len(res)-1);
+    }
+
+    return res;
+}
+
+### NAME kill_pid
+### PARAMETER pid: int
+### RETURNS unit
+### DESCRIPTION
+###   Kill the PID `pid`.
+@pub fn kill_pid(pid: int): unit {
+    System::cmd_wcheck(f"kill {pid}");
+}
+
+### NAME kill_pids
+### PARAMETER pid: list<int>
+### RETURNS unit
+### DESCRIPTION
+###   Kill all PIDs `pids`.
+@pub fn kill_pids(pids: list): unit {
+    foreach pid in pids {
+        kill_pid(pid);
+    }
 }
 

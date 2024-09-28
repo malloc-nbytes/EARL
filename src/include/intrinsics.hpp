@@ -321,8 +321,13 @@ namespace Intrinsics {
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                       std::shared_ptr<Ctx> &ctx,
-                       Expr *expr);
+                    std::shared_ptr<Ctx> &ctx,
+                    Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_env(std::vector<std::shared_ptr<earl::value::Obj>> &var,
+                  std::shared_ptr<Ctx> &ctx,
+                  Expr *expr);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
@@ -345,6 +350,11 @@ namespace Intrinsics {
     intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                        std::shared_ptr<Ctx> &ctx,
                                        Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic___internal_unix_system_woutput__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                               std::shared_ptr<Ctx> &ctx,
+                                               Expr *expr);
 
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
