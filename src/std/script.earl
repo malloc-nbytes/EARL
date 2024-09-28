@@ -25,6 +25,8 @@ module Script
 
 import "std/system.earl"
 
+### BEGIN FUNCTIONS
+
 ### NAME program_exists
 ### PARAMETER progname: str
 ### RETURNS str
@@ -96,3 +98,4 @@ import "std/system.earl"
     }
 }
 
+### END FUNCTIONS
