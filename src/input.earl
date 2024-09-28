@@ -1,16 +1,35 @@
 module Main
 
-import "std/system.earl" as sys
-import "std/script.earl" as scr
+fn sum(a, b) {
+    for i in 0 to 10 {
+        loop {
+            let x = 1;
+            return;
+        }
+        let name = "zachary";
+        break;
+    }
+    let x = 3;
+    return 100;
+}
 
-println(scr::all_running_procs());
+while 100 > 3 {
+    println("hello");
+}
 
-# foreach entry in s {
-#     if !entry["cmd"] {
-#         continue;
-#     }
-#     let cmd = entry["cmd"].unwrap();
-#     if cmd == "ocamllsp" {
-#         println("FOUND");
-#     }
-# }
+let s = sum(1, test(3, "hi", x));
+let lst = [1,2,3,4,54];
+
+if x > 3 {
+    println("hello");
+}
+else if x == 3 {
+    if x == 900 {
+    }
+}
+else {
+}
+
+x += 3;
+
+

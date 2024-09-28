@@ -36,6 +36,7 @@
 #include "repl.hpp"
 #include "config.h"
 #include "hot-reload.hpp"
+#include "earl-to-py.hpp"
 
 std::vector<std::string> earl_argv = {};
 static std::vector<std::string> watch_files = {};
@@ -62,6 +63,7 @@ usage(void) {
     std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
     std::cerr << "      --show-funs         Print every function call evaluated" << std::endl;
+    std::cerr << "      --to-py             Convert an EARL file to Python" << std::endl;
 
     std::exit(0);
 }
@@ -118,6 +120,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SHOWFUNS;
     else if (arg == COMMON_EARL2ARG_CHECK)
         flags |= __CHECK;
+    else if (arg == COMMON_EARL2ARG_TOPY)
+        flags |= __TOPY;
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -218,6 +222,26 @@ main(int argc, char **argv) {
         }
         hot_reload::register_watch_files(watch_files);
     }
+
+    if ((flags & __TOPY) != 0) {
+        std::unique_ptr<Lexer> lexer = nullptr;
+        std::unique_ptr<Program> program = nullptr;
+        try {
+            std::string src_code = read_file(filepath.c_str());
+            lexer = lex_file(src_code, filepath, keywords, types, comment);
+        } catch (const LexerException &e) {
+            std::cerr << "Lexer error: " << e.what() << std::endl;
+        }
+        try {
+            program = Parser::parse_program(*lexer.get(), filepath);
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+        }
+        auto pysrc = earl_to_py(std::move(program));
+        std::cout << pysrc << std::endl;
+        exit(0);
+    }
+
 
     if ((flags & __WATCH) != 0)
         std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
