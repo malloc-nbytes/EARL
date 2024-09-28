@@ -1,12 +1,4 @@
 module Main
 
-import "std/script.earl"
-import "std/system.earl"
-
-let res = Script::get_pid("discord");
-
-res.foreach(|info| {
-    Script::kill_pid(info[0]);
-});
 
 

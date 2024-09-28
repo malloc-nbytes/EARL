@@ -1571,6 +1571,18 @@ sleep(milli: int) -> unit
 Sleep for `milli` milliseconds.
 #+end_quote
 
+** =env=
+
+#+begin_quote
+#+begin_example
+env(variable: str) -> str
+#+end_example
+
+Get the environment variable =variable= as a =str=.
+
+*Note*: Do not put "$" in the variable name unless
+it has one explicitly in the name.
+#+end_quote
 
 * Member Intrinsics
 
