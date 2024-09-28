@@ -1,5 +1,7 @@
 module Main
 
-if true {
-    println("hi");
-}
+import "std/scripting.earl"
+
+
+
+
