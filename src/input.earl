@@ -1,8 +1,16 @@
 module Main
 
 import "std/system.earl" as sys
+import "std/script.earl" as scr
 
-sys::cd(env("HOME")+"/resume");
+println(scr::all_running_procs());
 
-println(sys::ls("."));
-
+# foreach entry in s {
+#     if !entry["cmd"] {
+#         continue;
+#     }
+#     let cmd = entry["cmd"].unwrap();
+#     if cmd == "ocamllsp" {
+#         println("FOUND");
+#     }
+# }

@@ -2709,6 +2709,22 @@ git_clone(link: str, depth: int) -> unit
 Performs a =git clone <link> --depth=<depth>=. To not specify a depth, put some number less than 1 as the =depth=.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+whoami() -> str
+#+end_example
+
+Return the user as a =str=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+all_running_procs() -> list<dict<str>>
+#+end_example
+
+Return information on all running processes as a =dict<str>= in the form of: =dict["user"] = str= =dict["pid"] = str= =dict["cpu"] = str= =dict["mem"] = str= =dict["vsz"] = str= =dict["rss"] = str= =dict["tty"] = str= =dict["stat"] = str= =dict["start"] = str= =dict["time"] = str= =dict["cmd"] = str=
+#+end_quote
+
 *** *Class List*: /None/
 
 ** Stack
