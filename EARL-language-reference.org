@@ -1571,6 +1571,18 @@ sleep(milli: int) -> unit
 Sleep for `milli` milliseconds.
 #+end_quote
 
+** =env=
+
+#+begin_quote
+#+begin_example
+env(variable: str) -> str
+#+end_example
+
+Get the environment variable =variable= as a =str=.
+
+*Note*: Do not put "$" in the variable name unless
+it has one explicitly in the name.
+#+end_quote
 
 * Member Intrinsics
 
@@ -2623,6 +2635,51 @@ Returns =true= if =value= is in the =set=, or =false= if it is not. A panic will
 
 #+end_quote
 
+** Script
+
+*** *Import*: ="std/script.earl"=
+
+*** *Module*: =Script=
+
+*** *Variable List*: /None/
+
+*** *Enum List*: /None/
+
+*** *Function List*:
+#+begin_quote
+#+begin_example
+program_exists(progname: str) -> str
+#+end_example
+
+Returns =true= if =progname= exists as a program on the machine or =false= if otherwise.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+get_pid(proc: str) -> list<tuple<int,str>>
+#+end_example
+
+Returns a list of pids and the process associated with it in the form of =[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+kill_pid(pid: int) -> unit
+#+end_example
+
+Kill the PID =pid=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+kill_pids(pid: list<int>) -> unit
+#+end_example
+
+Kill all PIDs =pids=.
+#+end_quote
+
+*** *Class List*: /None/
+
 ** Stack
 
 *** *Import*: ="std/stack.earl"=
@@ -2760,6 +2817,22 @@ cmd_onfail(cmd: str, onfail: closure) -> unit
 #+end_example
 
 Run the bash command =cmd= and checks the exit code. Will run =onfail= if the exit code is not 0.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+cmdstr(cmd: str) -> str
+#+end_example
+
+Run the bash command =cmd= and return the output as a =str=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+cmdstr_wexitcode(cmd: str) -> tuple<int,str>
+#+end_example
+
+Run the bash command =cmd= and return the output as a tuple of =(exit_code, output)=.
 #+end_quote
 
 *** *Class List*: /None/

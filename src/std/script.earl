@@ -1,0 +1,101 @@
+# MIT License
+
+# Copyright (c) 2023 malloc-nbytes
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+### MODULE
+module Script
+
+import "std/system.earl"
+
+### BEGIN FUNCTIONS
+
+### NAME program_exists
+### PARAMETER progname: str
+### RETURNS str
+### DESCRIPTION
+###   Returns `true` if `progname` exists as a program on the
+###   machine or `false` if otherwise.
+@pub fn program_exists(progname: str): bool {
+    return System::cmd(f"which {progname} > /dev/null 2>&1") == 0;
+}
+
+### NAME get_pid
+### PARAMETER proc: str
+### RETURNS list<tuple<int, str>>
+### DESCRIPTION
+###   Returns a list of pids and the process associated
+###   with it in the form of `[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]`.
+@pub fn get_pid(proc: str): list {
+    let output = System::cmdstr(f"ps aux | grep {proc}").split("\n");
+    let res = [];
+
+    let last_idx = 10;
+
+    foreach o in output {
+        let parts = o.split(" ").filter(|k|{return k != "";});
+        if len(parts) < 10 {
+            continue;
+        }
+
+        let pid = parts[1];
+        let cmd_parts = parts[last_idx:];
+        let cmd = "";
+
+        for i in 0 to len(cmd_parts) {
+            cmd += cmd_parts[i];
+            if i != len(cmd_parts)-1 {
+                cmd += ' ';
+            }
+        }
+
+        res.append((int(pid), cmd));
+    }
+
+    # Remove grep entries
+    if len(res) > 2 {
+        res.pop(len(res)-1);
+        res.pop(len(res)-1);
+    }
+
+    return res;
+}
+
+### NAME kill_pid
+### PARAMETER pid: int
+### RETURNS unit
+### DESCRIPTION
+###   Kill the PID `pid`.
+@pub fn kill_pid(pid: int): unit {
+    System::cmd_wcheck(f"kill {pid}");
+}
+
+### NAME kill_pids
+### PARAMETER pid: list<int>
+### RETURNS unit
+### DESCRIPTION
+###   Kill all PIDs `pids`.
+@pub fn kill_pids(pids: list): unit {
+    foreach pid in pids {
+        kill_pid(pid);
+    }
+}
+
+### END FUNCTIONS
