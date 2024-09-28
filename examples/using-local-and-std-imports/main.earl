@@ -4,13 +4,13 @@ module Main
 import "std/list.earl"
 
 # Import locally
-import "other-file.earl"
+import "other-file.earl" as local
 
 #--- Local import examples
 # We can access these resources because
 # they are labeled with the @pub attribute.
 println(OtherFile::other_file_var1);
-println(OtherFile::other_file_var2);
+println(local::other_file_var2);
 
 let s = OtherFile::sum(1, 2);
 println(s);

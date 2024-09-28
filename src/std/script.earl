@@ -108,6 +108,31 @@ import "std/system.earl"
     System::cmd_wcheck(f"wget -O {name} {link}");
 }
 
+### NAME wget_wredirects
+### PARAMETER link: str
+### PARAMETER name: str
+### RETURNS unit
+### DESCRIPTION
+###   Performs a `wget` on `link` and saves it to `name`.
+###   Allows redirects.
+@pub fn wget_wredirects(link: str, name: str): unit {
+    System::cmd_wcheck(f"wget --content-disposition -O {name} {link}");
+}
 
+### NAME git_clone
+### PARAMETER link: str
+### PARAMETER depth: int
+### RETURNS unit
+### DESCRIPTION
+###   Performs a `git clone <link> --depth=<depth>`. To not
+###   specify a depth, put some number less than 1 as the `depth`.
+@pub fn git_clone(link: str, depth: int): unit {
+    if depth < 1 {
+        System::cmd_wcheck(f"git clone {link}");
+    }
+    else {
+        System::cmd_wcheck(f"git clone {link} --depth={depth}");
+    }
+}
 
 ### END FUNCTIONS

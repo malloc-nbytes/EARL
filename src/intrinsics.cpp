@@ -57,6 +57,7 @@ Intrinsics::intrinsic_functions = {
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
+    {"__internal_cd__", &Intrinsics::intrinsic___internal_cd__},
     {"__internal_unix_system__", &Intrinsics::intrinsic___internal_unix_system__},
     {"__internal_unix_system_woutput__", &Intrinsics::intrinsic___internal_unix_system_woutput__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
@@ -452,6 +453,7 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
                                       Expr *expr) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_ls__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_ls__", expr);
 
     auto obj = params[0];
     std::string path = obj->to_cxxstring();
@@ -473,6 +475,25 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
     lst->append(items);
 
     return lst;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic___internal_cd__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_cd__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1,
+                                  "__internal_cd__", expr);
+    const std::string &new_dir = params[0]->to_cxxstring();
+
+    if (chdir(new_dir.c_str()) != 0) {
+        Err::err_wexpr(expr);
+        const std::string msg = "failed to change directory";
+        throw InterpreterException(msg);
+    }
+
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>

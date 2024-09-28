@@ -2685,6 +2685,30 @@ kill_pids(pid: list<int>) -> unit
 Kill all PIDs =pids=.
 #+end_quote
 
+#+begin_quote
+#+begin_example
+wget(link: str, name: str) -> unit
+#+end_example
+
+Performs a =wget= on =link= and saves it to =name=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+wget_wredirects(link: str, name: str) -> unit
+#+end_example
+
+Performs a =wget= on =link= and saves it to =name=. Allows redirects.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+git_clone(link: str, depth: int) -> unit
+#+end_example
+
+Performs a =git clone <link> --depth=<depth>=. To not specify a depth, put some number less than 1 as the =depth=.
+#+end_quote
+
 *** *Class List*: /None/
 
 ** Stack
@@ -2768,6 +2792,14 @@ ls(path: str) -> list
 #+end_example
 
 List all items at the path =path= and return a list of all elements it contains.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+cd(path: str) -> unit
+#+end_example
+
+Change the current working directory to =path=.
 #+end_quote
 
 #+begin_quote

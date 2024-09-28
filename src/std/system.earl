@@ -35,6 +35,15 @@ module System
     return __internal_ls__(path);
 }
 
+### NAME cd
+### PARAMETER path: str
+### RETURNS unit
+### DESCRIPTION
+###   Change the current working directory to `path`.
+@pub fn cd(path: str): unit {
+    __internal_cd__(path);
+}
+
 ### NAME mkdir
 ### PARAMETER name: str
 ### RETURNS unit

@@ -1,6 +1,8 @@
 module Main
 
-import "std/script.earl" almost as script
-import "std/system.earl" almost as sys
-import "std/list.earl"
+import "std/system.earl" as sys
+
+sys::cd(env("HOME")+"/resume");
+
+println(sys::ls("."));
 
