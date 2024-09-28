@@ -699,12 +699,15 @@ in =/usr/local/=. tl;dr make sure to put "std/" before the filename if using the
 When importing, a depth can be specified. Use =full=
 if you want all public elements from the file (enums, functions, variables, classes, etc.),
 or =almost= if you only desire public variables and enums. If none is provided, =full= will be used by default.
+
+If the module name of the file that is being imported is not known, or it is undesired, you
+can rename it using the =as= keyword followed by some identifier.
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=import= "filepath" ?(=full= | =almost=)
+=import= "filepath" ?(=full= | =almost=) ?( =as= <identifier>)
 #+end_quote
 
 ** Examples
@@ -712,11 +715,15 @@ or =almost= if you only desire public variables and enums. If none is provided, 
 #+begin_example
 # stdlib imports
 import "std/list.earl" full
-import "std/math.earl" # uses `full`
-import "std/utils.earl" almost
+
+import "std/math.earl"        # uses `full` by default
+
+# this module can now be accessed by
+# Utils:: or utl::
+import "std/utils.earl" almost as utl
 
 # local imports
-import "my-local-file.earl" almost
+import "my-local-file.earl" as local
 #+end_example
 
 * Modules

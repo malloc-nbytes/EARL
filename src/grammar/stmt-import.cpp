@@ -28,8 +28,10 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-StmtImport::StmtImport(std::shared_ptr<Token> fp, std::optional<std::shared_ptr<Token>> depth)
-    : m_fp(fp), m_depth(depth) {
+StmtImport::StmtImport(std::shared_ptr<Token> fp,
+                       std::optional<std::shared_ptr<Token>> depth,
+                       std::optional<std::shared_ptr<Token>> as)
+    : m_fp(fp), m_depth(depth), m_as(as) {
     // __m_depth = m_depth->lexeme() == COMMON_EARLKW_ALMOST ? COMMON_DEPTH_ALMOST : COMMON_DEPTH_FULL;
     if (!m_depth.has_value())
         __m_depth = COMMON_DEPTH_FULL;

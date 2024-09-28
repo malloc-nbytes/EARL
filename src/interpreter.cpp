@@ -775,8 +775,11 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         auto world = dynamic_cast<FunctionCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
     }
-    else if (ctx->type() == CtxType::Class)
-        UNIMPLEMENTED("eval_expr_term_mod_access:ctx->type() == CtxType::Class");
+    else if (ctx->type() == CtxType::Class) {
+        auto klass = dynamic_cast<ClassCtx *>(ctx.get());
+        auto world = dynamic_cast<WorldCtx *>(klass->get_world_owner().get());
+        ctx_ptr = world->get_import(left_id);
+    }
     else if (ctx->type() == CtxType::Closure) {
         auto world = dynamic_cast<ClosureCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
@@ -2088,7 +2091,12 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         program = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme());
 
-    std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+    std::shared_ptr<Ctx> child_ctx =
+        Interpreter::interpret(std::move(program), std::move(lexer));
+    if (stmt->m_as.has_value()) {
+        dynamic_cast<WorldCtx *>(child_ctx.get())
+            ->set_module_alias(stmt->m_as.value()->lexeme());
+    }
 
     if (stmt->__m_depth == COMMON_DEPTH_ALMOST)
         dynamic_cast<WorldCtx *>(child_ctx.get())->strip_funs_and_classes();

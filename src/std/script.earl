@@ -98,4 +98,16 @@ import "std/system.earl"
     }
 }
 
+### NAME wget
+### PARAMETER link: str
+### PARAMETER name: str
+### RETURNS unit
+### DESCRIPTION
+###   Performs a `wget` on `link` and saves it to `name`.
+@pub fn wget(link: str, name: str): unit {
+    System::cmd_wcheck(f"wget -O {name} {link}");
+}
+
+
+
 ### END FUNCTIONS

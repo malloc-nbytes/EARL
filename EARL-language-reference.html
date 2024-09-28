@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-09-27 Fri 20:54 -->
+<!-- 2024-09-28 Sat 00:22 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>EARL Lanugage Reference</title>
@@ -56,344 +56,344 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org2855cee">Your First Program</a></li>
-<li><a href="#orgcffcc1b">Typing</a></li>
-<li><a href="#orgfbc179b">REPL</a>
+<li><a href="#org288d8eb">Your First Program</a></li>
+<li><a href="#org725ad9f">Typing</a></li>
+<li><a href="#org74a1799">REPL</a>
 <ul>
-<li><a href="#orgdb7569f">REPL Commands</a></li>
-<li><a href="#org2de58a6">REPL Programming</a></li>
+<li><a href="#org3d17ecd">REPL Commands</a></li>
+<li><a href="#org582fd1d">REPL Programming</a></li>
 </ul>
 </li>
-<li><a href="#org3b7e2e0">Keywords</a></li>
-<li><a href="#org20cc250">Builtin Identifiers</a></li>
-<li><a href="#org45b1cfe">Binary Operations</a></li>
-<li><a href="#org689add1">Variable Declarations</a>
+<li><a href="#orgeb80a9a">Keywords</a></li>
+<li><a href="#orgace79c4">Builtin Identifiers</a></li>
+<li><a href="#orgcf7162a">Binary Operations</a></li>
+<li><a href="#org426005f">Variable Declarations</a>
 <ul>
-<li><a href="#org3027d37">Grammar</a></li>
-<li><a href="#org3cb7977">Examples</a></li>
+<li><a href="#orga74bc4d">Grammar</a></li>
+<li><a href="#org8d6d74e">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org386ef0c">Mutation</a>
+<li><a href="#orgb287554">Mutation</a>
 <ul>
-<li><a href="#org22174ec">Grammar</a></li>
-<li><a href="#orge6eddb0">Examples</a></li>
-<li><a href="#orgefd97d4">Shorthand</a></li>
+<li><a href="#org0bb4c1f">Grammar</a></li>
+<li><a href="#orgf003eb1">Examples</a></li>
+<li><a href="#orged4a23e">Shorthand</a></li>
 </ul>
 </li>
-<li><a href="#orgb1a647e">Conditionals</a>
+<li><a href="#orgec390dd">Conditionals</a>
 <ul>
-<li><a href="#orgfea3ff8">Grammar</a></li>
-<li><a href="#org12a61a6">Examples</a></li>
+<li><a href="#org1e545ff">Grammar</a></li>
+<li><a href="#org99bf748">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org2d0af74">Pattern Matching</a>
+<li><a href="#orga6364bb">Pattern Matching</a>
 <ul>
-<li><a href="#org2fa9651">Examples</a></li>
+<li><a href="#org52ee0a5">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgd53d79b">While Loops</a>
+<li><a href="#org900b2b5">While Loops</a>
 <ul>
-<li><a href="#org0c0e4fc">Grammar</a></li>
-<li><a href="#org2989250">Examples</a></li>
+<li><a href="#org53d2062">Grammar</a></li>
+<li><a href="#org12200ad">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgb02ae4d">For Loops</a>
+<li><a href="#org0c4c329">For Loops</a>
 <ul>
-<li><a href="#org4012670">Grammar</a></li>
-<li><a href="#org9871b3b">Examples</a></li>
+<li><a href="#org1d3f4ca">Grammar</a></li>
+<li><a href="#orgaa06eb2">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgaa8e28d">Foreach Loops</a>
+<li><a href="#org26321dd">Foreach Loops</a>
 <ul>
-<li><a href="#org41b7563">Grammar</a></li>
-<li><a href="#org8eae1fd">Examples</a></li>
+<li><a href="#orgf64e4ae">Grammar</a></li>
+<li><a href="#orgfe09663">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org4e93c4a">Forever Loops</a>
+<li><a href="#orgfeb65cb">Forever Loops</a>
 <ul>
-<li><a href="#orgbbf56dc">Grammar</a></li>
-<li><a href="#orga28ade7">Examples</a></li>
+<li><a href="#org7388b77">Grammar</a></li>
+<li><a href="#org3220790">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org3c4d695">Function Definitions</a>
+<li><a href="#orgf2f4f56">Function Definitions</a>
 <ul>
-<li><a href="#org0b81148">Grammar</a></li>
-<li><a href="#orga09621e">Examples</a></li>
+<li><a href="#org6392b29">Grammar</a></li>
+<li><a href="#orgeadcab8">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgb502eb9">Imports</a>
+<li><a href="#org655dad3">Imports</a>
 <ul>
-<li><a href="#org66932fb">Grammar</a></li>
-<li><a href="#org9f99694">Examples</a></li>
+<li><a href="#orgd492a84">Grammar</a></li>
+<li><a href="#orgec572ad">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org95dec2d">Modules</a>
+<li><a href="#orgb53bec9">Modules</a>
 <ul>
-<li><a href="#orgecd3b4b">Grammar</a></li>
-<li><a href="#orgc9969e9">Examples</a></li>
+<li><a href="#orgd7aa93b">Grammar</a></li>
+<li><a href="#org5f97278">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgf844fe0">Attributes</a>
+<li><a href="#org571e046">Attributes</a>
 <ul>
-<li><a href="#orgbeb0736">Grammar</a></li>
-<li><a href="#orgc9a5363">Examples</a></li>
+<li><a href="#org059dea0">Grammar</a></li>
+<li><a href="#org530834f">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org28e28ec">Enumerations</a>
+<li><a href="#org7a5da8c">Enumerations</a>
 <ul>
-<li><a href="#orgefc72d3"><span class="todo TODO">TODO</span> Grammar</a></li>
-<li><a href="#org47e6616">Examples</a></li>
+<li><a href="#orgaca5cfa"><span class="todo TODO">TODO</span> Grammar</a></li>
+<li><a href="#org43dcbd7">Examples</a></li>
 </ul>
 </li>
-<li><a href="#orgd39258e">Classes</a>
+<li><a href="#org19685bc">Classes</a>
 <ul>
-<li><a href="#orgb5f60d9">Grammar</a></li>
-<li><a href="#orgd8f7860">Examples</a></li>
+<li><a href="#org3987314">Grammar</a></li>
+<li><a href="#orgd13a99d">Examples</a></li>
 </ul>
 </li>
-<li><a href="#org11d20dc">Datatypes</a>
+<li><a href="#org4b33b5b">Datatypes</a>
 <ul>
-<li><a href="#org824f859"><code>int</code></a></li>
-<li><a href="#org2beaa17"><code>float</code></a></li>
-<li><a href="#orge40472e"><code>bool</code></a></li>
-<li><a href="#org73202e3"><code>char</code></a></li>
-<li><a href="#orgfc69b93"><code>str</code></a>
+<li><a href="#orgef7c534"><code>int</code></a></li>
+<li><a href="#org40b78d9"><code>float</code></a></li>
+<li><a href="#org9b83528"><code>bool</code></a></li>
+<li><a href="#org3d979fd"><code>char</code></a></li>
+<li><a href="#org712c55e"><code>str</code></a>
 <ul>
-<li><a href="#org804676e">fstr</a></li>
+<li><a href="#org5755264">fstr</a></li>
 </ul>
 </li>
-<li><a href="#org73bdcf8"><code>list</code></a>
+<li><a href="#orgfa05cea"><code>list</code></a>
 <ul>
-<li><a href="#org7d67409">Ranges</a></li>
+<li><a href="#org850a09f">Ranges</a></li>
 </ul>
 </li>
-<li><a href="#org1b56928"><code>Slice</code></a></li>
-<li><a href="#orgdbfa647"><code>tuple</code></a></li>
-<li><a href="#org3c0ae39"><code>option</code></a></li>
-<li><a href="#orgb243a8d"><code>closure</code></a></li>
-<li><a href="#org3cea605"><code>dictionary</code></a></li>
-<li><a href="#org2c26779"><code>TypeKW</code></a></li>
-<li><a href="#orge0d4898"><code>file</code></a></li>
-<li><a href="#orgc0f9bd0"><code>time</code></a></li>
-<li><a href="#org0fda45c"><code>unit</code></a></li>
+<li><a href="#org485d8df"><code>Slice</code></a></li>
+<li><a href="#org9749719"><code>tuple</code></a></li>
+<li><a href="#org1484721"><code>option</code></a></li>
+<li><a href="#org88bc794"><code>closure</code></a></li>
+<li><a href="#org87f643c"><code>dictionary</code></a></li>
+<li><a href="#org351bebf"><code>TypeKW</code></a></li>
+<li><a href="#org313c8e2"><code>file</code></a></li>
+<li><a href="#orgf704f2e"><code>time</code></a></li>
+<li><a href="#org4cef8b3"><code>unit</code></a></li>
 </ul>
 </li>
-<li><a href="#orgc8c538d">Intrinsics</a>
+<li><a href="#org1589e41">Intrinsics</a>
 <ul>
-<li><a href="#org2102be1"><code>print</code></a></li>
-<li><a href="#orgd134693"><code>println</code></a></li>
-<li><a href="#org5f07d96"><span class="todo TODO">TODO</span> <code>fprint</code></a></li>
-<li><a href="#org965ec06"><span class="todo TODO">TODO</span> <code>fprintln</code></a></li>
-<li><a href="#orga2d20dd"><code>input</code></a></li>
-<li><a href="#org02136e4"><code>int</code></a></li>
-<li><a href="#org4a8e99a"><code>float</code></a></li>
-<li><a href="#org5bb3751"><code>str</code></a></li>
-<li><a href="#orgb9cd5cf"><code>bool</code></a></li>
-<li><a href="#orgd71a4e3"><code>tuple</code></a></li>
-<li><a href="#org9626c91"><code>list</code></a></li>
-<li><a href="#org8d587b5"><code>Dict</code></a></li>
-<li><a href="#org8019fcd"><code>assert</code></a></li>
-<li><a href="#org747622e"><code>len</code></a></li>
-<li><a href="#org9c3cac8"><code>some</code></a></li>
-<li><a href="#org9cd460f"><code>type</code></a></li>
-<li><a href="#org9e5d5bc"><code>typeof</code></a></li>
-<li><a href="#org0e081fc"><code>argv</code></a></li>
-<li><a href="#org07b4a2b"><code>open</code></a></li>
-<li><a href="#org8ef5f29"><code>unimplemented</code></a></li>
-<li><a href="#orged57eff"><code>datetime</code></a></li>
-<li><a href="#org1015fe1"><code>sleep</code></a></li>
-<li><a href="#org74cb2fd"><code>env</code></a></li>
+<li><a href="#org37bcbc4"><code>print</code></a></li>
+<li><a href="#orgb7d15f1"><code>println</code></a></li>
+<li><a href="#orgad41060"><span class="todo TODO">TODO</span> <code>fprint</code></a></li>
+<li><a href="#org3a4d4f5"><span class="todo TODO">TODO</span> <code>fprintln</code></a></li>
+<li><a href="#orgf3be534"><code>input</code></a></li>
+<li><a href="#org08510a7"><code>int</code></a></li>
+<li><a href="#org040a5e9"><code>float</code></a></li>
+<li><a href="#org99802ad"><code>str</code></a></li>
+<li><a href="#org9806904"><code>bool</code></a></li>
+<li><a href="#orgdfe46a7"><code>tuple</code></a></li>
+<li><a href="#orgd807128"><code>list</code></a></li>
+<li><a href="#orged0baf5"><code>Dict</code></a></li>
+<li><a href="#orgd797f12"><code>assert</code></a></li>
+<li><a href="#org7c322ae"><code>len</code></a></li>
+<li><a href="#org86c8c27"><code>some</code></a></li>
+<li><a href="#org530d977"><code>type</code></a></li>
+<li><a href="#orgf9592b1"><code>typeof</code></a></li>
+<li><a href="#org27255c2"><code>argv</code></a></li>
+<li><a href="#org561476d"><code>open</code></a></li>
+<li><a href="#orgea7e392"><code>unimplemented</code></a></li>
+<li><a href="#orgdc90bbb"><code>datetime</code></a></li>
+<li><a href="#org4ab64cf"><code>sleep</code></a></li>
+<li><a href="#orgbff38fb"><code>env</code></a></li>
 </ul>
 </li>
-<li><a href="#org51cd081">Member Intrinsics</a>
+<li><a href="#org03da845">Member Intrinsics</a>
 <ul>
-<li><a href="#orga83ab19"><code>list</code> Implements</a></li>
-<li><a href="#org615359d"><code>str</code> Implements</a></li>
-<li><a href="#org61c72ba"><code>dictionary</code> Implements</a></li>
-<li><a href="#org6dd9813"><code>tuple</code> Implements</a></li>
-<li><a href="#orgdbf244e"><code>char</code> Implements</a></li>
-<li><a href="#org517b0ba"><code>option</code> Implements</a></li>
-<li><a href="#orge40c775"><code>file</code> Implements</a></li>
-<li><a href="#org3518afb"><code>time</code> Implements</a></li>
+<li><a href="#org537b654"><code>list</code> Implements</a></li>
+<li><a href="#org0f7c72d"><code>str</code> Implements</a></li>
+<li><a href="#org0509e13"><code>dictionary</code> Implements</a></li>
+<li><a href="#org44334b0"><code>tuple</code> Implements</a></li>
+<li><a href="#org7d89590"><code>char</code> Implements</a></li>
+<li><a href="#orgb5161ae"><code>option</code> Implements</a></li>
+<li><a href="#orgee76aa9"><code>file</code> Implements</a></li>
+<li><a href="#org343cd58"><code>time</code> Implements</a></li>
 </ul>
 </li>
-<li><a href="#org23ddd6c">StdLib</a>
+<li><a href="#org4af500e">StdLib</a>
 <ul>
-<li><a href="#org13c0afc">Math</a>
+<li><a href="#orga632177">Math</a>
 <ul>
-<li><a href="#org0d1191f"><b>Import</b>: <code>"std/math.earl"</code></a></li>
-<li><a href="#orgdef260e"><b>Module</b>: <code>Math</code></a></li>
-<li><a href="#org060dc83"><b>Variable List</b>:</a></li>
-<li><a href="#orgd132107"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org616d857"><b>Function List</b>:</a></li>
-<li><a href="#org3f21817"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#orgdc09b6b"><b>Import</b>: <code>"std/math.earl"</code></a></li>
+<li><a href="#orgfc1b560"><b>Module</b>: <code>Math</code></a></li>
+<li><a href="#orgfb5e99d"><b>Variable List</b>:</a></li>
+<li><a href="#org89d190d"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org6838c67"><b>Function List</b>:</a></li>
+<li><a href="#org9ea30ac"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#org95968c3">List</a>
+<li><a href="#org617d3f8">List</a>
 <ul>
-<li><a href="#org709230b"><b>Import</b>: <code>"std/list.earl"</code></a></li>
-<li><a href="#orgf1e69d6"><b>Module</b>: <code>List</code></a></li>
-<li><a href="#org5304f45"><b>Variable List</b>:</a></li>
-<li><a href="#orgc319d12"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org2f4a819"><b>Function List</b>:</a></li>
-<li><a href="#orgec37eaf"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#orgdbd3b47"><b>Import</b>: <code>"std/list.earl"</code></a></li>
+<li><a href="#orge2460f4"><b>Module</b>: <code>List</code></a></li>
+<li><a href="#orgad3603e"><b>Variable List</b>:</a></li>
+<li><a href="#orgb0405e3"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#orgda7f23c"><b>Function List</b>:</a></li>
+<li><a href="#org68ef82b"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#org27b3560">Utils</a>
+<li><a href="#orge0a3b37">Utils</a>
 <ul>
-<li><a href="#org7ec9ebf"><b>Import</b>: <code>"std/utils.earl"</code></a></li>
-<li><a href="#org716ed06"><b>Module</b>: <code>Utils</code></a></li>
-<li><a href="#orga66a6b7"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org9965ce4"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org109ef72"><b>Function List</b>:</a></li>
-<li><a href="#org053232d"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org03250f7"><b>Import</b>: <code>"std/utils.earl"</code></a></li>
+<li><a href="#orgeb79f3c"><b>Module</b>: <code>Utils</code></a></li>
+<li><a href="#org4a1e666"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org651ef46"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org9f10a2d"><b>Function List</b>:</a></li>
+<li><a href="#org2ccc298"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#orgaec0b3f">Queue</a>
+<li><a href="#org9abc05b">Queue</a>
 <ul>
-<li><a href="#orgbdead3d"><b>Import</b>: <code>"std/queue.earl"</code></a></li>
-<li><a href="#orgcbcc0e0"><b>Module</b>: <code>Queue</code></a></li>
-<li><a href="#org8fbea32"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#orga2537b7"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orgb2719c9"><b>Function List</b>: <i>None</i></a></li>
-<li><a href="#orge57eef3"><b>Class List</b>:</a></li>
-<li><a href="#org71a712e"><b><code>T</code></b></a></li>
+<li><a href="#orgcf32db9"><b>Import</b>: <code>"std/queue.earl"</code></a></li>
+<li><a href="#orgc98dc18"><b>Module</b>: <code>Queue</code></a></li>
+<li><a href="#orge2d2312"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#orgeed6ab9"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org452885e"><b>Function List</b>: <i>None</i></a></li>
+<li><a href="#org983dc43"><b>Class List</b>:</a></li>
+<li><a href="#org5728a64"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#orgc02889d">SinglyLL</a>
+<li><a href="#orgccf7d99">SinglyLL</a>
 <ul>
-<li><a href="#org7be7e2b"><b>Import</b>: <code>"std/linked-list.earl"</code></a></li>
-<li><a href="#org87bda5b"><b>Module</b>: <code>SinglyLL</code></a></li>
-<li><a href="#org723e19a"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#orga2d0663"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org59f7811"><b>Function List</b>: <i>None</i></a></li>
-<li><a href="#org8b7d294"><b>Class List</b>:</a></li>
-<li><a href="#org1e70e32"><b><code>T</code></b></a></li>
+<li><a href="#orgd845254"><b>Import</b>: <code>"std/linked-list.earl"</code></a></li>
+<li><a href="#org422076f"><b>Module</b>: <code>SinglyLL</code></a></li>
+<li><a href="#orgdb5b503"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#orgd829459"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org5062549"><b>Function List</b>: <i>None</i></a></li>
+<li><a href="#org42739b2"><b>Class List</b>:</a></li>
+<li><a href="#orga3e7a3e"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#org89e9770">Encryption</a>
+<li><a href="#org608b365">Encryption</a>
 <ul>
-<li><a href="#orgba1b820"><b>Import</b>: <code>"std/encryption.earl"</code></a></li>
-<li><a href="#orgd08f6bb"><b>Module</b>: <code>Encryption</code></a></li>
-<li><a href="#org658e741"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org414d7dd"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orge50d1ce"><b>Function List</b>:</a></li>
-<li><a href="#org43623e4"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#orgdc8676b"><b>Import</b>: <code>"std/encryption.earl"</code></a></li>
+<li><a href="#org3f38b35"><b>Module</b>: <code>Encryption</code></a></li>
+<li><a href="#orga15275b"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#orgbefd728"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#orga37b782"><b>Function List</b>:</a></li>
+<li><a href="#orgc226a65"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#orge81e6ab">Matrix</a>
+<li><a href="#orgea6549d">Matrix</a>
 <ul>
-<li><a href="#orgb2427be"><b>Import</b>: <code>"std/matrix.earl"</code></a></li>
-<li><a href="#orgca6d92c"><b>Module</b>: <code>Matrix</code></a></li>
-<li><a href="#orga1d752a"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org55b98cb"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org870547d"><b>Function List</b>:</a></li>
-<li><a href="#org674e38d"><b>Class List</b>:</a></li>
-<li><a href="#orgadfc2d7"><b><code>T</code></b></a></li>
+<li><a href="#orgc81b57c"><b>Import</b>: <code>"std/matrix.earl"</code></a></li>
+<li><a href="#org7dcd7c8"><b>Module</b>: <code>Matrix</code></a></li>
+<li><a href="#orgb3646c1"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org8e9863d"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org7862920"><b>Function List</b>:</a></li>
+<li><a href="#orge31396c"><b>Class List</b>:</a></li>
+<li><a href="#orgf9878c1"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#org4e5229a">IO</a>
+<li><a href="#org00e38f7">IO</a>
 <ul>
-<li><a href="#org6ada324"><b>Import</b>: <code>"std/io.earl"</code></a></li>
-<li><a href="#orga360d5b"><b>Module</b>: <code>IO</code></a></li>
-<li><a href="#org975e898"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org302c641"><b>Enum List</b>:</a></li>
-<li><a href="#org301ffef"><b>Function List</b>:</a></li>
-<li><a href="#org021fa15"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org3ad0518"><b>Import</b>: <code>"std/io.earl"</code></a></li>
+<li><a href="#org22b2db6"><b>Module</b>: <code>IO</code></a></li>
+<li><a href="#org04c7c66"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org294e86d"><b>Enum List</b>:</a></li>
+<li><a href="#orgb2a236e"><b>Function List</b>:</a></li>
+<li><a href="#org038a0f2"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#orgc014640">Str</a>
+<li><a href="#org51d11a3">Str</a>
 <ul>
-<li><a href="#org0552d74"><b>Import</b>: <code>"std/str.earl"</code></a></li>
-<li><a href="#orgac2672f"><b>Module</b>: <code>Str</code></a></li>
-<li><a href="#org02b8e1d"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#orgbe37420"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orgeb439bc"><b>Function List</b>:</a></li>
-<li><a href="#org3f98aca"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org17ecc87"><b>Import</b>: <code>"std/str.earl"</code></a></li>
+<li><a href="#orgc958d0e"><b>Module</b>: <code>Str</code></a></li>
+<li><a href="#org7ae8722"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org9457e3e"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org1c4446d"><b>Function List</b>:</a></li>
+<li><a href="#orgd86216b"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#org0e6815d">CSV</a>
+<li><a href="#org397c8be">CSV</a>
 <ul>
-<li><a href="#orgf19d710"><b>Import</b>: <code>"std/csv.earl"</code></a></li>
-<li><a href="#orgc88f934"><b>Module</b>: <code>CSV</code></a></li>
-<li><a href="#orgca144f6"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org161a36d"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orgff0a2b1"><b>Function List</b>:</a></li>
-<li><a href="#org392e06e"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org0462999"><b>Import</b>: <code>"std/csv.earl"</code></a></li>
+<li><a href="#org261e1d1"><b>Module</b>: <code>CSV</code></a></li>
+<li><a href="#org1095115"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org8f7f8fd"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#orgad2a446"><b>Function List</b>:</a></li>
+<li><a href="#org4aa01b5"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#orge226d2f">Char</a>
+<li><a href="#org8e29a12">Char</a>
 <ul>
-<li><a href="#orgef7275c"><b>Import</b>: <code>"std/char.earl"</code></a></li>
-<li><a href="#org69ba6de"><b>Module</b>: <code>Char</code></a></li>
-<li><a href="#orgfe70b37"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org4c08e12"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org200f9bd"><b>Function List</b>:</a></li>
-<li><a href="#org2a2a91d"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#orgf4280f0"><b>Import</b>: <code>"std/char.earl"</code></a></li>
+<li><a href="#org0056569"><b>Module</b>: <code>Char</code></a></li>
+<li><a href="#org63d61cb"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org3b8999e"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#orgcfca1a6"><b>Function List</b>:</a></li>
+<li><a href="#orgb2a2636"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#orged004ca">Set</a>
+<li><a href="#org4dd9bc4">Set</a>
 <ul>
-<li><a href="#org386d909"><b>Import</b>: <code>"std/set.earl"</code></a></li>
-<li><a href="#org86cfda9"><b>Module</b>: <code>Set</code></a></li>
-<li><a href="#orgca1d6fd"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org844109e"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org999a56b"><b>Function List</b>: <i>None</i></a></li>
-<li><a href="#orgf61fbc1"><b>Class List</b>:</a></li>
-<li><a href="#org24619cd"><b><code>T</code></b></a></li>
+<li><a href="#orgbdace21"><b>Import</b>: <code>"std/set.earl"</code></a></li>
+<li><a href="#org086f0d9"><b>Module</b>: <code>Set</code></a></li>
+<li><a href="#orgc2dff47"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org9d6bc4b"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org6092590"><b>Function List</b>: <i>None</i></a></li>
+<li><a href="#org21898eb"><b>Class List</b>:</a></li>
+<li><a href="#org62fd7e3"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#orgd3b9174">Script</a>
+<li><a href="#org206e3e6">Script</a>
 <ul>
-<li><a href="#org282eb18"><b>Import</b>: <code>"std/script.earl"</code></a></li>
-<li><a href="#orge6130dd"><b>Module</b>: <code>Script</code></a></li>
-<li><a href="#org1539807"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org813206e"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orgbf5e680"><b>Function List</b>:</a></li>
-<li><a href="#orgdac2e9e"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org630e08d"><b>Import</b>: <code>"std/script.earl"</code></a></li>
+<li><a href="#orgbb3a2b0"><b>Module</b>: <code>Script</code></a></li>
+<li><a href="#org8cd6397"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org27f67e8"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org0f0b6a6"><b>Function List</b>:</a></li>
+<li><a href="#org8bb045b"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#org40fc262">Stack</a>
+<li><a href="#org9858211">Stack</a>
 <ul>
-<li><a href="#orgb1146cc"><b>Import</b>: <code>"std/stack.earl"</code></a></li>
-<li><a href="#org5bae416"><b>Module</b>: <code>Stack</code></a></li>
-<li><a href="#org09ddc5c"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org93f4206"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#orgdcc567f"><b>Function List</b>: <i>None</i></a></li>
-<li><a href="#orge7e2746"><b>Class List</b>:</a></li>
-<li><a href="#orgfe07391"><b><code>T</code></b></a></li>
+<li><a href="#org15f9cc3"><b>Import</b>: <code>"std/stack.earl"</code></a></li>
+<li><a href="#org91bb251"><b>Module</b>: <code>Stack</code></a></li>
+<li><a href="#org9bc127e"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org616f8e5"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org2b13694"><b>Function List</b>: <i>None</i></a></li>
+<li><a href="#orgecbec33"><b>Class List</b>:</a></li>
+<li><a href="#org718acc4"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#org8c8a54f">System</a>
+<li><a href="#org52b5c9e">System</a>
 <ul>
-<li><a href="#orge5c001b"><b>Import</b>: <code>"std/system.earl"</code></a></li>
-<li><a href="#org5e2f4ec"><b>Module</b>: <code>System</code></a></li>
-<li><a href="#org4157db2"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org0b09813"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org9e47f47"><b>Function List</b>:</a></li>
-<li><a href="#orgf373a4a"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org3956974"><b>Import</b>: <code>"std/system.earl"</code></a></li>
+<li><a href="#org1a75507"><b>Module</b>: <code>System</code></a></li>
+<li><a href="#org7e4a5f7"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org2af00b2"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#orgc9f7f4e"><b>Function List</b>:</a></li>
+<li><a href="#org49317cc"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
-<li><a href="#org916fdcf">BasicLexer</a>
+<li><a href="#org9c7cb2e">BasicLexer</a>
 <ul>
-<li><a href="#orgafe9764"><b>Import</b>: <code>"std/basic-lexer.earl"</code></a></li>
-<li><a href="#org550bcf9"><b>Module</b>: <code>BasicLexer</code></a></li>
-<li><a href="#orgbdc92a2"><b>Variable List</b>: <i>None</i></a></li>
-<li><a href="#org0d84c6c"><b>Enum List</b>:</a></li>
-<li><a href="#orgb983723"><b>Function List</b>: <i>None</i></a></li>
-<li><a href="#orgf0cabd5"><b>Class List</b>:</a></li>
-<li><a href="#org2fff87c"><b><code>Token</code></b></a></li>
-<li><a href="#org976d9e7"><b><code>T</code></b></a></li>
+<li><a href="#orgecfbe7a"><b>Import</b>: <code>"std/basic-lexer.earl"</code></a></li>
+<li><a href="#org8146d2d"><b>Module</b>: <code>BasicLexer</code></a></li>
+<li><a href="#org945d25e"><b>Variable List</b>: <i>None</i></a></li>
+<li><a href="#org51e5c02"><b>Enum List</b>:</a></li>
+<li><a href="#org9240eba"><b>Function List</b>: <i>None</i></a></li>
+<li><a href="#orga4d36fb"><b>Class List</b>:</a></li>
+<li><a href="#org389d95d"><b><code>Token</code></b></a></li>
+<li><a href="#org6b4c178"><b><code>T</code></b></a></li>
 </ul>
 </li>
-<li><a href="#orgb5ab102">Assert</a>
+<li><a href="#org254cb83">Assert</a>
 <ul>
-<li><a href="#orga8cdb38"><b>Import</b>: <code>"std/assert.earl"</code></a></li>
-<li><a href="#orgefe3761"><b>Module</b>: <code>Assert</code></a></li>
-<li><a href="#orge4486c1"><b>Variable List</b>:</a></li>
-<li><a href="#org488a6cc"><b>Enum List</b>: <i>None</i></a></li>
-<li><a href="#org10f3dbb"><b>Function List</b>:</a></li>
-<li><a href="#org5db7478"><b>Class List</b>: <i>None</i></a></li>
+<li><a href="#org37e486c"><b>Import</b>: <code>"std/assert.earl"</code></a></li>
+<li><a href="#org9a2e62d"><b>Module</b>: <code>Assert</code></a></li>
+<li><a href="#orgd080564"><b>Variable List</b>:</a></li>
+<li><a href="#org97e3509"><b>Enum List</b>: <i>None</i></a></li>
+<li><a href="#org0804258"><b>Function List</b>:</a></li>
+<li><a href="#org3448b7f"><b>Class List</b>: <i>None</i></a></li>
 </ul>
 </li>
 </ul>
@@ -417,9 +417,9 @@
 <li>"text" represents a string</li>
 </ul>
 </blockquote>
-<div id="outline-container-org2855cee" class="outline-2">
-<h2 id="org2855cee">Your First Program</h2>
-<div class="outline-text-2" id="text-org2855cee">
+<div id="outline-container-org288d8eb" class="outline-2">
+<h2 id="org288d8eb">Your First Program</h2>
+<div class="outline-text-2" id="text-org288d8eb">
 <p>
 To jump right into testing out EARL, do the following to implement a <i>Hello World!</i> program.
 </p>
@@ -428,7 +428,7 @@ To jump right into testing out EARL, do the following to implement a <i>Hello Wo
 Create a new file called <code>hello.earl</code>
 </p>
 
-<pre class="example" id="org2ea2eb9">
+<pre class="example" id="org0207a34">
 module Main
 
 println("Hello World!");
@@ -447,27 +447,27 @@ Then run
 Output:
 </p>
 
-<pre class="example" id="org5bfcfee">
+<pre class="example" id="org711e87d">
 Hello World!
 </pre>
 
 <p>
-For more information on <code>module Main</code>, see <a href="#org95dec2d">Modules</a>.
+For more information on <code>module Main</code>, see <a href="#orgb53bec9">Modules</a>.
 </p>
 </div>
 </div>
-<div id="outline-container-orgcffcc1b" class="outline-2">
-<h2 id="orgcffcc1b">Typing</h2>
-<div class="outline-text-2" id="text-orgcffcc1b">
+<div id="outline-container-org725ad9f" class="outline-2">
+<h2 id="org725ad9f">Typing</h2>
+<div class="outline-text-2" id="text-org725ad9f">
 <blockquote>
 <p>
 EARL is "gradually typed". This means that explicit types are not required, rather
 the type of a variable is the type of the right hand side expression. Values are
 also not dynamic, so once a variable has a type, it will always have that type. If
-dynamic types are desired, see the <code>option</code> datatype in <a href="#org11d20dc">Datatypes</a>.
+dynamic types are desired, see the <code>option</code> datatype in <a href="#org4b33b5b">Datatypes</a>.
 </p>
 
-<pre class="example" id="org5e5f537">
+<pre class="example" id="orgb8eb9d5">
 let x = 1; # x is an int
 let y = 1.2 # y is a float
 let z = [1, 2, 3] # z is a list
@@ -499,13 +499,13 @@ If explicit types are desired, here are the following types that can be used:
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgfbc179b" class="outline-2">
-<h2 id="orgfbc179b">REPL</h2>
-<div class="outline-text-2" id="text-orgfbc179b">
+<div id="outline-container-org74a1799" class="outline-2">
+<h2 id="org74a1799">REPL</h2>
+<div class="outline-text-2" id="text-org74a1799">
 </div>
-<div id="outline-container-orgdb7569f" class="outline-3">
-<h3 id="orgdb7569f">REPL Commands</h3>
-<div class="outline-text-3" id="text-orgdb7569f">
+<div id="outline-container-org3d17ecd" class="outline-3">
+<h3 id="org3d17ecd">REPL Commands</h3>
+<div class="outline-text-3" id="text-org3d17ecd">
 <blockquote>
 <p>
 If you were to just start <code>earl</code> without any files, it will
@@ -522,9 +522,9 @@ a shell command. To view more information, launch the REPL and type <code>:help<
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org2de58a6" class="outline-3">
-<h3 id="org2de58a6">REPL Programming</h3>
-<div class="outline-text-3" id="text-org2de58a6">
+<div id="outline-container-org582fd1d" class="outline-3">
+<h3 id="org582fd1d">REPL Programming</h3>
+<div class="outline-text-3" id="text-org582fd1d">
 <blockquote>
 <p>
 If a line that is typed does not start with <code>:</code> or <code>$</code>, it will be
@@ -560,7 +560,7 @@ clean looking, but I am unable to demonstrate it in text, so it will
 be more verbose than it actually is i.e., (<code>[ENTER TO EVAL]</code>).
 </p>
 
-<pre class="example" id="orgbb86046">
+<pre class="example" id="org18f3183">
 0: let x = 1;
 1: x;
 2:                      [ENTER TO EVAL]
@@ -578,7 +578,7 @@ as it's not important. The second output <code>1 -&gt; int</code> is the result 
 Starting a new session does not remove variables that were created. That means that this is also valid:
 </p>
 
-<pre class="example" id="org77718c8">
+<pre class="example" id="org239c89d">
 0: let x = 1;
 1:                      [ENTER TO EVAL]
 &lt;unit&gt; -&gt; unit
@@ -592,7 +592,7 @@ Starting a new session does not remove variables that were created. That means t
 If you just want to do some quick math and use EARL as a calculator, here is another example:
 </p>
 
-<pre class="example" id="orgda3e02b">
+<pre class="example" id="orgb373d0d">
 0: -(3 * (0.5 / float(2)) - 1);
 1:                      [ENTER TO EVAL]
 0.25 -&gt; float
@@ -610,7 +610,7 @@ as you want.
 For example:
 </p>
 
-<pre class="example" id="orga827c01">
+<pre class="example" id="orgcd0f620">
 0: fn fib(n) {
 1:      if n &lt; 2 {
 2:              return n;
@@ -644,7 +644,7 @@ the REPL.
 </p>
 
 <p>
-<b>Note</b>: You can also still use the <code>import</code> statement as well. See <a href="#orgb502eb9">Imports</a>.
+<b>Note</b>: You can also still use the <code>import</code> statement as well. See <a href="#org655dad3">Imports</a>.
 </p>
 
 <p>
@@ -669,9 +669,9 @@ as you launch the REPL, it gives you the ability to hit the up arrow to get code
 </div>
 </div>
 </div>
-<div id="outline-container-org3b7e2e0" class="outline-2">
-<h2 id="org3b7e2e0">Keywords</h2>
-<div class="outline-text-2" id="text-org3b7e2e0">
+<div id="outline-container-orgeb80a9a" class="outline-2">
+<h2 id="orgeb80a9a">Keywords</h2>
+<div class="outline-text-2" id="text-orgeb80a9a">
 <blockquote>
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
@@ -681,95 +681,95 @@ as you launch the REPL, it gives you the ability to hit the up arrow to get code
 </colgroup>
 <tbody>
 <tr>
-<td class="org-left">let &rarr; <a href="#org689add1">Variable Declarations</a></td>
+<td class="org-left">let &rarr; <a href="#org426005f">Variable Declarations</a></td>
 </tr>
 
 <tr>
-<td class="org-left">fn  &rarr; <a href="#org3c4d695">Function Definitions</a></td>
+<td class="org-left">fn  &rarr; <a href="#orgf2f4f56">Function Definitions</a></td>
 </tr>
 
 <tr>
-<td class="org-left">if &rarr; <a href="#orgb1a647e">Conditionals</a></td>
+<td class="org-left">if &rarr; <a href="#orgec390dd">Conditionals</a></td>
 </tr>
 
 <tr>
-<td class="org-left">else &rarr; <a href="#orgb1a647e">Conditionals</a></td>
+<td class="org-left">else &rarr; <a href="#orgec390dd">Conditionals</a></td>
 </tr>
 
 <tr>
-<td class="org-left">while &rarr; <a href="#orgd53d79b">While Loops</a></td>
+<td class="org-left">while &rarr; <a href="#org900b2b5">While Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">for &rarr; <a href="#orgb02ae4d">For Loops</a></td>
+<td class="org-left">for &rarr; <a href="#org0c4c329">For Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">foreach &rarr; <a href="#orgaa8e28d">Foreach Loops</a></td>
+<td class="org-left">foreach &rarr; <a href="#org26321dd">Foreach Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">loop &rarr; <a href="#org4e93c4a">Forever Loops</a></td>
+<td class="org-left">loop &rarr; <a href="#orgfeb65cb">Forever Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">in &rarr; <a href="#orgb02ae4d">For Loops</a>, <a href="#orgaa8e28d">Foreach Loops</a></td>
+<td class="org-left">in &rarr; <a href="#org0c4c329">For Loops</a>, <a href="#org26321dd">Foreach Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">to &rarr; <a href="#orgb02ae4d">For Loops</a></td>
+<td class="org-left">to &rarr; <a href="#org0c4c329">For Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">break &rarr; <a href="#orgd53d79b">While Loops</a>, <a href="#orgb02ae4d">For Loops</a>, <a href="#orgaa8e28d">Foreach Loops</a></td>
+<td class="org-left">break &rarr; <a href="#org900b2b5">While Loops</a>, <a href="#org0c4c329">For Loops</a>, <a href="#org26321dd">Foreach Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">continue &rarr; <a href="#orgd53d79b">While Loops</a>, <a href="#orgb02ae4d">For Loops</a>, <a href="#orgaa8e28d">Foreach Loops</a></td>
+<td class="org-left">continue &rarr; <a href="#org900b2b5">While Loops</a>, <a href="#org0c4c329">For Loops</a>, <a href="#org26321dd">Foreach Loops</a></td>
 </tr>
 
 <tr>
-<td class="org-left">import &rarr; <a href="#orgb502eb9">Imports</a></td>
+<td class="org-left">import &rarr; <a href="#org655dad3">Imports</a></td>
 </tr>
 
 <tr>
-<td class="org-left">almost &rarr; <a href="#orgb502eb9">Imports</a></td>
+<td class="org-left">almost &rarr; <a href="#org655dad3">Imports</a></td>
 </tr>
 
 <tr>
-<td class="org-left">full &rarr; <a href="#orgb502eb9">Imports</a></td>
+<td class="org-left">full &rarr; <a href="#org655dad3">Imports</a></td>
 </tr>
 
 <tr>
-<td class="org-left">module &rarr; <a href="#org95dec2d">Modules</a></td>
+<td class="org-left">module &rarr; <a href="#orgb53bec9">Modules</a></td>
 </tr>
 
 <tr>
-<td class="org-left">class &rarr; <a href="#orgd39258e">Classes</a></td>
+<td class="org-left">class &rarr; <a href="#org19685bc">Classes</a></td>
 </tr>
 
 <tr>
-<td class="org-left">match &rarr; <a href="#org2d0af74">Pattern Matching</a></td>
+<td class="org-left">match &rarr; <a href="#orga6364bb">Pattern Matching</a></td>
 </tr>
 
 <tr>
-<td class="org-left">when  &rarr; <a href="#org2d0af74">Pattern Matching</a></td>
+<td class="org-left">when  &rarr; <a href="#orga6364bb">Pattern Matching</a></td>
 </tr>
 
 <tr>
-<td class="org-left">enum &rarr; <a href="#org28e28ec">Enumerations</a></td>
+<td class="org-left">enum &rarr; <a href="#org7a5da8c">Enumerations</a></td>
 </tr>
 
 <tr>
-<td class="org-left">@ref &rarr; <a href="#orgf844fe0">Attributes</a></td>
+<td class="org-left">@ref &rarr; <a href="#org571e046">Attributes</a></td>
 </tr>
 
 <tr>
-<td class="org-left">@pub &rarr; <a href="#orgf844fe0">Attributes</a></td>
+<td class="org-left">@pub &rarr; <a href="#org571e046">Attributes</a></td>
 </tr>
 
 <tr>
-<td class="org-left">@world &rarr; <a href="#orgf844fe0">Attributes</a></td>
+<td class="org-left">@world &rarr; <a href="#org571e046">Attributes</a></td>
 </tr>
 
 <tr>
@@ -792,9 +792,9 @@ as you launch the REPL, it gives you the ability to hit the up arrow to get code
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org20cc250" class="outline-2">
-<h2 id="org20cc250">Builtin Identifiers</h2>
-<div class="outline-text-2" id="text-org20cc250">
+<div id="outline-container-orgace79c4" class="outline-2">
+<h2 id="orgace79c4">Builtin Identifiers</h2>
+<div class="outline-text-2" id="text-orgace79c4">
 <blockquote>
 <p>
 These are identifiers that are built into the interpreter. The ones that
@@ -808,9 +808,9 @@ exist at the moment are:
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org45b1cfe" class="outline-2">
-<h2 id="org45b1cfe">Binary Operations</h2>
-<div class="outline-text-2" id="text-org45b1cfe">
+<div id="outline-container-orgcf7162a" class="outline-2">
+<h2 id="orgcf7162a">Binary Operations</h2>
+<div class="outline-text-2" id="text-orgcf7162a">
 <blockquote>
 <p>
 In the table below, the datatypes section describes which datatypes
@@ -956,13 +956,13 @@ describing that the operator works for (<code>int</code> &lt;op&gt; <code>int</c
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org689add1" class="outline-2">
-<h2 id="org689add1">Variable Declarations</h2>
-<div class="outline-text-2" id="text-org689add1">
+<div id="outline-container-org426005f" class="outline-2">
+<h2 id="org426005f">Variable Declarations</h2>
+<div class="outline-text-2" id="text-org426005f">
 </div>
-<div id="outline-container-org3027d37" class="outline-3">
-<h3 id="org3027d37">Grammar</h3>
-<div class="outline-text-3" id="text-org3027d37">
+<div id="outline-container-orga74bc4d" class="outline-3">
+<h3 id="orga74bc4d">Grammar</h3>
+<div class="outline-text-3" id="text-orga74bc4d">
 <blockquote>
 <p>
 <code>let</code> &lt;id&gt; ?(: &lt;type&gt;) = <i>expr</i>;
@@ -982,10 +982,10 @@ where |tuple| \(=\) number of ids.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3cb7977" class="outline-3">
-<h3 id="org3cb7977">Examples</h3>
-<div class="outline-text-3" id="text-org3cb7977">
-<pre class="example" id="orgaf4d5f3">
+<div id="outline-container-org8d6d74e" class="outline-3">
+<h3 id="org8d6d74e">Examples</h3>
+<div class="outline-text-3" id="text-org8d6d74e">
+<pre class="example" id="orga26c982">
 let k = 1;
 let x: int = func(k);
 let y = [1,2,3];
@@ -999,18 +999,18 @@ let k, j = s;
 </div>
 </div>
 </div>
-<div id="outline-container-org386ef0c" class="outline-2">
-<h2 id="org386ef0c">Mutation</h2>
-<div class="outline-text-2" id="text-org386ef0c">
+<div id="outline-container-orgb287554" class="outline-2">
+<h2 id="orgb287554">Mutation</h2>
+<div class="outline-text-2" id="text-orgb287554">
 <blockquote>
 <p>
 Mutation describes changing a variables value in memory.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org22174ec" class="outline-3">
-<h3 id="org22174ec">Grammar</h3>
-<div class="outline-text-3" id="text-org22174ec">
+<div id="outline-container-org0bb4c1f" class="outline-3">
+<h3 id="org0bb4c1f">Grammar</h3>
+<div class="outline-text-3" id="text-org0bb4c1f">
 <blockquote>
 <p>
 <i>expr</i> = <i>expr</i>;
@@ -1018,10 +1018,10 @@ Mutation describes changing a variables value in memory.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orge6eddb0" class="outline-3">
-<h3 id="orge6eddb0">Examples</h3>
-<div class="outline-text-3" id="text-orge6eddb0">
-<pre class="example" id="orga981447">
+<div id="outline-container-orgf003eb1" class="outline-3">
+<h3 id="orgf003eb1">Examples</h3>
+<div class="outline-text-3" id="text-orgf003eb1">
+<pre class="example" id="org04e6b98">
 k = 1;
 k = 3+9;
 k = (3+3)*2;
@@ -1030,15 +1030,15 @@ lst[3].nth(1) = 9+23;
 </pre>
 </div>
 </div>
-<div id="outline-container-orgefd97d4" class="outline-3">
-<h3 id="orgefd97d4">Shorthand</h3>
-<div class="outline-text-3" id="text-orgefd97d4">
+<div id="outline-container-orged4a23e" class="outline-3">
+<h3 id="orged4a23e">Shorthand</h3>
+<div class="outline-text-3" id="text-orged4a23e">
 <blockquote>
 <p>
 For convenience, there are some shorthand operations that can be performed.
 </p>
 
-<pre class="example" id="org9def440">
+<pre class="example" id="orga954feb">
 k += N # substitutes -&gt; k = k + (N);
 k -= N # substitutes -&gt; k = k - (N);
 k *= N # substitutes -&gt; k = k * (N);
@@ -1052,9 +1052,9 @@ k `^= N # substitutes -&gt; k = k `^ (N);
 </div>
 </div>
 </div>
-<div id="outline-container-orgb1a647e" class="outline-2">
-<h2 id="orgb1a647e">Conditionals</h2>
-<div class="outline-text-2" id="text-orgb1a647e">
+<div id="outline-container-orgec390dd" class="outline-2">
+<h2 id="orgec390dd">Conditionals</h2>
+<div class="outline-text-2" id="text-orgec390dd">
 <blockquote>
 <p>
 Conditionals are <code>if</code>, <code>if-else</code>, and <code>if-else-if</code> statements.
@@ -1062,9 +1062,9 @@ If the expression is true, that branch will occur.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgfea3ff8" class="outline-3">
-<h3 id="orgfea3ff8">Grammar</h3>
-<div class="outline-text-3" id="text-orgfea3ff8">
+<div id="outline-container-org1e545ff" class="outline-3">
+<h3 id="org1e545ff">Grammar</h3>
+<div class="outline-text-3" id="text-org1e545ff">
 <blockquote>
 <p>
 <code>if</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
@@ -1080,10 +1080,10 @@ If the expression is true, that branch will occur.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org12a61a6" class="outline-3">
-<h3 id="org12a61a6">Examples</h3>
-<div class="outline-text-3" id="text-org12a61a6">
-<pre class="example" id="org85c0b12">
+<div id="outline-container-org99bf748" class="outline-3">
+<h3 id="org99bf748">Examples</h3>
+<div class="outline-text-3" id="text-org99bf748">
+<pre class="example" id="org6e79297">
 if k == 2 {
     # code
 }
@@ -1097,9 +1097,9 @@ else {
 </div>
 </div>
 </div>
-<div id="outline-container-org2d0af74" class="outline-2">
-<h2 id="org2d0af74">Pattern Matching</h2>
-<div class="outline-text-2" id="text-org2d0af74">
+<div id="outline-container-orga6364bb" class="outline-2">
+<h2 id="orga6364bb">Pattern Matching</h2>
+<div class="outline-text-2" id="text-orga6364bb">
 <blockquote>
 <p>
 <b>Note</b>: Pattern matching is still a work in progress and may be buggy.
@@ -1138,10 +1138,10 @@ one happens, this one is guaranteed to happen (unless there is a guard).
 Grammar TODO
 </p>
 </div>
-<div id="outline-container-org2fa9651" class="outline-3">
-<h3 id="org2fa9651">Examples</h3>
-<div class="outline-text-3" id="text-org2fa9651">
-<pre class="example" id="org79578af">
+<div id="outline-container-org52ee0a5" class="outline-3">
+<h3 id="org52ee0a5">Examples</h3>
+<div class="outline-text-3" id="text-org52ee0a5">
+<pre class="example" id="orga2d2447">
 let x = 4;
 let msg = "foo";
 
@@ -1160,11 +1160,11 @@ match x {
 Output:
 </p>
 
-<pre class="example" id="org1da5572">
+<pre class="example" id="orga1b6920">
 x is 4 with msg = foo
 </pre>
 
-<pre class="example" id="orgd158d38">
+<pre class="example" id="org17ca7fc">
 let x = some(4);
 
 match x {
@@ -1196,32 +1196,32 @@ match x {
 Output:
 </p>
 
-<pre class="example" id="org0ef75f0">
+<pre class="example" id="orgc14297d">
 x is: 4
 true
 </pre>
 
 <blockquote>
 <p>
-<b>Note</b>: For more information on <code>some</code> and <code>none</code>, see <code>option</code> in <a href="#org11d20dc">Datatypes</a>.
-For <code>unwrap()</code>, see <code>unwrap</code> in <a href="#org51cd081">Member Intrinsics</a>.
+<b>Note</b>: For more information on <code>some</code> and <code>none</code>, see <code>option</code> in <a href="#org4b33b5b">Datatypes</a>.
+For <code>unwrap()</code>, see <code>unwrap</code> in <a href="#org03da845">Member Intrinsics</a>.
 </p>
 </blockquote>
 </div>
 </div>
 </div>
-<div id="outline-container-orgd53d79b" class="outline-2">
-<h2 id="orgd53d79b">While Loops</h2>
-<div class="outline-text-2" id="text-orgd53d79b">
+<div id="outline-container-org900b2b5" class="outline-2">
+<h2 id="org900b2b5">While Loops</h2>
+<div class="outline-text-2" id="text-org900b2b5">
 <blockquote>
 <p>
 <code>while</code> loops will continue to loop while the expression is <code>true</code>.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org0c0e4fc" class="outline-3">
-<h3 id="org0c0e4fc">Grammar</h3>
-<div class="outline-text-3" id="text-org0c0e4fc">
+<div id="outline-container-org53d2062" class="outline-3">
+<h3 id="org53d2062">Grammar</h3>
+<div class="outline-text-3" id="text-org53d2062">
 <blockquote>
 <p>
 <code>while</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
@@ -1229,10 +1229,10 @@ For <code>unwrap()</code>, see <code>unwrap</code> in <a href="#org51cd081">Memb
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org2989250" class="outline-3">
-<h3 id="org2989250">Examples</h3>
-<div class="outline-text-3" id="text-org2989250">
-<pre class="example" id="orgcac46b7">
+<div id="outline-container-org12200ad" class="outline-3">
+<h3 id="org12200ad">Examples</h3>
+<div class="outline-text-3" id="text-org12200ad">
+<pre class="example" id="org862095d">
 let i = 0;
 while i &lt; 3 {
     print(i);
@@ -1242,9 +1242,9 @@ while i &lt; 3 {
 </div>
 </div>
 </div>
-<div id="outline-container-orgb02ae4d" class="outline-2">
-<h2 id="orgb02ae4d">For Loops</h2>
-<div class="outline-text-2" id="text-orgb02ae4d">
+<div id="outline-container-org0c4c329" class="outline-2">
+<h2 id="org0c4c329">For Loops</h2>
+<div class="outline-text-2" id="text-org0c4c329">
 <blockquote>
 <p>
 For loops will enumerate over a range of numbers, with the enumerator being assigned the current number.
@@ -1259,9 +1259,9 @@ at \(-1\). This is not the case if we are enumerating upwards.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org4012670" class="outline-3">
-<h3 id="org4012670">Grammar</h3>
-<div class="outline-text-3" id="text-org4012670">
+<div id="outline-container-org1d3f4ca" class="outline-3">
+<h3 id="org1d3f4ca">Grammar</h3>
+<div class="outline-text-3" id="text-org1d3f4ca">
 <blockquote>
 <p>
 <code>for</code> &lt;id&gt; <code>in</code> <i>expr</i> <code>to</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
@@ -1269,10 +1269,10 @@ at \(-1\). This is not the case if we are enumerating upwards.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9871b3b" class="outline-3">
-<h3 id="org9871b3b">Examples</h3>
-<div class="outline-text-3" id="text-org9871b3b">
-<pre class="example" id="orge0c00aa">
+<div id="outline-container-orgaa06eb2" class="outline-3">
+<h3 id="orgaa06eb2">Examples</h3>
+<div class="outline-text-3" id="text-orgaa06eb2">
+<pre class="example" id="org8b9994d">
 for i in 0 to 5 {
     print(i);
 } # prints 01234
@@ -1293,14 +1293,14 @@ for i in len(lst)-1 to 0 {
 </div>
 </div>
 </div>
-<div id="outline-container-orgaa8e28d" class="outline-2">
-<h2 id="orgaa8e28d">Foreach Loops</h2>
-<div class="outline-text-2" id="text-orgaa8e28d">
+<div id="outline-container-org26321dd" class="outline-2">
+<h2 id="org26321dd">Foreach Loops</h2>
+<div class="outline-text-2" id="text-org26321dd">
 <blockquote>
 <p>
 Foreach loops take a list, string, tuple, or a dictionary and will iterate over the elements.
-The most common way to use these loops is with a <code>range</code> (see <a href="#org7d67409">Ranges</a>). Also, the iterator
-(usually the variable labeled as \(i\)), can be set as a reference (see <a href="#orgf844fe0">Attributes</a>) to the expression.
+The most common way to use these loops is with a <code>range</code> (see <a href="#org850a09f">Ranges</a>). Also, the iterator
+(usually the variable labeled as \(i\)), can be set as a reference (see <a href="#org571e046">Attributes</a>) to the expression.
 This means that \(i\) will be take the reference of each iterated value in the list and can modify it directly
 (see <i>ref example</i> below).
 </p>
@@ -1311,9 +1311,9 @@ This is also true for dictionaries (see dictionary example below).
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org41b7563" class="outline-3">
-<h3 id="org41b7563">Grammar</h3>
-<div class="outline-text-3" id="text-org41b7563">
+<div id="outline-container-orgf64e4ae" class="outline-3">
+<h3 id="orgf64e4ae">Grammar</h3>
+<div class="outline-text-3" id="text-orgf64e4ae">
 <blockquote>
 <p>
 <code>foreach</code> * (<code>@</code> [ <code>ref</code> | <code>const</code> ]) &lt;id&gt; * (<code>,</code> &lt;id&gt;) <code>in</code> <i>expr</i> <b>{</b> [stmt] <b>}</b>
@@ -1321,10 +1321,10 @@ This is also true for dictionaries (see dictionary example below).
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org8eae1fd" class="outline-3">
-<h3 id="org8eae1fd">Examples</h3>
-<div class="outline-text-3" id="text-org8eae1fd">
-<pre class="example" id="org274f299">
+<div id="outline-container-orgfe09663" class="outline-3">
+<h3 id="orgfe09663">Examples</h3>
+<div class="outline-text-3" id="text-orgfe09663">
+<pre class="example" id="orgebe9343">
 foreach i in 0..5 {
     print(i);
 } # prints 12345
@@ -1373,9 +1373,9 @@ foreach i in s {
 </div>
 </div>
 </div>
-<div id="outline-container-org4e93c4a" class="outline-2">
-<h2 id="org4e93c4a">Forever Loops</h2>
-<div class="outline-text-2" id="text-org4e93c4a">
+<div id="outline-container-orgfeb65cb" class="outline-2">
+<h2 id="orgfeb65cb">Forever Loops</h2>
+<div class="outline-text-2" id="text-orgfeb65cb">
 <blockquote>
 <p>
 The point of Forever loops is in their name, they will loop forever until
@@ -1383,9 +1383,9 @@ manually breaking out of them.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgbbf56dc" class="outline-3">
-<h3 id="orgbbf56dc">Grammar</h3>
-<div class="outline-text-3" id="text-orgbbf56dc">
+<div id="outline-container-org7388b77" class="outline-3">
+<h3 id="org7388b77">Grammar</h3>
+<div class="outline-text-3" id="text-org7388b77">
 <blockquote>
 <p>
 <code>loop</code> <b>{</b> [stmt] <b>}</b>
@@ -1393,10 +1393,10 @@ manually breaking out of them.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orga28ade7" class="outline-3">
-<h3 id="orga28ade7">Examples</h3>
-<div class="outline-text-3" id="text-orga28ade7">
-<pre class="example" id="org388205d">
+<div id="outline-container-org3220790" class="outline-3">
+<h3 id="org3220790">Examples</h3>
+<div class="outline-text-3" id="text-org3220790">
+<pre class="example" id="org1efe6ac">
 loop {
     println("foo");
 } # will never end
@@ -1413,18 +1413,18 @@ loop {
 </div>
 </div>
 </div>
-<div id="outline-container-org3c4d695" class="outline-2">
-<h2 id="org3c4d695">Function Definitions</h2>
-<div class="outline-text-2" id="text-org3c4d695">
+<div id="outline-container-orgf2f4f56" class="outline-2">
+<h2 id="orgf2f4f56">Function Definitions</h2>
+<div class="outline-text-2" id="text-orgf2f4f56">
 <blockquote>
 <p>
-This is how to create a function. The <code>@world</code>, <code>@pub</code> and <code>@ref</code> are attributes. See <a href="#orgf844fe0">Attributes</a> for a description on them.
+This is how to create a function. The <code>@world</code>, <code>@pub</code> and <code>@ref</code> are attributes. See <a href="#org571e046">Attributes</a> for a description on them.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org0b81148" class="outline-3">
-<h3 id="org0b81148">Grammar</h3>
-<div class="outline-text-3" id="text-org0b81148">
+<div id="outline-container-org6392b29" class="outline-3">
+<h3 id="org6392b29">Grammar</h3>
+<div class="outline-text-3" id="text-org6392b29">
 <blockquote>
 <p>
 *( <code>@</code> [ <code>pub</code> | <code>world</code> ])
@@ -1436,10 +1436,10 @@ This is how to create a function. The <code>@world</code>, <code>@pub</code> and
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orga09621e" class="outline-3">
-<h3 id="orga09621e">Examples</h3>
-<div class="outline-text-3" id="text-orga09621e">
-<pre class="example" id="org81e9c76">
+<div id="outline-container-orgeadcab8" class="outline-3">
+<h3 id="orgeadcab8">Examples</h3>
+<div class="outline-text-3" id="text-orgeadcab8">
+<pre class="example" id="org857861c">
 @world @pub
 fn func1(@ref x, y: int, @ref @const z: real): real {
     x += 9; # x will be modified also outside of this function because of @ref
@@ -1462,9 +1462,9 @@ fn rev(@ref lst: list): unit {
 </div>
 </div>
 </div>
-<div id="outline-container-orgb502eb9" class="outline-2">
-<h2 id="orgb502eb9">Imports</h2>
-<div class="outline-text-2" id="text-orgb502eb9">
+<div id="outline-container-org655dad3" class="outline-2">
+<h2 id="org655dad3">Imports</h2>
+<div class="outline-text-2" id="text-org655dad3">
 <blockquote>
 <p>
 EARL looks for the files relative to the directory
@@ -1487,43 +1487,52 @@ When importing, a depth can be specified. Use <code>full</code>
 if you want all public elements from the file (enums, functions, variables, classes, etc.),
 or <code>almost</code> if you only desire public variables and enums. If none is provided, <code>full</code> will be used by default.
 </p>
+
+<p>
+If the module name of the file that is being imported is not known, or it is undesired, you
+can rename it using the <code>as</code> keyword followed by some identifier.
+</p>
 </blockquote>
 </div>
-<div id="outline-container-org66932fb" class="outline-3">
-<h3 id="org66932fb">Grammar</h3>
-<div class="outline-text-3" id="text-org66932fb">
+<div id="outline-container-orgd492a84" class="outline-3">
+<h3 id="orgd492a84">Grammar</h3>
+<div class="outline-text-3" id="text-orgd492a84">
 <blockquote>
 <p>
-<code>import</code> "filepath" ?(<code>full</code> | <code>almost</code>)
+<code>import</code> "filepath" ?(<code>full</code> | <code>almost</code>) ?( <code>as</code> &lt;identifier&gt;)
 </p>
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9f99694" class="outline-3">
-<h3 id="org9f99694">Examples</h3>
-<div class="outline-text-3" id="text-org9f99694">
-<pre class="example" id="org8a4f11b">
+<div id="outline-container-orgec572ad" class="outline-3">
+<h3 id="orgec572ad">Examples</h3>
+<div class="outline-text-3" id="text-orgec572ad">
+<pre class="example" id="orgf43ac8e">
 # stdlib imports
 import "std/list.earl" full
-import "std/math.earl" # uses `full`
-import "std/utils.earl" almost
+
+import "std/math.earl"        # uses `full` by default
+
+# this module can now be accessed by
+# Utils:: or utl::
+import "std/utils.earl" almost as utl
 
 # local imports
-import "my-local-file.earl" almost
+import "my-local-file.earl" as local
 </pre>
 </div>
 </div>
 </div>
-<div id="outline-container-org95dec2d" class="outline-2">
-<h2 id="org95dec2d">Modules</h2>
-<div class="outline-text-2" id="text-org95dec2d">
+<div id="outline-container-orgb53bec9" class="outline-2">
+<h2 id="orgb53bec9">Modules</h2>
+<div class="outline-text-2" id="text-orgb53bec9">
 <blockquote>
 <p>
 <i>Modules</i> allow other files to access resources to the
 file that has the module declared in it. If a file does
 not have it, the entire file is private. While modules
 do allow other files to access resources, only resources
-that have the <code>@pub</code> attribute (see <a href="#orgf844fe0">Attributes</a>).
+that have the <code>@pub</code> attribute (see <a href="#org571e046">Attributes</a>).
 </p>
 
 <p>
@@ -1539,9 +1548,9 @@ as the REPL module is not required).
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgecd3b4b" class="outline-3">
-<h3 id="orgecd3b4b">Grammar</h3>
-<div class="outline-text-3" id="text-orgecd3b4b">
+<div id="outline-container-orgd7aa93b" class="outline-3">
+<h3 id="orgd7aa93b">Grammar</h3>
+<div class="outline-text-3" id="text-orgd7aa93b">
 <blockquote>
 <p>
 <code>module</code> &lt;id&gt;
@@ -1549,10 +1558,10 @@ as the REPL module is not required).
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgc9969e9" class="outline-3">
-<h3 id="orgc9969e9">Examples</h3>
-<div class="outline-text-3" id="text-orgc9969e9">
-<pre class="example" id="orgb288ae8">
+<div id="outline-container-org5f97278" class="outline-3">
+<h3 id="org5f97278">Examples</h3>
+<div class="outline-text-3" id="text-org5f97278">
+<pre class="example" id="orgab72e6f">
 .
 ├── main.earl
 └── my-math.earl
@@ -1564,7 +1573,7 @@ as the REPL module is not required).
 <p>
 file: <code>my-math.earl</code>
 </p>
-<pre class="example" id="org19c0017">
+<pre class="example" id="org3a58b66">
 module MyMath
 
 # Function is marked as @pub to make it
@@ -1577,7 +1586,7 @@ module MyMath
 <p>
 file: <code>main.earl</code>
 </p>
-<pre class="example" id="org38d33f8">
+<pre class="example" id="org18a0b79">
 module Main
 
 import "my-math.earl"
@@ -1588,9 +1597,9 @@ let s = MyMath::sum(1, 2);
 </div>
 </div>
 </div>
-<div id="outline-container-orgf844fe0" class="outline-2">
-<h2 id="orgf844fe0">Attributes</h2>
-<div class="outline-text-2" id="text-orgf844fe0">
+<div id="outline-container-org571e046" class="outline-2">
+<h2 id="org571e046">Attributes</h2>
+<div class="outline-text-2" id="text-org571e046">
 <blockquote>
 <p>
 Attributes embeds meta information into identifiers. You can have none, one, or multiple.
@@ -1667,9 +1676,9 @@ take a reference to the value passed to it.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgbeb0736" class="outline-3">
-<h3 id="orgbeb0736">Grammar</h3>
-<div class="outline-text-3" id="text-orgbeb0736">
+<div id="outline-container-org059dea0" class="outline-3">
+<h3 id="org059dea0">Grammar</h3>
+<div class="outline-text-3" id="text-org059dea0">
 <blockquote>
 <p>
 <code>@</code> *(pub | world | ref | const)
@@ -1677,10 +1686,10 @@ take a reference to the value passed to it.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgc9a5363" class="outline-3">
-<h3 id="orgc9a5363">Examples</h3>
-<div class="outline-text-3" id="text-orgc9a5363">
-<pre class="example" id="org4b1c200">
+<div id="outline-container-org530834f" class="outline-3">
+<h3 id="org530834f">Examples</h3>
+<div class="outline-text-3" id="text-org530834f">
+<pre class="example" id="org31bee99">
 @world @pub
 fn test_world() {
     # `i` will print since it is in the world scope.
@@ -1709,9 +1718,9 @@ assert(i == 3);
 </div>
 </div>
 </div>
-<div id="outline-container-org28e28ec" class="outline-2">
-<h2 id="org28e28ec">Enumerations</h2>
-<div class="outline-text-2" id="text-org28e28ec">
+<div id="outline-container-org7a5da8c" class="outline-2">
+<h2 id="org7a5da8c">Enumerations</h2>
+<div class="outline-text-2" id="text-org7a5da8c">
 <blockquote>
 <p>
 Enumerations (<i>enums</i>) act as it's own datatype, but they are just integers.
@@ -1733,14 +1742,14 @@ an integer is encountered, all values of the entries in the <i>enum</i> <span cl
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgefc72d3" class="outline-3">
-<h3 id="orgefc72d3"><span class="todo TODO">TODO</span> Grammar</h3>
+<div id="outline-container-orgaca5cfa" class="outline-3">
+<h3 id="orgaca5cfa"><span class="todo TODO">TODO</span> Grammar</h3>
 </div>
 
-<div id="outline-container-org47e6616" class="outline-3">
-<h3 id="org47e6616">Examples</h3>
-<div class="outline-text-3" id="text-org47e6616">
-<pre class="example" id="orge041b2a">
+<div id="outline-container-org43dcbd7" class="outline-3">
+<h3 id="org43dcbd7">Examples</h3>
+<div class="outline-text-3" id="text-org43dcbd7">
+<pre class="example" id="orgc64e284">
 import "external-enum.earl" almost
 
 @pub enum MyPubEnum {
@@ -1757,7 +1766,7 @@ println(my_enum_el, ' ', MyPubEnum.El5); # prints `2 10`
 println(ExternalEnum::MyEnum.Item3); # prints the enum element from "external-enum.earl"
 </pre>
 
-<pre class="example" id="orgdddb42a">
+<pre class="example" id="orgbe5e9cf">
 let x = [1,2,3];
 
 # All values are must be explicit if datatypes other
@@ -1772,9 +1781,9 @@ enum MixedEnum {
 </div>
 </div>
 </div>
-<div id="outline-container-orgd39258e" class="outline-2">
-<h2 id="orgd39258e">Classes</h2>
-<div class="outline-text-2" id="text-orgd39258e">
+<div id="outline-container-org19685bc" class="outline-2">
+<h2 id="org19685bc">Classes</h2>
+<div class="outline-text-2" id="text-org19685bc">
 <blockquote>
 <p>
 While classes are available, support for inheritance is not yet implemented.
@@ -1798,9 +1807,9 @@ dot `.` notation, i.e., <code>MyClass.member_var</code> or <code>MyClass.my_meth
 </p>
 </blockquote>
 </div>
-<div id="outline-container-orgb5f60d9" class="outline-3">
-<h3 id="orgb5f60d9">Grammar</h3>
-<div class="outline-text-3" id="text-orgb5f60d9">
+<div id="outline-container-org3987314" class="outline-3">
+<h3 id="org3987314">Grammar</h3>
+<div class="outline-text-3" id="text-org3987314">
 <blockquote>
 <p>
 *( <code>@</code> pub | world)
@@ -1828,10 +1837,10 @@ dot `.` notation, i.e., <code>MyClass.member_var</code> or <code>MyClass.my_meth
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgd8f7860" class="outline-3">
-<h3 id="orgd8f7860">Examples</h3>
-<div class="outline-text-3" id="text-orgd8f7860">
-<pre class="example" id="org6d8f6af">
+<div id="outline-container-orgd13a99d" class="outline-3">
+<h3 id="orgd13a99d">Examples</h3>
+<div class="outline-text-3" id="text-orgd13a99d">
+<pre class="example" id="orgadfcb20">
 # This class takes no arguments for the
 # constructors and is also not public,
 # so other modules cannot use this class.
@@ -1849,7 +1858,7 @@ class NoPassesArgs [] {
 }
 </pre>
 
-<pre class="example" id="org9f9dc48">
+<pre class="example" id="orga1e30ae">
 # This class is marked as @pub, so it is
 # visible to other modules.
 @pub class Point [x: int, y, name: str] {
@@ -1880,7 +1889,7 @@ class NoPassesArgs [] {
 }
 </pre>
 
-<pre class="example" id="org23fa16e">
+<pre class="example" id="orge6d0f32">
 @pub class Stack [init: list] {
 
     ### THIS HAPPENS FIRST ######
@@ -1915,18 +1924,18 @@ class NoPassesArgs [] {
 </div>
 </div>
 </div>
-<div id="outline-container-org11d20dc" class="outline-2">
-<h2 id="org11d20dc">Datatypes</h2>
-<div class="outline-text-2" id="text-org11d20dc">
+<div id="outline-container-org4b33b5b" class="outline-2">
+<h2 id="org4b33b5b">Datatypes</h2>
+<div class="outline-text-2" id="text-org4b33b5b">
 <blockquote>
 <p>
 The following is a list of the currently implemented primitive types.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org824f859" class="outline-3">
-<h3 id="org824f859"><code>int</code></h3>
-<div class="outline-text-3" id="text-org824f859">
+<div id="outline-container-orgef7c534" class="outline-3">
+<h3 id="orgef7c534"><code>int</code></h3>
+<div class="outline-text-3" id="text-orgef7c534">
 <blockquote>
 <p>
 Your basic 32 bit integer datatype.
@@ -1938,9 +1947,9 @@ Your basic 32 bit integer datatype.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org2beaa17" class="outline-3">
-<h3 id="org2beaa17"><code>float</code></h3>
-<div class="outline-text-3" id="text-org2beaa17">
+<div id="outline-container-org40b78d9" class="outline-3">
+<h3 id="org40b78d9"><code>float</code></h3>
+<div class="outline-text-3" id="text-org40b78d9">
 <blockquote>
 <p>
 Your basic 64 bit floating pointer number.
@@ -1952,9 +1961,9 @@ Your basic 64 bit floating pointer number.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orge40472e" class="outline-3">
-<h3 id="orge40472e"><code>bool</code></h3>
-<div class="outline-text-3" id="text-orge40472e">
+<div id="outline-container-org9b83528" class="outline-3">
+<h3 id="org9b83528"><code>bool</code></h3>
+<div class="outline-text-3" id="text-org9b83528">
 <blockquote>
 <p>
 The boolean datatype. Can either be <code>true</code> or <code>false</code>.
@@ -1962,9 +1971,9 @@ The boolean datatype. Can either be <code>true</code> or <code>false</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org73202e3" class="outline-3">
-<h3 id="org73202e3"><code>char</code></h3>
-<div class="outline-text-3" id="text-org73202e3">
+<div id="outline-container-org3d979fd" class="outline-3">
+<h3 id="org3d979fd"><code>char</code></h3>
+<div class="outline-text-3" id="text-org3d979fd">
 <blockquote>
 <p>
 A single character. They are surrounded by single quotes <code>'</code>.
@@ -1972,18 +1981,18 @@ A single character. They are surrounded by single quotes <code>'</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgfc69b93" class="outline-3">
-<h3 id="orgfc69b93"><code>str</code></h3>
-<div class="outline-text-3" id="text-orgfc69b93">
+<div id="outline-container-org712c55e" class="outline-3">
+<h3 id="org712c55e"><code>str</code></h3>
+<div class="outline-text-3" id="text-org712c55e">
 <blockquote>
 <p>
 A string is a list of <code>char</code>'s. They are surrounded with double quotes <code>"</code>.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org804676e" class="outline-4">
-<h4 id="org804676e">fstr</h4>
-<div class="outline-text-4" id="text-org804676e">
+<div id="outline-container-org5755264" class="outline-4">
+<h4 id="org5755264">fstr</h4>
+<div class="outline-text-4" id="text-org5755264">
 <blockquote>
 <p>
 <code>fstr</code> is syntax sugar to put variables inside of a string literal.
@@ -1995,7 +2004,7 @@ with <code>{ }</code> will have their value stringified.
 <b>Note</b>: They currently only work with <b>identifiers</b>.
 </p>
 
-<pre class="example" id="org5fb8956">
+<pre class="example" id="orgfb86b59">
 let x = [1, 2, 3];
 let y = 3;
 let s = f"x is {x} and y is {y}";
@@ -2005,9 +2014,9 @@ println(s); # prints "x is [1, 2, 3] and y is 3"
 </div>
 </div>
 </div>
-<div id="outline-container-org73bdcf8" class="outline-3">
-<h3 id="org73bdcf8"><code>list</code></h3>
-<div class="outline-text-3" id="text-org73bdcf8">
+<div id="outline-container-orgfa05cea" class="outline-3">
+<h3 id="orgfa05cea"><code>list</code></h3>
+<div class="outline-text-3" id="text-orgfa05cea">
 <blockquote>
 <p>
 A list is a growable array. They can hold any datatype, and you
@@ -2015,7 +2024,7 @@ can even mix multiple datatypes in a single list. They can be initialized with
 braces or a <code>range</code>.
 </p>
 
-<pre class="example" id="orgace614c">
+<pre class="example" id="org880c635">
 let lst0 = [];
 let lst1 = [1,2,3];
 println(lst0); # prints []
@@ -2030,15 +2039,15 @@ println(lst4); # prints ['a', 'b', 'c'];
 </pre>
 </blockquote>
 </div>
-<div id="outline-container-org7d67409" class="outline-4">
-<h4 id="org7d67409">Ranges</h4>
-<div class="outline-text-4" id="text-org7d67409">
+<div id="outline-container-org850a09f" class="outline-4">
+<h4 id="org850a09f">Ranges</h4>
+<div class="outline-text-4" id="text-org850a09f">
 <blockquote>
 <p>
 Ranges are not their own datatype, they are just syntax sugar for a list. For example:
 </p>
 
-<pre class="example" id="orgc01af9d">
+<pre class="example" id="orgfaa6474">
 1..5 # expands to [1, 2, 3, 4]
 1..=5 # expands to [1, 2, 3, 4, 5]
 'a'..'d' # expands to ['a', 'b', 'c'];
@@ -2053,9 +2062,9 @@ Currently they only work with <code>int</code> and <code>char</code>.
 </div>
 </div>
 </div>
-<div id="outline-container-org1b56928" class="outline-3">
-<h3 id="org1b56928"><code>Slice</code></h3>
-<div class="outline-text-3" id="text-org1b56928">
+<div id="outline-container-org485d8df" class="outline-3">
+<h3 id="org485d8df"><code>Slice</code></h3>
+<div class="outline-text-3" id="text-org485d8df">
 <blockquote>
 <p>
 Currently, <code>slice</code> types are only useful for indexing a <code>list</code>. They allow you to
@@ -2085,7 +2094,7 @@ and
 <li>If both \(S\) and \(E\) are either empty or <code>unit</code>, then \(L_{S : E} = L\).</li>
 </ul>
 
-<pre class="example" id="org9f39b1f">
+<pre class="example" id="org34f67e1">
 let lst = [1,2,3,4,5];
 println(lst[0:3]); # prints [1, 2, 3]
 println(lst[:4]);  # prints [1, 2, 3, 4]
@@ -2102,9 +2111,9 @@ println(lst[sl])   # prints [2,3]
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgdbfa647" class="outline-3">
-<h3 id="orgdbfa647"><code>tuple</code></h3>
-<div class="outline-text-3" id="text-orgdbfa647">
+<div id="outline-container-org9749719" class="outline-3">
+<h3 id="org9749719"><code>tuple</code></h3>
+<div class="outline-text-3" id="text-org9749719">
 <blockquote>
 <p>
 A <code>tuple</code> is the exact same thing as a <code>list</code> except they are <i>immutable</i>.
@@ -2116,7 +2125,7 @@ You cannot reassign, append, or modify a <code>tuple</code>. You can use bracket
 They can be created by using parenthesis and having elements be separated by commas <span class="underline">(including tuples of size 1)</span>:
 </p>
 
-<pre class="example" id="org1fe1ccb">
+<pre class="example" id="org2de7629">
 let tuple = (1, 'a', [1,2,3]);
 tuple.foreach(|x| { println(x); });
 
@@ -2131,9 +2140,9 @@ function <code>tuple()</code> i.e., <code>let empty_tuple = tuple();</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3c0ae39" class="outline-3">
-<h3 id="org3c0ae39"><code>option</code></h3>
-<div class="outline-text-3" id="text-org3c0ae39">
+<div id="outline-container-org1484721" class="outline-3">
+<h3 id="org1484721"><code>option</code></h3>
+<div class="outline-text-3" id="text-org1484721">
 <blockquote>
 <p>
 Because all variables need to be initialized when using a `let` statement,
@@ -2145,7 +2154,7 @@ allows you to set a variable to it and can be reassigned later.
 To assign a value to a none-type, you must wrap it in <code>some</code> i.e.,
 </p>
 
-<pre class="example" id="orgc90ed4c">
+<pre class="example" id="orgb3081a2">
 let x = none;
 x = some(9);
 </pre>
@@ -2159,7 +2168,7 @@ using the <code>unwrap()</code> member intrinsic.
 Another important note is that the underlying value that the <code>option</code> holds is dynamic:
 </p>
 
-<pre class="example" id="orge55e4c0">
+<pre class="example" id="orgc1c4838">
 let x = some(8);
 println(x.unwrap()); # prints 8
 x = some('a');
@@ -2168,9 +2177,9 @@ println(x.unwrap()); # prints 'a'
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgb243a8d" class="outline-3">
-<h3 id="orgb243a8d"><code>closure</code></h3>
-<div class="outline-text-3" id="text-orgb243a8d">
+<div id="outline-container-org88bc794" class="outline-3">
+<h3 id="org88bc794"><code>closure</code></h3>
+<div class="outline-text-3" id="text-org88bc794">
 <blockquote>
 <p>
 Closures are anonymous functions that close in the outer scope. They
@@ -2183,7 +2192,7 @@ then the item inside of the vertical bars is <code>_</code> i.e., <code>|_|</cod
 Here is an example of c++ lambdas and the equivalent EARL closures.
 </p>
 
-<pre class="example" id="org8cc4222">
+<pre class="example" id="org0911553">
 std::function&lt;int(int, int)&gt; sum_and_modify_b = [&amp;](int a, int &amp;b) -&gt; int {
     std::cout &lt;&lt; "in sum" &lt;&lt; std::endl;
     b *= 2;
@@ -2199,7 +2208,7 @@ std::vector&lt;int&gt; v = {1,2,3,4,5};
 v.for_each(v.begin(), v.end(), [](int k) { std::cout &lt;&lt; k &lt;&lt; std::endl; });
 </pre>
 
-<pre class="example" id="org6eda8c9">
+<pre class="example" id="org6b4d224">
 let sum_and_modify_b = |a, @ref b| {
     println("in sum");
     b *= 2;
@@ -2220,7 +2229,7 @@ v.foreach(|k| { println(k); });
 Some other examples:
 </p>
 
-<pre class="example" id="org4fe276e">
+<pre class="example" id="orgd8789df">
 fn take_sum_closure(f, a, b) {
     f(a, b);
 }
@@ -2243,7 +2252,7 @@ print(take_sum_closure(sum, 1, 2));
 <p>
 Output:
 </p>
-<pre class="example" id="orgf4309a2">
+<pre class="example" id="orga45b9d1">
 hello world
 in sum
 3
@@ -2251,9 +2260,9 @@ in sum
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3cea605" class="outline-3">
-<h3 id="org3cea605"><code>dictionary</code></h3>
-<div class="outline-text-3" id="text-org3cea605">
+<div id="outline-container-org87f643c" class="outline-3">
+<h3 id="org87f643c"><code>dictionary</code></h3>
+<div class="outline-text-3" id="text-org87f643c">
 <blockquote>
 <p>
 A <code>dictionary</code> is a collection of key-value pairs. Every key has an associated value.
@@ -2270,7 +2279,7 @@ an empty dictionary. This can be done by using the <code>Dict(type: TypeKW) -&gt
 produce an empty dictionary that holds keys of type <code>type</code>.
 </p>
 
-<pre class="example" id="org1e1466d">
+<pre class="example" id="org19a59ad">
 let empty_set = Dict(int);
 
 # Notice how all keys are strings
@@ -2293,9 +2302,9 @@ println(empty_set[3]); # some([1,2,3])
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org2c26779" class="outline-3">
-<h3 id="org2c26779"><code>TypeKW</code></h3>
-<div class="outline-text-3" id="text-org2c26779">
+<div id="outline-container-org351bebf" class="outline-3">
+<h3 id="org351bebf"><code>TypeKW</code></h3>
+<div class="outline-text-3" id="text-org351bebf">
 <blockquote>
 <p>
 <code>TypeKW</code> (or Type Keyword) are global identifiers for types. You are unable to do
@@ -2307,7 +2316,7 @@ raw values, or doing equality <code>==</code> or <code>!=</code>.
 <b>Note</b>: These are not the same as the casting functions.
 </p>
 
-<pre class="example" id="orgb67a3cd">
+<pre class="example" id="org8b30531">
 let integer_type = int;
 let str_type = str;
 println(integer_type == str_type); # false
@@ -2315,13 +2324,13 @@ println(integer_type == str_type); # false
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orge0d4898" class="outline-3">
-<h3 id="orge0d4898"><code>file</code></h3>
-<div class="outline-text-3" id="text-orge0d4898">
+<div id="outline-container-org313c8e2" class="outline-3">
+<h3 id="org313c8e2"><code>file</code></h3>
+<div class="outline-text-3" id="text-org313c8e2">
 <blockquote>
 <p>
 The <code>file</code> type is a file handler. It handles opening, closing, reading, and writing
-to files. The way to get a file handler is by using the intrinsic function <code>open()</code> (see <a href="#orgc8c538d">Intrinsics</a>).
+to files. The way to get a file handler is by using the intrinsic function <code>open()</code> (see <a href="#org1589e41">Intrinsics</a>).
 </p>
 
 <p>
@@ -2330,10 +2339,10 @@ to files. The way to get a file handler is by using the intrinsic function <code
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgc0f9bd0" class="outline-3">
-<h3 id="orgc0f9bd0"><code>time</code></h3>
-<div class="outline-text-3" id="text-orgc0f9bd0">
-<div class="qutoe" id="orga734930">
+<div id="outline-container-orgf704f2e" class="outline-3">
+<h3 id="orgf704f2e"><code>time</code></h3>
+<div class="outline-text-3" id="text-orgf704f2e">
+<div class="qutoe" id="orgc32cb0f">
 <p>
 This is a datatype representing time. It contains the values of
 the years, months, days, hours, minutes, and seconds of the current date.
@@ -2342,9 +2351,9 @@ the years, months, days, hours, minutes, and seconds of the current date.
 </div>
 </div>
 </div>
-<div id="outline-container-org0fda45c" class="outline-3">
-<h3 id="org0fda45c"><code>unit</code></h3>
-<div class="outline-text-3" id="text-org0fda45c">
+<div id="outline-container-org4cef8b3" class="outline-3">
+<h3 id="org4cef8b3"><code>unit</code></h3>
+<div class="outline-text-3" id="text-org4cef8b3">
 <blockquote>
 <p>
 The <code>unit</code> type is used as a "throwaway". It essentially throws
@@ -2371,9 +2380,9 @@ examples of correct usage of it:
 </div>
 </div>
 </div>
-<div id="outline-container-orgc8c538d" class="outline-2">
-<h2 id="orgc8c538d">Intrinsics</h2>
-<div class="outline-text-2" id="text-orgc8c538d">
+<div id="outline-container-org1589e41" class="outline-2">
+<h2 id="org1589e41">Intrinsics</h2>
+<div class="outline-text-2" id="text-org1589e41">
 <blockquote>
 <p>
 Intrinsics are functions that are automatically built into the interpreter.
@@ -2381,11 +2390,11 @@ You do not need to import anything to use these functions.
 </p>
 </blockquote>
 </div>
-<div id="outline-container-org2102be1" class="outline-3">
-<h3 id="org2102be1"><code>print</code></h3>
-<div class="outline-text-3" id="text-org2102be1">
+<div id="outline-container-org37bcbc4" class="outline-3">
+<h3 id="org37bcbc4"><code>print</code></h3>
+<div class="outline-text-3" id="text-org37bcbc4">
 <blockquote>
-<pre class="example" id="org8b9d9f1">
+<pre class="example" id="orga9f6475">
 print(arg1: any, arg2: any, ..., argN: any) -&gt; unit
 </pre>
 
@@ -2395,11 +2404,11 @@ Will print all elements if it can.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgd134693" class="outline-3">
-<h3 id="orgd134693"><code>println</code></h3>
-<div class="outline-text-3" id="text-orgd134693">
+<div id="outline-container-orgb7d15f1" class="outline-3">
+<h3 id="orgb7d15f1"><code>println</code></h3>
+<div class="outline-text-3" id="text-orgb7d15f1">
 <blockquote>
-<pre class="example" id="orge14bf1c">
+<pre class="example" id="orgd483adb">
 println(arg1: any, arg2: any, ..., argN: any) -&gt; unit
 </pre>
 
@@ -2415,11 +2424,11 @@ as their value. This is very helpful for debugging.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org5f07d96" class="outline-3">
-<h3 id="org5f07d96"><span class="todo TODO">TODO</span> <code>fprint</code></h3>
-<div class="outline-text-3" id="text-org5f07d96">
+<div id="outline-container-orgad41060" class="outline-3">
+<h3 id="orgad41060"><span class="todo TODO">TODO</span> <code>fprint</code></h3>
+<div class="outline-text-3" id="text-orgad41060">
 <blockquote>
-<pre class="example" id="org3e3206d">
+<pre class="example" id="org7e87e10">
 fprint(fd: int|file, arg1: any, arg2: any, ..., argN: any) -&gt; unit
 </pre>
 
@@ -2429,11 +2438,11 @@ Will print all elements to the file descriptor <code>fd</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org965ec06" class="outline-3">
-<h3 id="org965ec06"><span class="todo TODO">TODO</span> <code>fprintln</code></h3>
-<div class="outline-text-3" id="text-org965ec06">
+<div id="outline-container-org3a4d4f5" class="outline-3">
+<h3 id="org3a4d4f5"><span class="todo TODO">TODO</span> <code>fprintln</code></h3>
+<div class="outline-text-3" id="text-org3a4d4f5">
 <blockquote>
-<pre class="example" id="org0913010">
+<pre class="example" id="org2e0b6f4">
 fprintln(fd: int|file, arg1: any, arg2: any, ..., argN: any) -&gt; unit
 </pre>
 
@@ -2443,11 +2452,11 @@ Will print all elements as well as a newline to the file descriptor <code>fd</co
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orga2d20dd" class="outline-3">
-<h3 id="orga2d20dd"><code>input</code></h3>
-<div class="outline-text-3" id="text-orga2d20dd">
+<div id="outline-container-orgf3be534" class="outline-3">
+<h3 id="orgf3be534"><code>input</code></h3>
+<div class="outline-text-3" id="text-orgf3be534">
 <blockquote>
-<pre class="example" id="orgc388fcc">
+<pre class="example" id="org5873547">
 input(arg1: any, arg2: any, ..., argN: any) -&gt; str
 </pre>
 
@@ -2458,11 +2467,11 @@ and returns it as a <code>str</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org02136e4" class="outline-3">
-<h3 id="org02136e4"><code>int</code></h3>
-<div class="outline-text-3" id="text-org02136e4">
+<div id="outline-container-org08510a7" class="outline-3">
+<h3 id="org08510a7"><code>int</code></h3>
+<div class="outline-text-3" id="text-org08510a7">
 <blockquote>
-<pre class="example" id="org70d8efb">
+<pre class="example" id="orge3b2f81">
 int(arg: int|float|str|bool) -&gt; int
 </pre>
 
@@ -2472,11 +2481,11 @@ Casts <code>arg</code> to an <code>int</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org4a8e99a" class="outline-3">
-<h3 id="org4a8e99a"><code>float</code></h3>
-<div class="outline-text-3" id="text-org4a8e99a">
+<div id="outline-container-org040a5e9" class="outline-3">
+<h3 id="org040a5e9"><code>float</code></h3>
+<div class="outline-text-3" id="text-org040a5e9">
 <blockquote>
-<pre class="example" id="org7e35670">
+<pre class="example" id="org64da973">
 float(arg: int|float|str) -&gt; float
 </pre>
 
@@ -2486,11 +2495,11 @@ Casts <code>arg</code> to a <code>float</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org5bb3751" class="outline-3">
-<h3 id="org5bb3751"><code>str</code></h3>
-<div class="outline-text-3" id="text-org5bb3751">
+<div id="outline-container-org99802ad" class="outline-3">
+<h3 id="org99802ad"><code>str</code></h3>
+<div class="outline-text-3" id="text-org99802ad">
 <blockquote>
-<pre class="example" id="org7160338">
+<pre class="example" id="org0d6da42">
 str(arg: int|float|str|bool|option) -&gt; str
 </pre>
 
@@ -2500,11 +2509,11 @@ Casts <code>arg</code> to a <code>str</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgb9cd5cf" class="outline-3">
-<h3 id="orgb9cd5cf"><code>bool</code></h3>
-<div class="outline-text-3" id="text-orgb9cd5cf">
+<div id="outline-container-org9806904" class="outline-3">
+<h3 id="org9806904"><code>bool</code></h3>
+<div class="outline-text-3" id="text-org9806904">
 <blockquote>
-<pre class="example" id="org590e8df">
+<pre class="example" id="org79a3c9a">
 bool(arg: int|float|str) -&gt; bool
 </pre>
 
@@ -2514,11 +2523,11 @@ Casts <code>arg</code> to a <code>bool</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgd71a4e3" class="outline-3">
-<h3 id="orgd71a4e3"><code>tuple</code></h3>
-<div class="outline-text-3" id="text-orgd71a4e3">
+<div id="outline-container-orgdfe46a7" class="outline-3">
+<h3 id="orgdfe46a7"><code>tuple</code></h3>
+<div class="outline-text-3" id="text-orgdfe46a7">
 <blockquote>
-<pre class="example" id="org2c016c7">
+<pre class="example" id="org94014e3">
 tuple(arg0: any, arg1: any, ..., argN: any) -&gt; tuple
 </pre>
 
@@ -2528,11 +2537,11 @@ Cast the values to a <code>tuple</code>. You can also supply 0 arguments to crea
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9626c91" class="outline-3">
-<h3 id="org9626c91"><code>list</code></h3>
-<div class="outline-text-3" id="text-org9626c91">
+<div id="outline-container-orgd807128" class="outline-3">
+<h3 id="orgd807128"><code>list</code></h3>
+<div class="outline-text-3" id="text-orgd807128">
 <blockquote>
-<pre class="example" id="org6f3569b">
+<pre class="example" id="org22f6305">
 list(arg0: any, arg1: any, ..., argN: any) -&gt; list
 </pre>
 
@@ -2542,11 +2551,11 @@ Cast the values to a <code>list</code>. You can also supply 0 arguments to creat
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org8d587b5" class="outline-3">
-<h3 id="org8d587b5"><code>Dict</code></h3>
-<div class="outline-text-3" id="text-org8d587b5">
+<div id="outline-container-orged0baf5" class="outline-3">
+<h3 id="orged0baf5"><code>Dict</code></h3>
+<div class="outline-text-3" id="text-orged0baf5">
 <blockquote>
-<pre class="example" id="org653566b">
+<pre class="example" id="orgebac475">
 Dict(ty: TypeKW) -&gt; Dict&lt;ty&gt;
 </pre>
 
@@ -2556,11 +2565,11 @@ Creates a new <b>empty</b> dictionary that holds keys of type <code>ty</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org8019fcd" class="outline-3">
-<h3 id="org8019fcd"><code>assert</code></h3>
-<div class="outline-text-3" id="text-org8019fcd">
+<div id="outline-container-orgd797f12" class="outline-3">
+<h3 id="orgd797f12"><code>assert</code></h3>
+<div class="outline-text-3" id="text-orgd797f12">
 <blockquote>
-<pre class="example" id="org6c9a4ed">
+<pre class="example" id="orge477aa0">
 assert(arg1: bool, arg2: bool, ..., argN: bool) -&gt; unit
 </pre>
 
@@ -2571,11 +2580,11 @@ the program immediately crashes.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org747622e" class="outline-3">
-<h3 id="org747622e"><code>len</code></h3>
-<div class="outline-text-3" id="text-org747622e">
+<div id="outline-container-org7c322ae" class="outline-3">
+<h3 id="org7c322ae"><code>len</code></h3>
+<div class="outline-text-3" id="text-org7c322ae">
 <blockquote>
-<pre class="example" id="org90599b8">
+<pre class="example" id="orgd8aace3">
 len(arg: list|str|tuple) -&gt; int
 </pre>
 
@@ -2586,11 +2595,11 @@ as an integer.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9c3cac8" class="outline-3">
-<h3 id="org9c3cac8"><code>some</code></h3>
-<div class="outline-text-3" id="text-org9c3cac8">
+<div id="outline-container-org86c8c27" class="outline-3">
+<h3 id="org86c8c27"><code>some</code></h3>
+<div class="outline-text-3" id="text-org86c8c27">
 <blockquote>
-<pre class="example" id="org2308074">
+<pre class="example" id="org45c9b76">
 some(arg: any) -&gt; option&lt;any&gt;
 </pre>
 
@@ -2600,11 +2609,11 @@ Wraps <code>arg</code> in an <code>option</code> type.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9cd460f" class="outline-3">
-<h3 id="org9cd460f"><code>type</code></h3>
-<div class="outline-text-3" id="text-org9cd460f">
+<div id="outline-container-org530d977" class="outline-3">
+<h3 id="org530d977"><code>type</code></h3>
+<div class="outline-text-3" id="text-org530d977">
 <blockquote>
-<pre class="example" id="orgcf8b325">
+<pre class="example" id="orgb1ca753">
 type(arg: any) -&gt; str
 </pre>
 
@@ -2614,11 +2623,11 @@ Returns the type of <code>arg</code> as a <code>str</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org9e5d5bc" class="outline-3">
-<h3 id="org9e5d5bc"><code>typeof</code></h3>
-<div class="outline-text-3" id="text-org9e5d5bc">
+<div id="outline-container-orgf9592b1" class="outline-3">
+<h3 id="orgf9592b1"><code>typeof</code></h3>
+<div class="outline-text-3" id="text-orgf9592b1">
 <blockquote>
-<pre class="example" id="org344cdfa">
+<pre class="example" id="org46c89e3">
 typeof(arg: any) -&gt; TypeKW
 </pre>
 
@@ -2628,11 +2637,11 @@ Returns the type of <code>arg</code> as a <code>TypeKW</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org0e081fc" class="outline-3">
-<h3 id="org0e081fc"><code>argv</code></h3>
-<div class="outline-text-3" id="text-org0e081fc">
+<div id="outline-container-org27255c2" class="outline-3">
+<h3 id="org27255c2"><code>argv</code></h3>
+<div class="outline-text-3" id="text-org27255c2">
 <blockquote>
-<pre class="example" id="org4802108">
+<pre class="example" id="org4aa8c48">
 argv() -&gt; list
 </pre>
 
@@ -2643,11 +2652,11 @@ that were given by the <code>--</code> option.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org07b4a2b" class="outline-3">
-<h3 id="org07b4a2b"><code>open</code></h3>
-<div class="outline-text-3" id="text-org07b4a2b">
+<div id="outline-container-org561476d" class="outline-3">
+<h3 id="org561476d"><code>open</code></h3>
+<div class="outline-text-3" id="text-org561476d">
 <blockquote>
-<pre class="example" id="org090de39">
+<pre class="example" id="org10001fa">
 open(fp: str, mode: str) -&gt; file
 </pre>
 
@@ -2660,11 +2669,11 @@ i.e., <code>"wrb"</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org8ef5f29" class="outline-3">
-<h3 id="org8ef5f29"><code>unimplemented</code></h3>
-<div class="outline-text-3" id="text-org8ef5f29">
+<div id="outline-container-orgea7e392" class="outline-3">
+<h3 id="orgea7e392"><code>unimplemented</code></h3>
+<div class="outline-text-3" id="text-orgea7e392">
 <blockquote>
-<pre class="example" id="org6c00399">
+<pre class="example" id="orgee0d16b">
 unimplemented(arg1, arg2, ..., argN) -&gt; unit
 </pre>
 
@@ -2674,11 +2683,11 @@ Prints "UNIMPLEMENTED" arg1..arg\(N\) to <code>stderr</code> and exits with non-
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orged57eff" class="outline-3">
-<h3 id="orged57eff"><code>datetime</code></h3>
-<div class="outline-text-3" id="text-orged57eff">
+<div id="outline-container-orgdc90bbb" class="outline-3">
+<h3 id="orgdc90bbb"><code>datetime</code></h3>
+<div class="outline-text-3" id="text-orgdc90bbb">
 <blockquote>
-<pre class="example" id="orgcff7020">
+<pre class="example" id="org5a55bec">
 datetime() -&gt; time
 </pre>
 
@@ -2688,11 +2697,11 @@ Returns the current date as a `time` type.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org1015fe1" class="outline-3">
-<h3 id="org1015fe1"><code>sleep</code></h3>
-<div class="outline-text-3" id="text-org1015fe1">
+<div id="outline-container-org4ab64cf" class="outline-3">
+<h3 id="org4ab64cf"><code>sleep</code></h3>
+<div class="outline-text-3" id="text-org4ab64cf">
 <blockquote>
-<pre class="example" id="org80b97cc">
+<pre class="example" id="orgf5db426">
 sleep(milli: int) -&gt; unit
 </pre>
 
@@ -2702,11 +2711,11 @@ Sleep for `milli` milliseconds.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org74cb2fd" class="outline-3">
-<h3 id="org74cb2fd"><code>env</code></h3>
-<div class="outline-text-3" id="text-org74cb2fd">
+<div id="outline-container-orgbff38fb" class="outline-3">
+<h3 id="orgbff38fb"><code>env</code></h3>
+<div class="outline-text-3" id="text-orgbff38fb">
 <blockquote>
-<pre class="example" id="org0bd76fa">
+<pre class="example" id="org31c80af">
 env(variable: str) -&gt; str
 </pre>
 
@@ -2722,9 +2731,9 @@ it has one explicitly in the name.
 </div>
 </div>
 </div>
-<div id="outline-container-org51cd081" class="outline-2">
-<h2 id="org51cd081">Member Intrinsics</h2>
-<div class="outline-text-2" id="text-org51cd081">
+<div id="outline-container-org03da845" class="outline-2">
+<h2 id="org03da845">Member Intrinsics</h2>
+<div class="outline-text-2" id="text-org03da845">
 <blockquote>
 <p>
 Member intrinsics are the same as intrinsics, except they are
@@ -2732,17 +2741,17 @@ member functions (or methods) that types have built into them.
 You access these with the dot `.` notation i.e.,
 </p>
 
-<pre class="example" id="org50bbda1">
+<pre class="example" id="org4a01e5f">
 let lst = [1,2,3];
 lst = lst.rev();
 </pre>
 </blockquote>
 </div>
-<div id="outline-container-orga83ab19" class="outline-3">
-<h3 id="orga83ab19"><code>list</code> Implements</h3>
-<div class="outline-text-3" id="text-orga83ab19">
+<div id="outline-container-org537b654" class="outline-3">
+<h3 id="org537b654"><code>list</code> Implements</h3>
+<div class="outline-text-3" id="text-org537b654">
 <blockquote>
-<pre class="example" id="orge460c19">
+<pre class="example" id="orgbb95fb0">
 append(arg1: any, arg2: any, ..., argN: any) -&gt; unit
 </pre>
 
@@ -2752,7 +2761,7 @@ Will append arg1..arg\(N\) to the list.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org4167aad">
+<pre class="example" id="org8c9801f">
 pop(idx: int) -&gt; unit
 </pre>
 
@@ -2762,7 +2771,7 @@ Will remove the element at index <code>idx</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org3fc2d73">
+<pre class="example" id="org3efe5f0">
 rev() -&gt; list
 </pre>
 
@@ -2772,7 +2781,7 @@ Returns a new list that is the reverse of the original.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge901db7">
+<pre class="example" id="org0045097">
 filter(cl: closure) -&gt; list
 </pre>
 
@@ -2783,7 +2792,7 @@ elements where <code>cl</code> returns <code>true</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgea36e76">
+<pre class="example" id="orgd924c4e">
 foreach(cl: closure) -&gt; unit
 </pre>
 
@@ -2793,7 +2802,7 @@ Calls the closure <code>cl</code> on each element.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orga2cf64d">
+<pre class="example" id="org588ef06">
 map(cl: closure) -&gt; list
 </pre>
 
@@ -2803,7 +2812,7 @@ Calls the closure <code>cl</code> on each element and creates a new list on the 
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org68042a9">
+<pre class="example" id="orgf10fa8a">
 contains(val: any) -&gt; bool
 </pre>
 
@@ -2813,11 +2822,11 @@ Checks to see if <code>val</code> is in the <code>list</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org615359d" class="outline-3">
-<h3 id="org615359d"><code>str</code> Implements</h3>
-<div class="outline-text-3" id="text-org615359d">
+<div id="outline-container-org0f7c72d" class="outline-3">
+<h3 id="org0f7c72d"><code>str</code> Implements</h3>
+<div class="outline-text-3" id="text-org0f7c72d">
 <blockquote>
-<pre class="example" id="orgd7c0738">
+<pre class="example" id="org4cb7101">
 append(arg1: char|str, arg2: char|str, ..., argN: char|str) -&gt; unit
 </pre>
 
@@ -2827,7 +2836,7 @@ Will append arg1..arg\(N\) to the <code>str</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org6f1590b">
+<pre class="example" id="orgeafb348">
 pop(idx: int) -&gt; unit
 </pre>
 
@@ -2837,7 +2846,7 @@ Will remove the element at index <code>idx</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orga494047">
+<pre class="example" id="org7e230e4">
 rev() -&gt; str
 </pre>
 
@@ -2847,7 +2856,7 @@ Returns a new <code>str</code> that is the reverse of the original.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org189c488">
+<pre class="example" id="org87dae8d">
 filter(cl: closure) -&gt; str
 </pre>
 
@@ -2858,7 +2867,7 @@ elements where <code>cl</code> returns <code>true</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgc13edcc">
+<pre class="example" id="org3f45bc3">
 foreach(cl: closure) -&gt; unit
 </pre>
 
@@ -2868,7 +2877,7 @@ Calls the closure <code>cl</code> on each element.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5bd354d">
+<pre class="example" id="orgdbacc56">
 split(delim: str) -&gt; list
 </pre>
 
@@ -2878,7 +2887,7 @@ Split a string by the delimiter <code>delim</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgc960298">
+<pre class="example" id="org05bd898">
 contains(ch: c) -&gt; bool
 </pre>
 
@@ -2888,11 +2897,11 @@ Checks to see if <code>val</code> is in the <code>str</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org61c72ba" class="outline-3">
-<h3 id="org61c72ba"><code>dictionary</code> Implements</h3>
-<div class="outline-text-3" id="text-org61c72ba">
+<div id="outline-container-org0509e13" class="outline-3">
+<h3 id="org0509e13"><code>dictionary</code> Implements</h3>
+<div class="outline-text-3" id="text-org0509e13">
 <blockquote>
-<pre class="example" id="org1c50bd4">
+<pre class="example" id="org45f5b5b">
 insert(k: any, v: any) -&gt; unit
 </pre>
 
@@ -2902,7 +2911,7 @@ Inserts the key <code>k</code> and value <code>v</code> into the dictionary.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org3124927">
+<pre class="example" id="org693d10f">
 has_key(k: any) -&gt; bool
 </pre>
 
@@ -2912,7 +2921,7 @@ Returns <code>true</code> if the key <code>k</code> is present in the dictionary
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2a799cd">
+<pre class="example" id="orgf229b6c">
 has_value(v: any) -&gt; bool
 </pre>
 
@@ -2922,11 +2931,11 @@ Returns <code>true</code> if the value <code>v</code> is present in the dictiona
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org6dd9813" class="outline-3">
-<h3 id="org6dd9813"><code>tuple</code> Implements</h3>
-<div class="outline-text-3" id="text-org6dd9813">
+<div id="outline-container-org44334b0" class="outline-3">
+<h3 id="org44334b0"><code>tuple</code> Implements</h3>
+<div class="outline-text-3" id="text-org44334b0">
 <blockquote>
-<pre class="example" id="orgd61a0eb">
+<pre class="example" id="orga23e226">
 rev() -&gt; tuple
 </pre>
 
@@ -2936,7 +2945,7 @@ Returns a new tuple that is the reverse of the original.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5150a0c">
+<pre class="example" id="org0a104a2">
 filter(cl: closure) -&gt; tuple
 </pre>
 
@@ -2947,7 +2956,7 @@ elements where <code>cl</code> returns <code>true</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org1b585fd">
+<pre class="example" id="org5f9daac">
 foreach(cl: closure) -&gt; unit
 </pre>
 
@@ -2957,7 +2966,7 @@ Calls the closure <code>cl</code> on each element.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org8562c95">
+<pre class="example" id="orgdf2b363">
 contains(val: any) -&gt; bool
 </pre>
 
@@ -2967,11 +2976,11 @@ Checks to see if <code>val</code> is in the <code>tuple</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgdbf244e" class="outline-3">
-<h3 id="orgdbf244e"><code>char</code> Implements</h3>
-<div class="outline-text-3" id="text-orgdbf244e">
+<div id="outline-container-org7d89590" class="outline-3">
+<h3 id="org7d89590"><code>char</code> Implements</h3>
+<div class="outline-text-3" id="text-org7d89590">
 <blockquote>
-<pre class="example" id="orgc494b84">
+<pre class="example" id="org8243c16">
 ascii() -&gt; int
 </pre>
 
@@ -2981,11 +2990,11 @@ Returns the ascii code of the character.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org517b0ba" class="outline-3">
-<h3 id="org517b0ba"><code>option</code> Implements</h3>
-<div class="outline-text-3" id="text-org517b0ba">
+<div id="outline-container-orgb5161ae" class="outline-3">
+<h3 id="orgb5161ae"><code>option</code> Implements</h3>
+<div class="outline-text-3" id="text-orgb5161ae">
 <blockquote>
-<pre class="example" id="org12cfb73">
+<pre class="example" id="orgfa6074a">
 is_none() -&gt; bool
 </pre>
 
@@ -2995,7 +3004,7 @@ Returns <code>true</code> if the value is <code>none</code>, <code>false</code> 
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2d33b62">
+<pre class="example" id="org174220a">
 is_some() -&gt; bool
 </pre>
 
@@ -3005,7 +3014,7 @@ Returns <code>true</code> if the value is <code>some</code>, <code>false</code> 
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org98a656c">
+<pre class="example" id="org0491de3">
 unwrap() -&gt; any
 </pre>
 
@@ -3016,11 +3025,11 @@ Returns the inner value of the <code>option</code> datatype. If the <code>option
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orge40c775" class="outline-3">
-<h3 id="orge40c775"><code>file</code> Implements</h3>
-<div class="outline-text-3" id="text-orge40c775">
+<div id="outline-container-orgee76aa9" class="outline-3">
+<h3 id="orgee76aa9"><code>file</code> Implements</h3>
+<div class="outline-text-3" id="text-orgee76aa9">
 <blockquote>
-<pre class="example" id="org73921fb">
+<pre class="example" id="org68f52db">
 close() -&gt; unit
 </pre>
 
@@ -3030,7 +3039,7 @@ Closes an opened file.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org16e5cfa">
+<pre class="example" id="orgda925cb">
 read() -&gt; str
 </pre>
 
@@ -3040,7 +3049,7 @@ Get the contents of a file as a <code>str</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdee941e">
+<pre class="example" id="org447556c">
 dump() -&gt; unit
 </pre>
 
@@ -3050,7 +3059,7 @@ Print the contents of a file.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2a7862b">
+<pre class="example" id="org71f05c7">
 write(msg: str|char|int) -&gt; unit
 </pre>
 
@@ -3060,7 +3069,7 @@ Writes <code>msg</code> to the opened file.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2ba4ace">
+<pre class="example" id="org73f2bb4">
 writelines(msg: list) -&gt; unit
 </pre>
 
@@ -3071,11 +3080,11 @@ At the end of each value, a newline is added.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3518afb" class="outline-3">
-<h3 id="org3518afb"><code>time</code> Implements</h3>
-<div class="outline-text-3" id="text-org3518afb">
+<div id="outline-container-org343cd58" class="outline-3">
+<h3 id="org343cd58"><code>time</code> Implements</h3>
+<div class="outline-text-3" id="text-org343cd58">
 <blockquote>
-<pre class="example" id="org0a60c02">
+<pre class="example" id="orgce7327d">
 readable() -&gt; tuple&lt;int&gt;
 </pre>
 
@@ -3086,7 +3095,7 @@ Returns the current value of the time object as a tuple of
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org673f4cb">
+<pre class="example" id="org9cfcf44">
 years() -&gt; int
 </pre>
 
@@ -3096,7 +3105,7 @@ Returns the number of years in the time object.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org87f7ab0">
+<pre class="example" id="orgd519491">
 months() -&gt; int
 </pre>
 
@@ -3106,7 +3115,7 @@ Returns the number of months in the time object.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge450c71">
+<pre class="example" id="org8abdd6c">
 days() -&gt; int
 </pre>
 
@@ -3116,7 +3125,7 @@ Returns the number of days in the time object.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org326cc7b">
+<pre class="example" id="org37d0313">
 hours() -&gt; int
 </pre>
 
@@ -3126,7 +3135,7 @@ Returns the number of hours in the time object.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org3f00150">
+<pre class="example" id="org1b19180">
 minutes() -&gt; int
 </pre>
 
@@ -3136,7 +3145,7 @@ Returns the number of minutes in the time object.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org0f9e320">
+<pre class="example" id="orge53dd81">
 seconds() -&gt; int
 </pre>
 
@@ -3147,9 +3156,9 @@ Returns the number of seconds in the time object.
 </div>
 </div>
 </div>
-<div id="outline-container-org23ddd6c" class="outline-2">
-<h2 id="org23ddd6c">StdLib</h2>
-<div class="outline-text-2" id="text-org23ddd6c">
+<div id="outline-container-org4af500e" class="outline-2">
+<h2 id="org4af500e">StdLib</h2>
+<div class="outline-text-2" id="text-org4af500e">
 <blockquote>
 <p>
 Upon installing EARL, the standard library is installed into
@@ -3165,23 +3174,23 @@ This means that all you need to do to import these files is do:
 never be modified by hand.
 </p>
 </div>
-<div id="outline-container-org13c0afc" class="outline-3">
-<h3 id="org13c0afc">Math</h3>
-<div class="outline-text-3" id="text-org13c0afc">
+<div id="outline-container-orga632177" class="outline-3">
+<h3 id="orga632177">Math</h3>
+<div class="outline-text-3" id="text-orga632177">
 </div>
-<div id="outline-container-org0d1191f" class="outline-4">
-<h4 id="org0d1191f"><b>Import</b>: <code>"std/math.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgdef260e" class="outline-4">
-<h4 id="orgdef260e"><b>Module</b>: <code>Math</code></h4>
+<div id="outline-container-orgdc09b6b" class="outline-4">
+<h4 id="orgdc09b6b"><b>Import</b>: <code>"std/math.earl"</code></h4>
 </div>
 
-<div id="outline-container-org060dc83" class="outline-4">
-<h4 id="org060dc83"><b>Variable List</b>:</h4>
-<div class="outline-text-4" id="text-org060dc83">
+<div id="outline-container-orgfc1b560" class="outline-4">
+<h4 id="orgfc1b560"><b>Module</b>: <code>Math</code></h4>
+</div>
+
+<div id="outline-container-orgfb5e99d" class="outline-4">
+<h4 id="orgfb5e99d"><b>Variable List</b>:</h4>
+<div class="outline-text-4" id="text-orgfb5e99d">
 <blockquote>
-<pre class="example" id="org557ffa3">
+<pre class="example" id="org1395c37">
 PI: float
 </pre>
 
@@ -3191,7 +3200,7 @@ The mathematical constant for pi.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org36a38fb">
+<pre class="example" id="orgf3a6c60">
 EULER: float
 </pre>
 
@@ -3201,15 +3210,15 @@ The mathematical constant for Euler's number
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgd132107" class="outline-4">
-<h4 id="orgd132107"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org89d190d" class="outline-4">
+<h4 id="org89d190d"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org616d857" class="outline-4">
-<h4 id="org616d857"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org616d857">
+<div id="outline-container-org6838c67" class="outline-4">
+<h4 id="org6838c67"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org6838c67">
 <blockquote>
-<pre class="example" id="org5b3f7ca">
+<pre class="example" id="org77db052">
 max(x: int|float, y: int|float) -&gt; int|float
 </pre>
 
@@ -3219,7 +3228,7 @@ Returns the greater of <code>x</code> and <code>y</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgd134640">
+<pre class="example" id="orga98f5ac">
 min(x: int|float, y: int|float) -&gt; int|float
 </pre>
 
@@ -3229,7 +3238,7 @@ Returns the minimum of <code>x</code> and <code>y</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgc9ffbbe">
+<pre class="example" id="org9f49149">
 abs(x: int|float) -&gt; int|float
 </pre>
 
@@ -3239,7 +3248,7 @@ Returns the absolute value of <code>x</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgc25fb79">
+<pre class="example" id="orgee672e2">
 mode(lst: list) -&gt; list
 </pre>
 
@@ -3249,7 +3258,7 @@ This function returns a list of all modes that appear at the highest frequency i
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgaf5be65">
+<pre class="example" id="orgdd50902">
 mean(lst: list) -&gt; float
 </pre>
 
@@ -3259,7 +3268,7 @@ Returns the mean (average in a dataset) of a given list.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgd947a8b">
+<pre class="example" id="org842bdd1">
 median(lst: list) -&gt; int
 </pre>
 
@@ -3269,7 +3278,7 @@ This function sorts and then returns the middle number of a given list
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org38498e9">
+<pre class="example" id="orga635687">
 list_min(lst: list) -&gt; int|float
 </pre>
 
@@ -3279,7 +3288,7 @@ Returns the smallest element <code>lst</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgf83af67">
+<pre class="example" id="orgcbf1bea">
 list_max(lst: list) -&gt; int|float
 </pre>
 
@@ -3289,7 +3298,7 @@ Returns the largest element <code>lst</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdc31b1b">
+<pre class="example" id="orgfe10758">
 area_of_circle(r: float|int) -&gt; float|int
 </pre>
 
@@ -3299,7 +3308,7 @@ Returns the area of a circle with radius <code>r</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2f6dc2e">
+<pre class="example" id="org0858034">
 area_of_cylinder(r: float|int, h: float|int) -&gt; float|int
 </pre>
 
@@ -3309,7 +3318,7 @@ Returns the area of a cylinder with radius <code>r</code> and height <code>h</co
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdf0ab63">
+<pre class="example" id="org3ed2b46">
 area_of_cone(r: float|int, h: float|int) -&gt; float|int
 </pre>
 
@@ -3319,7 +3328,7 @@ Returns the area of a cone with radius <code>r</code> and height <code>h</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdd77397">
+<pre class="example" id="org62ee0a5">
 floor(f: float) -&gt; int
 </pre>
 
@@ -3329,7 +3338,7 @@ Returns the floor of <code>f</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5259422">
+<pre class="example" id="org4b55d17">
 ceil(f: float) -&gt; int
 </pre>
 
@@ -3339,7 +3348,7 @@ Returns the ceil of <code>f</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5f69ec8">
+<pre class="example" id="org1a90f46">
 lerp(a: real, b: real, f: real) -&gt; real
 </pre>
 
@@ -3349,7 +3358,7 @@ Performs the lerp algorithm from <code>a</code> to <code>b</code> by <code>f</co
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org7e7464c">
+<pre class="example" id="org35f36da">
 normalize(x: real, min: float, max: float) -&gt; float
 </pre>
 
@@ -3359,7 +3368,7 @@ Normalizes <code>x</code> to the range of <code>min</code> .. <code>max</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org1e3344d">
+<pre class="example" id="orgcb0cbb0">
 clamp(value: real, min: real, max: real) -&gt; real
 </pre>
 
@@ -3369,27 +3378,27 @@ Performs clamp on <code>value</code> with <code>min</code> and <code>max</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3f21817" class="outline-4">
-<h4 id="org3f21817"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org9ea30ac" class="outline-4">
+<h4 id="org9ea30ac"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-org95968c3" class="outline-3">
-<h3 id="org95968c3">List</h3>
-<div class="outline-text-3" id="text-org95968c3">
+<div id="outline-container-org617d3f8" class="outline-3">
+<h3 id="org617d3f8">List</h3>
+<div class="outline-text-3" id="text-org617d3f8">
 </div>
-<div id="outline-container-org709230b" class="outline-4">
-<h4 id="org709230b"><b>Import</b>: <code>"std/list.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgf1e69d6" class="outline-4">
-<h4 id="orgf1e69d6"><b>Module</b>: <code>List</code></h4>
+<div id="outline-container-orgdbd3b47" class="outline-4">
+<h4 id="orgdbd3b47"><b>Import</b>: <code>"std/list.earl"</code></h4>
 </div>
 
-<div id="outline-container-org5304f45" class="outline-4">
-<h4 id="org5304f45"><b>Variable List</b>:</h4>
-<div class="outline-text-4" id="text-org5304f45">
+<div id="outline-container-orge2460f4" class="outline-4">
+<h4 id="orge2460f4"><b>Module</b>: <code>List</code></h4>
+</div>
+
+<div id="outline-container-orgad3603e" class="outline-4">
+<h4 id="orgad3603e"><b>Variable List</b>:</h4>
+<div class="outline-text-4" id="text-orgad3603e">
 <blockquote>
-<pre class="example" id="org32b1ce7">
+<pre class="example" id="org9875e4d">
 DEFAULT_INT_ASCEND_QUICKSORT: closure(int, int) -&gt; bool
 </pre>
 
@@ -3399,7 +3408,7 @@ The default comparison function for ascending sort.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgcd81354">
+<pre class="example" id="org0ef9a30">
 DEFAULT_INT_DESCEND_QUICKSORT: closure(int, int) -&gt; bool
 </pre>
 
@@ -3409,15 +3418,15 @@ The default comparison function for descending sort.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgc319d12" class="outline-4">
-<h4 id="orgc319d12"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orgb0405e3" class="outline-4">
+<h4 id="orgb0405e3"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org2f4a819" class="outline-4">
-<h4 id="org2f4a819"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org2f4a819">
+<div id="outline-container-orgda7f23c" class="outline-4">
+<h4 id="orgda7f23c"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orgda7f23c">
 <blockquote>
-<pre class="example" id="org563603a">
+<pre class="example" id="org285f23c">
 preset(elem: any, cap: int) -&gt; list
 </pre>
 
@@ -3427,7 +3436,7 @@ Creates a list with elements <code>elem</code> of size <code>cap</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org26d6f8e">
+<pre class="example" id="org051abb8">
 from_range(start: int, stop: int, stride: int) -&gt; list&lt;int|float&gt;
 </pre>
 
@@ -3437,7 +3446,7 @@ Takes a list and then returns element within range specified by the parameters <
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgffe76f4">
+<pre class="example" id="org7b789f9">
 fill(lst: @ref list&lt;any&gt;, k: any) -&gt; unit
 </pre>
 
@@ -3447,7 +3456,7 @@ Fills the given list <code>lst</code> with element <code>k</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org86eaf79">
+<pre class="example" id="orgee9ef66">
 sumf(lst: @const @ref list&lt;float|int&gt;) -&gt; float
 </pre>
 
@@ -3457,7 +3466,7 @@ Returns the sum all elements in <code>lst</code> as a float.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org8708055">
+<pre class="example" id="org0c7015a">
 sum(lst: @const @ref list&lt;int|float&gt;) -&gt; int
 </pre>
 
@@ -3467,7 +3476,7 @@ Returns the sum all elements in <code>lst</code> as an integer.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org9a2ede8">
+<pre class="example" id="org3c455bc">
 find(lst: @const @ref list&lt;any&gt;, elem: @const @ref any) -&gt; option&lt;int&gt;
 </pre>
 
@@ -3477,7 +3486,7 @@ Takes a reference to a list and a reference to an element and looks for the elem
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org72b93a8">
+<pre class="example" id="orgc6818ac">
 count(lst: @const @ref list&lt;any&gt;, elem: @const @ref any) -&gt; int
 </pre>
 
@@ -3487,7 +3496,7 @@ Counts the number of occurrences that <code>elem</code> appears in <code>lst</co
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgba5aa0f">
+<pre class="example" id="org1ff7979">
 quicksort(lst: @ref list&lt;any&gt;, compar: @const closure(x1: any, x2: type(x1)) -&gt; bool|int) -&gt; unit
 </pre>
 
@@ -3497,7 +3506,7 @@ where <code>compar</code> is some ordering function \(F(x_1, x_2) \in \{true, fa
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org0d530de">
+<pre class="example" id="orgb1fe512">
 dict_to_list(dict: @const @ref dict&lt;any, any&gt;) -&gt; list&lt;tuple&lt;any,any&gt;&gt;
 </pre>
 
@@ -3507,35 +3516,35 @@ Converts the dictionary <code>dict</code> to a list.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgec37eaf" class="outline-4">
-<h4 id="orgec37eaf"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org68ef82b" class="outline-4">
+<h4 id="org68ef82b"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-org27b3560" class="outline-3">
-<h3 id="org27b3560">Utils</h3>
-<div class="outline-text-3" id="text-org27b3560">
+<div id="outline-container-orge0a3b37" class="outline-3">
+<h3 id="orge0a3b37">Utils</h3>
+<div class="outline-text-3" id="text-orge0a3b37">
 </div>
-<div id="outline-container-org7ec9ebf" class="outline-4">
-<h4 id="org7ec9ebf"><b>Import</b>: <code>"std/utils.earl"</code></h4>
-</div>
-
-<div id="outline-container-org716ed06" class="outline-4">
-<h4 id="org716ed06"><b>Module</b>: <code>Utils</code></h4>
+<div id="outline-container-org03250f7" class="outline-4">
+<h4 id="org03250f7"><b>Import</b>: <code>"std/utils.earl"</code></h4>
 </div>
 
-<div id="outline-container-orga66a6b7" class="outline-4">
-<h4 id="orga66a6b7"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-orgeb79f3c" class="outline-4">
+<h4 id="orgeb79f3c"><b>Module</b>: <code>Utils</code></h4>
 </div>
 
-<div id="outline-container-org9965ce4" class="outline-4">
-<h4 id="org9965ce4"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org4a1e666" class="outline-4">
+<h4 id="org4a1e666"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org109ef72" class="outline-4">
-<h4 id="org109ef72"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org109ef72">
+<div id="outline-container-org651ef46" class="outline-4">
+<h4 id="org651ef46"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org9f10a2d" class="outline-4">
+<h4 id="org9f10a2d"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org9f10a2d">
 <blockquote>
-<pre class="example" id="org2e9d807">
+<pre class="example" id="orgdcf69d2">
 is_even(n: int) -&gt; bool
 </pre>
 
@@ -3545,7 +3554,7 @@ Returns <code>true</code> if <code>n</code> is even, or <code>false</code> if ot
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org4a9ee13">
+<pre class="example" id="org0ecf624">
 swap(x1: @ref any, x2: @ref type(x1)) -&gt; unit
 </pre>
 
@@ -3555,7 +3564,7 @@ Swap <code>x1</code> and <code>x2</code> in-place.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org50903f7">
+<pre class="example" id="org74f200e">
 iota() -&gt; int
 </pre>
 
@@ -3565,42 +3574,42 @@ Returns 0 on first call, then 0+1 on second, then 0+1+1 on third etc.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org053232d" class="outline-4">
-<h4 id="org053232d"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org2ccc298" class="outline-4">
+<h4 id="org2ccc298"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-orgaec0b3f" class="outline-3">
-<h3 id="orgaec0b3f">Queue</h3>
-<div class="outline-text-3" id="text-orgaec0b3f">
+<div id="outline-container-org9abc05b" class="outline-3">
+<h3 id="org9abc05b">Queue</h3>
+<div class="outline-text-3" id="text-org9abc05b">
 </div>
-<div id="outline-container-orgbdead3d" class="outline-4">
-<h4 id="orgbdead3d"><b>Import</b>: <code>"std/queue.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgcbcc0e0" class="outline-4">
-<h4 id="orgcbcc0e0"><b>Module</b>: <code>Queue</code></h4>
+<div id="outline-container-orgcf32db9" class="outline-4">
+<h4 id="orgcf32db9"><b>Import</b>: <code>"std/queue.earl"</code></h4>
 </div>
 
-<div id="outline-container-org8fbea32" class="outline-4">
-<h4 id="org8fbea32"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-orgc98dc18" class="outline-4">
+<h4 id="orgc98dc18"><b>Module</b>: <code>Queue</code></h4>
 </div>
 
-<div id="outline-container-orga2537b7" class="outline-4">
-<h4 id="orga2537b7"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orge2d2312" class="outline-4">
+<h4 id="orge2d2312"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgb2719c9" class="outline-4">
-<h4 id="orgb2719c9"><b>Function List</b>: <i>None</i></h4>
+<div id="outline-container-orgeed6ab9" class="outline-4">
+<h4 id="orgeed6ab9"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orge57eef3" class="outline-4">
-<h4 id="orge57eef3"><b>Class List</b>:</h4>
+<div id="outline-container-org452885e" class="outline-4">
+<h4 id="org452885e"><b>Function List</b>: <i>None</i></h4>
 </div>
-<div id="outline-container-org71a712e" class="outline-4">
-<h4 id="org71a712e"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-org71a712e">
+
+<div id="outline-container-org983dc43" class="outline-4">
+<h4 id="org983dc43"><b>Class List</b>:</h4>
+</div>
+<div id="outline-container-org5728a64" class="outline-4">
+<h4 id="org5728a64"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-org5728a64">
 <blockquote>
-<pre class="example" id="org07e7308">
+<pre class="example" id="orgdd3a74b">
 T [init: list]
 </pre>
 <p>
@@ -3609,10 +3618,10 @@ Provides a class for the <code>queue</code> data structure.
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org610baf3"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-org610baf3">
+<li><a id="orgbaa636b"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-orgbaa636b">
 <blockquote>
-<pre class="example" id="orgc4f918b">
+<pre class="example" id="orgf16ea48">
 empty() -&gt; bool
 </pre>
 
@@ -3621,7 +3630,7 @@ Returns <code>true</code> if the <code>queue</code> is empty, or <code>false</co
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgfdea8e2">
+<pre class="example" id="orgc4c8724">
 enqueue(value: any) -&gt; unit
 </pre>
 
@@ -3630,7 +3639,7 @@ Inserts <code>value</code> into the <code>queue</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgcf7376f">
+<pre class="example" id="orgc8bfa47">
 dequeue() -&gt; unit
 </pre>
 
@@ -3639,7 +3648,7 @@ Pops the element in the font of the <code>queue</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org3831c3a">
+<pre class="example" id="org67bbfc2">
 peek() -&gt; any
 </pre>
 
@@ -3648,7 +3657,7 @@ Returns the element in the font of the <code>queue</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgba3de8a">
+<pre class="example" id="orged0f1a8">
 size() -&gt; int
 </pre>
 
@@ -3661,38 +3670,38 @@ Returns the size of the <code>queue</code>.
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc02889d" class="outline-3">
-<h3 id="orgc02889d">SinglyLL</h3>
-<div class="outline-text-3" id="text-orgc02889d">
+<div id="outline-container-orgccf7d99" class="outline-3">
+<h3 id="orgccf7d99">SinglyLL</h3>
+<div class="outline-text-3" id="text-orgccf7d99">
 </div>
-<div id="outline-container-org7be7e2b" class="outline-4">
-<h4 id="org7be7e2b"><b>Import</b>: <code>"std/linked-list.earl"</code></h4>
-</div>
-
-<div id="outline-container-org87bda5b" class="outline-4">
-<h4 id="org87bda5b"><b>Module</b>: <code>SinglyLL</code></h4>
+<div id="outline-container-orgd845254" class="outline-4">
+<h4 id="orgd845254"><b>Import</b>: <code>"std/linked-list.earl"</code></h4>
 </div>
 
-<div id="outline-container-org723e19a" class="outline-4">
-<h4 id="org723e19a"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org422076f" class="outline-4">
+<h4 id="org422076f"><b>Module</b>: <code>SinglyLL</code></h4>
 </div>
 
-<div id="outline-container-orga2d0663" class="outline-4">
-<h4 id="orga2d0663"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orgdb5b503" class="outline-4">
+<h4 id="orgdb5b503"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org59f7811" class="outline-4">
-<h4 id="org59f7811"><b>Function List</b>: <i>None</i></h4>
+<div id="outline-container-orgd829459" class="outline-4">
+<h4 id="orgd829459"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org8b7d294" class="outline-4">
-<h4 id="org8b7d294"><b>Class List</b>:</h4>
+<div id="outline-container-org5062549" class="outline-4">
+<h4 id="org5062549"><b>Function List</b>: <i>None</i></h4>
 </div>
-<div id="outline-container-org1e70e32" class="outline-4">
-<h4 id="org1e70e32"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-org1e70e32">
+
+<div id="outline-container-org42739b2" class="outline-4">
+<h4 id="org42739b2"><b>Class List</b>:</h4>
+</div>
+<div id="outline-container-orga3e7a3e" class="outline-4">
+<h4 id="orga3e7a3e"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-orga3e7a3e">
 <blockquote>
-<pre class="example" id="org2d4ab44">
+<pre class="example" id="orgec5e55c">
 T [init: list]
 </pre>
 <p>
@@ -3701,10 +3710,10 @@ Takes the initializer list <code>init</code> and creates a linked list of the el
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org6049dff"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-org6049dff">
+<li><a id="org6c70782"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-org6c70782">
 <blockquote>
-<pre class="example" id="org25f922d">
+<pre class="example" id="orgc53cba8">
 insert(value: any) -&gt; unit
 </pre>
 
@@ -3713,7 +3722,7 @@ Inserts <code>value</code> into the list.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org16de5e4">
+<pre class="example" id="org71011b6">
 contains(value: any) -&gt; bool
 </pre>
 
@@ -3722,7 +3731,7 @@ Checks to see if <code>value</code> is in the list. Returns <code>true</code> if
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org961f522">
+<pre class="example" id="org7630ac0">
 show() -&gt; unit
 </pre>
 
@@ -3735,31 +3744,31 @@ Prints all elements in the list to <code>stdout</code>.
 </ul>
 </div>
 </div>
-<div id="outline-container-org89e9770" class="outline-3">
-<h3 id="org89e9770">Encryption</h3>
-<div class="outline-text-3" id="text-org89e9770">
+<div id="outline-container-org608b365" class="outline-3">
+<h3 id="org608b365">Encryption</h3>
+<div class="outline-text-3" id="text-org608b365">
 </div>
-<div id="outline-container-orgba1b820" class="outline-4">
-<h4 id="orgba1b820"><b>Import</b>: <code>"std/encryption.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgd08f6bb" class="outline-4">
-<h4 id="orgd08f6bb"><b>Module</b>: <code>Encryption</code></h4>
+<div id="outline-container-orgdc8676b" class="outline-4">
+<h4 id="orgdc8676b"><b>Import</b>: <code>"std/encryption.earl"</code></h4>
 </div>
 
-<div id="outline-container-org658e741" class="outline-4">
-<h4 id="org658e741"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org3f38b35" class="outline-4">
+<h4 id="org3f38b35"><b>Module</b>: <code>Encryption</code></h4>
 </div>
 
-<div id="outline-container-org414d7dd" class="outline-4">
-<h4 id="org414d7dd"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orga15275b" class="outline-4">
+<h4 id="orga15275b"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orge50d1ce" class="outline-4">
-<h4 id="orge50d1ce"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-orge50d1ce">
+<div id="outline-container-orgbefd728" class="outline-4">
+<h4 id="orgbefd728"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-orga37b782" class="outline-4">
+<h4 id="orga37b782"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orga37b782">
 <blockquote>
-<pre class="example" id="orga30e249">
+<pre class="example" id="orgd19494f">
 rle(src: str) -&gt; str
 </pre>
 
@@ -3769,35 +3778,35 @@ Performs Run Length Encoding on <code>src</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org43623e4" class="outline-4">
-<h4 id="org43623e4"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-orgc226a65" class="outline-4">
+<h4 id="orgc226a65"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-orge81e6ab" class="outline-3">
-<h3 id="orge81e6ab">Matrix</h3>
-<div class="outline-text-3" id="text-orge81e6ab">
+<div id="outline-container-orgea6549d" class="outline-3">
+<h3 id="orgea6549d">Matrix</h3>
+<div class="outline-text-3" id="text-orgea6549d">
 </div>
-<div id="outline-container-orgb2427be" class="outline-4">
-<h4 id="orgb2427be"><b>Import</b>: <code>"std/matrix.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgca6d92c" class="outline-4">
-<h4 id="orgca6d92c"><b>Module</b>: <code>Matrix</code></h4>
+<div id="outline-container-orgc81b57c" class="outline-4">
+<h4 id="orgc81b57c"><b>Import</b>: <code>"std/matrix.earl"</code></h4>
 </div>
 
-<div id="outline-container-orga1d752a" class="outline-4">
-<h4 id="orga1d752a"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org7dcd7c8" class="outline-4">
+<h4 id="org7dcd7c8"><b>Module</b>: <code>Matrix</code></h4>
 </div>
 
-<div id="outline-container-org55b98cb" class="outline-4">
-<h4 id="org55b98cb"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orgb3646c1" class="outline-4">
+<h4 id="orgb3646c1"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org870547d" class="outline-4">
-<h4 id="org870547d"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org870547d">
+<div id="outline-container-org8e9863d" class="outline-4">
+<h4 id="org8e9863d"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org7862920" class="outline-4">
+<h4 id="org7862920"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org7862920">
 <blockquote>
-<pre class="example" id="org7c7a5a3">
+<pre class="example" id="org8af02b7">
 identity() -&gt; T
 </pre>
 
@@ -3807,7 +3816,7 @@ Creates the identity matrix.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5ff5d04">
+<pre class="example" id="orga808cd0">
 from1d(data: list&lt;any&gt;, rows: int, cols: int) -&gt; T
 </pre>
 
@@ -3817,7 +3826,7 @@ Creates a <code>rows</code> x <code>cols</code> matrix from a 1d list.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2926ebf">
+<pre class="example" id="org668e9d0">
 from2d(data: list&lt;list&lt;any&gt;&gt;) -&gt; T
 </pre>
 
@@ -3827,14 +3836,14 @@ Creates a matrix from a 2d list.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org674e38d" class="outline-4">
-<h4 id="org674e38d"><b>Class List</b>:</h4>
+<div id="outline-container-orge31396c" class="outline-4">
+<h4 id="orge31396c"><b>Class List</b>:</h4>
 </div>
-<div id="outline-container-orgadfc2d7" class="outline-4">
-<h4 id="orgadfc2d7"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-orgadfc2d7">
+<div id="outline-container-orgf9878c1" class="outline-4">
+<h4 id="orgf9878c1"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-orgf9878c1">
 <blockquote>
-<pre class="example" id="org6a3fd3f">
+<pre class="example" id="org499f5a1">
 T [init: list&lt;any&gt;, rows: int, cols: int]
 </pre>
 <p>
@@ -3843,10 +3852,10 @@ Creates a new matrix with the initial dataset <code>init</code> with <code>rows<
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org433891f"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-org433891f">
+<li><a id="org745a677"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-org745a677">
 <blockquote>
-<pre class="example" id="org7bedff7">
+<pre class="example" id="org90bc91e">
 at(i: int, j: int) -&gt; any
 </pre>
 
@@ -3855,7 +3864,7 @@ Returns the element at [ <code>i</code> ][ <code>j</code> ] in the matrix.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgbf634eb">
+<pre class="example" id="org3b25e01">
 show() -&gt; unit
 </pre>
 
@@ -3868,27 +3877,27 @@ Prints all elements in the matrix.
 </ul>
 </div>
 </div>
-<div id="outline-container-org4e5229a" class="outline-3">
-<h3 id="org4e5229a">IO</h3>
-<div class="outline-text-3" id="text-org4e5229a">
+<div id="outline-container-org00e38f7" class="outline-3">
+<h3 id="org00e38f7">IO</h3>
+<div class="outline-text-3" id="text-org00e38f7">
 </div>
-<div id="outline-container-org6ada324" class="outline-4">
-<h4 id="org6ada324"><b>Import</b>: <code>"std/io.earl"</code></h4>
-</div>
-
-<div id="outline-container-orga360d5b" class="outline-4">
-<h4 id="orga360d5b"><b>Module</b>: <code>IO</code></h4>
+<div id="outline-container-org3ad0518" class="outline-4">
+<h4 id="org3ad0518"><b>Import</b>: <code>"std/io.earl"</code></h4>
 </div>
 
-<div id="outline-container-org975e898" class="outline-4">
-<h4 id="org975e898"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org22b2db6" class="outline-4">
+<h4 id="org22b2db6"><b>Module</b>: <code>IO</code></h4>
 </div>
 
-<div id="outline-container-org302c641" class="outline-4">
-<h4 id="org302c641"><b>Enum List</b>:</h4>
-<div class="outline-text-4" id="text-org302c641">
+<div id="outline-container-org04c7c66" class="outline-4">
+<h4 id="org04c7c66"><b>Variable List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org294e86d" class="outline-4">
+<h4 id="org294e86d"><b>Enum List</b>:</h4>
+<div class="outline-text-4" id="text-org294e86d">
 <blockquote>
-<pre class="example" id="orgd1c436e">
+<pre class="example" id="org34937b5">
 Fd {
     In -&gt; int,
     Out -&gt; int,
@@ -3902,11 +3911,11 @@ The integer codes for <code>stdin</code>, <code>stdout</code>, and <code>stderr<
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org301ffef" class="outline-4">
-<h4 id="org301ffef"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org301ffef">
+<div id="outline-container-orgb2a236e" class="outline-4">
+<h4 id="orgb2a236e"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orgb2a236e">
 <blockquote>
-<pre class="example" id="org9de056f">
+<pre class="example" id="orgff69758">
 file_to_str(fp: str) -&gt; str
 </pre>
 
@@ -3916,7 +3925,7 @@ Get the contents of a file <code>fp</code> and put it into a string.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgcb990d4">
+<pre class="example" id="orgac1695f">
 read_lines(fp: str) -&gt; list
 </pre>
 
@@ -3926,7 +3935,7 @@ Read the lines of the file <code>fp</code> and get each line as a list.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge56c3c6">
+<pre class="example" id="org3b5b26a">
 rename(path_from: str, path_to: str) -&gt; unit
 </pre>
 
@@ -3936,35 +3945,35 @@ Rename the file <code>path_from</code> to <code>path_to</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org021fa15" class="outline-4">
-<h4 id="org021fa15"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org038a0f2" class="outline-4">
+<h4 id="org038a0f2"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-orgc014640" class="outline-3">
-<h3 id="orgc014640">Str</h3>
-<div class="outline-text-3" id="text-orgc014640">
+<div id="outline-container-org51d11a3" class="outline-3">
+<h3 id="org51d11a3">Str</h3>
+<div class="outline-text-3" id="text-org51d11a3">
 </div>
-<div id="outline-container-org0552d74" class="outline-4">
-<h4 id="org0552d74"><b>Import</b>: <code>"std/str.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgac2672f" class="outline-4">
-<h4 id="orgac2672f"><b>Module</b>: <code>Str</code></h4>
+<div id="outline-container-org17ecc87" class="outline-4">
+<h4 id="org17ecc87"><b>Import</b>: <code>"std/str.earl"</code></h4>
 </div>
 
-<div id="outline-container-org02b8e1d" class="outline-4">
-<h4 id="org02b8e1d"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-orgc958d0e" class="outline-4">
+<h4 id="orgc958d0e"><b>Module</b>: <code>Str</code></h4>
 </div>
 
-<div id="outline-container-orgbe37420" class="outline-4">
-<h4 id="orgbe37420"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org7ae8722" class="outline-4">
+<h4 id="org7ae8722"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgeb439bc" class="outline-4">
-<h4 id="orgeb439bc"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-orgeb439bc">
+<div id="outline-container-org9457e3e" class="outline-4">
+<h4 id="org9457e3e"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org1c4446d" class="outline-4">
+<h4 id="org1c4446d"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org1c4446d">
 <blockquote>
-<pre class="example" id="orga9918f5">
+<pre class="example" id="org90fbd31">
 to_list(s: @ref str) -&gt; list
 </pre>
 
@@ -3974,7 +3983,7 @@ Convert the string <code>s</code> to a <code>list</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org03bb0f8">
+<pre class="example" id="org137d6c2">
 find(s: @ref str, t: char) -&gt; int
 </pre>
 
@@ -3984,7 +3993,7 @@ Returns the index of target <code>t</code> in a <code>some</code> value or <code
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge18190e">
+<pre class="example" id="org87a91fd">
 trim(s: @ref str) -&gt; unit
 </pre>
 
@@ -3994,7 +4003,7 @@ Trims all whitespace (spaces, tabs, newlines etc.) from <code>s</code> in-place.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgbf7c7c7">
+<pre class="example" id="org40aeead">
 find_first_of(s: @const @ref str, t: char) -&gt; option&lt;int&gt;
 </pre>
 
@@ -4004,7 +4013,7 @@ Finds the first ocurrence of <code>t</code> in <code>s</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgb2b6ff3">
+<pre class="example" id="org85174e6">
 find_last_of(s: @const @ref str, t: char) -&gt; option&lt;int&gt;
 </pre>
 
@@ -4014,35 +4023,35 @@ Finds the last ocurrence of <code>t</code> in <code>s</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org3f98aca" class="outline-4">
-<h4 id="org3f98aca"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-orgd86216b" class="outline-4">
+<h4 id="orgd86216b"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-org0e6815d" class="outline-3">
-<h3 id="org0e6815d">CSV</h3>
-<div class="outline-text-3" id="text-org0e6815d">
+<div id="outline-container-org397c8be" class="outline-3">
+<h3 id="org397c8be">CSV</h3>
+<div class="outline-text-3" id="text-org397c8be">
 </div>
-<div id="outline-container-orgf19d710" class="outline-4">
-<h4 id="orgf19d710"><b>Import</b>: <code>"std/csv.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgc88f934" class="outline-4">
-<h4 id="orgc88f934"><b>Module</b>: <code>CSV</code></h4>
+<div id="outline-container-org0462999" class="outline-4">
+<h4 id="org0462999"><b>Import</b>: <code>"std/csv.earl"</code></h4>
 </div>
 
-<div id="outline-container-orgca144f6" class="outline-4">
-<h4 id="orgca144f6"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org261e1d1" class="outline-4">
+<h4 id="org261e1d1"><b>Module</b>: <code>CSV</code></h4>
 </div>
 
-<div id="outline-container-org161a36d" class="outline-4">
-<h4 id="org161a36d"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org1095115" class="outline-4">
+<h4 id="org1095115"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgff0a2b1" class="outline-4">
-<h4 id="orgff0a2b1"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-orgff0a2b1">
+<div id="outline-container-org8f7f8fd" class="outline-4">
+<h4 id="org8f7f8fd"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-orgad2a446" class="outline-4">
+<h4 id="orgad2a446"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orgad2a446">
 <blockquote>
-<pre class="example" id="org5731bf1">
+<pre class="example" id="org369752d">
 parse(src: str) -&gt; list
 </pre>
 
@@ -4052,35 +4061,35 @@ Takes src file path of csv file and parses it
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org392e06e" class="outline-4">
-<h4 id="org392e06e"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org4aa01b5" class="outline-4">
+<h4 id="org4aa01b5"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-orge226d2f" class="outline-3">
-<h3 id="orge226d2f">Char</h3>
-<div class="outline-text-3" id="text-orge226d2f">
+<div id="outline-container-org8e29a12" class="outline-3">
+<h3 id="org8e29a12">Char</h3>
+<div class="outline-text-3" id="text-org8e29a12">
 </div>
-<div id="outline-container-orgef7275c" class="outline-4">
-<h4 id="orgef7275c"><b>Import</b>: <code>"std/char.earl"</code></h4>
-</div>
-
-<div id="outline-container-org69ba6de" class="outline-4">
-<h4 id="org69ba6de"><b>Module</b>: <code>Char</code></h4>
+<div id="outline-container-orgf4280f0" class="outline-4">
+<h4 id="orgf4280f0"><b>Import</b>: <code>"std/char.earl"</code></h4>
 </div>
 
-<div id="outline-container-orgfe70b37" class="outline-4">
-<h4 id="orgfe70b37"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org0056569" class="outline-4">
+<h4 id="org0056569"><b>Module</b>: <code>Char</code></h4>
 </div>
 
-<div id="outline-container-org4c08e12" class="outline-4">
-<h4 id="org4c08e12"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org63d61cb" class="outline-4">
+<h4 id="org63d61cb"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org200f9bd" class="outline-4">
-<h4 id="org200f9bd"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org200f9bd">
+<div id="outline-container-org3b8999e" class="outline-4">
+<h4 id="org3b8999e"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-orgcfca1a6" class="outline-4">
+<h4 id="orgcfca1a6"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orgcfca1a6">
 <blockquote>
-<pre class="example" id="org915df10">
+<pre class="example" id="org7c9624b">
 isalpha(c: char) -&gt; bool
 </pre>
 
@@ -4090,7 +4099,7 @@ Takes the char <code>c</code> and returns a boolean of whether or not it is a an
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgbb27911">
+<pre class="example" id="org51841c6">
 isnum(c: char) -&gt; bool
 </pre>
 
@@ -4100,7 +4109,7 @@ Takes the char <code>c</code> and returns a boolean of whether or not it is a di
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgc12088a">
+<pre class="example" id="orge3a45e4">
 isalnum(c: char) -&gt; bool
 </pre>
 
@@ -4110,7 +4119,7 @@ Takes the char <code>c</code> and returns a boolean of whether or not it is a di
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge16864e">
+<pre class="example" id="orgbdd3a37">
 tolower(c: char) -&gt; char
 </pre>
 
@@ -4120,7 +4129,7 @@ Takes the char <code>c</code> and returns a lowercase character version of the l
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org790f22c">
+<pre class="example" id="org6741174">
 toupper(c: char) -&gt; char
 </pre>
 
@@ -4130,42 +4139,42 @@ Takes the char <code>c</code> and returns a uppercase character version of the l
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org2a2a91d" class="outline-4">
-<h4 id="org2a2a91d"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-orgb2a2636" class="outline-4">
+<h4 id="orgb2a2636"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-orged004ca" class="outline-3">
-<h3 id="orged004ca">Set</h3>
-<div class="outline-text-3" id="text-orged004ca">
+<div id="outline-container-org4dd9bc4" class="outline-3">
+<h3 id="org4dd9bc4">Set</h3>
+<div class="outline-text-3" id="text-org4dd9bc4">
 </div>
-<div id="outline-container-org386d909" class="outline-4">
-<h4 id="org386d909"><b>Import</b>: <code>"std/set.earl"</code></h4>
-</div>
-
-<div id="outline-container-org86cfda9" class="outline-4">
-<h4 id="org86cfda9"><b>Module</b>: <code>Set</code></h4>
+<div id="outline-container-orgbdace21" class="outline-4">
+<h4 id="orgbdace21"><b>Import</b>: <code>"std/set.earl"</code></h4>
 </div>
 
-<div id="outline-container-orgca1d6fd" class="outline-4">
-<h4 id="orgca1d6fd"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org086f0d9" class="outline-4">
+<h4 id="org086f0d9"><b>Module</b>: <code>Set</code></h4>
 </div>
 
-<div id="outline-container-org844109e" class="outline-4">
-<h4 id="org844109e"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-orgc2dff47" class="outline-4">
+<h4 id="orgc2dff47"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org999a56b" class="outline-4">
-<h4 id="org999a56b"><b>Function List</b>: <i>None</i></h4>
+<div id="outline-container-org9d6bc4b" class="outline-4">
+<h4 id="org9d6bc4b"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgf61fbc1" class="outline-4">
-<h4 id="orgf61fbc1"><b>Class List</b>:</h4>
+<div id="outline-container-org6092590" class="outline-4">
+<h4 id="org6092590"><b>Function List</b>: <i>None</i></h4>
 </div>
-<div id="outline-container-org24619cd" class="outline-4">
-<h4 id="org24619cd"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-org24619cd">
+
+<div id="outline-container-org21898eb" class="outline-4">
+<h4 id="org21898eb"><b>Class List</b>:</h4>
+</div>
+<div id="outline-container-org62fd7e3" class="outline-4">
+<h4 id="org62fd7e3"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-org62fd7e3">
 <blockquote>
-<pre class="example" id="org6f76726">
+<pre class="example" id="org002d828">
 T [init: list&lt;x0: any, x1: type(x0), ..., xN: type(x0)&gt;]
 </pre>
 <p>
@@ -4174,10 +4183,10 @@ Creates a new Set container with the initializer list <code>init</code>.
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="orgde0d072"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-orgde0d072">
+<li><a id="orgcb3760c"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-orgcb3760c">
 <blockquote>
-<pre class="example" id="orgd7b62f8">
+<pre class="example" id="orgc7edf75">
 insert(value: any) -&gt; unit
 </pre>
 
@@ -4186,7 +4195,7 @@ Insert <code>value</code> into the <code>set</code>. A panic will occur if the <
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org61d0149">
+<pre class="example" id="orgddd6938">
 contains(value: any) -&gt; bool
 </pre>
 
@@ -4199,31 +4208,31 @@ Returns <code>true</code> if <code>value</code> is in the <code>set</code>, or <
 </ul>
 </div>
 </div>
-<div id="outline-container-orgd3b9174" class="outline-3">
-<h3 id="orgd3b9174">Script</h3>
-<div class="outline-text-3" id="text-orgd3b9174">
+<div id="outline-container-org206e3e6" class="outline-3">
+<h3 id="org206e3e6">Script</h3>
+<div class="outline-text-3" id="text-org206e3e6">
 </div>
-<div id="outline-container-org282eb18" class="outline-4">
-<h4 id="org282eb18"><b>Import</b>: <code>"std/script.earl"</code></h4>
-</div>
-
-<div id="outline-container-orge6130dd" class="outline-4">
-<h4 id="orge6130dd"><b>Module</b>: <code>Script</code></h4>
+<div id="outline-container-org630e08d" class="outline-4">
+<h4 id="org630e08d"><b>Import</b>: <code>"std/script.earl"</code></h4>
 </div>
 
-<div id="outline-container-org1539807" class="outline-4">
-<h4 id="org1539807"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-orgbb3a2b0" class="outline-4">
+<h4 id="orgbb3a2b0"><b>Module</b>: <code>Script</code></h4>
 </div>
 
-<div id="outline-container-org813206e" class="outline-4">
-<h4 id="org813206e"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org8cd6397" class="outline-4">
+<h4 id="org8cd6397"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgbf5e680" class="outline-4">
-<h4 id="orgbf5e680"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-orgbf5e680">
+<div id="outline-container-org27f67e8" class="outline-4">
+<h4 id="org27f67e8"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org0f0b6a6" class="outline-4">
+<h4 id="org0f0b6a6"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org0f0b6a6">
 <blockquote>
-<pre class="example" id="org0373831">
+<pre class="example" id="orge6c7005">
 program_exists(progname: str) -&gt; str
 </pre>
 
@@ -4233,7 +4242,7 @@ Returns <code>true</code> if <code>progname</code> exists as a program on the ma
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdcb6e48">
+<pre class="example" id="org6bb23ff">
 get_pid(proc: str) -&gt; list&lt;tuple&lt;int,str&gt;&gt;
 </pre>
 
@@ -4243,7 +4252,7 @@ Returns a list of pids and the process associated with it in the form of <code>[
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org9124849">
+<pre class="example" id="orgb6260b8">
 kill_pid(pid: int) -&gt; unit
 </pre>
 
@@ -4253,7 +4262,7 @@ Kill the PID <code>pid</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orga6bd84b">
+<pre class="example" id="org9f26c8d">
 kill_pids(pid: list&lt;int&gt;) -&gt; unit
 </pre>
 
@@ -4263,42 +4272,42 @@ Kill all PIDs <code>pids</code>.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgdac2e9e" class="outline-4">
-<h4 id="orgdac2e9e"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org8bb045b" class="outline-4">
+<h4 id="org8bb045b"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-org40fc262" class="outline-3">
-<h3 id="org40fc262">Stack</h3>
-<div class="outline-text-3" id="text-org40fc262">
+<div id="outline-container-org9858211" class="outline-3">
+<h3 id="org9858211">Stack</h3>
+<div class="outline-text-3" id="text-org9858211">
 </div>
-<div id="outline-container-orgb1146cc" class="outline-4">
-<h4 id="orgb1146cc"><b>Import</b>: <code>"std/stack.earl"</code></h4>
-</div>
-
-<div id="outline-container-org5bae416" class="outline-4">
-<h4 id="org5bae416"><b>Module</b>: <code>Stack</code></h4>
+<div id="outline-container-org15f9cc3" class="outline-4">
+<h4 id="org15f9cc3"><b>Import</b>: <code>"std/stack.earl"</code></h4>
 </div>
 
-<div id="outline-container-org09ddc5c" class="outline-4">
-<h4 id="org09ddc5c"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org91bb251" class="outline-4">
+<h4 id="org91bb251"><b>Module</b>: <code>Stack</code></h4>
 </div>
 
-<div id="outline-container-org93f4206" class="outline-4">
-<h4 id="org93f4206"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org9bc127e" class="outline-4">
+<h4 id="org9bc127e"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgdcc567f" class="outline-4">
-<h4 id="orgdcc567f"><b>Function List</b>: <i>None</i></h4>
+<div id="outline-container-org616f8e5" class="outline-4">
+<h4 id="org616f8e5"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orge7e2746" class="outline-4">
-<h4 id="orge7e2746"><b>Class List</b>:</h4>
+<div id="outline-container-org2b13694" class="outline-4">
+<h4 id="org2b13694"><b>Function List</b>: <i>None</i></h4>
 </div>
-<div id="outline-container-orgfe07391" class="outline-4">
-<h4 id="orgfe07391"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-orgfe07391">
+
+<div id="outline-container-orgecbec33" class="outline-4">
+<h4 id="orgecbec33"><b>Class List</b>:</h4>
+</div>
+<div id="outline-container-org718acc4" class="outline-4">
+<h4 id="org718acc4"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-org718acc4">
 <blockquote>
-<pre class="example" id="orge77eb34">
+<pre class="example" id="org05671cd">
 T [init: list]
 </pre>
 <p>
@@ -4307,10 +4316,10 @@ Create a stack based off of the initializer list <code>init</code> if it contain
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org8e9d0cb"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-org8e9d0cb">
+<li><a id="orge80c6cc"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-orge80c6cc">
 <blockquote>
-<pre class="example" id="org61d5668">
+<pre class="example" id="org5f8e9fc">
 push(x: any) -&gt; unit
 </pre>
 
@@ -4319,7 +4328,7 @@ Pushes <code>x</code> onto the <code>stack</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org61ca982">
+<pre class="example" id="org7c26434">
 pop() -&gt; unit
 </pre>
 
@@ -4328,7 +4337,7 @@ Pops last element on the <code>stack</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org2bbdb88">
+<pre class="example" id="org15ab8c7">
 empty() -&gt; bool
 </pre>
 
@@ -4337,7 +4346,7 @@ Return <code>true</code> if the <code>stack</code> is empty or <code>false</code
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org04236cc">
+<pre class="example" id="orgb69ab0f">
 top() -&gt; any
 </pre>
 
@@ -4346,7 +4355,7 @@ Returns the element at the top of the <code>stack</code>.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org75eff71">
+<pre class="example" id="orgd9d03de">
 show() -&gt; unit
 </pre>
 
@@ -4359,31 +4368,31 @@ Prints the entire <code>stack</code>.
 </ul>
 </div>
 </div>
-<div id="outline-container-org8c8a54f" class="outline-3">
-<h3 id="org8c8a54f">System</h3>
-<div class="outline-text-3" id="text-org8c8a54f">
+<div id="outline-container-org52b5c9e" class="outline-3">
+<h3 id="org52b5c9e">System</h3>
+<div class="outline-text-3" id="text-org52b5c9e">
 </div>
-<div id="outline-container-orge5c001b" class="outline-4">
-<h4 id="orge5c001b"><b>Import</b>: <code>"std/system.earl"</code></h4>
-</div>
-
-<div id="outline-container-org5e2f4ec" class="outline-4">
-<h4 id="org5e2f4ec"><b>Module</b>: <code>System</code></h4>
+<div id="outline-container-org3956974" class="outline-4">
+<h4 id="org3956974"><b>Import</b>: <code>"std/system.earl"</code></h4>
 </div>
 
-<div id="outline-container-org4157db2" class="outline-4">
-<h4 id="org4157db2"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org1a75507" class="outline-4">
+<h4 id="org1a75507"><b>Module</b>: <code>System</code></h4>
 </div>
 
-<div id="outline-container-org0b09813" class="outline-4">
-<h4 id="org0b09813"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org7e4a5f7" class="outline-4">
+<h4 id="org7e4a5f7"><b>Variable List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org9e47f47" class="outline-4">
-<h4 id="org9e47f47"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org9e47f47">
+<div id="outline-container-org2af00b2" class="outline-4">
+<h4 id="org2af00b2"><b>Enum List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-orgc9f7f4e" class="outline-4">
+<h4 id="orgc9f7f4e"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-orgc9f7f4e">
 <blockquote>
-<pre class="example" id="orgaa8cadd">
+<pre class="example" id="org0ed2e97">
 ls(path: str) -&gt; list
 </pre>
 
@@ -4393,7 +4402,7 @@ List all items at the path <code>path</code> and return a list of all elements i
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org8b3e3da">
+<pre class="example" id="org4ccf167">
 mkdir(name: str) -&gt; unit
 </pre>
 
@@ -4403,7 +4412,7 @@ Create a new directory in the <code>cwd</code> called <code>name</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org9b93402">
+<pre class="example" id="org9200040">
 fullpath_mkdir(fullpath: str) -&gt; unit
 </pre>
 
@@ -4413,7 +4422,7 @@ Creates a full path directory as well as a file i.e., ./dir1/dir2/dir3/file.txt.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org2fb2c45">
+<pre class="example" id="orgb2889da">
 name_and_ext(filepath: str) -&gt; tuple
 </pre>
 
@@ -4423,7 +4432,7 @@ Returns a tuple of filename and extension. If either the name or extension canno
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org71908e1">
+<pre class="example" id="org474b5c4">
 move(path_from: str, path_to: str) -&gt; unit
 </pre>
 
@@ -4433,7 +4442,7 @@ Move the file <code>path_from</code> to <code>path_to</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgd22f3d2">
+<pre class="example" id="org457e7f3">
 cmd(cmd: str) -&gt; int
 </pre>
 
@@ -4443,7 +4452,7 @@ Run the bash command <code>cmd</code>. Returns the exit code.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org189a23e">
+<pre class="example" id="orgb38e8bb">
 cmd_wcheck(cmd: str) -&gt; unit
 </pre>
 
@@ -4453,7 +4462,7 @@ Run the bash command <code>cmd</code> and checks the exit code. Will print a war
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org0cc0f37">
+<pre class="example" id="org00c6e25">
 cmd_onfail(cmd: str, onfail: closure) -&gt; unit
 </pre>
 
@@ -4463,7 +4472,7 @@ Run the bash command <code>cmd</code> and checks the exit code. Will run <code>o
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org62f28fb">
+<pre class="example" id="org77882e4">
 cmdstr(cmd: str) -&gt; str
 </pre>
 
@@ -4473,7 +4482,7 @@ Run the bash command <code>cmd</code> and return the output as a <code>str</code
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org925b4f5">
+<pre class="example" id="org2bf945b">
 cmdstr_wexitcode(cmd: str) -&gt; tuple&lt;int,str&gt;
 </pre>
 
@@ -4483,31 +4492,31 @@ Run the bash command <code>cmd</code> and return the output as a tuple of <code>
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgf373a4a" class="outline-4">
-<h4 id="orgf373a4a"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org49317cc" class="outline-4">
+<h4 id="org49317cc"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
-<div id="outline-container-org916fdcf" class="outline-3">
-<h3 id="org916fdcf">BasicLexer</h3>
-<div class="outline-text-3" id="text-org916fdcf">
+<div id="outline-container-org9c7cb2e" class="outline-3">
+<h3 id="org9c7cb2e">BasicLexer</h3>
+<div class="outline-text-3" id="text-org9c7cb2e">
 </div>
-<div id="outline-container-orgafe9764" class="outline-4">
-<h4 id="orgafe9764"><b>Import</b>: <code>"std/basic-lexer.earl"</code></h4>
-</div>
-
-<div id="outline-container-org550bcf9" class="outline-4">
-<h4 id="org550bcf9"><b>Module</b>: <code>BasicLexer</code></h4>
+<div id="outline-container-orgecfbe7a" class="outline-4">
+<h4 id="orgecfbe7a"><b>Import</b>: <code>"std/basic-lexer.earl"</code></h4>
 </div>
 
-<div id="outline-container-orgbdc92a2" class="outline-4">
-<h4 id="orgbdc92a2"><b>Variable List</b>: <i>None</i></h4>
+<div id="outline-container-org8146d2d" class="outline-4">
+<h4 id="org8146d2d"><b>Module</b>: <code>BasicLexer</code></h4>
 </div>
 
-<div id="outline-container-org0d84c6c" class="outline-4">
-<h4 id="org0d84c6c"><b>Enum List</b>:</h4>
-<div class="outline-text-4" id="text-org0d84c6c">
+<div id="outline-container-org945d25e" class="outline-4">
+<h4 id="org945d25e"><b>Variable List</b>: <i>None</i></h4>
+</div>
+
+<div id="outline-container-org51e5c02" class="outline-4">
+<h4 id="org51e5c02"><b>Enum List</b>:</h4>
+<div class="outline-text-4" id="text-org51e5c02">
 <blockquote>
-<pre class="example" id="org0825fe1">
+<pre class="example" id="org07fd2c6">
 TokenType {
     Ident -&gt; int,
     StrLit -&gt; int,
@@ -4551,18 +4560,18 @@ Individual identifiers for each token type.
 </blockquote>
 </div>
 </div>
-<div id="outline-container-orgb983723" class="outline-4">
-<h4 id="orgb983723"><b>Function List</b>: <i>None</i></h4>
+<div id="outline-container-org9240eba" class="outline-4">
+<h4 id="org9240eba"><b>Function List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-orgf0cabd5" class="outline-4">
-<h4 id="orgf0cabd5"><b>Class List</b>:</h4>
+<div id="outline-container-orga4d36fb" class="outline-4">
+<h4 id="orga4d36fb"><b>Class List</b>:</h4>
 </div>
-<div id="outline-container-org2fff87c" class="outline-4">
-<h4 id="org2fff87c"><b><code>Token</code></b></h4>
-<div class="outline-text-4" id="text-org2fff87c">
+<div id="outline-container-org389d95d" class="outline-4">
+<h4 id="org389d95d"><b><code>Token</code></b></h4>
+<div class="outline-text-4" id="text-org389d95d">
 <blockquote>
-<pre class="example" id="orgb79f76a">
+<pre class="example" id="org6da0dcc">
 Token [lx: str, ty: TokenType, r: int, c: int, fp: str]
 </pre>
 <p>
@@ -4571,10 +4580,10 @@ A token class that constists of: <code>lx</code> -&gt; lexeme, <code>ty</code> -
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org3e753ce"></a><b><code>Token</code> Members</b>:<br />
-<div class="outline-text-5" id="text-org3e753ce">
+<li><a id="org69bb575"></a><b><code>Token</code> Members</b>:<br />
+<div class="outline-text-5" id="text-org69bb575">
 <blockquote>
-<pre class="example" id="orgf6a8039">
+<pre class="example" id="org4cfd2a0">
 lx: str
 </pre>
 
@@ -4583,7 +4592,7 @@ The <code>lexeme</code> of the token.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orga286bd6">
+<pre class="example" id="org31b40f1">
 ty: TokenType
 </pre>
 
@@ -4592,7 +4601,7 @@ The type of the token.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orge3b9d72">
+<pre class="example" id="orga39a360">
 r: int
 </pre>
 
@@ -4601,7 +4610,7 @@ The row that the token is located at.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org1e102c3">
+<pre class="example" id="orgcf34fce">
 c: int
 </pre>
 
@@ -4610,7 +4619,7 @@ The column that the token is located at.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgcf0ced5">
+<pre class="example" id="org1babd93">
 fp: int
 </pre>
 
@@ -4622,11 +4631,11 @@ The filepath that the token is located at.
 </li>
 </ul>
 </div>
-<div id="outline-container-org976d9e7" class="outline-4">
-<h4 id="org976d9e7"><b><code>T</code></b></h4>
-<div class="outline-text-4" id="text-org976d9e7">
+<div id="outline-container-org6b4c178" class="outline-4">
+<h4 id="org6b4c178"><b><code>T</code></b></h4>
+<div class="outline-text-4" id="text-org6b4c178">
 <blockquote>
-<pre class="example" id="org4ab3835">
+<pre class="example" id="orgd89099b">
 T [keywords: tuple&lt;str&gt;|list&lt;str&gt;]
 </pre>
 <p>
@@ -4635,10 +4644,10 @@ Creates a new Basic Lexer class with the keywords set to <code>keywords</code>. 
 </blockquote>
 </div>
 <ul class="org-ul">
-<li><a id="org068d352"></a><b><code>T</code> Members</b>:<br />
-<div class="outline-text-5" id="text-org068d352">
+<li><a id="org77d5b25"></a><b><code>T</code> Members</b>:<br />
+<div class="outline-text-5" id="text-org77d5b25">
 <blockquote>
-<pre class="example" id="org42fda27">
+<pre class="example" id="org41460b9">
 tokens: list&lt;Token&gt;
 </pre>
 
@@ -4647,7 +4656,7 @@ The list of tokens that the lexer currently holds.
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgdf48bf5">
+<pre class="example" id="org4738cef">
 default_ops: Dict&lt;str&gt;
 </pre>
 
@@ -4657,10 +4666,10 @@ The default operators and symbols.
 </blockquote>
 </div>
 </li>
-<li><a id="org3c0519e"></a><b><code>T</code> Implements</b><br />
-<div class="outline-text-5" id="text-org3c0519e">
+<li><a id="orgc509a9e"></a><b><code>T</code> Implements</b><br />
+<div class="outline-text-5" id="text-orgc509a9e">
 <blockquote>
-<pre class="example" id="orgdecccef">
+<pre class="example" id="orgb41cbfb">
 lex(src: str, fp: str) -&gt; unit
 </pre>
 
@@ -4669,7 +4678,7 @@ Performs basic lexical analysis on the source code <code>src</code> at the filep
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgebf3435">
+<pre class="example" id="orgaeea738">
 next() -&gt; option&lt;Token&gt;
 </pre>
 
@@ -4678,7 +4687,7 @@ Returns <code>some(token)</code> if the lexer is not empty and pops it from the 
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="orgfe7a892">
+<pre class="example" id="org973b802">
 peek(pk: int) -&gt; option&lt;Token&gt;
 </pre>
 
@@ -4687,7 +4696,7 @@ Returns the token at location <code>pk</code> wrapped in <code>some</code> or <c
 </p>
 </blockquote>
 <blockquote>
-<pre class="example" id="org1b74521">
+<pre class="example" id="orgf9fc175">
 sz() -&gt; int
 </pre>
 
@@ -4700,23 +4709,23 @@ Return the number of tokens the lexer currently holds.
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb5ab102" class="outline-3">
-<h3 id="orgb5ab102">Assert</h3>
-<div class="outline-text-3" id="text-orgb5ab102">
+<div id="outline-container-org254cb83" class="outline-3">
+<h3 id="org254cb83">Assert</h3>
+<div class="outline-text-3" id="text-org254cb83">
 </div>
-<div id="outline-container-orga8cdb38" class="outline-4">
-<h4 id="orga8cdb38"><b>Import</b>: <code>"std/assert.earl"</code></h4>
-</div>
-
-<div id="outline-container-orgefe3761" class="outline-4">
-<h4 id="orgefe3761"><b>Module</b>: <code>Assert</code></h4>
+<div id="outline-container-org37e486c" class="outline-4">
+<h4 id="org37e486c"><b>Import</b>: <code>"std/assert.earl"</code></h4>
 </div>
 
-<div id="outline-container-orge4486c1" class="outline-4">
-<h4 id="orge4486c1"><b>Variable List</b>:</h4>
-<div class="outline-text-4" id="text-orge4486c1">
+<div id="outline-container-org9a2e62d" class="outline-4">
+<h4 id="org9a2e62d"><b>Module</b>: <code>Assert</code></h4>
+</div>
+
+<div id="outline-container-orgd080564" class="outline-4">
+<h4 id="orgd080564"><b>Variable List</b>:</h4>
+<div class="outline-text-4" id="text-orgd080564">
 <blockquote>
-<pre class="example" id="orgd60b779">
+<pre class="example" id="orgbfadd5c">
 CRASH_ON_FAILURE: bool
 </pre>
 
@@ -4726,7 +4735,7 @@ Will crash the program on assertion failures if set to <code>true</code>. Otherw
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org1e181a9">
+<pre class="example" id="org72d17f4">
 FILE: str
 </pre>
 
@@ -4736,7 +4745,7 @@ Should be set in the caller file to set the file location that the assertions ar
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgdfd094e">
+<pre class="example" id="orgc2be573">
 FUNC: str
 </pre>
 
@@ -4746,15 +4755,15 @@ Should be set in the caller file in the function that the assertions are being c
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org488a6cc" class="outline-4">
-<h4 id="org488a6cc"><b>Enum List</b>: <i>None</i></h4>
+<div id="outline-container-org97e3509" class="outline-4">
+<h4 id="org97e3509"><b>Enum List</b>: <i>None</i></h4>
 </div>
 
-<div id="outline-container-org10f3dbb" class="outline-4">
-<h4 id="org10f3dbb"><b>Function List</b>:</h4>
-<div class="outline-text-4" id="text-org10f3dbb">
+<div id="outline-container-org0804258" class="outline-4">
+<h4 id="org0804258"><b>Function List</b>:</h4>
+<div class="outline-text-4" id="text-org0804258">
 <blockquote>
-<pre class="example" id="org4f70822">
+<pre class="example" id="orga0203f9">
 is_true(cond: bool) -&gt; unit
 </pre>
 
@@ -4764,7 +4773,7 @@ Tests <code>cond</code> for <code>true</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orge1be26d">
+<pre class="example" id="orgfdc9a0b">
 is_false(cond: bool) -&gt; unit
 </pre>
 
@@ -4774,7 +4783,7 @@ Tests <code>cond</code> for <code>false</code>.
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgf19e095">
+<pre class="example" id="org0341248">
 eq(l: any, r: any) -&gt; unit
 </pre>
 
@@ -4784,7 +4793,7 @@ Tests for <code>l</code> equal to <code>r</code>. <b>Note</b>: this function is 
 </blockquote>
 
 <blockquote>
-<pre class="example" id="org5fe65e2">
+<pre class="example" id="org4120977">
 neq(l: any, r: any) -&gt; unit
 </pre>
 
@@ -4794,7 +4803,7 @@ Tests for <code>l</code> not equal to <code>r</code>. <b>Note</b>: this function
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgcea7ed7">
+<pre class="example" id="org3141a95">
 not_none(k: any) -&gt; unit
 </pre>
 
@@ -4804,7 +4813,7 @@ Tests for <code>k</code> being not <code>none</code>. <b>Note</b>: this function
 </blockquote>
 
 <blockquote>
-<pre class="example" id="orgea28940">
+<pre class="example" id="org3f9a9bf">
 is_none(k: any) -&gt; unit
 </pre>
 
@@ -4814,15 +4823,15 @@ Tests for <code>k</code> being <code>none</code>. <b>Note</b>: this function is 
 </blockquote>
 </div>
 </div>
-<div id="outline-container-org5db7478" class="outline-4">
-<h4 id="org5db7478"><b>Class List</b>: <i>None</i></h4>
+<div id="outline-container-org3448b7f" class="outline-4">
+<h4 id="org3448b7f"><b>Class List</b>: <i>None</i></h4>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Zachary Haskins (malloc-nbytes)</p>
-<p class="date">Created: 2024-09-27 Fri 20:54</p>
+<p class="date">Created: 2024-09-28 Sat 00:22</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

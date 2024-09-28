@@ -770,12 +770,25 @@ parse_stmt_for(Lexer &lexer) {
 std::unique_ptr<Stmt>
 parse_stmt_import(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
+
     std::shared_ptr<Token> fp = Parser::parse_expect(lexer, TokenType::Strlit);
     std::optional<std::shared_ptr<Token>> depth = {};
+    std::optional<std::shared_ptr<Token>> as = {};
     Token *peek = lexer.peek(0);
-    if (peek && peek->type() == TokenType::Keyword && (peek->lexeme() == COMMON_EARLKW_ALMOST || peek->lexeme() == COMMON_EARLKW_FULL))
+
+    if (peek && peek->type() == TokenType::Keyword &&
+        (peek->lexeme() == COMMON_EARLKW_ALMOST ||
+         peek->lexeme() == COMMON_EARLKW_FULL)) {
         depth = lexer.next();
-    return std::make_unique<StmtImport>(std::move(fp), std::move(depth));
+    }
+
+    if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Keyword &&
+        lexer.peek(0)->lexeme() == COMMON_EARLKW_AS) {
+        lexer.discard(); // as
+        as = Parser::parse_expect(lexer, TokenType::Ident);
+    }
+
+    return std::make_unique<StmtImport>(std::move(fp), std::move(depth), std::move(as));
 }
 
 std::unique_ptr<Stmt>

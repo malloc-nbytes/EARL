@@ -520,9 +520,13 @@ struct StmtFor : public Stmt {
 struct StmtImport : public Stmt {
     std::shared_ptr<Token> m_fp;
     std::optional<std::shared_ptr<Token>> m_depth;
+    std::optional<std::shared_ptr<Token>> m_as;
     uint32_t __m_depth;
 
-    StmtImport(std::shared_ptr<Token> fp, std::optional<std::shared_ptr<Token>> depth);
+    StmtImport(std::shared_ptr<Token> fp,
+               std::optional<std::shared_ptr<Token>> depth,
+               std::optional<std::shared_ptr<Token>> as);
+
     StmtType stmt_type() const override;
 };
 

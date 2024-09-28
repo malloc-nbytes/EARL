@@ -36,6 +36,11 @@ WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> progra
 
 WorldCtx::WorldCtx() : m_lexer(nullptr), m_program(nullptr) {}
 
+void
+WorldCtx::set_module_alias(const std::string &id) {
+    m_module_alias = id;
+}
+
 Program *
 WorldCtx::get_repl_program(size_t i) {
     if (i >= m_repl_programs.size())
@@ -99,11 +104,26 @@ WorldCtx::import_is_defined(const std::string &id) {
     return false;
 }
 
+bool
+WorldCtx::has_module_alias(void) const {
+    return m_module_alias.has_value();
+}
+
+const std::string &
+WorldCtx::get_module_alias(void) const {
+    return m_module_alias.value();
+}
+
 std::shared_ptr<Ctx> *
 WorldCtx::get_import(const std::string &id) {
-    for (auto &im : m_imports)
-        if (dynamic_cast<WorldCtx *>(im.get())->get_mod() == id)
+    for (auto &im : m_imports) {
+        auto wctx = dynamic_cast<WorldCtx *>(im.get());
+        if (wctx->get_mod() == id)
             return &im;
+        if (wctx->has_module_alias() && wctx->get_module_alias() == id)
+            return &im;
+    }
+
     std::string msg = "module `"+id+"` does not exist";
     throw InterpreterException(msg);
 }

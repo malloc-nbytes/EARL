@@ -107,6 +107,9 @@ struct WorldCtx : public Ctx {
     std::vector<std::string> get_available_function_names(void) override; // for errors
     std::vector<std::string> get_available_variable_names(void) override; // for errors
     std::string get_filepath(void) const;
+    void set_module_alias(const std::string &id);
+    bool has_module_alias(void) const;
+    const std::string &get_module_alias(void) const;
 
     // REPL
     void add_repl_lexer(std::unique_ptr<Lexer> lexer);
@@ -122,6 +125,7 @@ private:
     std::unordered_map<std::string, StmtClass *> m_defined_classes;
     std::unordered_map<std::string, std::shared_ptr<earl::value::Enum>> m_enums;
     std::string m_filepath;
+    std::optional<std::string> m_module_alias;
 
     // REPL
     std::vector<std::unique_ptr<Lexer>> m_repl_lexers;
