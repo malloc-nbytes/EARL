@@ -1,134 +1,135 @@
-module Main
+# module Main
 
-class Point [x, y, name] {
-    @pub let x = x;
-    @pub let y = y;
-    let name = name;
+# class Point [x, y, name] {
+#     @pub let x = x;
+#     @pub let y = y;
+#     let name = name;
 
-    let t1, t2, t3 = (1, 2, 3);
+#     let t1, t2, t3 = (1, 2, 3);
 
-    let t4 = (false, true);
+#     let t4 = (false, true);
 
-    fn sum_xy() {
-        return this.x + this.y;
-    }
-}
+#     fn sum_xy() {
+#         return this.x + this.y;
+#     }
+# }
 
-fn sum(a, b) {
-    for i in 0 to 10 {
-        continue;
-        loop {
-            let x = 1;
-            return;
-        }
-        let name = "zachary";
-        break;
-    }
-    let x = 3;
-    return 100;
-}
+# fn sum(a, b) {
+#     for i in 0 to 10 {
+#         continue;
+#         loop {
+#             let x = 1;
+#             return;
+#         }
+#         let name = "zachary";
+#         break;
+#     }
+#     let x = 3;
+#     return 100;
+# }
 
-while 100 > 3 {
-    println("hello");
-}
+# while 100 > 3 {
+#     println("hello");
+# }
 
-let s = sum(1, test(3, "hi", x));
-let lst = [1,2,3,4,54];
+# let s = sum(1, test(3, "hi", x));
+# let lst = [1,2,3,4,54];
 
-if x > 3 {
-    println("hello");
-}
-else if x == 3 {
-    if x == 900 {
-    }
-}
-else {
-}
+# if x > 3 {
+#     println("hello");
+# }
+# else if x == 3 {
+#     if x == 900 {
+#     }
+# }
+# else {
+# }
 
-x += 3;
+# x += 3;
 
-let lst = List::preset(0, 10);
+# let lst = List::preset(0, 10);
 
-let x = lst[i];
-let y = lst[300*3];
+# let x = lst[i];
+# let y = lst[300*3];
 
-let d = {"foo": 1, "bar": none, "baz": false};
+# let d = {"foo": 1, "bar": none, "baz": false};
 
-let nums = 1..=10;
-let chars = 'a'..='z';
+# let nums = 1..=10;
+# let chars = 'a'..='z';
 
-foreach elem in lst {
-    println(f"{elem}");
-}
+# foreach elem in lst {
+#     println(f"{elem}");
+# }
 
-foreach k, v in d {
-}
+# foreach k, v in d {
+# }
 
-println('\n');
+# println('\n');
 
-let cl = |x, y| {
-    let inner = |a, b| {
-        let inner2 = |_| {
-            println("in inner2");
-        };
-        println("in inner");
-        inner2();
-    };
-    println("in cl");
-    inner(x, y);
-};
+# let cl = |x, y| {
+#     let inner = |a, b| {
+#         let inner2 = |_| {
+#             println("in inner2");
+#         };
+#         println("in inner");
+#         inner2();
+#     };
+#     println("in cl");
+#     inner(x, y);
+# };
 
-cl(1, 2);
+# cl(1, 2);
 
-println(|x| { println("test" + x); });
-println(|y| { println(y); });
+# println(|x| { println("test" + x); });
+# println(|y| { println(y); });
 
-(1..=10).filter(|x| { return x%2 == 0; });
+# (1..=10).filter(|x| { return x%2 == 0; });
 
-println(x, y, z);
-print("hello world");
-print(tuple(1,2,3));
-print(list(x,y,2));
-let s = input();
+# println(x, y, z);
+# print("hello world");
+# print(tuple(1,2,3));
+# print(list(x,y,2));
+# let s = input();
 
-let d = Dict(int);
+# let d = Dict(int);
 
-let x = some('a');
-x = some(1);
+# let x = some('a');
+# x = some(1);
 
-type(1);
+# type(1);
 
-let args = argv();
-let args = argv();
+# let args = argv();
+# let args = argv();
 
-loop {
-    unimplemented("test");
-}
+# loop {
+#     unimplemented("test");
+# }
 
-println(datetime());
+# println(datetime());
 
-sleep(500);
+# sleep(500);
 
-let x = env("HOME");
-(1..=10).map(|x| { return x%2 == 0; });
+# let x = env("HOME");
+# (1..=10).map(|x| { return x%2 == 0; });
 
-let lst = 1..=5;
-lst.append(1,2,3,4,5);
+# let lst = 1..=5;
+# lst.append(1,2,3,4,5);
 
-lst.filter(|x| { return x%2 == 0; });
+# lst.filter(|x| { return x%2 == 0; });
 
-let mapped = lst.map(|x| { return x*2; });
-let mapped = lst.map(|x| { return x*2; });
+# let mapped = lst.map(|x| { return x*2; });
+# let mapped = lst.map(|x| { return x*2; });
 
-lst.pop(0);
+# lst.pop(0);
 
-let reved = lst.rev();
+# let reved = lst.rev();
 
-reved.foreach(|k| {
-    println("item: ", k);
-});
+# reved.foreach(|k| {
+#     println("item: ", k);
+# });
 
-println(lst.contains(3));
+# println(lst.contains(3));
 
-let d = {1: 2, 3: 4};
-d.insert(3, 5);
+# let d = {1: 2, 3: 4};
+# d.insert(3, 5);
+

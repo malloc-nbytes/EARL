@@ -56,16 +56,6 @@
 
 using etopy_intr = std::pair<std::string, std::optional<const std::string>>;
 
-struct etopy {
-    std::string py_repl;
-    std::vector<std::string> extra_py_params;
-    std::vector<std::string> imports;
-    etopy(std::string py_repl, std::vector<std::string> extra_py_params,
-          std::vector<std::string> imports)
-        : py_repl(py_repl), extra_py_params(extra_py_params), imports(imports) {
-    }
-};
-
 struct Context {
     unsigned scope_depth;
     std::string py_src;
@@ -74,6 +64,7 @@ struct Context {
     std::vector<std::string> earl_imports;
     std::vector<std::string> py_imports;
     std::vector<std::pair<std::string, std::string>> py_member_intrinsics;
+    std::vector<std::string> unresolved_idents;
 };
 
 static unsigned lambdas_count = 0;
@@ -88,33 +79,37 @@ intrinsic_member_functions_exceptions = {
     "split",
 };
 
-// static const std::unordered_map<std::string, etopy> earl_to_py_equiv = {
-//     {"println", etopy("print(~)", )}
-// };
+struct etopy {
+    std::string py_repl;
+    std::vector<std::string> extra_py_params;
+    std::optional<std::string> imports;
+    etopy(std::string py_repl, std::vector<std::string> extra_py_params,
+          std::optional<std::string> imports)
+        : py_repl(py_repl), extra_py_params(extra_py_params), imports(imports) {
+    }
+};
 
-//                                  ID     PyID/import needed
-static const std::unordered_map<std::string, etopy_intr>
-intrinsic_function_python_equiv = {
-    {"println", etopy_intr("print(~sep='')",           {})},
-    {"print",   etopy_intr("print(~sep='', end='')",   {})},
-    {"input",   etopy_intr("input(~)",                 {})},
-    {"int",     etopy_intr("int(~)",                   {})},
-    {"float",   etopy_intr("float(~)",                 {})},
-    {"str",     etopy_intr("str(~)",                   {})},
-    {"bool",    etopy_intr("bool(~)",                  {})},
-    {"tuple",   etopy_intr("(~,)",                     {})},
-    {"list",    etopy_intr("[~]",                      {})},
-    {"Dict",    etopy_intr("dict()",                   {})},
-    {"len",     etopy_intr("len(~)",                   {})},
-    {"some",    etopy_intr("~",                        {})},
-    {"type",    etopy_intr("type(~).__name__",         {})},
-    {"typeof",  etopy_intr("type(~)",                  {})},
-    {"argv",    etopy_intr("sys.argv",                 "sys")},
-    {"open",    etopy_intr("open(~)",                  {})},
-    {"unimplemented", etopy_intr("sys.exit()",         "sys")},
-    {"sleep",   etopy_intr("time.sleep(~*1000)",       "time")},
-    {"env",     etopy_intr("os.getenv(~)",             "os")},
-    {"datetime", etopy_intr("datetime.datetime.now()", "datetime")},
+static const std::unordered_map<std::string, etopy> earl_to_py_equiv = {
+    {"println", etopy("print(~)", {"sep=''"},         {})},
+    {"print", etopy("print(~)", {"sep=''", "end=''"}, {})},
+    {"input", etopy("input(~)", {},                   {})},
+    {"int", etopy("int(~)", {},                       {})},
+    {"float", etopy("float(~)", {},                   {})},
+    {"str", etopy("str(~)", {},                       {})},
+    {"bool", etopy("bool(~)", {},                     {})},
+    {"tuple", etopy("(~,)", {},                       {})},
+    {"list", etopy("[~]", {},                         {})},
+    {"Dict", etopy("dict()", {},                      {})},
+    {"len", etopy("len(~)", {},                       {})},
+    {"some", etopy("~", {},                           {})},
+    {"type", etopy("type(~).__name__", {},            {})},
+    {"typeof", etopy("type(~)", {},                   {})},
+    {"argv", etopy("sys.argv", {},                    "sys")},
+    {"open", etopy("open(~)", {},                     {})},
+    {"unimplemented", etopy("sys.exit()", {},         "sys")},
+    {"sleep", etopy("time.sleep(~*1000)", {},         "time")},
+    {"env", etopy("os.getenv(~)", {},                 "os")},
+    {"datetime", etopy("datetime.datetime.now()", {}, "datetime")},
 };
 
 static void
@@ -130,17 +125,17 @@ static std::string
 earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
                                const std::string &comma_sep_params_str,
                                Context &ctx) {
-    auto it = intrinsic_function_python_equiv.find(orig_funccall);
+    auto it = earl_to_py_equiv.find(orig_funccall);
 
     // Function was called without checking first.
-    if (it == intrinsic_function_python_equiv.end()) {
+    if (it == earl_to_py_equiv.end()) {
         std::cerr <<
             "EARL intrinsic `"+orig_funccall+"` does not have an equivalent Python intrinsic"
                   << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
-    const std::string &py_replacement = it->second.first;
+    const std::string &py_replacement = it->second.py_repl;
     std::string py_intr_buf = "";
     bool found_replacement_pos = false;
 
@@ -155,16 +150,26 @@ earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
             }
             found_replacement_pos = true;
             py_intr_buf += comma_sep_params_str;
-            if (comma_sep_params_str != "")
+
+            // If there are extra parameters that Python needs,
+            // insert them.
+            if (it->second.extra_py_params.size() != 0) {
                 py_intr_buf += ", ";
+                for (size_t i = 0; i < it->second.extra_py_params.size(); ++i) {
+                    py_intr_buf += it->second.extra_py_params.at(i);
+                    if (i != it->second.extra_py_params.size() - 1)
+                        py_intr_buf += ", ";
+                }
+            }
         }
         else
             py_intr_buf += ch;
     }
 
+
     // There is an import that we need
-    if (it->second.second.has_value())
-        add_ctx_py_import(it->second.second.value(), ctx);
+    if (it->second.imports.has_value())
+        add_ctx_py_import(it->second.imports.value(), ctx);
 
     return py_intr_buf;
 }
@@ -287,6 +292,11 @@ expr_term_get_to_py(ExprGet *expr, Context &ctx) {
         ident += right.at(i);
     }
 
+    if (Intrinsics::intrinsic_member_functions.find(ident) !=
+        Intrinsics::intrinsic_member_functions.end()) {
+        ctx.unresolved_idents.push_back(ident);
+    }
+
     return left+"."+right;
 }
 
@@ -336,7 +346,7 @@ static std::string construct_closure(ExprClosure *expr, Context &ctx) {
     }
     pylambda += "):\n";
 
-    Context clctx = {0, pylambda, false, {}, {}, {}};
+    Context clctx = {0, pylambda, false, {}, {}, {}, {}};
     stmt_block_to_py(expr->m_block.get(), clctx);
 
     ctx.lambdas.push_back(clctx.py_src);
@@ -720,20 +730,22 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
 
 std::string
 earl_to_py(std::unique_ptr<Program> program) {
-    Context ctx = {0, "", false, {}, {}, {}};
+    Context ctx = {0, "", false, {}, {}, {}, {}};
     for (size_t i = 0; i < program->m_stmts.size(); ++i) {
         stmt_to_py(program->m_stmts.at(i).get(), ctx);
     }
 
+    std::string unresolved = "";
+    for (auto &l : ctx.unresolved_idents)
+        unresolved += "# UNRESOLVED: " + l + "\n";
+
     std::string imports = "";
     for (auto &l : ctx.earl_imports)
         imports += l + "\n";
-    imports += "\n";
 
     std::string py_imports = "";
     for (auto &l : ctx.py_imports)
         py_imports += "import "+l+"\n";
-    py_imports += "\n";
 
     std::string lambdas = "";
     for (auto &l : ctx.lambdas)
@@ -743,6 +755,6 @@ earl_to_py(std::unique_ptr<Program> program) {
     for (auto &l : ctx.py_member_intrinsics)
         py_intrinsics += l.second + "\n";
 
-    return py_imports+imports+lambdas+py_intrinsics+ctx.py_src;
+    return unresolved+py_imports+imports+lambdas+py_intrinsics+ctx.py_src;
 }
 
