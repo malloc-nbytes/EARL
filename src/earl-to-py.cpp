@@ -28,6 +28,7 @@
 #include <cassert>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "err.hpp"
 #include "ast.hpp"
@@ -55,6 +56,16 @@
 
 using etopy_intr = std::pair<std::string, std::optional<const std::string>>;
 
+struct etopy {
+    std::string py_repl;
+    std::vector<std::string> extra_py_params;
+    std::vector<std::string> imports;
+    etopy(std::string py_repl, std::vector<std::string> extra_py_params,
+          std::vector<std::string> imports)
+        : py_repl(py_repl), extra_py_params(extra_py_params), imports(imports) {
+    }
+};
+
 struct Context {
     unsigned scope_depth;
     std::string py_src;
@@ -62,6 +73,7 @@ struct Context {
     std::vector<std::string> lambdas;
     std::vector<std::string> earl_imports;
     std::vector<std::string> py_imports;
+    std::vector<std::pair<std::string, std::string>> py_member_intrinsics;
 };
 
 static unsigned lambdas_count = 0;
@@ -70,11 +82,21 @@ static std::string expr_to_py(Expr *expr, Context &ctx);
 static void stmt_block_to_py(StmtBlock *stmt, Context &ctx);
 static void stmt_to_py(Stmt *stmt, Context &ctx);
 
+static const std::unordered_set<std::string>
+intrinsic_member_functions_exceptions = {
+    "pop",
+    "split",
+};
+
+// static const std::unordered_map<std::string, etopy> earl_to_py_equiv = {
+//     {"println", etopy("print(~)", )}
+// };
+
 //                                  ID     PyID/import needed
 static const std::unordered_map<std::string, etopy_intr>
 intrinsic_function_python_equiv = {
-    {"println", etopy_intr("print(~sep='')",         {})},
-    {"print",   etopy_intr("print(~sep='', end='')", {})},
+    {"println", etopy_intr("print(~sep='')",           {})},
+    {"print",   etopy_intr("print(~sep='', end='')",   {})},
     {"input",   etopy_intr("input(~)",                 {})},
     {"int",     etopy_intr("int(~)",                   {})},
     {"float",   etopy_intr("float(~)",                 {})},
@@ -252,6 +274,19 @@ expr_term_get_to_py(ExprGet *expr, Context &ctx) {
         }
     }, expr->m_right);
 
+    std::string ident = "";
+    std::string new_right = "";
+    size_t open_paren = 0;
+    size_t close_paren = 0;
+    for (size_t i = 0; i < right.size(); ++i) {
+        if (right.at(i) == '(') {
+            for (size_t j = i; j < right.size(); ++j)
+                new_right += right.at(j);
+            break;
+        }
+        ident += right.at(i);
+    }
+
     return left+"."+right;
 }
 
@@ -301,7 +336,7 @@ static std::string construct_closure(ExprClosure *expr, Context &ctx) {
     }
     pylambda += "):\n";
 
-    Context clctx = {0, pylambda, false, {}, {}};
+    Context clctx = {0, pylambda, false, {}, {}, {}};
     stmt_block_to_py(expr->m_block.get(), clctx);
 
     ctx.lambdas.push_back(clctx.py_src);
@@ -685,7 +720,7 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
 
 std::string
 earl_to_py(std::unique_ptr<Program> program) {
-    Context ctx = {0, "", false, {}, {}};
+    Context ctx = {0, "", false, {}, {}, {}};
     for (size_t i = 0; i < program->m_stmts.size(); ++i) {
         stmt_to_py(program->m_stmts.at(i).get(), ctx);
     }
@@ -704,6 +739,10 @@ earl_to_py(std::unique_ptr<Program> program) {
     for (auto &l : ctx.lambdas)
         lambdas += l + "\n";
 
-    return py_imports+imports+lambdas+ctx.py_src;
+    std::string py_intrinsics = "";
+    for (auto &l : ctx.py_member_intrinsics)
+        py_intrinsics += l.second + "\n";
+
+    return py_imports+imports+lambdas+py_intrinsics+ctx.py_src;
 }
 
