@@ -27,9 +27,11 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <unordered_map>
 
 #include "err.hpp"
 #include "ast.hpp"
+#include "intrinsics.hpp"
 
 #define PYSTMT(s, ctx)                          \
     do {                                        \
@@ -49,13 +51,17 @@
     } while (0)
 
 #define PYTAB "    "
+#define PY_INTRINSIC_REPLACEMENT_CODE '~'
+
+using etopy_intr = std::pair<std::string, std::optional<const std::string>>;
 
 struct Context {
     unsigned scope_depth;
     std::string py_src;
     bool in_class;
     std::vector<std::string> lambdas;
-    std::vector<std::string> imports;
+    std::vector<std::string> earl_imports;
+    std::vector<std::string> py_imports;
 };
 
 static unsigned lambdas_count = 0;
@@ -64,10 +70,97 @@ static std::string expr_to_py(Expr *expr, Context &ctx);
 static void stmt_block_to_py(StmtBlock *stmt, Context &ctx);
 static void stmt_to_py(Stmt *stmt, Context &ctx);
 
+//                                  ID     PyID/import needed
+static const std::unordered_map<std::string, etopy_intr>
+intrinsic_function_python_equiv = {
+    {"println", etopy_intr("print(~)",           {})},
+    {"print",   etopy_intr("print(~, end='')",   {})},
+    {"input",   etopy_intr("input(~)",           {})},
+    {"int",     etopy_intr("int(~)",             {})},
+    {"float",   etopy_intr("float(~)",           {})},
+    {"str",     etopy_intr("str(~)",             {})},
+    {"bool",    etopy_intr("bool(~)",            {})},
+    {"tuple",   etopy_intr("(~,)",               {})},
+    {"list",    etopy_intr("[~]",                {})},
+    {"Dict",    etopy_intr("dict()",             {})},
+    {"len",     etopy_intr("len(~)",             {})},
+    {"some",    etopy_intr("~",                  {})},
+    {"type",    etopy_intr("type(~).__name__",   {})},
+    {"typeof",  etopy_intr("type(~)",            {})},
+    {"argv",    etopy_intr("sys.argv",           "sys")},
+    {"open",    etopy_intr("open(~)",            {})},
+    {"unimplemented", etopy_intr("sys.exit()",   "sys")},
+    {"sleep",   etopy_intr("time.sleep(~*1000)", "time")},
+    {"env",     etopy_intr("os.getenv(~)",       "os")},
+    {"datetime", etopy_intr("datetime.datetime.now()", "datetime")},
+};
+
+static void
+add_ctx_py_import(const std::string &py_import, Context &ctx) {
+    for (auto &i : ctx.py_imports) {
+        if (i == py_import)
+            return;
+    }
+    ctx.py_imports.push_back(py_import);
+}
+
+static std::string
+earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
+                               const std::string &comma_sep_params_str,
+                               Context &ctx) {
+    auto it = intrinsic_function_python_equiv.find(orig_funccall);
+
+    // Function was called without checking first.
+    if (it == intrinsic_function_python_equiv.end()) {
+        std::cerr <<
+            "EARL intrinsic `"+orig_funccall+"` does not have an equivalent Python intrinsic"
+                  << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    const std::string &py_replacement = it->second.first;
+    std::string py_intr_buf = "";
+    bool found_replacement_pos = false;
+
+    for (size_t i = 0; i < py_replacement.size(); ++i) {
+        char ch = py_replacement.at(i);
+        if (ch == PY_INTRINSIC_REPLACEMENT_CODE) {
+            if (found_replacement_pos) {
+                std::cerr <<
+                    "can only have 1 replacement location in Python intrinsic"
+                          << std::endl;
+                std::exit(EXIT_FAILURE);
+            }
+            found_replacement_pos = true;
+            py_intr_buf += comma_sep_params_str;
+        }
+        else
+            py_intr_buf += ch;
+    }
+
+    // There is an import that we need
+    if (it->second.second.has_value())
+        add_ctx_py_import(it->second.second.value(), ctx);
+
+    return py_intr_buf;
+}
+
 void tabs(Context &ctx) {
     for (unsigned i = 0; i < ctx.scope_depth; ++i) {
         ctx.py_src += PYTAB;
     }
+}
+
+bool ident_is_intrinsic_function(const std::string &id) {
+    const std::unordered_map<std::string, Intrinsics::IntrinsicFunction> &map =
+        Intrinsics::intrinsic_functions;
+    return map.find(id) != map.end();
+}
+
+bool ident_is_intrinsic_member_function(const std::string &id) {
+    const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> &map =
+        Intrinsics::intrinsic_member_functions;
+    return map.find(id) != map.end();
 }
 
 static std::string
@@ -113,12 +206,19 @@ expr_term_floatlit_to_py(ExprFloatLit *expr, Context &ctx)  {
 static std::string
 expr_term_funccall_to_py(ExprFuncCall *expr, Context &ctx) {
     std::string accessor = expr_to_py(expr->m_left.get(), ctx);
+
     std::string params = "";
     for (size_t i = 0; i < expr->m_params.size(); ++i) {
         params += expr_to_py(expr->m_params.at(i).get(), ctx);
         if (i != expr->m_params.size() - 1)
             params += ", ";
     }
+
+    if (ident_is_intrinsic_function(accessor)) {
+        accessor = earl_intrinsic_to_py_intrinsic(accessor, params, ctx);
+        return accessor;
+    }
+
     return accessor+"("+params+")";
 }
 
@@ -384,15 +484,16 @@ stmt_let_to_py(StmtLet *stmt, Context &ctx, bool __init__ = false) {
             pylet += ", ";
     }
 
-    if (stmt->m_expr->get_type() == ExprType::Term) {
-        auto term = dynamic_cast<ExprTerm *>(stmt->m_expr.get());
-        if (term->get_term_type() == ExprTermType::Closure) {
-            auto cl = dynamic_cast<ExprClosure *>(term);
-            std::string clname = construct_closure(cl, ctx);
-            PYSTMT_CONS(pylet+" = "+clname, ctx);
-            return;
-        }
-    }
+    // TODO: remove if found unnecessary
+    // if (stmt->m_expr->get_type() == ExprType::Term) {
+    //     auto term = dynamic_cast<ExprTerm *>(stmt->m_expr.get());
+    //     if (term->get_term_type() == ExprTermType::Closure) {
+    //         auto cl = dynamic_cast<ExprClosure *>(term);
+    //         std::string clname = construct_closure(cl, ctx);
+    //         PYSTMT_CONS(pylet+" = "+clname, ctx);
+    //         return;
+    //     }
+    // }
 
     const std::string pyexpr = expr_to_py(stmt->m_expr.get(), ctx);
     PYSTMT_CONS(pylet+" = " + pyexpr, ctx);
@@ -490,7 +591,7 @@ stmt_import_to_py(StmtImport *stmt, Context &ctx) {
     if (alias != "")
         pyimport += " as " + alias;
 
-    ctx.imports.push_back(pyimport);
+    ctx.earl_imports.push_back(pyimport);
 
     // PYSTMT_CONS(pyimport, ctx);
 }
@@ -584,13 +685,19 @@ earl_to_py(std::unique_ptr<Program> program) {
     }
 
     std::string imports = "";
-    for (auto &l : ctx.imports)
-        imports += l + "\n\n";
+    for (auto &l : ctx.earl_imports)
+        imports += l + "\n";
+    imports += "\n";
+
+    std::string py_imports = "";
+    for (auto &l : ctx.py_imports)
+        py_imports += "import "+l+"\n";
+    py_imports += "\n";
 
     std::string lambdas = "";
     for (auto &l : ctx.lambdas)
         lambdas += l + "\n";
 
-    return imports+lambdas+ctx.py_src;
+    return py_imports+imports+lambdas+ctx.py_src;
 }
 
