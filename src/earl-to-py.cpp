@@ -73,25 +73,25 @@ static void stmt_to_py(Stmt *stmt, Context &ctx);
 //                                  ID     PyID/import needed
 static const std::unordered_map<std::string, etopy_intr>
 intrinsic_function_python_equiv = {
-    {"println", etopy_intr("print(~)",           {})},
-    {"print",   etopy_intr("print(~, end='')",   {})},
-    {"input",   etopy_intr("input(~)",           {})},
-    {"int",     etopy_intr("int(~)",             {})},
-    {"float",   etopy_intr("float(~)",           {})},
-    {"str",     etopy_intr("str(~)",             {})},
-    {"bool",    etopy_intr("bool(~)",            {})},
-    {"tuple",   etopy_intr("(~,)",               {})},
-    {"list",    etopy_intr("[~]",                {})},
-    {"Dict",    etopy_intr("dict()",             {})},
-    {"len",     etopy_intr("len(~)",             {})},
-    {"some",    etopy_intr("~",                  {})},
-    {"type",    etopy_intr("type(~).__name__",   {})},
-    {"typeof",  etopy_intr("type(~)",            {})},
-    {"argv",    etopy_intr("sys.argv",           "sys")},
-    {"open",    etopy_intr("open(~)",            {})},
-    {"unimplemented", etopy_intr("sys.exit()",   "sys")},
-    {"sleep",   etopy_intr("time.sleep(~*1000)", "time")},
-    {"env",     etopy_intr("os.getenv(~)",       "os")},
+    {"println", etopy_intr("print(~sep='')",         {})},
+    {"print",   etopy_intr("print(~sep='', end='')", {})},
+    {"input",   etopy_intr("input(~)",                 {})},
+    {"int",     etopy_intr("int(~)",                   {})},
+    {"float",   etopy_intr("float(~)",                 {})},
+    {"str",     etopy_intr("str(~)",                   {})},
+    {"bool",    etopy_intr("bool(~)",                  {})},
+    {"tuple",   etopy_intr("(~,)",                     {})},
+    {"list",    etopy_intr("[~]",                      {})},
+    {"Dict",    etopy_intr("dict()",                   {})},
+    {"len",     etopy_intr("len(~)",                   {})},
+    {"some",    etopy_intr("~",                        {})},
+    {"type",    etopy_intr("type(~).__name__",         {})},
+    {"typeof",  etopy_intr("type(~)",                  {})},
+    {"argv",    etopy_intr("sys.argv",                 "sys")},
+    {"open",    etopy_intr("open(~)",                  {})},
+    {"unimplemented", etopy_intr("sys.exit()",         "sys")},
+    {"sleep",   etopy_intr("time.sleep(~*1000)",       "time")},
+    {"env",     etopy_intr("os.getenv(~)",             "os")},
     {"datetime", etopy_intr("datetime.datetime.now()", "datetime")},
 };
 
@@ -133,6 +133,8 @@ earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
             }
             found_replacement_pos = true;
             py_intr_buf += comma_sep_params_str;
+            if (comma_sep_params_str != "")
+                py_intr_buf += ", ";
         }
         else
             py_intr_buf += ch;
@@ -460,9 +462,13 @@ expr_to_py(Expr *expr, Context &ctx) {
 }
 
 static void
-stmt_def_to_py(StmtDef *stmt, Context &ctx) {
+stmt_def_to_py(StmtDef *stmt, Context &ctx, bool add_self = false) {
     const std::string &id = stmt->m_id->lexeme();
     std::string params = "";
+
+    if (add_self)
+        params += "self";
+
     for (size_t i = 0; i < stmt->m_args.size(); ++i) {
         params += stmt->m_args.at(i).first.first->lexeme();
         if (i != stmt->m_args.size() - 1)
@@ -627,7 +633,7 @@ stmt_class_to_py(StmtClass *stmt, Context &ctx) {
     }
 
     for (size_t i = 0; i < stmt->m_methods.size(); ++i)
-        stmt_def_to_py(stmt->m_methods.at(i).get(), ctx);
+        stmt_def_to_py(stmt->m_methods.at(i).get(), ctx, /*add_self=*/true);
 
     ctx.in_class = false;
     ctx.scope_depth--;

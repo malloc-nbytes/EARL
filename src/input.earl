@@ -2,19 +2,19 @@ module Main
 
 # import "std/list.earl" as List
 
-# class Point [x, y, name] {
-#     @pub let x = x;
-#     @pub let y = y;
-#     let name = name;
+class Point [x, y, name] {
+    @pub let x = x;
+    @pub let y = y;
+    let name = name;
 
-#     let t1, t2, t3 = (1, 2, 3);
+    let t1, t2, t3 = (1, 2, 3);
 
-#     let t4 = (false, true);
+    let t4 = (false, true);
 
-#     fn sum_xy() {
-#         return this.x + this.y;
-#     }
-# }
+    fn sum_xy() {
+        return this.x + this.y;
+    }
+}
 
 # fn sum(a, b) {
 #     for i in 0 to 10 {
