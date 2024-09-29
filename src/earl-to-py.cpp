@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <string>
 
 #include "err.hpp"
 #include "ast.hpp"
@@ -36,9 +37,9 @@
         ctx.py_src += s "\n";                   \
     } while (0)
 
-#define PYAPPEND(s, ctx)                                                \
-    do {                                                                \
-        ctx.py_src += s;                                                \
+#define PYAPPEND(s, ctx)                        \
+    do {                                        \
+        ctx.py_src += s;                        \
     } while (0)
 
 #define PYSTMT_CONS(s, ctx)                     \
@@ -52,7 +53,12 @@
 struct Context {
     unsigned scope_depth;
     std::string py_src;
+    bool in_class;
+    std::vector<std::string> lambdas;
+    std::vector<std::string> imports;
 };
+
+static unsigned lambdas_count = 0;
 
 static std::string expr_to_py(Expr *expr, Context &ctx);
 static void stmt_block_to_py(StmtBlock *stmt, Context &ctx);
@@ -66,7 +72,10 @@ void tabs(Context &ctx) {
 
 static std::string
 expr_term_ident_to_py(ExprIdent *expr, Context &ctx) {
-    return expr->m_tok->lexeme();
+    std::string id = expr->m_tok->lexeme();
+    if (ctx.in_class && id == "this")
+        id = "self";
+    return id;
 }
 
 static std::string
@@ -76,7 +85,19 @@ expr_term_intlit_to_py(ExprIntLit *expr, Context &ctx) {
 
 static std::string
 expr_term_strlit_to_py(ExprStrLit *expr, Context &ctx) {
-    return "\"" + expr->m_tok->lexeme() + "\"";
+    std::string pystr = "";
+    for (size_t i = 0; i < expr->m_tok->lexeme().size(); ++i) {
+        char ch = expr->m_tok->lexeme()[i];
+        if (ch == '\n')
+            pystr += "\\n";
+        else if (ch == '\t')
+            pystr += "\\t";
+        else if (ch == '\r')
+            pystr += "\\r";
+        else
+            pystr += ch;
+    }
+    return "\""+pystr+"\"";
 }
 
 static std::string
@@ -86,6 +107,7 @@ expr_term_charlit_to_py(ExprCharLit *expr, Context &ctx)  {
 
 static std::string
 expr_term_floatlit_to_py(ExprFloatLit *expr, Context &ctx)  {
+    return expr->m_tok->lexeme();
 }
 
 static std::string
@@ -133,42 +155,151 @@ expr_term_get_to_py(ExprGet *expr, Context &ctx) {
 
 static std::string
 expr_term_mod_to_py_access(ExprModAccess *expr, Context &ctx) {
+    const std::string pyleft = expr_to_py(expr->m_expr_ident.get(), ctx);
+    std::string pyright = "";
+    std::visit([&](auto &&arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<ExprIdent>>)
+            pyright = expr_to_py(arg.get(), ctx);
+        else if constexpr (std::is_same_v<T, std::unique_ptr<ExprFuncCall>>)
+            pyright = expr_to_py(arg.get(), ctx);
+        else {
+            std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";
+            throw InterpreterException(msg);
+        }
+    }, expr->m_right);
+
+    return pyleft+"."+pyright;
 }
 
 static std::string
-expr_term_array_to_py_access(ExprArrayAccess *expr, Context &ctx) {
+expr_term_array_access_to_py(ExprArrayAccess *expr, Context &ctx) {
+    const std::string pyleft = expr_to_py(expr->m_left.get(), ctx);
+    const std::string pyidx = expr_to_py(expr->m_expr.get(), ctx);
+    return pyleft+"["+pyidx+"]";
 }
 
 static std::string
 expr_term_boollit_to_py(ExprBool *expr, Context &context)  {
+    return expr->m_value ? "true" : "false";
 }
 
 static std::string
 expr_term_none_to_py(ExprNone *expr, Context &context)  {
+    return "None";
+}
+
+static std::string construct_closure(ExprClosure *expr, Context &ctx) {
+    std::string lambda_name = "__EARL_CLOSURE__" + std::to_string(lambdas_count++);
+    std::string pylambda = "def " + lambda_name + "(";
+    for (size_t i = 0; i < expr->m_args.size(); ++i) {
+        pylambda += expr->m_args.at(i).first->lexeme();
+        if (i != expr->m_args.size()-1)
+            pylambda += ", ";
+    }
+    pylambda += "):\n";
+
+    Context clctx = {0, pylambda, false, {}, {}};
+    stmt_block_to_py(expr->m_block.get(), clctx);
+
+    ctx.lambdas.push_back(clctx.py_src);
+
+    for (size_t i = 0; i < clctx.lambdas.size(); ++i)
+        ctx.lambdas.push_back(clctx.lambdas.at(i));
+
+    return lambda_name;
 }
 
 static std::string
 expr_term_closure_to_py(ExprClosure *expr, Context &ctx) {
+    return construct_closure(expr, ctx);
 }
 
 static std::string
 expr_term_range_to_py(ExprRange *expr, Context &ctx) {
+    std::string pylst = "[";
+    const std::string pystart = expr_to_py(expr->m_start.get(), ctx);
+    const std::string pyend = expr_to_py(expr->m_end.get(), ctx);
+    bool ischar = false;
+    int start = 0;
+    int end = 0;
+
+    if (pystart[0] == '\'') {
+        start = pystart[1];
+        end = pyend[1];
+        ischar = true;
+    }
+    else {
+        start = std::stoi(pystart);
+        end = std::stoi(pyend);
+    }
+
+    for (int i = start; i < end; ++i) {
+        if (ischar) {
+            pylst += "'";
+            pylst += (char)i;
+            pylst += "'";
+        }
+        else
+            pylst += std::to_string(i);
+        if (i != end - 1)
+            pylst += ", ";
+    }
+
+    if (expr->m_inclusive) {
+        if (ischar) {
+            pylst += ", '";
+            pylst += (char)end;
+            pylst += "'";
+        }
+        else
+            pylst += ", " + std::to_string(end);
+    }
+
+    pylst += "]";
+    return pylst;
 }
 
 static std::string
 expr_term_tuple_to_py(ExprTuple *expr, Context &ctx) {
+    std::string pyexprs = "";
+    for (size_t i = 0; i < expr->m_exprs.size(); ++i) {
+        pyexprs += expr_to_py(expr->m_exprs.at(i).get(), ctx);
+        if (i != expr->m_exprs.size()-1)
+            pyexprs += ", ";
+    }
+    return "("+pyexprs+")";
 }
 
 static std::string
 expr_term_slice_to_py(ExprSlice *expr, Context &ctx) {
+    std::string pystart = "", pyend = "";
+    if (expr->m_start.has_value())
+        pystart = expr_to_py(expr->m_start.value().get(), ctx);
+    if (expr->m_end.has_value())
+        pyend = expr_to_py(expr->m_end.value().get(), ctx);
+    return pystart+":"+pyend;
 }
 
 static std::string
 expr_term_dict_to_py(ExprDict *expr, Context &ctx) {
+    std::string pydict = "{";
+
+    for (size_t i = 0; i < expr->m_values.size(); ++i) {
+        pydict += expr_to_py(expr->m_values.at(i).first.get(), ctx);
+        pydict += ": ";
+        pydict += expr_to_py(expr->m_values.at(i).second.get(), ctx);
+        if (i != expr->m_values.size() - 1)
+            pydict += ", ";
+    }
+
+    pydict += "}";
+    return pydict;
 }
 
 static std::string
 expr_term_fstr_to_py(ExprFStr *expr, Context &ctx) {
+    return "f\""+expr->m_tok->lexeme()+"\"";
 }
 
 static std::string
@@ -183,7 +314,7 @@ expr_term_to_py(ExprTerm *expr, Context &ctx) {
     case ExprTermType::List_Literal:  return expr_term_listlit_to_py(dynamic_cast<ExprListLit *>(expr), ctx);
     case ExprTermType::Get:           return expr_term_get_to_py(dynamic_cast<ExprGet *>(expr), ctx);
     case ExprTermType::Mod_Access:    return expr_term_mod_to_py_access(dynamic_cast<ExprModAccess *>(expr), ctx);
-    case ExprTermType::Array_Access:  return expr_term_array_to_py_access(dynamic_cast<ExprArrayAccess *>(expr), ctx);
+    case ExprTermType::Array_Access:  return expr_term_array_access_to_py(dynamic_cast<ExprArrayAccess *>(expr), ctx);
     case ExprTermType::Bool:          return expr_term_boollit_to_py(dynamic_cast<ExprBool *>(expr), ctx);
     case ExprTermType::None:          return expr_term_none_to_py(dynamic_cast<ExprNone *>(expr), ctx);
     case ExprTermType::Closure:       return expr_term_closure_to_py(dynamic_cast<ExprClosure *>(expr), ctx);
@@ -242,12 +373,29 @@ stmt_def_to_py(StmtDef *stmt, Context &ctx) {
 }
 
 static void
-stmt_let_to_py(StmtLet *stmt, Context &ctx) {
-    if (stmt->m_ids.size() > 1)
-        ERR(Err::Type::Fatal, "multiple ids in `let` statement is unimplemented");
-    const std::string &id = stmt->m_ids.at(0)->lexeme();
+stmt_let_to_py(StmtLet *stmt, Context &ctx, bool __init__ = false) {
+    std::string pylet = "";
+    for (size_t i = 0; i < stmt->m_ids.size(); ++i) {
+        std::string id = "";
+        if (__init__)
+            pylet += "self.";
+        pylet += stmt->m_ids.at(i)->lexeme();
+        if (i != stmt->m_ids.size()-1)
+            pylet += ", ";
+    }
+
+    if (stmt->m_expr->get_type() == ExprType::Term) {
+        auto term = dynamic_cast<ExprTerm *>(stmt->m_expr.get());
+        if (term->get_term_type() == ExprTermType::Closure) {
+            auto cl = dynamic_cast<ExprClosure *>(term);
+            std::string clname = construct_closure(cl, ctx);
+            PYSTMT_CONS(pylet+" = "+clname, ctx);
+            return;
+        }
+    }
+
     const std::string pyexpr = expr_to_py(stmt->m_expr.get(), ctx);
-    PYSTMT_CONS(id + " = " + pyexpr, ctx);
+    PYSTMT_CONS(pylet+" = " + pyexpr, ctx);
 }
 
 static void
@@ -310,6 +458,15 @@ stmt_while_to_py(StmtWhile *stmt, Context &ctx) {
 
 static void
 stmt_foreach_to_py(StmtForeach *stmt, Context &ctx) {
+    std::string pyloop = "for ";
+    for (size_t i = 0; i < stmt->m_enumerators.size(); ++i) {
+        pyloop += stmt->m_enumerators.at(i)->lexeme();
+        if (i != stmt->m_enumerators.size()-1)
+            pyloop += ", ";
+    }
+    pyloop += " in " + expr_to_py(stmt->m_expr.get(), ctx) + ":";
+    PYSTMT_CONS(pyloop, ctx);
+    stmt_block_to_py(stmt->m_block.get(), ctx);
 }
 
 static void
@@ -324,6 +481,18 @@ stmt_for_to_py(StmtFor *stmt, Context &ctx) {
 
 static void
 stmt_import_to_py(StmtImport *stmt, Context &ctx) {
+    const std::string &pyfp = stmt->m_fp->lexeme();
+    std::string alias = "";
+    if (stmt->m_as.has_value())
+        alias = stmt->m_as.value()->lexeme();
+
+    std::string pyimport = "# IMPORT NEEDS RESOLVING\n# import " + pyfp;
+    if (alias != "")
+        pyimport += " as " + alias;
+
+    ctx.imports.push_back(pyimport);
+
+    // PYSTMT_CONS(pyimport, ctx);
 }
 
 static void
@@ -335,6 +504,32 @@ stmt_mod_to_py(StmtMod *stmt, Context &ctx) {
 
 static void
 stmt_class_to_py(StmtClass *stmt, Context &ctx) {
+    std::string pyclass = "class " + stmt->m_id->lexeme() + ":";
+    PYSTMT_CONS(pyclass, ctx);
+
+    ctx.in_class = true;
+    ctx.scope_depth++;
+
+    if (stmt->m_constructor_args.size() > 0) {
+        std::string init = "def __init__(self, ";
+        for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
+            init += stmt->m_constructor_args.at(i).first->lexeme();
+            if (i != stmt->m_constructor_args.size()-1)
+                init += ", ";
+        }
+        init += "):";
+        PYSTMT_CONS(init, ctx);
+        ctx.scope_depth++;
+        for (size_t i = 0; i < stmt->m_members.size(); ++i)
+            stmt_let_to_py(stmt->m_members.at(i).get(), ctx, true);
+        ctx.scope_depth--;
+    }
+
+    for (size_t i = 0; i < stmt->m_methods.size(); ++i)
+        stmt_def_to_py(stmt->m_methods.at(i).get(), ctx);
+
+    ctx.in_class = false;
+    ctx.scope_depth--;
 }
 
 static void
@@ -347,6 +542,7 @@ stmt_enum_to_py(StmtEnum *stmt, Context &ctx) {
 
 static void
 stmt_continue_to_py(StmtContinue *stmt, Context &ctx) {
+    PYSTMT("continue", ctx);
 }
 
 static void
@@ -382,10 +578,19 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
 
 std::string
 earl_to_py(std::unique_ptr<Program> program) {
-    Context ctx = {0, ""};
+    Context ctx = {0, "", false, {}, {}};
     for (size_t i = 0; i < program->m_stmts.size(); ++i) {
         stmt_to_py(program->m_stmts.at(i).get(), ctx);
     }
-    return ctx.py_src;
+
+    std::string imports = "";
+    for (auto &l : ctx.imports)
+        imports += l + "\n\n";
+
+    std::string lambdas = "";
+    for (auto &l : ctx.lambdas)
+        lambdas += l + "\n";
+
+    return imports+lambdas+ctx.py_src;
 }
 

@@ -1,7 +1,24 @@
 module Main
 
+import "std/list.earl" as List
+
+class Point [x, y, name] {
+    @pub let x = x;
+    @pub let y = y;
+    let name = name;
+
+    let t1, t2, t3 = (1, 2, 3);
+
+    let t4 = (false, true);
+
+    fn sum_xy() {
+        return this.x + this.y;
+    }
+}
+
 fn sum(a, b) {
     for i in 0 to 10 {
+        continue;
         loop {
             let x = 1;
             return;
@@ -31,5 +48,44 @@ else {
 }
 
 x += 3;
+
+
+let lst = List::preset(0, 10);
+
+let x = lst[i];
+let y = lst[300*3];
+
+let d = {"foo": 1, "bar": none, "baz": false};
+
+let nums = 1..=10;
+let chars = 'a'..='z';
+
+foreach elem in lst {
+    println(f"{elem}");
+}
+
+foreach k, v in d {
+}
+
+println('\n');
+
+let cl = |x, y| {
+    let inner = |a, b| {
+        let inner2 = |_| {
+            println("in inner2");
+        };
+        println("in inner");
+        inner2();
+    };
+    println("in cl");
+    inner(x, y);
+};
+
+cl(1, 2);
+
+println(|x| { println("ur mom" + x); });
+println(|y| { println(y); });
+
+(1..=10).filter(|x| { return x%2 == 0; });
 
 
