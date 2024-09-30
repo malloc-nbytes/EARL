@@ -1,2 +1,12 @@
 module Main
 
+class Point [x, y] {
+    @pub let x = x;
+    @pub let y = y;
+
+    @pub fn sumxy() {
+        return this.x + this.y;
+    }
+}
+
+println(Point(1, 2).x, ' ', Point(3, 4).y, ' ', Point(9, 2).sumxy());
