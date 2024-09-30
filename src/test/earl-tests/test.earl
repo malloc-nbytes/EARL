@@ -10,12 +10,15 @@ import "./option-tests.earl"
 import "./tuple-tests.earl"
 import "./int-tests.earl"
 import "./float-tests.earl"
+import "./encryption-module-tests.earl"
 import "./char-tests.earl"
+import "./char-module-tests.earl"
 import "./list-tests.earl"
 import "./for-loops-tests.earl"
 import "./foreach-loop-tests.earl"
 import "./if-tests.earl"
 import "./type-tests.earl"
+import "./io-module-tests.earl"
 import "./class-tests.earl"
 import "./fn-test.earl"
 
@@ -30,12 +33,15 @@ fn main() {
     TupleTests::run(should_print, crash_on_failure);
     IntTests::run(should_print, crash_on_failure);
     FloatTests::run(should_print, crash_on_failure);
+    EncryptionModuleTests::run(should_print, crash_on_failure);
     CharTests::run(should_print, crash_on_failure);
+    CharModuleTests::run(should_print, crash_on_failure);
     ListTests::run(should_print, crash_on_failure);
     ForLoopTests::run(should_print, crash_on_failure);
     ForeachLoopTests::run(should_print, crash_on_failure);
     IfTests::run(should_print, crash_on_failure);
     TypeTests::run(should_print, crash_on_failure);
+    IOModuleTests::run(should_print, crash_on_failure);
     ClassTests::run(should_print, crash_on_failure);
     FnTests::run(should_print, crash_on_failure);
 }
