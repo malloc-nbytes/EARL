@@ -45,7 +45,7 @@ import "std/system.earl"
 ###   Returns a list of pids and the process associated
 ###   with it in the form of `[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]`.
 @pub fn get_pid(proc: str): list {
-    let output = System::cmdstr(f"ps aux | grep {proc}").split("\n");
+    let output = System::cmdstr(f"ps aux | grep -i {proc}").split("\n");
     let res = [];
 
     let last_idx = 10;

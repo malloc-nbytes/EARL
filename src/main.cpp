@@ -36,10 +36,15 @@
 #include "repl.hpp"
 #include "config.h"
 #include "hot-reload.hpp"
+#include "earl-to-py.hpp"
 
 std::vector<std::string> earl_argv = {};
 static std::vector<std::string> watch_files = {};
 static size_t run_count = 1;
+
+// --to-py resources
+static std::string to_py_formatter = "";
+static std::string to_py_output = "";
 
 uint32_t flags = 0x00;
 
@@ -53,16 +58,19 @@ usage(void) {
     std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl <script> | [options...] -- [args...]" << std::endl << std::endl;
+    std::cerr << "Usage: earl [script] [options...] -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "  -v, --version           Print version information" << std::endl;
-    std::cerr << "  -h, --help              Print this help message" << std::endl;
-    std::cerr << "  -c, --check             Only parse the file given" << std::endl;
-    std::cerr << "  -w, --watch [files...]  Watch files for changes and hot reload" << std::endl;
-    std::cerr << "      --without-stdlib    Do not use standard library" << std::endl;
-    std::cerr << "      --repl-nocolor      Do not use color in the REPL" << std::endl;
-    std::cerr << "      --show-funs         Print every function call evaluated" << std::endl;
-
+    std::cerr << "  -v, --version                          Print version information" << std::endl;
+    std::cerr << "  -h, --help                             Print this help message" << std::endl;
+    std::cerr << "  -c, --check                            Only parse the file given" << std::endl;
+    std::cerr << "  -w, --watch [files...]                 Watch files for changes and hot reload on save" << std::endl;
+    std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor                     Do not use color in the REPL" << std::endl;
+    std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
+    std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
+    std::cerr << "          where" << std::endl;
+    std::cerr << "              O = stdout|file" << std::endl;
+    std::cerr << "              F = program" << std::endl;
     std::exit(0);
 }
 
@@ -101,6 +109,34 @@ try_guess_wrong_arg(std::string &arg) {
 }
 
 static void
+handle_to_py_flag(std::vector<std::string> &args) {
+    std::cout << "[EARL] warning: flag `--" << COMMON_EARL2ARG_TOPY << "` is experimental and may not work correctly" << std::endl;
+    flags |= __TOPY;
+    while (args.size() != 0 && args[0][0] != '-') {
+        const std::string &option = args.at(0);
+        std::string left = "", right = "";
+        size_t pos = option.find('=');
+        if (pos != std::string::npos) {
+            left = option.substr(0, pos);
+            right = option.substr(pos+1);
+            if (left == "formatter")
+                to_py_formatter = right;
+            else if (left == "output")
+                to_py_output = right;
+            else {
+                std::cerr << "invalid option `" << left <<  "` for `--" << COMMON_EARL2ARG_TOPY << "`";
+                std::exit(EXIT_FAILURE);
+            }
+            args.erase(args.begin());
+        }
+        else {
+            std::cerr << "missing `=` in `--" << COMMON_EARL2ARG_TOPY << "` option" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+    }
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -118,6 +154,9 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SHOWFUNS;
     else if (arg == COMMON_EARL2ARG_CHECK)
         flags |= __CHECK;
+    else if (arg == COMMON_EARL2ARG_TOPY) {
+        handle_to_py_flag(args);
+    }
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -218,6 +257,52 @@ main(int argc, char **argv) {
         }
         hot_reload::register_watch_files(watch_files);
     }
+
+    if ((flags & __TOPY) != 0) {
+        std::unique_ptr<Lexer> lexer = nullptr;
+        std::unique_ptr<Program> program = nullptr;
+        try {
+            std::string src_code = read_file(filepath.c_str());
+            lexer = lex_file(src_code, filepath, keywords, types, comment);
+        } catch (const LexerException &e) {
+            std::cerr << "Lexer error: " << e.what() << std::endl;
+        }
+        try {
+            program = Parser::parse_program(*lexer.get(), filepath);
+        } catch (const ParserException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+        }
+        auto pysrc = earl_to_py(std::move(program));
+
+        if (to_py_output == "") {
+            std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+
+        if (to_py_output == "stdout")
+            std::cout << pysrc << std::endl;
+        else {
+            std::ofstream pysrc_outfile(to_py_output);
+            if (!pysrc_outfile) {
+                std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+                std::exit(EXIT_FAILURE);
+            }
+            pysrc_outfile << pysrc;
+            pysrc_outfile.close();
+        }
+
+        if (to_py_formatter != "") {
+            std::string cmd = to_py_formatter+" "+to_py_output;
+            int exit_code = system(cmd.c_str());
+            if (exit_code != 0) {
+                std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
+                std::exit(1);
+            }
+        }
+
+        std::exit(0);
+    }
+
 
     if ((flags & __WATCH) != 0)
         std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
