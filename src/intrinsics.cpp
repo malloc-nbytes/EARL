@@ -31,6 +31,7 @@
 #include <filesystem>
 #include <ctime>
 #include <unistd.h>
+#include <random>
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -40,6 +41,8 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"seed", &Intrinsics::intrinsic_seed},
+    {"rand", &Intrinsics::intrinsic_rand},
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
@@ -117,7 +120,9 @@ Intrinsics::intrinsic_member_functions = {
     {"hours", &Intrinsics::intrinsic_member_hours},
     {"minutes", &Intrinsics::intrinsic_member_minutes},
     {"seconds", &Intrinsics::intrinsic_member_seconds},
+    {"raw", &Intrinsics::intrinsic_member_raw},
 };
+
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::call(const std::string &id,
@@ -644,6 +649,26 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
     }
     return std::make_shared<earl::value::Void>();
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
+               std::shared_ptr<Ctx> &ctx,
+               Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(seed, 1, "seed", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(seed[0], earl::value::Type::Int, 1, "seed", expr);
+    unsigned s = (unsigned)dynamic_cast<earl::value::Int *>(seed[0].get())->value();
+    std::srand(s);
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_rand(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+               std::shared_ptr<Ctx> &ctx,
+               Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rand", expr);
+    return std::make_shared<earl::value::Int>(std::rand());
+}
+
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_print(std::vector<std::shared_ptr<earl::value::Obj>> &params,

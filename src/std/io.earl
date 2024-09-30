@@ -60,9 +60,22 @@ module IO
 ### DESCRIPTION
 ###   Read the lines of the file `fp` and get
 ###   each line as a list.
-@pub fn read_lines(fp) {
+@pub fn read_lines(fp: str): list {
     let content = file_to_str(fp);
     return content.split("\n");
+}
+
+### NAME write_to_file
+### PARAMETER content: str
+### PARAMETER fp: str
+### RETURNS unit
+### DESCRIPTION
+###   Takes the string `content` and writes it to
+###   the file `fp`.
+@pub fn write_to_file(content: str, fp: str): unit {
+    let f = open(fp, "w");
+    f.write(content);
+    f.close();
 }
 
 ### NAME rename
@@ -71,7 +84,7 @@ module IO
 ### RETURNS unit
 ### DESCRIPTION
 ###   Rename the file `path_from` to `path_to`.
-@pub fn rename(path_from, path_to) {
+@pub fn rename(path_from: str, path_to: str): unit {
     __internal_move__(path_from, path_to);
 }
 
