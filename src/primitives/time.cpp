@@ -52,6 +52,12 @@ Time::readable(void) {
     return std::make_shared<Tuple>(std::move(values));
 }
 
+std::shared_ptr<Int>
+Time::raw(void) {
+    int r = static_cast<int>(m_now);
+    return std::make_shared<Int>(r);
+}
+
 std::shared_ptr<Time>
 Time::update(void) {
     return std::make_shared<Time>(m_now);

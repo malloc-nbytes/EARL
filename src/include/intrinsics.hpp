@@ -195,6 +195,16 @@ namespace Intrinsics {
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
+                   std::shared_ptr<Ctx> &ctx,
+                   Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_rand(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                   std::shared_ptr<Ctx> &ctx,
+                   Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
@@ -362,6 +372,12 @@ namespace Intrinsics {
                                                Expr *expr);
 
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_raw(std::shared_ptr<earl::value::Obj> obj,
+                         std::vector<std::shared_ptr<earl::value::Obj>> &idx,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_member_nth(std::shared_ptr<earl::value::Obj> obj,

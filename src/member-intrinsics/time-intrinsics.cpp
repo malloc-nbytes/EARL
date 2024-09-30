@@ -39,7 +39,17 @@ Intrinsics::intrinsic_time_member_functions = {
     {"hours", &Intrinsics::intrinsic_member_hours},
     {"minutes", &Intrinsics::intrinsic_member_minutes},
     {"seconds", &Intrinsics::intrinsic_member_seconds},
+    {"raw", &Intrinsics::intrinsic_member_raw},
 };
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_raw(std::shared_ptr<earl::value::Obj> obj,
+                                      std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                      std::shared_ptr<Ctx> &ctx,
+                                      Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "raw", expr);
+    return dynamic_cast<earl::value::Time *>(obj.get())->raw();
+}
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_member_readable(std::shared_ptr<earl::value::Obj> obj,

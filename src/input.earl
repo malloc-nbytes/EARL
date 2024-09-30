@@ -3,14 +3,4 @@ module Main
 import "std/system.earl" as sys
 import "std/script.earl" as scr
 
-println(scr::all_running_procs());
 
-# foreach entry in s {
-#     if !entry["cmd"] {
-#         continue;
-#     }
-#     let cmd = entry["cmd"].unwrap();
-#     if cmd == "ocamllsp" {
-#         println("FOUND");
-#     }
-# }

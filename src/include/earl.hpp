@@ -518,6 +518,7 @@ namespace earl {
             Time(std::time_t now);
 
             std::shared_ptr<Time> update(void);
+            std::shared_ptr<Int> raw(void);
             std::shared_ptr<Tuple> readable(void);
             std::shared_ptr<Int> years(void);
             std::shared_ptr<Int> months(void);

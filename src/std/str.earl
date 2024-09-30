@@ -90,6 +90,18 @@ module Str
     return none;
 }
 
+@pub fn remove_all_of_char(@ref s: str, target: char): unit {
+    let i = 0;
+    while i < len(s) {
+        if s[i] == target {
+            s.pop(i);
+        }
+        else {
+            i += 1;
+        }
+    }
+}
+
 ### NAME find_last_of
 ### PARAMETER s: @const @ref str
 ### PARAMETER t: char

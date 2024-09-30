@@ -163,4 +163,3 @@ File::to_cxxstring(void) {
     std::string msg = "File(fp="+m_fp->to_cxxstring()+", mode="+m_mode->to_cxxstring()+", stream=..., open="+std::to_string(m_open)+", mode_actual="+std::to_string(m_mode_actual)+")";
     return msg;
 }
-
