@@ -195,16 +195,6 @@ namespace Intrinsics {
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>
-    intrinsic_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
-                   std::shared_ptr<Ctx> &ctx,
-                   Expr *expr);
-
-    std::shared_ptr<earl::value::Obj>
-    intrinsic_rand(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-                   std::shared_ptr<Ctx> &ctx,
-                   Expr *expr);
-
-    std::shared_ptr<earl::value::Obj>
     intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
@@ -340,6 +330,16 @@ namespace Intrinsics {
                   Expr *expr);
 
     /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_init_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
+                        std::shared_ptr<Ctx> &ctx,
+                        Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_random(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                     std::shared_ptr<Ctx> &ctx,
+                     Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic___internal_mkdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,

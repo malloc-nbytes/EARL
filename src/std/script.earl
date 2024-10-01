@@ -234,4 +234,22 @@ import "std/system.earl"
     return res;
 }
 
+### NAME launch_proc
+### PARAMETER proc: str
+### RETURNS unit
+### DESCRIPTION
+###   Launch the processes `proc`.
+@pub fn launch_proc(proc: str): unit {
+    System::cmd_wcheck(proc);
+}
+
+### NAME launch_bgproc
+### PARAMETER proc: str
+### RETURNS unit
+### DESCRIPTION
+###   Launch the processes `proc` in the background.
+@pub fn launch_bgproc(proc: str): unit {
+    System::cmd_wcheck(proc+'&');
+}
+
 ### END FUNCTIONS

@@ -41,8 +41,6 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
-    {"seed", &Intrinsics::intrinsic_seed},
-    {"rand", &Intrinsics::intrinsic_rand},
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
@@ -57,6 +55,8 @@ Intrinsics::intrinsic_functions = {
     {"some", &Intrinsics::intrinsic_some},
     {"argv", &Intrinsics::intrinsic_argv},
     {"input", &Intrinsics::intrinsic_input},
+    {"init_seed", &Intrinsics::intrinsic_init_seed},
+    {"random", &Intrinsics::intrinsic_random},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
@@ -651,9 +651,9 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
-               std::shared_ptr<Ctx> &ctx,
-               Expr *expr) {
+Intrinsics::intrinsic_init_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
+                                std::shared_ptr<Ctx> &ctx,
+                                Expr *expr) {
     __INTR_ARGS_MUSTBE_SIZE(seed, 1, "seed", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(seed[0], earl::value::Type::Int, 1, "seed", expr);
     unsigned s = (unsigned)dynamic_cast<earl::value::Int *>(seed[0].get())->value();
@@ -662,9 +662,9 @@ Intrinsics::intrinsic_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_rand(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
-               std::shared_ptr<Ctx> &ctx,
-               Expr *expr) {
+Intrinsics::intrinsic_random(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr) {
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "rand", expr);
     return std::make_shared<earl::value::Int>(std::rand());
 }

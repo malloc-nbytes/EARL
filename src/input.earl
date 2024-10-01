@@ -1,12 +1,9 @@
 module Main
 
-class Point [x, y] {
-    @pub let x = x;
-    @pub let y = y;
+init_seed(datetime().raw());
 
-    @pub fn sumxy() {
-        return this.x + this.y;
-    }
+for i in 0 to 10000 {
+    println(random()%100);
 }
 
-println(Point(1, 2).x, ' ', Point(3, 4).y, ' ', Point(9, 2).sumxy());
+
