@@ -426,7 +426,7 @@ eval_user_defined_function_wo_params(const std::string &id,
 
     if (ctx->function_exists(id)) {
         if ((flags & __SHOWFUNS) != 0)
-            std::cout << "[EARL show-fun] " << id << std::endl;
+            std::cout << "[EARL show-funs] " << id << std::endl;
 
         auto func = ctx->function_get(id);
 
@@ -511,7 +511,7 @@ eval_user_defined_function(ExprFuncCall *expr,
                            bool from_outside) {
     if (ctx->function_exists(id)) {
         if ((flags & __SHOWFUNS) != 0)
-            std::cout << "[EARL show-fun] " << id << '\n';
+            std::cout << "[EARL show-funs] " << id << '\n';
 
         auto func = ctx->function_get(id);
         if (func->params_len() != params.size()) {

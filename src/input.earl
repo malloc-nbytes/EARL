@@ -1,9 +1,9 @@
 module Main
 
-init_seed(datetime().raw());
-
-for i in 0 to 10000 {
-    println(random()%100);
+class Point [] {
+    let x = 2;
 }
 
-
+let p = Point();
+println(p);
+println();

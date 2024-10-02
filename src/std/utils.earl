@@ -36,6 +36,15 @@ module Utils
     return n%2 == 0;
 }
 
+### NAME is_odd
+### PARAMETER n: int
+### RETURNS bool
+### DESCRIPTION
+###   Returns `true` if `n` is odd, or `false` if otherwise.
+@pub fn is_odd(n) {
+    return n%2 != 0;
+}
+
 ### NAME swap
 ### PARAMETER x1: @ref any
 ### PARAMETER x2: @ref type(x1)

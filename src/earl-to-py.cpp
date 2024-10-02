@@ -22,8 +22,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// *** TODO: Update bitwise binary operators for Python ***
-
 #include <iostream>
 #include <cassert>
 #include <string>
@@ -63,8 +61,9 @@ struct Context {
     std::vector<std::string> lambdas;
     std::vector<std::string> earl_imports;
     std::vector<std::string> py_imports;
-    std::vector<std::pair<std::string, std::string>> py_member_intrinsics;
     std::vector<std::string> unresolved_idents;
+    std::vector<std::string> enum_ids;
+    std::vector<std::string> enum_values;
 };
 
 static unsigned lambdas_count = 0;
@@ -106,10 +105,12 @@ static const std::unordered_map<std::string, etopy> earl_to_py_equiv = {
     {"typeof", etopy("type(~)", {},                   {})},
     {"argv", etopy("sys.argv", {},                    "sys")},
     {"open", etopy("open(~)", {},                     {})},
-    {"unimplemented", etopy("sys.exit()", {},         "sys")},
+    {"unimplemented", etopy("assert False, \"UNIMPLEMENTED: \" + ~", {}, {})},
     {"sleep", etopy("time.sleep(~*1000)", {},         "time")},
     {"env", etopy("os.getenv(~)", {},                 "os")},
     {"datetime", etopy("datetime.datetime.now()", {}, "datetime")},
+    {"assert", etopy("assert(~)", {}, {})},
+    {"panic", etopy("assert False, \"PANIC: \" + ~", {}, {})}
 };
 
 static void
@@ -144,7 +145,7 @@ earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
         if (ch == PY_INTRINSIC_REPLACEMENT_CODE) {
             if (found_replacement_pos) {
                 std::cerr <<
-                    "can only have 1 replacement location in Python intrinsic"
+                    "earl_intrinsic_to_py_intrinsic: can only have 1 replacement location in Python intrinsic"
                           << std::endl;
                 std::exit(EXIT_FAILURE);
             }
@@ -154,7 +155,9 @@ earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
             // If there are extra parameters that Python needs,
             // insert them.
             if (it->second.extra_py_params.size() != 0) {
-                py_intr_buf += ", ";
+                // Handle the case where there are no user parameters passed.
+                if (comma_sep_params_str.size() > 0)
+                    py_intr_buf += ", ";
                 for (size_t i = 0; i < it->second.extra_py_params.size(); ++i) {
                     py_intr_buf += it->second.extra_py_params.at(i);
                     if (i != it->second.extra_py_params.size() - 1)
@@ -165,7 +168,6 @@ earl_intrinsic_to_py_intrinsic(const std::string &orig_funccall,
         else
             py_intr_buf += ch;
     }
-
 
     // There is an import that we need
     if (it->second.imports.has_value())
@@ -297,6 +299,11 @@ expr_term_get_to_py(ExprGet *expr, Context &ctx) {
         ctx.unresolved_idents.push_back(ident);
     }
 
+    for (size_t i = 0; i < ctx.enum_ids.size(); ++i) {
+        if (left == ctx.enum_ids.at(i))
+            return right;
+    }
+
     return left+"."+right;
 }
 
@@ -328,7 +335,7 @@ expr_term_array_access_to_py(ExprArrayAccess *expr, Context &ctx) {
 
 static std::string
 expr_term_boollit_to_py(ExprBool *expr, Context &context)  {
-    return expr->m_value ? "true" : "false";
+    return expr->m_value ? "True" : "False";
 }
 
 static std::string
@@ -346,7 +353,7 @@ static std::string construct_closure(ExprClosure *expr, Context &ctx) {
     }
     pylambda += "):\n";
 
-    Context clctx = {0, pylambda, false, {}, {}, {}, {}};
+    Context clctx = {0, pylambda, false, {}, {}, {}, {}, {}};
     stmt_block_to_py(expr->m_block.get(), clctx);
 
     ctx.lambdas.push_back(clctx.py_src);
@@ -481,13 +488,33 @@ static std::string
 expr_bin_to_py(ExprBinary *expr, Context &ctx) {
     std::string lhs = expr_to_py(expr->m_lhs.get(), ctx);
     std::string rhs = expr_to_py(expr->m_rhs.get(), ctx);
-    return lhs+" "+expr->m_op->lexeme()+" "+rhs;
+    std::string op = "";
+    if (expr->m_op->lexeme() == "`&")
+        op = "&";
+    else if (expr->m_op->lexeme() == "`|")
+        op = "|";
+    else if (expr->m_op->lexeme() == "`^")
+        op = "^";
+    else if (expr->m_op->lexeme() == "&&")
+        op = "and";
+    else if (expr->m_op->lexeme() == "||")
+        op = "or";
+    else
+        op = expr->m_op->lexeme();
+    return lhs+" "+op+" "+rhs;
 }
 
 static std::string
 expr_unary_to_py(ExprUnary *expr, Context &ctx) {
     std::string pyexpr = expr_to_py(expr->m_expr.get(), ctx);
-    return expr->m_op->lexeme()+pyexpr;
+    std::string op = "";
+    if (expr->m_op->lexeme() == "`~")
+        op = "~";
+    else if (expr->m_op->lexeme() == "!")
+        op = "not ";
+    else
+        op = expr->m_op->lexeme();
+    return op+pyexpr;
 }
 
 static std::string
@@ -497,7 +524,7 @@ expr_to_py(Expr *expr, Context &ctx) {
         return expr_term_to_py(dynamic_cast<ExprTerm *>(expr), ctx);
     } break;
     case ExprType::Binary: {
-        return expr_bin_to_py(dynamic_cast<ExprBinary *>(expr), ctx);
+        return "("+expr_bin_to_py(dynamic_cast<ExprBinary *>(expr), ctx)+")";
     } break;
     case ExprType::Unary: {
         return expr_unary_to_py(dynamic_cast<ExprUnary *>(expr), ctx);
@@ -534,17 +561,6 @@ stmt_let_to_py(StmtLet *stmt, Context &ctx, bool __init__ = false) {
         if (i != stmt->m_ids.size()-1)
             pylet += ", ";
     }
-
-    // TODO: remove if found unnecessary
-    // if (stmt->m_expr->get_type() == ExprType::Term) {
-    //     auto term = dynamic_cast<ExprTerm *>(stmt->m_expr.get());
-    //     if (term->get_term_type() == ExprTermType::Closure) {
-    //         auto cl = dynamic_cast<ExprClosure *>(term);
-    //         std::string clname = construct_closure(cl, ctx);
-    //         PYSTMT_CONS(pylet+" = "+clname, ctx);
-    //         return;
-    //     }
-    // }
 
     const std::string pyexpr = expr_to_py(stmt->m_expr.get(), ctx);
     PYSTMT_CONS(pylet+" = " + pyexpr, ctx);
@@ -643,8 +659,6 @@ stmt_import_to_py(StmtImport *stmt, Context &ctx) {
         pyimport += " as " + alias;
 
     ctx.earl_imports.push_back(pyimport);
-
-    // PYSTMT_CONS(pyimport, ctx);
 }
 
 static void
@@ -662,12 +676,15 @@ stmt_class_to_py(StmtClass *stmt, Context &ctx) {
     ctx.in_class = true;
     ctx.scope_depth++;
 
-    if (stmt->m_constructor_args.size() > 0) {
-        std::string init = "def __init__(self, ";
-        for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
-            init += stmt->m_constructor_args.at(i).first->lexeme();
-            if (i != stmt->m_constructor_args.size()-1)
-                init += ", ";
+    if (stmt->m_members.size() > 0) {
+        std::string init = "def __init__(self";
+        if (stmt->m_constructor_args.size() > 0) {
+            init += ", ";
+            for (size_t i = 0; i < stmt->m_constructor_args.size(); ++i) {
+                init += stmt->m_constructor_args.at(i).first->lexeme();
+                if (i != stmt->m_constructor_args.size()-1)
+                    init += ", ";
+            }
         }
         init += "):";
         PYSTMT_CONS(init, ctx);
@@ -686,10 +703,22 @@ stmt_class_to_py(StmtClass *stmt, Context &ctx) {
 
 static void
 stmt_match_to_py(StmtMatch *stmt, Context &ctx) {
+    std::cerr << "[EARL] warn: `match` statement for --to-py is unimplemented. Ignoring..." << std::endl;
 }
 
 static void
 stmt_enum_to_py(StmtEnum *stmt, Context &ctx) {
+    ctx.enum_ids.push_back(stmt->m_id->lexeme());
+    for (size_t i = 0; i < stmt->m_elems.size(); ++i) {
+        std::string pylet = stmt->m_elems.at(i).first->lexeme()+" = ";
+        if (!stmt->m_elems.at(i).second) {
+            std::cerr << "[EARL] error: Cannot convert enum "+stmt->m_id->lexeme()+" to Python because there is no explict value found" << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+        std::string pyexpr = expr_to_py(stmt->m_elems.at(i).second.get(), ctx);
+        pylet += pyexpr + " # from enum " + stmt->m_id->lexeme();
+        ctx.enum_values.push_back(pylet);
+    }
 }
 
 static void
@@ -730,31 +759,45 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
 
 std::string
 earl_to_py(std::unique_ptr<Program> program) {
-    Context ctx = {0, "", false, {}, {}, {}, {}};
-    for (size_t i = 0; i < program->m_stmts.size(); ++i) {
+    Context ctx = {0, "", false, {}, {}, {}, {}, {}};
+    for (size_t i = 0; i < program->m_stmts.size(); ++i)
         stmt_to_py(program->m_stmts.at(i).get(), ctx);
-    }
 
     std::string unresolved = "";
+    if (ctx.unresolved_idents.size() > 0)
+        unresolved += "# UNRESOLVED SYMBOLS\n";
     for (auto &l : ctx.unresolved_idents)
         unresolved += "# UNRESOLVED: " + l + "\n";
 
     std::string imports = "";
+    if (ctx.earl_imports.size() > 0)
+        imports += "# EARL Imports\n";
     for (auto &l : ctx.earl_imports)
         imports += l + "\n";
 
     std::string py_imports = "";
+    if (ctx.py_imports.size() > 0)
+        py_imports += "# Python Imports\n";
     for (auto &l : ctx.py_imports)
         py_imports += "import "+l+"\n";
 
     std::string lambdas = "";
+    if (ctx.lambdas.size() > 0)
+        lambdas += "# Autogenerated Lambdas\n";
     for (auto &l : ctx.lambdas)
         lambdas += l + "\n";
 
-    std::string py_intrinsics = "";
-    for (auto &l : ctx.py_member_intrinsics)
-        py_intrinsics += l.second + "\n";
+    std::string enum_values = "";
+    if (ctx.enum_values.size() > 0)
+        enum_values += "# Substitute Enum Values\n";
+    for (auto &l : ctx.enum_values)
+        enum_values += l + "\n";
 
-    return unresolved+py_imports+imports+lambdas+py_intrinsics+ctx.py_src;
+    return unresolved
+        + py_imports
+        + imports
+        + lambdas
+        + enum_values
+        + "# Begin Python Source\n"
+        + ctx.py_src;
 }
-
