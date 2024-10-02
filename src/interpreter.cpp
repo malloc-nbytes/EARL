@@ -614,7 +614,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             if (ctx->function_exists(er.id))
                 func = ctx->function_get(er.id);
             if ((!perp || !perp->this_) && (func && er.ctx != ctx && !func->is_pub())) {
-                std::string msg = "member variable `" + func->id() + "` is missing the @pub attribute";
+                std::string msg = "member `" + func->id() + "` is missing the @pub attribute";
                 if (er.extra) Err::err_wexpr(static_cast<Expr *>(er.extra));
                 throw InterpreterException(msg);
             }

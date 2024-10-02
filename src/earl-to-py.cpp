@@ -541,6 +541,9 @@ stmt_def_to_py(StmtDef *stmt, Context &ctx, bool add_self = false) {
     if (add_self)
         params += "self";
 
+    if (stmt->m_args.size() > 0)
+        params += ", ";
+
     for (size_t i = 0; i < stmt->m_args.size(); ++i) {
         params += stmt->m_args.at(i).first.first->lexeme();
         if (i != stmt->m_args.size() - 1)
