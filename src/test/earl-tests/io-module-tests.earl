@@ -1,8 +1,8 @@
 module IOModuleTests
 
-import "std/assert.earl"
-import "std/io.earl"
-import "test-utils.earl"
+import "std/assert.earl";
+import "std/io.earl";
+import "test-utils.earl";
 
 Assert::FILE = __FILE__;
 

@@ -707,23 +707,26 @@ can rename it using the =as= keyword followed by some identifier.
 ** Grammar
 
 #+begin_quote
-=import= "filepath" ?(=full= | =almost=) ?( =as= <identifier>)
+=import= <expr> =;= ?(=full= | =almost=) ?( =as= <identifier>)
 #+end_quote
 
 ** Examples
 
 #+begin_example
 # stdlib imports
-import "std/list.earl" full
+import "std/list.earl"; full
 
-import "std/math.earl"        # uses `full` by default
+import "std/math.earl";       # uses `full` by default
 
 # this module can now be accessed by
 # Utils:: or utl::
-import "std/utils.earl" almost as utl
+import "std/utils.earl"; almost as utl
+
 
 # local imports
-import "my-local-file.earl" as local
+import env("HOME")+"/my-file.earl"; full as my_file
+
+import "my-local-file.earl"; as local
 #+end_example
 
 * Modules

@@ -1,8 +1,8 @@
 module CharModuleTests
 
-import "std/assert.earl"
-import "std/char.earl"
-import "test-utils.earl"
+import "std/assert.earl";
+import "std/char.earl";
+import "test-utils.earl";
 
 Assert::FILE = __FILE__;
 

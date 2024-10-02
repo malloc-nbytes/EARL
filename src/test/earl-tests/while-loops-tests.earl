@@ -1,7 +1,7 @@
 module WhileLoopTests
 
-import "std/assert.earl"
-import "test-utils.earl"
+import "std/assert.earl";
+import "test-utils.earl";
 
 Assert::FILE = __FILE__;
 

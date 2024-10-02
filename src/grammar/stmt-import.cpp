@@ -28,7 +28,7 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-StmtImport::StmtImport(std::shared_ptr<Token> fp,
+StmtImport::StmtImport(std::shared_ptr<Expr> fp,
                        std::optional<std::shared_ptr<Token>> depth,
                        std::optional<std::shared_ptr<Token>> as)
     : m_fp(fp), m_depth(depth), m_as(as) {

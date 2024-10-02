@@ -23,8 +23,8 @@
 ### MODULE
 module Script
 
-import "std/str.earl"
-import "std/system.earl"
+import "std/str.earl";
+import "std/system.earl";
 
 ### BEGIN FUNCTIONS
 

@@ -1,8 +1,8 @@
 module TestMgr
 
-import "std/system.earl"
-import "std/io.earl"
-import "std/str.earl"
+import "std/system.earl";
+import "std/io.earl";
+import "std/str.earl";
 
 #--- This file will either generate the test entrypoint
 #--- or it can be used to generate a test template.
@@ -53,7 +53,7 @@ fn gen(should_print, crash_on_failure) {
     println("TESTS: ", tests);
 
     foreach test in tests {
-        src += f"import \"{test}\"\n";
+        src += f"import \"{test}\";\n";
     }
 
     src += "\nfn "+ main_test_fun +"() {\n";
@@ -96,8 +96,8 @@ fn gen(should_print, crash_on_failure) {
 fn create_test_file(filename, modname) {
     let s = f"module {modname}\n\n";
 
-    s += "import \"std/assert.earl\"\n";
-    s += "import \"test-utils.earl\"\n\n";
+    s += "import \"std/assert.earl\";\n";
+    s += "import \"test-utils.earl\";\n\n";
 
     s += "Assert::FILE = __FILE__;\n\n";
 

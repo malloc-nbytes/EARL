@@ -23,7 +23,7 @@
 ### MODULE
 module List
 
-import "std/utils.earl" full
+import "std/utils.earl"; full
 
 ### BEGIN FUNCTIONS
 

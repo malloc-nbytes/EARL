@@ -1,9 +1,3 @@
 module Main
 
-class Point [] {
-    let x = 2;
-}
 
-let p = Point();
-println(p);
-println();

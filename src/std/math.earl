@@ -23,7 +23,7 @@
 ### MODULE
 module Math
 
-import "std/list.earl"
+import "std/list.earl";
 
 ### BEGIN FUNCTIONS
 

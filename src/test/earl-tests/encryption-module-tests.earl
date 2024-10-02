@@ -1,8 +1,8 @@
 module EncryptionModuleTests
 
-import "std/assert.earl"
-import "std/encryption.earl"
-import "test-utils.earl"
+import "std/assert.earl";
+import "std/encryption.earl";
+import "test-utils.earl";
 
 Assert::FILE = __FILE__;
 

@@ -1,8 +1,8 @@
 module ClassTests
 
-import "std/assert.earl"
-import "test-utils.earl"
-import "imports/import-tests-artifacts.earl"
+import "std/assert.earl";
+import "test-utils.earl";
+import "imports/import-tests-artifacts.earl";
 
 Assert::FILE = __FILE__;
 

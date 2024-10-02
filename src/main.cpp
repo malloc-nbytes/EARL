@@ -50,18 +50,20 @@ uint32_t flags = 0x00;
 
 static void
 usage(void) {
+    std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
+
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
     std::cerr << "Documentation can be found on the Github repository: https://github.com/malloc-nbytes/EARL/" << std::endl;
-    std::cerr << "  README                  -> compiling, installing, contributing" << std::endl;
-    std::cerr << "  docs/html/index.html    -> source code (make docs)" << std::endl;
-    std::cerr << "  EARL-language-reference -> how to use EARL" << std::endl << std::endl;
+    std::cerr << "  README.html                  -> compiling, installing, contributing" << std::endl;
+    std::cerr << "  docs/html/index.html         -> source code (make docs)" << std::endl;
+    std::cerr << "  EARL-language-reference.html -> how to use EARL" << std::endl << std::endl;
 
     std::cerr << "Usage: earl [script] [options...] -- [args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "  -v, --version                          Print version information" << std::endl;
     std::cerr << "  -h, --help                             Print this help message" << std::endl;
+    std::cerr << "  -v, --version                          Print version information" << std::endl;
     std::cerr << "  -c, --check                            Only parse the file given" << std::endl;
     std::cerr << "  -w, --watch [files...]                 Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
@@ -69,8 +71,9 @@ usage(void) {
     std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
     std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "          where" << std::endl;
-    std::cerr << "              O = stdout|file" << std::endl;
-    std::cerr << "              F = program" << std::endl;
+    std::cerr << "              O = stdout|<file>" << std::endl;
+    std::cerr << "              F = <program>" << std::endl;
+
     std::exit(0);
 }
 

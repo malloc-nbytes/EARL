@@ -518,12 +518,13 @@ struct StmtFor : public Stmt {
 };
 
 struct StmtImport : public Stmt {
-    std::shared_ptr<Token> m_fp;
+    // std::shared_ptr<Token> m_fp;
+    std::shared_ptr<Expr> m_fp;
     std::optional<std::shared_ptr<Token>> m_depth;
     std::optional<std::shared_ptr<Token>> m_as;
     uint32_t __m_depth;
 
-    StmtImport(std::shared_ptr<Token> fp,
+    StmtImport(std::shared_ptr<Expr> fp,
                std::optional<std::shared_ptr<Token>> depth,
                std::optional<std::shared_ptr<Token>> as);
 

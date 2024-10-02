@@ -5,9 +5,9 @@ main();
 
 :reset
 
-import "std/system.earl"
-import "std/list.earl"
-import "std/math.earl"
+import "std/system.earl";
+import "std/list.earl";
+import "std/math.earl";
 
 sleep(1000000/2);
 

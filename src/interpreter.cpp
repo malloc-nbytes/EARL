@@ -2070,7 +2070,8 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() != CtxType::World) {
-        Err::err_wtok(stmt->m_fp.get());
+        // Err::err_wtok(stmt->m_fp.get());
+        Err::err_wexpr(stmt->m_fp.get());
         std::string msg = "`import` statements must be used in the @world context";
         throw InterpreterException(msg);
     }
@@ -2079,17 +2080,21 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
 
-    std::string src_code              = read_file(stmt->m_fp.get()->lexeme().c_str());
+    ER path_er = eval_expr(stmt->m_fp.get(), ctx, false);
+    PackedERPreliminary perp;
+    auto path_obj                     = unpack_ER(path_er, ctx, &perp);
+    std::string path                  = path_obj->to_cxxstring();
+    std::string src_code              = read_file(path.c_str());
     std::unique_ptr<Lexer> lexer      = lex_file(src_code,
-                                                 stmt->m_fp.get()->lexeme(),
+                                                 path,
                                                  keywords,
                                                  types,
                                                  comment);
     std::unique_ptr<Program> program = nullptr;
     if ((flags & __CHECK) != 0)
-        program = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme(), /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
+        program = Parser::parse_program(*lexer.get(), path, /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
     else
-        program = Parser::parse_program(*lexer.get(), stmt->m_fp->lexeme());
+        program = Parser::parse_program(*lexer.get(), path);
 
     std::shared_ptr<Ctx> child_ctx =
         Interpreter::interpret(std::move(program), std::move(lexer));
@@ -2351,16 +2356,14 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
                  "This may lead to undefined behavior and break functionality.");
         if (stmt->stmt_type() == StmtType::Def
             || stmt->stmt_type() == StmtType::Class
-            || stmt->stmt_type() == StmtType::Mod
-            || stmt->stmt_type() == StmtType::Import)
+            || stmt->stmt_type() == StmtType::Mod)
             (void)Interpreter::eval_stmt(wctx->stmt_at(i), ctx);
     }
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
         if (stmt->stmt_type() != StmtType::Def
             && stmt->stmt_type() != StmtType::Class
-            && stmt->stmt_type() != StmtType::Mod
-            && stmt->stmt_type() != StmtType::Import) {
+            && stmt->stmt_type() != StmtType::Mod) {
             (void)Interpreter::eval_stmt(stmt, ctx);
         }
     }

@@ -649,16 +649,18 @@ stmt_for_to_py(StmtFor *stmt, Context &ctx) {
 
 static void
 stmt_import_to_py(StmtImport *stmt, Context &ctx) {
-    const std::string &pyfp = stmt->m_fp->lexeme();
-    std::string alias = "";
-    if (stmt->m_as.has_value())
-        alias = stmt->m_as.value()->lexeme();
+    assert(false && "todo");
 
-    std::string pyimport = "# IMPORT NEEDS RESOLVING\n# import " + pyfp;
-    if (alias != "")
-        pyimport += " as " + alias;
+    // const std::string &pyfp = stmt->m_fp->lexeme();
+    // std::string alias = "";
+    // if (stmt->m_as.has_value())
+    //     alias = stmt->m_as.value()->lexeme();
 
-    ctx.earl_imports.push_back(pyimport);
+    // std::string pyimport = "# IMPORT NEEDS RESOLVING\n# import " + pyfp;
+    // if (alias != "")
+    //     pyimport += " as " + alias;
+
+    // ctx.earl_imports.push_back(pyimport);
 }
 
 static void

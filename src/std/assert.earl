@@ -23,8 +23,6 @@
 ### MODULE
 module Assert
 
-# import "std/io.earl" almost
-
 ### BEGIN VARIABLES
 
 ### NAME CRASH_ON_FAILURE
