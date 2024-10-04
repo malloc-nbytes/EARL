@@ -182,23 +182,23 @@ fn area_of_circle(r) {
     return PI * (r**2);
 }
 
-### NAME area_of_cylinder
+### NAME volume_of_cylinder
 ### PARAMETER r: float|int
 ### PARAMETER h: float|int
 ### RETURNS float|int
 ### DESCRIPTION
-###   Returns the area of a cylinder with radius `r` and height `h`.
+###   Returns the volume of a cylinder with radius `r` and height `h`.
 @pub @world
 fn volume_of_cylinder(r, h) {
     return h * PI * (r**2);
 }
 
-### NAME area_of_cone
+### NAME volume_of_cone
 ### PARAMETER r: float|int
 ### PARAMETER h: float|int
 ### RETURNS float|int
 ### DESCRIPTION
-###   Returns the area of a cone with radius `r` and height `h`.
+###   Returns the volume of a cone with radius `r` and height `h`.
 @pub @world
 fn volume_of_cone(r, h) {
     return (1.0/3.0) * h * PI * (r**2);
