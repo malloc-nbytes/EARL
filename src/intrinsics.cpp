@@ -394,7 +394,8 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
         return iter_help(info);
     } break;
     default: {
-        assert(false && "unimplemented");
+        const std::string msg = "intrinsic `help` can only be called on function at the moment";
+        throw InterpreterException(msg);
     }
     }
     return nullptr; // unreachable

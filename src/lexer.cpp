@@ -264,7 +264,7 @@ lex_file(std::string &src,
     while (i < src.size()) {
         char *lexeme = &src[i];
 
-        if (i < src.size()-2 && src[i] == '#' && src[i+1] == '#' && src[i+2] == '#') {
+        if (i < src.size()-2 && src[i] == '#' && src[i+1] == '-' && src[i+2] == '-') {
             std::string info = "";
             i += 3;
             while (src[i] && src[i] != '\n') {

@@ -525,11 +525,27 @@ eval_user_defined_function(ExprFuncCall *expr,
                            std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx,
                            bool from_outside) {
-    if (ctx->function_exists(id)) {
+    bool func_exists = false, var_exists = false;
+    func_exists = ctx->function_exists(id);
+    if (!func_exists)
+        var_exists = ctx->variable_exists(id);
+
+    if (func_exists || var_exists) {
         if ((flags & __SHOWFUNS) != 0)
             std::cout << "[EARL show-funs] " << id << '\n';
 
-        auto func = ctx->function_get(id);
+        std::shared_ptr<earl::function::Obj> func = nullptr;
+
+        if (func_exists)
+            func = ctx->function_get(id);
+        else {
+            std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
+            if (var->type() != earl::value::Type::FunctionRef)
+                goto bad;
+            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(var->value().get());
+            func = std::dynamic_pointer_cast<earl::function::Obj>(ref->value());
+        }
+
         if (func->params_len() != params.size()) {
             const std::string msg = "function `"+func->id()+"` expects "+std::to_string(func->params_len())+" arguments but got "+std::to_string(params.size());
             Err::err_wexpr(expr);
@@ -575,6 +591,8 @@ eval_user_defined_function(ExprFuncCall *expr,
         std::shared_ptr<Ctx> mask = clctx;
         return Interpreter::eval_stmt_block(clvalue->block(), mask);
     }
+
+ bad:
 
     Err::err_wexpr(expr);
 
@@ -635,7 +653,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
                 throw InterpreterException(msg);
             }
 
-            auto call = eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra),er.id, params, ctx);
+            auto call = eval_user_defined_function(static_cast<ExprFuncCall *>(er.extra), er.id, params, ctx);
             if (call->type() == earl::value::Type::Return)
                 call = std::make_shared<earl::value::Void>();
             return call;

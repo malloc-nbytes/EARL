@@ -1,15 +1,15 @@
 module Main
 
-import "../src/other.earl"; as oth
-
-### NAME sum
-### PARAMETER a: int
-### PARAMETER b: int
-### RETURNS int
-### DESCRIPTION
-### Returns the result of `a` + `b`.
+#-- NAME sum
+#-- PARAMETER a: int
+#-- PARAMETER b: int
+#-- RETURNS int
+#-- DESCRIPTION
+#-- Returns the result of `a` + `b`.
 fn sum(a, b) {
     return a+b;
 }
 
-println(help(sum));
+let x = 1;
+
+

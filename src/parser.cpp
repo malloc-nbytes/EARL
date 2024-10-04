@@ -1015,10 +1015,17 @@ Parser::parse_stmt(Lexer &lexer) {
         switch (tok->type()) {
         case TokenType::Dollarsign: return parse_stmt_bash(lexer);
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_LET)
-                return parse_stmt_let(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_FN)
                 return parse_stmt_def(lexer, attrs, info);
+
+            if (info.size() > 0) {
+                Err::err_wtok(tok);
+                const std::string msg = "Info statements are only available for functions at the moment";
+                throw ParserException(msg);
+            }
+
+            if (tok->lexeme() == COMMON_EARLKW_LET)
+                return parse_stmt_let(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_IF)
                 return parse_stmt_if(lexer);
             if (tok->lexeme() == COMMON_EARLKW_RETURN)
@@ -1054,6 +1061,12 @@ Parser::parse_stmt(Lexer &lexer) {
             throw ParserException(msg);
         } break;
         case TokenType::Ident: {
+            if (info.size() > 0) {
+                Err::err_wtok(tok);
+                const std::string msg = "Info statements are only available for functions at the moment";
+                throw ParserException(msg);
+            }
+
             // Keeping track of parens to fix an equals sign being in a closure
             // that is defined inside of a function call.
             int paren = 0;
@@ -1088,6 +1101,11 @@ Parser::parse_stmt(Lexer &lexer) {
             throw ParserException(msg);
         } break;
         default: {
+            if (info.size() > 0) {
+                Err::err_wtok(tok);
+                const std::string msg = "Info statements are only available for functions at the moment";
+                throw ParserException(msg);
+            }
             return parse_stmt_expr(lexer);
         }
         }
