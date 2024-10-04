@@ -2737,7 +2737,7 @@ The mathematical constant for Euler's number
 *** *Function List*:
 #+begin_quote
 #+begin_example
-max(x: int|float, y: int|float) -> int|float
+max(x: real, y: real) -> real
 #+end_example
 
 Returns the greater of =x= and =y=.
@@ -2745,7 +2745,7 @@ Returns the greater of =x= and =y=.
 
 #+begin_quote
 #+begin_example
-min(x: int|float, y: int|float) -> int|float
+min(x: real, y: real) -> real
 #+end_example
 
 Returns the minimum of =x= and =y=.
@@ -2753,7 +2753,7 @@ Returns the minimum of =x= and =y=.
 
 #+begin_quote
 #+begin_example
-abs(x: int|float) -> int|float
+abs(x: real) -> real
 #+end_example
 
 Returns the absolute value of =x=.
@@ -2785,7 +2785,7 @@ This function sorts and then returns the middle number of a given list
 
 #+begin_quote
 #+begin_example
-list_min(lst: list) -> int|float
+list_min(lst: list) -> real
 #+end_example
 
 Returns the smallest element =lst=.
@@ -2793,7 +2793,7 @@ Returns the smallest element =lst=.
 
 #+begin_quote
 #+begin_example
-list_max(lst: list) -> int|float
+list_max(lst: list) -> real
 #+end_example
 
 Returns the largest element =lst=.
@@ -2801,7 +2801,7 @@ Returns the largest element =lst=.
 
 #+begin_quote
 #+begin_example
-area_of_circle(r: float|int) -> float|int
+area_of_circle(r: real) -> real
 #+end_example
 
 Returns the area of a circle with radius =r=.
@@ -2809,7 +2809,7 @@ Returns the area of a circle with radius =r=.
 
 #+begin_quote
 #+begin_example
-volume_of_cylinder(r: float|int, h: float|int) -> float|int
+volume_of_cylinder(r: real, h: real) -> real
 #+end_example
 
 Returns the volume of a cylinder with radius =r= and height =h=.
@@ -2817,7 +2817,7 @@ Returns the volume of a cylinder with radius =r= and height =h=.
 
 #+begin_quote
 #+begin_example
-volume_of_cone(r: float|int, h: float|int) -> float|int
+volume_of_cone(r: real, h: real) -> real
 #+end_example
 
 Returns the volume of a cone with radius =r= and height =h=.

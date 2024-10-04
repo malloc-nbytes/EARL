@@ -28,12 +28,12 @@ import "std/list.earl";
 ### BEGIN FUNCTIONS
 
 ### NAME max
-### PARAMETER x: int|float
-### PARAMETER y: int|float
-### RETURNS int|float
+### PARAMETER x: real
+### PARAMETER y: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the greater of `x` and `y`.
-@pub fn max(x, y) {
+@pub fn max(x: real, y: real): real {
     if x >= y {
         return x;
     }
@@ -41,12 +41,12 @@ import "std/list.earl";
 }
 
 ### NAME min
-### PARAMETER x: int|float
-### PARAMETER y: int|float
-### RETURNS int|float
+### PARAMETER x: real
+### PARAMETER y: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the minimum of `x` and `y`.
-@pub fn min(x, y) {
+@pub fn min(x: real, y: real): real {
     if x <= y {
         return x;
     }
@@ -54,13 +54,13 @@ import "std/list.earl";
 }
 
 ### NAME abs
-### PARAMETER x: int|float
-### RETURNS int|float
+### PARAMETER x: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the absolute value of `x`.
-@pub fn abs(x) {
+@pub fn abs(x: real): real {
     if x < 0 {
-        return x * (0-1);
+        return x * -1;
     }
     return x;
 }
@@ -132,10 +132,10 @@ import "std/list.earl";
 
 ### NAME list_min
 ### PARAMETER lst: list
-### RETURNS int|float
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the smallest element `lst`.
-@pub fn list_min(lst) {
+@pub fn list_min(lst: list): real {
     if len(lst) == 0 {
         return none;
     }
@@ -153,10 +153,10 @@ import "std/list.earl";
 
 ### NAME list_max
 ### PARAMETER lst: list
-### RETURNS int|float
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the largest element `lst`.
-@pub fn list_max(lst) {
+@pub fn list_max(lst: list): real {
     if len(lst) == 0 {
         return none;
     }
@@ -173,34 +173,34 @@ import "std/list.earl";
 }
 
 ### NAME area_of_circle
-### PARAMETER r: float|int
-### RETURNS float|int
+### PARAMETER r: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the area of a circle with radius `r`.
 @pub @world
-fn area_of_circle(r) {
+fn area_of_circle(r: real): real {
     return PI * (r**2);
 }
 
 ### NAME volume_of_cylinder
-### PARAMETER r: float|int
-### PARAMETER h: float|int
-### RETURNS float|int
+### PARAMETER r: real
+### PARAMETER h: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the volume of a cylinder with radius `r` and height `h`.
 @pub @world
-fn volume_of_cylinder(r, h) {
+fn volume_of_cylinder(r: real, h: real): real {
     return h * PI * (r**2);
 }
 
 ### NAME volume_of_cone
-### PARAMETER r: float|int
-### PARAMETER h: float|int
-### RETURNS float|int
+### PARAMETER r: real
+### PARAMETER h: real
+### RETURNS real
 ### DESCRIPTION
 ###   Returns the volume of a cone with radius `r` and height `h`.
 @pub @world
-fn volume_of_cone(r, h) {
+fn volume_of_cone(r: real, h: real): real {
     return (1.0/3.0) * h * PI * (r**2);
 }
 
