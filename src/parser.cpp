@@ -25,6 +25,7 @@
 #include <cassert>
 #include <iostream>
 #include <optional>
+#include <memory>
 #include <optional>
 
 #include "utils.hpp"
@@ -993,6 +994,14 @@ parse_stmt_loop(Lexer &lexer) {
     return std::make_unique<StmtLoop>(std::move(tok), std::move(block));
 }
 
+static std::unique_ptr<Stmt>
+parse_stmt_bash(Lexer &lexer) {
+    (void)Parser::parse_expect(lexer, TokenType::Dollarsign);
+    auto expr = Parser::parse_expr(lexer);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::make_unique<StmtBashLiteral>(std::unique_ptr<Expr>(expr));
+}
+
 std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
@@ -1002,6 +1011,7 @@ Parser::parse_stmt(Lexer &lexer) {
         Token *tok = lexer.peek();
 
         switch (tok->type()) {
+        case TokenType::Dollarsign: return parse_stmt_bash(lexer);
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_LET)
                 return parse_stmt_let(lexer, attrs);

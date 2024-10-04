@@ -37,128 +37,68 @@
 std::string
 tokentype_to_str(TokenType type) {
     switch (type) {
-    case TokenType::Lparen:
-        return "LPAREN";
-    case TokenType::Rparen:
-        return "RPAREN";
-    case TokenType::Lbracket:
-        return "LBRACKET";
-    case TokenType::Rbracket:
-        return "RBRACKET";
-    case TokenType::Lbrace:
-        return "LBRACE";
-    case TokenType::Rbrace:
-        return "RBRACE";
-    case TokenType::Hash:
-        return "HASH";
-    case TokenType::Period:
-        return "PERIOD";
-    case TokenType::Comma:
-        return "COMMA";
-    case TokenType::Semicolon:
-        return "SEMICOLON";
-    case TokenType::Greaterthan:
-        return "GREATERTHAN";
-    case TokenType::Lessthan:
-        return "LESSTHAN";
-    case TokenType::Equals:
-        return "EQUALS";
-    case TokenType::Ampersand:
-        return "AMPERSAND";
-    case TokenType::Asterisk:
-        return "ASTERISK";
-    case TokenType::Plus:
-        return "PLUS";
-    case TokenType::Minus:
-        return "MINUS";
-    case TokenType::Forwardslash:
-        return "FORWARDSLASH";
-    case TokenType::Pipe:
-        return "PIPE";
-    case TokenType::Caret:
-        return "CARET";
-    case TokenType::Questionmark:
-        return "QUESTIONMARK";
-    case TokenType::Backwardslash:
-        return "BACKWARDSLASH";
-    case TokenType::Bang:
-        return "BANG";
-    case TokenType::At:
-        return "AT";
-    case TokenType::Dollarsign:
-        return "DOLLARSIGN";
-    case TokenType::Percent:
-        return "PERCENT";
-    case TokenType::Backtick:
-        return "BACKTICK";
-    case TokenType::Tilde:
-        return "TILDE";
-    case TokenType::Colon:
-        return "COLON";
-    case TokenType::Double_Ampersand:
-        return "DOUBLE_AMPERSAND";
-    case TokenType::Double_Pipe:
-        return "DOUBLE_PIPE";
-    case TokenType::Greaterthan_Equals:
-        return "GREATERTHAN_EQUALS";
-    case TokenType::Lessthan_Equals:
-        return "LESSTHAN_EQUALS";
-    case TokenType::Double_Equals:
-        return "DOUBLE_EQUALS";
-    case TokenType::Bang_Equals:
-        return "BANG_EQUALS";
-    case TokenType::Plus_Equals:
-        return "PLUS_EQUALS";
-    case TokenType::Minus_Equals:
-        return "MINUS_EQUALS";
-    case TokenType::Asterisk_Equals:
-        return "ASTERISK_EQUALS";
-    case TokenType::Forwardslash_Equals:
-        return "FORWARDSLASH_EQUALS";
-    case TokenType::Percent_Equals:
-        return "PERCENT_EQUALS";
-    case TokenType::RightArrow:
-        return "`RIGHTARROW`";
-    case TokenType::Double_Period:
-        return "`DOUBLE_PERIOD`";
-    case TokenType::Double_Colon:
-        return "`DOUBLE_COLON`";
-    case TokenType::Double_Lessthan:
-        return "`DOUBLE_LESSTHAN`";
-    case TokenType::Double_Greaterthan:
-        return "`DOUBLE_GREATERTHAN`";
-    case TokenType::Double_Asterisk:
-        return "DOUBLE_ASTERISK";
-    case TokenType::Backtick_Pipe:
-        return "`BACKTICK_PIPE`";
-    case TokenType::Backtick_Ampersand:
-        return "`BACKTICK_AMPERSAND`";
-    case TokenType::Backtick_Tilde:
-        return "`BACKTICK_TILDE`";
-    case TokenType::Backtick_Caret:
-        return "`BACKTICK_CARET`";
-    case TokenType::Backtick_Pipe_Equals:
-        return "`BACKTICK_PIPE_EQUALS`";
-    case TokenType::Backtick_Ampersand_Equals:;
-        return "`BACKTICK_AMPERSAND_EQUALS`";
-    case TokenType::Backtick_Caret_Equals:;
-        return "`BACKTICK_CARET_EQUALS`";
-    case TokenType::Eof:
-        return "`EOF`";
-    case TokenType::Intlit:
-        return "INTLIT";
-    case TokenType::Strlit:
-        return "STRLIT";
-    case TokenType::Charlit:
-        return "CHARLIT";
-    case TokenType::Floatlit:
-        return "FLOATLIT";
-    case TokenType::Ident:
-        return "IDENTIFIER";
-    case TokenType::Keyword:
-        return "KEYWORD";
-    case TokenType::Type:
-        return "TYPE";
+    case TokenType::Lparen:                     return "LPAREN";
+    case TokenType::Rparen:                     return "RPAREN";
+    case TokenType::Lbracket:                   return "LBRACKET";
+    case TokenType::Rbracket:                   return "RBRACKET";
+    case TokenType::Lbrace:                     return "LBRACE";
+    case TokenType::Rbrace:                     return "RBRACE";
+    case TokenType::Hash:                       return "HASH";
+    case TokenType::Period:                     return "PERIOD";
+    case TokenType::Comma:                      return "COMMA";
+    case TokenType::Semicolon:                  return "SEMICOLON";
+    case TokenType::Greaterthan:                return "GREATERTHAN";
+    case TokenType::Lessthan:                   return "LESSTHAN";
+    case TokenType::Equals:                     return "EQUALS";
+    case TokenType::Ampersand:                  return "AMPERSAND";
+    case TokenType::Asterisk:                   return "ASTERISK";
+    case TokenType::Plus:                       return "PLUS";
+    case TokenType::Minus:                      return "MINUS";
+    case TokenType::Forwardslash:               return "FORWARDSLASH";
+    case TokenType::Pipe:                       return "PIPE";
+    case TokenType::Caret:                      return "CARET";
+    case TokenType::Questionmark:               return "QUESTIONMARK";
+    case TokenType::Backwardslash:              return "BACKWARDSLASH";
+    case TokenType::Bang:                       return "BANG";
+    case TokenType::At:                         return "AT";
+    case TokenType::Dollarsign:                 return "DOLLARSIGN";
+    case TokenType::Percent:                    return "PERCENT";
+    case TokenType::Backtick:                   return "BACKTICK";
+    case TokenType::Tilde:                      return "TILDE";
+    case TokenType::Colon:                      return "COLON";
+    case TokenType::Double_Ampersand:           return "DOUBLE_AMPERSAND";
+    case TokenType::Double_Pipe:                return "DOUBLE_PIPE";
+    case TokenType::Greaterthan_Equals:         return "GREATERTHAN_EQUALS";
+    case TokenType::Lessthan_Equals:            return "LESSTHAN_EQUALS";
+    case TokenType::Double_Equals:              return "DOUBLE_EQUALS";
+    case TokenType::Bang_Equals:                return "BANG_EQUALS";
+    case TokenType::Plus_Equals:                return "PLUS_EQUALS";
+    case TokenType::Minus_Equals:               return "MINUS_EQUALS";
+    case TokenType::Asterisk_Equals:            return "ASTERISK_EQUALS";
+    case TokenType::Forwardslash_Equals:        return "FORWARDSLASH_EQUALS";
+    case TokenType::Percent_Equals:             return "PERCENT_EQUALS";
+    case TokenType::RightArrow:                 return "`RIGHTARROW`";
+    case TokenType::Double_Period:              return "`DOUBLE_PERIOD`";
+    case TokenType::Double_Colon:               return "`DOUBLE_COLON`";
+    case TokenType::Double_Lessthan:            return "`DOUBLE_LESSTHAN`";
+    case TokenType::Double_Greaterthan:         return "`DOUBLE_GREATERTHAN`";
+    case TokenType::Double_Asterisk:            return "DOUBLE_ASTERISK";
+    case TokenType::Backtick_Pipe:              return "`BACKTICK_PIPE`";
+    case TokenType::Backtick_Ampersand:         return "`BACKTICK_AMPERSAND`";
+    case TokenType::Backtick_Tilde:             return "`BACKTICK_TILDE`";
+    case TokenType::Backtick_Caret:             return "`BACKTICK_CARET`";
+    case TokenType::Backtick_Pipe_Equals:       return "`BACKTICK_PIPE_EQUALS`";
+    case TokenType::Backtick_Ampersand_Equals:; return "`BACKTICK_AMPERSAND_EQUALS`";
+    case TokenType::Backtick_Caret_Equals:;     return "`BACKTICK_CARET_EQUALS`";
+    case TokenType::Eof:                        return "`EOF`";
+    case TokenType::Intlit:                     return "INTLIT";
+    case TokenType::Strlit:                     return "STRLIT";
+    case TokenType::Charlit:                    return "CHARLIT";
+    case TokenType::Floatlit:                   return "FLOATLIT";
+    case TokenType::Ident:                      return "IDENTIFIER";
+    case TokenType::Keyword:                    return "KEYWORD";
+    case TokenType::Type:                       return "TYPE";
+    case TokenType::Bashlit:                    return "BASHLIT";
     default:
         ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(type));
         return nullptr;
@@ -177,7 +117,7 @@ Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, st
 std::shared_ptr<Token>
 token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
     (void)lexer;
-    if (type == TokenType::Strlit) {
+    if (type == TokenType::Strlit || type == TokenType::Bashlit) {
         std::string s = "";
         for (size_t i = 0; i < len; ++i) {
             if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 'n') {
