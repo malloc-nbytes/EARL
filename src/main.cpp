@@ -306,7 +306,6 @@ main(int argc, char **argv) {
         std::exit(0);
     }
 
-
     if ((flags & __WATCH) != 0)
         std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
 

@@ -25,6 +25,7 @@
 #include <cassert>
 #include <iostream>
 #include <optional>
+#include <memory>
 #include <optional>
 
 #include "utils.hpp"
@@ -1002,6 +1003,11 @@ Parser::parse_stmt(Lexer &lexer) {
         Token *tok = lexer.peek();
 
         switch (tok->type()) {
+        case TokenType::Bashlit: {
+            auto res = std::make_unique<StmtBashLiteral>(lexer.next());
+            (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+            return res;
+        }
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_LET)
                 return parse_stmt_let(lexer, attrs);

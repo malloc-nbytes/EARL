@@ -56,6 +56,7 @@ enum class StmtType {
     Match,
     Enum,
     Continue,
+    Bash_Literal,
 };
 
 /// The different types an expression can be.
@@ -338,6 +339,12 @@ struct Stmt {
     virtual StmtType stmt_type() const = 0;
 
     bool m_evald = false;
+};
+
+struct StmtBashLiteral : public Stmt {
+    std::shared_ptr<Token> m_lit;
+    StmtBashLiteral(std::shared_ptr<Token> lit);
+    StmtType stmt_type() const override;
 };
 
 /// @brief The Statement Definition Class

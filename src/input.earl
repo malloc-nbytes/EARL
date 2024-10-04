@@ -1,20 +1,8 @@
 module Main
 
-class Solution [] {
-    @pub fn twoSum(nums, target) {
-        for i in 0 to len(nums)-1 {
-            for j in i to len(nums) {
-                if nums[i] + nums[j] == target {
-                    return [i, j];
-                }
-            }
-        }
-        return [-1, -1];
-    }
-
-    @pub fn test() {
-    }
-}
-
-
+$"echo \"creating directory\"";
+$"mkdir tmp";
+$"cd tmp";
+$"touch notes.txt";
+$"echo done";
 
