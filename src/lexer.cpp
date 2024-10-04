@@ -375,5 +375,9 @@ lex_file(std::string &src,
     }
 
     lexer->append(token_alloc(*lexer.get(), nullptr, 0, TokenType::Eof, row, col, fp));
+
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] lex'd file " << fp << " (#tokens=" << lexer->m_len << ")" << std::endl;
+
     return lexer;
 }

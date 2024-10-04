@@ -652,18 +652,18 @@ stmt_for_to_py(StmtFor *stmt, Context &ctx) {
 
 static void
 stmt_import_to_py(StmtImport *stmt, Context &ctx) {
-    assert(false && "todo");
+    // assert(false && "todo");
 
-    // const std::string &pyfp = stmt->m_fp->lexeme();
-    // std::string alias = "";
-    // if (stmt->m_as.has_value())
-    //     alias = stmt->m_as.value()->lexeme();
+    const std::string &pyfp = expr_to_py(stmt->m_fp.get(), ctx);
+    std::string alias = "";
+    if (stmt->m_as.has_value())
+        alias = stmt->m_as.value()->lexeme();
 
-    // std::string pyimport = "# IMPORT NEEDS RESOLVING\n# import " + pyfp;
-    // if (alias != "")
-    //     pyimport += " as " + alias;
+    std::string pyimport = "# IMPORT NEEDS RESOLVING\n# import " + pyfp;
+    if (alias != "")
+        pyimport += " as " + alias;
 
-    // ctx.earl_imports.push_back(pyimport);
+    ctx.earl_imports.push_back(pyimport);
 }
 
 static void
@@ -738,6 +738,12 @@ stmt_loop_to_py(StmtLoop *stmt, Context &ctx) {
 }
 
 static void
+stmt_bash_literal_to_py(StmtBashLiteral *stmt, Context &ctx) {
+    std::string pybash = "$"+expr_to_py(stmt->m_expr.get(), ctx)+";";
+    PYSTMT_CONS("# UNRESOLVED BASH STATEMENT: "+pybash, ctx);
+}
+
+static void
 stmt_to_py(Stmt *stmt, Context &ctx) {
     switch (stmt->stmt_type()) {
     case StmtType::Def:      stmt_def_to_py(dynamic_cast<StmtDef *>(stmt), ctx); break;
@@ -758,6 +764,7 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
     case StmtType::Enum:     stmt_enum_to_py(dynamic_cast<StmtEnum *>(stmt), ctx); break;
     case StmtType::Continue: stmt_continue_to_py(dynamic_cast<StmtContinue *>(stmt), ctx); break;
     case StmtType::Loop:     stmt_loop_to_py(dynamic_cast<StmtLoop *>(stmt), ctx); break;
+    case StmtType::Bash_Literal: stmt_bash_literal_to_py(dynamic_cast<StmtBashLiteral *>(stmt), ctx); break;
     default: assert(false && "unreachable");
     }
 }

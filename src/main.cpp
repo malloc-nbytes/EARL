@@ -60,12 +60,13 @@ usage(void) {
     std::cerr << "  docs/html/index.html         -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference.html -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [script] [options...] -- [args...]" << std::endl << std::endl;
+    std::cerr << "Usage: earl [script] [options...] -- [passed_args...]" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
     std::cerr << "  -h, --help                             Print this help message" << std::endl;
     std::cerr << "  -v, --version                          Print version information" << std::endl;
     std::cerr << "  -c, --check                            Only parse the file given" << std::endl;
     std::cerr << "  -w, --watch [files...]                 Watch files for changes and hot reload on save" << std::endl;
+    std::cerr << "      --verbose                          Enable verbose mode" << std::endl;
     std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor                     Do not use color in the REPL" << std::endl;
     std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
@@ -157,9 +158,10 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SHOWFUNS;
     else if (arg == COMMON_EARL2ARG_CHECK)
         flags |= __CHECK;
-    else if (arg == COMMON_EARL2ARG_TOPY) {
+    else if (arg == COMMON_EARL2ARG_TOPY)
         handle_to_py_flag(args);
-    }
+    else if (arg == COMMON_EARL2ARG_VERBOSE)
+        flags |= __VERBOSE;
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

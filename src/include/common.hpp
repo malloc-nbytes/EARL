@@ -44,6 +44,7 @@ extern uint32_t flags;
 #define __SHOWFUNS 1 << 4
 #define __CHECK 1 << 5
 #define __TOPY 1 << 6
+#define __VERBOSE 1 << 7
 
 #define COMMON_EARL2ARG_HELP           "help"
 #define COMMON_EARL2ARG_WITHOUT_STDLIB "without-stdlib"
@@ -53,6 +54,7 @@ extern uint32_t flags;
 #define COMMON_EARL2ARG_SHOWFUNS       "show-funs"
 #define COMMON_EARL2ARG_CHECK          "check"
 #define COMMON_EARL2ARG_TOPY           "to-py"
+#define COMMON_EARL2ARG_VERBOSE        "verbose"
 
 #define COMMON_EARL2ARG_ASCPL {COMMON_EARL2ARG_HELP, COMMON_EARL2ARG_WITHOUT_STDLIB, COMMON_EARL2ARG_VERSION, COMMON_EARL2ARG_REPL_NOCOLOR, COMMON_EARL2ARG_WATCH, COMMON_EARL2ARG_SHOWFUNS, COMMON_EARL2ARG_CHECK}
 

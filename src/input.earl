@@ -1,5 +1,4 @@
 module Main
 
-let cmd = "echo \"hello world\n\"";
-$cmd;
+println("hello");
 

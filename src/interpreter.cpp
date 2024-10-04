@@ -1676,6 +1676,8 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] defining function " << stmt->m_id->lexeme() << std::endl;
     const std::string &id = stmt->m_id->lexeme();
     if (ctx->function_exists(id)) {
         std::string msg = "function `"+id+"` has already been declared";
@@ -2055,6 +2057,8 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] defining class " << stmt->m_id->lexeme() << std::endl;
     dynamic_cast<WorldCtx *>(ctx.get())->define_class(stmt);
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2062,6 +2066,8 @@ eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] found module " << stmt->m_id->lexeme() << std::endl;
     dynamic_cast<WorldCtx *>(ctx.get())->set_mod(stmt->m_id->lexeme());
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2070,7 +2076,6 @@ eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
 std::shared_ptr<earl::value::Obj>
 eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     if (ctx->type() != CtxType::World) {
-        // Err::err_wtok(stmt->m_fp.get());
         Err::err_wexpr(stmt->m_fp.get());
         std::string msg = "`import` statements must be used in the @world context";
         throw InterpreterException(msg);
@@ -2210,6 +2215,9 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] defining enum " << stmt->m_id->lexeme() << std::endl;
+
     if (ctx->type() != CtxType::World) {
         std::string msg = "enum statements are only allowed in the @world scope";
         Err::err_wtok(stmt->m_id.get());
@@ -2365,9 +2373,10 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
     // Also check to make sure the first statement is a module declaration.
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0))
-            WARN("A `module` statement is expected to be the first statement. "
-                 "This may lead to undefined behavior and break functionality.");
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0)) {
+            WARN("A `module` statement is expected to be the first statement of every file. "
+                 "Not having this may lead to undefined behavior and break functionality.");
+        }
         if (stmt->stmt_type() == StmtType::Def
             || stmt->stmt_type() == StmtType::Class
             || stmt->stmt_type() == StmtType::Mod)
