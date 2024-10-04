@@ -25,10 +25,10 @@
 
 module Main
 
-import "std/system.earl"
-import "std/io.earl"
-import "std/str.earl"
-import "std/utils.earl"
+import "std/system.earl";
+import "std/io.earl";
+import "std/str.earl";
+import "std/utils.earl";
 
 enum State {
     None = 0,

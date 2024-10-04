@@ -2500,6 +2500,14 @@ Returns =true= if =n= is even, or =false= if otherwise.
 
 #+begin_quote
 #+begin_example
+is_odd(n: int) -> bool
+#+end_example
+
+Returns =true= if =n= is odd, or =false= if otherwise.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 swap(x1: @ref any, x2: @ref type(x1)) -> unit
 #+end_example
 
@@ -2801,18 +2809,18 @@ Returns the area of a circle with radius =r=.
 
 #+begin_quote
 #+begin_example
-area_of_cylinder(r: float|int, h: float|int) -> float|int
+volume_of_cylinder(r: float|int, h: float|int) -> float|int
 #+end_example
 
-Returns the area of a cylinder with radius =r= and height =h=.
+Returns the volume of a cylinder with radius =r= and height =h=.
 #+end_quote
 
 #+begin_quote
 #+begin_example
-area_of_cone(r: float|int, h: float|int) -> float|int
+volume_of_cone(r: float|int, h: float|int) -> float|int
 #+end_example
 
-Returns the area of a cone with radius =r= and height =h=.
+Returns the volume of a cone with radius =r= and height =h=.
 #+end_quote
 
 #+begin_quote
