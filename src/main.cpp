@@ -70,6 +70,7 @@ usage(void) {
     std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor                     Do not use color in the REPL" << std::endl;
     std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
+    std::cerr << "      --install-prefix                   Print the installation prefix" << std::endl;
     std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "          where" << std::endl;
     std::cerr << "              O = stdout|<file>" << std::endl;
@@ -141,6 +142,12 @@ handle_to_py_flag(std::vector<std::string> &args) {
 }
 
 static void
+install_prefix(void) {
+    std::cout << "[EARL install-prefix] EARL and StdLib installed at " << PREFIX << std::endl;
+    std::exit(0);
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -162,6 +169,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         handle_to_py_flag(args);
     else if (arg == COMMON_EARL2ARG_VERBOSE)
         flags |= __VERBOSE;
+    else if (arg == COMMON_EARL2ARG_INSTALL_PREFIX)
+        install_prefix();
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

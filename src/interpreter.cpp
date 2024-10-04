@@ -425,7 +425,7 @@ eval_user_defined_function_wo_params(const std::string &id,
     std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
 
     if (ctx->function_exists(id)) {
-        if ((flags & __SHOWFUNS) != 0)
+        if (((flags & __SHOWFUNS) != 0) || ((flags & __VERBOSE) != 0))
             std::cout << "[EARL show-funs] " << id << std::endl;
 
         auto func = ctx->function_get(id);
