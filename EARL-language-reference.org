@@ -2,7 +2,8 @@
 #+DESCRIPTION: The "ins" and "outs" of EARL
 #+AUTHOR: Zachary Haskins (malloc-nbytes)
 #+EMAIL: zdhdev@yahoo.com
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: ./misc/theme-readtheorg.setup
 #+OPTIONS: num:nil
 
 

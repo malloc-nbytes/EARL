@@ -1,4 +1,7 @@
 module Other
 
-@pub fn sum() {
+#--- NAME sum
+#--- DESCRIPTION returns a+b.
+@pub fn sum(a, b) {
+    return a+b;
 }

@@ -1,15 +1,6 @@
 module Main
 
-#-- NAME sum
-#-- PARAMETER a: int
-#-- PARAMETER b: int
-#-- RETURNS int
-#-- DESCRIPTION
-#-- Returns the result of `a` + `b`.
-fn sum(a, b) {
-    return a+b;
-}
+import "../src/other.earl"; as oth
 
-let x = 1;
-
+println(help(oth::sum));
 
