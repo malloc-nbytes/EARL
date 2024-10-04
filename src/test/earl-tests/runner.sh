@@ -3,4 +3,4 @@
 set -xe
 
 earl testmgr.earl -- gen true true
-earl --verbose < cmds.txt
+earl < cmds.txt
