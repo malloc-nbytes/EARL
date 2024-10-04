@@ -1,6 +1,6 @@
 module Main
 
-import "../src/other.earl"; as oth
+let lst = ["hello", "world", "foo", "bar"];
 
-println(help(oth::sum));
-
+println(lst.fold(|s, acc|{return acc+' '+s;}, ""));
+println((1..=5).fold(|s, acc|{return acc+s;}, 0));

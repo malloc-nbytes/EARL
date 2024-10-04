@@ -183,6 +183,16 @@ List::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     return copy;
 }
 
+std::shared_ptr<Obj>
+List::fold(Closure *closure, std::shared_ptr<Obj> acc, std::shared_ptr<Ctx> &ctx) {
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> values = {m_value.at(i), acc};
+        acc = closure->call(values, ctx);
+    }
+
+    return acc;
+}
+
 void
 List::foreach(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     Closure *cl = dynamic_cast<Closure *>(closure);

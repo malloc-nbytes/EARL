@@ -1703,6 +1703,14 @@ Calls the closure =cl= on each element and creates a new list on the evaluated r
 
 #+begin_quote
 #+begin_example
+fold(cl: closure<el: any, acc: any>, acc: any) -> any
+#+end_example
+
+Calls the closure =cl= on each element with the accumulator.
+#+end_quote
+
+#+begin_quote
+#+begin_example
 contains(val: any) -> bool
 #+end_example
 

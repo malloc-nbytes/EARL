@@ -42,6 +42,7 @@ Intrinsics::intrinsic_list_member_functions = {
     {"pop", &Intrinsics::intrinsic_member_pop},
     {"contains", &Intrinsics::intrinsic_member_contains},
     {"map", &Intrinsics::intrinsic_member_map},
+    {"fold", &Intrinsics::intrinsic_member_fold},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -202,3 +203,16 @@ Intrinsics::intrinsic_member_map(std::shared_ptr<earl::value::Obj> obj,
     auto cl = std::dynamic_pointer_cast<earl::value::Closure>(closure[0]);
     return dynamic_cast<earl::value::List *>(obj.get())->map(cl.get(), ctx);
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_fold(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &values,
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(values, 2, "foldr", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Closure, 1, "foldr", expr);
+    auto cl = std::dynamic_pointer_cast<earl::value::Closure>(values[0]);
+    return dynamic_cast<earl::value::List *>(obj.get())->fold(cl.get(), values[1], ctx);
+}
+
+

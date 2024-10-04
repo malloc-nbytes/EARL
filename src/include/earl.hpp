@@ -463,6 +463,7 @@ namespace earl {
             std::shared_ptr<List> map(Closure *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Obj> back(void);
             std::shared_ptr<Bool> contains(Obj *value);
+            std::shared_ptr<Obj> fold(Closure *closure, std::shared_ptr<Obj> acc, std::shared_ptr<Ctx> &ctx);
 
             // Implements
             Type type(void) const                                                         override;
