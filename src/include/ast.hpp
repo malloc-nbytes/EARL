@@ -57,6 +57,7 @@ enum class StmtType {
     Enum,
     Continue,
     Bash_Literal,
+    Info,
 };
 
 /// The different types an expression can be.
@@ -341,6 +342,12 @@ struct Stmt {
     bool m_evald = false;
 };
 
+struct StmtInfo : public Stmt {
+    std::string m_info;
+    StmtInfo(std::string info);
+    StmtType stmt_type() const override;
+};
+
 struct StmtBashLiteral : public Stmt {
     std::unique_ptr<Expr> m_expr;
     StmtBashLiteral(std::unique_ptr<Expr> expr);
@@ -362,12 +369,14 @@ struct StmtDef : public Stmt {
     std::unique_ptr<StmtBlock> m_block;
 
     uint32_t m_attrs;
+    std::vector<std::string> m_info;
 
     StmtDef(std::shared_ptr<Token> id,
             std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
             std::optional<std::shared_ptr<__Type>> ty,
             std::unique_ptr<StmtBlock> block,
-            uint32_t attrs);
+            uint32_t attrs,
+            std::vector<std::string> info);
 
     StmtType stmt_type() const override;
 };

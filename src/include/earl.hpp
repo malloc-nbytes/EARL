@@ -142,6 +142,7 @@ namespace earl {
             /** EARL continue keyword */
             Continue,
             Return,
+            FunctionRef,
         };
 
         struct Obj;
@@ -239,6 +240,21 @@ namespace earl {
         protected:
             bool m_const = false;
             bool m_iterable = false;
+        };
+
+        struct FunctionRef : public Obj {
+            FunctionRef(std::shared_ptr<earl::function::Obj> fun);
+            std::shared_ptr<earl::function::Obj> value(void);
+            const std::vector<std::string> &get_info(void);
+
+            // Implements
+            Type type(void) const                                                         override;
+            std::string to_cxxstring(void)                                                override;
+            void mutate(Obj *other, StmtMut *stmt)                                        override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+
+        private:
+            std::shared_ptr<earl::function::Obj> m_fun;
         };
 
         struct TypeKW : public Obj {
@@ -816,7 +832,11 @@ namespace earl {
 
         /// @brief The structure to represent EARL functions
         struct Obj {
-            Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok, std::optional<__Type *> explicit_type);
+            Obj(StmtDef *stmtdef,
+                std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params,
+                Token *tok,
+                std::optional<__Type *> explicit_type,
+                std::vector<std::string> info);
             ~Obj() = default;
 
             bool is_explicit_typed(void) const;
@@ -831,15 +851,19 @@ namespace earl {
                                  std::shared_ptr<Ctx> &old_ctx);
             bool is_world(void) const;
             bool is_pub(void) const;
-            Obj *copy(void);
+            std::shared_ptr<Obj> copy(void);
             bool param_at_is_ref(size_t i) const;
             uint32_t attrs(void) const;
+            const std::vector<std::string> &info(void) const;
+            void change_id(const std::string &newid);
 
         private:
             StmtDef *m_stmtdef;
             std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> m_params;
             Token *m_tok;
             std::optional<__Type *> m_explicit_type;
+            std::vector<std::string> m_info;
+            std::string m_id;
         };
     };
 };

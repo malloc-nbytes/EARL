@@ -1,2 +1,6 @@
 module Main
 
+import "../src/other.earl"; as oth
+
+println(help(oth::sum));
+

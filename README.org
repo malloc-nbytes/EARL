@@ -4,8 +4,8 @@
 #+EMAIL: zdhdev@yahoo.com
 
 # Theme from: https://github.com/fniessen/org-html-themes
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
-
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
+#+SETUPFILE: ./misc/theme-bigblow.setup
 
 
 
@@ -32,7 +32,7 @@
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
 
-[[./imgs/earl-logo-resized.jpg]]
+[[./misc/earl-logo-resized.jpg]]
 
 * Introduction
 

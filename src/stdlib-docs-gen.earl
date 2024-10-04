@@ -29,6 +29,7 @@ import "std/system.earl";
 import "std/io.earl";
 import "std/str.earl";
 import "std/utils.earl";
+import "std/script.earl"; as scr
 
 enum State {
     None = 0,
@@ -697,6 +698,17 @@ fn main() {
 
     println(f"The following modules were written to {docsfp}");
     println(modules);
+
+    if scr::program_exists("emacs") {
+        println("Found Emacs, converting EARL-language-reference.org to HTML");
+        $"rm ../EARL-language-reference.html";
+        $"rm ../README.html";
+        $"emacs --batch ../EARL-language-reference.org -f org-html-export-to-html";
+        $"emacs --batch ../README.org -f org-html-export-to-html";
+    }
+    else {
+        println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
+    }
 }
 
 main();

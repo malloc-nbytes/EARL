@@ -41,6 +41,7 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"help", &Intrinsics::intrinsic_help},
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
@@ -367,6 +368,36 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
     }
 
     assert(false);
+    return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "help", expr);
+    auto obj = params[0];
+
+    auto iter_help = [](const std::vector<std::string> &v) {
+        std::string total = "";
+        for (size_t i = 0; i < v.size(); ++i) {
+            total += v.at(i);
+            if (i != v.size()-1)
+                total += '\n';
+        }
+        return std::make_shared<earl::value::Str>(total);
+    };
+
+    switch (obj->type()) {
+    case earl::value::Type::FunctionRef: {
+        const std::vector<std::string> &info = dynamic_cast<earl::value::FunctionRef *>(obj.get())->get_info();
+        return iter_help(info);
+    } break;
+    default: {
+        const std::string msg = "intrinsic `help` can only be called on function at the moment";
+        throw InterpreterException(msg);
+    }
+    }
     return nullptr; // unreachable
 }
 

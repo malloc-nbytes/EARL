@@ -22,25 +22,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <cassert>
+#include <cmath>
 #include <memory>
 
-#include "ast.hpp"
+#include "earl.hpp"
+#include "err.hpp"
+#include "utils.hpp"
 
-StmtDef::StmtDef(std::shared_ptr<Token> id,
-                 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
-                 std::optional<std::shared_ptr<__Type>> ty,
-                 std::unique_ptr<StmtBlock> block,
-                 uint32_t attrs,
-                 std::vector<std::string> info) :
-    m_id(id),
-    m_args(args),
-    m_ty(ty),
-    m_block(std::move(block)),
-    m_attrs(attrs),
-    m_info(std::move(info)) {}
+using namespace earl::value;
 
-StmtType
-StmtDef::stmt_type() const {
-    return StmtType::Def;
+FunctionRef::FunctionRef(std::shared_ptr<earl::function::Obj> fun) : m_fun(fun) {}
+
+std::shared_ptr<earl::function::Obj>
+FunctionRef::value(void) {
+    return m_fun->copy();
+}
+
+const std::vector<std::string> &
+FunctionRef::get_info(void) {
+    return m_fun->info();
+}
+
+// Implements
+Type
+FunctionRef::type(void) const {
+    return Type::FunctionRef;
+}
+
+std::string
+FunctionRef::to_cxxstring(void) {
+    return "<Function Reference { src = "+m_fun->id()+" }>";
+}
+
+void
+FunctionRef::mutate(Obj *other, StmtMut *stmt) {
+    UNIMPLEMENTED("FunctionRef::mutate");
+}
+
+std::shared_ptr<Obj>
+FunctionRef::copy(void) {
+    return std::make_shared<FunctionRef>(m_fun);
 }

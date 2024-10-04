@@ -216,4 +216,3 @@ import "std/utils.earl"; full
 @pub let DEFAULT_INT_DESCEND_QUICKSORT = |x, y| { return x > y; };
 
 ### END VARIABLES
-
