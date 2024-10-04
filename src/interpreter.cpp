@@ -2307,8 +2307,11 @@ eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
+    ER bash_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
+    auto bash = unpack_ER(bash_er, ctx, false, nullptr);
+
     int x;
-    if ((x = system(stmt->m_lit->lexeme().c_str())) == -1) {
+    if ((x = system(bash->to_cxxstring().c_str())) == -1) {
         const std::string msg = "bash cmd failed with exit code "+std::to_string(x);
         throw InterpreterException(msg);
     }

@@ -1,8 +1,5 @@
 module Main
 
-$"echo \"creating directory\"";
-$"mkdir tmp";
-$"cd tmp";
-$"touch notes.txt";
-$"echo done";
+let cmd = "echo \"hello world\n\"";
+$cmd;
 

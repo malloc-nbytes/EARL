@@ -338,15 +338,15 @@ lex_file(std::string &src,
             }
         }
 
-        else if (src[i] == '$' && src[i+1] == '"') {
-            size_t strlit_len = consume_until(lexeme+2, [](const char c) {
-                return c == '"';
-            });
-            std::shared_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+2, strlit_len, TokenType::Bashlit, row, col, fp);
-            lexer->append(std::move(tok));
-            i += 1 + strlit_len + 1 + 1;
-            col += 1 + strlit_len + 1 + 1;
-        }
+        // else if (src[i] == '$' && src[i+1] == '"') {
+        //     size_t strlit_len = consume_until(lexeme+2, [](const char c) {
+        //         return c == '"';
+        //     });
+        //     std::shared_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+2, strlit_len, TokenType::Bashlit, row, col, fp);
+        //     lexer->append(std::move(tok));
+        //     i += 1 + strlit_len + 1 + 1;
+        //     col += 1 + strlit_len + 1 + 1;
+        // }
 
         else {
             std::string buf = "";

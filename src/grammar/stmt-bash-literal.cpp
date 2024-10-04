@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-StmtBashLiteral::StmtBashLiteral(std::shared_ptr<Token> lit)
-    : m_lit(lit) {}
+StmtBashLiteral::StmtBashLiteral(std::unique_ptr<Expr> expr)
+    : m_expr(std::move(expr)) {}
 
 StmtType StmtBashLiteral::stmt_type() const {
     return StmtType::Bash_Literal;

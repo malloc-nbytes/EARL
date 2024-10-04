@@ -342,8 +342,8 @@ struct Stmt {
 };
 
 struct StmtBashLiteral : public Stmt {
-    std::shared_ptr<Token> m_lit;
-    StmtBashLiteral(std::shared_ptr<Token> lit);
+    std::unique_ptr<Expr> m_expr;
+    StmtBashLiteral(std::unique_ptr<Expr> expr);
     StmtType stmt_type() const override;
 };
 
