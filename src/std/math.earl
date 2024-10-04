@@ -189,7 +189,7 @@ fn area_of_circle(r) {
 ### DESCRIPTION
 ###   Returns the area of a cylinder with radius `r` and height `h`.
 @pub @world
-fn area_of_cylinder(r, h) {
+fn volume_of_cylinder(r, h) {
     return h * PI * (r**2);
 }
 
@@ -200,8 +200,8 @@ fn area_of_cylinder(r, h) {
 ### DESCRIPTION
 ###   Returns the area of a cone with radius `r` and height `h`.
 @pub @world
-fn area_of_cone(r, h) {
-    return (1/3) * h * PI * (r**2);
+fn volume_of_cone(r, h) {
+    return (1.0/3.0) * h * PI * (r**2);
 }
 
 ### NAME floor
