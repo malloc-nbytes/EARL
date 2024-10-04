@@ -375,7 +375,29 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                            std::shared_ptr<Ctx> &ctx,
                            Expr *expr) {
-    assert(false && "unimplemented");
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "help", expr);
+    auto obj = params[0];
+
+    auto iter_help = [](const std::vector<std::string> &v) {
+        std::string total = "";
+        for (size_t i = 0; i < v.size(); ++i) {
+            total += v.at(i);
+            if (i != v.size()-1)
+                total += '\n';
+        }
+        return std::make_shared<earl::value::Str>(total);
+    };
+
+    switch (obj->type()) {
+    case earl::value::Type::FunctionRef: {
+        const std::vector<std::string> &info = dynamic_cast<earl::value::FunctionRef *>(obj.get())->get_info();
+        return iter_help(info);
+    } break;
+    default: {
+        assert(false && "unimplemented");
+    }
+    }
+    return nullptr; // unreachable
 }
 
 std::shared_ptr<earl::value::Obj>

@@ -424,11 +424,26 @@ eval_user_defined_function_wo_params(const std::string &id,
     std::vector<int> refs = {};
     std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
 
-    if (ctx->function_exists(id)) {
+    bool func_exists = false, var_exists = false;
+    func_exists = ctx->function_exists(id);
+    if (!func_exists)
+        var_exists = ctx->variable_exists(id);
+
+    if (func_exists || var_exists) {
         if (((flags & __SHOWFUNS) != 0) || ((flags & __VERBOSE) != 0))
             std::cout << "[EARL show-funs] " << id << std::endl;
 
-        auto func = ctx->function_get(id);
+        std::shared_ptr<earl::function::Obj> func = nullptr;
+
+        if (func_exists)
+            func = ctx->function_get(id);
+        else {
+            std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
+            if (var->type() != earl::value::Type::FunctionRef)
+                goto bad;
+            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(var->value().get());
+            func = std::dynamic_pointer_cast<earl::function::Obj>(ref->value());
+        }
 
         v = func;
         if (from_outside && !func->is_pub()) {
@@ -493,6 +508,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         return Interpreter::eval_stmt_block(clvalue->block(), mask);
     }
 
+bad:
     Err::err_wexpr(funccall);
 
     std::string msg = "function `" + id + "` has not been defined\n";
@@ -851,6 +867,16 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
             }
             return ER(value, ERT::Literal);
         }
+        // Check if it is a function identifier
+        if (right_er.ctx->function_exists(right_er.id)) {
+            if (!right_er.ctx->function_get(right_er.id)->is_pub()) {
+                std::string msg = "function `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+                Err::err_wexpr(left_ident);
+                throw InterpreterException(msg);
+            }
+            return ER(value, ERT::Literal);
+        }
+
         // It must be an enum
         assert(value->type() == earl::value::Type::Enum);
         if (!dynamic_cast<earl::value::Enum *>(value.get())->is_pub()) {
@@ -1636,16 +1662,10 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     if (stmt->m_tys.size() > 0)
         typecheck(stmt->m_tys[0].get(), value.get(), ctx);
 
-    if (value->type() == earl::value::Type::FunctionRef) {
-        auto fun = dynamic_cast<earl::value::FunctionRef *>(value.get())->value();
-        fun->change_id(stmt->m_ids.at(0)->lexeme());
-        ctx->function_add(fun);
-    }
-    else {
-        std::shared_ptr<earl::variable::Obj> var
-            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
-        ctx->variable_add(var);
-    }
+    std::shared_ptr<earl::variable::Obj> var
+        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
+    ctx->variable_add(var);
+
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }

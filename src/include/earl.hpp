@@ -245,10 +245,13 @@ namespace earl {
         struct FunctionRef : public Obj {
             FunctionRef(std::shared_ptr<earl::function::Obj> fun);
             std::shared_ptr<earl::function::Obj> value(void);
+            const std::vector<std::string> &get_info(void);
 
             // Implements
             Type type(void) const                                                         override;
             std::string to_cxxstring(void)                                                override;
+            void mutate(Obj *other, StmtMut *stmt)                                        override;
+            std::shared_ptr<Obj> copy(void)                                               override;
 
         private:
             std::shared_ptr<earl::function::Obj> m_fun;

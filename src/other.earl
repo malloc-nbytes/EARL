@@ -1,8 +1,4 @@
 module Other
 
-@pub class Point [x: int, y: int, s: str] {
-    @pub let x: int = x;
-    @pub let y: int = y;
-    @pub let z: str = s;
-    @pub let a: str, b: type = ("hi", int);
+@pub fn sum() {
 }

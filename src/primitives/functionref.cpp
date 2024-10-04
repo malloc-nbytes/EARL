@@ -40,6 +40,11 @@ FunctionRef::value(void) {
     return m_fun->copy();
 }
 
+const std::vector<std::string> &
+FunctionRef::get_info(void) {
+    return m_fun->info();
+}
+
 // Implements
 Type
 FunctionRef::type(void) const {
@@ -48,5 +53,15 @@ FunctionRef::type(void) const {
 
 std::string
 FunctionRef::to_cxxstring(void) {
-    return "<Function Reference "+m_fun->id()+">";
+    return "<Function Reference { src = "+m_fun->id()+" }>";
+}
+
+void
+FunctionRef::mutate(Obj *other, StmtMut *stmt) {
+    UNIMPLEMENTED("FunctionRef::mutate");
+}
+
+std::shared_ptr<Obj>
+FunctionRef::copy(void) {
+    return std::make_shared<FunctionRef>(m_fun);
 }
