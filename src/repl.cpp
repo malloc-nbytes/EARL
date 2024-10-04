@@ -227,7 +227,6 @@ help(void) {
     log(LIST_ENTRIES " -> list all entries in the current session\n");
     log(DISCARD " -> discard the current session\n");
     log(RESET " -> reset all identifiers\n");
-    log("You can also issue bash commands by typing `$` followed by the command\n");
 }
 
 static void
@@ -511,9 +510,9 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
-    if (line.size() != 0 && line[0] == '$')
-        bash(line);
-    else if (lst[0] == RM_ENTRY)
+    // if (line.size() != 0 && line[0] == '$')
+    //     bash(line);
+    if (lst[0] == RM_ENTRY)
         rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
         edit_entry(ri, args, lines);
@@ -571,11 +570,11 @@ repl::run(void) {
                 repled::clearln(line.size());
                 handle_repl_arg(ri, line, lines, ctx);
             }
-            else if (line[0] == '$') {
-                repled::clearln(true);
-                std::cout << std::flush;
-                bash(line);
-            }
+            // else if (line[0] == '$') {
+            //     repled::clearln(true);
+            //     std::cout << std::flush;
+            //     bash(line);
+            // }
             else {
                 if (line != "") {
                     lines.push_back(line);

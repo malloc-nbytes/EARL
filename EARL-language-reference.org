@@ -106,14 +106,14 @@ code that is provided.
 
 When in the REPL, typing =:= <cmd> will run a REPL command.
 It will not evaluate any code, but you can use it to show the current session,
-edit lines that have already been typed, remove lines, and more. Typing =$= <cmd> will issue
-a shell command. To view more information, launch the REPL and type =:help=.
+edit lines that have already been typed, remove lines, and more.
+To view more information, launch the REPL and type =:help=.
 #+end_quote
 
 ** REPL Programming
 
 #+begin_quote
-If a line that is typed does not start with =:= or =$=, it will be
+If a line that is typed does not start with =:=, it will be
 interpreted as code. Upon hitting =<enter>=, it will not immediately
 evaluate the code. It only does code evaluation when an empty line is processed.
 Because of this, you can code in _sessions_. Starting a new session does not mean
@@ -484,6 +484,25 @@ true
 *Note*: For more information on =some= and =none=, see =option= in [[Datatypes]].
 For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
 #+end_quote
+
+* Bash Commands
+
+#+begin_quote
+You can use BASH commands directly in EARL source code.
+#+end_quote
+
+** Grammar
+
+=$= <expr> =;=
+
+** Examles
+
+#+begin_example
+$"ls -lah";
+
+let cmd = "echo \"hello world\n\"";
+$cmd;
+#+end_example
 
 * While Loops
 
