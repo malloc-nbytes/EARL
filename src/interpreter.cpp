@@ -680,8 +680,15 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return std::make_shared<earl::value::TypeKW>(earl::value::get_typekw_proper(er.id));
         }
 
+        // Check for builtin identifier
         if (earl::value::is_builtin_ident(er.id)) {
             return earl::value::get_builtin_ident(er.id, ctx);
+        }
+
+        // Check for a function identifier (not the same as calling a function).
+        if (ctx->function_exists(er.id)) {
+            auto fun = ctx->function_get(er.id);
+            return std::make_shared<earl::value::FunctionRef>(fun);
         }
 
         Err::err_wexpr(static_cast<Expr *>(er.extra));
@@ -1629,9 +1636,16 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     if (stmt->m_tys.size() > 0)
         typecheck(stmt->m_tys[0].get(), value.get(), ctx);
 
-    std::shared_ptr<earl::variable::Obj> var
-        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
-    ctx->variable_add(var);
+    if (value->type() == earl::value::Type::FunctionRef) {
+        auto fun = dynamic_cast<earl::value::FunctionRef *>(value.get())->value();
+        fun->change_id(stmt->m_ids.at(0)->lexeme());
+        ctx->function_add(fun);
+    }
+    else {
+        std::shared_ptr<earl::variable::Obj> var
+            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
+        ctx->variable_add(var);
+    }
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
@@ -1678,6 +1692,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
     if ((flags & __VERBOSE) != 0)
         std::cout << "[EARL] defining function " << stmt->m_id->lexeme() << std::endl;
+
     const std::string &id = stmt->m_id->lexeme();
     if (ctx->function_exists(id)) {
         std::string msg = "function `"+id+"` has already been declared";
@@ -1699,7 +1714,7 @@ eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
     if (stmt->m_ty.has_value())
         explicit_type = stmt->m_ty.value().get();
 
-    auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get(), explicit_type);
+    auto func = std::make_shared<earl::function::Obj>(stmt, args, stmt->m_id.get(), explicit_type, std::move(stmt->m_info));
     ctx->function_add(func);
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();

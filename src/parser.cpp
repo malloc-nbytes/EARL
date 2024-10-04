@@ -695,7 +695,7 @@ parse_stmt_def_args(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtDef>
-Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
+Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -711,7 +711,8 @@ Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs) {
                                      std::move(args),
                                      std::move(ty),
                                      std::move(block),
-                                     attrs);
+                                     attrs,
+                                     std::move(info));
 }
 
 std::unique_ptr<StmtReturn>
@@ -1006,6 +1007,7 @@ std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
     uint32_t attrs = 0;
+    std::vector<std::string> info = {};
 
     do {
         Token *tok = lexer.peek();
@@ -1016,7 +1018,7 @@ Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_LET)
                 return parse_stmt_let(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_FN)
-                return parse_stmt_def(lexer, attrs);
+                return parse_stmt_def(lexer, attrs, info);
             if (tok->lexeme() == COMMON_EARLKW_IF)
                 return parse_stmt_if(lexer);
             if (tok->lexeme() == COMMON_EARLKW_RETURN)
@@ -1077,6 +1079,9 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::At: {
             attrs |= static_cast<uint32_t>(translate_attr(lexer));
         } break;
+        case TokenType::Info: {
+            info.push_back(lexer.next()->lexeme());
+        } break;
         case TokenType::Semicolon: {
             Err::err_wtok(tok);
             std::string msg = "expected a statement or expression but got excess semicolon(s)";
@@ -1086,7 +1091,7 @@ Parser::parse_stmt(Lexer &lexer) {
             return parse_stmt_expr(lexer);
         }
         }
-    } while (attrs != 0);
+    } while (attrs != 0 || info.size() != 0);
 
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";
     throw ParserException(msg);

@@ -2,5 +2,5 @@
 
 set -xe
 
-earl testmgr.earl --verbose -- gen true true
+earl testmgr.earl -- gen true true
 earl --verbose < cmds.txt

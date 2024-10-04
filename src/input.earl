@@ -1,2 +1,16 @@
 module Main
 
+### NAME sum
+### PARAMETER a: int
+### PARAMETER b: int
+### RETURNS int
+### DESCRIPTION
+###   Returns the result of `a` + `b`.
+fn sum(a, b) {
+    return a+b;
+}
+
+let s = sum;
+println(s);
+println(sum);
+

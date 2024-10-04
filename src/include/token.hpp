@@ -107,6 +107,7 @@ enum class TokenType {
     Keyword,
     Type,
     Bashlit,
+    Info,
     Total_Len
 };
 

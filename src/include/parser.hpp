@@ -46,7 +46,7 @@ namespace Parser {
     /// @note ex:
     /// def my_func(a: int, b: int) -> int { ... }
     /// @param lexer The lexer with the linked list of tokens
-    std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer, uint32_t attrs);
+    std::unique_ptr<StmtDef> parse_stmt_def(Lexer &lexer, uint32_t attrs, std::vector<std::string> info={});
 
     /// @brief Parses a statement of type
     /// statement expression. Examples of this are functions

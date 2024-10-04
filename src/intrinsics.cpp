@@ -41,6 +41,7 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"help", &Intrinsics::intrinsic_help},
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
@@ -368,6 +369,13 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
     assert(false);
     return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
+    assert(false && "unimplemented");
 }
 
 std::shared_ptr<earl::value::Obj>

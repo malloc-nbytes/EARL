@@ -99,6 +99,7 @@ tokentype_to_str(TokenType type) {
     case TokenType::Keyword:                    return "KEYWORD";
     case TokenType::Type:                       return "TYPE";
     case TokenType::Bashlit:                    return "BASHLIT";
+    case TokenType::Info:                       return "INFO";
     default:
         ERR_WARGS(Err::Type::Fatal, "unkown type: %d", static_cast<int>(type));
         return nullptr;

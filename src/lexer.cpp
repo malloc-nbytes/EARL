@@ -264,6 +264,20 @@ lex_file(std::string &src,
     while (i < src.size()) {
         char *lexeme = &src[i];
 
+        if (i < src.size()-2 && src[i] == '#' && src[i+1] == '#' && src[i+2] == '#') {
+            std::string info = "";
+            i += 3;
+            while (src[i] && src[i] != '\n') {
+                info += src[i];
+                ++col, ++i;
+            }
+
+            while (info[0] == ' ')
+                info.erase(info.begin());
+
+            lexer->append(info, TokenType::Info, row, col, fp);
+        }
+
         if (src[i] == '#') {
             while (src[i] != '\n') {
                 ++i;
@@ -337,16 +351,6 @@ lex_file(std::string &src,
                 col += digit.size()+1;
             }
         }
-
-        // else if (src[i] == '$' && src[i+1] == '"') {
-        //     size_t strlit_len = consume_until(lexeme+2, [](const char c) {
-        //         return c == '"';
-        //     });
-        //     std::shared_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+2, strlit_len, TokenType::Bashlit, row, col, fp);
-        //     lexer->append(std::move(tok));
-        //     i += 1 + strlit_len + 1 + 1;
-        //     col += 1 + strlit_len + 1 + 1;
-        // }
 
         else {
             std::string buf = "";

@@ -22,25 +22,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <cassert>
+#include <cmath>
 #include <memory>
 
-#include "ast.hpp"
+#include "earl.hpp"
+#include "err.hpp"
+#include "utils.hpp"
 
-StmtDef::StmtDef(std::shared_ptr<Token> id,
-                 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
-                 std::optional<std::shared_ptr<__Type>> ty,
-                 std::unique_ptr<StmtBlock> block,
-                 uint32_t attrs,
-                 std::vector<std::string> info) :
-    m_id(id),
-    m_args(args),
-    m_ty(ty),
-    m_block(std::move(block)),
-    m_attrs(attrs),
-    m_info(std::move(info)) {}
+using namespace earl::value;
 
-StmtType
-StmtDef::stmt_type() const {
-    return StmtType::Def;
+FunctionRef::FunctionRef(std::shared_ptr<earl::function::Obj> fun) : m_fun(fun) {}
+
+std::shared_ptr<earl::function::Obj>
+FunctionRef::value(void) {
+    return m_fun->copy();
+}
+
+// Implements
+Type
+FunctionRef::type(void) const {
+    return Type::FunctionRef;
+}
+
+std::string
+FunctionRef::to_cxxstring(void) {
+    return "<Function Reference "+m_fun->id()+">";
 }

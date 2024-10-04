@@ -34,8 +34,18 @@
 
 using namespace earl::function;
 
-Obj::Obj(StmtDef *stmtdef, std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params, Token *tok, std::optional<__Type *> explicit_type)
-    : m_stmtdef(stmtdef), m_params(std::move(params)), m_tok(tok), m_explicit_type(explicit_type) {}
+Obj::Obj(StmtDef *stmtdef,
+         std::vector<std::pair<std::pair<Token *, __Type *>, uint32_t>> params,
+         Token *tok,
+         std::optional<__Type *> explicit_type,
+         std::vector<std::string> info)
+    : m_stmtdef(stmtdef),
+      m_params(std::move(params)),
+      m_tok(tok),
+      m_explicit_type(explicit_type),
+      m_info(std::move(info)) {
+    m_id = tok->lexeme();
+}
 
 bool
 Obj::is_explicit_typed(void) const {
@@ -59,7 +69,8 @@ Obj::gettok(void) {
 
 const std::string &
 Obj::id(void) const {
-    return m_stmtdef->m_id->lexeme();
+    // return m_stmtdef->m_id->lexeme();
+    return m_id;
 }
 
 size_t
@@ -108,9 +119,9 @@ Obj::is_pub(void) const {
     return (m_stmtdef->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }
 
-Obj *
+std::shared_ptr<Obj>
 Obj::copy(void) {
-    UNIMPLEMENTED("Obj::copy (function)");
+    return std::make_shared<Obj>(m_stmtdef, m_params, m_tok, m_explicit_type, m_info);
 }
 
 bool
@@ -122,3 +133,15 @@ uint32_t
 Obj::attrs(void) const {
     return m_stmtdef->m_attrs;
 }
+
+const std::vector<std::string> &
+Obj::info(void) const {
+    return m_info;
+}
+
+void
+Obj::change_id(const std::string &newid) {
+    m_id = newid;
+}
+
+
