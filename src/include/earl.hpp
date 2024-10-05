@@ -244,7 +244,7 @@ namespace earl {
         protected:
             bool m_const = false;
             bool m_iterable = false;
-            earl::variable::Obj *m_var_owner;
+            earl::variable::Obj *m_var_owner = nullptr;
         };
 
         struct FunctionRef : public Obj {
