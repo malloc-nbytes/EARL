@@ -1,2 +1,25 @@
 module Main
 
+#-- This is my enum.
+enum MyEnum {
+    Item1,
+    Item2,
+    Item3,
+}
+
+#-- A point class, takes integers
+#-- `x` and `y`.
+class Point [x, y] {}
+
+#-- Name: sum
+#-- Param: x: int
+#-- Param: y: int
+#-- Returns: int
+#-- Description: Takes integers `a` and `b` and sums them.
+fn sum(a, b) {
+    return a+b;
+}
+
+println(help(MyEnum));
+println(help(Point));
+println(help(sum));
