@@ -32,7 +32,7 @@ module Matrix
 ### DESCRIPTION
 ###   Creates a new matrix with the initial dataset `init`
 ###   with `rows` rows and `cols` columns.
-class T [init: list, rows: int, cols: int] {
+@pub class T [init: list, rows: int, cols: int] {
     let lst = init;
     let r, c = (rows, cols);
 
