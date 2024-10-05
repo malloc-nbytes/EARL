@@ -1,10 +1,9 @@
 module Main
 
-#--- This is my enum
+#--- This is my class
 #--- it has two items.
-enum Test {
-    Item1,
-    Item2,
+class Point [x, y] {
 }
 
-println(help(Test));
+let x = Point;
+println(x(1, 2));

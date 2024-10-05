@@ -563,12 +563,14 @@ struct StmtClass : public Stmt {
 
     std::vector<std::unique_ptr<StmtLet>> m_members;
     std::vector<std::unique_ptr<StmtDef>> m_methods;
+    std::vector<std::string> m_info;
 
     StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
               std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
-              std::vector<std::unique_ptr<StmtDef>> methods);
+              std::vector<std::unique_ptr<StmtDef>> methods,
+              std::vector<std::string> info);
 
     StmtType stmt_type() const override;
 };

@@ -837,7 +837,7 @@ parse_stmt_class_constructor_arguments(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtClass>
-parse_stmt_class(Lexer &lexer, uint32_t attrs) {
+parse_stmt_class(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
 
     std::shared_ptr<Token> class_id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -890,7 +890,8 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
                                        attrs,
                                        std::move(constructor_args),
                                        std::move(members),
-                                       std::move(methods));
+                                       std::move(methods),
+                                       std::move(info));
 }
 
 static std::unique_ptr<StmtMatch::Branch>
@@ -1019,10 +1020,12 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_def(lexer, attrs, std::move(info));
             if (tok->lexeme() == COMMON_EARLKW_ENUM)
                 return parse_stmt_enum(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_CLASS)
+                return parse_stmt_class(lexer, attrs, std::move(info));
 
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for functions, enums, and classes";
                 throw ParserException(msg);
             }
 
@@ -1044,8 +1047,6 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_import(lexer);
             if (tok->lexeme() == COMMON_EARLKW_MODULE)
                 return parse_stmt_mod(lexer);
-            if (tok->lexeme() == COMMON_EARLKW_CLASS)
-                return parse_stmt_class(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_MATCH)
                 return parse_stmt_match(lexer);
             if (tok->lexeme() == COMMON_EARLKW_CONTINUE)

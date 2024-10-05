@@ -22,21 +22,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <cassert>
+#include <cmath>
 #include <memory>
 
-#include "ast.hpp"
+#include "earl.hpp"
+#include "err.hpp"
+#include "utils.hpp"
 
-StmtClass::StmtClass(std::shared_ptr<Token> id,
-                     uint32_t attrs,
-                     std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
-                     std::vector<std::unique_ptr<StmtLet>> members,
-                     std::vector<std::unique_ptr<StmtDef>> methods,
-                     std::vector<std::string> info)
-    : m_id(id), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
-      m_members(std::move(members)), m_methods(std::move(methods)), m_info(std::move(info)) {}
+using namespace earl::value;
 
-StmtType
-StmtClass::stmt_type() const {
-    return StmtType::Class;
+ClassRef::ClassRef(StmtClass *stmt) : m_stmt(stmt) {}
+
+const std::vector<std::string> &
+ClassRef::get_info(void) {
+    return m_stmt->m_info;
+}
+
+// Implements
+Type
+ClassRef::type(void) const {
+    return Type::ClassRef;
+}
+
+std::string
+ClassRef::to_cxxstring(void) {
+    return "<Class Reference { src = "+m_stmt->m_id->lexeme()+" }>";
+}
+
+std::shared_ptr<Obj>
+ClassRef::copy(void) {
+    return std::make_shared<earl::value::ClassRef>(m_stmt);
 }

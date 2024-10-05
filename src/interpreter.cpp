@@ -744,6 +744,12 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             return std::make_shared<earl::value::FunctionRef>(fun);
         }
 
+        // Check for a class identifier (not the same as calling a function).
+        if (world->class_is_defined(er.id)) {
+            auto klass = world->class_get(er.id);
+            return std::make_shared<earl::value::ClassRef>(klass);
+        }
+
         Err::err_wexpr(static_cast<Expr *>(er.extra));
 
         std::string msg = "variable `" + er.id + "` has not been defined\n";

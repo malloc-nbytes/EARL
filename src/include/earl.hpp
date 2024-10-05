@@ -143,6 +143,7 @@ namespace earl {
             Continue,
             Return,
             FunctionRef,
+            ClassRef,
         };
 
         struct Obj;
@@ -255,6 +256,19 @@ namespace earl {
 
         private:
             std::shared_ptr<earl::function::Obj> m_fun;
+        };
+
+        struct ClassRef : public Obj {
+            ClassRef(StmtClass *stmt);
+            const std::vector<std::string> &get_info(void);
+
+            // Implements
+            Type type(void) const                                                         override;
+            std::string to_cxxstring(void)                                                override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+
+        private:
+            StmtClass *m_stmt;
         };
 
         struct TypeKW : public Obj {

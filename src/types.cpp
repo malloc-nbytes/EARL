@@ -70,6 +70,7 @@ std::string earl::value::type_to_str(earl::value::Type ty) {
     case earl::value::Type::Time: return "time";
     case earl::value::Type::Return: return "unit";
     case earl::value::Type::FunctionRef: return "FunctionRef";
+    case earl::value::Type::ClassRef: return "ClassRef";
     default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
     }
 }
