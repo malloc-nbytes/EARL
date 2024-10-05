@@ -423,13 +423,19 @@ eval_user_defined_function_wo_params(const std::string &id,
     std::vector<bool> originally_was_const = {};
     std::vector<int> refs = {};
     std::variant<std::shared_ptr<earl::function::Obj>, earl::value::Closure *> v;
+    std::shared_ptr<earl::variable::Obj> maybe_closure = nullptr;
 
     bool func_exists = false, var_exists = false;
     func_exists = ctx->function_exists(id);
-    if (!func_exists)
+    if (!func_exists) {
         var_exists = ctx->variable_exists(id);
+        if (var_exists) {
+            maybe_closure = ctx->variable_get(id);
+            var_exists = maybe_closure->type() != earl::value::Type::Closure;
+        }
+    }
 
-    if (func_exists) {
+    if (func_exists || var_exists) {
         if (((flags & __SHOWFUNS) != 0) || ((flags & __VERBOSE) != 0))
             std::cout << "[EARL show-funs] " << id << std::endl;
 
@@ -438,10 +444,12 @@ eval_user_defined_function_wo_params(const std::string &id,
         if (func_exists)
             func = ctx->function_get(id);
         else {
-            std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
-            if (var->type() != earl::value::Type::FunctionRef)
+            // std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
+            if (maybe_closure->type() == earl::value::Type::Closure)
+                goto is_closure;
+            if (maybe_closure->type() != earl::value::Type::FunctionRef)
                 goto bad;
-            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(var->value().get());
+            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(maybe_closure->value().get());
             func = std::dynamic_pointer_cast<earl::function::Obj>(ref->value());
         }
 
@@ -493,7 +501,8 @@ eval_user_defined_function_wo_params(const std::string &id,
         return res;
     }
     else if (ctx->closure_exists(id)) {
-        auto cl = ctx->variable_get(id);
+    is_closure:
+        auto cl = maybe_closure ? std::move(maybe_closure) : ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
         earl::value::Closure *clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
         v = clvalue;
@@ -527,10 +536,16 @@ eval_user_defined_function(ExprFuncCall *expr,
                            bool from_outside) {
     bool func_exists = false, var_exists = false;
     func_exists = ctx->function_exists(id);
-    if (!func_exists)
+    std::shared_ptr<earl::variable::Obj> maybe_closure = nullptr;
+    if (!func_exists) {
         var_exists = ctx->variable_exists(id);
+        if (var_exists) {
+            maybe_closure = ctx->variable_get(id);
+            var_exists = maybe_closure->type() != earl::value::Type::Closure;
+        }
+    }
 
-    if (func_exists) {
+    if (func_exists || var_exists) {
         if ((flags & __SHOWFUNS) != 0)
             std::cout << "[EARL show-funs] " << id << '\n';
 
@@ -539,10 +554,12 @@ eval_user_defined_function(ExprFuncCall *expr,
         if (func_exists)
             func = ctx->function_get(id);
         else {
-            std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
-            if (var->type() != earl::value::Type::FunctionRef)
+            // std::shared_ptr<earl::variable::Obj> var = ctx->variable_get(id);
+            if (maybe_closure->type() == earl::value::Type::Closure)
+                goto is_closure;
+            if (maybe_closure->type() != earl::value::Type::FunctionRef)
                 goto bad;
-            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(var->value().get());
+            earl::value::FunctionRef *ref = dynamic_cast<earl::value::FunctionRef *>(maybe_closure->value().get());
             func = std::dynamic_pointer_cast<earl::function::Obj>(ref->value());
         }
 
@@ -579,7 +596,9 @@ eval_user_defined_function(ExprFuncCall *expr,
         return res;
     }
     else if (ctx->closure_exists(id)) {
-        auto cl = ctx->variable_get(id);
+    is_closure:
+        // auto cl = ctx->variable_get(id);
+        auto cl = maybe_closure ? std::move(maybe_closure) : ctx->variable_get(id);
         auto clctx = std::make_shared<ClosureCtx>(ctx);
         auto clvalue = dynamic_cast<earl::value::Closure *>(cl->value().get());
         if (clvalue->params_len() != params.size()) {

@@ -1,5 +1,16 @@
 module Main
 
+let cl = |_| { println("here"); };
 
+cl();
 
+#--- Takes two integers a and b
+#--- and returns the sum
+#--- of them
+fn sum(a, b) { return a+b; }
 
+let s = sum;
+
+println(s);
+println(s(1, 2));
+println(help(s));
