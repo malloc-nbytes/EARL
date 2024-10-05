@@ -1,8 +1,8 @@
 module Main
 
-import "std/system.earl"
-import "std/list.earl"
-import "std/math.earl"
+import "std/system.earl";
+import "std/list.earl";
+import "std/math.earl";
 
 class Matrix [init, r, c] {
     let lst = init;
@@ -17,7 +17,7 @@ class Matrix [init, r, c] {
 let speed = 1;
 let x, y = (3., 3.);
 let dx, dy = (.77*speed/100, 1.*speed/100);
-let width, height = (40, 20);
+let width, height = (20, 20);
 let not_draws_per_sec = 1;
 let current_not_draws_per_sec = 0;
 

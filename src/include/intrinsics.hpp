@@ -194,6 +194,15 @@ namespace Intrinsics {
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_cos(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                  std::shared_ptr<Ctx> &ctx,
+                  Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_sin(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                  std::shared_ptr<Ctx> &ctx,
+                  Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &params,

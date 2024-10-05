@@ -174,13 +174,11 @@ class Class [] {
             s += "**** *=" + this.name + "= Members*:\n\n";
         }
 
-        # s += "#+begin_section\n";
         foreach m in this.members {
             s += "#+begin_quote\n";
             s += m.to_org_mode() + "\n";
             s += "#+end_quote\n";
         }
-        # s += "#+end_section\n";
 
         if len(this.methods) != 0 {
             s += "\n**** *=" + this.name + "= Implements*\n\n";

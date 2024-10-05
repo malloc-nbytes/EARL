@@ -429,7 +429,7 @@ eval_user_defined_function_wo_params(const std::string &id,
     if (!func_exists)
         var_exists = ctx->variable_exists(id);
 
-    if (func_exists || var_exists) {
+    if (func_exists) {
         if (((flags & __SHOWFUNS) != 0) || ((flags & __VERBOSE) != 0))
             std::cout << "[EARL show-funs] " << id << std::endl;
 
@@ -530,7 +530,7 @@ eval_user_defined_function(ExprFuncCall *expr,
     if (!func_exists)
         var_exists = ctx->variable_exists(id);
 
-    if (func_exists || var_exists) {
+    if (func_exists) {
         if ((flags & __SHOWFUNS) != 0)
             std::cout << "[EARL show-funs] " << id << '\n';
 

@@ -1,6 +1,5 @@
 module Main
 
-let lst = ["hello", "world", "foo", "bar"];
 
-println(lst.fold(|s, acc|{return acc+' '+s;}, ""));
-println((1..=5).fold(|s, acc|{return acc+s;}, 0));
+
+

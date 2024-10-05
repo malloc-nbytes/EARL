@@ -41,6 +41,8 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"sin", &Intrinsics::intrinsic_sin},
+    {"cos", &Intrinsics::intrinsic_cos},
     {"help", &Intrinsics::intrinsic_help},
     {"print", &Intrinsics::intrinsic_print},
     {"println", &Intrinsics::intrinsic_println},
@@ -400,6 +402,36 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
     }
     }
     return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_cos(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "cos", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "cos", expr);
+    auto obj = params[0];
+    if (obj->type() == earl::value::Type::Int) {
+        int value = dynamic_cast<earl::value::Int *>(obj.get())->value();
+        return std::make_shared<earl::value::Float>(cos(value));
+    }
+    double value = dynamic_cast<earl::value::Float *>(obj.get())->value();
+    return std::make_shared<earl::value::Float>(cos(value));
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_sin(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "sin", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Int, 1, "sin", expr);
+    auto obj = params[0];
+    if (obj->type() == earl::value::Type::Int) {
+        int value = dynamic_cast<earl::value::Int *>(obj.get())->value();
+        return std::make_shared<earl::value::Float>(sin(value));
+    }
+    double value = dynamic_cast<earl::value::Float *>(obj.get())->value();
+    return std::make_shared<earl::value::Float>(sin(value));
 }
 
 std::shared_ptr<earl::value::Obj>
