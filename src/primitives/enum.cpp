@@ -34,8 +34,9 @@ using namespace earl::value;
 
 Enum::Enum(StmtEnum *stmt,
            std::unordered_map<std::string, std::shared_ptr<variable::Obj>> elems,
-           uint32_t attrs)
-    : m_stmt(stmt), m_elems(std::move(elems)), m_attrs(attrs) {
+           uint32_t attrs,
+           std::vector<std::string> info)
+    : m_stmt(stmt), m_elems(std::move(elems)), m_attrs(attrs), m_info(std::move(info)) {
     m_id = stmt->m_id.get();
 }
 
@@ -64,6 +65,11 @@ Enum::has_entry(const std::string &id) const {
 std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &
 Enum::extract(void) {
     return m_elems;
+}
+
+const std::vector<std::string> &
+Enum::get_info(void) {
+    return m_info;
 }
 
 /*** OVERRIDES ***/

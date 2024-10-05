@@ -1,6 +1,6 @@
 module Main
 
-import "std/list.earl"
+import "std/list.earl";
 
 # Change the grid size to whatever you want.
 # However it tends to slow down quite a

@@ -393,7 +393,13 @@ struct StmtLet : public Stmt {
 
     uint32_t m_attrs;
 
-    StmtLet(std::vector<std::shared_ptr<Token>> ids, std::vector<std::shared_ptr<__Type>> tys, std::unique_ptr<Expr> expr, uint32_t attrs);
+    std::vector<std::string> m_info;
+
+    StmtLet(std::vector<std::shared_ptr<Token>> ids,
+            std::vector<std::shared_ptr<__Type>> tys,
+            std::unique_ptr<Expr> expr,
+            uint32_t attrs,
+            std::vector<std::string> info);
     StmtType stmt_type() const override;
 };
 
@@ -563,12 +569,14 @@ struct StmtClass : public Stmt {
 
     std::vector<std::unique_ptr<StmtLet>> m_members;
     std::vector<std::unique_ptr<StmtDef>> m_methods;
+    std::vector<std::string> m_info;
 
     StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
               std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
-              std::vector<std::unique_ptr<StmtDef>> methods);
+              std::vector<std::unique_ptr<StmtDef>> methods,
+              std::vector<std::string> info);
 
     StmtType stmt_type() const override;
 };
@@ -599,11 +607,13 @@ struct StmtEnum : public Stmt {
     std::shared_ptr<Token> m_id;
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
     uint32_t m_attrs;
+    std::vector<std::string> m_info;
 
     StmtEnum(std::shared_ptr<Token> id,
              std::vector<std::pair<std::shared_ptr<Token>,
              std::unique_ptr<Expr>>> elems,
-             uint32_t attrs);
+             uint32_t attrs,
+             std::vector<std::string> info);
     StmtType stmt_type() const override;
 };
 

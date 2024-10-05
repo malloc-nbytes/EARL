@@ -107,7 +107,9 @@ void Time::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Time::copy(void) {
-    return std::make_shared<Time>(m_now);
+    auto value = std::make_shared<Time>(m_now);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

@@ -6,7 +6,7 @@ module Main
 #--- pick and choose which procs to kill, or
 #--- you can just kill them all.
 
-import "std/script.earl" as scr
+import "std/script.earl"; as scr
 
 fn handle_input(num, candidates) {
     if num == 'a' || num == "all" {

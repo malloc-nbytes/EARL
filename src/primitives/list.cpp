@@ -319,6 +319,7 @@ std::shared_ptr<Obj>
 List::copy(void) {
     auto list = std::make_shared<List>();
     list->append_copy(this->value());
+    list->set_owner(m_var_owner);
     return list;
 }
 

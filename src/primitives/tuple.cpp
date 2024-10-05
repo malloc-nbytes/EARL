@@ -158,7 +158,9 @@ std::shared_ptr<Obj>
 Tuple::copy(void) {
     std::vector<std::shared_ptr<Obj>> values = {};
     std::for_each(m_values.begin(), m_values.end(), [&](auto &v){values.push_back(v);});
-    return std::make_shared<Tuple>(values);
+    auto value = std::make_shared<Tuple>(values);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

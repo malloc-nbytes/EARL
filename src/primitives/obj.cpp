@@ -31,6 +31,18 @@
 
 using namespace earl::value;
 
+std::string
+Obj::get_info_from_owner(void) {
+    if (!m_var_owner)
+        return "";
+    return m_var_owner->get_info();
+}
+
+void
+Obj::set_owner(earl::variable::Obj *owner) {
+    m_var_owner = owner;
+}
+
 std::shared_ptr<Obj>
 Obj::binop(Token *op, Obj *other) {
     Err::err_wtok(op);

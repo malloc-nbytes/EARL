@@ -606,7 +606,7 @@ Parser::parse_stmt_if(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtLet>
-Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
+Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     auto errtok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
 
     std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
@@ -639,7 +639,7 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs);
+    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs, std::move(info));
 }
 
 std::unique_ptr<StmtExpr>
@@ -837,7 +837,7 @@ parse_stmt_class_constructor_arguments(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtClass>
-parse_stmt_class(Lexer &lexer, uint32_t attrs) {
+parse_stmt_class(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
 
     std::shared_ptr<Token> class_id = Parser::parse_expect(lexer, TokenType::Ident);
@@ -890,7 +890,8 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs) {
                                        attrs,
                                        std::move(constructor_args),
                                        std::move(members),
-                                       std::move(methods));
+                                       std::move(methods),
+                                       std::move(info));
 }
 
 static std::unique_ptr<StmtMatch::Branch>
@@ -959,7 +960,7 @@ parse_stmt_continue(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtEnum>
-parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
+parse_stmt_enum(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
@@ -983,7 +984,7 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
             break;
         }
     }
-    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs);
+    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs, std::move(info));
 }
 
 static std::unique_ptr<StmtLoop>
@@ -1016,16 +1017,20 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::Dollarsign: return parse_stmt_bash(lexer);
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_FN)
-                return parse_stmt_def(lexer, attrs, info);
+                return parse_stmt_def(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_ENUM)
+                return parse_stmt_enum(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_CLASS)
+                return parse_stmt_class(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_LET)
+                return parse_stmt_let(lexer, attrs, std::move(info));
 
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for functions, enums, and classes";
                 throw ParserException(msg);
             }
 
-            if (tok->lexeme() == COMMON_EARLKW_LET)
-                return parse_stmt_let(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_IF)
                 return parse_stmt_if(lexer);
             if (tok->lexeme() == COMMON_EARLKW_RETURN)
@@ -1042,12 +1047,8 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_import(lexer);
             if (tok->lexeme() == COMMON_EARLKW_MODULE)
                 return parse_stmt_mod(lexer);
-            if (tok->lexeme() == COMMON_EARLKW_CLASS)
-                return parse_stmt_class(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_MATCH)
                 return parse_stmt_match(lexer);
-            if (tok->lexeme() == COMMON_EARLKW_ENUM)
-                return parse_stmt_enum(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_CONTINUE)
                 return parse_stmt_continue(lexer);
             if (tok->lexeme() == COMMON_EARLKW_LOOP)
@@ -1063,7 +1064,7 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::Ident: {
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for variables, functions, enums, and classes";
                 throw ParserException(msg);
             }
 
@@ -1103,7 +1104,7 @@ Parser::parse_stmt(Lexer &lexer) {
         default: {
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for variables, functions, enums, and classes";
                 throw ParserException(msg);
             }
             return parse_stmt_expr(lexer);

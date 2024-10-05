@@ -1,10 +1,10 @@
 module Main
 
 # Import from the stdlib
-import "std/list.earl"
+import "std/list.earl";
 
 # Import locally
-import "other-file.earl" as local
+import "other-file.earl"; as local
 
 #--- Local import examples
 # We can access these resources because

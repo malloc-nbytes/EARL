@@ -99,6 +99,7 @@ std::shared_ptr<Obj>
 Closure::copy(void) {
     std::vector<std::pair<Token *, uint32_t>> params = {};
     auto copy = std::make_shared<Closure>(m_expr_closure, m_params, m_owner);
+    copy->set_owner(m_var_owner);
     return copy;
 }
 

@@ -75,7 +75,9 @@ Char::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Char::copy(void) {
-    return std::make_shared<Char>(m_value);
+    auto value = std::make_shared<Char>(m_value);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

@@ -209,7 +209,9 @@ Int::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Int::copy(void) {
-    return std::make_shared<Int>(m_value);
+    auto c = std::make_shared<Int>(m_value);
+    c->set_owner(m_var_owner);
+    return c;
 }
 
 bool

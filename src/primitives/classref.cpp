@@ -22,24 +22,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <iostream>
 #include <cassert>
+#include <cmath>
 #include <memory>
 
-#include "ast.hpp"
+#include "earl.hpp"
+#include "err.hpp"
+#include "utils.hpp"
 
-StmtLet::StmtLet(std::vector<std::shared_ptr<Token>> ids,
-                 std::vector<std::shared_ptr<__Type>> tys,
-                 std::unique_ptr<Expr> expr,
-                 uint32_t attrs,
-                 std::vector<std::string> info)
-    : m_ids(ids),
-      m_tys(tys)
-    , m_expr(std::move(expr)),
-      m_attrs(attrs),
-      m_info(std::move(info)) {}
+using namespace earl::value;
 
-StmtType
-StmtLet::stmt_type() const {
-    return StmtType::Let;
+ClassRef::ClassRef(StmtClass *stmt) : m_stmt(stmt) {}
+
+const std::vector<std::string> &
+ClassRef::get_info(void) {
+    return m_stmt->m_info;
 }
 
+StmtClass *
+ClassRef::get_stmt(void) {
+    return m_stmt;
+}
+
+// Implements
+Type
+ClassRef::type(void) const {
+    return Type::ClassRef;
+}
+
+std::string
+ClassRef::to_cxxstring(void) {
+    return "<Class Reference { src = "+m_stmt->m_id->lexeme()+" }>";
+}
+
+std::shared_ptr<Obj>
+ClassRef::copy(void) {
+    auto value = std::make_shared<earl::value::ClassRef>(m_stmt);
+    value->set_owner(m_var_owner);
+    return value;
+}

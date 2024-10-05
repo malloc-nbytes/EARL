@@ -383,6 +383,8 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
     auto iter_help = [](const std::vector<std::string> &v) {
         std::string total = "";
+        if (v.size() == 0)
+            total = "<no help information provided>";
         for (size_t i = 0; i < v.size(); ++i) {
             total += v.at(i);
             if (i != v.size()-1)
@@ -396,9 +398,20 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
         const std::vector<std::string> &info = dynamic_cast<earl::value::FunctionRef *>(obj.get())->get_info();
         return iter_help(info);
     } break;
+    case earl::value::Type::ClassRef: {
+        const std::vector<std::string> &info = dynamic_cast<earl::value::ClassRef *>(obj.get())->get_info();
+        return iter_help(info);
+    } break;
+    case earl::value::Type::Enum: {
+        const std::vector<std::string> &info = dynamic_cast<earl::value::Enum *>(obj.get())->get_info();
+        return iter_help(info);
+    } break;
     default: {
-        const std::string msg = "intrinsic `help` can only be called on function at the moment";
-        throw InterpreterException(msg);
+        std::string info = obj->get_info_from_owner();
+        if (info == "") {
+            info = "<no help information provided>";
+        }
+        return std::make_shared<earl::value::Str>(info);
     }
     }
     return nullptr; // unreachable

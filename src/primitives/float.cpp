@@ -158,7 +158,9 @@ Float::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Float::copy(void) {
-    return std::make_shared<Float>(m_value);
+    auto value = std::make_shared<Float>(m_value);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

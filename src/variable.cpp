@@ -28,9 +28,14 @@
 
 using namespace earl::variable;
 
-Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs)
-    : m_id(id), m_value(value), m_attrs(attrs) {
+Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs, std::string info)
+    : m_id(id), m_value(value), m_attrs(attrs), m_info(info) {
     m_constness = (attrs & static_cast<uint32_t>(Attr::Const)) != 0 ? true : false;
+}
+
+std::string
+Obj::get_info(void) {
+    return m_info;
 }
 
 Token *

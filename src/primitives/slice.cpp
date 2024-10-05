@@ -61,7 +61,9 @@ Slice::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Slice::copy(void) {
-    return std::make_shared<Slice>(m_start, m_end);
+    auto value = std::make_shared<Slice>(m_start, m_end);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

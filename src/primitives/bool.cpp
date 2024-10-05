@@ -92,7 +92,9 @@ Bool::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Bool::copy(void) {
-    return std::make_shared<Bool>(m_value);
+    auto value = std::make_shared<Bool>(m_value);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool

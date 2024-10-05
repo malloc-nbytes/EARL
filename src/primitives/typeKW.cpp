@@ -94,7 +94,9 @@ TypeKW::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 TypeKW::copy(void) {
-    return std::make_shared<TypeKW>(m_ty);
+    auto value = std::make_shared<TypeKW>(m_ty);
+    value->set_owner(m_var_owner);
+    return value;
 }
 
 bool
