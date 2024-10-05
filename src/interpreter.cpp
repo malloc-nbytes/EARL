@@ -2344,7 +2344,7 @@ eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
         throw InterpreterException(msg);
     }
 
-    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs);
+    auto _enum = std::make_shared<earl::value::Enum>(stmt, std::move(elems), stmt->m_attrs, std::move(stmt->m_info));
     wctx->enum_add(std::move(_enum));
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();

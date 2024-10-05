@@ -396,6 +396,10 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
         const std::vector<std::string> &info = dynamic_cast<earl::value::FunctionRef *>(obj.get())->get_info();
         return iter_help(info);
     } break;
+    case earl::value::Type::Enum: {
+        const std::vector<std::string> &info = dynamic_cast<earl::value::Enum *>(obj.get())->get_info();
+        return iter_help(info);
+    } break;
     default: {
         const std::string msg = "intrinsic `help` can only be called on function at the moment";
         throw InterpreterException(msg);

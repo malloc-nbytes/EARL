@@ -599,11 +599,13 @@ struct StmtEnum : public Stmt {
     std::shared_ptr<Token> m_id;
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
     uint32_t m_attrs;
+    std::vector<std::string> m_info;
 
     StmtEnum(std::shared_ptr<Token> id,
              std::vector<std::pair<std::shared_ptr<Token>,
              std::unique_ptr<Expr>>> elems,
-             uint32_t attrs);
+             uint32_t attrs,
+             std::vector<std::string> info);
     StmtType stmt_type() const override;
 };
 

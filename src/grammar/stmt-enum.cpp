@@ -29,8 +29,9 @@
 
 StmtEnum::StmtEnum(std::shared_ptr<Token> id,
                    std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems,
-                   uint32_t attrs)
-    : m_id(std::move(id)), m_elems(std::move(elems)), m_attrs(attrs) {}
+                   uint32_t attrs,
+                   std::vector<std::string> info)
+    : m_id(std::move(id)), m_elems(std::move(elems)), m_attrs(attrs), m_info(std::move(info)) {}
 
 StmtType
 StmtEnum::stmt_type() const {

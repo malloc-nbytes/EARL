@@ -959,7 +959,7 @@ parse_stmt_continue(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtEnum>
-parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
+parse_stmt_enum(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
@@ -983,7 +983,7 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs) {
             break;
         }
     }
-    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs);
+    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs, std::move(info));
 }
 
 static std::unique_ptr<StmtLoop>
@@ -1016,7 +1016,9 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::Dollarsign: return parse_stmt_bash(lexer);
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_FN)
-                return parse_stmt_def(lexer, attrs, info);
+                return parse_stmt_def(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_ENUM)
+                return parse_stmt_enum(lexer, attrs, std::move(info));
 
             if (info.size() > 0) {
                 Err::err_wtok(tok);
@@ -1046,8 +1048,6 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_class(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_MATCH)
                 return parse_stmt_match(lexer);
-            if (tok->lexeme() == COMMON_EARLKW_ENUM)
-                return parse_stmt_enum(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_CONTINUE)
                 return parse_stmt_continue(lexer);
             if (tok->lexeme() == COMMON_EARLKW_LOOP)

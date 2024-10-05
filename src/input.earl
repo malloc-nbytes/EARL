@@ -1,16 +1,10 @@
 module Main
 
-let cl = |_| { println("here"); };
+#--- This is my enum
+#--- it has two items.
+enum Test {
+    Item1,
+    Item2,
+}
 
-cl();
-
-#--- Takes two integers a and b
-#--- and returns the sum
-#--- of them
-fn sum(a, b) { return a+b; }
-
-let s = sum;
-
-println(s);
-println(s(1, 2));
-println(help(s));
+println(help(Test));
