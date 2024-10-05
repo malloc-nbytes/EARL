@@ -1027,11 +1027,11 @@ class NoPassesArgs [] {
 * Documentation Comments
 
 #+begin_quote
-Documentation Comments allow you to embed help information into functions, enums, and classes.
+Documentation Comments allow you to embed help information into variables, functions, enums, and classes.
 The information can be retrieved by calling the intrinsic function =help()= on the appropriate
 identifier.
 
-*Note*: When using these, a function, enum, or class *must* be immediately after it.
+*Note*: When using these, a variable, function, enum, or class *must* be immediately after it.
 #+end_quote
 
 ** Grammar
@@ -1064,9 +1064,13 @@ fn sum(a, b) {
     return a+b;
 }
 
+#-- This is my var
+let my_var = 3;
+
 println(help(MyEnum));
 println(help(Point));
 println(help(sum));
+println(help(my_var));
 #+end_example
 
 * Datatypes
@@ -1437,6 +1441,17 @@ Will print all elements if it can. Adds a newline at the end.
 *Note*: If given a class or enum, both this function and =print()= will
 do an in-depth print showing all variables that they contain as well
 as their value. This is very helpful for debugging.
+#+end_quote
+
+** =help=
+
+#+begin_quote
+#+begin_example
+help(id: <identifier>) -> str
+#+end_example
+
+Will return a =str= of all doc comments (see [[Documentation Comments]]) associated
+with the identifer =id=.
 #+end_quote
 
 ** TODO =fprint=
