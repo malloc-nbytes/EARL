@@ -606,7 +606,7 @@ Parser::parse_stmt_if(Lexer &lexer) {
 }
 
 std::unique_ptr<StmtLet>
-Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
+Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     auto errtok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LET);
 
     std::vector<std::shared_ptr<Token>> ids = {parse_expect(lexer, TokenType::Ident)};
@@ -639,7 +639,7 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs) {
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs);
+    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs, std::move(info));
 }
 
 std::unique_ptr<StmtExpr>
@@ -1022,6 +1022,8 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_enum(lexer, attrs, std::move(info));
             if (tok->lexeme() == COMMON_EARLKW_CLASS)
                 return parse_stmt_class(lexer, attrs, std::move(info));
+            if (tok->lexeme() == COMMON_EARLKW_LET)
+                return parse_stmt_let(lexer, attrs, std::move(info));
 
             if (info.size() > 0) {
                 Err::err_wtok(tok);
@@ -1029,8 +1031,6 @@ Parser::parse_stmt(Lexer &lexer) {
                 throw ParserException(msg);
             }
 
-            if (tok->lexeme() == COMMON_EARLKW_LET)
-                return parse_stmt_let(lexer, attrs);
             if (tok->lexeme() == COMMON_EARLKW_IF)
                 return parse_stmt_if(lexer);
             if (tok->lexeme() == COMMON_EARLKW_RETURN)

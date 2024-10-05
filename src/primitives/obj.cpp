@@ -31,6 +31,18 @@
 
 using namespace earl::value;
 
+void
+Obj::set_info(std::string info) {
+    m_info = std::move(info);
+}
+
+std::string
+Obj::get_info_from_value(void) {
+    if (m_info.has_value())
+        return m_info.value();
+    return "";
+}
+
 std::shared_ptr<Obj>
 Obj::binop(Token *op, Obj *other) {
     Err::err_wtok(op);

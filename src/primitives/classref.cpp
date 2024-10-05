@@ -58,5 +58,8 @@ ClassRef::to_cxxstring(void) {
 
 std::shared_ptr<Obj>
 ClassRef::copy(void) {
-    return std::make_shared<earl::value::ClassRef>(m_stmt);
+    auto value = std::make_shared<earl::value::ClassRef>(m_stmt);
+    if (m_info.has_value())
+        value->set_info(m_info.value());
+    return value;
 }

@@ -117,9 +117,14 @@ Option::mutate(Obj *other, StmtMut *stmt) {
 
 std::shared_ptr<Obj>
 Option::copy(void) {
+    std::shared_ptr<Option> value = nullptr;
     if (m_value)
-        return std::make_shared<Option>(m_value->copy());
-    return std::make_shared<Option>();
+        value = std::make_shared<Option>(m_value->copy());
+    else
+        value = std::make_shared<Option>();
+    if (m_info.has_value())
+        value->set_info(m_info.value());
+    return value;
 }
 
 bool

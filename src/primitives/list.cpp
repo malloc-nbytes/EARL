@@ -319,6 +319,8 @@ std::shared_ptr<Obj>
 List::copy(void) {
     auto list = std::make_shared<List>();
     list->append_copy(this->value());
+    if (m_info.has_value())
+        list->set_info(m_info.value());
     return list;
 }
 

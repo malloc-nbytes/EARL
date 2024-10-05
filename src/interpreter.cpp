@@ -1719,6 +1719,16 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
         = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
     ctx->variable_add(var);
 
+    if (stmt->m_info.size() > 0) {
+        std::string info = "";
+        for (size_t i = 0; i < stmt->m_info.size(); ++i) {
+            info += stmt->m_info.at(i);
+            if (i != stmt->m_info.size()-1)
+                info += '\n';
+        }
+        value->set_info(info);
+    }
+
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }

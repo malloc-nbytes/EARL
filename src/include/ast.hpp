@@ -393,7 +393,13 @@ struct StmtLet : public Stmt {
 
     uint32_t m_attrs;
 
-    StmtLet(std::vector<std::shared_ptr<Token>> ids, std::vector<std::shared_ptr<__Type>> tys, std::unique_ptr<Expr> expr, uint32_t attrs);
+    std::vector<std::string> m_info;
+
+    StmtLet(std::vector<std::shared_ptr<Token>> ids,
+            std::vector<std::shared_ptr<__Type>> tys,
+            std::unique_ptr<Expr> expr,
+            uint32_t attrs,
+            std::vector<std::string> info);
     StmtType stmt_type() const override;
 };
 

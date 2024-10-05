@@ -162,6 +162,9 @@ namespace earl {
         struct Obj {
             virtual ~Obj() {}
 
+            virtual void set_info(std::string info);
+            virtual std::string get_info_from_value(void);
+
             /// @brief Set this value as constant
             virtual void set_const(void);
 
@@ -241,6 +244,7 @@ namespace earl {
         protected:
             bool m_const = false;
             bool m_iterable = false;
+            std::optional<std::string> m_info;
         };
 
         struct FunctionRef : public Obj {
