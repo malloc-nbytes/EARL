@@ -162,8 +162,8 @@ namespace earl {
         struct Obj {
             virtual ~Obj() {}
 
-            virtual void set_info(std::string info);
-            virtual std::string get_info_from_value(void);
+            virtual std::string get_info_from_owner(void);
+            virtual void set_owner(earl::variable::Obj *owner);
 
             /// @brief Set this value as constant
             virtual void set_const(void);
@@ -244,7 +244,7 @@ namespace earl {
         protected:
             bool m_const = false;
             bool m_iterable = false;
-            std::optional<std::string> m_info;
+            earl::variable::Obj *m_var_owner;
         };
 
         struct FunctionRef : public Obj {
@@ -821,7 +821,7 @@ namespace earl {
 
         /// @brief The structure to represent EARL variables
         struct Obj {
-            Obj(Token *id, std::shared_ptr<value::Obj> value, uint32_t attrs = 0);
+            Obj(Token *id, std::shared_ptr<value::Obj> value, uint32_t attrs = 0, std::string info = "");
             ~Obj() = default;
 
             Token *gettok(void);
@@ -839,12 +839,14 @@ namespace earl {
             bool is_pub(void) const;
             std::shared_ptr<Obj> copy(void);
             void reset(std::shared_ptr<value::Obj> value);
+            std::string get_info(void);
 
         private:
             Token *m_id;
             std::shared_ptr<value::Obj> m_value;
             uint32_t m_attrs;
             bool m_constness;
+            std::string m_info;
         };
     };
 

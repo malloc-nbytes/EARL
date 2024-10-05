@@ -64,7 +64,6 @@ FunctionRef::mutate(Obj *other, StmtMut *stmt) {
 std::shared_ptr<Obj>
 FunctionRef::copy(void) {
     auto value = std::make_shared<FunctionRef>(m_fun);
-    if (m_info.has_value())
-        value->set_info(m_info.value());
+    value->set_owner(m_var_owner);
     return value;
 }

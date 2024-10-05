@@ -1064,7 +1064,7 @@ Parser::parse_stmt(Lexer &lexer) {
         case TokenType::Ident: {
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for variables, functions, enums, and classes";
                 throw ParserException(msg);
             }
 
@@ -1104,7 +1104,7 @@ Parser::parse_stmt(Lexer &lexer) {
         default: {
             if (info.size() > 0) {
                 Err::err_wtok(tok);
-                const std::string msg = "Info statements are only available for functions at the moment";
+                const std::string msg = "Info statements are only available for variables, functions, enums, and classes";
                 throw ParserException(msg);
             }
             return parse_stmt_expr(lexer);

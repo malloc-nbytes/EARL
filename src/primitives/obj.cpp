@@ -31,16 +31,16 @@
 
 using namespace earl::value;
 
-void
-Obj::set_info(std::string info) {
-    m_info = std::move(info);
+std::string
+Obj::get_info_from_owner(void) {
+    if (!m_var_owner)
+        return "";
+    return m_var_owner->get_info();
 }
 
-std::string
-Obj::get_info_from_value(void) {
-    if (m_info.has_value())
-        return m_info.value();
-    return "";
+void
+Obj::set_owner(earl::variable::Obj *owner) {
+    m_var_owner = owner;
 }
 
 std::shared_ptr<Obj>

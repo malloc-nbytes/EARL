@@ -407,7 +407,7 @@ Intrinsics::intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &param
         return iter_help(info);
     } break;
     default: {
-        std::string info = obj->get_info_from_value();
+        std::string info = obj->get_info_from_owner();
         if (info == "") {
             info = "<no help information provided>";
         }

@@ -122,8 +122,7 @@ Option::copy(void) {
         value = std::make_shared<Option>(m_value->copy());
     else
         value = std::make_shared<Option>();
-    if (m_info.has_value())
-        value->set_info(m_info.value());
+    value->set_owner(m_var_owner);
     return value;
 }
 
