@@ -40,6 +40,11 @@ ClassRef::get_info(void) {
     return m_stmt->m_info;
 }
 
+StmtClass *
+ClassRef::get_stmt(void) {
+    return m_stmt;
+}
+
 // Implements
 Type
 ClassRef::type(void) const {

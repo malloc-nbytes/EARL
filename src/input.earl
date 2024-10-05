@@ -1,9 +1,2 @@
 module Main
 
-#--- This is my class
-#--- it has two items.
-class Point [x, y] {
-}
-
-let x = Point;
-println(x(1, 2));

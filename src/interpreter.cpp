@@ -687,6 +687,16 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             throw InterpreterException(msg);
         }
 
+        // Check for class reference
+        if (ctx->variable_exists(er.id)) {
+            auto var = ctx->variable_get(er.id);
+            if (var->type() == earl::value::Type::ClassRef) {
+                auto value = dynamic_cast<earl::value::ClassRef *>(var->value().get());
+                auto class_instantiation = eval_class_instantiation(static_cast<ExprFuncCall *>(er.extra), value->get_stmt()->m_id->lexeme(), params, ctx, ref);
+                return class_instantiation;
+            }
+        }
+
         // We need to have this function to gen the parameters so we
         // know which ones need to be taken as a reference. NOTE: The
         // routine(s) above this may need this change as well.

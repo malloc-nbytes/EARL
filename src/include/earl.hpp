@@ -261,6 +261,7 @@ namespace earl {
         struct ClassRef : public Obj {
             ClassRef(StmtClass *stmt);
             const std::vector<std::string> &get_info(void);
+            StmtClass *get_stmt(void);
 
             // Implements
             Type type(void) const                                                         override;
