@@ -1,9 +1,8 @@
 module Main
 
-fn test1() {println("in test1");}
-fn test2() {println("in test2");}
+let i = 0;
 
-let last = test1;
-last();
-last = test2;
-last();
+while i < 100 {
+    i += 1;
+}
+

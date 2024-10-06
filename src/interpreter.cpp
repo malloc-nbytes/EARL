@@ -1662,6 +1662,13 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     int i = 0;
     for (auto &tok : stmt->m_ids) {
+        if ((flags & __SHOWLETS) != 0)
+            std::cout << "[EARL show-lets] "
+                      << stmt->m_ids.at(i)->lexeme()
+                      << " = "
+                      << tuple->value().at(i)->to_cxxstring()
+                      << std::endl;
+
         if (tok->lexeme() != "_") {
             if (_const)
                 tuple->value().at(i)->set_const();
@@ -1723,6 +1730,9 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     else
         value = unpack_ER(rhs, ctx, ref);
+
+    if ((flags & __SHOWLETS) != 0)
+        std::cout << "[EARL show-lets] " << id << " = " << value->to_cxxstring() << std::endl;
 
     if (id == "_")
         return std::make_shared<earl::value::Void>();
@@ -1864,9 +1874,22 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     auto l = unpack_ER(left_er, ctx, true);
     auto r = unpack_ER(right_er, ctx, false);
 
+    bool showmuts = (flags & __SHOWMUTS) != 0;
+
+    if (showmuts) {
+        auto lvar_owner = l->borrow_owner();
+        auto rvar_owner = r->borrow_owner();
+        std::cout << "[EARL show-muts] ";
+        std::cout << "<" << (lvar_owner ? lvar_owner->id() : "?") << ">" << l->to_cxxstring();
+        std::cout << " " << stmt->m_equals->lexeme() << " ";
+        std::cout << "<" << (rvar_owner ? rvar_owner->id() : "?") << ">" << r->to_cxxstring();
+    }
+
     switch (stmt->m_equals->type()) {
     case TokenType::Equals: {
         l->mutate(r.get(), stmt);
+        if (showmuts)
+            std::cout << " -> " << l->to_cxxstring() << std::endl;
     } break;
     case TokenType::Plus_Equals:
     case TokenType::Minus_Equals:
@@ -1877,6 +1900,8 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     case TokenType::Backtick_Ampersand_Equals:
     case TokenType::Backtick_Caret_Equals: {
         l->spec_mutate(stmt->m_equals.get(), r.get(), stmt);
+        if (showmuts)
+            std::cout << " -> " << l->to_cxxstring() << std::endl;
     } break;
     default: {
         Err::err_wtok(stmt->m_equals.get());
@@ -2427,6 +2452,9 @@ static std::shared_ptr<earl::value::Obj>
 eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
     ER bash_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     auto bash = unpack_ER(bash_er, ctx, false, nullptr);
+
+    if ((flags & __SHOWBASH) != 0)
+        std::cout << "+ " << bash->to_cxxstring() << std::endl;
 
     int x;
     if ((x = system(bash->to_cxxstring().c_str())) == -1) {

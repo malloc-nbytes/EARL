@@ -38,6 +38,11 @@ Obj::get_info_from_owner(void) {
     return m_var_owner->get_info();
 }
 
+earl::variable::Obj *
+Obj::borrow_owner(void) {
+    return m_var_owner;
+}
+
 void
 Obj::set_owner(earl::variable::Obj *owner) {
     m_var_owner = owner;

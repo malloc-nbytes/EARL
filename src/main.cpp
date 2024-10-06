@@ -69,8 +69,11 @@ usage(void) {
     std::cerr << "      --verbose                          Enable verbose mode" << std::endl;
     std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor                     Do not use color in the REPL" << std::endl;
-    std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
     std::cerr << "      --install-prefix                   Print the installation prefix" << std::endl;
+    std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
+    std::cerr << "      --show-bash                        Print all inlined bash" << std::endl;
+    std::cerr << "      --show-lets                        Print all variable instantiations" << std::endl;
+    std::cerr << "      --show-muts                        Print all value mutations" << std::endl;
     std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "          where" << std::endl;
     std::cerr << "              O = stdout|<file>" << std::endl;
@@ -171,6 +174,12 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __VERBOSE;
     else if (arg == COMMON_EARL2ARG_INSTALL_PREFIX)
         install_prefix();
+    else if (arg == COMMON_EARL2ARG_SHOWBASH)
+        flags |= __SHOWBASH;
+    else if (arg == COMMON_EARL2ARG_SHOWLETS)
+        flags |= __SHOWLETS;
+    else if (arg == COMMON_EARL2ARG_SHOWMUTS)
+        flags |= __SHOWMUTS;
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

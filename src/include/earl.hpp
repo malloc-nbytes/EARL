@@ -162,6 +162,7 @@ namespace earl {
         struct Obj {
             virtual ~Obj() {}
 
+            virtual earl::variable::Obj *borrow_owner(void);
             virtual std::string get_info_from_owner(void);
             virtual void set_owner(earl::variable::Obj *owner);
 
