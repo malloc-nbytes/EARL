@@ -43,6 +43,8 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
     {earl::value::Type::Slice, {earl::value::Type::Slice}},
     {earl::value::Type::TypeKW, {earl::value::Type::TypeKW}},
     {earl::value::Type::Time, {earl::value::Type::Time}},
+    {earl::value::Type::FunctionRef, {earl::value::Type::FunctionRef}},
+    {earl::value::Type::ClassRef, {earl::value::Type::ClassRef}},
 };
 
 std::string earl::value::type_to_str(earl::value::Type ty) {

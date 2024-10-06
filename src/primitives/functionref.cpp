@@ -58,7 +58,9 @@ FunctionRef::to_cxxstring(void) {
 
 void
 FunctionRef::mutate(Obj *other, StmtMut *stmt) {
-    UNIMPLEMENTED("FunctionRef::mutate");
+    ASSERT_MUTATE_COMPAT(this, other, stmt);
+    ASSERT_CONSTNESS(this, stmt);
+    m_fun = dynamic_cast<FunctionRef *>(other)->m_fun;
 }
 
 std::shared_ptr<Obj>

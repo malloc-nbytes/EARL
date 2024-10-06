@@ -1,3 +1,9 @@
 module Main
 
-println(help(1));
+fn test1() {println("in test1");}
+fn test2() {println("in test2");}
+
+let last = test1;
+last();
+last = test2;
+last();
