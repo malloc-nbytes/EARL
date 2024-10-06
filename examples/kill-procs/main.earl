@@ -1,10 +1,10 @@
 module Main
 
-#--- This script takes a program name from the cli
-#--- and will grep for all running processes that
-#--- match what the user entered. You can then
-#--- pick and choose which procs to kill, or
-#--- you can just kill them all.
+# This script takes a program name from the cli
+# and will grep for all running processes that
+# match what the user entered. You can then
+# pick and choose which procs to kill, or
+# you can just kill them all.
 
 import "std/script.earl"; as scr
 
