@@ -133,6 +133,13 @@ Str::pop(Obj *idx, Expr *expr) {
     (void)expr;
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
     int I = idx1->value();
+
+    if (I >= m_value.size()) {
+        Err::err_wexpr(expr);
+        const std::string msg = "index "+std::to_string(I)+" is out of range of length "+std::to_string(m_value.size());
+        throw InterpreterException(msg);
+    }
+
     this->update_changed();
     m_value.erase(m_value.begin() + I);
     m_chars.erase(m_chars.begin() + I);

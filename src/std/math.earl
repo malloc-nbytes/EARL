@@ -20,59 +20,63 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Math
 
 import "std/list.earl";
 
-### BEGIN FUNCTIONS
-
-### NAME max
-### PARAMETER x: real
-### PARAMETER y: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the greater of `x` and `y`.
+### Function
+#-- Name: max
+#-- Parameter: x: real
+#-- Parameter: y: real
+#-- Returns: real
+#-- Description:
+#--   Returns the greater of `x` and `y`.
 @pub fn max(x: real, y: real): real {
     if x >= y {
         return x;
     }
     return y;
 }
+### End
 
-### NAME min
-### PARAMETER x: real
-### PARAMETER y: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the minimum of `x` and `y`.
+### Function
+#-- Name: min
+#-- Parameter: x: real
+#-- Parameter: y: real
+#-- Returns: real
+#-- Description:
+#--   Returns the minimum of `x` and `y`.
 @pub fn min(x: real, y: real): real {
     if x <= y {
         return x;
     }
     return y;
 }
+### End
 
-### NAME abs
-### PARAMETER x: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the absolute value of `x`.
+### Function
+#-- Name: abs
+#-- Parameter: x: real
+#-- Returns: real
+#-- Description:
+#--   Returns the absolute value of `x`.
 @pub fn abs(x: real): real {
     if x < 0 {
         return x * -1;
     }
     return x;
 }
+### End
 
 # Statistical Functions #
 
-### NAME mode
-### PARAMETER lst: list
-### RETURNS list
-### DESCRIPTION
-###   This function returns a list of all modes that appear at the
-###   highest frequency in the given list in the order modes are found.
+### Function
+#-- Name: mode
+#-- Parameter: lst: list
+#-- Returns: list
+#-- Description:
+#--   This function returns a list of all modes that appear at the
+#--   highest frequency in the given list in the order modes are found.
 @pub fn mode(lst) {
 
     if len(lst) == 0 {
@@ -103,21 +107,25 @@ import "std/list.earl";
     }
     return lst_modes;
 }
+### End
 
-### NAME mean
-### PARAMETER lst: list
-### RETURNS float
-### DESCRIPTION
-###   Returns the mean (average in a dataset) of a given list.
+### Function
+#-- Name: mean
+#-- Parameter: lst: list
+#-- Returns: float
+#-- Description:
+#--   Returns the mean (average in a dataset) of a given list.
 @pub fn mean(lst) {
     return List::sumf(lst) / len(lst);
 }
+### End
 
-### NAME median
-### PARAMETER lst: list
-### RETURNS int
-### DESCRIPTION
-###   This function sorts and then returns the middle number of a given list
+### Function
+#-- Name: median
+#-- Parameter: lst: list
+#-- Returns: int
+#-- Description:
+#--   This function sorts and then returns the middle number of a given list
 @pub fn median(lst) {
     List::quicksort(lst, List::DEFAULT_INT_ASCEND_QUICKSORT);
 
@@ -129,12 +137,14 @@ import "std/list.earl";
 
     return lst[middle];
 }
+### End
 
-### NAME list_min
-### PARAMETER lst: list
-### RETURNS real
-### DESCRIPTION
-###   Returns the smallest element `lst`.
+### Function
+#-- Name: list_min
+#-- Parameter: lst: list
+#-- Returns: real
+#-- Description:
+#--   Returns the smallest element `lst`.
 @pub fn list_min(lst: list): real {
     if len(lst) == 0 {
         return none;
@@ -150,12 +160,14 @@ import "std/list.earl";
 
     return min;
 }
+### End
 
-### NAME list_max
-### PARAMETER lst: list
-### RETURNS real
-### DESCRIPTION
-###   Returns the largest element `lst`.
+### Function
+#-- Name: list_max
+#-- Parameter: lst: list
+#-- Returns: real
+#-- Description:
+#--   Returns the largest element `lst`.
 @pub fn list_max(lst: list): real {
     if len(lst) == 0 {
         return none;
@@ -171,104 +183,119 @@ import "std/list.earl";
 
     return max;
 }
+### End
 
-### NAME area_of_circle
-### PARAMETER r: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the area of a circle with radius `r`.
+### Function
+#-- Name: area_of_circle
+#-- Parameter: r: real
+#-- Returns: real
+#-- Description:
+#--   Returns the area of a circle with radius `r`.
 @pub @world
 fn area_of_circle(r: real): real {
     return PI * (r**2);
 }
+### End
 
-### NAME volume_of_cylinder
-### PARAMETER r: real
-### PARAMETER h: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the volume of a cylinder with radius `r` and height `h`.
+### Function
+#-- Name: volume_of_cylinder
+#-- Parameter: r: real
+#-- Parameter: h: real
+#-- Returns: real
+#-- Description:
+#--   Returns the volume of a cylinder with radius `r` and height `h`.
 @pub @world
 fn volume_of_cylinder(r: real, h: real): real {
     return h * PI * (r**2);
 }
+### End
 
-### NAME volume_of_cone
-### PARAMETER r: real
-### PARAMETER h: real
-### RETURNS real
-### DESCRIPTION
-###   Returns the volume of a cone with radius `r` and height `h`.
+### Function
+#-- Name: volume_of_cone
+#-- Parameter: r: real
+#-- Parameter: h: real
+#-- Returns: real
+#-- Description:
+#--   Returns the volume of a cone with radius `r` and height `h`.
 @pub @world
 fn volume_of_cone(r: real, h: real): real {
     return (1.0/3.0) * h * PI * (r**2);
 }
+### End
 
-### NAME floor
-### PARAMETER f: float
-### RETURNS int
-### DESCRIPTION
-###   Returns the floor of `f`.
+### Function
+#-- Name: floor
+#-- Parameter: f: float
+#-- Returns: int
+#-- Description:
+#--   Returns the floor of `f`.
 @pub fn floor(f: float): int {
     return int(f);
 }
+### End
 
-### NAME ceil
-### PARAMETER f: float
-### RETURNS int
-### DESCRIPTION
-###   Returns the ceil of `f`.
+### Function
+#-- Name: ceil
+#-- Parameter: f: float
+#-- Returns: int
+#-- Description:
+#--   Returns the ceil of `f`.
 @pub fn ceil(f: float): int {
     return floor(1+f);
 }
+### End
 
-### NAME lerp
-### PARAMETER a: real
-### PARAMETER b: real
-### PARAMETER f: real
-### RETURNS real
-### DESCRIPTION
-###   Performs the lerp algorithm from `a` to `b` by `f`.
+### Function
+#-- Name: lerp
+#-- Parameter: a: real
+#-- Parameter: b: real
+#-- Parameter: f: real
+#-- Returns: real
+#-- Description:
+#--   Performs the lerp algorithm from `a` to `b` by `f`.
 @pub fn lerp(a: real, b: real, f: real): float {
     return a*(1.-f)+(b*f);
 }
+### End
 
-### NAME normalize
-### PARAMETER x: real
-### PARAMETER min: float
-### PARAMETER max: float
-### RETURNS float
-### DESCRIPTION
-###   Normalizes `x` to the range of `min` .. `max`.
+### Function
+#-- Name: normalize
+#-- Parameter: x: real
+#-- Parameter: min: float
+#-- Parameter: max: float
+#-- Returns: float
+#-- Description:
+#--   Normalizes `x` to the range of `min` .. `max`.
 @pub fn normalize(x: real, min: float, max: float): float {
     return (x-min)/(1-max);
 }
+### End
 
-### NAME clamp
-### PARAMETER value: real
-### PARAMETER min: real
-### PARAMETER max: real
-### RETURNS real
-### DESCRIPTION
-###   Performs clamp on `value` with `min` and `max`.
+### Function
+#-- Name: clamp
+#-- Parameter: value: real
+#-- Parameter: min: real
+#-- Parameter: max: real
+#-- Returns: real
+#-- Description:
+#--   Performs clamp on `value` with `min` and `max`.
 @pub fn clamp(value: real, min: real, max: real): real {
     return max(min, min(value, max));
 }
+### End
 
-### END FUNCTIONS
-
-### BEGIN VARIABLES
-
-### NAME PI
-### TYPE float
-### DESCRIPTION
-###   The mathematical constant for pi.
+### Variable
+#-- Name: PI
+#-- Type: float
+#-- Description:
+#--   The mathematical constant for pi.
 @pub @const let PI = 3.141592653589793;
+### End
 
-### NAME EULER
-### TYPE float
-### DESCRIPTION
-###   The mathematical constant for Euler's number
+### Variable
+#-- Name: EULER
+#-- Type: float
+#-- Description:
+#--   The mathematical constant for Euler's number.
 @pub @const let EULER = 2.718281828459045;
-
-### END VARIABLES
+### End

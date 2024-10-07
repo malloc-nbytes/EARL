@@ -20,15 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Set
 
-### BEGIN CLASSES
-
-### NAME T
-### PARAMETER init: list<x0: any, x1: type(x0), ..., xN: type(x0)>
-### DESCRIPTION
-###   Creates a new Set container with the initializer list `init`.
+### Class
+#-- Name: T
+#-- Parameter: init: list<x0: any, x1: type(x0), ..., xN: type(x0)>
+#-- Description:
+#--   Creates a new Set container with the initializer list `init`.
 @pub class T [init] {
     let items = none;
     let type_ = int;
@@ -47,15 +45,14 @@ module Set
         }
     }
 
-    ### BEGIN METHODS
-
-    ### NAME insert
-    ### PARAMETER value: any
-    ### RETURNS unit
-    ### DESCRIPTION
-    ###  Insert `value` into the `set`. A panic will occur
-    ###  if the `typeof(value)` is not the same as the other
-    ###  values in the `set`.
+    ### Method
+    #-- Name: insert
+    #-- Parameter: value: any
+    #-- Returns: unit
+    #-- Description:
+    #--  Insert `value` into the `set`. A panic will occur
+    #--  if the `typeof(value)` is not the same as the other
+    #--  values in the `set`.
     @pub fn insert(value) {
         if !items {
             this.init(value);
@@ -71,14 +68,16 @@ module Set
                     .insert(value, _);
         }
     }
+    ### End
 
-    ### NAME contains
-    ### PARAMETER value: any
-    ### RETURNS bool
-    ### DESCRIPTION
-    ###   Returns `true` if `value` is in the `set`, or `false` if it is not.
-    ###   A panic will occur if the `typeof(value)` is not the same as the other
-    ###   values in the `set`.
+    ### Method
+    #-- Name: contains
+    #-- Parameter: value: any
+    #-- Returns: bool
+    #-- Description:
+    #--   Returns `true` if `value` is in the `set`, or `false` if it is not.
+    #--   A panic will occur if the `typeof(value)` is not the same as the other
+    #--   values in the `set`.
     @pub fn contains(value) {
         if typeof(value) != type_ {
             panic(f"Set::T expected value  `{type_}` but got: ", typeof(value));
@@ -92,9 +91,6 @@ module Set
                        .unwrap()[value]
                        .is_some();
     }
-
-    ### END METHODS
+    ### End
 }
-
-### END CLASSES
-
+### End

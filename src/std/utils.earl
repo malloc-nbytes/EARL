@@ -20,52 +20,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Utils
 
-### BEGIN FUNCTIONS
-
-### NAME is_even
-### PARAMETER n: int
-### RETURNS bool
-### DESCRIPTION
-###   Returns `true` if `n` is even, or `false` if otherwise.
+### Function
+#-- Name: is_even
+#-- Parameter: n: int
+#-- Returns: bool
+#-- Description:
+#--   Returns `true` if `n` is even, or `false` if otherwise.
 @pub fn is_even(n) {
     return n%2 == 0;
 }
+### End
 
-### NAME is_odd
-### PARAMETER n: int
-### RETURNS bool
-### DESCRIPTION
-###   Returns `true` if `n` is odd, or `false` if otherwise.
+### Function
+#-- Name: is_odd
+#-- Parameter: n: int
+#-- Returns: bool
+#-- Description:
+#--   Returns `true` if `n` is odd, or `false` if otherwise.
 @pub fn is_odd(n) {
     return n%2 != 0;
 }
+### End
 
-### NAME swap
-### PARAMETER x1: @ref any
-### PARAMETER x2: @ref type(x1)
-### RETURNS unit
-### DESCRIPTION
-###   Swap `x1` and `x2` in-place.
+### Function
+#-- Name: swap
+#-- Parameter: x1: @ref any
+#-- Parameter: x2: @ref type(x1)
+#-- Returns: unit
+#-- Description:
+#--   Swap `x1` and `x2` in-place.
 @pub fn swap(@ref x1, @ref x2) {
     let t = x1;
     x1 = x2;
     x2 = t;
 }
+### End
 
 let iota_N = 0;
 
-### NAME iota
-### RETURNS int
-### DESCRIPTION
-###   Returns 0 on first call, then 0+1 on second, then 0+1+1 on third etc.
+### Function
+#-- Name: iota
+#-- Returns: int
+#-- Description:
+#--   Returns 0 on first call, then 0+1 on second, then 0+1+1 on third etc.
 @pub @world
 fn iota() {
     let res = iota_N;
     iota_N = iota_N+1;
     return res;
 }
-
-### END FUNCTIONS
+### End

@@ -20,72 +20,73 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module IO
 
-### BEGIN ENUMS
-
-### NAME Fd
-### PARAMETER In: int
-### PARAMETER Out: int
-### PARAMETER Err: int
-### DESCRIPTION
-###   The integer codes for `stdin`, `stdout`, and `stderr` for
-###   `In`, `Out`, and `Err` respectively.
+### Enum
+#-- Name: Fd
+#-- Parameter: In: int
+#-- Parameter: Out: int
+#-- Parameter: Err: int
+#-- Description:
+#--   The integer codes for `stdin`, `stdout`, and `stderr` for
+#--   `In`, `Out`, and `Err` respectively.
 @pub enum Fd {
     In = 0,
     Out,
     Err,
 }
+### End
 
-### END ENUMS
-
-### BEGIN FUNCTIONS
-
-### NAME file_to_str
-### PARAMETER fp: str
-### RETURNS str
-### DESCRIPTION
-###   Get the contents of a file `fp` and put it into a string.
+### Function
+#-- Name: file_to_str
+#-- Parameter: fp: str
+#-- Returns: str
+#-- Description:
+#--   Get the contents of a file `fp` and put it into a string.
 @pub fn file_to_str(fp) {
     let f = open(fp, "r");
     let s = f.read();
     f.close();
     return s;
 }
+### End
 
-### NAME read_lines
-### PARAMETER fp: str
-### RETURNS list
-### DESCRIPTION
-###   Read the lines of the file `fp` and get
-###   each line as a list.
+### Function
+#-- Name: read_lines
+#-- Parameter: fp: str
+#-- Returns: list
+#-- Description:
+#--   Read the lines of the file `fp` and get
+#--   each line as a list.
 @pub fn read_lines(fp: str): list {
     let content = file_to_str(fp);
     return content.split("\n");
 }
+### End
 
-### NAME write_to_file
-### PARAMETER content: str
-### PARAMETER fp: str
-### RETURNS unit
-### DESCRIPTION
-###   Takes the string `content` and writes it to
-###   the file `fp`.
+### Function
+#-- Name: write_to_file
+#-- Parameter: content: str
+#-- Parameter: fp: str
+#-- Returns: unit
+#-- Description:
+#--   Takes the string `content` and writes it to
+#--   the file `fp`.
 @pub fn write_to_file(content: str, fp: str): unit {
     let f = open(fp, "w");
     f.write(content);
     f.close();
 }
+### End
 
-### NAME rename
-### PARAMETER path_from: str
-### PARAMETER path_to: str
-### RETURNS unit
-### DESCRIPTION
-###   Rename the file `path_from` to `path_to`.
+### Function
+#-- Name: rename
+#-- Parameter: path_from: str
+#-- Parameter: path_to: str
+#-- Returns: unit
+#-- Description:
+#--   Rename the file `path_from` to `path_to`.
 @pub fn rename(path_from: str, path_to: str): unit {
     __internal_move__(path_from, path_to);
 }
-
-### END FUNCTIONS
+### End

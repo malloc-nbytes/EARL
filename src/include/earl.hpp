@@ -477,7 +477,7 @@ namespace earl {
 
             /// @brief Remove an element in the list at a specific index
             /// @param idx The index of the element to remove
-            void pop(Obj *idx);
+            void pop(Obj *idx, Expr *expr);
             std::shared_ptr<List> filter(Obj *closure, std::shared_ptr<Ctx> &ctx);
             void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<List> map(Closure *closure, std::shared_ptr<Ctx> &ctx);

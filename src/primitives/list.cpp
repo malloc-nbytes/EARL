@@ -134,8 +134,18 @@ List::contains(Obj *value) {
 }
 
 void
-List::pop(Obj *idx) {
+List::pop(Obj *idx, Expr *expr) {
     auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
+
+    if (idx1->value() >= m_value.size()) {
+        Err::err_wexpr(expr);
+        const std::string msg = "index "
+            +std::to_string(idx1->value())
+            +" is out of range of length "
+            +std::to_string(m_value.size());
+        throw InterpreterException(msg);
+    }
+
     m_value.erase(m_value.begin() + idx1->value());
 }
 

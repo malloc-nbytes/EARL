@@ -20,16 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Str
 
-### BEGIN FUNCTIONS
-
-### NAME to_list
-### PARAMETER s: @ref str
-### RETURNS list
-### DESCRIPTION
-###   Convert the string `s` to a `list`.
+### Function
+#-- Name: to_list
+#-- Parameter: s: @ref str
+#-- Returns: list
+#-- Description:
+#--   Convert the string `s` to a `list`.
 @pub fn to_list(@ref s) {
     let lst = [];
     for i in 0 to len(s) {
@@ -37,13 +35,15 @@ module Str
     }
     return lst;
 }
+### End
 
-### NAME find
-### PARAMETER s: @ref str
-### PARAMETER t: char
-### RETURNS int
-### DESCRIPTION
-###   Returns the index of target `t` in a `some` value or `none` if not found.
+### Function
+#-- Name: find
+#-- Parameter: s: @ref str
+#-- Parameter: t: char
+#-- Returns: int
+#-- Description:
+#--   Returns the index of target `t` in a `some` value or `none` if not found.
 @pub fn find(@ref s, t) {
     for i in 0 to len(s) {
         if s[i] == t {
@@ -52,12 +52,14 @@ module Str
     }
     return none;
 }
+### End
 
-### NAME trim
-### PARAMETER s: @ref str
-### RETURNS unit
-### DESCRIPTION
-###   Trims all whitespace (spaces, tabs, newlines etc.) from `s` in-place.
+### Function
+#-- Name: trim
+#-- Parameter: s: @ref str
+#-- Returns: unit
+#-- Description:
+#--   Trims all whitespace (spaces, tabs, newlines etc.) from `s` in-place.
 @pub fn trim(@ref s) {
     while len(s) > 0 &&
         (s[0] == ' '
@@ -74,13 +76,15 @@ module Str
         s.pop(len(s)-1);
     }
 }
+### End
 
-### NAME find_first_of
-### PARAMETER s: @const @ref str
-### PARAMETER t: char
-### RETURNS option<int>
-### DESCRIPTION
-###   Finds the first ocurrence of `t` in `s`.
+### Function
+#-- Name: find_first_of
+#-- Parameter: s: @const @ref str
+#-- Parameter: t: char
+#-- Returns: option<int>
+#-- Description:
+#--   Finds the first ocurrence of `t` in `s`.
 @pub fn find_first_of(@const @ref s, t) {
     for i in 0 to len(s) {
         if s[i] == t {
@@ -89,6 +93,7 @@ module Str
     }
     return none;
 }
+### End
 
 @pub fn remove_all_of_char(@ref s: str, target: char): unit {
     let i = 0;
@@ -102,12 +107,13 @@ module Str
     }
 }
 
-### NAME find_last_of
-### PARAMETER s: @const @ref str
-### PARAMETER t: char
-### RETURNS option<int>
-### DESCRIPTION
-###   Finds the last ocurrence of `t` in `s`.
+### Function
+#-- Name: find_last_of
+#-- Parameter: s: @const @ref str
+#-- Parameter: t: char
+#-- Returns: option<int>
+#-- Description:
+#--   Finds the last ocurrence of `t` in `s`.
 @pub fn find_last_of(@const @ref s, @const @ref t) {
     let idx = none;
     for i in 0 to len(s) {
@@ -117,5 +123,4 @@ module Str
     }
     return idx;
 }
-
-### END FUNCTIONS
+### End

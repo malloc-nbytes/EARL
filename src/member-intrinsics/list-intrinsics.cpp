@@ -157,7 +157,7 @@ Intrinsics::intrinsic_member_pop(std::shared_ptr<earl::value::Obj> obj,
     __INTR_ARGS_MUSTBE_SIZE(values, 1, "pop", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Int, 1, "pop", expr);
     if (obj->type() == earl::value::Type::List)
-        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0].get());
+        dynamic_cast<earl::value::List *>(obj.get())->pop(values[0].get(), expr);
     else
         dynamic_cast<earl::value::Str *>(obj.get())->pop(values[0].get(), expr);
     return std::make_shared<earl::value::Void>();

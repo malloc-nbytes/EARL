@@ -20,30 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Script
 
 import "std/str.earl";
 import "std/system.earl";
 
-### BEGIN FUNCTIONS
-
-### NAME program_exists
-### PARAMETER progname: str
-### RETURNS str
-### DESCRIPTION
-###   Returns `true` if `progname` exists as a program on the
-###   machine or `false` if otherwise.
+### Function
+#-- Name: program_exists
+#-- Parameter: progname: str
+#-- Returns: str
+#-- Description:
+#--   Returns `true` if `progname` exists as a program on the
+#--   machine or `false` if otherwise.
 @pub fn program_exists(progname: str): bool {
     return System::cmd(f"which {progname} > /dev/null 2>&1") == 0;
 }
+### End
 
-### NAME get_pid
-### PARAMETER proc: str
-### RETURNS list<tuple<int, str>>
-### DESCRIPTION
-###   Returns a list of pids and the process associated
-###   with it in the form of `[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]`.
+### Function
+#-- Name: get_pid
+#-- Parameter: proc: str
+#-- Returns: list<tuple<int, str>>
+#-- Description:
+#--   Returns a list of pids and the process associated
+#--   with it in the form of `[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]`.
 @pub fn get_pid(proc: str): list {
     let output = System::cmdstr(f"ps aux | grep -i {proc}").split("\n");
     let res = [];
@@ -78,61 +78,71 @@ import "std/system.earl";
 
     return res;
 }
+### End
 
-### NAME kill_pid
-### PARAMETER pid: int
-### RETURNS unit
-### DESCRIPTION
-###   Kill the PID `pid`.
+### Function
+#-- Name: kill_pid
+#-- Parameter: pid: int
+#-- Returns: unit
+#-- Description:
+#--   Kill the PID `pid`.
 @pub fn kill_pid(pid: int): unit {
     System::cmd_wcheck(f"kill {pid}");
 }
+### End
 
-### NAME kill_pids
-### PARAMETER pid: list<int>
-### RETURNS unit
-### DESCRIPTION
-###   Kill all PIDs `pids`.
+### Function
+#-- Name: kill_pids
+#-- Parameter: pid: list<int>
+#-- Returns: unit
+#-- Description:
+#--   Kill all PIDs `pids`.
 @pub fn kill_pids(pids: list): unit {
     foreach pid in pids {
         kill_pid(pid);
     }
 }
+### End
 
-### NAME wget
-### PARAMETER link: str
-### PARAMETER name: str
-### RETURNS unit
-### DESCRIPTION
-###   Performs a `wget` on `link` and saves it to `name`.
+### Function
+#-- Name: wget
+#-- Parameter: link: str
+#-- Parameter: name: str
+#-- Returns: unit
+#-- Description:
+#--   Performs a `wget` on `link` and saves it to `name`.
 @pub fn wget(link: str, name: str): unit {
     if !program_exists("wget") {
         panic(__FUNC__, ": program `wget` does not exist on the system");
     }
     System::cmd_wcheck(f"wget -O {name} {link}");
 }
+### End
 
-### NAME wget_wredirects
-### PARAMETER link: str
-### PARAMETER name: str
-### RETURNS unit
-### DESCRIPTION
-###   Performs a `wget` on `link` and saves it to `name`.
-###   Allows redirects.
+### Function
+#-- Name: wget_wredirects
+#-- Parameter: link: str
+#-- Parameter: name: str
+#-- Returns: unit
+#-- Description:
+#--   Performs a `wget` on `link` and saves it to `name`.
+#--   Allows redirects.
 @pub fn wget_wredirects(link: str, name: str): unit {
     if !program_exists("wget") {
         panic(__FUNC__, ": program `wget` does not exist on the system");
     }
     System::cmd_wcheck(f"wget --content-disposition -O {name} {link}");
 }
+### End
 
-### NAME git_clone
-### PARAMETER link: str
-### PARAMETER depth: int
-### RETURNS unit
-### DESCRIPTION
-###   Performs a `git clone <link> --depth=<depth>`. To not
-###   specify a depth, put some number less than 1 as the `depth`.
+### Function
+#-- Name: git_clone
+#-- Parameter: link: str
+#-- Parameter: depth: int
+#-- Returns: unit
+#-- Description:
+#--   Performs a `git clone <link> --depth=<depth>`. To not
+#--   specify a depth, put some number less than 1 as the `depth`.
 @pub fn git_clone(link: str, depth: int): unit {
     if !program_exists("git") {
         panic(__FUNC__, ": program `git` does not exist on the system");
@@ -145,33 +155,37 @@ import "std/system.earl";
         System::cmd_wcheck(f"git clone {link} --depth={depth}");
     }
 }
+### End
 
-### NAME whoami
-### RETURNS str
-### DESCRIPTION
-###   Return the user as a `str`.
+### Function
+#-- Name: whoami
+#-- Returns: str
+#-- Description:
+#--   Return the user as a `str`.
 @pub fn whoami(): str {
     let s = System::cmdstr("whoami");
     s.pop(len(s)-1); # newline at the end
     return s;
 }
+### End
 
-### NAME all_running_procs
-### RETURNS list<dict<str>>
-### DESCRIPTION
-###   Return information on all running processes as a `dict<str>`
-###   in the form of:
-###     `dict["user"] = str`
-###     `dict["pid"] = str`
-###     `dict["cpu"] = str`
-###     `dict["mem"] = str`
-###     `dict["vsz"] = str`
-###     `dict["rss"] = str`
-###     `dict["tty"] = str`
-###     `dict["stat"] = str`
-###     `dict["start"] = str`
-###     `dict["time"] = str`
-###     `dict["cmd"] = str`
+### Function
+#-- Name: all_running_procs
+#-- Returns: list<dict<str>>
+#-- Description:
+#--   Return information on all running processes as a `dict<str>`
+#--   in the form of:
+#--     `dict["user"] = str`
+#--     `dict["pid"] = str`
+#--     `dict["cpu"] = str`
+#--     `dict["mem"] = str`
+#--     `dict["vsz"] = str`
+#--     `dict["rss"] = str`
+#--     `dict["tty"] = str`
+#--     `dict["stat"] = str`
+#--     `dict["start"] = str`
+#--     `dict["time"] = str`
+#--     `dict["cmd"] = str`
 @pub fn all_running_procs(): list {
     if !program_exists("ps") {
         panic(__FUNC__, ": program `ps` does not exist on the system");
@@ -233,23 +247,26 @@ import "std/system.earl";
 
     return res;
 }
+### End
 
-### NAME launch_proc
-### PARAMETER proc: str
-### RETURNS unit
-### DESCRIPTION
-###   Launch the processes `proc`.
+### Function
+#-- Name: launch_proc
+#-- Parameter: proc: str
+#-- Returns: unit
+#-- Description:
+#--   Launch the processes `proc`.
 @pub fn launch_proc(proc: str): unit {
     System::cmd_wcheck(proc);
 }
+### End
 
-### NAME launch_bgproc
-### PARAMETER proc: str
-### RETURNS unit
-### DESCRIPTION
-###   Launch the processes `proc` in the background.
+### Function
+#-- Name: launch_bgproc
+#-- Parameter: proc: str
+#-- Returns: unit
+#-- Description:
+#--   Launch the processes `proc` in the background.
 @pub fn launch_bgproc(proc: str): unit {
     System::cmd_wcheck(proc+'&');
 }
-
-### END FUNCTIONS
+### End

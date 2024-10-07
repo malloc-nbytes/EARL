@@ -20,46 +20,50 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Char
 
-### BEGIN FUNCTIONS
-
-### NAME isalpha
-### PARAMETER c: char
-### RETURNS bool
-### DESCRIPTION
-###  Takes the char `c` and returns a boolean of whether or not it is a an alpha character.
+### Function
+#-- Name: isalpha
+#-- Parameter: c: char
+#-- Returns: bool
+#-- Description:
+#--  Takes the char `c` and returns a boolean of whether or not it is a an alpha character.
 @pub fn isalpha(c) {
     let dc = c.ascii();
     return (dc >= 'A'.ascii() && dc <= 'Z'.ascii()) || (dc >= 'a'.ascii() && dc <= 'z'.ascii());
 }
+### End
 
-### NAME isnum
-### PARAMETER c: char
-### RETURNS bool
-### DESCRIPTION
-###   Takes the char `c` and returns a boolean of whether or not
-###   it is a digit.
+### Function
+#-- Name: isnum
+#-- Parameter: c: char
+#-- Returns: bool
+#-- Description:
+#--   Takes the char `c` and returns a boolean of whether or not
+#--   it is a digit.
 @pub fn isnum(c) {
     let dc = c.ascii();
     return dc >= '0'.ascii() && dc <= '9'.ascii();
 }
+### End
 
-### NAME isalnum
-### PARAMETER c: char
-### RETURNS bool
-### DESCRIPTION
-###   Takes the char `c` and returns a boolean of whether or not it is a digit or an alpha character.
+### Function
+#-- Name: isalnum
+#-- Parameter: c: char
+#-- Returns: bool
+#-- Description:
+#--   Takes the char `c` and returns a boolean of whether or not it is a digit or an alpha character.
 @pub fn isalnum(c) {
     return isalpha(c) || isnum(c);
 }
+### End
 
-### NAME tolower
-### PARAMETER c: char
-### RETURNS char
-### DESCRIPTION
-###   Takes the char `c` and returns a lowercase character version of the latin alphabet
+### Function
+#-- Name: tolower
+#-- Parameter: c: char
+#-- Returns: char
+#-- Description:
+#--   Takes the char `c` and returns a lowercase character version of the latin alphabet
 @pub fn tolower(c) {
     if isalpha(c) {
         # Dumb solution for now...
@@ -95,12 +99,14 @@ module Char
     }
     return c;
 }
+### End
 
-### NAME toupper
-### PARAMETER c: char
-### RETURNS char
-### DESCRIPTION
-###  Takes the char `c` and returns a uppercase character version of the latin alphabet
+### Function
+#-- Name: toupper
+#-- Parameter: c: char
+#-- Returns: char
+#-- Description:
+#--  Takes the char `c` and returns a uppercase character version of the latin alphabet
 @pub fn toupper(c) {
     if isalpha(c) {
         # Dumb solution for now...
@@ -136,6 +142,4 @@ module Char
     }
     return c;
 }
-
-### END FUNCTIONS
-
+### End

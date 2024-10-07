@@ -1,44 +1,19 @@
-# MIT License
-
-# Copyright (c) 2023 malloc-nbytes
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-### This file is used to generate the Stdlib variables, functions,
-### classes, and enums in the EARL-language-reference.org file.
-
 module Main
 
 import "std/system.earl";
+import "std/utils.earl";
 import "std/io.earl";
 import "std/str.earl";
-import "std/utils.earl";
-import "std/script.earl"; as scr
+import "std/script.earl";
 
 enum State {
-    None = 0,
-    Variables = 1 << Utils::iota(),
-    Functions = 1 << Utils::iota(),
-    Classes   = 1 << Utils::iota(),
-    Enums     = 1 << Utils::iota(),
-    Methods   = 1 << Utils::iota(),
-    Members   = 1 << Utils::iota(),
+    None,
+    Variables,
+    Functions,
+    Methods,
+    Members,
+    Classes,
+    Enums,
 }
 
 fn replace_backticks(@ref desc) {
@@ -91,7 +66,6 @@ class Function [] {
     }
 
     @pub fn dump() {
-        this.description.pop(len(this.description)-1);
         print(this.name, "(");
         for i in 0 to len(this.parameters) {
             print(this.parameters[i].tostr());
@@ -146,7 +120,6 @@ class Class [] {
     }
 
     @pub fn dump() {
-        this.description.pop(len(this.description)-1);
         print(this.name, "[");
         for i in 0 to len(this.params) {
             print(this.params[i].tostr());
@@ -199,7 +172,6 @@ class Variable [] {
     @pub let description = "";
 
     @pub fn dump() {
-        this.description.pop(len(this.description)-1);
         println(this.name, ": ", this.ty);
         println("└──", this.description, "\n");
     }
@@ -244,7 +216,6 @@ class Enum [] {
     }
 
     @pub fn dump() {
-        this.description.pop(len(this.description)-1);
         println(this.name, " {");
         for i in 0 to len(this.items) {
             print("    ", this.items[i].tostr());
@@ -374,302 +345,202 @@ class Entry [import_, mod, classes, functions, enums, variables] {
     }
 }
 
-fn ready_input(fp) {
-    let lst = IO::file_to_str(fp).split("###");
-    lst.foreach(|@ref el| { Str::trim(el); });
-    lst.pop(0); # pop MIT License
-    lst.foreach(|@ref el| {
-        let newline = Str::find(el, '\n');
-        if newline {
-            if el.substr(0, newline.unwrap()) != "MODULE" {
-                el = el.substr(0, newline.unwrap());
-            }
-        }
-    });
-    return lst;
-}
+fn commit(
+    @ref state,
+    @ref cur_item,
+    @const @ref variables,
+    @const @ref functions,
+    @const @ref enums,
+    @const @ref classes,
+    @const @ref methods,
+    @const @ref members,
+    @ref cur_class,
+    mod) {
 
-fn handle_begin(@ref state, @ref splits, @ref cur_item, @ref cur_method, @ref cur_member) {
-    assert(len(splits) == 2);
-    match splits[1] {
-        "FUNCTIONS" -> {
-            state `|= State.Functions;
-            cur_item = some(Function());
-        }
-        "VARIABLES" -> {
-            state `|= State.Variables;
-            cur_item = some(Variable());
-        }
-        "CLASSES" -> {
-            state `|= State.Classes;
-            cur_item = some(Class());
-        }
-        "ENUMS" -> {
-            state `|= State.Enums;
-            cur_item = some(Enum());
-        }
-        "METHODS" -> {
-            state `|= State.Methods;
-            cur_method = some(Function());
-        }
-        "MEMBERS" -> {
-            state `|= State.Members;
-            cur_member = some(Variable());
-        }
-        _ -> { panic("unknown BEGIN section: " + splits[1]); }
-    }
-}
+    assert(cur_item);
 
-fn handle_end(@ref state, @const @ref splits, @ref cur_item, @ref cur_method, @ref cur_member) {
-    assert(len(splits) == 2);
-    match splits[1] {
-        "FUNCTIONS" -> {
-            cur_item = none;
-            state `&= `~State.Functions;
-        }
-        "VARIABLES" -> {
-            cur_item = none;
-            state `&= `~State.Variables;
-        }
-        "CLASSES" -> {
-            cur_item = none;
-            state `&= `~State.Classes;
-        }
-        "ENUMS" -> {
-            cur_item = none;
-            state `&= `~State.Enums;
-        }
-        "METHODS" -> {
-            cur_method = none;
-            state `&= `~State.Methods;
-        }
-        "MEMBERS" -> {
-            cur_member = none;
-            state `&= `~State.Members;
-        }
-        _ -> { panic("unknown END section: " + splits[1]); }
-    }
-}
-
-fn commit(@ref cur_item,
-          @ref cur_method,
-          @ref cur_member,
-          @const @ref state,
-          @const @ref funcs,
-          @const @ref methods,
-          @const @ref classes,
-          @const @ref enums,
-          @const @ref vars
-          @const @ref mod) {
-
-    assert(cur_item.is_some());
-
-    if (state `& State.Functions) != 0 {
-        funcs.append(cur_item.unwrap());
-        print("(Function) ", f"{mod}::");
-        cur_item.unwrap().dump();
-        cur_item = some(Function());
-    }
-    else if (state `& State.Methods) != 0 {
-        assert(cur_method.is_some());
-        cur_item.unwrap().add_method(cur_method.unwrap());
-        print("(Method) ", f"{mod}::", cur_item.unwrap().name, ".");
-        cur_method.unwrap().dump();
-        cur_method = some(Function());
-    }
-    else if (state `& State.Members) != 0 {
-        assert(cur_member.is_some());
-        cur_item.unwrap().add_member(cur_member.unwrap());
-        print("(Member) ", f"{mod}::", cur_item.unwrap().name, ".");
-        cur_member.unwrap().dump();
-        cur_member = some(Variable());
-    }
-    else if (state `& State.Classes) != 0 {
-        classes.append(cur_item.unwrap());
-        print("(Class) ", f"{mod}::");
-        cur_item.unwrap().dump();
-        cur_item = some(Class());
-    }
-    else if (state `& State.Enums) != 0 {
-        enums.append(cur_item.unwrap());
-        print("(Enum) ", f"{mod}::");
-        cur_item.unwrap().dump();
-        cur_item = some(Enum());
-    }
-    else if (state `& State.Variables) != 0 {
-        vars.append(cur_item.unwrap());
+    if state == State.Variables {
         print("(Variable) ", f"{mod}::");
         cur_item.unwrap().dump();
-        cur_item = some(Variable());
+        variables.append(cur_item.unwrap());
+        state = State.None;
+        cur_item = none;
+    }
+    else if state == State.Functions {
+        print("(Function) ", f"{mod}::");
+        cur_item.unwrap().dump();
+        functions.append(cur_item.unwrap());
+        state = State.None;
+        cur_item = none;
+    }
+    else if state == State.Enums {
+        print("(Enum) ", f"{mod}::");
+        cur_item.unwrap().dump();
+        enums.append(cur_item.unwrap());
+        state = State.None;
+        cur_item = none;
+    }
+    else if state == State.Classes {
+        print("(Class) ", f"{mod}::");
+        cur_item.unwrap().dump();
+        foreach m in methods { cur_item.unwrap().add_method(m); }
+        foreach m in members { cur_item.unwrap().add_member(m); }
+        classes.append(cur_item.unwrap());
+        state = State.None;
+        cur_item = none;
+    }
+    else if state == State.Methods {
+        print("(Method) ", f"{mod}::", cur_class.unwrap().name, ".");
+        cur_item.unwrap().dump();
+        methods.append(cur_item.unwrap());
+        state = State.Classes;
+        cur_item = cur_class;
+    }
+    else if state == State.Members {
+        print("(Member) ", f"{mod}::", cur_item.unwrap().name, ".");
+        cur_member.unwrap().dump();
+        members.append(cur_item.unwrap());
+        state = State.Classes;
+        cur_item = cur_class;
     }
 }
 
-fn index(filepath) {
-    let lst = ready_input(filepath);
-
+fn index(lines, fp) {
     let state = State.None;
-    let funcs, methods, classes, enums, vars = ([], [], [], [], []);
-    let cur_item, cur_method, cur_member = (none, none, none);
-    let mod, import_ = ("", "");
-    let in_desc = false;
+    let mod = "";
+    let variables, functions, enums, classes = (
+        [],
+        [],
+        [],
+        [],
+    );
+    let methods, members = ([], []);
+    let history = "";
+    let cur_item = none;
+    let cur_class = none;
+    let desc_newline = false;
 
-    foreach el in lst {
-        let parts = el.split("\n");
-        if parts[0] == "MODULE" {
-            mod = parts[1].split(" ")[1];
-            continue;
+    let i = 0;
+    while i < len(lines) {
+        let line = lines[i];
+        Str::trim(line);
+
+        let parts = line.split(" ").filter(|s|{return s != "";});
+        if parts[0] == "module" {
+            if mod != "" {
+                panic("duplicate module statements");
+            }
+            mod = parts[1];
         }
-        let splits = parts[0].split(" ");
-
-        if splits[0] == "BEGIN" {
-            in_desc = false;
-            handle_begin(state, splits, cur_item, cur_method, cur_member);
-        }
-        else if splits[0] == "END" {
-            in_desc = false;
-            commit(cur_item, cur_method, cur_member, state, funcs, methods, classes, enums, vars, mod);
-            handle_end(state, splits, cur_item, cur_method, cur_member);
-        }
-
-        else if splits[0] == "NAME" {
-            in_desc = false;
-            assert(cur_item.is_some());
-
-            if (state `& State.Members) != 0 {
-                assert(cur_member.is_some());
-                if cur_member.unwrap().name != "" {
-                    commit(cur_item, cur_method, cur_member, state, funcs, methods, classes, enums, vars, mod);
-                }
+        else if parts[0] == "###" {
+            if parts[1] == "Variable" {
+                cur_item = some(Variable());
+                state = State.Variables;
             }
-            else if (state `& State.Methods) != 0 {
-                assert(cur_method.is_some());
-                if cur_method.unwrap().name != "" {
-                    commit(cur_item, cur_method, cur_member, state, funcs, methods, classes, enums, vars, mod);
-                }
+            else if parts[1] == "Function" {
+                cur_item = some(Function());
+                state = State.Functions;
             }
-            else if cur_item.unwrap().name != "" {
-                commit(cur_item, cur_method, cur_member, state, funcs, methods, classes, enums, vars, mod);
+            else if parts[1] == "Enum" {
+                cur_item = some(Enum());
+                state = State.Enums;
             }
-
-            if (state `& State.Functions) != 0 {
-                cur_item.unwrap().add_name(splits[1]);
+            else if parts[1] == "Class" {
+                cur_item = some(Class());
+                state = State.Classes;
             }
-            else if (state `& State.Enums) != 0 {
-                cur_item.unwrap().add_name(splits[1]);
+            else if parts[1] == "Method" {
+                cur_class = cur_item;
+                cur_item = some(Function());
+                state = State.Methods;
             }
-            else if (state `& State.Methods) != 0 {
-                cur_method.unwrap().add_name(splits[1]);
+            else if parts[1] == "Member" {
+                cur_class = cur_item;
+                cur_item = some(Variable());
+                state = State.Members;
             }
-            else if (state `& State.Members) != 0 {
-                cur_member.unwrap().add_name(splits[1]);
-            }
-            else if (state `& State.Classes) != 0 {
-                cur_item.unwrap().add_name(splits[1]);
-            }
-            else if (state `& State.Variables) != 0 {
-                cur_item.unwrap().add_name(splits[1]);
+            else if parts[1] == "End" {
+                commit(state, cur_item, variables, functions, enums, classes, methods, members, cur_class, mod);
             }
             else {
-                panic(f"unknown state: {state}");
+                panic("unknown section: ", parts[1]);
             }
         }
-
-        else if splits[0] == "PARAMETER" {
-            in_desc = false;
-            let ty = "";
-            for i in 2 to len(splits) {
-                ty += splits[i];
-                if i != len(splits)-1 {
-                    ty += " ";
+        else if parts[0] == "#--" {
+            let right = parts[2:].fold(|s, acc|{return acc+' '+s;}, "");
+            assert(cur_item);
+            match parts[1] {
+                "Name:" -> {
+                    desc_newline = false;
+                    Str::trim(right);
+                    cur_item.unwrap().add_name(right);
+                }
+                "Type:" -> {
+                    desc_newline = false;
+                    Str::trim(right);
+                    cur_item.unwrap().add_type(right);
+                }
+                "Parameter:" -> {
+                    desc_newline = false;
+                    let param_parts = right.split(":");
+                    let name = param_parts[0];
+                    let ty = "";
+                    if len(param_parts) > 2 {
+                        ty = param_parts[1:].fold(|s, acc|{return acc+':'+s;}, "");
+                    }
+                    else {
+                        ty = param_parts[1];
+                    }
+                    Str::trim(name);
+                    Str::trim(ty);
+                    cur_item.unwrap().add_param(Parameter(name, ty));
+                }
+                "Returns:" -> {
+                    desc_newline = false;
+                    Str::trim(right);
+                    cur_item.unwrap().add_returns(right);
+                }
+                "Description:" -> {
+                    cur_item.unwrap().addto_description(right);
+                    if len(right) > 0 {
+                        desc_newline = true;
+                    }
+                }
+                _ -> {
+                    let s = "";
+                    if len(parts) < 2 {
+                        s = "";
+                    }
+                    else if desc_newline {
+                        s = '\n'+parts[1]+right;
+                    }
+                    else {
+                        s = parts[1]+right;
+                        desc_newline = true;
+                    }
+                    cur_item.unwrap().addto_description(s);
                 }
             }
-            let p = Parameter(splits[1].substr(0, len(splits[1])-1), ty);
-            if (state `& State.Methods) != 0 {
-                assert(cur_method.is_some());
-                cur_method
-                    .unwrap()
-                    .add_param(p);
-            }
-            else {
-                assert(cur_item.is_some());
-                cur_item
-                    .unwrap()
-                    .add_param(p);
-            }
         }
 
-        else if splits[0] == "RETURNS" {
-            in_desc = false;
-            let ty = "";
-            for i in 1 to len(splits) { ty += splits[i]; }
-            if (state `& State.Methods) != 0 {
-                assert(cur_method.is_some());
-                cur_method
-                    .unwrap()
-                    .add_returns(ty);
-            }
-            else {
-                assert(cur_item.is_some());
-                cur_item
-                    .unwrap()
-                    .add_returns(ty);
-            }
-        }
-
-        else if splits[0] == "DESCRIPTION" {
-            assert(cur_item.is_some());
-            assert(!in_desc && "extra description detected");
-            in_desc = true;
-        }
-
-        else if splits[0] == "TYPE" {
-            assert(cur_item.is_some());
-            assert(((state `& State.Variables) != 0) || ((state `& State.Members) != 0));
-            let ty = "";
-            for i in 1 to len(splits) {
-                ty += splits[i];
-                if i != len(splits)-1 {
-                    ty += " ";
-                }
-            }
-            if (state `& State.Members) != 0 {
-                cur_member
-                    .unwrap()
-                    .add_type(ty);
-            }
-            if (state `& State.Variables) != 0 {
-                cur_item
-                    .unwrap()
-                    .add_type(ty);
-            }
-
-        }
-
-        else if in_desc {
-            if (state `& State.Members) != 0 {
-                cur_member
-                    .unwrap()
-                    .addto_description(parts[0] + " ");
-            }
-            if (state `& State.Methods) != 0 {
-                cur_method
-                    .unwrap()
-                    .addto_description(parts[0] + " ");
-            }
-            else {
-                assert(cur_item.is_some());
-                cur_item
-                    .unwrap()
-                    .addto_description(parts[0] + " ");
-            }
-        }
+        i += 1;
     }
 
     if mod == "" {
-        panic("missing module for file: " + filepath);
+        panic(f"file `{fp}` is missing a module statement");
     }
 
-    return (Entry(filepath, mod, classes, funcs, enums, vars).to_org_mode(), mod);
+    return (
+        Entry(fp, mod, classes, functions, enums, variables).to_org_mode(),
+        mod
+    );
+}
+
+fn ready_input(fp) {
+    let lines = IO::file_to_str(fp)
+        .split("\n")
+        .filter(|k|{return k != "";});
+    return lines;
 }
 
 fn main() {
@@ -682,7 +553,8 @@ fn main() {
         println("############################################################");
         println(f"# Indexing {f}");
         println("############################################################\n");
-        let content, mod = index(f);
+        let lines = ready_input(f);
+        let content, mod = index(lines, f);
         autogen += content;
         modules.append(mod);
     }
@@ -697,7 +569,7 @@ fn main() {
     println(f"The following modules were written to {docsfp}");
     println(modules);
 
-    if scr::program_exists("emacs") {
+    if Script::program_exists("emacs") {
         println("Found Emacs, converting EARL-language-reference.org to HTML");
         $"rm ../EARL-language-reference.html";
         $"rm ../README.html";
@@ -710,3 +582,4 @@ fn main() {
 }
 
 main();
+

@@ -20,41 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Matrix
 
-### BEGIN CLASSES
-
-### NAME T
-### PARAMETER init: list<any>
-### PARAMETER rows: int
-### PARAMETER cols: int
-### DESCRIPTION
-###   Creates a new matrix with the initial dataset `init`
-###   with `rows` rows and `cols` columns.
+### Class
+#-- Name: T
+#-- Parameter: init: list<any>
+#-- Parameter: rows: int
+#-- Parameter: cols: int
+#-- Description:
+#--   Creates a new matrix with the initial dataset `init`
+#--   with `rows` rows and `cols` columns.
 @pub class T [init: list, rows: int, cols: int] {
     let lst = init;
     let r, c = (rows, cols);
 
-    ### BEGIN METHODS
-
-    ### NAME at
-    ### PARAMETER i: int
-    ### PARAMETER j: int
-    ### RETURNS any
-    ### DESCRIPTION
-    ###   Returns the element at [ `i` ][ `j` ] in the matrix.
+    ### Method
+    #-- Name: at
+    #-- Parameter: i: int
+    #-- Parameter: j: int
+    #-- Returns: any
+    #-- Description:
+    #--   Returns the element at [ `i` ][ `j` ] in the matrix.
     @pub fn at(i, j) {
         if i < 0 || i >= this.r || j < 0 || j >= this.c {
             panic(f"The index at [{i}][{j}] is out of range of matrix of size {r}x{c} (size ", this.c*this.r, ")");
         }
         return this.lst[i*this.c+j];
     }
+    ### End
 
-    ### NAME show
-    ### RETURNS unit
-    ### DESCRIPTION
-    ###   Prints all elements in the matrix.
+    ### Method
+    #-- Name: show
+    #-- Returns: unit
+    #-- Description:
+    #--   Prints all elements in the matrix.
     @pub fn show() {
         for i in 0 to this.r {
             for j in 0 to this.c {
@@ -66,38 +65,39 @@ module Matrix
             println();
         }
     }
-
-    ### END METHODS
+    ### End
 }
+### End
 
-### END CLASSES
-
-### BEGIN FUNCTIONS
-
-### NAME identity
-### RETURNS T
-### DESCRIPTION
-###   Creates the identity matrix.
+### Function
+#-- Name: identity
+#-- Returns: T
+#-- Description:
+#--   Creates the identity matrix.
 @pub fn identity(): T {
     return T([1,0,0,0,1,0,0,0,1], 3, 3);
 }
+### End
 
-### NAME from1d
-### PARAMETER data: list<any>
-### PARAMETER rows: int
-### PARAMETER cols: int
-### RETURNS T
-### DESCRIPTION
-###   Creates a `rows` x `cols` matrix from a 1d list.
+### Function
+#-- Name: from1d
+#-- Parameter: data: list<any>
+#-- Parameter: rows: int
+#-- Parameter: cols: int
+#-- Returns: T
+#-- Description:
+#--   Creates a `rows` x `cols` matrix from a 1d list.
 @pub fn from1d(data: list, rows: int, cols: int): T {
     return T(data, rows, cols);
 }
+### End
 
-### NAME from2d
-### PARAMETER data: list<list<any>>
-### RETURNS T
-### DESCRIPTION
-###   Creates a matrix from a 2d list.
+### Function
+#-- Name: from2d
+#-- Parameter: data: list<list<any>>
+#-- Returns: T
+#-- Description:
+#--   Creates a matrix from a 2d list.
 @pub fn from2d(lst: list): T {
     let rows = len(lst);
     let cols = len(lst[0]);
@@ -114,6 +114,4 @@ module Matrix
 
     return T(actual, rows, cols);
 }
-
-### END FUNCTIONS
-
+### End

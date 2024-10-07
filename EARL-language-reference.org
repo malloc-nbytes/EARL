@@ -2119,7 +2119,8 @@ Fd {
 }
 #+end_example
 
-The integer codes for =stdin=, =stdout=, and =stderr= for =In=, =Out=, and =Err= respectively.
+The integer codes for =stdin=, =stdout=, and =stderr= for
+=In=, =Out=, and =Err= respectively.
 #+end_quote
 
 *** *Function List*:
@@ -2136,7 +2137,8 @@ Get the contents of a file =fp= and put it into a string.
 read_lines(fp: str) -> list
 #+end_example
 
-Read the lines of the file =fp= and get each line as a list.
+Read the lines of the file =fp= and get
+each line as a list.
 #+end_quote
 
 #+begin_quote
@@ -2144,7 +2146,8 @@ Read the lines of the file =fp= and get each line as a list.
 write_to_file(content: str, fp: str) -> unit
 #+end_example
 
-Takes the string =content= and writes it to the file =fp=.
+Takes the string =content= and writes it to
+the file =fp=.
 #+end_quote
 
 #+begin_quote
@@ -2194,15 +2197,17 @@ Performs Run Length Encoding on =src=.
 program_exists(progname: str) -> str
 #+end_example
 
-Returns =true= if =progname= exists as a program on the machine or =false= if otherwise.
+Returns =true= if =progname= exists as a program on the
+machine or =false= if otherwise.
 #+end_quote
 
 #+begin_quote
 #+begin_example
-get_pid(proc: str) -> list<tuple<int,str>>
+get_pid(proc: str) -> list<tuple<int, str>>
 #+end_example
 
-Returns a list of pids and the process associated with it in the form of =[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]=.
+Returns a list of pids and the process associated
+with it in the form of =[(pid1, proc1), (pid2, proc2), ..., (pidN, procN)]=.
 #+end_quote
 
 #+begin_quote
@@ -2234,7 +2239,8 @@ Performs a =wget= on =link= and saves it to =name=.
 wget_wredirects(link: str, name: str) -> unit
 #+end_example
 
-Performs a =wget= on =link= and saves it to =name=. Allows redirects.
+Performs a =wget= on =link= and saves it to =name=.
+Allows redirects.
 #+end_quote
 
 #+begin_quote
@@ -2242,7 +2248,8 @@ Performs a =wget= on =link= and saves it to =name=. Allows redirects.
 git_clone(link: str, depth: int) -> unit
 #+end_example
 
-Performs a =git clone <link> --depth=<depth>=. To not specify a depth, put some number less than 1 as the =depth=.
+Performs a =git clone <link> --depth=<depth>=. To not
+specify a depth, put some number less than 1 as the =depth=.
 #+end_quote
 
 #+begin_quote
@@ -2258,7 +2265,19 @@ Return the user as a =str=.
 all_running_procs() -> list<dict<str>>
 #+end_example
 
-Return information on all running processes as a =dict<str>= in the form of: =dict["user"] = str= =dict["pid"] = str= =dict["cpu"] = str= =dict["mem"] = str= =dict["vsz"] = str= =dict["rss"] = str= =dict["tty"] = str= =dict["stat"] = str= =dict["start"] = str= =dict["time"] = str= =dict["cmd"] = str=
+Return information on all running processes as a =dict<str>=
+in the form of:
+=dict["user"] = str=
+=dict["pid"] = str=
+=dict["cpu"] = str=
+=dict["mem"] = str=
+=dict["vsz"] = str=
+=dict["rss"] = str=
+=dict["tty"] = str=
+=dict["stat"] = str=
+=dict["start"] = str=
+=dict["time"] = str=
+=dict["cmd"] = str=
 #+end_quote
 
 #+begin_quote
@@ -2331,7 +2350,7 @@ Fills the given list =lst= with element =k=.
 
 #+begin_quote
 #+begin_example
-sumf(lst: @const @ref list<float|int>) -> float
+sumf(lst: @const @ref list<real>) -> float
 #+end_example
 
 Returns the sum all elements in =lst= as a float.
@@ -2350,7 +2369,8 @@ Returns the sum all elements in =lst= as an integer.
 find(lst: @const @ref list<any>, elem: @const @ref any) -> option<int>
 #+end_example
 
-Takes a reference to a list and a reference to an element and looks for the element find in the given list Returns the index of the first occurrence that =elem= appears in =lst= wrapped in =some=, or =none= if not found.
+Takes a reference to a list and a reference to an element and looks for the element find in the given list
+Returns the index of the first occurrence that =elem= appears in =lst= wrapped in =some=, or =none= if not found.
 #+end_quote
 
 #+begin_quote
@@ -2363,15 +2383,25 @@ Counts the number of occurrences that =elem= appears in =lst=.
 
 #+begin_quote
 #+begin_example
-quicksort(lst: @ref list<any>, compar: @const closure(x1: any, x2: type(x1)) -> bool|int) -> unit
+quicksort(lst: @ref list<any>, compar: : @const closure(x1: any, x2: type(x1)) -> bool|int) -> unit
 #+end_example
 
-where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$  and $F$ is defined by  \[ F(x_1, x_2) = \begin{cases} true & \text{if } R(x_1) \ge R(x_2) \\ false & \text{if } R(x_1) < R(x_2) \end{cases} \]  and $R(x)$ is some ranking function that produces a rank of $x$.  Performs the quicksort sorting algorithm on =lst= and sorts by the comparison closure =compar=.
+where =compar= is some ordering function $F(x_1, x_2) \in \{true, false\}$
+and $F$ is defined by
+\[
+F(x_1, x_2) = \begin{cases}
+true & \text{if } R(x_1) \ge R(x_2) \\
+false & \text{if } R(x_1) < R(x_2)
+\end{cases}
+\]
+and $R(x)$ is some ranking function that produces a rank of $x$.
+Performs the quicksort sorting algorithm on =lst= and
+sorts by the comparison closure =compar=.
 #+end_quote
 
 #+begin_quote
 #+begin_example
-dict_to_list(dict: @const @ref dict<any, any>) -> list<tuple<any,any>>
+dict_to_list(dict: @const @ref dict<any, any>) -> list<tuple<any, any>>
 #+end_example
 
 Converts the dictionary =dict= to a list.
@@ -2420,7 +2450,8 @@ Creates a matrix from a 2d list.
 #+begin_example
 T [init: list<any>, rows: int, cols: int]
 #+end_example
-Creates a new matrix with the initial dataset =init= with =rows= rows and =cols= columns.
+Creates a new matrix with the initial dataset =init=
+with =rows= rows and =cols= columns.
 #+end_quote
 
 **** *=T= Implements*
@@ -2430,7 +2461,7 @@ Creates a new matrix with the initial dataset =init= with =rows= rows and =cols=
 at(i: int, j: int) -> any
 #+end_example
 
-Returns the element at [ =i= ][ =j= ] in the matrix. 
+Returns the element at [ =i= ][ =j= ] in the matrix.
 
 #+end_quote
 #+begin_quote
@@ -2438,7 +2469,7 @@ Returns the element at [ =i= ][ =j= ] in the matrix.
 show() -> unit
 #+end_example
 
-Prints all elements in the matrix. 
+Prints all elements in the matrix.
 
 #+end_quote
 
@@ -2466,7 +2497,8 @@ Takes the char =c= and returns a boolean of whether or not it is a an alpha char
 isnum(c: char) -> bool
 #+end_example
 
-Takes the char =c= and returns a boolean of whether or not it is a digit.
+Takes the char =c= and returns a boolean of whether or not
+it is a digit.
 #+end_quote
 
 #+begin_quote
@@ -2564,7 +2596,7 @@ Finds the last ocurrence of =t= in =s=.
 *** *=T=*
 #+begin_quote
 #+begin_example
-T [init: list<x0: any, x1: type(x0), ..., xN: type(x0)>]
+T [init: : list<x0: any, x1: type(x0), ..., xN: type(x0)>]
 #+end_example
 Creates a new Set container with the initializer list =init=.
 #+end_quote
@@ -2576,7 +2608,9 @@ Creates a new Set container with the initializer list =init=.
 insert(value: any) -> unit
 #+end_example
 
-Insert =value= into the =set=. A panic will occur if the =typeof(value)= is not the same as the other values in the =set=. 
+Insert =value= into the =set=. A panic will occur
+if the =typeof(value)= is not the same as the other
+values in the =set=.
 
 #+end_quote
 #+begin_quote
@@ -2584,7 +2618,9 @@ Insert =value= into the =set=. A panic will occur if the =typeof(value)= is not 
 contains(value: any) -> bool
 #+end_example
 
-Returns =true= if =value= is in the =set=, or =false= if it is not. A panic will occur if the =typeof(value)= is not the same as the other values in the =set=. 
+Returns =true= if =value= is in the =set=, or =false= if it is not.
+A panic will occur if the =typeof(value)= is not the same as the other
+values in the =set=.
 
 #+end_quote
 
@@ -2649,7 +2685,8 @@ Returns 0 on first call, then 0+1 on second, then 0+1+1 on third etc.
 ls(path: str) -> list
 #+end_example
 
-List all items at the path =path= and return a list of all elements it contains.
+List all items at the path =path= and return a list of
+all elements it contains.
 #+end_quote
 
 #+begin_quote
@@ -2673,7 +2710,10 @@ Create a new directory in the =cwd= called =name=.
 fullpath_mkdir(fullpath: str) -> unit
 #+end_example
 
-Creates a full path directory as well as a file i.e., ./dir1/dir2/dir3/file.txt. The last entry in the path will be used as the file to be created. It is functionally equivalent to: =mkdir -p <path> && touch <path>/file.txt=.
+Creates a full path directory as well as a file
+i.e., ./dir1/dir2/dir3/file.txt. The last entry
+in the path will be used as the file to be created.
+It is functionally equivalent to: =mkdir -p <path> && touch <path>/file.txt=.
 #+end_quote
 
 #+begin_quote
@@ -2681,7 +2721,8 @@ Creates a full path directory as well as a file i.e., ./dir1/dir2/dir3/file.txt.
 name_and_ext(filepath: str) -> tuple
 #+end_example
 
-Returns a tuple of filename and extension. If either the name or extension cannot be found, the respective one will be set to =none=.
+Returns a tuple of filename and extension. If either the name or extension
+cannot be found, the respective one will be set to =none=.
 #+end_quote
 
 #+begin_quote
@@ -2705,7 +2746,8 @@ Run the bash command =cmd=. Returns the exit code.
 cmd_wcheck(cmd: str) -> unit
 #+end_example
 
-Run the bash command =cmd= and checks the exit code. Will print a warning if the exit code is not zero.
+Run the bash command =cmd= and checks the exit code.
+Will print a warning if the exit code is not zero.
 #+end_quote
 
 #+begin_quote
@@ -2713,7 +2755,8 @@ Run the bash command =cmd= and checks the exit code. Will print a warning if the
 cmd_onfail(cmd: str, onfail: closure) -> unit
 #+end_example
 
-Run the bash command =cmd= and checks the exit code. Will run =onfail= if the exit code is not 0.
+Run the bash command =cmd= and checks the exit code.
+Will run =onfail= if the exit code is not 0.
 #+end_quote
 
 #+begin_quote
@@ -2721,15 +2764,17 @@ Run the bash command =cmd= and checks the exit code. Will run =onfail= if the ex
 cmdstr(cmd: str) -> str
 #+end_example
 
-Run the bash command =cmd= and return the output as a =str=.
+Run the bash command =cmd= and return the
+output as a =str=.
 #+end_quote
 
 #+begin_quote
 #+begin_example
-cmdstr_wexitcode(cmd: str) -> tuple<int,str>
+cmdstr_wexitcode(cmd: str) -> tuple<int, str>
 #+end_example
 
-Run the bash command =cmd= and return the output as a tuple of =(exit_code, output)=.
+Run the bash command =cmd= and return the
+output as a tuple of =(exit_code, output)=.
 #+end_quote
 
 *** *Class List*: /None/
@@ -2746,7 +2791,9 @@ Run the bash command =cmd= and return the output as a tuple of =(exit_code, outp
 CRASH_ON_FAILURE: bool
 #+end_example
 
-Will crash the program on assertion failures if set to =true=. Otherwise will print failures to =stderr=. By default, it is set to =true=.
+Will crash the program on assertion failures
+if set to =true=. Otherwise will print failures
+to =stderr=. By default, it is set to =true=.
 #+end_quote
 
 #+begin_quote
@@ -2754,7 +2801,9 @@ Will crash the program on assertion failures if set to =true=. Otherwise will pr
 FILE: str
 #+end_example
 
-Should be set in the caller file to set the file location that the assertions are being called from using =__FILE__=. *Note*: This variable must be set manually.
+Should be set in the caller file to set the file location
+that the assertions are being called from using =__FILE__=.
+*Note*: This variable must be set manually.
 #+end_quote
 
 #+begin_quote
@@ -2762,7 +2811,9 @@ Should be set in the caller file to set the file location that the assertions ar
 FUNC: str
 #+end_example
 
-Should be set in the caller file in the function that the assertions are being called from using =__FUNC__=. *Note*: This variable must be set manually.
+Should be set in the caller file in the function
+that the assertions are being called from using =__FUNC__=.
+*Note*: This variable must be set manually.
 #+end_quote
 
 *** *Enum List*: /None/
@@ -2789,7 +2840,8 @@ Tests =cond= for =false=.
 eq(l: any, r: any) -> unit
 #+end_example
 
-Tests for =l= equal to =r=. *Note*: this function is type safe to it will not panic with differing types.
+Tests for =l= equal to =r=. *Note*: this function
+is type safe to it will not panic with differing types.
 #+end_quote
 
 #+begin_quote
@@ -2797,7 +2849,8 @@ Tests for =l= equal to =r=. *Note*: this function is type safe to it will not pa
 neq(l: any, r: any) -> unit
 #+end_example
 
-Tests for =l= not equal to =r=. *Note*: this function is type safe to it will not panic with differing types.
+Tests for =l= not equal to =r=. *Note*: this function
+is type safe to it will not panic with differing types.
 #+end_quote
 
 #+begin_quote
@@ -2805,7 +2858,8 @@ Tests for =l= not equal to =r=. *Note*: this function is type safe to it will no
 not_none(k: any) -> unit
 #+end_example
 
-Tests for =k= being not =none=. *Note*: this function is type safe so it will not panic with differing types.
+Tests for =k= being not =none=. *Note*: this function
+is type safe so it will not panic with differing types.
 #+end_quote
 
 #+begin_quote
@@ -2813,7 +2867,8 @@ Tests for =k= being not =none=. *Note*: this function is type safe so it will no
 is_none(k: any) -> unit
 #+end_example
 
-Tests for =k= being =none=. *Note*: this function is type safe so it will not panic with differing types.
+Tests for =k= being =none=. *Note*: this function
+is type safe so it will not panic with differing types.
 #+end_quote
 
 *** *Class List*: /None/
@@ -2838,7 +2893,7 @@ The mathematical constant for pi.
 EULER: float
 #+end_example
 
-The mathematical constant for Euler's number
+The mathematical constant for Euler's number.
 #+end_quote
 
 *** *Enum List*: /None/
@@ -2873,7 +2928,8 @@ Returns the absolute value of =x=.
 mode(lst: list) -> list
 #+end_example
 
-This function returns a list of all modes that appear at the highest frequency in the given list in the order modes are found.
+This function returns a list of all modes that appear at the
+highest frequency in the given list in the order modes are found.
 #+end_quote
 
 #+begin_quote

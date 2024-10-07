@@ -20,16 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Encryption
 
-### BEGIN FUNCTIONS
-
-### NAME rle
-### PARAMETER src: str
-### RETURNS str
-### DESCRIPTION
-###   Performs Run Length Encoding on `src`.
+### Function
+#-- Name: rle
+#-- Parameter: src: str
+#-- Returns: str
+#-- Description:
+#--   Performs Run Length Encoding on `src`.
 @pub fn rle(src) {
     let result = "";
     let cur, count = (none, 1);
@@ -56,6 +54,5 @@ module Encryption
 
     return result;
 }
-
-### END FUNCTIONS
+### End
 

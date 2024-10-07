@@ -20,36 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module Assert
 
-### BEGIN VARIABLES
-
-### NAME CRASH_ON_FAILURE
-### TYPE bool
-### DESCRIPTION
-###   Will crash the program on assertion failures
-###   if set to `true`. Otherwise will print failures
-###   to `stderr`. By default, it is set to `true`.
+### Variable
+#-- Name: CRASH_ON_FAILURE
+#-- Type: bool
+#-- Description:
+#--   Will crash the program on assertion failures
+#--   if set to `true`. Otherwise will print failures
+#--   to `stderr`. By default, it is set to `true`.
 @pub let CRASH_ON_FAILURE = true;
+### End
 
-### NAME FILE
-### TYPE str
-### DESCRIPTION
-###   Should be set in the caller file to set the file location
-###   that the assertions are being called from using `__FILE__`.
-###   *Note*: This variable must be set manually.
+### Variable
+#-- Name: FILE
+#-- Type: str
+#-- Description:
+#--   Should be set in the caller file to set the file location
+#--   that the assertions are being called from using `__FILE__`.
+#--   *Note*: This variable must be set manually.
 @pub let FILE = "";
+### End
 
-### NAME FUNC
-### TYPE str
-### DESCRIPTION
-###   Should be set in the caller file in the function
-###   that the assertions are being called from using `__FUNC__`.
-###   *Note*: This variable must be set manually.
+### Variable
+#-- Name: FUNC
+#-- Type: str
+#-- Description:
+#--   Should be set in the caller file in the function
+#--   that the assertions are being called from using `__FUNC__`.
+#--   *Note*: This variable must be set manually.
 @pub let FUNC = "";
-
-### END VARIABLES
+### End
 
 @world
 fn fail(msg) {
@@ -69,37 +70,40 @@ fn fail(msg) {
     fprintln(IO::Fd.Err, "ASSERTION FAILURE: ", loc, '(', msg, ')');
 }
 
-### BEGIN FUNCTIONS
-
-### NAME is_true
-### PARAMETER cond: bool
-### RETURNS unit
-### DESCRIPTION
-###   Tests `cond` for `true`.
+### Function
+#-- Name: is_true
+#-- Parameter: cond: bool
+#-- Returns: unit
+#-- Description:
+#--   Tests `cond` for `true`.
 @pub fn is_true(cond: bool): unit {
     if !cond {
         fail(__FUNC__ + f"() expected `true` but got `false`");
     }
 }
+### End
 
-### NAME is_false
-### PARAMETER cond: bool
-### RETURNS unit
-### DESCRIPTION
-###   Tests `cond` for `false`.
+### Function
+#-- Name: is_false
+#-- Parameter: cond: bool
+#-- Returns: unit
+#-- Description:
+#--   Tests `cond` for `false`.
 @pub fn is_false(cond: bool): unit {
     if cond {
         fail(__FUNC__ + "() expected `false` but got `true`");
     }
 }
+### End
 
-### NAME eq
-### PARAMETER l: any
-### PARAMETER r: any
-### RETURNS unit
-### DESCRIPTION
-###   Tests for `l` equal to `r`. *Note*: this function
-###   is type safe to it will not panic with differing types.
+### Function
+#-- Name: eq
+#-- Parameter: l: any
+#-- Parameter: r: any
+#-- Returns: unit
+#-- Description:
+#--   Tests for `l` equal to `r`. *Note*: this function
+#--   is type safe to it will not panic with differing types.
 @pub fn eq(l: any, r: any): unit {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
         if l.is_none() && r.is_some() {
@@ -119,14 +123,16 @@ fn fail(msg) {
         }
     }
 }
+### End
 
-### NAME neq
-### PARAMETER l: any
-### PARAMETER r: any
-### RETURNS unit
-### DESCRIPTION
-###   Tests for `l` not equal to `r`. *Note*: this function
-###   is type safe to it will not panic with differing types.
+### Function
+#-- Name: neq
+#-- Parameter: l: any
+#-- Parameter: r: any
+#-- Returns: unit
+#-- Description:
+#--   Tests for `l` not equal to `r`. *Note*: this function
+#--   is type safe to it will not panic with differing types.
 @pub fn neq(l: any, r: any): unit {
     if typeof(l) == typeof(none) && typeof(r) == typeof(none) {
         if l.is_none() && r.is_none() {
@@ -140,23 +146,27 @@ fn fail(msg) {
         match l {r -> {fail(__FUNC__ + "() left = {l}, right = {r}");}}
     }
 }
+### End
 
-### NAME not_none
-### PARAMETER k: any
-### RETURNS unit
-### DESCRIPTION
-###   Tests for `k` being not `none`. *Note*: this function
-###   is type safe so it will not panic with differing types.
+### Function
+#-- Name: not_none
+#-- Parameter: k: any
+#-- Returns: unit
+#-- Description:
+#--   Tests for `k` being not `none`. *Note*: this function
+#--   is type safe so it will not panic with differing types.
 @pub fn not_none(k: any): unit {
     match k {none -> {fail(__FUNC__ + "() expected not `none` but got `none`");}}
 }
+### End
 
-### NAME is_none
-### PARAMETER k: any
-### RETURNS unit
-### DESCRIPTION
-###   Tests for `k` being `none`. *Note*: this function
-###   is type safe so it will not panic with differing types.
+### Function
+#-- Name: is_none
+#-- Parameter: k: any
+#-- Returns: unit
+#-- Description:
+#--   Tests for `k` being `none`. *Note*: this function
+#--   is type safe so it will not panic with differing types.
 @pub fn is_none(k: any): unit {
     match k {
         none -> {}
@@ -165,5 +175,4 @@ fn fail(msg) {
         }
     }
 }
-
-### END FUNCTIONS
+### End

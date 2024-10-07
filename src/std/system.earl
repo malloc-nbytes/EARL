@@ -20,47 +20,51 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-### MODULE
 module System
 
-### BEGIN FUNCTIONS
-
-### NAME ls
-### PARAMETER path: str
-### RETURNS list
-### DESCRIPTION
-###   List all items at the path `path` and return a list of
-###   all elements it contains.
+### Function
+#-- Name: ls
+#-- Parameter: path: str
+#-- Returns: list
+#-- Description:
+#--   List all items at the path `path` and return a list of
+#--   all elements it contains.
 @pub fn ls(path) {
     return __internal_ls__(path);
 }
+### End
 
-### NAME cd
-### PARAMETER path: str
-### RETURNS unit
-### DESCRIPTION
-###   Change the current working directory to `path`.
+### Function
+#-- Name: cd
+#-- Parameter: path: str
+#-- Returns: unit
+#-- Description:
+#--   Change the current working directory to `path`.
 @pub fn cd(path: str): unit {
     __internal_cd__(path);
 }
+### End
 
-### NAME mkdir
-### PARAMETER name: str
-### RETURNS unit
-### DESCRIPTION
-###   Create a new directory in the `cwd` called `name`.
+### Function
+#-- Name: mkdir
+#-- Parameter: name: str
+#-- Returns: unit
+#-- Description:
+#--   Create a new directory in the `cwd` called `name`.
 @pub fn mkdir(name) {
     __internal_mkdir__(name);
 }
+### End
 
-### NAME fullpath_mkdir
-### PARAMETER fullpath: str
-### RETURNS unit
-### DESCRIPTION
-###   Creates a full path directory as well as a file
-###   i.e., ./dir1/dir2/dir3/file.txt. The last entry
-###   in the path will be used as the file to be created.
-###   It is functionally equivalent to: `mkdir -p <path> && touch <path>/file.txt`.
+### Function
+#-- Name: fullpath_mkdir
+#-- Parameter: fullpath: str
+#-- Returns: unit
+#-- Description:
+#--   Creates a full path directory as well as a file
+#--   i.e., ./dir1/dir2/dir3/file.txt. The last entry
+#--   in the path will be used as the file to be created.
+#--   It is functionally equivalent to: `mkdir -p <path> && touch <path>/file.txt`.
 @pub fn fullpath_mkdir(fullpath) {
     if len(fullpath) == 0 {
         panic("fullpath_mkdir: the path specified cannot be empty");
@@ -80,13 +84,15 @@ module System
     f.write("");
     f.close();
 }
+### End
 
-### NAME name_and_ext
-### PARAMETER filepath: str
-### RETURNS tuple
-### DESCRIPTION
-###   Returns a tuple of filename and extension. If either the name or extension
-###   cannot be found, the respective one will be set to `none`.
+### Function
+#-- Name: name_and_ext
+#-- Parameter: filepath: str
+#-- Returns: tuple
+#-- Description:
+#--   Returns a tuple of filename and extension. If either the name or extension
+#--   cannot be found, the respective one will be set to `none`.
 @pub fn name_and_ext(filepath) {
     assert(len(filepath) > 0);
 
@@ -120,71 +126,82 @@ module System
 
     return (some(name), some(ext));
 }
+### End
 
-### NAME move
-### PARAMETER path_from: str
-### PARAMETER path_to: str
-### RETURNS unit
-### DESCRIPTION
-###   Move the file `path_from` to `path_to`.
+### Function
+#-- Name: move
+#-- Parameter: path_from: str
+#-- Parameter: path_to: str
+#-- Returns: unit
+#-- Description:
+#--   Move the file `path_from` to `path_to`.
 @pub fn move(path_from, path_to) {
     __internal_move__(path_from, path_to);
 }
+### End
 
-### NAME cmd
-### PARAMETER cmd: str
-### RETURNS int
-### DESCRIPTION
-###   Run the bash command `cmd`. Returns the exit code.
+### Function
+#-- Name: cmd
+#-- Parameter: cmd: str
+#-- Returns: int
+#-- Description:
+#--   Run the bash command `cmd`. Returns the exit code.
 @pub fn cmd(cmd: str) {
     return __internal_unix_system__(cmd);
 }
+### End
 
-### NAME cmd_wcheck
-### PARAMETER cmd: str
-### RETURNS unit
-### DESCRIPTION
-###   Run the bash command `cmd` and checks the exit code.
-###   Will print a warning if the exit code is not zero.
+### Function
+#-- Name: cmd_wcheck
+#-- Parameter: cmd: str
+#-- Returns: unit
+#-- Description:
+#--   Run the bash command `cmd` and checks the exit code.
+#--   Will print a warning if the exit code is not zero.
 @pub fn cmd_wcheck(cmd: str) {
     let status = cmd(cmd);
     if status != 0 {
         warn(f"command `{cmd}` failed with exit code {status}");
     }
 }
+### End
 
-### NAME cmd_onfail
-### PARAMETER cmd: str
-### PARAMETER onfail: closure
-### RETURNS unit
-### DESCRIPTION
-###   Run the bash command `cmd` and checks the exit code.
-###   Will run `onfail` if the exit code is not 0.
+### Function
+#-- Name: cmd_onfail
+#-- Parameter: cmd: str
+#-- Parameter: onfail: closure
+#-- Returns: unit
+#-- Description:
+#--   Run the bash command `cmd` and checks the exit code.
+#--   Will run `onfail` if the exit code is not 0.
 @pub fn cmd_onfail(cmd: str, onfail: closure): unit {
     let status = cmd(cmd);
     if status != 0 {
         onfail();
     }
 }
+### End
 
-### NAME cmdstr
-### PARAMETER cmd: str
-### RETURNS str
-### DESCRIPTION
-###   Run the bash command `cmd` and return the
-###   output as a `str`.
+### Function
+#-- Name: cmdstr
+#-- Parameter: cmd: str
+#-- Returns: str
+#-- Description:
+#--   Run the bash command `cmd` and return the
+#--   output as a `str`.
 @pub fn cmdstr(cmd: str): str {
     return __internal_unix_system_woutput__(cmd)[1];
 }
+### End
 
-### NAME cmdstr_wexitcode
-### PARAMETER cmd: str
-### RETURNS tuple<int, str>
-### DESCRIPTION
-###   Run the bash command `cmd` and return the
-###   output as a tuple of `(exit_code, output)`.
+### Function
+#-- Name: cmdstr_wexitcode
+#-- Parameter: cmd: str
+#-- Returns: tuple<int, str>
+#-- Description:
+#--   Run the bash command `cmd` and return the
+#--   output as a tuple of `(exit_code, output)`.
 @pub fn cmdstr_wexitcode(cmd: str): tuple {
     return __internal_unix_system_woutput__(cmd);
 }
-
-### END FUNCTIONS
+### End
