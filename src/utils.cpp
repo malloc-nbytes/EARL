@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+#include "common.hpp"
+
 int
 levenshtein_distance(std::string &str1, std::string &str2) {
     const size_t m = str1.length();
@@ -50,3 +52,32 @@ levenshtein_distance(std::string &str1, std::string &str2) {
 
     return dp[m][n];
 }
+
+bool
+valid_earl_cli_flag(const std::string &flag) {
+    std::vector<std::string> flags2 = COMMON_EARL2ARG_ASCPL;
+    std::vector<char> flags1 = COMMON_EARL1ARG_ASCPL;
+
+    if (flag.size() <= 2)
+        return false;
+    if (flag.at(0) != '-')
+        return false;
+
+    if (flag.at(0) == '-' && flag.at(0) == '-') {
+        std::string trim = flag.substr(2);
+        for (auto &f : flags2)
+            if (trim == f)
+                return true;
+        return false;
+    }
+
+    std::string trim = flag.substr(1);
+    for (auto c : trim) {
+        
+    }
+
+
+
+    return false;
+}
+

@@ -1,8 +1,12 @@
 module Main
 
+set_flag("--show-muts");
 let i = 0;
 
 while i < 100 {
+    if i == 50 {
+        unset_flag("--to-py");
+    }
     i += 1;
 }
 

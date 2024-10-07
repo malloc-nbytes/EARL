@@ -1474,6 +1474,46 @@ fprintln(fd: int|file, arg1: any, arg2: any, ..., argN: any) -> unit
 Will print all elements as well as a newline to the file descriptor =fd=.
 #+end_quote
 
+** =sin=
+
+#+begin_quote
+#+begin_example
+sin(arg: real) -> float
+#+end_example
+
+Will return the sin of =arg=.
+#+end_quote
+
+** =cos=
+
+#+begin_quote
+#+begin_example
+cos(arg: real) -> float
+#+end_example
+
+Will return the cos of =arg=.
+#+end_quote
+
+** =set_flag=
+
+#+begin_quote
+#+begin_example
+set_flag(flag: str) -> unit
+#+end_example
+
+Will set the command line flag =flag= during runtime.
+#+end_quote
+
+** =unset_flag=
+
+#+begin_quote
+#+begin_example
+unset_flag(flag: str) -> unit
+#+end_example
+
+Will unset the command line flag =flag= during runtime.
+#+end_quote
+
 ** =input=
 
 #+begin_quote

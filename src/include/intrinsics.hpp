@@ -62,11 +62,20 @@
         }                                                               \
     } while (0)
 
+#define __INTR_ARGS_MUSTNOT_BE_0(args, fn, expr)                        \
+    do {                                                                \
+        if (args.size() == 0) {                                         \
+            Err::err_wexpr(expr);                                       \
+            std::string __Msg = "intrinsic `" fn "` expects greater than 0 arguments"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
+    } while (0)
+
 #define __MEMBER_INTR_ARGS_MUSTNOT_BE_0(args, fn, expr)                 \
     do {                                                                \
         if (args.size() == 0) {                                         \
             Err::err_wexpr(expr);                                       \
-            std::string __Msg = "member intrinsic `" fn "` expects grater than 0 arguments"; \
+            std::string __Msg = "member intrinsic `" fn "` expects greater than 0 arguments"; \
             throw InterpreterException(__Msg);                          \
         }                                                               \
     } while (0)
@@ -193,6 +202,16 @@ namespace Intrinsics {
                                                   Expr *expr);
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_unset_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_set_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                       std::shared_ptr<Ctx> &ctx,
+                       Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_cos(std::vector<std::shared_ptr<earl::value::Obj>> &params,

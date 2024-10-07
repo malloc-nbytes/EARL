@@ -70,6 +70,11 @@ extern uint32_t flags;
 #define COMMON_EARL1ARG_CHECK    'c'
 #define COMMON_EARL1ARG_WATCH    'w'
 
+#define COMMON_EARL1ARG_ASCPL {COMMON_EARL1ARG_HELP, COMMON_EARL1ARG_VERSION, COMMON_EARL1ARG_CHECK, COMMON_EARL1ARG_WATCH}
+
+void handle_2flag(std::string flag, bool set);
+void handle_1flag(char flag, bool set);
+
 #define COMMON_EARLATTR_WORLD "world"
 #define COMMON_EARLATTR_PUB   "pub"
 #define COMMON_EARLATTR_REF   "ref"

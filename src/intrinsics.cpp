@@ -41,6 +41,8 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"unset_flag", &Intrinsics::intrinsic_unset_flag},
+    {"set_flag", &Intrinsics::intrinsic_set_flag},
     {"sin", &Intrinsics::intrinsic_sin},
     {"cos", &Intrinsics::intrinsic_cos},
     {"help", &Intrinsics::intrinsic_help},
@@ -372,6 +374,48 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
     assert(false);
     return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_unset_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                 std::shared_ptr<Ctx> &ctx,
+                                 Expr *expr) {
+    __INTR_ARGS_MUSTNOT_BE_0(params, "unset_flag", expr);
+    for (size_t i = 0; i < params.size(); ++i) {
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[i], earl::value::Type::Str, 1, "unset_flag", expr);
+        const std::string &flag = dynamic_cast<earl::value::Str *>(params.at(i).get())->value();
+        if (flag.size() < 2 || flag.at(0) != '-')
+            throw InterpreterException("invalid flag " + flag);
+        if (flag.at(1) == '-')
+            handle_2flag(flag.substr(2), false);
+        else {
+            std::string trim = flag.substr(1);
+            for (auto c : trim)
+                handle_1flag(c, false);
+        }
+    }
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_set_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                               std::shared_ptr<Ctx> &ctx,
+                               Expr *expr) {
+    __INTR_ARGS_MUSTNOT_BE_0(params, "set_flag", expr);
+    for (size_t i = 0; i < params.size(); ++i) {
+        __INTR_ARG_MUSTBE_TYPE_COMPAT(params[i], earl::value::Type::Str, 1, "set_flag", expr);
+        const std::string &flag = dynamic_cast<earl::value::Str *>(params.at(i).get())->value();
+        if (flag.size() < 2 || flag.at(0) != '-')
+            throw InterpreterException("invalid flag " + flag);
+        if (flag.at(1) == '-')
+            handle_2flag(flag.substr(2), true);
+        else {
+            std::string trim = flag.substr(1);
+            for (auto c : trim)
+                handle_1flag(c, true);
+        }
+    }
+    return std::make_shared<earl::value::Void>();
 }
 
 std::shared_ptr<earl::value::Obj>
