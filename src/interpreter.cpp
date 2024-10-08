@@ -301,6 +301,11 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
+    if (klass->is_experimental()) {
+        std::cerr << "warning: class `"+klass->id()+"` is marked as `experimental`" << std::endl;
+        klass->disable_experimental_flag();
+    }
+
     // Add the constructor arguments to a temporary pushed scope
     for (size_t i = 0; i < class_stmt->m_constructor_args.size(); ++i) {
         __Type *ty = nullptr;
@@ -485,6 +490,11 @@ eval_user_defined_function_wo_params(const std::string &id,
             }
         }
 
+        if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+            std::cerr << "warning: function `"+func->id()+"` is marked as `experimental`" << std::endl;
+            func->disable_experimental_flag();
+        }
+
         std::shared_ptr<Ctx> mask = fctx;
         auto res = Interpreter::eval_stmt_block(func->block(), mask);
 
@@ -586,6 +596,10 @@ eval_user_defined_function(ExprFuncCall *expr,
         }
 
         std::shared_ptr<Ctx> mask = fctx;
+
+        if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0)
+            std::cerr << "warning: function `"+func->id()+"` is marked as `experimental`" << std::endl;;
+
         auto res = Interpreter::eval_stmt_block(func->block(), mask);
 
         if (func->is_explicit_typed()) {
@@ -716,6 +730,10 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
         if (perp && perp->lhs_getter_accessor && perp->lhs_getter_accessor->type() == earl::value::Type::Enum) {
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
             if (lhs->has_entry(er.id)) {
+                if (lhs->is_experimental()) {
+                    std::cerr << "warning: enum `"+lhs->id()+"` is marked as `experimental`" << std::endl;
+                    lhs->disable_experimental_flag();
+                }
                 return lhs->get_entry(er.id)->value()->copy();
             }
         }

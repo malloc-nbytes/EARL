@@ -46,6 +46,16 @@ Enum::id(void) const {
 }
 
 bool
+Enum::is_experimental(void) const {
+    return (m_attrs & static_cast<uint32_t>(Attr::Experimental)) != 0;
+}
+
+void
+Enum::disable_experimental_flag(void) {
+    m_attrs &= ~static_cast<uint32_t>(Attr::Experimental);
+}
+
+bool
 Enum::is_pub(void) const {
     return (m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }

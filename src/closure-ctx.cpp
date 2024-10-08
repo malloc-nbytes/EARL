@@ -28,6 +28,7 @@
 #include "ctx.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 ClosureCtx::ClosureCtx(std::shared_ptr<Ctx> owner) : m_owner(owner) {}
 
@@ -117,6 +118,11 @@ ClosureCtx::variable_get(const std::string &id) {
 
     if (!var && m_owner && m_owner->type() == CtxType::Closure)
         var = dynamic_cast<ClosureCtx *>(m_owner.get())->variable_get(id);
+
+    if ((var->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+        std::cerr << "warning: variable `"+var->id()+"` is marked as `experimental`" << std::endl;
+        var->disable_experimental_flag();
+    }
 
     return var;
 }

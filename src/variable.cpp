@@ -71,3 +71,14 @@ void
 Obj::reset(std::shared_ptr<earl::value::Obj> value) {
     m_value = value;
 }
+
+uint32_t
+Obj::attrs(void) const {
+    return m_attrs;
+}
+
+void
+Obj::disable_experimental_flag(void) {
+    m_attrs &= ~static_cast<uint32_t>(Attr::Experimental);
+}
+

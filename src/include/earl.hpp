@@ -644,6 +644,8 @@ namespace earl {
             void add_member(std::shared_ptr<variable::Obj> var);
             void add_member_assignee(Token *assignee);
             bool is_pub(void) const;
+            bool is_experimental(void) const;
+            void disable_experimental_flag(void);
 
             [[deprecated]]
             std::vector<std::shared_ptr<earl::variable::Obj>> &get_members(void);
@@ -703,6 +705,8 @@ namespace earl {
             bool is_pub(void) const;
             std::unordered_map<std::string, std::shared_ptr<variable::Obj>> &extract(void);
             const std::vector<std::string> &get_info(void);
+            bool is_experimental(void) const;
+            void disable_experimental_flag(void);
 
             // Implements
             Type type(void) const                                                         override;
@@ -841,6 +845,8 @@ namespace earl {
             std::shared_ptr<Obj> copy(void);
             void reset(std::shared_ptr<value::Obj> value);
             std::string get_info(void);
+            uint32_t attrs(void) const;
+            void disable_experimental_flag(void);
 
         private:
             Token *m_id;
@@ -882,6 +888,7 @@ namespace earl {
             uint32_t attrs(void) const;
             const std::vector<std::string> &info(void) const;
             void change_id(const std::string &newid);
+            void disable_experimental_flag(void);
 
         private:
             StmtDef *m_stmtdef;

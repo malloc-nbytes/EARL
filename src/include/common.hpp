@@ -79,12 +79,14 @@ void handle_1flag(char flag, bool set);
 #define COMMON_EARLATTR_PUB   "pub"
 #define COMMON_EARLATTR_REF   "ref"
 #define COMMON_EARLATTR_CONST "const"
+#define COMMON_EARLATTR_EXPERIMENTAL "experimental"
 
 enum class Attr {
     World = 1 << 0,
     Pub = 1 << 1,
     Ref = 1 << 2,
     Const = 1 << 3,
+    Experimental = 1 << 4,
 };
 
 // Keywords

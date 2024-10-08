@@ -433,7 +433,10 @@ fn index(lines, fp) {
             mod = parts[1];
         }
         else if parts[0] == "###" {
-            if parts[1] == "Variable" {
+            if parts[1] == "IGNORE" {
+                return none;
+            }
+            else if parts[1] == "Variable" {
                 cur_item = some(Variable());
                 state = State.Variables;
             }
@@ -530,10 +533,7 @@ fn index(lines, fp) {
         panic(f"file `{fp}` is missing a module statement");
     }
 
-    return (
-        Entry(fp, mod, classes, functions, enums, variables).to_org_mode(),
-        mod
-    );
+    return some((Entry(fp, mod, classes, functions, enums, variables).to_org_mode(), mod));
 }
 
 fn ready_input(fp) {
@@ -554,9 +554,16 @@ fn main() {
         println(f"# Indexing {f}");
         println("############################################################\n");
         let lines = ready_input(f);
-        let content, mod = index(lines, f);
-        autogen += content;
-        modules.append(mod);
+        # let content, mod = index(lines, f);
+        let res = index(lines, f);
+        if res {
+            let content, mod = res.unwrap();
+            autogen += content;
+            modules.append(mod);
+        }
+        else {
+            println(f"file {f} has IGNORE tag, ignoring...");
+        }
     }
 
     let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";

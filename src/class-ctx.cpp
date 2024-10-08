@@ -28,6 +28,7 @@
 #include "ctx.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 ClassCtx::ClassCtx(std::shared_ptr<Ctx> owner) : m_owner(owner) {}
 
@@ -95,6 +96,11 @@ ClassCtx::variable_get(const std::string &id) {
         auto it = __m_class_constructor_tmp_args.find(id);
         if (it != __m_class_constructor_tmp_args.end())
             var = it->second;
+    }
+
+    if ((var->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+        std::cerr << "warning: variable `"+var->id()+"` is marked as `experimental`" << std::endl;;
+        var->disable_experimental_flag();
     }
 
     return var;

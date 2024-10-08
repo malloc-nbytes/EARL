@@ -46,6 +46,16 @@ Class::ctx(void) {
 }
 
 bool
+Class::is_experimental(void) const {
+    return (m_stmtclass->m_attrs & static_cast<uint32_t>(Attr::Experimental)) != 0;
+}
+
+void
+Class::disable_experimental_flag(void) {
+    m_stmtclass->m_attrs &= ~static_cast<uint32_t>(Attr::Experimental);
+}
+
+bool
 Class::is_pub(void) const {
     return (m_stmtclass->m_attrs & static_cast<uint32_t>(Attr::Pub)) != 0;
 }

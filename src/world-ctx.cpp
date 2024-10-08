@@ -28,6 +28,7 @@
 #include "ctx.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program)
     : m_lexer(std::move(lexer)), m_program(std::move(program)) {
@@ -175,7 +176,12 @@ WorldCtx::variable_exists(const std::string &id) {
 
 std::shared_ptr<earl::variable::Obj>
 WorldCtx::variable_get(const std::string &id) {
-    return m_scope.get(id);
+    auto var = m_scope.get(id);
+    if ((var->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+        std::cerr << "warning: variable `"+var->id()+"` is marked as `experimental`" << std::endl;;
+        var->disable_experimental_flag();
+    }
+    return var;
 }
 
 void

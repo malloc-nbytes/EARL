@@ -1,0 +1,11 @@
+[owner]
+name = "malloc-nbytes"
+github = "github.com/malloc-nbytes"
+
+[deps]
+earl = "https://www.github.com/malloc-nbytes/EARL.git/"
+earlmgr = "https://www.github.com/malloc-nbytes/earlmgr.git/"
+
+[config]
+prefix = "mgr"
+

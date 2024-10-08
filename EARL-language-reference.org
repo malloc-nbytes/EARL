@@ -251,6 +251,8 @@ as you launch the REPL, it gives you the ability to hit the up arrow to get code
 | @ref \rightarrow [[Attributes]]                                |
 | @pub \rightarrow [[Attributes]]                                |
 | @world \rightarrow [[Attributes]]                              |
+| @const \rightarrow [[Attributes]]                              |
+| @experimental \rightarrow [[Attributes]]                       |
 | return                                                     |
 | true                                                       |
 | false                                                      |
@@ -673,7 +675,7 @@ This is how to create a function. The =@world=, =@pub= and =@ref= are attributes
 ** Grammar
 
 #+begin_quote
-*( =@= [ =pub= | =world= ])
+*(<attr>)
 
 =fn= <id> *(* [ * ( =@ref= | =@const= ) <id> ?(: <type>) ] *)* ?(: <type>)  *{* [stmt] *}*
 #+end_quote
@@ -810,12 +812,13 @@ let s = MyMath::sum(1, 2);
 #+begin_quote
 Attributes embeds meta information into identifiers. You can have none, one, or multiple.
 
-| Name     | Variables | Functions | Classes       | Enumerations  | Description                                                  |
-|----------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
-| =@pub=   | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
-| =@world= | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
-| =@ref=   | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
-| =@const= | YES       | NO        | NO            | NO            | Declares the variable as constant                            |
+| Name            | Variables | Functions | Classes       | Enumerations  | Description                                                  |
+|-----------------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
+| =@pub=          | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
+| =@world=        | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
+| =@ref=          | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
+| =@const=        | YES       | NO        | NO            | NO            | Declares the variable as constant                            |
+| =@experimental= | YES       | YES       | YES           | YES           | Shows an `experimental` warning once upon use                |
 
 *NOTE:* =@ref= can be used in a function parameter and that function will
 take a reference to the value passed to it.
@@ -824,7 +827,7 @@ take a reference to the value passed to it.
 ** Grammar
 
 #+begin_quote
-=@= *(pub | world | ref | const)
+*(=@= =pub= | =@= =world= | =@= =ref= | =@= =const= | =@= =experimental=)
 #+end_quote
 
 ** Examples
@@ -927,7 +930,7 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 ** Grammar
 
 #+begin_quote
-*( =@= pub | world)
+*(<attr>)
 
 =class= <id> =[= *(<id> ?(: <type>)) =]= ={=
 

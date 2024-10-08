@@ -28,6 +28,7 @@
 #include "ctx.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 FunctionCtx::FunctionCtx(std::shared_ptr<Ctx> owner, uint32_t attrs)
     : m_immediate_owner(owner), m_attrs(attrs) {
@@ -106,6 +107,11 @@ FunctionCtx::variable_get(const std::string &id) {
 
     if (!var && m_owner && m_owner->type() == CtxType::Class)
         var = dynamic_cast<ClassCtx *>(m_owner.get())->variable_get(id);
+
+    if ((var->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+        std::cerr << "warning: variable `"+var->id()+"` is marked as `experimental`" << std::endl;;
+        var->disable_experimental_flag();
+    }
 
     return var;
 }

@@ -50,6 +50,8 @@ translate_attr(Lexer &lexer) {
         return Attr::Ref;
     if (attr->lexeme() == COMMON_EARLATTR_CONST)
         return Attr::Const;
+    if (attr->lexeme() == COMMON_EARLATTR_EXPERIMENTAL)
+        return Attr::Experimental;
     else {
         Err::err_wtok(errtok.get());
         std::string msg = "unknown attribute `" + attr->lexeme() + "`";

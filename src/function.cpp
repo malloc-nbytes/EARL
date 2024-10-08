@@ -144,4 +144,7 @@ Obj::change_id(const std::string &newid) {
     m_id = newid;
 }
 
-
+void
+Obj::disable_experimental_flag(void) {
+    m_stmtdef->m_attrs &= ~static_cast<uint32_t>(Attr::Experimental);
+}
