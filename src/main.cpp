@@ -60,25 +60,33 @@ usage(void) {
     std::cerr << "  docs/html/index.html         -> source code (make docs)" << std::endl;
     std::cerr << "  EARL-language-reference.html -> how to use EARL" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [script] [options...] -- [passed_args...]" << std::endl << std::endl;
+    std::cerr << "Usage: earl [script (max 1 file)] [options...] -- [passed_args...]" << std::endl;
+    std::cerr << "|  or: provide no script to launch the REPL" << std::endl << std::endl;
     std::cerr << "Options:" << std::endl;
-    std::cerr << "  -h, --help                             Print this help message" << std::endl;
-    std::cerr << "  -v, --version                          Print version information" << std::endl;
-    std::cerr << "  -c, --check                            Only parse the file given" << std::endl;
-    std::cerr << "  -w, --watch [files...]                 Watch files for changes and hot reload on save" << std::endl;
-    std::cerr << "      --verbose                          Enable verbose mode" << std::endl;
-    std::cerr << "      --without-stdlib                   Do not use standard library" << std::endl;
-    std::cerr << "      --repl-nocolor                     Do not use color in the REPL" << std::endl;
-    std::cerr << "      --install-prefix                   Print the installation prefix" << std::endl;
-    std::cerr << "      --show-funs                        Print every function call evaluated" << std::endl;
-    std::cerr << "      --show-bash                        Print all inlined bash" << std::endl;
-    std::cerr << "      --show-lets                        Print all variable instantiations" << std::endl;
-    std::cerr << "      --show-muts                        Print all value mutations" << std::endl;
-    std::cerr << "      --no-sanitize-pipes                Do not sanitize bash pipes" << std::endl;
-    std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
-    std::cerr << "          where" << std::endl;
-    std::cerr << "              O = stdout|<file>" << std::endl;
-    std::cerr << "              F = <program>" << std::endl;
+    std::cerr << "  -h, --help . . . . . . . . . . . . . . Print this help message" << std::endl;
+    std::cerr << "  -v, --version  . . . . . . . . . . . . Print version information" << std::endl;
+    std::cerr << "      --install-prefix . . . . . . . . . Print the installation prefix" << std::endl;
+    std::cerr << "  -c, --check  . . . . . . . . . . . . . Only parse the file given" << std::endl;
+    std::cerr << "  -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
+    std::cerr << "      --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
+    std::cerr << "      --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
+    std::cerr << "      --repl-nocolor . . . . . . . . . . Do not use color in the REPL" << std::endl;
+    std::cerr << "      --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
+    std::cerr << "      --show-bash  . . . . . . . . . . . Print all inlined bash" << std::endl;
+    std::cerr << "      --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
+    std::cerr << "      --show-muts  . . . . . . . . . . . Print all value mutations" << std::endl;
+    std::cerr << "      --no-sanitize-pipes  . . . . . . . Do not sanitize bash pipes" << std::endl;
+    std::cerr << "      --to-py output=O [formatter=F] . . Convert an EARL file to Python (experimental)" << std::endl;
+    std::cerr << "        | where" << std::endl;
+    std::cerr << "        |     O = stdout|<file>" << std::endl;
+    std::cerr << "        |     F = <program>" << std::endl;
+
+    std::cerr << std::endl;
+
+    std::cerr << "Examples:" << std::endl;
+    std::cerr << "  earl script.earl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
+    std::cerr << "  earl script.earl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
+    std::cerr << "  earl --show-lets                       # Launch the REPL and print variable instantiations" << std::endl;
 
     std::exit(0);
 }
