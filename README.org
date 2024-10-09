@@ -26,7 +26,7 @@
 
 *NOTE*: *This language is still in the infant stage and it is _NOT_ recommended to use in any real or professional capacity.*
 
-*NOTE*: As of now, the only supported platforms are Linux and MacOS.
+*NOTE*: As of now, the only supported platform is Linux.
 
 *NOTE*: Do not modify the README.html as it is auto generated from README.org by [[https://orgmode.org/][Emacs Org Mode]].
 
@@ -37,7 +37,43 @@
 * Introduction
 
 #+begin_quote
-EARL (Evaluate And Run Language) is being designed to be functionally similar to Python but is gradually typed and has C style syntax.
+EARL (Evaluate And Run Language) is being designed to be a BASH wrapper, essentially making BASH easier to write.
+It is most similar to Python and Rust but is gradually typed.
+#+end_quote
+
+* Quick Examples
+
+#+begin_quote
+This examples performs =ls -lah= and takes the permissions and the filename
+and prints them.
+
+Here is the BASH version:
+#+begin_src
+files=$(ls -lah)
+
+echo "$files" | while read -r line; do
+    # Skip the header
+    if [[ "$line" =~ ^total ]]; then
+        continue
+    fi
+
+    permissions=$(echo "$line" | awk '{print $1}')
+    filename=$(echo "$line" | awk '{print $9}')
+
+    echo "Permissions: $permissions - File: $filename"
+done
+#+end_src
+
+And here is the EARL version:
+#+begin_example
+$"ls -lah" |> let files;
+
+foreach f in files.split("\n")[1:] {
+    let parts = f.split(" ");
+    let permissions, filename = (parts[0], parts.back());
+    println(f"Permissions: {permissions} - File: {filename}");
+}
+#+end_example
 #+end_quote
 
 For the manual on how to use the language, see [[./EARL-language-reference.html][Click here for the EARL Language Reference]].

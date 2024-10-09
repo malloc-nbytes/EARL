@@ -2498,6 +2498,8 @@ T [init: list<any>, rows: int, cols: int]
 #+end_example
 Creates a new matrix with the initial dataset =init=
 with =rows= rows and =cols= columns.
+the x value
+it does stuff
 #+end_quote
 
 **** *=T= Implements*
