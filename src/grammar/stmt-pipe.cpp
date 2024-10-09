@@ -28,8 +28,10 @@
 #include "ast.hpp"
 
 StmtPipe::StmtPipe(std::unique_ptr<StmtBashLiteral> bash,
-                   std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to)
-    : m_bash(std::move(bash)), m_to(std::move(to)) {}
+                   std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to,
+                   uint32_t attrs,
+                   std::vector<std::string> info)
+    : m_bash(std::move(bash)), m_to(std::move(to)), m_attrs(attrs), m_info(std::move(info)) {}
 
 StmtType
 StmtPipe::stmt_type() const {

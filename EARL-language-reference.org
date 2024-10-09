@@ -491,20 +491,58 @@ For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
 * Bash Commands
 
 #+begin_quote
-You can use BASH commands directly in EARL source code.
+You can use BASH commands directly in EARL source code, and
+there are three different ways to do this:
+1. by just having the embed bash.
+2. by piping the output into a new variable
+3. by piping the output into an existing variable/location.
+
+*Note*: For convenience, if a bash command returns a string of size 1
+that is a space, newline, tab etc, EARL will cut those out. This can be disabled
+using the =--no-sanitize-pipes= flag.
 #+end_quote
 
 ** Grammar
 
+#+begin_quote
 =$= <expr> =;=
+#+end_quote
+
+or
+
+#+begin_quote
+*(<attr>) =$= <expr> =|>= =let= <id> =;=
+#+end_quote
+
+or
+
+#+begin_quote
+=$= <expr> =|>= <expr> =;=
+#+end_quote
 
 ** Examles
 
 #+begin_example
+# Output goes directly to stdout
 $"ls -lah";
 
+# Output goes directly to stdout
 let cmd = "echo \"hello world\n\"";
 $cmd;
+
+$"ps aux | grep earl" |> let grepped;
+println(grepped); // output of the bash command.
+
+@pub $"ps aux" |> let procs;
+println(procs);
+
+let x = "";
+$"whoami" |> x;
+println(x);
+
+let lst = [""];
+$"ls" |> lst[0];
+println(lst);
 #+end_example
 
 * While Loops
@@ -1070,10 +1108,15 @@ fn sum(a, b) {
 #-- This is my var
 let my_var = 3;
 
+#-- This is the current user
+#-- of this machine.
+$"whoami" |> let me;
+
 println(help(MyEnum));
 println(help(Point));
 println(help(sum));
 println(help(my_var));
+println(help(me));
 #+end_example
 
 * Datatypes

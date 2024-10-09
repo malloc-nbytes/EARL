@@ -74,6 +74,7 @@ usage(void) {
     std::cerr << "      --show-bash                        Print all inlined bash" << std::endl;
     std::cerr << "      --show-lets                        Print all variable instantiations" << std::endl;
     std::cerr << "      --show-muts                        Print all value mutations" << std::endl;
+    std::cerr << "      --no-sanitize-pipes                Do not sanitize bash pipes" << std::endl;
     std::cerr << "      --to-py output=O [formatter=F]     Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "          where" << std::endl;
     std::cerr << "              O = stdout|<file>" << std::endl;
@@ -180,6 +181,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SHOWLETS;
     else if (arg == COMMON_EARL2ARG_SHOWMUTS)
         flags |= __SHOWMUTS;
+    else if (arg == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
+        flags |= __NO_SANITIZE_PIPES;
     else {
         std::cerr << "Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

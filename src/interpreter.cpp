@@ -2502,6 +2502,15 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
             const std::string msg = "command `"+cmd+"` failed to exit";
             throw InterpreterException(msg);
         }
+        if (output.size() > 1)
+            output.erase(output.size()-1);
+        if (((flags & __NO_SANITIZE_PIPES) == 0)
+            && output.size() == 1
+            && (output == " "
+                || output == "\n"
+                || output == "\r"
+                || output == "\t"))
+            output = "";
         return std::make_shared<earl::value::Str>(std::move(output));
     };
 
@@ -2529,11 +2538,9 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
             auto cmd_result = get_bash_res(cmd);
 
             if (id != "_") {
-                // TODO: info lines
-                // TODO: attributes
                 // TODO: show-lets
                 std::shared_ptr<earl::variable::Obj> var
-                    = std::make_shared<earl::variable::Obj>(rhs.get(), cmd_result, /*attrs=*/0, /*info=*/"");
+                    = std::make_shared<earl::variable::Obj>(rhs.get(), cmd_result, stmt->m_attrs, flatten_info(stmt->m_info));
                 ctx->variable_add(var);
                 cmd_result->set_owner(var.get());
             }

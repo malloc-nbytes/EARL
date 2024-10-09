@@ -1,6 +1,4 @@
 module Main
 
-@experimental
-$"eval $(opam env)" |> let x;
-
-println(f"x: {x}");
+$"echo $FDJF" |> let me;
+println(me == "");

@@ -56,6 +56,8 @@ void handle_2flag(std::string flag, bool set) {
         handle_flag(__SHOWLETS, set);
     else if (flag == COMMON_EARL2ARG_SHOWMUTS)
         handle_flag(__SHOWMUTS, set);
+    else if (flag == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
+        handle_flag(__NO_SANITIZE_PIPES, set);
     else
         throw InterpreterException("invalid flag `"+flag+"`");
 }

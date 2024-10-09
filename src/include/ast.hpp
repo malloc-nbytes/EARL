@@ -407,9 +407,13 @@ struct StmtLet : public Stmt {
 struct StmtPipe : public Stmt {
     std::unique_ptr<StmtBashLiteral> m_bash;
     std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> m_to;
+    uint32_t m_attrs;
+    std::vector<std::string> m_info;
 
     StmtPipe(std::unique_ptr<StmtBashLiteral> bash,
-             std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to);
+             std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to,
+             uint32_t attrs,
+             std::vector<std::string> info);
     StmtType stmt_type() const override;
 };
 
