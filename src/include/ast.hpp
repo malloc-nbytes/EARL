@@ -58,6 +58,7 @@ enum class StmtType {
     Continue,
     Bash_Literal,
     Info,
+    Pipe,
 };
 
 /// The different types an expression can be.
@@ -400,6 +401,15 @@ struct StmtLet : public Stmt {
             std::unique_ptr<Expr> expr,
             uint32_t attrs,
             std::vector<std::string> info);
+    StmtType stmt_type() const override;
+};
+
+struct StmtPipe : public Stmt {
+    std::unique_ptr<StmtBashLiteral> m_bash;
+    std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> m_to;
+
+    StmtPipe(std::unique_ptr<StmtBashLiteral> bash,
+             std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to);
     StmtType stmt_type() const override;
 };
 

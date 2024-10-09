@@ -2482,6 +2482,83 @@ eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
+    ER bash_er = Interpreter::eval_expr(stmt->m_bash->m_expr.get(), ctx, false);
+    auto bash = unpack_ER(bash_er, ctx, false, nullptr);
+
+    auto get_bash_res = [&](std::string cmd) {
+        std::string output = "";
+        std::array<char, 256> buffer;
+        FILE *pipe = popen(cmd.c_str(), "r");
+        if (!pipe) {
+            Err::err_wexpr(stmt->m_bash->m_expr.get());
+            throw InterpreterException("failed to execute bash `"+cmd+"`");
+        }
+        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+            output += buffer.data();
+        int ec = pclose(pipe);
+        if (ec == -1) {
+            const std::string msg = "command `"+cmd+"` failed to exit";
+            throw InterpreterException(msg);
+        }
+        return std::make_shared<earl::value::Str>(std::move(output));
+    };
+
+    std::visit([&] (auto &&rhs) {
+        using T = std::decay_t<decltype(rhs)>;
+        static_assert(std::is_same_v<T, std::shared_ptr<Token>>
+                        || std::is_same_v<T, std::unique_ptr<Expr>>);
+        // Creating a new variable.
+        if constexpr (std::is_same_v<T, std::shared_ptr<Token>>) {
+            const std::string id = rhs->m_lexeme;
+
+            if (ctx->type() == CtxType::Closure)
+                // Special case for when we declare a variable in a recursive closure.
+                dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id);
+            else {
+                if (ctx->variable_exists(id)) {
+                    std::string msg = "variable `"+id+"` is already declared";
+                    auto conflict = ctx->variable_get(id);
+                    Err::err_wconflict(rhs.get(), conflict->gettok());
+                    throw InterpreterException(msg);
+                }
+            }
+
+            std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
+            auto cmd_result = get_bash_res(cmd);
+
+            if (id != "_") {
+                // TODO: info lines
+                // TODO: attributes
+                // TODO: show-lets
+                std::shared_ptr<earl::variable::Obj> var
+                    = std::make_shared<earl::variable::Obj>(rhs.get(), cmd_result, /*attrs=*/0, /*info=*/"");
+                ctx->variable_add(var);
+                cmd_result->set_owner(var.get());
+            }
+        }
+        // Assigning it to something that exists.
+        else if constexpr (std::is_same_v<T, std::unique_ptr<Expr>>) {
+            auto expr_er = Interpreter::eval_expr(rhs.get(), ctx, true);
+
+            if (expr_er.is_tuple_access()) {
+                Err::err_wexpr(rhs.get());
+                std::string msg = "cannot mutate tuple type as they are immutable";
+                throw InterpreterException(msg);
+            }
+
+            // TODO: show-muts
+            // TODO: attributes
+            auto location = unpack_ER(expr_er, ctx, true);
+            std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
+            location->mutate(get_bash_res(cmd).get(), nullptr);
+        }
+    }, stmt->m_to);
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Void>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -2504,6 +2581,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Continue:     return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
     case StmtType::Loop:         return eval_stmt_loop(dynamic_cast<StmtLoop *>(stmt), ctx);
     case StmtType::Bash_Literal: return eval_stmt_bash_lit(dynamic_cast<StmtBashLiteral *>(stmt), ctx);
+    case StmtType::Pipe:         return eval_stmt_pipe(dynamic_cast<StmtPipe *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

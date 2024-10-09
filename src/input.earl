@@ -1,6 +1,6 @@
 module Main
 
-# import "std/toml.earl"; as toml
-# let d = toml::parse("tmp.toml");
-# toml::dump(d);
+@experimental
+$"eval $(opam env)" |> let x;
 
+println(f"x: {x}");

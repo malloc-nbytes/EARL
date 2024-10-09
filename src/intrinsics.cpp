@@ -646,7 +646,7 @@ Intrinsics::intrinsic___internal_unix_system_woutput__(
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_unix_system__woutput_", expr);
     const std::string cmd = params[0]->to_cxxstring();
 
-    std::array<char, 128> buffer;
+    std::array<char, 256> buffer;
     std::string output = "";
 
     FILE *pipe = popen(cmd.c_str(), "r");

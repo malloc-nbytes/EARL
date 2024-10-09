@@ -78,6 +78,7 @@ tokentype_to_str(TokenType type) {
     case TokenType::Forwardslash_Equals:        return "FORWARDSLASH_EQUALS";
     case TokenType::Percent_Equals:             return "PERCENT_EQUALS";
     case TokenType::RightArrow:                 return "`RIGHTARROW`";
+    case TokenType::Pipe_Greaterthan:           return "`PIPE_GREATERTHAN`";
     case TokenType::Double_Period:              return "`DOUBLE_PERIOD`";
     case TokenType::Double_Colon:               return "`DOUBLE_COLON`";
     case TokenType::Double_Lessthan:            return "`DOUBLE_LESSTHAN`";
