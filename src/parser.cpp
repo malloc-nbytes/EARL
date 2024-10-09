@@ -854,24 +854,26 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
     uint32_t inclass_attrs = 0;
     while (lexer.peek(0) && lexer.peek()->type() != TokenType::Rbrace) {
 
+        std::vector<std::string> inclass_info = {};
         inclass_attrs = 0;
         do {
             if (lexer.peek(0) && lexer.peek()->type() == TokenType::At)
                 inclass_attrs |= static_cast<uint32_t>(translate_attr(lexer));
+            else if (lexer.peek(0) && lexer.peek()->type() == TokenType::Info)
+                inclass_info.push_back(lexer.next()->lexeme());
             else
                 break;
-        } while (inclass_attrs != 0);
+        } while (inclass_attrs != 0 || inclass_info.size() != 0);
 
         Token *tok = lexer.peek();
         assert(tok);
 
         switch (tok->type()) {
         case TokenType::Keyword: {
-            if (tok->lexeme() == COMMON_EARLKW_LET) {
-                members.push_back(Parser::parse_stmt_let(lexer, inclass_attrs));
-            }
+            if (tok->lexeme() == COMMON_EARLKW_LET)
+                members.push_back(Parser::parse_stmt_let(lexer, inclass_attrs, std::move(inclass_info)));
             else if (tok->lexeme() == COMMON_EARLKW_FN)
-                methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs));
+                methods.push_back(Parser::parse_stmt_def(lexer, inclass_attrs, std::move(inclass_info)));
             else {
                 Err::err_wtok(tok);
                 std::string msg = "invalid keyword specifier `" + tok->lexeme() + "` in class declaration";

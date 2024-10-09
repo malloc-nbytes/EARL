@@ -71,6 +71,17 @@ static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
 
 static std::string
+flatten_info(const std::vector<std::string> &lines) {
+    std::string info = "";
+    for (size_t i = 0; i < lines.size(); ++i) {
+        info += lines.at(i);
+        if (i != lines.size()-1)
+            info += '\n';
+    }
+    return info;
+}
+
+static std::string
 identifier_not_declared(std::string given, std::vector<std::string> possible, bool include_intrinsics=true) {
     if (include_intrinsics) {
         for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it)
@@ -210,9 +221,9 @@ eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(StmtLet *stmt,
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_let_wcustom_buffer_in_class(StmtLet *stmt,
-                             std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
-                             std::shared_ptr<Ctx> &ctx,
-                             bool ref) {
+                                      std::unordered_map<std::string, std::shared_ptr<earl::variable::Obj>> &buffer,
+                                      std::shared_ptr<Ctx> &ctx,
+                                      bool ref) {
     if (stmt->m_ids.size() > 1)
         return eval_stmt_let_wmultiple_vars_wcustom_buffer_in_class(stmt, buffer, ctx, ref);
 
@@ -248,9 +259,12 @@ eval_stmt_let_wcustom_buffer_in_class(StmtLet *stmt,
     if (id == "_")
         return std::make_shared<earl::value::Void>();
 
+    auto info = flatten_info(stmt->m_info);
+
     std::shared_ptr<earl::variable::Obj> var
-        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs);
+        = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(0).get(), value, stmt->m_attrs, std::move(info));
     ctx->variable_add(var);
+    value->set_owner(var.get());
     return std::make_shared<earl::value::Void>();
 }
 
@@ -1614,17 +1628,6 @@ Interpreter::typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx>
     else
         msg = "explicit type of `"+tyname+"` does not match what was given `"+type_to_str(value->type())+"`";
     throw InterpreterException(msg);
-}
-
-static std::string
-flatten_info(const std::vector<std::string> &lines) {
-    std::string info = "";
-    for (size_t i = 0; i < lines.size(); ++i) {
-        info += lines.at(i);
-        if (i != lines.size()-1)
-            info += '\n';
-    }
-    return info;
 }
 
 std::shared_ptr<earl::value::Obj>
