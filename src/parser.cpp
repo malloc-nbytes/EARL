@@ -992,17 +992,14 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
 static std::unique_ptr<StmtLoop>
 parse_stmt_loop(Lexer &lexer) {
     auto tok = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_LOOP);
-
     auto block = Parser::parse_stmt_block(lexer);
-
     return std::make_unique<StmtLoop>(std::move(tok), std::move(block));
 }
 
-static std::unique_ptr<Stmt>
+static std::unique_ptr<StmtBashLiteral>
 parse_stmt_bash(Lexer &lexer) {
     (void)Parser::parse_expect(lexer, TokenType::Dollarsign);
     auto expr = Parser::parse_expr(lexer);
-    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
     return std::make_unique<StmtBashLiteral>(std::unique_ptr<Expr>(expr));
 }
 
@@ -1016,7 +1013,27 @@ Parser::parse_stmt(Lexer &lexer) {
         Token *tok = lexer.peek();
 
         switch (tok->type()) {
-        case TokenType::Dollarsign: return parse_stmt_bash(lexer);
+        case TokenType::Dollarsign: {
+            auto bash_stmt = parse_stmt_bash(lexer);
+
+            if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Pipe_Greaterthan) {
+                lexer.discard(); // |>
+                if (lexer.peek(0) &&
+                    lexer.peek(0)->type() == TokenType::Keyword &&
+                    lexer.peek(0)->m_lexeme == COMMON_EARLKW_LET) {
+                    lexer.discard(); // let
+                    auto tok = Parser::parse_expect(lexer, TokenType::Ident);
+                    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+                    return std::make_unique<StmtPipe>(std::move(bash_stmt), std::move(tok), attrs, std::move(info));
+                }
+                auto expr = Parser::parse_expr(lexer);
+                (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+                return std::make_unique<StmtPipe>(std::move(bash_stmt), std::unique_ptr<Expr>(expr), attrs, std::move(info));
+            }
+
+            (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+            return bash_stmt;
+        } break;
         case TokenType::Keyword: {
             if (tok->lexeme() == COMMON_EARLKW_FN)
                 return parse_stmt_def(lexer, attrs, std::move(info));

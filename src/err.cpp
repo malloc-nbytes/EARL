@@ -323,6 +323,10 @@ err_wstmtenum(StmtEnum *stmt) {
 
 void
 Err::err_wstmt(Stmt *stmt) {
+    if (!stmt) {
+        std::cerr << "[EARL] <unable to display error line at this time>" << std::endl;;
+        return;
+    }
     switch (stmt->stmt_type()) {
     case StmtType::Def: assert(false); break;
     case StmtType::Let: assert(false); break;

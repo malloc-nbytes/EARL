@@ -1,6 +1,4 @@
 module Main
 
-# import "std/toml.earl"; as toml
-# let d = toml::parse("tmp.toml");
-# toml::dump(d);
-
+$"echo $FDJF" |> let me;
+println(me == "");

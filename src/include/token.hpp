@@ -86,6 +86,7 @@ enum class TokenType {
     Double_Lessthan,
     Double_Greaterthan,
     Double_Asterisk,
+    Pipe_Greaterthan,
 
     // Bitwise
     Backtick_Pipe,
