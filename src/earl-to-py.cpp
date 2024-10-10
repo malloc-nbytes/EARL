@@ -541,7 +541,7 @@ stmt_def_to_py(StmtDef *stmt, Context &ctx, bool add_self = false) {
     if (add_self)
         params += "self";
 
-    if (stmt->m_args.size() > 0)
+    if (stmt->m_args.size() > 0 && add_self)
         params += ", ";
 
     for (size_t i = 0; i < stmt->m_args.size(); ++i) {
@@ -771,6 +771,10 @@ stmt_to_py(Stmt *stmt, Context &ctx) {
 
 std::string
 earl_to_py(std::unique_ptr<Program> program) {
+    if (!program) {
+        return "";
+    }
+
     Context ctx = {0, "", false, {}, {}, {}, {}, {}};
     for (size_t i = 0; i < program->m_stmts.size(); ++i)
         stmt_to_py(program->m_stmts.at(i).get(), ctx);

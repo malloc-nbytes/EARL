@@ -8,4 +8,3 @@ earlmgr = "https://www.github.com/malloc-nbytes/earlmgr.git/"
 
 [config]
 prefix = "mgr"
-

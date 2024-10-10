@@ -1,14 +1,2 @@
 module Main
 
-import "../src/std/matrix.earl";
-
-class T [] {
-    #-- this is an info line
-    @pub let x = 1;
-
-    #-- this is a test function
-    @pub fn test() {}
-}
-
-println(help(T().x));
-# println(help(T().test));
