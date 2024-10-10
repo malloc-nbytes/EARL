@@ -26,6 +26,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "common.hpp"
 #include "repled.hpp"
@@ -46,6 +47,28 @@ repled::RawInput::get_char() {
     char ch;
     read(STDIN_FILENO, &ch, 1);
     return ch;
+}
+
+void
+redraw_line(std::string &line, std::string &prompt, int pad) {
+    std::string yellow = "\033[93m";
+    std::string noc = "\033[0m";
+
+    std::istringstream stream(line);
+    std::string word = "";
+    std::vector<std::string> words;
+
+    while (stream >> word)
+        words.push_back(word);
+
+    repled::clearln(line.size()+pad);
+    std::cout << prompt;
+    for (const auto &w : words) {
+        if (w == "let")
+            std::cout << yellow << w << noc;
+        else
+            std::cout << ' ' << w;
+    }
 }
 
 void
@@ -217,7 +240,8 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             }
             else {
                 line.push_back(ch);
-                std::cout << ch;
+                // std::cout << ch;
+                redraw_line(line, prompt, PAD-1);
             }
             ++c;
             std::cout.flush();
