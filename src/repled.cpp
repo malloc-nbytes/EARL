@@ -79,7 +79,7 @@ redraw_line(std::string &line, std::string &prompt, int pad) {
     std::string italic = "\033[3m";
     std::string noc = "\033[0m";
 
-    repled::clearln(line.size() + pad);
+    repled::clearln(line.size() + pad + prompt.size() + 50);
     std::cout << prompt;
 
     size_t i = 0;
@@ -196,6 +196,30 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
     --c;
 }
 
+static void
+handle_delete(std::string &prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+    if (c >= static_cast<int>(line.size()))
+        return;
+
+    std::cout << "\033[P" << std::flush;
+
+    line.erase(c, 1);
+
+    redraw_line(line, prompt, pad);
+    std::cout << "\033[" << c+pad+1 << "G" << std::flush;
+}
+
+void
+handle_delete_to_end(std::string &prompt, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+    if (c >= static_cast<int>(line.size()))
+        return;
+
+    line.erase(c, line.size()-c);
+
+    redraw_line(line, prompt, pad);
+    std::cout << "\033[" << c+pad+1 << "G" << std::flush;
+}
+
 void
 repled::handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines) {
     std::cout << std::endl;
@@ -215,8 +239,6 @@ repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, s
 
     --lines_idx;
     std::string &histline = lines[lines_idx];
-    // clearln(line.size());
-    // std::cout << prompt << histline << std::flush;
     redraw_line(histline, prompt, line.size());
     line = histline;
 }
@@ -235,11 +257,8 @@ repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line,
 
     ++lines_idx;
     std::string &histline = lines[lines_idx];
-    // clearln(line.size());
-    // std::cout << prompt << histline;
     redraw_line(histline, prompt, line.size()+prompt.size());
     line = histline;
-    // std::cout.flush();
 }
 
 void
@@ -267,6 +286,66 @@ repled::handle_tab(std::string prompt, int &c, int pad, std::string &line, std::
     std::cout << line;
     std::cout << "\033[" << c+pad+3 << "G" << std::flush;
     c += 2;
+}
+
+void
+handle_jump_to_end(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    c = line.size();
+    std::cout << "\033[" << c+pad+1 << "G" << std::flush;
+}
+
+void
+handle_jump_to_beginning_line(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    c = 0;
+    std::cout << "\033[" << pad+1 << "G" << std::flush;
+}
+
+void
+jump_word(int &c, int sz, std::string &line) {
+    if (c >= sz)
+        return;
+
+    while (c < sz && !isspace(line[c]))
+        ++c;
+    while (c < sz && isspace(line[c]))
+        ++c;
+    std::cout << "\033[" << c+1 << "G" << std::flush;
+}
+
+void
+jump_word_rev(int &c, int sz, std::string &line) {
+    if (c <= 0)
+        return;
+
+    while (c > 0 && isspace(line[c-1]))
+        --c;
+    while (c > 0 && !isspace(line[c-1]))
+        --c;
+    std::cout << "\033[" << c+1 << "G" << std::flush;
+}
+
+void
+delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+    if (c >= static_cast<int>(line.size()))
+        return;
+
+    if (!isalnum(line[c])) {
+        int i = 0;
+        while (c+i < static_cast<int>(line.size()) && !isalnum(line[c+i])) {
+            ++i;
+        }
+        while (c+i < static_cast<int>(line.size()) && isalnum(line[c+i]))
+            ++i;
+        line.erase(c, i);
+    }
+    else {
+        int i = c;
+        while (i < static_cast<int>(line.size()) && isalnum(line[i]))
+            ++i;
+        line.erase(c, i-c);
+    }
+    redraw_line(line, prompt, pad);
+    std::cout << "\033[" << c+pad+1 << "G" << std::flush;
 }
 
 std::string
@@ -330,17 +409,51 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 default: break;
                 }
             }
+            else { // alt key
+                switch (next0) {
+                case 'f': {
+                    jump_word(c, line.size(), line);
+                    std::cout << "\033[" << c+PAD+1 << "G" << std::flush;
+                } break;
+                case 'b': {
+                    jump_word_rev(c, line.size(), line);
+                    std::cout << "\033[" << c+PAD+1 << "G" << std::flush;
+                } break;
+                case 'd': {
+                    delete_word_from_cursor(prompt, c, PAD, line, history);
+                } break;
+                default: break;
+                }
+            }
         }
-        else if (BACKSPACE(ch)) {
+        else if (ch == 0x01) // ctrl+a
+            handle_jump_to_beginning_line(c, PAD, line, history);
+        else if (ch == 0x02) // ctrl+b
+            handle_left_arrow(c, PAD, line, history);
+        else if (ch == 0x06) // ctrl+f
+            handle_right_arrow(c, PAD, line, history);
+        else if (ch == 0x04) // ctrl+d
+            handle_delete(prompt, ch, c, PAD, line, history);
+        else if (ch == 0x0B) // ctrl+k
+            handle_delete_to_end(prompt, c, PAD, line, history);
+        else if (ch == 0x0E) { // ctrl+n
+            handle_down_arrow(prompt, lines_idx, line, history);
+            c = line.size();
+            std::cout << "\033[" << PAD+c+1 << "G";
+        }
+        else if (ch == 0x10) { // ctrl+p
+            handle_up_arrow(prompt, lines_idx, line, history);
+            c = line.size();
+            std::cout << "\033[" << PAD+c+1 << "G";
+        }
+        else if (ch == 0x05) // ctrl+e
+            handle_jump_to_end(c, PAD, line, history);
+        else if (BACKSPACE(ch))
             handle_backspace(prompt, ch, c, PAD, line, history);
-        }
         else {
             if (c != line.size()) {
-                // clearln(line.size());
                 line.insert(line.begin()+c, ch);
                 redraw_line(line, prompt, PAD-1);
-                // std::cout << prompt;
-                // std::cout << line;
                 std::cout << "\033[" << c+PAD+2 << "G";
             }
             else {
