@@ -31,6 +31,9 @@
 #include "common.hpp"
 #include "repled.hpp"
 
+static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
+static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
+
 repled::RawInput::RawInput() {
     tcgetattr(STDIN_FILENO, &old_termios);
     termios raw = old_termios;
@@ -49,26 +52,54 @@ repled::RawInput::get_char() {
     return ch;
 }
 
-void
+static bool
+is_keyword(std::string &word) {
+    for (auto &kw : KEYWORDS)
+        if (word == kw)
+            return true;
+    return false;
+}
+
+static bool
+is_type(std::string &word) {
+    for (auto &ty : TYPES)
+        if (word == ty)
+            return true;
+    return false;
+}
+
+static void
 redraw_line(std::string &line, std::string &prompt, int pad) {
     std::string yellow = "\033[93m";
+    std::string blue = "\033[94m";
     std::string noc = "\033[0m";
-
-    std::istringstream stream(line);
-    std::string word = "";
-    std::vector<std::string> words;
-
-    while (stream >> word)
-        words.push_back(word);
 
     repled::clearln(line.size()+pad);
     std::cout << prompt;
-    for (const auto &w : words) {
-        if (w == "let")
-            std::cout << yellow << w << noc;
+
+    std::string buf = "";
+    size_t i = 0;
+    while (i < line.size()) {
+        if (line.at(i) == ' ') {
+            if (((flags & __REPL_NOCOLOR) == 0) && is_keyword(buf)) {
+                std::cout << yellow;
+                std::cout << buf << ' ';
+                std::cout << noc;
+            }
+            else if (((flags & __REPL_NOCOLOR) == 0) && is_type(buf)) {
+                std::cout << blue;
+                std::cout << buf << ' ';
+                std::cout << noc;
+            }
+            else
+                std::cout << buf << ' ';
+            buf.clear();
+        }
         else
-            std::cout << ' ' << w;
+            buf += line.at(i);
+        ++i;
     }
+    std::cout << buf << std::flush;
 }
 
 void
@@ -87,9 +118,9 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
 
     line.erase(c-1, 1);
 
-    clearln(line.size()+pad);
-    std::cout << prompt << line;
-    // std::cout << "\033[" << (line.size() - (c-1)) << "D";
+    // clearln(line.size()+pad);
+    // std::cout << prompt << line;
+    redraw_line(line, prompt, pad);
     std::cout << "\033[" << c+pad << "G" << std::flush;
     --c;
 }
@@ -113,8 +144,9 @@ repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, s
 
     --lines_idx;
     std::string &histline = lines[lines_idx];
-    clearln(line.size());
-    std::cout << prompt << histline << std::flush;
+    // clearln(line.size());
+    // std::cout << prompt << histline << std::flush;
+    redraw_line(histline, prompt, line.size());
     line = histline;
 }
 
@@ -132,10 +164,11 @@ repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line,
 
     ++lines_idx;
     std::string &histline = lines[lines_idx];
-    clearln(line.size());
-    std::cout << prompt << histline;
+    // clearln(line.size());
+    // std::cout << prompt << histline;
+    redraw_line(histline, prompt, line.size()+prompt.size());
     line = histline;
-    std::cout.flush();
+    // std::cout.flush();
 }
 
 void
@@ -240,7 +273,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             }
             else {
                 line.push_back(ch);
-                // std::cout << ch;
+                //std::cout << ch;
                 redraw_line(line, prompt, PAD-1);
             }
             ++c;
