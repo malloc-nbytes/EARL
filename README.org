@@ -169,7 +169,8 @@ Users compiling for the first time should do
     cmake -S ../ -B .
 #+end_src
 
-*Note*: You can also supply a =prefix= option to changed the default installation location (=/usr/local=) by using =-DINSTALL_PREFIX=<prefix>=
+*Note*: You can also supply a =prefix= option to changed the default installation location (=/usr/local=) by using =-DINSTALL_PREFIX=<prefix>=.
+*However, there must be an =include/= and =bin/= directory inside of the prefix that is supplied*.
 
 This will create the Makefile. Use =make <opt>= where =<opt>= is one of,
 
