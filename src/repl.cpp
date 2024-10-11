@@ -72,12 +72,12 @@
 
 static std::string REPL_HIST = "";
 
+static size_t lineno = 0;
+static std::vector<std::string> HIST = {};
+
 static int g_brace = 0;
 static int g_bracket = 0;
 static int g_paren = 0;
-
-static size_t lineno = 0;
-static std::vector<std::string> HIST = {};
 
 static void
 try_clear_repl_history() {
@@ -570,11 +570,6 @@ repl::run(void) {
                 repled::clearln(line.size());
                 handle_repl_arg(ri, line, lines, ctx);
             }
-            // else if (line[0] == '$') {
-            //     repled::clearln(true);
-            //     std::cout << std::flush;
-            //     bash(line);
-            // }
             else {
                 if (line != "") {
                     lines.push_back(line);

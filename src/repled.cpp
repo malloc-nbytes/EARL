@@ -72,34 +72,105 @@ static void
 redraw_line(std::string &line, std::string &prompt, int pad) {
     std::string yellow = "\033[93m";
     std::string blue = "\033[94m";
+    std::string green = "\033[32m";
+    std::string gray = "\033[90m";
+    std::string underline = "\033[4m";
+    std::string bold = "\033[1m";
+    std::string italic = "\033[3m";
     std::string noc = "\033[0m";
 
-    repled::clearln(line.size()+pad);
+    repled::clearln(line.size() + pad);
     std::cout << prompt;
 
-    std::string buf = "";
     size_t i = 0;
+    std::string current_word;
     while (i < line.size()) {
-        if (line.at(i) == ' ') {
-            if (((flags & __REPL_NOCOLOR) == 0) && is_keyword(buf)) {
-                std::cout << yellow;
-                std::cout << buf << ' ';
-                std::cout << noc;
+        // Handle a word boundary (space, quote, or single quote)
+        if (isspace(line[i]) || line[i] == '"' || line[i] == '\'') {
+            // If a word has been built, check if it's a keyword or type
+            if (!current_word.empty()) {
+                if (is_keyword(current_word))
+                    std::cout << yellow << italic << bold << current_word;
+                else if (is_type(current_word))
+                    std::cout << blue << current_word;
+                else
+                    std::cout << noc << current_word;
+                current_word.clear();
             }
-            else if (((flags & __REPL_NOCOLOR) == 0) && is_type(buf)) {
-                std::cout << blue;
-                std::cout << buf << ' ';
+
+            // Handle string literals (double quotes)
+            if (line[i] == '"') {
+                std::cout << green << line[i];
+                size_t j = i + 1;
+                // Print the content inside the string literal
+                while (j < line.size() && line[j] != '"') {
+                    std::cout << line[j++];
+                }
+                if (j < line.size()) {
+                    std::cout << line[j];
+                }
                 std::cout << noc;
+                i = j + 1;
             }
-            else
-                std::cout << buf << ' ';
-            buf.clear();
+            // Handle character literals (single quotes)
+            else if (line[i] == '\'') {
+                std::cout << green << line[i];
+                size_t j = i + 1;
+                // Print the content inside the character literal
+                while (j < line.size() && line[j] != '\'') {
+                    std::cout << line[j++];
+                }
+                if (j < line.size()) {
+                    std::cout << line[j];
+                }
+                std::cout << noc;
+                i = j + 1;
+            }
+            else {
+                // Print spaces or other non-alphabetic characters normally
+                std::cout << noc << line[i];
+                ++i;
+            }
+        } else {
+            // Accumulate characters for a word (could be a keyword, type, etc.)
+            current_word += line[i];
+            ++i;
         }
-        else
-            buf += line.at(i);
-        ++i;
     }
-    std::cout << buf << std::flush;
+
+    // Handle the last word in case the line ends without a space
+    if (!current_word.empty()) {
+        if (is_keyword(current_word)) {
+            std::cout << yellow << current_word;
+        } else if (is_type(current_word)) {
+            std::cout << blue << current_word;
+        } else {
+            std::cout << noc << current_word;
+        }
+    }
+
+    // size_t cursor_end_position = line.size() + pad;
+    // std::cout << "\033[" << (cursor_end_position + 6) << "G";
+
+    // if (g_brace != 0) {
+    //     const std::string msg = "missing "+std::to_string(g_brace)+"`}`";
+    //     std::cout << gray << msg << "\033[" << msg.size() << "D" << std::flush;
+    // }
+    // else {
+    //     std::cout << green << "ok";
+    //     std::cout << "\033[6D" << std::flush;
+    // }
+
+    // if (line.back() == ';') {
+    //     std::cout << green << "ok";
+    //     std::cout << "\033[6D" << std::flush;
+    // }
+    // else {
+    //     std::cout << gray << "x";
+    //     std::cout << "\033[5D" << std::flush;
+    // }
+
+    std::cout << noc << std::flush;
 }
 
 void
@@ -265,15 +336,15 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         }
         else {
             if (c != line.size()) {
-                clearln(line.size());
+                // clearln(line.size());
                 line.insert(line.begin()+c, ch);
-                std::cout << prompt;
-                std::cout << line;
+                redraw_line(line, prompt, PAD-1);
+                // std::cout << prompt;
+                // std::cout << line;
                 std::cout << "\033[" << c+PAD+2 << "G";
             }
             else {
                 line.push_back(ch);
-                //std::cout << ch;
                 redraw_line(line, prompt, PAD-1);
             }
             ++c;
