@@ -348,6 +348,15 @@ delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line,
     std::cout << "\033[" << c+pad+1 << "G" << std::flush;
 }
 
+void
+handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line) {
+    if (system("clear") == 0) {
+        std::cout << prompt << line;
+        std::cout << "\033[" << c+pad+1 << "G" << std::flush;
+    }
+    redraw_line(line, prompt, 0);
+}
+
 std::string
 repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass) {
     const int PAD = prompt.size();
@@ -426,6 +435,8 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 }
             }
         }
+        else if (ch == 0x0C)
+            handle_clear_screen(prompt, c, PAD, line);
         else if (ch == 0x01) // ctrl+a
             handle_jump_to_beginning_line(c, PAD, line, history);
         else if (ch == 0x02) // ctrl+b
