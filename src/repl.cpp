@@ -255,13 +255,24 @@ static void
 analyze_new_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': ss.braces++; break;
-        case '}': ss.braces--; break;
-        case '[': ss.brackets++; break;
-        case ']': ss.brackets--; break;
-        case '(': ss.parens++; break;
-        case ')': ss.parens--; break;
-        case ';': break;
+        case '{': {
+            ss.braces++;
+        } break;
+        case '}': {
+            ss.braces--;
+        } break;
+        case '[':{
+            ss.brackets++;
+        } break;
+        case ']': {
+            ss.brackets--;
+        } break;
+        case '(': {
+            ss.parens++;
+        } break;
+        case ')': {
+            ss.parens--;
+        } break;
         default: break;
         }
     }
@@ -519,6 +530,9 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == CLEAR)
         clearscrn();
     else if (lst[0] == QUIT) {
+        std::cout << "\033[1E";
+        repled::clearln(50);
+        std::cout << "\033[A";
         ri.~RawInput();
         exit(0);
     }

@@ -82,22 +82,37 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::string dim = "\033[2m";
     std::string noc = "\033[0m";
 
-    int local_braces = 0;
-    int local_parens = 0;
-    int local_brackets = 0;
+    // Stacks to track unmatched symbols with their positions
+    std::vector<std::pair<char, size_t>> opening_braces;
+    std::vector<std::pair<char, size_t>> unmatched_closing;
 
     repled::clearln(line.size() + pad + prompt.size() + 50);
+    std::cout << "\033[1E"; // Move to the next line
+    repled::clearln(50);
+    std::cout << "\033[A"; // Move back to the original line
+
     std::cout << prompt;
 
     size_t i = 0;
     std::string current_word;
     while (i < line.size()) {
-        if (line[i] == '{') --local_braces;
-        else if (line[i] == '}') ++local_braces;
-        else if (line[i] == '(') --local_parens;
-        else if (line[i] == ')') ++local_parens;
-        else if (line[i] == '[') --local_brackets;
-        else if (line[i] == ']') ++local_brackets;
+        // Handle opening symbols by pushing to stack
+        if (line[i] == '{' || line[i] == '(' || line[i] == '[')
+            opening_braces.push_back({line[i], i});
+        // Handle closing symbols by matching with stack
+        else if (line[i] == '}' || line[i] == ')' || line[i] == ']') {
+            if (!opening_braces.empty() &&
+                ((line[i] == '}' && opening_braces.back().first == '{') ||
+                 (line[i] == ')' && opening_braces.back().first == '(') ||
+                 (line[i] == ']' && opening_braces.back().first == '['))) {
+                // If the current closing symbol matches the last opening symbol, pop the stack
+                opening_braces.pop_back();
+            } else {
+                // If no matching opening symbol, add this to unmatched closing
+                unmatched_closing.push_back({line[i], i});
+            }
+        }
+
         // Handle a word boundary (space, quote, or single quote)
         if (isspace(line[i]) || line[i] == '"' || line[i] == '\'') {
             // If a word has been built, check if it's a keyword or type
@@ -161,27 +176,56 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             std::cout << noc << current_word;
     }
 
+    // If the line does not end with a newline, handle the unmatched braces
     if (!newline) {
         size_t cursor_end_position = line.size() + pad;
+
+        // Move the cursor to the end of the current line
         std::cout << "\033[" << (cursor_end_position + 6) << "G";
+
+        // Print unmatched opening symbols first (in the correct order)
         std::string msg = "";
-        if (ss.braces-local_braces > 0)
-            msg += std::string(ss.braces-local_braces, '{');
-        if (ss.braces-local_braces < 0)
-            msg += std::string(local_braces-ss.braces, '}');
-        if (ss.parens-local_parens > 0)
-            msg += std::string(ss.parens-local_parens, '(');
-        if (ss.parens-local_parens < 0)
-            msg += std::string(local_parens-ss.parens, ')');
-        if (ss.brackets-local_brackets > 0)
-            msg += std::string(ss.brackets-local_brackets, '[');
-        if (ss.brackets-local_brackets < 0)
-            msg += std::string(local_brackets-ss.brackets, ']');
-        if (msg != "")
-            std::cout << underline << gray << msg;
+        for (const auto& pair : opening_braces)
+            msg += pair.first;
+
+        int local_braces = ss.braces;
+        int local_brackets = ss.brackets;
+        int local_parens = ss.parens;
+
+        // Then print the unmatched closing symbols (in the order they were encountered)
+        for (const auto& pair : unmatched_closing) {
+            if (pair.first == '}' && local_braces > 0)
+                --local_braces;
+            else if (pair.first == ']' && local_brackets > 0)
+               --local_brackets;
+            else if (pair.first == ')' && local_parens > 0)
+                --local_parens;
+            else
+                msg += pair.first;
+        }
+
+        if (local_braces > 0)
+            msg += std::string(local_braces, '{');
+        if (local_brackets > 0)
+            msg += std::string(local_brackets, '[');
+        if (local_parens > 0)
+            msg += std::string(local_parens, '(');
+
+        // Move to the next line
+        std::cout << "\033[1E";
+        repled::clearln(50);
+
+        // Print the message
+        if (!msg.empty())
+            std::cout << underline << gray << "unclosed: " << msg << " in no order";
         else
-            std::cout << dim << green << "ok";
-        std::cout << "\033[" << cursor_end_position+2 << "G";
+            std::cout << bold << green << "ok";
+
+        // Move the cursor back to the original line
+        std::cout << "\033[A";
+
+        // Move the cursor to the original position after printing
+        std::cout << "\033[" << cursor_end_position + 2 << "G";
     }
 
     std::cout << noc << std::flush;
@@ -203,8 +247,6 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
 
     line.erase(c-1, 1);
 
-    // clearln(line.size()+pad);
-    // std::cout << prompt << line;
     redraw_line(line, prompt, pad, ss);
     std::cout << "\033[" << c+pad << "G" << std::flush;
     --c;
@@ -244,36 +286,6 @@ repled::handle_newline(int &lines_idx, std::string &line, std::vector<std::strin
     }
 }
 
-void
-repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
-    if (lines.size() == 0)
-        return;
-    if (lines_idx <= 0)
-        return;
-
-    --lines_idx;
-    std::string &histline = lines[lines_idx];
-    redraw_line(histline, prompt, line.size(), ss);
-    line = histline;
-}
-
-void
-repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
-    if (lines.size() == 0)
-        return;
-    if (lines_idx >= static_cast<int>(lines.size()) - 1) {
-        clearln(line.size());
-        std::cout << prompt << std::flush;
-        lines_idx = lines.size();
-        line = "";
-        return;
-    }
-
-    ++lines_idx;
-    std::string &histline = lines[lines_idx];
-    redraw_line(histline, prompt, line.size()+prompt.size(), ss);
-    line = histline;
-}
 
 void
 repled::handle_left_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
@@ -292,17 +304,6 @@ repled::handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::
 }
 
 void
-repled::handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines) {
-    clearln(line.size());
-    line.insert(line.begin()+c, ' ');
-    line.insert(line.begin()+c, ' ');
-    std::cout << prompt;
-    std::cout << line;
-    std::cout << "\033[" << c+pad+3 << "G" << std::flush;
-    c += 2;
-}
-
-void
 handle_jump_to_end(int &c, int pad, std::string &line, std::vector<std::string> &lines) {
     c = line.size();
     std::cout << "\033[" << c+pad+1 << "G" << std::flush;
@@ -315,14 +316,66 @@ handle_jump_to_beginning_line(int &c, int pad, std::string &line, std::vector<st
 }
 
 void
+repled::handle_up_arrow(int c, int pad, std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
+    if (lines.size() == 0)
+        return;
+    if (lines_idx <= 0)
+        return;
+
+    --lines_idx;
+    std::string &histline = lines[lines_idx];
+    redraw_line(histline, prompt, line.size(), ss);
+    line = histline;
+    handle_jump_to_end(c, pad, line, lines);
+}
+
+void
+repled::handle_down_arrow(int c, int pad, std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
+    if (lines.size() == 0)
+        return;
+    if (lines_idx >= static_cast<int>(lines.size()) - 1) {
+        clearln(line.size());
+        std::cout << prompt << std::flush;
+        lines_idx = lines.size();
+        line = "";
+        return;
+    }
+
+    ++lines_idx;
+    std::string &histline = lines[lines_idx];
+    redraw_line(histline, prompt, line.size()+prompt.size(), ss);
+    line = histline;
+    handle_jump_to_end(c, pad, line, lines);
+}
+
+void
+repled::handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+    clearln(line.size());
+    line.insert(line.begin()+c, ' ');
+    line.insert(line.begin()+c, ' ');
+    std::cout << prompt;
+    std::cout << line;
+    std::cout << "\033[" << c+pad+3 << "G" << std::flush;
+    c += 2;
+}
+
+void
 jump_word(int &c, int sz, std::string &line) {
     if (c >= sz)
         return;
 
-    while (c < sz && !isspace(line[c]))
-        ++c;
-    while (c < sz && isspace(line[c]))
-        ++c;
+    if (isalnum(line[c])) {
+        while (c < sz && isalnum(line[c]))
+            ++c;
+        while (c < sz && !isalnum(line[c]))
+            ++c;
+    }
+    else {
+        while (c < sz && !isalnum(line[c]))
+            ++c;
+        while (c < sz && isalnum(line[c]))
+            ++c;
+    }
     std::cout << "\033[" << c+1 << "G" << std::flush;
 }
 
@@ -331,10 +384,18 @@ jump_word_rev(int &c, int sz, std::string &line) {
     if (c <= 0)
         return;
 
-    while (c > 0 && isspace(line[c-1]))
-        --c;
-    while (c > 0 && !isspace(line[c-1]))
-        --c;
+    if (isalnum(line[c])) {
+        while (c > 0 && isalnum(line[c]))
+            --c;
+        while (c < sz && !isalnum(line[c]))
+            --c;
+    }
+    else {
+        while (c > 0 && !isalnum(line[c-1]))
+            --c;
+        while (c > 0 && isalnum(line[c-1]))
+            --c;
+    }
     std::cout << "\033[" << c+1 << "G" << std::flush;
 }
 
@@ -381,14 +442,24 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
     bool ready = prompt[0] != '0' && !bypass;
 
     if (ready) {
-        std::cout << prompt << std::string(64, ' ');
+        std::cout << prompt;
+
+        // Move cursor to line below.
+        std::cout << "\033[1E";
+        repled::clearln(50);
+
         std::cout << "[";
         if ((flags & __REPL_NOCOLOR) == 0)
             std::cout << "\033[32m";
-        std::cout << "ENTER TO EVAL";
+        std::cout << "Enter to Evaluate";
         if ((flags & __REPL_NOCOLOR) == 0)
             std::cout << "\033[0m";
+
         std::cout << "]" << "\033[" << PAD+1 << "G" << std::flush;
+        // Move cursor to prev line.
+        std::cout << "\033[A";
+
+        handle_jump_to_beginning_line(c, PAD, line, history);
     }
     else
         std::cout << prompt << std::flush;
@@ -416,12 +487,12 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 int next1 = RI.get_char();
                 switch (next1) {
                 case UP_ARROW: {
-                    handle_up_arrow(prompt, lines_idx, line, history, ss);
+                    handle_up_arrow(c, PAD, prompt, lines_idx, line, history, ss);
                     c = line.size();
                     std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
                 case DOWN_ARROW: {
-                    handle_down_arrow(prompt, lines_idx, line, history, ss);
+                    handle_down_arrow(c, PAD, prompt, lines_idx, line, history, ss);
                     c = line.size();
                     std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
@@ -464,12 +535,12 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         else if (ch == 0x0B) // ctrl+k
             handle_delete_to_end(prompt, c, PAD, line, history, ss);
         else if (ch == 0x0E) { // ctrl+n
-            handle_down_arrow(prompt, lines_idx, line, history, ss);
+            handle_down_arrow(c, PAD, prompt, lines_idx, line, history, ss);
             c = line.size();
             std::cout << "\033[" << PAD+c+1 << "G";
         }
         else if (ch == 0x10) { // ctrl+p
-            handle_up_arrow(prompt, lines_idx, line, history, ss);
+            handle_up_arrow(c, PAD, prompt, lines_idx, line, history, ss);
             c = line.size();
             std::cout << "\033[" << PAD+c+1 << "G";
         }
