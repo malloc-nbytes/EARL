@@ -220,6 +220,8 @@ it hits 1MB in file size.
 to navigate through history. The stored history in =~/.earl_history= is what initializes this, so as soon
 as you launch the REPL, it gives you the ability to hit the up arrow to get code from other sessions.
 
+*Note*: You can also use Emacs keybindings such as =C-f=, =C-b=, =C-p=, =C-n=, =M-f=, =M-b=, etc.
+
 *Note*: Hitting =<tab>= will insert two spaces.
 
 #+end_quote

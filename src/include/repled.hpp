@@ -46,16 +46,24 @@ namespace repled {
         struct termios old_termios;
     };
 
+    struct SS {
+        int braces;
+        int brackets;
+        int parens;
+        SS();
+        ~SS() = default;
+    };
+
     void clearln(int sz, bool flush=false);
     void out_lineno(bool flush=false);
-    void handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines);
+    void handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines, repled::SS &ss);
     void handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines);
-    void handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines);
-    void handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines);
+    void handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss);
+    void handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss);
     void handle_left_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines);
     void handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines);
     void handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines);
-    std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass);
+    std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss);
 };
 
 #endif // REPLED_H

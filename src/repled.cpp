@@ -34,6 +34,8 @@
 static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 
+repled::SS::SS() : braces(0), brackets(0), parens(0) {}
+
 repled::RawInput::RawInput() {
     tcgetattr(STDIN_FILENO, &old_termios);
     termios raw = old_termios;
@@ -69,7 +71,7 @@ is_type(std::string &word) {
 }
 
 static void
-redraw_line(std::string &line, std::string &prompt, int pad) {
+redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, bool newline = false) {
     std::string yellow = "\033[93m";
     std::string blue = "\033[94m";
     std::string green = "\033[32m";
@@ -77,7 +79,12 @@ redraw_line(std::string &line, std::string &prompt, int pad) {
     std::string underline = "\033[4m";
     std::string bold = "\033[1m";
     std::string italic = "\033[3m";
+    std::string dim = "\033[2m";
     std::string noc = "\033[0m";
+
+    int local_braces = 0;
+    int local_parens = 0;
+    int local_brackets = 0;
 
     repled::clearln(line.size() + pad + prompt.size() + 50);
     std::cout << prompt;
@@ -85,6 +92,12 @@ redraw_line(std::string &line, std::string &prompt, int pad) {
     size_t i = 0;
     std::string current_word;
     while (i < line.size()) {
+        if (line[i] == '{') --local_braces;
+        else if (line[i] == '}') ++local_braces;
+        else if (line[i] == '(') --local_parens;
+        else if (line[i] == ')') ++local_parens;
+        else if (line[i] == '[') --local_brackets;
+        else if (line[i] == ']') ++local_brackets;
         // Handle a word boundary (space, quote, or single quote)
         if (isspace(line[i]) || line[i] == '"' || line[i] == '\'') {
             // If a word has been built, check if it's a keyword or type
@@ -140,35 +153,36 @@ redraw_line(std::string &line, std::string &prompt, int pad) {
 
     // Handle the last word in case the line ends without a space
     if (!current_word.empty()) {
-        if (is_keyword(current_word)) {
+        if (is_keyword(current_word))
             std::cout << yellow << current_word;
-        } else if (is_type(current_word)) {
+        else if (is_type(current_word))
             std::cout << blue << current_word;
-        } else {
+        else
             std::cout << noc << current_word;
-        }
     }
 
-    // size_t cursor_end_position = line.size() + pad;
-    // std::cout << "\033[" << (cursor_end_position + 6) << "G";
-
-    // if (g_brace != 0) {
-    //     const std::string msg = "missing "+std::to_string(g_brace)+"`}`";
-    //     std::cout << gray << msg << "\033[" << msg.size() << "D" << std::flush;
-    // }
-    // else {
-    //     std::cout << green << "ok";
-    //     std::cout << "\033[6D" << std::flush;
-    // }
-
-    // if (line.back() == ';') {
-    //     std::cout << green << "ok";
-    //     std::cout << "\033[6D" << std::flush;
-    // }
-    // else {
-    //     std::cout << gray << "x";
-    //     std::cout << "\033[5D" << std::flush;
-    // }
+    if (!newline) {
+        size_t cursor_end_position = line.size() + pad;
+        std::cout << "\033[" << (cursor_end_position + 6) << "G";
+        std::string msg = "";
+        if (ss.braces-local_braces > 0)
+            msg += std::string(ss.braces-local_braces, '{');
+        if (ss.braces-local_braces < 0)
+            msg += std::string(local_braces-ss.braces, '}');
+        if (ss.parens-local_parens > 0)
+            msg += std::string(ss.parens-local_parens, '(');
+        if (ss.parens-local_parens < 0)
+            msg += std::string(local_parens-ss.parens, ')');
+        if (ss.brackets-local_brackets > 0)
+            msg += std::string(ss.brackets-local_brackets, '[');
+        if (ss.brackets-local_brackets < 0)
+            msg += std::string(local_brackets-ss.brackets, ']');
+        if (msg != "")
+            std::cout << underline << gray << msg;
+        else
+            std::cout << dim << green << "ok";
+        std::cout << "\033[" << cursor_end_position+2 << "G";
+    }
 
     std::cout << noc << std::flush;
 }
@@ -181,7 +195,7 @@ repled::clearln(int sz, bool flush) {
 }
 
 void
-repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines) {
+repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
     if (c <= 0)
         return;
 
@@ -191,13 +205,13 @@ repled::handle_backspace(std::string prompt, char ch, int &c, int pad, std::stri
 
     // clearln(line.size()+pad);
     // std::cout << prompt << line;
-    redraw_line(line, prompt, pad);
+    redraw_line(line, prompt, pad, ss);
     std::cout << "\033[" << c+pad << "G" << std::flush;
     --c;
 }
 
 static void
-handle_delete(std::string &prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+handle_delete(std::string &prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &history, repled::SS &ss) {
     if (c >= static_cast<int>(line.size()))
         return;
 
@@ -205,18 +219,18 @@ handle_delete(std::string &prompt, char ch, int &c, int pad, std::string &line, 
 
     line.erase(c, 1);
 
-    redraw_line(line, prompt, pad);
+    redraw_line(line, prompt, pad, ss);
     std::cout << "\033[" << c+pad+1 << "G" << std::flush;
 }
 
 void
-handle_delete_to_end(std::string &prompt, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+handle_delete_to_end(std::string &prompt, int &c, int pad, std::string &line, std::vector<std::string> &history, repled::SS &ss) {
     if (c >= static_cast<int>(line.size()))
         return;
 
     line.erase(c, line.size()-c);
 
-    redraw_line(line, prompt, pad);
+    redraw_line(line, prompt, pad, ss);
     std::cout << "\033[" << c+pad+1 << "G" << std::flush;
 }
 
@@ -231,7 +245,7 @@ repled::handle_newline(int &lines_idx, std::string &line, std::vector<std::strin
 }
 
 void
-repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
     if (lines.size() == 0)
         return;
     if (lines_idx <= 0)
@@ -239,12 +253,12 @@ repled::handle_up_arrow(std::string prompt, int &lines_idx, std::string &line, s
 
     --lines_idx;
     std::string &histline = lines[lines_idx];
-    redraw_line(histline, prompt, line.size());
+    redraw_line(histline, prompt, line.size(), ss);
     line = histline;
 }
 
 void
-repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines) {
+repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss) {
     if (lines.size() == 0)
         return;
     if (lines_idx >= static_cast<int>(lines.size()) - 1) {
@@ -257,7 +271,7 @@ repled::handle_down_arrow(std::string prompt, int &lines_idx, std::string &line,
 
     ++lines_idx;
     std::string &histline = lines[lines_idx];
-    redraw_line(histline, prompt, line.size()+prompt.size());
+    redraw_line(histline, prompt, line.size()+prompt.size(), ss);
     line = histline;
 }
 
@@ -325,7 +339,7 @@ jump_word_rev(int &c, int sz, std::string &line) {
 }
 
 void
-delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line, std::vector<std::string> &history) {
+delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line, repled::SS &ss) {
     if (c >= static_cast<int>(line.size()))
         return;
 
@@ -344,21 +358,21 @@ delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line,
             ++i;
         line.erase(c, i-c);
     }
-    redraw_line(line, prompt, pad);
+    redraw_line(line, prompt, pad, ss);
     std::cout << "\033[" << c+pad+1 << "G" << std::flush;
 }
 
 void
-handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line) {
+handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line, repled::SS &ss) {
     if (system("clear") == 0) {
         std::cout << prompt << line;
         std::cout << "\033[" << c+pad+1 << "G" << std::flush;
     }
-    redraw_line(line, prompt, 0);
+    redraw_line(line, prompt, 0, ss);
 }
 
 std::string
-repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass) {
+repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss) {
     const int PAD = prompt.size();
     std::string line = "";
     int lines_idx = history.size();
@@ -388,8 +402,10 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             ready = false;
         }
 
-        if (ENTER(ch))
+        if (ENTER(ch)) {
+            redraw_line(line, prompt, PAD-1, ss, /*newline=*/true);
             break;
+        }
 
         else if (TAB(ch))
             handle_tab(prompt, c, PAD, line, history);
@@ -400,12 +416,12 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 int next1 = RI.get_char();
                 switch (next1) {
                 case UP_ARROW: {
-                    handle_up_arrow(prompt, lines_idx, line, history);
+                    handle_up_arrow(prompt, lines_idx, line, history, ss);
                     c = line.size();
                     std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
                 case DOWN_ARROW: {
-                    handle_down_arrow(prompt, lines_idx, line, history);
+                    handle_down_arrow(prompt, lines_idx, line, history, ss);
                     c = line.size();
                     std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
@@ -429,14 +445,14 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                     std::cout << "\033[" << c+PAD+1 << "G" << std::flush;
                 } break;
                 case 'd': {
-                    delete_word_from_cursor(prompt, c, PAD, line, history);
+                    delete_word_from_cursor(prompt, c, PAD, line, ss);
                 } break;
                 default: break;
                 }
             }
         }
         else if (ch == 0x0C)
-            handle_clear_screen(prompt, c, PAD, line);
+            handle_clear_screen(prompt, c, PAD, line, ss);
         else if (ch == 0x01) // ctrl+a
             handle_jump_to_beginning_line(c, PAD, line, history);
         else if (ch == 0x02) // ctrl+b
@@ -444,32 +460,32 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         else if (ch == 0x06) // ctrl+f
             handle_right_arrow(c, PAD, line, history);
         else if (ch == 0x04) // ctrl+d
-            handle_delete(prompt, ch, c, PAD, line, history);
+            handle_delete(prompt, ch, c, PAD, line, history, ss);
         else if (ch == 0x0B) // ctrl+k
-            handle_delete_to_end(prompt, c, PAD, line, history);
+            handle_delete_to_end(prompt, c, PAD, line, history, ss);
         else if (ch == 0x0E) { // ctrl+n
-            handle_down_arrow(prompt, lines_idx, line, history);
+            handle_down_arrow(prompt, lines_idx, line, history, ss);
             c = line.size();
             std::cout << "\033[" << PAD+c+1 << "G";
         }
         else if (ch == 0x10) { // ctrl+p
-            handle_up_arrow(prompt, lines_idx, line, history);
+            handle_up_arrow(prompt, lines_idx, line, history, ss);
             c = line.size();
             std::cout << "\033[" << PAD+c+1 << "G";
         }
         else if (ch == 0x05) // ctrl+e
             handle_jump_to_end(c, PAD, line, history);
         else if (BACKSPACE(ch))
-            handle_backspace(prompt, ch, c, PAD, line, history);
+            handle_backspace(prompt, ch, c, PAD, line, history, ss);
         else {
             if (c != line.size()) {
                 line.insert(line.begin()+c, ch);
-                redraw_line(line, prompt, PAD-1);
+                redraw_line(line, prompt, PAD-1, ss);
                 std::cout << "\033[" << c+PAD+2 << "G";
             }
             else {
                 line.push_back(ch);
-                redraw_line(line, prompt, PAD-1);
+                redraw_line(line, prompt, PAD-1, ss);
             }
             ++c;
             std::cout.flush();

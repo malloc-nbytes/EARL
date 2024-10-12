@@ -75,9 +75,7 @@ static std::string REPL_HIST = "";
 static size_t lineno = 0;
 static std::vector<std::string> HIST = {};
 
-static int g_brace = 0;
-static int g_bracket = 0;
-static int g_paren = 0;
+static repled::SS ss;
 
 static void
 try_clear_repl_history() {
@@ -247,8 +245,8 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
 }
 
 static std::string
-get_special_input(repled::RawInput &ri) {
-    auto line = repled::getln(ri, ">>> ", HIST, true);
+get_special_input(repled::RawInput &ri, repled::SS &ss) {
+    auto line = repled::getln(ri, ">>> ", HIST, true, ss);
     std::cout << std::endl;
     return line;
 }
@@ -257,12 +255,12 @@ static void
 analyze_new_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': ++g_brace; break;
-        case '}': --g_brace; break;
-        case '[': ++g_bracket; break;
-        case ']': --g_bracket; break;
-        case '(': ++g_paren; break;
-        case ')': --g_paren; break;
+        case '{': ss.braces++; break;
+        case '}': ss.braces--; break;
+        case '[': ss.brackets++; break;
+        case ']': ss.brackets--; break;
+        case '(': ss.parens++; break;
+        case ')': ss.parens--; break;
         case ';': break;
         default: break;
         }
@@ -273,12 +271,12 @@ static void
 manage_removed_or_edited_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': --g_brace; break;
-        case '}': ++g_brace; break;
-        case '[': --g_bracket; break;
-        case ']': ++g_bracket; break;
-        case '(': --g_paren; break;
-        case ')': ++g_paren; break;
+        case '{': ss.braces--; break;
+        case '}': ss.braces++; break;
+        case '[': ss.brackets--; break;
+        case ']': ss.brackets++; break;
+        case '(': ss.parens--; break;
+        case ')': ss.parens++; break;
         }
     }
 }
@@ -338,7 +336,7 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
             gray();
             std::cout << "]" << std::endl;
             noc();
-            std::string newline = get_special_input(ri);
+            std::string newline = get_special_input(ri, ss);
             if (newline == QUIT) {
                 log("Quitting session editor\n", gray);
                 return;
@@ -367,7 +365,7 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
         gray();
         std::cout << "]" << std::endl;
         noc();
-        std::string newline = get_special_input(ri);
+        std::string newline = get_special_input(ri, ss);
         manage_removed_or_edited_line(lines.at(lines.size()-1));
         if (newline == "")
             lines.erase(lines.end()-1);
@@ -416,7 +414,7 @@ discard(repled::RawInput &ri, std::vector<std::string> &lines) {
     std::string line = "";
     while (true) {
         red();
-        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true);
+        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true, ss);
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
@@ -510,8 +508,6 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
-    // if (line.size() != 0 && line[0] == '$')
-    //     bash(line);
     if (lst[0] == RM_ENTRY)
         rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
@@ -559,9 +555,9 @@ repl::run(void) {
         bool ready = false;
         std::vector<std::string> lines = {};
         while (true) {
-            bool closed_braces = !g_brace && !g_bracket && !g_paren;
+            bool closed_braces = !ss.braces && !ss.brackets && !ss.parens;
 
-            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces);
+            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces, ss);
             analyze_new_line(line);
 
             if (line == "" && closed_braces)
