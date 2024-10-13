@@ -178,6 +178,7 @@ noc(void) {
 
 static void
 log(std::string msg, void(*color)(void) = nullptr) {
+    repled::clearln(0, true);
     blue();
     std::cout << "[EARL] ";
     noc();
@@ -230,6 +231,7 @@ help(void) {
 static void
 import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (args.size() == 0) {
+        repled::clearln(0, true);
         log("No files supplied\n");
         return;
     }
@@ -239,6 +241,7 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
         auto src_lines = split_on_newline(src);
         lineno += src_lines.size();
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
+        repled::clearln(0, true);
         log("Imported " + f + "\n", green);
         noc();
     }
@@ -295,6 +298,7 @@ manage_removed_or_edited_line(std::string &line) {
 static void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
+        repled::clearln(0, true);
         log("No previous entry exists\n");
         return;
     }
@@ -311,6 +315,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         for (auto &arg : args) {
             int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
             if (lnum < 0 || lnum >= (int)lines.size()) {
+                repled::clearln(0, true);
                 log("Line number is out of range for session\n");
                 return;
             }
@@ -321,8 +326,10 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         }
     }
 
+    repled::clearln(0, true);
     log("Removed:\n");
     for (auto &h : hist) {
+        repled::clearln(0, true);
         red();
         std::cout << h;
         noc();
@@ -338,9 +345,11 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
         for (auto arg : args) {
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
+                repled::clearln(0, true);
                 log("Line number is out of range for session\n");
                 return;
             }
+            repled::clearln(0, true);
             log("Editing [", gray);
             yellow();
             std::cout << lines.at(lnum);
@@ -349,11 +358,14 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
             noc();
             std::string newline = get_special_input(ri, ss);
             if (newline == QUIT) {
+                repled::clearln(0, true);
                 log("Quitting session editor\n", gray);
                 return;
             }
-            if (newline == SKIP)
+            if (newline == SKIP) {
+                repled::clearln(0, true);
                 log("Skipping current selection\n", gray);
+            }
             else if (newline == "") {
                 manage_removed_or_edited_line(lines.at(lnum));
                 lines.erase(lines.begin()+lnum);
@@ -370,6 +382,7 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
             log("No lines to edit\n", gray);
             return;
         }
+        repled::clearln(0, true);
         log("Editing [", gray);
         yellow();
         std::cout << lines.back();
@@ -396,10 +409,12 @@ clearscrn(void) {
 static void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
+        repled::clearln(0, true);
         log("Nothing appropriate\n", gray);
         return;
     }
     for (size_t i = 0; i < lines.size(); ++i) {
+        repled::clearln(0, true);
         green();
         std::cout << i << ": ";
         std::cout << lines[i];
@@ -457,6 +472,7 @@ show_vars(std::shared_ptr<Ctx> &ctx) {
     if (vars.size() == 0)
         log("Nothing appropriate\n", gray);
 
+    repled::clearln(0, true);
     for (auto &v : vars)
         std::cout << v << std::endl;
 }
@@ -468,8 +484,10 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
     if (funcs.size() == 0)
         log("Nothing appropriate\n", gray);
 
-    for (auto &v : funcs)
+    repled::clearln(0, true);
+    for (auto &v : funcs) {
         std::cout << v << std::endl;
+    }
 }
 
 static void
@@ -588,13 +606,17 @@ repl::run(void) {
                 }
                 ++lineno;
                 std::cout << std::endl;
+                std::cout << "\033[K";
             }
         }
 
         if (lines.size() != 0)
             repled::clearln(lines.back().size());
-        else
+        else {
             std::cout << std::endl;
+        }
+
+        std::cout << "\033[K";
 
         std::string combined = "";
 
@@ -624,6 +646,7 @@ repl::run(void) {
                 try {
                     auto val = Interpreter::eval_stmt(stmt, ctx);
                     if (val) {
+                        repled::clearln(0, true);
                         std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
                         green();
                         (void)Intrinsics::intrinsic_print(params, ctx, nullptr);

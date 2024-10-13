@@ -27,9 +27,11 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include "common.hpp"
 #include "repled.hpp"
+#include "utils.hpp"
 
 static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
@@ -70,6 +72,17 @@ is_type(std::string &word) {
     return false;
 }
 
+static std::string
+get_last_word(std::string &line) {
+    std::string buf = "";
+    for (auto it = line.rbegin(); it != line.rend(); ++it) {
+        if (!isalpha(*it))
+            break;
+        buf.insert(buf.begin(), *it);
+    }
+    return buf;
+}
+
 static void
 redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, bool newline = false) {
     std::string yellow = "\033[93m";
@@ -80,6 +93,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::string bold = "\033[1m";
     std::string italic = "\033[3m";
     std::string dim = "\033[2m";
+    std::string invert = "\033[7m";
     std::string noc = "\033[0m";
 
     // Stacks to track unmatched symbols with their positions
@@ -87,9 +101,6 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::vector<std::pair<char, size_t>> unmatched_closing;
 
     repled::clearln(line.size() + pad + prompt.size() + 50);
-    std::cout << "\033[1E"; // Move to the next line
-    repled::clearln(50);
-    std::cout << "\033[A"; // Move back to the original line
 
     std::cout << prompt;
 
@@ -183,43 +194,28 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         // Move the cursor to the end of the current line
         std::cout << "\033[" << (cursor_end_position + 6) << "G";
 
-        // Print unmatched opening symbols first (in the correct order)
-        std::string msg = "";
-        for (const auto& pair : opening_braces)
-            msg += pair.first;
-
-        int local_braces = ss.braces;
-        int local_brackets = ss.brackets;
-        int local_parens = ss.parens;
-
-        // Then print the unmatched closing symbols (in the order they were encountered)
-        for (const auto& pair : unmatched_closing) {
-            if (pair.first == '}' && local_braces > 0)
-                --local_braces;
-            else if (pair.first == ']' && local_brackets > 0)
-               --local_brackets;
-            else if (pair.first == ')' && local_parens > 0)
-                --local_parens;
-            else
-                msg += pair.first;
-        }
-
-        if (local_braces > 0)
-            msg += std::string(local_braces, '{');
-        if (local_brackets > 0)
-            msg += std::string(local_brackets, '[');
-        if (local_parens > 0)
-            msg += std::string(local_parens, '(');
-
         // Move to the next line
         std::cout << "\033[1E";
         repled::clearln(50);
 
-        // Print the message
-        if (!msg.empty())
-            std::cout << underline << gray << "unclosed: " << msg << " in no order";
-        else
-            std::cout << bold << green << "ok";
+        std::string last_word = get_last_word(line);
+        std::vector<std::string> kwds = COMMON_EARLKW_ASCPL;
+        std::vector<std::pair<int, std::string>> closest = {};
+        for (std::string kw : kwds) {
+            int rank = levenshtein_distance(last_word, kw);
+            closest.push_back(std::make_pair(rank, kw));
+        }
+
+        std::sort(closest.begin(), closest.end(), [](auto &p1, auto &p2) {
+            return p1.first < p2.first;
+        });
+
+        std::cout << gray << "| ";
+        for (size_t i = 0; i < closest.size() && i < 7; ++i) {
+            std::cout << closest[i].second << " |";
+            if (i < closest.size()-1 && i < 7)
+                std::cout << ' ';
+        }
 
         // Move the cursor back to the original line
         std::cout << "\033[A";
@@ -233,7 +229,8 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
 void
 repled::clearln(int sz, bool flush) {
-    std::cout << "\r" << std::string(sz+8, ' ') << "\r";
+    std::cout << "\033[K" << "\r";
+    // std::cout << "\r" << std::string(sz+8, ' ') << "\r";
     if (flush)
         std::cout.flush();
 }
@@ -322,6 +319,7 @@ repled::handle_up_arrow(int c, int pad, std::string prompt, int &lines_idx, std:
     if (lines_idx <= 0)
         return;
 
+    clearln(0);
     --lines_idx;
     std::string &histline = lines[lines_idx];
     redraw_line(histline, prompt, line.size(), ss);
@@ -341,6 +339,7 @@ repled::handle_down_arrow(int c, int pad, std::string prompt, int &lines_idx, st
         return;
     }
 
+    clearln(0);
     ++lines_idx;
     std::string &histline = lines[lines_idx];
     redraw_line(histline, prompt, line.size()+prompt.size(), ss);
@@ -434,6 +433,8 @@ handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line, rep
 
 std::string
 repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss) {
+    std::cout << "\033[K";
+
     const int PAD = prompt.size();
     std::string line = "";
     int lines_idx = history.size();
