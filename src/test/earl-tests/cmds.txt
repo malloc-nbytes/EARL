@@ -9,8 +9,6 @@ import "std/system.earl";
 import "std/list.earl";
 import "std/math.earl";
 
-sleep(1000000/2);
-
 class Matrix [init, r, c] {
     let lst = init;
     let rows, cols = (r, c);
@@ -21,16 +19,12 @@ class Matrix [init, r, c] {
     }
 }
 
-sleep(1000000/2);
-
 let speed = 80;
 let x, y = (3., 3.);
 let dx, dy = (.77*speed/100, 1.*speed/100);
 let width, height = (10, 10);
 let not_draws_per_sec = 1;
 let current_not_draws_per_sec = 0;
-
-sleep(1000000/2);
 
 let faces = ['.', 'O', '#', 'X'];
 let current_face = 0;
@@ -39,8 +33,6 @@ let emoji_screen = "";
 let board = Matrix(List::preset(0, height*width), height, width);
 let int_y = int(y);
 let int_x = int(x);
-
-sleep(1000000/2);
 
 @world fn draw() {
     let _ = System::cmd("clear");
@@ -57,11 +49,7 @@ sleep(1000000/2);
 
 let counter = 0;
 
-sleep(1000000/2);
-
 loop {
-
-    sleep(900);
 
     x += dx;
     y += dy;

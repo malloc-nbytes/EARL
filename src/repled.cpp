@@ -103,6 +103,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         local_brackets = 0,
         local_parens = 0;
     bool in_quote = false;
+    bool comment = false;
 
     repled::clearln(line.size() + pad + prompt.size() + 50);
 
@@ -111,37 +112,32 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     size_t i = 0;
     std::string current_word;
     while (i < line.size()) {
-        if (line[i] == '}')
-            ++local_braces;
-        else if (line[i] == '{')
-            --local_braces;
-        else if (line[i] == ']')
-            ++local_brackets;
-        else if (line[i] == '[')
-            --local_brackets;
-        else if (line[i] == ')')
-            ++local_parens;
-        else if (line[i] == '(')
-            --local_parens;
+        if (line[i] == '#')        comment = true;
+        else if (line[i] == '}') ++local_braces;
+        else if (line[i] == '{') --local_braces;
+        else if (line[i] == ']') ++local_brackets;
+        else if (line[i] == '[') --local_brackets;
+        else if (line[i] == ')') ++local_parens;
+        else if (line[i] == '(') --local_parens;
 
         // Handle a word boundary (space, quote, or single quote)
         if (isspace(line[i]) || line[i] == '"' || line[i] == '\'') {
             // If a word has been built, check if it's a keyword or type
             if (!current_word.empty()) {
                 if (is_keyword(current_word)) {
-                    if ((flags & __REPL_NOCOLOR) == 0)
+                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << yellow << italic << bold << current_word;
                     else
                         std::cout << current_word;
                 }
                 else if (is_type(current_word)) {
-                    if ((flags & __REPL_NOCOLOR) == 0)
+                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << blue << current_word;
                     else
                         std::cout << current_word;
                 }
                 else {
-                    if ((flags & __REPL_NOCOLOR) == 0)
+                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << noc << current_word;
                     else
                         std::cout << current_word;
@@ -152,7 +148,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             // Handle string literals (double quotes)
             if (line[i] == '"') {
                 in_quote = true;
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << green << line[i];
                 else
                     std::cout << line[i];
@@ -164,13 +160,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     in_quote = false;
                 if (j < line.size())
                     std::cout << line[j];
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
                 i = j+1;
             }
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << green << line[i];
                 else
                     std::cout << line[i];
@@ -180,13 +176,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << line[j++];
                 if (j < line.size())
                     std::cout << line[j];
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
                 i = j+1;
             }
             else {
                 // Print spaces or other non-alphabetic characters normally
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc << line[i];
                 else
                     std::cout << line[i];
@@ -202,19 +198,19 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     // Handle the last word in case the line ends without a space
     if (!current_word.empty()) {
         if (is_keyword(current_word)) {
-            if ((flags & __REPL_NOCOLOR) == 0)
+            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << yellow << current_word;
             else
                 std::cout << current_word;
         }
         else if (is_type(current_word)) {
-            if ((flags & __REPL_NOCOLOR) == 0)
+            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << blue << current_word;
             else
                 std::cout << current_word;
         }
         else {
-            if ((flags & __REPL_NOCOLOR) == 0)
+            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << noc << current_word;
             else
                 std::cout << current_word;
@@ -222,7 +218,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     }
 
     // If the line does not end with a newline, handle the unmatched braces
-    if (!newline && !in_quote) {
+    if (!newline && !in_quote && !comment) {
         size_t cursor_end_position = line.size() + pad;
 
         // Move the cursor to the end of the current line
@@ -422,7 +418,8 @@ repled::handle_down_arrow(int c, int pad, std::string prompt, int &lines_idx, st
     if (lines.size() == 0)
         return;
     if (lines_idx >= static_cast<int>(lines.size()) - 1) {
-        clearln(line.size());
+        clearln(0);
+        clearln(0, true);
         std::cout << prompt << std::flush;
         lines_idx = lines.size();
         line = "";

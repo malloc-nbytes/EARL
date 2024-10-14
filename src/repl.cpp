@@ -217,17 +217,41 @@ split_on_newline(std::string &line) {
 
 static void
 help(void) {
-    log(HELP " -> show this message\n");
-    log(QUIT " -> quit the session\n");
-    log(VARS " -> show current variables in scope\n");
-    log(FUNCS " -> show current functions in scope\n");
-    log(CLEAR " -> clear the screen\n");
-    log(IMPORT " [files...] -> import local EARL files\n");
-    log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
-    log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
-    log(LIST_ENTRIES " -> list all entries in the current session\n");
-    log(DISCARD " -> discard the current session\n");
-    log(RESET " -> reset all identifiers\n");
+    log("Command Sequences:\n");
+    log("| " HELP " -> show this message\n");
+    log("| " QUIT " -> quit the session\n");
+    log("| " VARS " -> show current variables in scope\n");
+    log("| " FUNCS " -> show current functions in scope\n");
+    log("| " CLEAR " -> clear the screen\n");
+    log("| " IMPORT " [files...] -> import local EARL files\n");
+    log("| " RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
+    log("| " EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
+    log("| " LIST_ENTRIES " -> list all entries in the current session\n");
+    log("| " DISCARD " -> discard the current session\n");
+    log("| " RESET " -> reset all identifiers\n");
+    log("Controls: (C = [CONTROL], M = [META] (ALT))\n");
+    log("| Navigation:\n");
+    log("| | [UP] -> previous line\n");
+    log("| | [DOWN] -> next line\n");
+    log("| | [LEFT] -> previous char\n");
+    log("| | [RIGHT] -> next char\n");
+    log("| | C-f -> next char\n");
+    log("| | C-b -> previous char\n");
+    log("| | M-f -> next word\n");
+    log("| | M-b -> previous word\n");
+    log("| | C-p -> previous line\n");
+    log("| | C-n -> next line\n");
+    log("| | C-a -> jump to beginning of line\n");
+    log("| | C-e -> jump to end of line\n");
+    log("| Editing:\n");
+    log("| | [ENTER] -> submit\n");
+    log("| | [TAB] -> insert 2 spaces at cursor");
+    log("| | C-j -> submit\n");
+    log("| | C-d -> delete char under cursor\n");
+    log("| | M-d -> delete word from cursor\n");
+    log("| Other:\n");
+    log("| | C-l -> clear screen\n");
+    log("| | C-c -> quit REPL\n");
 }
 
 static void
