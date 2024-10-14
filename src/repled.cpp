@@ -91,6 +91,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::string blue = "\033[94m";
     std::string green = "\033[32m";
     std::string gray = "\033[90m";
+    std::string red = "\033[31m";
     std::string underline = "\033[4m";
     std::string bold = "\033[1m";
     std::string italic = "\033[3m";
@@ -98,11 +99,10 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::string invert = "\033[7m";
     std::string noc = "\033[0m";
 
+    int local_braces = 0,
+        local_brackets = 0,
+        local_parens = 0;
     bool in_quote = false;
-
-    // Stacks to track unmatched symbols with their positions
-    std::vector<std::pair<char, size_t>> opening_braces;
-    std::vector<std::pair<char, size_t>> unmatched_closing;
 
     repled::clearln(line.size() + pad + prompt.size() + 50);
 
@@ -111,40 +111,51 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     size_t i = 0;
     std::string current_word;
     while (i < line.size()) {
-        // Handle opening symbols by pushing to stack
-        if (line[i] == '{' || line[i] == '(' || line[i] == '[')
-            opening_braces.push_back({line[i], i});
-        // Handle closing symbols by matching with stack
-        else if (line[i] == '}' || line[i] == ')' || line[i] == ']') {
-            if (!opening_braces.empty() &&
-                ((line[i] == '}' && opening_braces.back().first == '{') ||
-                 (line[i] == ')' && opening_braces.back().first == '(') ||
-                 (line[i] == ']' && opening_braces.back().first == '['))) {
-                // If the current closing symbol matches the last opening symbol, pop the stack
-                opening_braces.pop_back();
-            } else {
-                // If no matching opening symbol, add this to unmatched closing
-                unmatched_closing.push_back({line[i], i});
-            }
-        }
+        if (line[i] == '}')
+            ++local_braces;
+        else if (line[i] == '{')
+            --local_braces;
+        else if (line[i] == ']')
+            ++local_brackets;
+        else if (line[i] == '[')
+            --local_brackets;
+        else if (line[i] == ')')
+            ++local_parens;
+        else if (line[i] == '(')
+            --local_parens;
 
         // Handle a word boundary (space, quote, or single quote)
         if (isspace(line[i]) || line[i] == '"' || line[i] == '\'') {
             // If a word has been built, check if it's a keyword or type
             if (!current_word.empty()) {
-                if (is_keyword(current_word))
-                    std::cout << yellow << italic << bold << current_word;
-                else if (is_type(current_word))
-                    std::cout << blue << current_word;
-                else
-                    std::cout << noc << current_word;
+                if (is_keyword(current_word)) {
+                    if ((flags & __REPL_NOCOLOR) == 0)
+                        std::cout << yellow << italic << bold << current_word;
+                    else
+                        std::cout << current_word;
+                }
+                else if (is_type(current_word)) {
+                    if ((flags & __REPL_NOCOLOR) == 0)
+                        std::cout << blue << current_word;
+                    else
+                        std::cout << current_word;
+                }
+                else {
+                    if ((flags & __REPL_NOCOLOR) == 0)
+                        std::cout << noc << current_word;
+                    else
+                        std::cout << current_word;
+                }
                 current_word.clear();
             }
 
             // Handle string literals (double quotes)
             if (line[i] == '"') {
                 in_quote = true;
-                std::cout << green << line[i];
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << green << line[i];
+                else
+                    std::cout << line[i];
                 size_t j = i+1;
                 // Print the content inside the string literal
                 while (j < line.size() && line[j] != '"')
@@ -153,24 +164,32 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     in_quote = false;
                 if (j < line.size())
                     std::cout << line[j];
-                std::cout << noc;
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << noc;
                 i = j+1;
             }
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
-                std::cout << green << line[i];
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << green << line[i];
+                else
+                    std::cout << line[i];
                 size_t j = i+1;
                 // Print the content inside the character literal
                 while (j < line.size() && line[j] != '\'')
                     std::cout << line[j++];
                 if (j < line.size())
                     std::cout << line[j];
-                std::cout << noc;
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << noc;
                 i = j+1;
             }
             else {
                 // Print spaces or other non-alphabetic characters normally
-                std::cout << noc << line[i];
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << noc << line[i];
+                else
+                    std::cout << line[i];
                 ++i;
             }
         } else {
@@ -182,12 +201,24 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
     // Handle the last word in case the line ends without a space
     if (!current_word.empty()) {
-        if (is_keyword(current_word))
-            std::cout << yellow << current_word;
-        else if (is_type(current_word))
-            std::cout << blue << current_word;
-        else
-            std::cout << noc << current_word;
+        if (is_keyword(current_word)) {
+            if ((flags & __REPL_NOCOLOR) == 0)
+                std::cout << yellow << current_word;
+            else
+                std::cout << current_word;
+        }
+        else if (is_type(current_word)) {
+            if ((flags & __REPL_NOCOLOR) == 0)
+                std::cout << blue << current_word;
+            else
+                std::cout << current_word;
+        }
+        else {
+            if ((flags & __REPL_NOCOLOR) == 0)
+                std::cout << noc << current_word;
+            else
+                std::cout << current_word;
+        }
     }
 
     // If the line does not end with a newline, handle the unmatched braces
@@ -201,6 +232,49 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         std::cout << "\033[1E";
         repled::clearln(50);
 
+        std::string bracket_msg = "";
+        bool bracket_ok = true;
+
+        if (ss.braces-local_braces > 0) {
+            bracket_msg += "{x"+std::to_string(ss.braces-local_braces) + ' ';
+            bracket_ok = false;
+        }
+        else if (ss.braces-local_braces < 0) {
+            bracket_msg += "}x"+std::to_string(local_braces-ss.braces) + ' ';
+            bracket_ok = false;
+        }
+
+        if (ss.brackets-local_brackets > 0) {
+            bracket_msg += "[x"+std::to_string(ss.brackets-local_brackets)+" ";
+            bracket_ok = false;
+        }
+        else if (ss.brackets-local_brackets < 0) {
+            bracket_msg += "]x"+std::to_string(local_brackets-ss.brackets)+" ";
+            bracket_ok = false;
+        }
+
+        if (ss.parens-local_parens > 0) {
+            bracket_msg += "(x"+std::to_string(ss.parens-local_parens)+" ";
+            bracket_ok = false;
+        }
+        else if (ss.parens-local_parens < 0) {
+            bracket_msg += ")x"+std::to_string(local_parens-ss.parens)+" ";
+            bracket_ok = false;
+        }
+
+        if (bracket_ok) {
+            if ((flags & __REPL_NOCOLOR) == 0)
+                std::cout << noc << bold << dim << green << "< ok >" << noc << " ";
+            else
+                std::cout << "< ok > ";
+        }
+        else {
+            if ((flags & __REPL_NOCOLOR) == 0)
+                std::cout << noc << dim << invert << italic << "< " << bracket_msg << ">" << noc << " ";
+            else
+                std::cout << "< " << bracket_msg << "> ";
+        }
+
         std::string last_word = get_last_word(line);
         std::vector<std::pair<int, std::string>> closest = {};
         for (std::string &kw : autocomplete) {
@@ -212,14 +286,25 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             return p1.first < p2.first;
         });
 
-        std::cout << gray << "| ";
+        if ((flags & __REPL_NOCOLOR) == 0)
+            std::cout << gray << "| ";
+        else
+            std::cout << "| ";
         for (size_t i = 0; i < closest.size() && i < 7; ++i) {
             if (closest[i].first > 2)
                 break;
-            if (closest[i].first == 0)
-                std::cout << yellow << underline << closest[i].second << noc << gray << " | ";
-            else
-                std::cout << gray << closest[i].second << " | ";
+            if (closest[i].first == 0) {
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << yellow << underline << closest[i].second << noc << gray << " | ";
+                else
+                    std::cout << closest[i].second << " | ";
+            }
+            else {
+                if ((flags & __REPL_NOCOLOR) == 0)
+                    std::cout << gray << closest[i].second << " | ";
+                else
+                    std::cout << closest[i].second << " | ";
+            }
         }
 
         // Move the cursor back to the original line
@@ -446,6 +531,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
     int c = 0;
 
     bool ready = prompt[0] != '0' && !bypass;
+
 
     if (ready) {
         std::cout << prompt;
