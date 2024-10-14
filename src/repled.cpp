@@ -550,8 +550,10 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
 
         handle_jump_to_beginning_line(c, PAD, line, history);
     }
-    else
-        std::cout << prompt << std::flush;
+    else {
+        // std::cout << prompt << std::flush;
+        redraw_line(line, prompt, PAD-1, ss);
+    }
 
     while (1) {
         char ch = RI.get_char();
