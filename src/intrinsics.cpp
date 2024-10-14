@@ -751,6 +751,9 @@ static void
 __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream = nullptr) {
     if (stream == nullptr)
         stream = &std::cout;
+    // Clearing for the REPL
+    if ((flags & __REPL) != 0)
+        *stream << "\033[K" << "\r" << std::flush;
     *stream << param->to_cxxstring();
 }
 
@@ -804,6 +807,7 @@ std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_println(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                               std::shared_ptr<Ctx> &ctx,
                               Expr *expr) {
+
     (void)ctx;
     for (size_t i = 0; i < params.size(); ++i)
         __intrinsic_print(params[i]);

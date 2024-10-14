@@ -70,6 +70,8 @@
 #define FUNCS ":funcs"
 #define RESET ":reset"
 
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET}
+
 static std::string REPL_HIST = "";
 
 static size_t lineno = 0;
@@ -444,6 +446,7 @@ discard(repled::RawInput &ri, std::vector<std::string> &lines) {
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
+            ss.braces = ss.parens = ss.brackets = 0;
             lines.clear();
             break;
         }
@@ -473,8 +476,10 @@ show_vars(std::shared_ptr<Ctx> &ctx) {
         log("Nothing appropriate\n", gray);
 
     repled::clearln(0, true);
-    for (auto &v : vars)
+    for (auto &v : vars) {
+        repled::clearln(0, true);
         std::cout << v << std::endl;
+    }
 }
 
 static void
@@ -484,8 +489,8 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
     if (funcs.size() == 0)
         log("Nothing appropriate\n", gray);
 
-    repled::clearln(0, true);
     for (auto &v : funcs) {
+        repled::clearln(0, true);
         std::cout << v << std::endl;
     }
 }
@@ -574,6 +579,8 @@ std::shared_ptr<Ctx>
 repl::run(void) {
     try_clear_repl_history();
 
+    repled::init(CMD_OPTION_ASCPL);
+
     repled::RawInput ri;
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
@@ -615,8 +622,7 @@ repl::run(void) {
         else {
             std::cout << std::endl;
         }
-
-        std::cout << "\033[K";
+        repled::clearln(0, true);
 
         std::string combined = "";
 
@@ -652,7 +658,9 @@ repl::run(void) {
                         (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
                         std::cout << " -> ";
                         gray();
-                        std::cout << earl::value::type_to_str(val->type()) << std::endl;
+                        std::cout << earl::value::type_to_str(val->type())
+                                  << std::string(std::string("[Enter to Evaluate]").size(), ' ')
+                                  << std::endl;
                         noc();
                     }
                 }

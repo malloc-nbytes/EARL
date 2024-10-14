@@ -36,6 +36,8 @@
 static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 
+static std::vector<std::string> autocomplete = {};
+
 repled::SS::SS() : braces(0), brackets(0), parens(0) {}
 
 repled::RawInput::RawInput() {
@@ -96,6 +98,8 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     std::string invert = "\033[7m";
     std::string noc = "\033[0m";
 
+    bool in_quote = false;
+
     // Stacks to track unmatched symbols with their positions
     std::vector<std::pair<char, size_t>> opening_braces;
     std::vector<std::pair<char, size_t>> unmatched_closing;
@@ -139,31 +143,30 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
             // Handle string literals (double quotes)
             if (line[i] == '"') {
+                in_quote = true;
                 std::cout << green << line[i];
-                size_t j = i + 1;
+                size_t j = i+1;
                 // Print the content inside the string literal
-                while (j < line.size() && line[j] != '"') {
+                while (j < line.size() && line[j] != '"')
                     std::cout << line[j++];
-                }
-                if (j < line.size()) {
+                if (j < line.size() && line[j] == '"')
+                    in_quote = false;
+                if (j < line.size())
                     std::cout << line[j];
-                }
                 std::cout << noc;
-                i = j + 1;
+                i = j+1;
             }
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
                 std::cout << green << line[i];
-                size_t j = i + 1;
+                size_t j = i+1;
                 // Print the content inside the character literal
-                while (j < line.size() && line[j] != '\'') {
+                while (j < line.size() && line[j] != '\'')
                     std::cout << line[j++];
-                }
-                if (j < line.size()) {
+                if (j < line.size())
                     std::cout << line[j];
-                }
                 std::cout << noc;
-                i = j + 1;
+                i = j+1;
             }
             else {
                 // Print spaces or other non-alphabetic characters normally
@@ -188,7 +191,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     }
 
     // If the line does not end with a newline, handle the unmatched braces
-    if (!newline) {
+    if (!newline && !in_quote) {
         size_t cursor_end_position = line.size() + pad;
 
         // Move the cursor to the end of the current line
@@ -199,9 +202,8 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         repled::clearln(50);
 
         std::string last_word = get_last_word(line);
-        std::vector<std::string> kwds = COMMON_EARLKW_ASCPL;
         std::vector<std::pair<int, std::string>> closest = {};
-        for (std::string kw : kwds) {
+        for (std::string &kw : autocomplete) {
             int rank = levenshtein_distance(last_word, kw);
             closest.push_back(std::make_pair(rank, kw));
         }
@@ -212,9 +214,12 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
         std::cout << gray << "| ";
         for (size_t i = 0; i < closest.size() && i < 7; ++i) {
-            std::cout << closest[i].second << " |";
-            if (i < closest.size()-1 && i < 7)
-                std::cout << ' ';
+            if (closest[i].first > 2)
+                break;
+            if (closest[i].first == 0)
+                std::cout << yellow << underline << closest[i].second << noc << gray << " | ";
+            else
+                std::cout << gray << closest[i].second << " | ";
         }
 
         // Move the cursor back to the original line
@@ -523,8 +528,10 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 }
             }
         }
-        else if (ch == 0x0C)
+        else if (ch == 0x0C) { // ctrl+l
             handle_clear_screen(prompt, c, PAD, line, ss);
+            handle_jump_to_beginning_line(c, PAD, line, history);
+        }
         else if (ch == 0x01) // ctrl+a
             handle_jump_to_beginning_line(c, PAD, line, history);
         else if (ch == 0x02) // ctrl+b
@@ -566,3 +573,17 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
 
     return line;
 }
+
+void
+repled::init(std::vector<std::string> cmd_options) {
+    std::vector<std::string> attrs = COMMON_EARLATTR_ASCPL;
+    for (size_t i = 0; i < KEYWORDS.size(); ++i)
+        autocomplete.push_back(KEYWORDS[i]);
+    for (size_t i = 0; i < TYPES.size(); ++i)
+        autocomplete.push_back(TYPES[i]);
+    for (size_t i = 0; i < attrs.size(); ++i)
+        autocomplete.push_back(attrs[i]);
+    for (size_t i = 0; i < cmd_options.size(); ++i)
+        autocomplete.push_back(cmd_options[i]);
+}
+

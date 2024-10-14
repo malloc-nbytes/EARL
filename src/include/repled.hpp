@@ -64,6 +64,7 @@ namespace repled {
     void handle_right_arrow(int &c, int pad, std::string &line, std::vector<std::string> &lines);
     void handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines);
     std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss);
+    void init(std::vector<std::string> cmd_options);
 };
 
 #endif // REPLED_H
