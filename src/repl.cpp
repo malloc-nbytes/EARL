@@ -70,14 +70,14 @@
 #define FUNCS ":funcs"
 #define RESET ":reset"
 
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET}
+
 static std::string REPL_HIST = "";
 
 static size_t lineno = 0;
 static std::vector<std::string> HIST = {};
 
-static int g_brace = 0;
-static int g_bracket = 0;
-static int g_paren = 0;
+static repled::SS ss;
 
 static void
 try_clear_repl_history() {
@@ -180,6 +180,7 @@ noc(void) {
 
 static void
 log(std::string msg, void(*color)(void) = nullptr) {
+    repled::clearln(0, true);
     blue();
     std::cout << "[EARL] ";
     noc();
@@ -216,22 +217,47 @@ split_on_newline(std::string &line) {
 
 static void
 help(void) {
-    log(HELP " -> show this message\n");
-    log(QUIT " -> quit the session\n");
-    log(VARS " -> show current variables in scope\n");
-    log(FUNCS " -> show current functions in scope\n");
-    log(CLEAR " -> clear the screen\n");
-    log(IMPORT " [files...] -> import local EARL files\n");
-    log(RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
-    log(EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
-    log(LIST_ENTRIES " -> list all entries in the current session\n");
-    log(DISCARD " -> discard the current session\n");
-    log(RESET " -> reset all identifiers\n");
+    log("Command Sequences:\n");
+    log("| " HELP " -> show this message\n");
+    log("| " QUIT " -> quit the session\n");
+    log("| " VARS " -> show current variables in scope\n");
+    log("| " FUNCS " -> show current functions in scope\n");
+    log("| " CLEAR " -> clear the screen\n");
+    log("| " IMPORT " [files...] -> import local EARL files\n");
+    log("| " RM_ENTRY " [lineno...] -> remove entries (previous if blank)\n");
+    log("| " EDIT_ENTRY " [lineno...] -> edit previous entries (previous if blank)\n");
+    log("| " LIST_ENTRIES " -> list all entries in the current session\n");
+    log("| " DISCARD " -> discard the current session\n");
+    log("| " RESET " -> reset all identifiers\n");
+    log("Controls: (C = [CONTROL], M = [META] (ALT))\n");
+    log("| Navigation:\n");
+    log("| | [UP] -> previous line\n");
+    log("| | [DOWN] -> next line\n");
+    log("| | [LEFT] -> previous char\n");
+    log("| | [RIGHT] -> next char\n");
+    log("| | C-f -> next char\n");
+    log("| | C-b -> previous char\n");
+    log("| | M-f -> next word\n");
+    log("| | M-b -> previous word\n");
+    log("| | C-p -> previous line\n");
+    log("| | C-n -> next line\n");
+    log("| | C-a -> jump to beginning of line\n");
+    log("| | C-e -> jump to end of line\n");
+    log("| Editing:\n");
+    log("| | [ENTER] -> submit\n");
+    log("| | [TAB] -> insert 2 spaces at cursor");
+    log("| | C-j -> submit\n");
+    log("| | C-d -> delete char under cursor\n");
+    log("| | M-d -> delete word from cursor\n");
+    log("| Other:\n");
+    log("| | C-l -> clear screen\n");
+    log("| | C-c -> quit REPL\n");
 }
 
 static void
 import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (args.size() == 0) {
+        repled::clearln(0, true);
         log("No files supplied\n");
         return;
     }
@@ -241,14 +267,15 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
         auto src_lines = split_on_newline(src);
         lineno += src_lines.size();
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
+        repled::clearln(0, true);
         log("Imported " + f + "\n", green);
         noc();
     }
 }
 
 static std::string
-get_special_input(repled::RawInput &ri) {
-    auto line = repled::getln(ri, ">>> ", HIST, true);
+get_special_input(repled::RawInput &ri, repled::SS &ss) {
+    auto line = repled::getln(ri, ">>> ", HIST, true, ss);
     std::cout << std::endl;
     return line;
 }
@@ -257,13 +284,24 @@ static void
 analyze_new_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': ++g_brace; break;
-        case '}': --g_brace; break;
-        case '[': ++g_bracket; break;
-        case ']': --g_bracket; break;
-        case '(': ++g_paren; break;
-        case ')': --g_paren; break;
-        case ';': break;
+        case '{': {
+            ss.braces++;
+        } break;
+        case '}': {
+            ss.braces--;
+        } break;
+        case '[':{
+            ss.brackets++;
+        } break;
+        case ']': {
+            ss.brackets--;
+        } break;
+        case '(': {
+            ss.parens++;
+        } break;
+        case ')': {
+            ss.parens--;
+        } break;
         default: break;
         }
     }
@@ -273,12 +311,12 @@ static void
 manage_removed_or_edited_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': --g_brace; break;
-        case '}': ++g_brace; break;
-        case '[': --g_bracket; break;
-        case ']': ++g_bracket; break;
-        case '(': --g_paren; break;
-        case ')': ++g_paren; break;
+        case '{': ss.braces--; break;
+        case '}': ss.braces++; break;
+        case '[': ss.brackets--; break;
+        case ']': ss.brackets++; break;
+        case '(': ss.parens--; break;
+        case ')': ss.parens++; break;
         }
     }
 }
@@ -286,6 +324,7 @@ manage_removed_or_edited_line(std::string &line) {
 static void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
+        repled::clearln(0, true);
         log("No previous entry exists\n");
         return;
     }
@@ -302,6 +341,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         for (auto &arg : args) {
             int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
             if (lnum < 0 || lnum >= (int)lines.size()) {
+                repled::clearln(0, true);
                 log("Line number is out of range for session\n");
                 return;
             }
@@ -312,8 +352,10 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
         }
     }
 
+    repled::clearln(0, true);
     log("Removed:\n");
     for (auto &h : hist) {
+        repled::clearln(0, true);
         red();
         std::cout << h;
         noc();
@@ -329,22 +371,27 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
         for (auto arg : args) {
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
+                repled::clearln(0, true);
                 log("Line number is out of range for session\n");
                 return;
             }
+            repled::clearln(0, true);
             log("Editing [", gray);
             yellow();
             std::cout << lines.at(lnum);
             gray();
             std::cout << "]" << std::endl;
             noc();
-            std::string newline = get_special_input(ri);
+            std::string newline = get_special_input(ri, ss);
             if (newline == QUIT) {
+                repled::clearln(0, true);
                 log("Quitting session editor\n", gray);
                 return;
             }
-            if (newline == SKIP)
+            if (newline == SKIP) {
+                repled::clearln(0, true);
                 log("Skipping current selection\n", gray);
+            }
             else if (newline == "") {
                 manage_removed_or_edited_line(lines.at(lnum));
                 lines.erase(lines.begin()+lnum);
@@ -361,13 +408,14 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
             log("No lines to edit\n", gray);
             return;
         }
+        repled::clearln(0, true);
         log("Editing [", gray);
         yellow();
         std::cout << lines.back();
         gray();
         std::cout << "]" << std::endl;
         noc();
-        std::string newline = get_special_input(ri);
+        std::string newline = get_special_input(ri, ss);
         manage_removed_or_edited_line(lines.at(lines.size()-1));
         if (newline == "")
             lines.erase(lines.end()-1);
@@ -387,10 +435,12 @@ clearscrn(void) {
 static void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
+        repled::clearln(0, true);
         log("Nothing appropriate\n", gray);
         return;
     }
     for (size_t i = 0; i < lines.size(); ++i) {
+        repled::clearln(0, true);
         green();
         std::cout << i << ": ";
         std::cout << lines[i];
@@ -416,10 +466,11 @@ discard(repled::RawInput &ri, std::vector<std::string> &lines) {
     std::string line = "";
     while (true) {
         red();
-        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true);
+        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true, ss);
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
+            ss.braces = ss.parens = ss.brackets = 0;
             lines.clear();
             break;
         }
@@ -448,8 +499,11 @@ show_vars(std::shared_ptr<Ctx> &ctx) {
     if (vars.size() == 0)
         log("Nothing appropriate\n", gray);
 
-    for (auto &v : vars)
+    repled::clearln(0, true);
+    for (auto &v : vars) {
+        repled::clearln(0, true);
         std::cout << v << std::endl;
+    }
 }
 
 static void
@@ -459,8 +513,10 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
     if (funcs.size() == 0)
         log("Nothing appropriate\n", gray);
 
-    for (auto &v : funcs)
+    for (auto &v : funcs) {
+        repled::clearln(0, true);
         std::cout << v << std::endl;
+    }
 }
 
 static void
@@ -510,8 +566,6 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
-    // if (line.size() != 0 && line[0] == '$')
-    //     bash(line);
     if (lst[0] == RM_ENTRY)
         rm_entries(args, lines);
     else if (lst[0] == EDIT_ENTRY)
@@ -523,6 +577,9 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == CLEAR)
         clearscrn();
     else if (lst[0] == QUIT) {
+        std::cout << "\033[1E";
+        repled::clearln(50);
+        std::cout << "\033[A";
         ri.~RawInput();
         exit(0);
     }
@@ -546,6 +603,8 @@ std::shared_ptr<Ctx>
 repl::run(void) {
     try_clear_repl_history();
 
+    repled::init(CMD_OPTION_ASCPL);
+
     repled::RawInput ri;
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
@@ -559,9 +618,9 @@ repl::run(void) {
         bool ready = false;
         std::vector<std::string> lines = {};
         while (true) {
-            bool closed_braces = !g_brace && !g_bracket && !g_paren;
+            bool closed_braces = !ss.braces && !ss.brackets && !ss.parens;
 
-            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces);
+            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces, ss);
             analyze_new_line(line);
 
             if (line == "" && closed_braces)
@@ -578,13 +637,16 @@ repl::run(void) {
                 }
                 ++lineno;
                 std::cout << std::endl;
+                std::cout << "\033[K";
             }
         }
 
         if (lines.size() != 0)
             repled::clearln(lines.back().size());
-        else
+        else {
             std::cout << std::endl;
+        }
+        repled::clearln(0, true);
 
         std::string combined = "";
 
@@ -614,12 +676,15 @@ repl::run(void) {
                 try {
                     auto val = Interpreter::eval_stmt(stmt, ctx);
                     if (val) {
+                        repled::clearln(0, true);
                         std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
                         green();
                         (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
                         std::cout << " -> ";
                         gray();
-                        std::cout << earl::value::type_to_str(val->type()) << std::endl;
+                        std::cout << earl::value::type_to_str(val->type())
+                                  << std::string(std::string("[Enter to Evaluate]").size(), ' ')
+                                  << std::endl;
                         noc();
                     }
                 }
