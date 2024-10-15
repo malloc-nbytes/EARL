@@ -266,7 +266,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         }
         else {
             if ((flags & __REPL_NOCOLOR) == 0)
-                std::cout << noc << dim << invert << italic << "< " << bracket_msg << ">" << noc << " ";
+                std::cout << noc << dim << italic << "< " << bracket_msg << ">" << noc << " ";
             else
                 std::cout << "< " << bracket_msg << "> ";
         }
