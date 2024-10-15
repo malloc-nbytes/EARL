@@ -245,7 +245,7 @@ help(void) {
     log("| | C-e -> jump to end of line\n");
     log("| Editing:\n");
     log("| | [ENTER] -> submit\n");
-    log("| | [TAB] -> insert 2 spaces at cursor");
+    log("| | [TAB] -> insert 2 spaces at cursor\n");
     log("| | C-j -> submit\n");
     log("| | C-d -> delete char under cursor\n");
     log("| | M-d -> delete word from cursor\n");
