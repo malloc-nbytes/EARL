@@ -962,6 +962,21 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
             return ER(value, ERT::Literal);
         }
 
+        if (right_er.ctx->type() == CtxType::World) {
+            auto worldctx = dynamic_cast<WorldCtx *>(right_er.ctx.get());
+            if (worldctx->class_is_defined(right_er.id)) {
+                auto class_stmt = worldctx->class_get(right_er.id);
+                if ((class_stmt->m_attrs & static_cast<uint32_t>(Attr::Pub)) == 0) {
+                    std::string msg = "class `"+right_er.id+"` in module `"+left_id+"` does not contain the @pub attribute";
+                    Err::err_wexpr(left_ident);
+                    throw InterpreterException(msg);
+                }
+                return ER(value, ERT::Literal);
+            }
+        }
+
+        // Check if it is a class identifier
+
         // It must be an enum
         assert(value->type() == earl::value::Type::Enum);
         if (!dynamic_cast<earl::value::Enum *>(value.get())->is_pub()) {

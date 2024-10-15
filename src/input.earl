@@ -1,34 +1,6 @@
 module Main
 
-import "std/toml.earl"; as toml
-import "std/utils.earl"; as utils
+import "clap/clap.earl"; as clap
 
-let git_dirs = [];
-
-@world fn get(link) {
-    println(f"dowloading: {link}");
-
-    let tmp_file = "__earl-package." + str(utils::iota());
-    $f"git clone {link} --depth=1 {tmp_file}";
-    $f"ls {tmp_file}/tmp.toml" |> let config_file;
-
-    if config_file == "" {
-        panic("no TOML file found!");
-    }
-
-    println("config_file");
-    exit(0);
-
-    let config = toml::parse("tmp.toml");
-    toml::dump(config);
-
-    if config["deps"] {
-        foreach l in config["deps"].unwrap() {
-            get(l);
-        }
-    }
-}
-
-get("");
-
+println(help(clap::Arg));
 
