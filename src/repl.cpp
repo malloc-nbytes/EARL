@@ -677,6 +677,12 @@ repl::run(void) {
                     auto val = Interpreter::eval_stmt(stmt, ctx);
                     if (val) {
                         repled::clearln(0, true);
+
+                        // Clear next line
+                        std::cout << "\033[1E";
+                        repled::clearln(0);
+                        std::cout << "\033[A";
+
                         std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
                         green();
                         (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
