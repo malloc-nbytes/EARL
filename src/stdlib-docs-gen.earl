@@ -544,7 +544,7 @@ fn ready_input(fp) {
 }
 
 fn main() {
-    let stdlib = System::ls("std/");
+    let stdlib = System::ls("../src/std/");
     let autogen = "";
     let docsfp = "../EARL-language-reference.org";
     let modules = [];

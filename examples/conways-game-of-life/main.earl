@@ -8,6 +8,7 @@ import "std/list.earl";
 let grid, ROWS, COLS = ([], 10, 10);
 
 @world fn show_grid() {
+    $"clear";
     foreach @ref col in grid {
         println(col);
     }
