@@ -2,7 +2,8 @@
 #+DESCRIPTION: The "ins" and "outs" of EARL
 #+AUTHOR: Zachary Haskins (malloc-nbytes)
 #+EMAIL: zdhdev@yahoo.com
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+SETUPFILE: ./misc/theme-readtheorg.setup
 #+OPTIONS: num:nil
 
 
@@ -63,7 +64,7 @@ For more information on =module Main=, see [[Modules]].
 * Typing
 
 #+begin_quote
-EARL is "gradually typed". This means that there are no explicit types, rather
+EARL is "gradually typed". This means that explicit types are not required, rather
 the type of a variable is the type of the right hand side expression. Values are
 also not dynamic, so once a variable has a type, it will always have that type. If
 dynamic types are desired, see the =option= datatype in [[Datatypes][Datatypes]].
@@ -75,6 +76,24 @@ let z = [1, 2, 3] # z is a list
 
 x = "not allowed"; # results in an error because `x` is an integer.
 #+end_example
+
+If explicit types are desired, here are the following types that can be used:
+1. int
+2. float
+3. real \rightarrow means int or float
+4. char
+5. str
+6. bool
+7. option
+8. file
+9. tuple
+10. list
+11. closure
+12. slice
+13. dictionary
+14. type
+15. unit
+16. any
 #+end_quote
 
 * REPL
@@ -88,14 +107,14 @@ code that is provided.
 
 When in the REPL, typing =:= <cmd> will run a REPL command.
 It will not evaluate any code, but you can use it to show the current session,
-edit lines that have already been typed, remove lines, and more. Typing =$= <cmd> will issue
-a shell command. To view more information, launch the REPL and type =:help=.
+edit lines that have already been typed, remove lines, and more.
+To view more information, launch the REPL and type =:help=.
 #+end_quote
 
 ** REPL Programming
 
 #+begin_quote
-If a line that is typed does not start with =:= or =$=, it will be
+If a line that is typed does not start with =:=, it will be
 interpreted as code. Upon hitting =<enter>=, it will not immediately
 evaluate the code. It only does code evaluation when an empty line is processed.
 Because of this, you can code in _sessions_. Starting a new session does not mean
@@ -115,10 +134,14 @@ This means that if =1 + 2;= is typed into the REPL followed by =<enter><enter>=,
 
 *Note*: The line numbers are provided from the REPL and you do not type these in.
 
+*Note*: Some things will vanish while using the REPL to keep everything
+clean looking, but I am unable to demonstrate it in text, so it will
+be more verbose than it actually is i.e., (=[ENTER TO EVAL]=).
+
 #+begin_example
 0: let x = 1;
 1: x;
-2:
+2:                      [ENTER TO EVAL]
 <unit> -> unit
 1 -> int
 0:
@@ -131,10 +154,10 @@ Starting a new session does not remove variables that were created. That means t
 
 #+begin_example
 0: let x = 1;
-1:
+1:                      [ENTER TO EVAL]
 <unit> -> unit
 0: x;
-1:
+1:                      [ENTER TO EVAL]
 1 -> int
 0:
 #+end_example
@@ -143,7 +166,7 @@ If you just want to do some quick math and use EARL as a calculator, here is ano
 
 #+begin_example
 0: -(3 * (0.5 / float(2)) - 1);
-1:
+1:                      [ENTER TO EVAL]
 0.25 -> float
 0:
 #+end_example
@@ -164,19 +187,19 @@ For example:
 5:      return fib(n-1)+fib(n-2);
 6: }
 7: class Point [x, y] {
-8:      @pub x = x;
+8:      @pub let x = x;
 9:
-10:     @pub y = y;
+10:     @pub let y = y;
 11:
 12:     @pub fn sumxy() {
-13:             return this.x + this.y;
+13:         return this.x + this.y;
 14:     }
 15: }
-16:
+16:                      [ENTER TO EVAL]
 <unit> -> unit
 <unit> -> unit
 0: Point(fib(10), fib(15));
-1:
+1:                      [ENTER TO EVAL]
 <Class Point { y = 610, x = 55 }> -> class
 0:
 #+end_example
@@ -192,6 +215,15 @@ the REPL.
 
 *Note*: The REPL saves your history and stores it in =~/.earl_history= and will be cleared every time
 it hits 1MB in file size.
+
+*Note*: You can use left and right arrow keys to navigate back and forth in the text and the up and down arrows
+to navigate through history. The stored history in =~/.earl_history= is what initializes this, so as soon
+as you launch the REPL, it gives you the ability to hit the up arrow to get code from other sessions.
+
+*Note*: You can also use Emacs keybindings such as =C-f=, =C-b=, =C-p=, =C-n=, =M-f=, =M-b=, etc.
+
+*Note*: Hitting =<tab>= will insert two spaces.
+
 #+end_quote
 
 * Keywords
@@ -205,6 +237,7 @@ it hits 1MB in file size.
 | while \rightarrow [[While Loops]]                              |
 | for \rightarrow [[For Loops]]                                  |
 | foreach \rightarrow [[Foreach Loops]]                          |
+| loop \rightarrow [[Forever Loops]]                             |
 | in \rightarrow [[For Loops]], [[Foreach Loops]]                    |
 | to \rightarrow [[For Loops]]                                   |
 | break \rightarrow [[While Loops]], [[For Loops]], [[Foreach Loops]]    |
@@ -220,10 +253,22 @@ it hits 1MB in file size.
 | @ref \rightarrow [[Attributes]]                                |
 | @pub \rightarrow [[Attributes]]                                |
 | @world \rightarrow [[Attributes]]                              |
+| @const \rightarrow [[Attributes]]                              |
+| @experimental \rightarrow [[Attributes]]                       |
 | return                                                     |
 | true                                                       |
 | false                                                      |
 | none                                                       |
+#+end_quote
+
+* Builtin Identifiers
+
+#+begin_quote
+These are identifiers that are built into the interpreter. The ones that
+exist at the moment are:
+
+- =__FILE__= \rightarrow Get the current filename as a =str=.
+- =__FUNC__= \rightarrow Get the current function name as a =str=.
 #+end_quote
 
 * Binary Operations
@@ -234,24 +279,26 @@ are able to use the binary operations. This does not mean that if an
 entry has (=int=, =list=), that you can add an integer to a list. Rather, it is
 describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=).
 
-| Symbol | Datatypes                                                                          | Description                      |
-|--------+------------------------------------------------------------------------------------+----------------------------------|
-| +      | =int=, =float=, =list=, =str=                                                      | Adds the elements together       |
-| -      | =int=, =float=                                                                     | Subtracts the elements           |
-| *      | =int=, =float=                                                                     | Multiplies the elements together |
-| ///    | =int=, =float=                                                                     | Divides the elements             |
-| %      | =int=                                                                              | Produces the modulo              |
-| **     | =int=, =float=                                                                     | Produces the power               |
-| >      | =int=, =float=                                                                     | Greater than                     |
-| <      | =int=, =float=                                                                     | Less than                        |
-| >=     | =int=, =float=                                                                     | Greater than or equal to         |
-| <=     | =int=, =float=                                                                     | Less than or equal to            |
-| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Equal to                         |
-| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit= | Not equal to                     |
-| &&     | =bool=, =option=                                                                   | Logical AND                      |
-| `&     | =int=                                                                              | Bitwise AND (backtick needed)    |
-| `~     | =int=                                                                              | Bitwise NOT (backtick needed)    |
-| `^     | =int=                                                                              | Bitwise XOR (backtick needed)    |
+| Symbol | Datatypes                                                                                  | Description                      |
+|--------+--------------------------------------------------------------------------------------------+----------------------------------|
+| +      | =int=, =float=, =list=, =str=                                                              | Adds the elements together       |
+| -      | =int=, =float=                                                                             | Subtracts the elements           |
+| *      | =int=, =float=                                                                             | Multiplies the elements together |
+| ///    | =int=, =float=                                                                             | Divides the elements             |
+| %      | =int=                                                                                      | Produces the modulo              |
+| **     | =int=, =float=                                                                             | Produces the power               |
+| >      | =int=, =float=, =time=                                                                     | Greater than                     |
+| <      | =int=, =float=, =time=                                                                     | Less than                        |
+| >=     | =int=, =float=, =time=                                                                     | Greater than or equal to         |
+| <=     | =int=, =float=, =time=                                                                     | Less than or equal to            |
+| ==     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit=, =time= | Equal to                         |
+| !=     | =bool=, =int=, =str=, =float=, =char=, =list=, =option=, =tuple=, =TypeKW=, =unit=, =time= | Not equal to                     |
+| &&     | =bool=, =option=                                                                           | Logical AND                      |
+| <<     | =int=                                                                                      | Bit shift left                   |
+| >>     | =int=                                                                                      | Bit shift right                  |
+| `&     | =int=                                                                                      | Bitwise AND (backtick needed)    |
+| `~     | =int=                                                                                      | Bitwise NOT (backtick needed)    |
+| `^     | =int=                                                                                      | Bitwise XOR (backtick needed)    |
 =||=, =bool=, =option= \rightarrow Logical OR (this had to be separate to not misformat the table above)
 
 =`|= Bitwise OR (backtick needed)
@@ -263,11 +310,11 @@ describing that the operator works for (=int= <op> =int=) or (=list= <op> =list=
 ** Grammar
 
 #+begin_quote
-=let= <id> = /expr/;
+=let= <id> ?(: <type>) = /expr/;
 
 or
 
-=let= <id0>, <id1>, <id2>, ..., <idN> = /tuple/
+=let= <id0> ?(: <type>), <id1> ?(: <type>), <id2> ?(: <type>), ..., <idN> ?(: <type>) = /tuple/
 
 where |tuple| $=$ number of ids.
 #+end_quote
@@ -276,11 +323,12 @@ where |tuple| $=$ number of ids.
 
 #+begin_example
 let k = 1;
-let x = func(k);
+let x: int = func(k);
 let y = [1,2,3];
-let z = (0..10).rev().filter(|x| { return x % 2 == 0; });
+let z: list = (0..10).rev().filter(|x| { return x % 2 == 0; });
 
-let a, b, c = (1, 2, 3);
+let x, y, z = ('a', none, false);
+let a: int, b: int, c: real = (1, 2, 3);
 let s = (1, 2);
 let k, j = s;
 #+end_example
@@ -442,6 +490,63 @@ true
 For =unwrap()=, see =unwrap= in [[Member Intrinsics]].
 #+end_quote
 
+* Bash Commands
+
+#+begin_quote
+You can use BASH commands directly in EARL source code, and
+there are three different ways to do this:
+1. by just having the embed bash.
+2. by piping the output into a new variable
+3. by piping the output into an existing variable/location.
+
+*Note*: For convenience, if a bash command returns a string of size 1
+that is a space, newline, tab etc, EARL will cut those out. This can be disabled
+using the =--no-sanitize-pipes= flag.
+#+end_quote
+
+** Grammar
+
+#+begin_quote
+=$= <expr> =;=
+#+end_quote
+
+or
+
+#+begin_quote
+*(<attr>) =$= <expr> =|>= =let= <id> =;=
+#+end_quote
+
+or
+
+#+begin_quote
+=$= <expr> =|>= <expr> =;=
+#+end_quote
+
+** Examles
+
+#+begin_example
+# Output goes directly to stdout
+$"ls -lah";
+
+# Output goes directly to stdout
+let cmd = "echo \"hello world\n\"";
+$cmd;
+
+$"ps aux | grep earl" |> let grepped;
+println(grepped); // output of the bash command.
+
+@pub $"ps aux" |> let procs;
+println(procs);
+
+let x = "";
+$"whoami" |> x;
+println(x);
+
+let lst = [""];
+$"ls" |> lst[0];
+println(lst);
+#+end_example
+
 * While Loops
 
 #+begin_quote
@@ -506,17 +611,20 @@ for i in len(lst)-1 to 0 {
 * Foreach Loops
 
 #+begin_quote
-Foreach loops take a list, string, or tuple and will iterate over the elements.
+Foreach loops take a list, string, tuple, or a dictionary and will iterate over the elements.
 The most common way to use these loops is with a =range= (see [[Ranges][Ranges]]). Also, the iterator
 (usually the variable labeled as $i$), can be set as a reference (see [[Attributes]]) to the expression.
 This means that $i$ will be take the reference of each iterated value in the list and can modify it directly
 (see /ref example/ below).
+
+You can also destructure the value being enumerated over by providing more ids.
+This is also true for dictionaries (see dictionary example below).
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=foreach= ?(=@= =ref=) <id> =in= /expr/ *{* [stmt] *}*
+=foreach= * (=@= [ =ref= | =const= ]) <id> * (=,= <id>) =in= /expr/ *{* [stmt] *}*
 #+end_quote
 
 ** Examples
@@ -539,12 +647,22 @@ foreach i in 0..len(iterable) {
     print(i);
 } # prints 012
 
+foreach i, j in [(1,2), (3,4), (5,6)] {
+    print(i, ' ', j);
+}
+
+# DICTIONARY EXAMPLE
+let dict = {"foo": 1, "bar": true, "baz": 3.2};
+foreach key, value in dict {
+    print(f"key: {key}, value: {value}");
+}
+
 foreach @ref i in iterable { # REF EXAMPLE
     i = 9;
 }
 println(iterable); # prints [9, 9, 9]
 
-foreach i in "foo" {
+foreach @const @ref i in "foo" {
     print(i);
 } # prints foo
 
@@ -558,6 +676,36 @@ foreach i in s {
 } # prints bar
 #+end_example
 
+* Forever Loops
+
+#+begin_quote
+The point of Forever loops is in their name, they will loop forever until
+manually breaking out of them.
+#+end_quote
+
+** Grammar
+
+#+begin_quote
+=loop= *{* [stmt] *}*
+#+end_quote
+
+** Examples
+
+#+begin_example
+loop {
+    println("foo");
+} # will never end
+
+let i = 0;
+loop {
+    if i == 5 { break; }
+}
+
+loop {
+    if i == 10 { return; }
+}
+#+end_example
+
 * Function Definitions
 
 #+begin_quote
@@ -567,22 +715,32 @@ This is how to create a function. The =@world=, =@pub= and =@ref= are attributes
 ** Grammar
 
 #+begin_quote
-*( =@= [ =pub= | =world= ])
+*(<attr>)
 
-=fn= <id> *(* [ * ( =@ref= | =@const= ) <id> ] *)* *{* [stmt] *}*
+=fn= <id> *(* [ * ( =@ref= | =@const= ) <id> ?(: <type>) ] *)* ?(: <type>)  *{* [stmt] *}*
 #+end_quote
 
 ** Examples
 
 #+begin_example
 @world @pub
-fn func1(@ref x, y, @ref @const z) {
-    ...
+fn func1(@ref x, y: int, @ref @const z: real): real {
+    x += 9; # x will be modified also outside of this function because of @ref
+    return x + y + z;
 }
 
 fn func2() {
-    ...
+    return 1;
 }
+
+fn rev(@ref lst: list): unit {
+    for i in 0 to len(lst)/2 {
+        let t = lst[i];
+        lst[len(lst)-i-1] = lst[i];
+        lst[len(lst)-i-1] = t;
+    }
+}
+
 #+end_example
 
 * Imports
@@ -603,24 +761,34 @@ in =/usr/local/=. tl;dr make sure to put "std/" before the filename if using the
 When importing, a depth can be specified. Use =full=
 if you want all public elements from the file (enums, functions, variables, classes, etc.),
 or =almost= if you only desire public variables and enums. If none is provided, =full= will be used by default.
+
+If the module name of the file that is being imported is not known, or it is undesired, you
+can rename it using the =as= keyword followed by some identifier.
 #+end_quote
 
 ** Grammar
 
 #+begin_quote
-=import= "filepath" ?(=full= | =almost=)
+=import= <expr> =;= ?(=full= | =almost=) ?( =as= <identifier>)
 #+end_quote
 
 ** Examples
 
 #+begin_example
 # stdlib imports
-import "std/list.earl" full
-import "std/math.earl" # uses `full`
-import "std/utils.earl" almost
+import "std/list.earl"; full
+
+import "std/math.earl";       # uses `full` by default
+
+# this module can now be accessed by
+# Utils:: or utl::
+import "std/utils.earl"; almost as utl
+
 
 # local imports
-import "my-local-file.earl" almost
+import env("HOME")+"/my-file.earl"; full as my_file
+
+import "my-local-file.earl"; as local
 #+end_example
 
 * Modules
@@ -684,12 +852,13 @@ let s = MyMath::sum(1, 2);
 #+begin_quote
 Attributes embeds meta information into identifiers. You can have none, one, or multiple.
 
-| Name     | Variables | Functions | Classes       | Enumerations  | Description                                                  |
-|----------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
-| =@pub=   | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
-| =@world= | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
-| =@ref=   | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
-| =@const= | YES       | NO        | NO            | NO            | Declares the variable as constant                            |
+| Name            | Variables | Functions | Classes       | Enumerations  | Description                                                  |
+|-----------------+-----------+-----------+---------------+---------------+--------------------------------------------------------------|
+| =@pub=          | YES       | YES       | YES           | YES           | Makes the identifier available to other files                |
+| =@world=        | NO        | YES       | UNIMPLEMENTED | UNIMPLEMENTED | The identifier closes in the world scope                     |
+| =@ref=          | YES       | NO ***    | NO            | NO            | Declares the variable to be a reference (see the note below) |
+| =@const=        | YES       | NO        | NO            | NO            | Declares the variable as constant                            |
+| =@experimental= | YES       | YES       | YES           | YES           | Shows an `experimental` warning once upon use                |
 
 *NOTE:* =@ref= can be used in a function parameter and that function will
 take a reference to the value passed to it.
@@ -698,7 +867,7 @@ take a reference to the value passed to it.
 ** Grammar
 
 #+begin_quote
-=@= *(pub | world | ref | const)
+*(=@= =pub= | =@= =world= | =@= =ref= | =@= =const= | =@= =experimental=)
 #+end_quote
 
 ** Examples
@@ -801,9 +970,9 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 ** Grammar
 
 #+begin_quote
-*( =@= pub | world | ref)
+*(<attr>)
 
-=class= <id> =[= *(<arg>) =]= ={=
+=class= <id> =[= *(<id> ?(: <type>)) =]= ={=
 
     *(<let stmt>)
 
@@ -822,7 +991,7 @@ dot `.` notation, i.e., =MyClass.member_var= or =MyClass.my_method()=.
 # so other modules cannot use this class.
 
 class NoPassesArgs [] {
-    let x = 1;
+    let x: int = 1;
     let y = 2;
 
     @pub fn print() {
@@ -837,13 +1006,13 @@ class NoPassesArgs [] {
 #+begin_example
 # This class is marked as @pub, so it is
 # visible to other modules.
-@pub class Point [x, y, name] {
+@pub class Point [x: int, y, name: str] {
     # Because this is public, you can access
     # it directly from outside the class.
     @pub let x, y = (x, y);
     @pub let desc = "A point class"
 
-    let name = name;
+    let name: str = name;
 
     # Function not marked as @pub so
     # it does is not visible outside
@@ -852,7 +1021,7 @@ class NoPassesArgs [] {
         println("in helper");
     }
 
-    @pub fn set_x(newx) {
+    @pub fn set_x(newx: int) {
         this.x = newx
     }
 
@@ -866,7 +1035,7 @@ class NoPassesArgs [] {
 #+end_example
 
 #+begin_example
-@pub class Stack [init] {
+@pub class Stack [init: list] {
 
     ### THIS HAPPENS FIRST ######
     # You could just assign `init` to `lst` here,
@@ -886,7 +1055,7 @@ class NoPassesArgs [] {
     }
     ###############################
 
-    @pub fn push(x) {
+    @pub fn push(x: any) {
         this.lst.append(x);
         this.sz = this.sz+1;
     }
@@ -896,6 +1065,60 @@ class NoPassesArgs [] {
         this.sz = this.sz-1;
     }
 }
+#+end_example
+
+* Documentation Comments
+
+#+begin_quote
+Documentation Comments allow you to embed help information into variables, functions, enums, and classes.
+The information can be retrieved by calling the intrinsic function =help()= on the appropriate
+identifier.
+
+*Note*: When using these, a variable, function, enum, or class *must* be immediately after it.
+#+end_quote
+
+** Grammar
+
+#+begin_quote
+*( =#--= <text> )
+<Function> | <Enum> | <Class>
+#+end_quote
+
+** Examples
+
+#+begin_example
+#-- This is my enum.
+enum MyEnum {
+    Item1,
+    Item2,
+    Item3,
+}
+
+#-- A point class, takes integers
+#-- `x` and `y`.
+class Point [x, y] {}
+
+#-- Name: sum
+#-- Param: x: int
+#-- Param: y: int
+#-- Returns: int
+#-- Description: Takes integers `a` and `b` and sums them.
+fn sum(a, b) {
+    return a+b;
+}
+
+#-- This is my var
+let my_var = 3;
+
+#-- This is the current user
+#-- of this machine.
+$"whoami" |> let me;
+
+println(help(MyEnum));
+println(help(Point));
+println(help(sum));
+println(help(my_var));
+println(help(me));
 #+end_example
 
 * Datatypes
@@ -987,7 +1210,7 @@ Ranges are not their own datatype, they are just syntax sugar for a list. For ex
 1..=5 # expands to [1, 2, 3, 4, 5]
 'a'..'d' # expands to ['a', 'b', 'c'];
 'a'..='d' # expands to ['a', 'b', 'c', 'd'];
-(1..=10).rev().filter(|x| { x%2 == 0; }); # expands to [10, 8, 6, 4, 2]
+(1..=10).rev().filter(|x| { return x%2 == 0; }); # expands to [10, 8, 6, 4, 2]
 #+end_example
 
 Currently they only work with =int= and =char=.
@@ -1049,7 +1272,7 @@ println(single_elem_tuple[0]);
 #+end_example
 
 *Note*: If an empty =tuple= is desired (why would you ever want this?) you can use the intrinsic casting
-function =tuple()= i.e., =let empty_tuple = tuple()=.
+function =tuple()= i.e., =let empty_tuple = tuple();=.
 #+end_quote
 
 ** =option=
@@ -1164,7 +1387,7 @@ and entries are separated by a comma =,=.
 
 The keys in dictionaries must be uniform throughout, although the values can be of any type.
 They must also be initalized with data so it can infer the type of the keys, however you may want
-an empty set. This can be done by using the =Dict(type: TypeKW) -> Dict<type>= function which will
+an empty dictionary. This can be done by using the =Dict(type: TypeKW) -> Dict<type>= function which will
 produce an empty dictionary that holds keys of type =type=.
 
 #+begin_example
@@ -1185,7 +1408,7 @@ println(s.has_value(1))        # true
 println(empty_set.has_key(3)); # false
 empty_set.insert(3, [1,2,3]);
 println(empty_set.has_key(3)); # true
-println(empty_set[3]); # [1,2,3]
+println(empty_set[3]); # some([1,2,3])
 #+end_example
 #+end_quote
 
@@ -1213,6 +1436,13 @@ to files. The way to get a file handler is by using the intrinsic function =open
 
 *Note*: It is up to the user to =close()= the file handle.
 #+end_quote
+
+** =time=
+
+#+begin_qutoe
+This is a datatype representing time. It contains the values of
+the years, months, days, hours, minutes, and seconds of the current date.
+#+end_qutoe
 
 ** =unit=
 
@@ -1261,6 +1491,17 @@ do an in-depth print showing all variables that they contain as well
 as their value. This is very helpful for debugging.
 #+end_quote
 
+** =help=
+
+#+begin_quote
+#+begin_example
+help(id: <identifier>) -> str
+#+end_example
+
+Will return a =str= of all doc comments (see [[Documentation Comments]]) associated
+with the identifer =id=.
+#+end_quote
+
 ** TODO =fprint=
 
 #+begin_quote
@@ -1279,6 +1520,46 @@ fprintln(fd: int|file, arg1: any, arg2: any, ..., argN: any) -> unit
 #+end_example
 
 Will print all elements as well as a newline to the file descriptor =fd=.
+#+end_quote
+
+** =sin=
+
+#+begin_quote
+#+begin_example
+sin(arg: real) -> float
+#+end_example
+
+Will return the sin of =arg=.
+#+end_quote
+
+** =cos=
+
+#+begin_quote
+#+begin_example
+cos(arg: real) -> float
+#+end_example
+
+Will return the cos of =arg=.
+#+end_quote
+
+** =set_flag=
+
+#+begin_quote
+#+begin_example
+set_flag(flag: str) -> unit
+#+end_example
+
+Will set the command line flag =flag= during runtime.
+#+end_quote
+
+** =unset_flag=
+
+#+begin_quote
+#+begin_example
+unset_flag(flag: str) -> unit
+#+end_example
+
+Will unset the command line flag =flag= during runtime.
 #+end_quote
 
 ** =input=
@@ -1442,10 +1723,66 @@ i.e., ="wrb"=.
 
 #+begin_quote
 #+begin_example
-unimplemented(arg1, arg2, ..., argN)
+unimplemented(arg1, arg2, ..., argN) -> unit
 #+end_example
 
 Prints "UNIMPLEMENTED" arg1..arg$N$ to =stderr= and exits with non-zero exit code.
+#+end_quote
+
+** =datetime=
+
+#+begin_quote
+#+begin_example
+datetime() -> time
+#+end_example
+
+Returns the current date as a `time` type.
+#+end_quote
+
+** =sleep=
+
+#+begin_quote
+#+begin_example
+sleep(milli: int) -> unit
+#+end_example
+
+Sleep for `milli` milliseconds.
+#+end_quote
+
+** =env=
+
+#+begin_quote
+#+begin_example
+env(variable: str) -> str
+#+end_example
+
+Get the environment variable =variable= as a =str=.
+
+*Note*: Do not put "$" in the variable name unless
+it has one explicitly in the name.
+#+end_quote
+
+** =init_seed=
+
+#+begin_quote
+#+begin_example
+init_seed(seed: int) -> unit
+#+end_example
+
+Sets the internal seed to =seed=.
+
+*Note*: A good way of getting a random seed is by doing
+=init_seed(datetime().raw())=.
+#+end_quote
+
+** =random=
+
+#+begin_quote
+#+begin_example
+random() -> int
+#+end_example
+
+Gives a random number based off of the internal seed from =init_seed=
 #+end_quote
 
 * Member Intrinsics
@@ -1510,6 +1847,14 @@ map(cl: closure) -> list
 #+end_example
 
 Calls the closure =cl= on each element and creates a new list on the evaluated results.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+fold(cl: closure<el: any, acc: any>, acc: any) -> any
+#+end_example
+
+Calls the closure =cl= on each element with the accumulator.
 #+end_quote
 
 #+begin_quote
@@ -1720,6 +2065,74 @@ Writes all elements in the list =msg= to the opened file.
 At the end of each value, a newline is added.
 #+end_quote
 
+** =time= Implements
+
+#+begin_quote
+#+begin_example
+raw() -> int
+#+end_example
+
+Gives the underlying =time= value as a raw =int=. This
+is a good way for setting the seed with =init_seed=.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+readable() -> tuple<int>
+#+end_example
+
+Returns the current value of the time object as a tuple of
+=(years, months, days, hours, minutes, seconds)=
+#+end_quote
+
+#+begin_quote
+#+begin_example
+years() -> int
+#+end_example
+
+Returns the number of years in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+months() -> int
+#+end_example
+
+Returns the number of months in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+days() -> int
+#+end_example
+
+Returns the number of days in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+hours() -> int
+#+end_example
+
+Returns the number of hours in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+minutes() -> int
+#+end_example
+
+Returns the number of minutes in the time object.
+#+end_quote
+
+#+begin_quote
+#+begin_example
+seconds() -> int
+#+end_example
+
+Returns the number of seconds in the time object.
+#+end_quote
+
 * StdLib
 
 #+begin_quote
@@ -1730,5 +2143,9 @@ This means that all you need to do to import these files is do:
 =import "std/<file>.earl"= <depth>.
 #+end_quote
 
+*Note*: The following is generated from =stdlib-docs-gen.earl= so it should
+never be modified by hand.
+
 # ********** DO NOT MODIFY BELOW THIS LINE AS IT IS AUTOGENERATED BY stdlib-docs-gen.earl **********
 
+# BEGIN_AUTOGEN

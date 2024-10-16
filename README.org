@@ -197,6 +197,12 @@ To uninstall, simply do =sudo make uninstall=.
 
 Syntax highlighting for Emacs, Vim, and VSCode and can be installed by [[https://github.com/malloc-nbytes/EARL-language-support][clicking here]].
 
+* earlmgr
+
+=earlmgr= is a script similar to Python's =pip= and can be downloaded [[https://github.com/malloc-nbytes/earlmgr][here]].
+
+*Note*: =earlmgr= is a WIP. USE AT YOUR OWN RISK!
+
 * Contributing
 
 ** Style Guide
