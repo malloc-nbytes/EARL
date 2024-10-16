@@ -32,6 +32,7 @@
 #include "common.hpp"
 #include "repled.hpp"
 #include "utils.hpp"
+#include "intrinsics.hpp"
 
 static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
@@ -668,5 +669,8 @@ repled::init(std::vector<std::string> cmd_options) {
         autocomplete.push_back(attrs[i]);
     for (size_t i = 0; i < cmd_options.size(); ++i)
         autocomplete.push_back(cmd_options[i]);
+    for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it) {
+        autocomplete.push_back(it->first);
+    }
 }
 
