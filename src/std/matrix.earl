@@ -31,9 +31,7 @@ module Matrix
 #--   Creates a new matrix with the initial dataset `init`
 #--   with `rows` rows and `cols` columns.
 @pub class T [init: list, rows: int, cols: int] {
-    #-- the x value
-    #-- it does stuff
-    @pub let x = 1;
+    let x = 1;
     let lst = init;
     let r, c = (rows, cols);
 
