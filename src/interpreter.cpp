@@ -29,6 +29,7 @@
 #include <optional>
 #include <functional>
 #include <variant>
+#include <array>
 
 #include "parser.hpp"
 #include "utils.hpp"

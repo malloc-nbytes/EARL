@@ -33,7 +33,26 @@
 
 #include "hot-reload.hpp"
 
-static std::unordered_map<std::filesystem::path, std::filesystem::file_time_type> last_writes;
+#ifdef __APPLE__
+struct PathHash {
+    std::size_t operator()(const std::filesystem::path& path) const {
+        return std::hash<std::string>()(path.string());
+    }
+};
+struct PathEqual {
+    bool operator()(const std::filesystem::path& lhs,
+                    const std::filesystem::path& rhs) const {
+        return lhs == rhs;
+    }
+};
+static std::unordered_map<std::filesystem::path,
+                          std::filesystem::file_time_type,
+                          PathHash,
+                          PathEqual> last_writes;
+#else
+static std::unordered_map<std::filesystem::path,
+                          std::filesystem::file_time_type> last_writes;
+#endif
 
 static bool
 is_newer(const std::filesystem::path &path,
