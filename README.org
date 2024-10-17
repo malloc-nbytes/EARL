@@ -26,9 +26,9 @@
 
 *NOTE*: *This language is still in the infant stage and it is _NOT_ recommended to use in any real or professional capacity.*
 
-*NOTE*: As of now, the only supported platform is Linux.
+*NOTE*: As of now, the only supported platform is Linux, and no guarantees for MacOS.
 
-*NOTE*: Do not modify the README.html as it is auto generated from README.org by [[https://orgmode.org/][Emacs Org Mode]].
+*NOTE*: (If contributing) do not modify the =README.html= as it is auto generated from =README.org= by [[https://orgmode.org/][Emacs Org Mode]].
 
 *NOTE*: Open =README.html= in a browser to view this document in a much better format.
 
@@ -37,8 +37,18 @@
 * Introduction
 
 #+begin_quote
-EARL (Evaluate And Run Language) is being designed to be a BASH wrapper, essentially making BASH easier to write.
+EARL (Evaluate And Run Language) is a gradually typed programming language that introduces higher level programming concepts to BASH scripting,
+and designed to replace BASH scripts.
 It is most similar to Python and Rust but is gradually typed.
+
+It has (and plans to have):
+- [X] Object Oriented Programming
+- [X] fully interactive REPL
+- [X] standard library
+- [X] syntax highlighting for common editors (VSCode, Emacs, Vim, NeoVim)
+- [X] extensive documentation
+- [-] package manager (WIP) (see https://github.com/malloc-nbytes/earlmgr)
+- [-] the ability to be translated to Python (WIP) (see the =--to-py= flag in =earl --help=)
 #+end_quote
 
 * Quick Examples
