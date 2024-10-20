@@ -172,7 +172,24 @@ class Function [] {
     }
 
     @pub fn to_jsx() {
-        
+        let s = "";
+        s += "                        <EARLCodeSnippet code={`";
+        s += this.name + "(";
+
+        for i in 0 to len(this.parameters) {
+            s += this.parameters[i].name + ": " + this.parameters[i].ty;
+            if i != len(this.parameters)-1 {
+                s += ", ";
+            }
+        }
+        s += ") -> " + this.returns + "`} language={'armasm'} />\n";
+
+        s += "                        <EARLInfoIndent>\n";
+        foreach desc in this.description.split("\n") {
+            s += "                            <EARLInfo text='" + desc + "' />\n";
+        }
+        s += "                        </EARLInfoIndent>\n";
+        return s;
     }
 }
 
@@ -248,6 +265,48 @@ class Class [] {
 
         return s;
     }
+
+    @pub fn to_jsx() {
+        let s = "";
+        s += "                        <EARLCodeSnippet code={`";
+        s += this.name + "[";
+        for i in 0 to len(this.params) {
+            s += this.params[i].name + ": " + this.params[i].ty;
+            if i != len(this.params)-1 { s += ", "; }
+        }
+        s += "]`} language={'armasm'} />\n";
+
+        s += "                        <EARLInfoIndent>\n";
+        foreach desc in this.description.split("\n") {
+            s += "                            <EARLInfo text='" + desc + "' />\n";
+        }
+        s += "                        </EARLInfoIndent>`\n";
+
+
+        foreach m in this.members { unimplemented(__FILE__, ":", __FUNC__, ": class members"); }
+
+        s += "                    </>\n";
+        s += "                ),\n";
+
+        if len(this.methods) != 0 {
+            s += "                subsections: [\n";
+            s += "                    {\n";
+            s += "                        title: \""+ this.name +" Implements\",\n";
+            s += "                        content: (\n";
+            s += "                            <>\n";
+            foreach m in this.methods {
+                s += m.to_jsx();
+            }
+            s += "                            </>\n";
+            s += "                        ),\n";
+            s += "                    },\n";
+            s += "                ],\n";
+        }
+
+        s += "            },\n";
+
+        return s;
+    }
 }
 
 class Variable [] {
@@ -285,6 +344,11 @@ class Variable [] {
         let s = "";
         s += "                        <EARLCodeSnippet code={`";
         s += this.name + ": " + this.ty + "`} language={'armasm'} />\n";
+        s += "                        <EARLInfoIndent>\n";
+        foreach desc in this.description.split("\n") {
+            s += "                            <EARLInfo text=\"" + desc + "\" />\n";
+        }
+        s += "                        </EARLInfoIndent>\n";
         return s;
     }
 }
@@ -359,7 +423,7 @@ class Enum [] {
         foreach desc in this.description.split("\n") {
             s += "                            <EARLInfo text='" + desc + "' />\n";
         }
-        s += "                        </EARLInfoIndent>`\n";
+        s += "                        </EARLInfoIndent>\n";
         return s;
     }
 }
@@ -477,8 +541,25 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         s += "                ),\n";
         s += "            },\n";
 
-        s += "        ],\n";
+        s += "            {\n";
+        s += "                title: \"Class List\",\n";
+        s += "                content: (\n";
+        s += "                    <>\n";
+        if len(this.classes) == 0 {
+            s += "                        <EARLInfo text='None' />\n";
+            # The class will close the section because it may
+            # have other subsections!
+            s += "                    </>\n";
+            s += "                ),\n";
+            s += "            },\n";
+        }
+        else {
+            foreach @const @ref c in this.classes {
+                s += c.to_jsx();
+            }
+        }
 
+        s += "        ],\n";
         s += "    },\n";
 
         return s;
@@ -723,10 +804,10 @@ fn ready_input(fp) {
     return lines;
 }
 
-fn main() {
+fn main(convert_mode: str) {
     let stdlib = System::ls("../src/std/");
     let autogen = "";
-    let docsfp = "../EARL-language-reference.org";
+    let docsfporg = "../EARL-language-reference.org";
     let modules = [];
     let entries = [];
 
@@ -738,7 +819,9 @@ fn main() {
         let res = index(lines, f);
         if res {
             let entry, mod = res.unwrap();
-            autogen += entry.to_org_mode();
+            if convert_mode == "org" {
+                autogen += entry.to_org_mode();
+            }
             modules.append(mod);
             entries.append(entry);
         }
@@ -747,39 +830,52 @@ fn main() {
         }
     }
 
-    let jsx = "import EARLInfo from \"../components/EARLInfo\";\n";
-    jsx += "import EARLInfoIndent from \"../components/EARLInfoIndent\";\n";
-    jsx += "import EARLCodeSnippet from \"../components/EARLCodeSnippet\";\n";
-    jsx += "export const stdLibModules = [\n";
+    if convert_mode == "jsx" {
+        let jsx = "DO NOT MODIFY THIS FILE! IT IS AUTOGENERATED BY\n";
+        jsx += "    https://github.com/malloc-nbytes/EARL/blob/main/src/stdlib-docs-gen.earl\n";
+        jsx = "import EARLInfo from \"../components/EARLInfo\";\n";
+        jsx += "import EARLInfoIndent from \"../components/EARLInfoIndent\";\n";
+        jsx += "import EARLCodeSnippet from \"../components/EARLCodeSnippet\";\n";
+        jsx += "export const stdLibModules = [\n";
+        foreach e in entries {
+            jsx += e.to_jsx();
+        }
+        jsx += "];\n";
 
-    foreach e in entries {
-        jsx += e.to_jsx();
+        let jsx_output = "StdLibModules.jsx";
+        let f = open(jsx_output, "w");
+        f.write(jsx);
+        f.close();
+        println(jsx);
+        println(f"Wrote to {jsx_output}");
     }
+    else if convert_mode == "org" {
+        let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";
+        let f = open(docsfp, "w");
+        let content = orig_content+autogen;
+        f.write(content);
+        f.close();
 
-    jsx += "];\n";
-    println(jsx);
+        println(f"The following modules were written to {docsfp}");
+        println(modules);
 
-    # let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";
-
-    # let f = open(docsfp, "w");
-    # let content = orig_content+autogen;
-    # f.write(content);
-    # f.close();
-
-    # println(f"The following modules were written to {docsfp}");
-    # println(modules);
-
-    # if Script::program_exists("emacs") {
-    #     println("Found Emacs, converting EARL-language-reference.org to HTML");
-    #     $"rm ../EARL-language-reference.html";
-    #     $"rm ../README.html";
-    #     $"emacs --batch ../EARL-language-reference.org -f org-html-export-to-html";
-    #     $"emacs --batch ../README.org -f org-html-export-to-html";
-    # }
-    # else {
-    #     println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
-    # }
+        if Script::program_exists("emacs") {
+            println("Found Emacs, converting EARL-language-reference.org to HTML");
+            $"rm ../EARL-language-reference.html";
+            $"rm ../README.html";
+            $"emacs --batch ../EARL-language-reference.org -f org-html-export-to-html";
+            $"emacs --batch ../README.org -f org-html-export-to-html";
+        }
+        else {
+            println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
+        }
+    }
 }
 
-main();
+let mode = "";
+if len(argv()) != 2 || (argv()[1] != "org" && argv()[1] != "jsx") {
+    panic("Usage: earl ", argv()[0], " -- <org|jsx>");
+}
+mode = argv()[1];
 
+main(mode);
