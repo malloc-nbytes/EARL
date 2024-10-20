@@ -170,6 +170,10 @@ class Function [] {
         s += this.description + "\n";
         return s;
     }
+
+    @pub fn to_jsx() {
+        
+    }
 }
 
 class Class [] {
@@ -276,6 +280,13 @@ class Variable [] {
         s += this.description + "\n";
         return s;
     }
+
+    @pub fn to_jsx() {
+        let s = "";
+        s += "                        <EARLCodeSnippet code={`";
+        s += this.name + ": " + this.ty + "`} language={'armasm'} />\n";
+        return s;
+    }
 }
 
 class Enum [] {
@@ -326,6 +337,29 @@ class Enum [] {
         replace_backticks(this.description);
         s += this.description + "\n";
 
+        return s;
+    }
+
+    @pub fn to_jsx() {
+        let s = "";
+        s += "                        <EARLCodeSnippet code={`";
+        s += this.name + " {\n";
+
+        for i in 0 to len(this.items) {
+            let item = this.items[i];
+            s += "    " + item.name + " -> " + item.ty;
+            if i != len(this.items)-1 {
+                s += ",";
+            }
+            s += "\n";
+        }
+
+        s += "}`} language={'armasm'} />\n";
+        s += "                        <EARLInfoIndent>\n";
+        foreach desc in this.description.split("\n") {
+            s += "                            <EARLInfo text='" + desc + "' />\n";
+        }
+        s += "                        </EARLInfoIndent>`\n";
         return s;
     }
 }
@@ -382,6 +416,72 @@ class Entry [import_, mod, classes, functions, enums, variables] {
         }
 
         return result;
+    }
+
+    @pub fn to_jsx() {
+        let s = "    {\n";
+        s += "        title: \"" + this.mod + "\",\n";
+        s += "        content: (\n";
+        s += "            <>\n";
+        s += "                <EARLInfo text='Import: `\"" + this.import_ + "\"`' />\n";
+        s += "                <EARLInfo text='Module: `" + this.mod + "`' />\n";
+        s += "            </>\n";
+        s += "        ),\n";
+        s += "        subsections: [\n";
+        s += "            {\n";
+        s += "                title: \"Variable List\",\n";
+        s += "                content: (\n";
+        s += "                    <>\n";
+
+        if len(this.variables) == 0 {
+            s += "                        <EARLInfo text='None' />\n";
+        }
+        else {
+            foreach @const @ref v in this.variables {
+                s += v.to_jsx();
+            }
+        }
+
+        s += "                    </>\n";
+        s += "                ),\n";
+        s += "            },\n";
+        s += "            {\n";
+        s += "                title: \"Enum List\",\n";
+        s += "                content: (\n";
+        s += "                    <>\n";
+        if len(this.enums) == 0 {
+            s += "                        <EARLInfo text='None' />\n";
+        }
+        else {
+            foreach @const @ref e in this.enums {
+                s += e.to_jsx();
+            }
+        }
+        s += "                    </>\n";
+        s += "                ),\n";
+        s += "            },\n";
+
+        s += "            {\n";
+        s += "                title: \"Function List\",\n";
+        s += "                content: (\n";
+        s += "                    <>\n";
+        if len(this.functions) == 0 {
+            s += "                        <EARLInfo text='None' />\n";
+        }
+        else {
+            foreach @const @ref f in this.functions {
+                s += f.to_jsx();
+            }
+        }
+        s += "                    </>\n";
+        s += "                ),\n";
+        s += "            },\n";
+
+        s += "        ],\n";
+
+        s += "    },\n";
+
+        return s;
     }
 
     @pub fn to_org_mode() {
@@ -613,7 +713,7 @@ fn index(lines, fp) {
         panic(f"file `{fp}` is missing a module statement");
     }
 
-    return some((Entry(fp, mod, classes, functions, enums, variables).to_org_mode(), mod));
+    return some((Entry(fp, mod, classes, functions, enums, variables), mod));
 }
 
 fn ready_input(fp) {
@@ -628,6 +728,7 @@ fn main() {
     let autogen = "";
     let docsfp = "../EARL-language-reference.org";
     let modules = [];
+    let entries = [];
 
     foreach f in stdlib {
         println("############################################################");
@@ -636,35 +737,48 @@ fn main() {
         let lines = ready_input(f);
         let res = index(lines, f);
         if res {
-            let content, mod = res.unwrap();
-            autogen += content;
+            let entry, mod = res.unwrap();
+            autogen += entry.to_org_mode();
             modules.append(mod);
+            entries.append(entry);
         }
         else {
             println(f"file {f} has IGNORE tag, ignoring...");
         }
     }
 
-    let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";
+    let jsx = "import EARLInfo from \"../components/EARLInfo\";\n";
+    jsx += "import EARLInfoIndent from \"../components/EARLInfoIndent\";\n";
+    jsx += "import EARLCodeSnippet from \"../components/EARLCodeSnippet\";\n";
+    jsx += "export const stdLibModules = [\n";
 
-    let f = open(docsfp, "w");
-    let content = orig_content+autogen;
-    f.write(content);
-    f.close();
-
-    println(f"The following modules were written to {docsfp}");
-    println(modules);
-
-    if Script::program_exists("emacs") {
-        println("Found Emacs, converting EARL-language-reference.org to HTML");
-        $"rm ../EARL-language-reference.html";
-        $"rm ../README.html";
-        $"emacs --batch ../EARL-language-reference.org -f org-html-export-to-html";
-        $"emacs --batch ../README.org -f org-html-export-to-html";
+    foreach e in entries {
+        jsx += e.to_jsx();
     }
-    else {
-        println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
-    }
+
+    jsx += "];\n";
+    println(jsx);
+
+    # let orig_content = IO::file_to_str(docsfp).split("# BEGIN_AUTOGEN")[0] + "# BEGIN_AUTOGEN\n";
+
+    # let f = open(docsfp, "w");
+    # let content = orig_content+autogen;
+    # f.write(content);
+    # f.close();
+
+    # println(f"The following modules were written to {docsfp}");
+    # println(modules);
+
+    # if Script::program_exists("emacs") {
+    #     println("Found Emacs, converting EARL-language-reference.org to HTML");
+    #     $"rm ../EARL-language-reference.html";
+    #     $"rm ../README.html";
+    #     $"emacs --batch ../EARL-language-reference.org -f org-html-export-to-html";
+    #     $"emacs --batch ../README.org -f org-html-export-to-html";
+    # }
+    # else {
+    #     println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
+    # }
 }
 
 main();
