@@ -1,6 +1,8 @@
 module Main
 
-import "clap/clap.earl"; as clap
+```
+ls -lah
+```
 
-println(help(clap::Arg));
+
 
