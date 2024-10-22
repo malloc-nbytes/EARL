@@ -805,7 +805,7 @@ fn ready_input(fp) {
 }
 
 fn main(convert_mode: str) {
-    let stdlib = System::ls("../src/std/");
+    let stdlib = System::ls("std/");
     let autogen = "";
     let docsfporg = "../EARL-language-reference.org";
     let modules = [];
