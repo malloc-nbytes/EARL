@@ -280,7 +280,7 @@ class Class [] {
         foreach desc in this.description.split("\n") {
             s += "                            <EARLInfo text='" + desc + "' />\n";
         }
-        s += "                        </EARLInfoIndent>`\n";
+        s += "                        </EARLInfoIndent>\n";
 
 
         foreach m in this.members { unimplemented(__FILE__, ":", __FUNC__, ": class members"); }
