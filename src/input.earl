@@ -1,8 +1,14 @@
 module Main
 
-```
-ls -lah
-```
+bash {
+    cd dev/
+    cd build
+    make -j12
+}
 
-
+```
+cd dev/
+cd build
+make -j12
+```
 
