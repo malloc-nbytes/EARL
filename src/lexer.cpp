@@ -189,11 +189,15 @@ read_file(const char *filepath) {
     return buffer;
 }
 
-int consume_multiline_bash(char *s) {
+int consume_multiline_bash(char *s, int &cols, int &rows) {
     for (size_t i = 0; s[i]; ++i) {
         bool inbounds = s[i] && s[i+1] && s[i+2];
         if (inbounds && s[i] == '`' && s[i+1] == '`' && s[i+2] == '`')
             return i;
+        if (s[i] == '\n') 
+            ++rows, cols = 0;
+        else
+            ++cols;
     }
     return -1;
 }
@@ -316,9 +320,9 @@ lex_file(std::string &src,
             col += 1 + strlit_len + 1;
         }
 
-        // check for ```
         else if (i < src.size()-2 && src[i] == '`' && src[i+1] == '`' && src[i+2] == '`') {
-            int bash_len = consume_multiline_bash(&src[i+3]);
+            int newlines = 0;
+            int bash_len = consume_multiline_bash(&src[i+3], col, row);
             if (bash_len == -1) {
                 std::string msg = "could not find the end of the multiline bash script";
                 throw std::runtime_error(msg);
@@ -326,7 +330,6 @@ lex_file(std::string &src,
             std::shared_ptr<Token> tok = token_alloc(*lexer.get(), &src[i+3], bash_len, TokenType::Multiline_Bash, row, col, fp);
             lexer->append(std::move(tok));
             i += 6 + bash_len;
-            col += 6 + bash_len;
         }
 
         else if (src[i] == '\'') {
