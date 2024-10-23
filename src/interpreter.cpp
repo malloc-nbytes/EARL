@@ -2585,29 +2585,45 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_multiline_bash(StmtMultilineBash *stmt, std::shared_ptr<Ctx> &ctx) {
+    std::string cmd = stmt->m_sh->lexeme();
+    if ((flags & __SHOWBASH) != 0)
+        std::cout << "+ " << cmd << std::endl;
+
+    int x;
+    if ((x = system(cmd.c_str())) == -1) {
+        const std::string msg = "bash cmd failed with exit code "+std::to_string(x);
+        throw InterpreterException(msg);
+    }
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Void>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
-    case StmtType::Def:          return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
-    case StmtType::Let:          return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
-    case StmtType::Block:        return Interpreter::eval_stmt_block(dynamic_cast<StmtBlock *>(stmt), ctx);
-    case StmtType::Mut:          return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);
-    case StmtType::Stmt_Expr:    return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
-    case StmtType::If:           return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
-    case StmtType::Return:       return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
-    case StmtType::Break:        return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
-    case StmtType::While:        return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
-    case StmtType::Foreach:      return eval_stmt_foreach(dynamic_cast<StmtForeach *>(stmt), ctx);
-    case StmtType::For:          return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
-    case StmtType::Import:       return eval_stmt_import(dynamic_cast<StmtImport *>(stmt), ctx);
-    case StmtType::Mod:          return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
-    case StmtType::Class:        return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
-    case StmtType::Match:        return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
-    case StmtType::Enum:         return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
-    case StmtType::Continue:     return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
-    case StmtType::Loop:         return eval_stmt_loop(dynamic_cast<StmtLoop *>(stmt), ctx);
-    case StmtType::Bash_Literal: return eval_stmt_bash_lit(dynamic_cast<StmtBashLiteral *>(stmt), ctx);
-    case StmtType::Pipe:         return eval_stmt_pipe(dynamic_cast<StmtPipe *>(stmt), ctx);
+    case StmtType::Def:             return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
+    case StmtType::Let:             return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
+    case StmtType::Block:           return Interpreter::eval_stmt_block(dynamic_cast<StmtBlock *>(stmt), ctx);
+    case StmtType::Mut:             return eval_stmt_mut(dynamic_cast<StmtMut *>(stmt), ctx);
+    case StmtType::Stmt_Expr:       return eval_stmt_expr(dynamic_cast<StmtExpr *>(stmt), ctx);
+    case StmtType::If:              return eval_stmt_if(dynamic_cast<StmtIf *>(stmt), ctx);
+    case StmtType::Return:          return eval_stmt_return(dynamic_cast<StmtReturn *>(stmt), ctx);
+    case StmtType::Break:           return eval_stmt_break(dynamic_cast<StmtBreak *>(stmt), ctx);
+    case StmtType::While:           return eval_stmt_while(dynamic_cast<StmtWhile *>(stmt), ctx);
+    case StmtType::Foreach:         return eval_stmt_foreach(dynamic_cast<StmtForeach *>(stmt), ctx);
+    case StmtType::For:             return eval_stmt_for(dynamic_cast<StmtFor *>(stmt), ctx);
+    case StmtType::Import:          return eval_stmt_import(dynamic_cast<StmtImport *>(stmt), ctx);
+    case StmtType::Mod:             return eval_stmt_mod(dynamic_cast<StmtMod *>(stmt), ctx);
+    case StmtType::Class:           return eval_stmt_class(dynamic_cast<StmtClass *>(stmt), ctx);
+    case StmtType::Match:           return eval_stmt_match(dynamic_cast<StmtMatch *>(stmt), ctx);
+    case StmtType::Enum:            return eval_stmt_enum(dynamic_cast<StmtEnum *>(stmt), ctx);
+    case StmtType::Continue:        return eval_stmt_continue(dynamic_cast<StmtContinue *>(stmt), ctx);
+    case StmtType::Loop:            return eval_stmt_loop(dynamic_cast<StmtLoop *>(stmt), ctx);
+    case StmtType::Bash_Literal:    return eval_stmt_bash_lit(dynamic_cast<StmtBashLiteral *>(stmt), ctx);
+    case StmtType::Pipe:            return eval_stmt_pipe(dynamic_cast<StmtPipe *>(stmt), ctx);
+    case StmtType::Multiline_Bash:  return eval_stmt_multiline_bash(dynamic_cast<StmtMultilineBash *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

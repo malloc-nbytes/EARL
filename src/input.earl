@@ -1,14 +1,17 @@
 module Main
 
-bash {
-    cd dev/
-    cd build
-    make -j12
+if true {
+    ```
+    cd ~
+    ls -lah
+    pwd
+    ```;
 }
 
-```
-cd dev/
-cd build
-make -j12
-```
+
+
+
+
+
+
 

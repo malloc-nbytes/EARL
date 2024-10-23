@@ -109,6 +109,7 @@ enum class TokenType {
     Type,
     Bashlit,
     Info,
+    Multiline_Bash,
     Total_Len
 };
 

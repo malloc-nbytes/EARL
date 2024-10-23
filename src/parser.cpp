@@ -1005,6 +1005,13 @@ parse_stmt_bash(Lexer &lexer) {
     return std::make_unique<StmtBashLiteral>(std::unique_ptr<Expr>(expr));
 }
 
+static std::unique_ptr<StmtMultilineBash>
+parse_stmt_multiline_bash(Lexer &lexer) {
+    auto res = std::make_unique<StmtMultilineBash>(lexer.next());
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+    return std::move(res);
+}
+
 std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
@@ -1015,6 +1022,9 @@ Parser::parse_stmt(Lexer &lexer) {
         Token *tok = lexer.peek();
 
         switch (tok->type()) {
+        case TokenType::Multiline_Bash: {
+            return parse_stmt_multiline_bash(lexer);
+        } break;
         case TokenType::Dollarsign: {
             auto bash_stmt = parse_stmt_bash(lexer);
 
