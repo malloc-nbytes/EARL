@@ -59,6 +59,7 @@ enum class StmtType {
     Bash_Literal,
     Info,
     Pipe,
+    Multiline_Bash,
 };
 
 /// The different types an expression can be.
@@ -352,6 +353,12 @@ struct StmtInfo : public Stmt {
 struct StmtBashLiteral : public Stmt {
     std::unique_ptr<Expr> m_expr;
     StmtBashLiteral(std::unique_ptr<Expr> expr);
+    StmtType stmt_type() const override;
+};
+
+struct StmtMultilineBash : public Stmt {
+    std::shared_ptr<Token> m_sh;
+    StmtMultilineBash(std::shared_ptr<Token> sh);
     StmtType stmt_type() const override;
 };
 

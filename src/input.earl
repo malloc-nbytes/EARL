@@ -1,6 +1,17 @@
 module Main
 
-import "clap/clap.earl"; as clap
+if true {
+    ```
+    cd ~
+    ls -lah
+    pwd
+    ```;
+}
 
-println(help(clap::Arg));
+
+
+
+
+
+
 
