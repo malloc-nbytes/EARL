@@ -610,7 +610,6 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
 
     bool ready = prompt[0] != '0' && !bypass;
 
-
     if (ready) {
         std::cout << prompt;
 
@@ -658,8 +657,8 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 switch (next1) {
                 case UP_ARROW: {
                     handle_up_arrow(c, PAD, prompt, lines_idx, line, history, ss);
-                    c = line.size();
-                    std::cout << "\033[" << PAD+c+1 << "G";
+                    //c = line.size();
+                    //std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
                 case DOWN_ARROW: {
                     handle_down_arrow(c, PAD, prompt, lines_idx, line, history, ss);
