@@ -28,6 +28,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <functional>
 
 #include "common.hpp"
 #include "repled.hpp"
@@ -38,6 +39,89 @@ static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 
 static std::vector<std::string> autocomplete = {};
+
+static repled::PrefixTrie trie;
+
+repled::PrefixTrie::PrefixTrie() : prefix(""), children(0), is_end_of_word(false) {}
+
+repled::PrefixTrie::~PrefixTrie() {
+    for (auto &child : children)
+        delete child;
+}
+
+void repled::PrefixTrie::dump(void) const {
+    std::vector<std::string> words;
+
+    std::function<void(const PrefixTrie*, std::string)> collect_words = [&](const PrefixTrie *node, std::string current_word) {
+        current_word += node->prefix;
+
+        if (node->is_end_of_word)
+            words.push_back(current_word);
+
+        for (auto &child : node->children)
+            collect_words(child, current_word);
+    };
+
+    collect_words(this, "");
+
+    for (const auto &word : words)
+        std::cout << word << ' ';
+
+    std::cout << std::endl;
+}
+
+void repled::PrefixTrie::insert(std::string word) {
+    PrefixTrie *current = this;
+    for (auto &ch : word) {
+        bool found = false;
+        for (auto &child : current->children) {
+            if (child->prefix == std::string(1, ch)) {
+                current = child;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            PrefixTrie *new_node = new PrefixTrie();
+            new_node->prefix = std::string(1, ch);
+            current->children.push_back(new_node);
+            current = new_node;
+        }
+    }
+    current->is_end_of_word = true;
+}
+
+std::vector<std::string> repled::PrefixTrie::get_completions(std::string prefix) {
+    std::vector<std::string> completions;
+    PrefixTrie *current = this;
+
+    for (auto &ch : prefix) {
+        bool found = false;
+        for (auto &child : current->children) {
+            if (child->prefix == std::string(1, ch)) {
+                current = child;
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return completions; // No completions found
+    }
+
+    std::function<void(PrefixTrie*, std::string, bool)> collect_words = [&](PrefixTrie *node, std::string current_word, bool first) {
+        if (!first)
+            current_word += node->prefix;
+        if (node->is_end_of_word) {
+            completions.push_back(current_word);
+        }
+        for (auto &child : node->children) {
+            collect_words(child, current_word, false);
+        }
+    };
+
+    collect_words(current, prefix, true);
+    return completions;
+}
 
 repled::SS::SS() : braces(0), brackets(0), parens(0) {}
 
@@ -113,7 +197,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     size_t i = 0;
     std::string current_word;
     while (i < line.size()) {
-        if (line[i] == '#')        comment = true;
+        if (line[i] == '#') comment = true;
         else if (line[i] == '}') ++local_braces;
         else if (line[i] == '{') --local_braces;
         else if (line[i] == ']') ++local_brackets;
@@ -153,7 +237,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << green << line[i];
                 else
                     std::cout << line[i];
-                size_t j = i+1;
+                size_t j = i + 1;
                 // Print the content inside the string literal
                 while (j < line.size() && line[j] != '"')
                     std::cout << line[j++];
@@ -163,7 +247,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << line[j];
                 if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
-                i = j+1;
+                i = j + 1;
             }
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
@@ -171,7 +255,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << green << line[i];
                 else
                     std::cout << line[i];
-                size_t j = i+1;
+                size_t j = i + 1;
                 // Print the content inside the character literal
                 while (j < line.size() && line[j] != '\'')
                     std::cout << line[j++];
@@ -179,7 +263,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << line[j];
                 if ((flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
-                i = j+1;
+                i = j + 1;
             }
             else {
                 // Print spaces or other non-alphabetic characters normally
@@ -232,30 +316,30 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         std::string bracket_msg = "";
         bool bracket_ok = true;
 
-        if (ss.braces-local_braces > 0) {
-            bracket_msg += "{x"+std::to_string(ss.braces-local_braces) + ' ';
+        if (ss.braces - local_braces > 0) {
+            bracket_msg += "{x" + std::to_string(ss.braces - local_braces) + ' ';
             bracket_ok = false;
         }
-        else if (ss.braces-local_braces < 0) {
-            bracket_msg += "}x"+std::to_string(local_braces-ss.braces) + ' ';
-            bracket_ok = false;
-        }
-
-        if (ss.brackets-local_brackets > 0) {
-            bracket_msg += "[x"+std::to_string(ss.brackets-local_brackets)+" ";
-            bracket_ok = false;
-        }
-        else if (ss.brackets-local_brackets < 0) {
-            bracket_msg += "]x"+std::to_string(local_brackets-ss.brackets)+" ";
+        else if (ss.braces - local_braces < 0) {
+            bracket_msg += "}x" + std::to_string(local_braces - ss.braces) + ' ';
             bracket_ok = false;
         }
 
-        if (ss.parens-local_parens > 0) {
-            bracket_msg += "(x"+std::to_string(ss.parens-local_parens)+" ";
+        if (ss.brackets - local_brackets > 0) {
+            bracket_msg += "[x" + std::to_string(ss.brackets - local_brackets) + " ";
             bracket_ok = false;
         }
-        else if (ss.parens-local_parens < 0) {
-            bracket_msg += ")x"+std::to_string(local_parens-ss.parens)+" ";
+        else if (ss.brackets - local_brackets < 0) {
+            bracket_msg += "]x" + std::to_string(local_brackets - ss.brackets) + " ";
+            bracket_ok = false;
+        }
+
+        if (ss.parens - local_parens > 0) {
+            bracket_msg += "(x" + std::to_string(ss.parens - local_parens) + " ";
+            bracket_ok = false;
+        }
+        else if (ss.parens - local_parens < 0) {
+            bracket_msg += ")x" + std::to_string(local_parens - ss.parens) + " ";
             bracket_ok = false;
         }
 
@@ -272,35 +356,31 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                 std::cout << "< " << bracket_msg << "> ";
         }
 
+        // Extract the last word
         std::string last_word = get_last_word(line);
-        std::vector<std::pair<int, std::string>> closest = {};
-        for (std::string &kw : autocomplete) {
-            int rank = levenshtein_distance(last_word, kw);
-            closest.push_back(std::make_pair(rank, kw));
+        if (!line.empty() && line[0] == ':') {
+            last_word = ':' + last_word; // Prepend ':' if the line starts with it
         }
 
-        std::sort(closest.begin(), closest.end(), [](auto &p1, auto &p2) {
-            return p1.first < p2.first;
-        });
+        std::vector<std::string> completions = trie.get_completions(last_word);
 
         if ((flags & __REPL_NOCOLOR) == 0)
             std::cout << gray << "| ";
         else
             std::cout << "| ";
-        for (size_t i = 0; i < closest.size() && i < 7; ++i) {
-            if (closest[i].first > 2)
-                break;
-            if (closest[i].first == 0) {
+
+        for (size_t i = 0; i < completions.size() && i < 7; ++i) {
+            if (completions[i] == last_word) {
                 if ((flags & __REPL_NOCOLOR) == 0)
-                    std::cout << yellow << underline << closest[i].second << noc << gray << " | ";
+                    std::cout << yellow << underline << completions[i] << noc << gray << " | ";
                 else
-                    std::cout << closest[i].second << " | ";
+                    std::cout << completions[i] << " | ";
             }
             else {
                 if ((flags & __REPL_NOCOLOR) == 0)
-                    std::cout << gray << closest[i].second << " | ";
+                    std::cout << gray << completions[i] << " | ";
                 else
-                    std::cout << closest[i].second << " | ";
+                    std::cout << completions[i] << " | ";
             }
         }
 
@@ -662,15 +742,18 @@ void
 repled::init(std::vector<std::string> cmd_options) {
     std::vector<std::string> attrs = COMMON_EARLATTR_ASCPL;
     for (size_t i = 0; i < KEYWORDS.size(); ++i)
-        autocomplete.push_back(KEYWORDS[i]);
+        trie.insert(KEYWORDS[i]);
     for (size_t i = 0; i < TYPES.size(); ++i)
-        autocomplete.push_back(TYPES[i]);
+        trie.insert(TYPES[i]);
     for (size_t i = 0; i < attrs.size(); ++i)
-        autocomplete.push_back(attrs[i]);
+        trie.insert(attrs[i]);
     for (size_t i = 0; i < cmd_options.size(); ++i)
-        autocomplete.push_back(cmd_options[i]);
-    for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it) {
-        autocomplete.push_back(it->first);
-    }
+        trie.insert(cmd_options[i]);
+    for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it)
+        trie.insert(it->first);
+}
+
+void repled::show_prefix_trie(void) {
+    trie.dump();
 }
 

@@ -69,8 +69,9 @@
 #define VARS ":vars"
 #define FUNCS ":funcs"
 #define RESET ":reset"
+#define AUTO ":auto"
 
-#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET}
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO}
 
 static std::string REPL_HIST = "";
 
@@ -229,6 +230,7 @@ help(void) {
     log("| " LIST_ENTRIES " -> list all entries in the current session\n");
     log("| " DISCARD " -> discard the current session\n");
     log("| " RESET " -> reset all identifiers\n");
+    log("| " AUTO " -> show all completions\n");
     log("Controls: (C = [CONTROL], M = [META] (ALT))\n");
     log("| Navigation:\n");
     log("| | [UP] -> previous line\n");
@@ -595,6 +597,8 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
         reset(ctx);
     else if (lst[0] == HELP)
         help();
+    else if (lst[0] == AUTO)
+        repled::show_prefix_trie();
     else
         log("unknown command sequence `" + lst[0] + "`\n", gray);
 }

@@ -54,6 +54,19 @@ namespace repled {
         ~SS() = default;
     };
 
+    struct PrefixTrie {
+        std::string prefix;
+        std::vector<PrefixTrie*> children;
+        bool is_end_of_word;
+
+        PrefixTrie();
+        ~PrefixTrie();
+
+        void insert(std::string word);
+        std::vector<std::string> get_completions(std::string prefix);
+        void dump(void) const;
+    };
+
     void clearln(int sz, bool flush=false);
     void out_lineno(bool flush=false);
     void handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines, repled::SS &ss);
@@ -65,6 +78,7 @@ namespace repled {
     void handle_tab(std::string prompt, int &c, int pad, std::string &line, std::vector<std::string> &lines);
     std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss);
     void init(std::vector<std::string> cmd_options);
+    void show_prefix_trie(void);
 };
 
 #endif // REPLED_H
