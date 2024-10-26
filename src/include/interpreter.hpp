@@ -34,6 +34,7 @@
 #include "earl.hpp"
 
 extern std::vector<std::string> include_dirs;
+extern std::vector<std::string> cli_import_dirs;
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {

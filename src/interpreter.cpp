@@ -2631,6 +2631,35 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     return nullptr;
 }
 
+static void
+import_cli_import_files(std::shared_ptr<Ctx> &ctx) {
+    // Need to move so these files do not import other cli imports.
+    auto cli_import_copy = std::move(cli_import_dirs);
+    cli_import_dirs.clear();
+    while (cli_import_copy.size() > 0) {
+        auto f = cli_import_copy.at(0);
+        cli_import_copy.erase(cli_import_copy.begin());
+
+        if ((flags & __VERBOSE) != 0)
+            std::cout << "[EARL] importing file `" << f << "` from command line flag" << std::endl;
+
+        std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+        std::vector<std::string> types    = {};
+        std::string comment               = COMMON_EARL_COMMENT;
+        std::string src_code              = read_file(f.c_str(), include_dirs);
+        std::unique_ptr<Lexer> lexer      = lex_file(src_code, f, keywords, types, comment);
+        std::unique_ptr<Program> program  = nullptr;
+
+        if ((flags & __CHECK) != 0)
+            program = Parser::parse_program(*lexer.get(), f, /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
+        else
+            program = Parser::parse_program(*lexer.get(), f);
+
+        std::shared_ptr<Ctx> child_ctx = Interpreter::interpret(std::move(program), std::move(lexer));
+        dynamic_cast<WorldCtx *>(ctx.get())->add_import(std::move(child_ctx));
+    }
+}
+
 std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
@@ -2644,6 +2673,9 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
         }
         return ctx;
     }
+
+    if (cli_import_dirs.size() > 0)
+        import_cli_import_files(ctx);
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
