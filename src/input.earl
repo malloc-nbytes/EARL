@@ -1,7 +1,7 @@
 module Main
 
-import "main.earl";
-import "std/io.earl";
-
 println("here");
+
+println(Other::x);
+println(Other2::y);
 

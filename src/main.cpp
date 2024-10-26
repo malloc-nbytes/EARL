@@ -44,6 +44,9 @@ static std::vector<std::string> watch_files = {};
 // --include resources
 std::vector<std::string> include_dirs = {};
 
+// --import resources
+std::vector<std::string> cli_import_dirs = {};
+
 // --watch resources
 static size_t run_count = 1;
 
@@ -69,7 +72,8 @@ usage(void) {
     std::cerr << "  -v, --version  . . . . . . . . . . . . Print version information" << std::endl;
     std::cerr << "      --install-prefix . . . . . . . . . Print the installation prefix" << std::endl;
     std::cerr << "  -c, --check  . . . . . . . . . . . . . Only parse the file given" << std::endl;
-    std::cerr << "  -i, --include <path>   . . . . . . . . Add an include directory" << std::endl;
+    std::cerr << "  -I, --include <DIR>  . . . . . . . . . Add an include directory" << std::endl;
+    std::cerr << "  -i, --import <filepath>  . . . . . . . Import a file from the CLI" << std::endl;
     std::cerr << "  -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "      --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "      --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
@@ -162,6 +166,18 @@ install_prefix(void) {
 }
 
 static void
+add_import_file(std::vector<std::string> &args) {
+    if (args.size() > 0) {
+        cli_import_dirs.push_back(args.at(0));
+        args.erase(args.begin());
+    }
+    else {
+        std::cerr << "error: missing import directory for flag `--" COMMON_EARL2ARG_IMPORT "`" << std::endl;
+        std::exit(1);
+    }
+}
+
+static void
 add_include_file(std::vector<std::string> &args) {
     if (args.size() > 0) {
         include_dirs.push_back(args.at(0));
@@ -207,6 +223,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __NO_SANITIZE_PIPES;
     else if (arg == COMMON_EARL2ARG_INCLUDE)
         add_include_file(args);
+    else if (arg == COMMON_EARL2ARG_IMPORT)
+        add_import_file(args);
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -233,6 +251,9 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         } break;
         case COMMON_EARL1ARG_INCLUDE: {
             add_include_file(args);
+        } break;
+        case COMMON_EARL1ARG_IMPORT: {
+            add_import_file(args);
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
