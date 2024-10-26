@@ -40,6 +40,11 @@
 
 std::vector<std::string> earl_argv = {};
 static std::vector<std::string> watch_files = {};
+
+// --include resources
+std::vector<std::string> include_dirs = {};
+
+// --watch resources
 static size_t run_count = 1;
 
 // --to-py resources
@@ -64,6 +69,7 @@ usage(void) {
     std::cerr << "  -v, --version  . . . . . . . . . . . . Print version information" << std::endl;
     std::cerr << "      --install-prefix . . . . . . . . . Print the installation prefix" << std::endl;
     std::cerr << "  -c, --check  . . . . . . . . . . . . . Only parse the file given" << std::endl;
+    std::cerr << "  -i, --include <path>   . . . . . . . . Add an include directory" << std::endl;
     std::cerr << "  -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "      --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "      --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
@@ -97,9 +103,8 @@ version() {
 static void
 gather_watch_files(std::vector<std::string> &args) {
     while (args.size() > 0) {
-        if (!std::filesystem::exists(std::filesystem::path(args.at(0)))) {
+        if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
             break;
-        }
         watch_files.push_back(std::string(args.at(0)));
         args.erase(args.begin());
     }
@@ -124,7 +129,7 @@ try_guess_wrong_arg(std::string &arg) {
 
 static void
 handle_to_py_flag(std::vector<std::string> &args) {
-    std::cout << "[EARL] warning: flag `--" << COMMON_EARL2ARG_TOPY << "` is experimental and may not work correctly" << std::endl;
+    std::cout << "warning: flag `--" << COMMON_EARL2ARG_TOPY << "` is experimental and may not work correctly" << std::endl;
     flags |= __TOPY;
     while (args.size() != 0 && args[0][0] != '-') {
         const std::string &option = args.at(0);
@@ -138,13 +143,13 @@ handle_to_py_flag(std::vector<std::string> &args) {
             else if (left == "output")
                 to_py_output = right;
             else {
-                std::cerr << "invalid option `" << left <<  "` for `--" << COMMON_EARL2ARG_TOPY << "`";
+                std::cerr << "error: invalid option `" << left <<  "` for `--" << COMMON_EARL2ARG_TOPY << "`";
                 std::exit(EXIT_FAILURE);
             }
             args.erase(args.begin());
         }
         else {
-            std::cerr << "missing `=` in `--" << COMMON_EARL2ARG_TOPY << "` option" << std::endl;
+            std::cerr << "error: missing `=` in `--" << COMMON_EARL2ARG_TOPY << "` option" << std::endl;
             std::exit(EXIT_FAILURE);
         }
     }
@@ -154,6 +159,18 @@ static void
 install_prefix(void) {
     std::cout << "[EARL install-prefix] EARL and StdLib installed at " << PREFIX << std::endl;
     std::exit(0);
+}
+
+static void
+add_include_file(std::vector<std::string> &args) {
+    if (args.size() > 0) {
+        include_dirs.push_back(args.at(0));
+        args.erase(args.begin());
+    }
+    else {
+        std::cerr << "error: missing include directory for flag `--" COMMON_EARL2ARG_INCLUDE "`" << std::endl;
+        std::exit(1);
+    }
 }
 
 static void
@@ -188,8 +205,10 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SHOWMUTS;
     else if (arg == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
         flags |= __NO_SANITIZE_PIPES;
+    else if (arg == COMMON_EARL2ARG_INCLUDE)
+        add_include_file(args);
     else {
-        std::cerr << "Unrecognised argument: " << arg << std::endl;
+        std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
         exit(1);
     }
@@ -211,6 +230,9 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         case COMMON_EARL1ARG_WATCH: {
             gather_watch_files(args);
             flags |= __WATCH;
+        } break;
+        case COMMON_EARL1ARG_INCLUDE: {
+            add_include_file(args);
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
@@ -293,7 +315,7 @@ main(int argc, char **argv) {
         std::unique_ptr<Lexer> lexer = nullptr;
         std::unique_ptr<Program> program = nullptr;
         try {
-            std::string src_code = read_file(filepath.c_str());
+            std::string src_code = read_file(filepath.c_str(), include_dirs);
             lexer = lex_file(src_code, filepath, keywords, types, comment);
         } catch (const LexerException &e) {
             std::cerr << "Lexer error: " << e.what() << std::endl;
@@ -355,7 +377,7 @@ main(int argc, char **argv) {
             std::unique_ptr<Lexer> lexer = nullptr;
             std::unique_ptr<Program> program = nullptr;
             try {
-                std::string src_code = read_file(filepath.c_str());
+                std::string src_code = read_file(filepath.c_str(), include_dirs);
                 lexer = lex_file(src_code, filepath, keywords, types, comment);
             } catch (const LexerException &e) {
                 std::cerr << "Lexer error: " << e.what() << std::endl;
@@ -384,7 +406,7 @@ main(int argc, char **argv) {
         flags |= __REPL;
         std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
-        repl::run();
+        repl::run(include_dirs);
     }
 
     return 0;

@@ -99,6 +99,6 @@ lex_file(std::string &src_code,
          std::string &comment);
 
 char *
-read_file(const char *filepath);
+read_file(const char *filepath, std::vector<std::string> &include_dirs);
 
 #endif // LEXER_H

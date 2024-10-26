@@ -147,41 +147,52 @@ try_comment(char *src, std::string &comment) {
 }
 
 char *
-read_file(const char *filepath) {
+read_file(const char *filepath, std::vector<std::string> &include_dirs) {
     const char *search_path = PREFIX "/include/EARL/";
-
     char full_path[256];
-    snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
 
+    // Try the PREFIX path first
+    snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
     FILE *f = nullptr;
 
-    if ((flags & __WITHOUT_STDLIB) == 0) {
+    if ((flags & __WITHOUT_STDLIB) == 0)
         f = fopen(full_path, "rb");
+
+    // If not found in PREFIX path, search in include_dirs
+    if (!f) {
+        for (const auto &dir : include_dirs) {
+            snprintf(full_path, sizeof(full_path), "%s/%s", dir.c_str(), filepath);
+            f = fopen(full_path, "rb");
+            if (f != nullptr) {
+                break; // File found
+            }
+        }
     }
 
-    if (f == nullptr) {
+    // If still not found, try to open the file using its original path
+    if (!f) {
         f = fopen(filepath, "rb");
     }
 
     if (f == nullptr || fseek(f, 0, SEEK_END)) {
         std::string msg = "could not find the specified source filepath: " + std::string(filepath);
-        throw std::runtime_error(msg);
+        throw InterpreterException(msg);
     }
 
     long length = ftell(f);
     rewind(f);
-    if (length == -1 || (unsigned long) length >= SIZE_MAX) {
+    if (length == -1 || (unsigned long)length >= SIZE_MAX) {
         fclose(f);
-        return NULL;
+        return nullptr;
     }
 
-    size_t ulength = (size_t)length;
-    char *buffer = (char *)malloc(ulength + 1);
+    size_t ulength = static_cast<size_t>(length);
+    char *buffer = static_cast<char *>(malloc(ulength + 1));
 
-    if (buffer == NULL || fread(buffer, 1, ulength, f) != ulength) {
+    if (buffer == nullptr || fread(buffer, 1, ulength, f) != ulength) {
         fclose(f);
         free(buffer);
-        return NULL;
+        return nullptr;
     }
     buffer[ulength] = '\0';
 
@@ -194,7 +205,7 @@ int consume_multiline_bash(char *s, int &cols, int &rows) {
         bool inbounds = s[i] && s[i+1] && s[i+2];
         if (inbounds && s[i] == '`' && s[i+1] == '`' && s[i+2] == '`')
             return i;
-        if (s[i] == '\n') 
+        if (s[i] == '\n')
             ++rows, cols = 0;
         else
             ++cols;

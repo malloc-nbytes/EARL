@@ -26,10 +26,14 @@
 #define INTERPRETER_H
 
 #include <memory>
+#include <vector>
+#include <string>
 
 #include "ctx.hpp"
 #include "ast.hpp"
 #include "earl.hpp"
+
+extern std::vector<std::string> include_dirs;
 
 /// @brief The namespace for the interpreter during runtime
 namespace Interpreter {

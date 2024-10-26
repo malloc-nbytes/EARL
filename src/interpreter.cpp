@@ -2261,7 +2261,7 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     PackedERPreliminary perp;
     auto path_obj                     = unpack_ER(path_er, ctx, &perp);
     std::string path                  = path_obj->to_cxxstring();
-    std::string src_code              = read_file(path.c_str());
+    std::string src_code              = read_file(path.c_str(), include_dirs);
     std::unique_ptr<Lexer> lexer      = lex_file(src_code,
                                                  path,
                                                  keywords,

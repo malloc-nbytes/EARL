@@ -257,14 +257,14 @@ help(void) {
 }
 
 static void
-import_file(std::vector<std::string> &args, std::vector<std::string> &lines) {
+import_file(std::vector<std::string> &args, std::vector<std::string> &lines, std::vector<std::string> &include_dirs) {
     if (args.size() == 0) {
         repled::clearln(0, true);
         log("No files supplied\n");
         return;
     }
     for (auto &f : args) {
-        const char *src_c = read_file(f.c_str());
+        const char *src_c = read_file(f.c_str(), include_dirs);
         std::string src = std::string(src_c);
         auto src_lines = split_on_newline(src);
         lineno += src_lines.size();
@@ -564,7 +564,7 @@ reset(std::shared_ptr<Ctx> &ctx) {
 }
 
 static void
-handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string> &lines, std::shared_ptr<Ctx> &ctx) {
+handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string> &lines, std::vector<std::string> &include_dirs, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
 
@@ -575,7 +575,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == LIST_ENTRIES)
         ls_entries(lines);
     else if (lst[0] == IMPORT)
-        import_file(args, lines);
+        import_file(args, lines, include_dirs);
     else if (lst[0] == CLEAR)
         clearscrn();
     else if (lst[0] == QUIT) {
@@ -604,7 +604,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
 }
 
 std::shared_ptr<Ctx>
-repl::run(void) {
+repl::run(std::vector<std::string> &include_dirs) {
     try_clear_repl_history();
 
     repled::init(CMD_OPTION_ASCPL);
@@ -631,7 +631,7 @@ repl::run(void) {
                 break;
             else if (line[0] == ':') {
                 repled::clearln(line.size());
-                handle_repl_arg(ri, line, lines, ctx);
+                handle_repl_arg(ri, line, lines, include_dirs, ctx);
             }
             else {
                 if (line != "") {
