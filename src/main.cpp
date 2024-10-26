@@ -55,10 +55,7 @@ usage(void) {
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
 
-    std::cerr << "Documentation can be found on the Github repository: https://github.com/malloc-nbytes/EARL/" << std::endl;
-    std::cerr << "  README.html                  -> compiling, installing, contributing" << std::endl;
-    std::cerr << "  docs/html/index.html         -> source code (make docs)" << std::endl;
-    std::cerr << "  EARL-language-reference.html -> how to use EARL" << std::endl << std::endl;
+    std::cerr << "Documentation can be found at: https://malloc-nbytes.github.io/EARL-web/" << std::endl << std::endl;
 
     std::cerr << "Usage: earl [script (max 1 file)] [options...] -- [passed_args...]" << std::endl;
     std::cerr << "|  or: provide no script to launch the REPL" << std::endl << std::endl;
