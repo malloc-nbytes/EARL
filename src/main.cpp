@@ -172,7 +172,7 @@ add_import_file(std::vector<std::string> &args) {
         args.erase(args.begin());
     }
     else {
-        std::cerr << "error: missing import directory for flag `--" COMMON_EARL2ARG_IMPORT "`" << std::endl;
+        std::cerr << "error: missing import file for flag `--" COMMON_EARL2ARG_IMPORT "`" << std::endl;
         std::exit(1);
     }
 }
