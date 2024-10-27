@@ -847,6 +847,10 @@ namespace earl {
             std::string get_info(void);
             uint32_t attrs(void) const;
             void disable_experimental_flag(void);
+            void set_event_listener(std::shared_ptr<earl::value::FunctionRef> &m_event_listener);
+
+            // Public for speed
+            std::shared_ptr<earl::value::FunctionRef> m_event_listener;
 
         private:
             Token *m_id;

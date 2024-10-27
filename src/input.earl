@@ -1,7 +1,12 @@
 module Main
 
-println("here");
+fn action(x) {
+    println(f"updated {x}");
+}
 
-println(Other::x);
-println(Other2::y);
+let lst = [];
+observe(lst, action);
 
+for i in 0 to 10 {
+    lst += [i];
+}

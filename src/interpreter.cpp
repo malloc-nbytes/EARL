@@ -1947,6 +1947,18 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     } break;
     }
     stmt->m_evald = true;
+
+    auto owner = l->borrow_owner();
+    if (owner && owner->m_event_listener) {
+        std::shared_ptr<earl::function::Obj> func = owner->m_event_listener->value();
+        auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
+        fctx->set_curfunc(func->id());
+        std::vector<std::shared_ptr<earl::value::Obj>> params = {l};
+        func->load_parameters(params, fctx, ctx);
+        std::shared_ptr<Ctx> mask = fctx;
+        (void)Interpreter::eval_stmt_block(func->block(), mask);
+    }
+    
     return std::make_shared<earl::value::Void>();
 }
 
