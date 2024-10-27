@@ -37,9 +37,10 @@
 #include "config.h"
 #include "hot-reload.hpp"
 #include "earl-to-py.hpp"
+#include "hidden-file.hpp"
 
 std::vector<std::string> earl_argv = {};
-static std::vector<std::string> watch_files = {};
+std::vector<std::string> watch_files = {};
 
 // --repl-theme resources
 std::vector<std::string> AVAILABLE_REPL_THEMES = COMMON_EARL_REPL_THEME_ASCPL;
@@ -90,12 +91,15 @@ usage(void) {
     std::cerr << "      --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
     std::cerr << "      --show-muts  . . . . . . . . . . . Print all value mutations" << std::endl;
     std::cerr << "      --no-sanitize-pipes  . . . . . . . Do not sanitize bash pipes" << std::endl;
+    std::cerr << "      --create-default-config  . . . . . Create a default configuration file" << std::endl;
     std::cerr << "      --to-py output=O [formatter=F] . . Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "        | where" << std::endl;
     std::cerr << "        |     O = stdout|<file>" << std::endl;
     std::cerr << "        |     F = <program>" << std::endl;
 
     std::cerr << std::endl;
+
+    std::cerr << "You can also create a configuration file by using the `--create-default-config` flag for a starting point." << std::endl << std::endl;
 
     std::cerr << "Examples:" << std::endl;
     std::cerr << "  earl script.earl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
@@ -185,6 +189,22 @@ add_import_file(std::vector<std::string> &args) {
 }
 
 static void
+assert_repl_theme_valid(void) {
+    bool found = false;
+    for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
+        if (REPL_THEME == t) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        std::cerr << "invalid theme: `" << REPL_THEME << "`" << std::endl;
+        std::cerr << "see `--" << COMMON_EARL2ARG_REPL_THEME << " list` to view all themes" << std::endl;
+        std::exit(1);
+    }
+}
+
+static void
 get_repl_theme(std::vector<std::string> &args) {
     if (args.size() > 0) {
         REPL_THEME = args.at(0);
@@ -198,18 +218,7 @@ get_repl_theme(std::vector<std::string> &args) {
             std::exit(0);
         }
 
-        bool found = false;
-        for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
-            if (REPL_THEME == t) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            std::cerr << "invalid theme: `" << REPL_THEME << "`" << std::endl;
-            std::cerr << "see `--" << COMMON_EARL2ARG_REPL_THEME << " list` to view all themes" << std::endl;
-            std::exit(1);
-        }
+        // Theme checking is done in main().
     }
     else {
         std::cerr << "error: missing theme for flag `--" COMMON_EARL2ARG_REPL_THEME "`" << std::endl;
@@ -267,6 +276,10 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         add_import_file(args);
     else if (arg == COMMON_EARL2ARG_REPL_THEME)
         get_repl_theme(args);
+    else if (arg == COMMON_EARL2ARG_CREATE_DEF_CONF)
+        create_default_config_file();
+    else if (arg == COMMON_EARL2ARG_IGNORE_CONF)
+        flags |= __IGNORE_CONF;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -360,11 +373,15 @@ handlecli(int argc, char **argv) {
 int
 main(int argc, char **argv) {
     ++argv; --argc;
-    std::string filepath = handlecli(argc, argv);
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types = {};
     std::string comment = "#";
+
+    handle_hidden_file();
+    assert_repl_theme_valid();
+
+    std::string filepath = handlecli(argc, argv);
 
     if ((flags & __WATCH) != 0) {
         if (watch_files.size() == 0) {
