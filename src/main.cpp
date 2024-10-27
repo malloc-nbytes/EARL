@@ -41,6 +41,10 @@
 std::vector<std::string> earl_argv = {};
 static std::vector<std::string> watch_files = {};
 
+// --repl-theme resources
+std::vector<std::string> AVAILABLE_REPL_THEMES = COMMON_EARL_REPL_THEME_ASCPL;
+std::string REPL_THEME = COMMON_EARL_REPL_THEME_DEFAULT;
+
 // --include resources
 std::vector<std::string> include_dirs = {};
 
@@ -78,6 +82,9 @@ usage(void) {
     std::cerr << "      --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "      --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "      --repl-nocolor . . . . . . . . . . Do not use color in the REPL" << std::endl;
+    std::cerr << "      --repl-theme <<theme>|list>  . . . Use a color theme in the REPL (`default` if this option is not used)" << std::endl;
+    std::cerr << "        | where" << std::endl;
+    std::cerr << "        |     list = list all available themes" << std::endl;
     std::cerr << "      --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
     std::cerr << "      --show-bash  . . . . . . . . . . . Print all inlined bash" << std::endl;
     std::cerr << "      --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
@@ -178,6 +185,39 @@ add_import_file(std::vector<std::string> &args) {
 }
 
 static void
+get_repl_theme(std::vector<std::string> &args) {
+    if (args.size() > 0) {
+        REPL_THEME = args.at(0);
+        args.erase(args.begin());
+
+        if (REPL_THEME == "list") {
+            std::cerr << "REPL Themes:" << std::endl;
+            for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
+                std::cerr << "| " << t << std::endl;
+            }
+            std::exit(0);
+        }
+
+        bool found = false;
+        for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
+            if (REPL_THEME == t) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            std::cerr << "invalid theme: `" << REPL_THEME << "`" << std::endl;
+            std::cerr << "see `--" << COMMON_EARL2ARG_REPL_THEME << " list` to view all themes" << std::endl;
+            std::exit(1);
+        }
+    }
+    else {
+        std::cerr << "error: missing theme for flag `--" COMMON_EARL2ARG_REPL_THEME "`" << std::endl;
+        std::exit(1);
+    }
+}
+
+static void
 add_include_file(std::vector<std::string> &args) {
     if (args.size() > 0) {
         include_dirs.push_back(args.at(0));
@@ -225,6 +265,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         add_include_file(args);
     else if (arg == COMMON_EARL2ARG_IMPORT)
         add_import_file(args);
+    else if (arg == COMMON_EARL2ARG_REPL_THEME)
+        get_repl_theme(args);
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

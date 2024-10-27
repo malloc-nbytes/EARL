@@ -38,9 +38,128 @@
 static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 
-static std::vector<std::string> autocomplete = {};
+static repled::PrefixTrie TRIE;
 
-static repled::PrefixTrie trie;
+const char *repled::main_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return YELLOW;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return CYAN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE INVERT;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return YELLOW;
+    }
+}
+
+// used for identifiers, numbers, etc.
+const char *repled::misc_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return "";
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return CYAN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE BOLD;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE;
+    }
+}
+
+const char *repled::quote_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return GREEN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return BLUE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE INVERT;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE ITALIC;
+    }
+}
+
+const char *repled::error_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return RED;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return RED;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return RED;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return RED;
+    }
+}
+
+const char *repled::msg_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return GRAY;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return CYAN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE INVERT;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE;
+    }
+}
+
+const char *repled::stdout_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return GREEN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return CYAN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE;
+    }
+}
+
+const char *repled::stdout_type_color(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return GRAY;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return BLUE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE;
+    }
+}
+
+const char *repled::status_ok(void) {
+    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+        return GREEN;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+        return BLUE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+        return WHITE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+        return ORANGE;
+    }
+}
 
 repled::PrefixTrie::PrefixTrie() : prefix(""), children(0), is_end_of_word(false) {}
 
@@ -211,19 +330,19 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             if (!current_word.empty()) {
                 if (is_keyword(current_word)) {
                     if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                        std::cout << yellow << italic << bold << current_word;
+                        std::cout << repled::main_color() << italic << bold << current_word;
                     else
                         std::cout << current_word;
                 }
                 else if (is_type(current_word)) {
                     if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                        std::cout << blue << current_word;
+                        std::cout << repled::main_color() << current_word;
                     else
                         std::cout << current_word;
                 }
                 else {
                     if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                        std::cout << noc << current_word;
+                        std::cout << noc << repled::misc_color() << current_word;
                     else
                         std::cout << current_word;
                 }
@@ -234,7 +353,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             if (line[i] == '"') {
                 in_quote = true;
                 if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                    std::cout << green << line[i];
+                    std::cout << repled::quote_color() << line[i];
                 else
                     std::cout << line[i];
                 size_t j = i + 1;
@@ -252,7 +371,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
                 if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                    std::cout << green << line[i];
+                    std::cout << repled::quote_color() << line[i];
                 else
                     std::cout << line[i];
                 size_t j = i + 1;
@@ -284,19 +403,19 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     if (!current_word.empty()) {
         if (is_keyword(current_word)) {
             if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                std::cout << yellow << current_word;
+                std::cout << repled::main_color() << current_word;
             else
                 std::cout << current_word;
         }
         else if (is_type(current_word)) {
             if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                std::cout << blue << current_word;
+                std::cout << repled::main_color() << current_word;
             else
                 std::cout << current_word;
         }
         else {
             if ((flags & __REPL_NOCOLOR) == 0 && !comment)
-                std::cout << noc << current_word;
+                std::cout << noc << repled::misc_color() << current_word;
             else
                 std::cout << current_word;
         }
@@ -345,7 +464,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
         if (bracket_ok) {
             if ((flags & __REPL_NOCOLOR) == 0)
-                std::cout << noc << bold << dim << green << "< ok >" << noc << " ";
+                std::cout << noc << bold << dim << repled::quote_color() << "< ok >" << noc << " ";
             else
                 std::cout << "< ok > ";
         }
@@ -362,7 +481,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             last_word = ':' + last_word; // Prepend ':' if the line starts with it
         }
 
-        std::vector<std::string> completions = trie.get_completions(last_word);
+        std::vector<std::string> completions = TRIE.get_completions(last_word);
 
         if ((flags & __REPL_NOCOLOR) == 0)
             std::cout << gray << "| ";
@@ -372,7 +491,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         for (size_t i = 0; i < completions.size() && i < 7; ++i) {
             if (completions[i] == last_word) {
                 if ((flags & __REPL_NOCOLOR) == 0)
-                    std::cout << yellow << underline << completions[i] << noc << gray << " | ";
+                    std::cout << repled::main_color() << underline << completions[i] << noc << gray << " | ";
                 else
                     std::cout << completions[i] << " | ";
             }
@@ -741,18 +860,18 @@ void
 repled::init(std::vector<std::string> cmd_options) {
     std::vector<std::string> attrs = COMMON_EARLATTR_ASCPL;
     for (size_t i = 0; i < KEYWORDS.size(); ++i)
-        trie.insert(KEYWORDS[i]);
+        TRIE.insert(KEYWORDS[i]);
     for (size_t i = 0; i < TYPES.size(); ++i)
-        trie.insert(TYPES[i]);
+        TRIE.insert(TYPES[i]);
     for (size_t i = 0; i < attrs.size(); ++i)
-        trie.insert(attrs[i]);
+        TRIE.insert(attrs[i]);
     for (size_t i = 0; i < cmd_options.size(); ++i)
-        trie.insert(cmd_options[i]);
+        TRIE.insert(cmd_options[i]);
     for (auto it = Intrinsics::intrinsic_functions.begin(); it != Intrinsics::intrinsic_functions.end(); ++it)
-        trie.insert(it->first);
+        TRIE.insert(it->first);
 }
 
 void repled::show_prefix_trie(void) {
-    trie.dump();
+    TRIE.dump();
 }
 
