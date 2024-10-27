@@ -94,7 +94,7 @@ usage(void) {
     std::cerr << "            --no-sanitize-pipes  . . . . . . . Do not sanitize bash pipes" << std::endl;
     std::cerr << "    REPL Config" << std::endl;
     std::cerr << "            --repl-nocolor . . . . . . . . . . Do not use color in the REPL" << std::endl;
-    std::cerr << "            --repl-theme <<theme>|list>  . . . Use a color theme in the REPL (`default` if this option is not used)" << std::endl;
+    std::cerr << "            --repl-theme <theme>|list  . . . . Use a color theme in the REPL (`default` if this option is not used)" << std::endl;
     std::cerr << "                where" << std::endl;
     std::cerr << "                    list = list all available themes" << std::endl;
     std::cerr << "    Misc. Options" << std::endl;
