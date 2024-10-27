@@ -32,6 +32,7 @@
 #include <ctime>
 #include <unistd.h>
 #include <random>
+#include <variant>
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -60,6 +61,7 @@ Intrinsics::intrinsic_functions = {
     {"some", &Intrinsics::intrinsic_some},
     {"argv", &Intrinsics::intrinsic_argv},
     {"input", &Intrinsics::intrinsic_input},
+    {"observe", &Intrinsics::intrinsic_observe},
     {"init_seed", &Intrinsics::intrinsic_init_seed},
     {"random", &Intrinsics::intrinsic_random},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
@@ -770,6 +772,51 @@ Intrinsics::intrinsic_assert(std::vector<std::shared_ptr<earl::value::Obj>> &par
             throw InterpreterException(msg);
         }
     }
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_observe(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "observe", expr);
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[1],
+                                            earl::value::Type::FunctionRef,
+                                            earl::value::Type::Closure, 2, "observe", expr);
+
+    auto listen_arg = params.at(0).get();
+    auto event = params.back().get();
+
+    earl::variable::event_listener_t callback = {};
+
+    if (event->type() == earl::value::Type::FunctionRef) {
+        auto func = dynamic_cast<earl::value::FunctionRef *>(params.back().get())->value();
+        if (func->params_len() != 1) {
+            Err::err_wexpr(expr);
+            const std::string msg = "Observe callback functions must have 1 parameter";
+            throw InterpreterException(msg);
+        }
+        callback = std::dynamic_pointer_cast<earl::value::FunctionRef>(params.back());
+    }
+    else {
+        auto cl = std::dynamic_pointer_cast<earl::value::Closure>(params.back());
+        if (cl->params_len() != 1) {
+            Err::err_wexpr(expr);
+            const std::string msg = "Observe callback functions must have 1 parameter";
+            throw InterpreterException(msg);
+        }
+        callback = cl;
+    }
+
+    auto listen_owner = listen_arg->borrow_owner();
+    if (!listen_owner) {
+        Err::err_wexpr(expr);
+        const std::string msg = "cannot set an event listener on a non-variable";
+        throw InterpreterException(msg);
+    }
+
+    listen_owner->m_event_listener = callback;
+
     return std::make_shared<earl::value::Void>();
 }
 

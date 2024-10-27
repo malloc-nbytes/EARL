@@ -62,6 +62,15 @@
         }                                                               \
     } while (0)
 
+#define __INTR_ARGS_MUSTBE_AT_LEAST_SIZE(args, sz, fn, expr)            \
+    do {                                                                \
+        if (args.size() < sz) {                                         \
+            Err::err_wexpr(expr);                                       \
+            std::string __Msg = "intrinsic `" fn "` expects at least "+std::to_string(sz)+" arguments"; \
+            throw InterpreterException(__Msg);                          \
+        }                                                               \
+    } while (0)
+
 #define __INTR_ARGS_MUSTNOT_BE_0(args, fn, expr)                        \
     do {                                                                \
         if (args.size() == 0) {                                         \
@@ -363,7 +372,10 @@ namespace Intrinsics {
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
-    /*** INTERNAL INTRINSIC FUNCTION IMPLEMENTATIONS ***/
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_observe(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                      std::shared_ptr<Ctx> &ctx,
+                      Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_init_seed(std::vector<std::shared_ptr<earl::value::Obj>> &seed,

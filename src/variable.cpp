@@ -29,8 +29,13 @@
 using namespace earl::variable;
 
 Obj::Obj(Token *id, std::shared_ptr<earl::value::Obj> value, uint32_t attrs, std::string info)
-    : m_id(id), m_value(value), m_attrs(attrs), m_info(info) {
+    : m_id(id), m_value(value), m_attrs(attrs), m_info(info), m_event_listener({}) {
     m_constness = (attrs & static_cast<uint32_t>(Attr::Const)) != 0 ? true : false;
+}
+
+void
+Obj::set_event_listener(event_listener_t event_listener) {
+    m_event_listener = event_listener;
 }
 
 std::string

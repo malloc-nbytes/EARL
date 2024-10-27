@@ -95,6 +95,8 @@ Obj::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
         if (ty) {
             Interpreter::typecheck(ty, value.get(), old_ctx);
         }
+        if (id->lexeme() == "_")
+            continue;
 
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)

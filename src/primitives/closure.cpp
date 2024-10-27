@@ -53,6 +53,8 @@ Closure::load_parameters(std::vector<std::shared_ptr<earl::value::Obj>> &values,
     for (size_t i = 0; i < values.size(); ++i) {
         auto value = values[i];
         Token *id = m_params.at(i).first;
+        if (id->lexeme() == "_")
+            continue;
         std::shared_ptr<earl::variable::Obj> var = nullptr;
         if ((m_params.at(i).second & static_cast<uint32_t>(Attr::Ref)) != 0)
             var = std::make_shared<earl::variable::Obj>(id, value);

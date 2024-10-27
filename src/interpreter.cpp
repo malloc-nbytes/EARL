@@ -1947,6 +1947,35 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     } break;
     }
     stmt->m_evald = true;
+
+    // If an observe callback is initialized.
+    auto owner = l->borrow_owner();
+    if (owner && owner->m_event_listener.has_value()) {
+        std::visit([&](auto &&f) {
+            using T = std::decay_t<decltype(f)>;
+
+            // Event listener is a function reference.
+            if constexpr (std::is_same_v<T, std::shared_ptr<earl::value::FunctionRef>>) {
+                std::shared_ptr<earl::function::Obj> func = f->value();
+                auto fctx = std::make_shared<FunctionCtx>(ctx, func->attrs());
+                fctx->set_curfunc(func->id());
+                std::vector<std::shared_ptr<earl::value::Obj>> params = {l};
+                func->load_parameters(params, fctx, ctx);
+                std::shared_ptr<Ctx> mask = fctx;
+                (void)Interpreter::eval_stmt_block(func->block(), mask);
+            }
+            // Event listener is a closure.
+            else if constexpr (std::is_same_v<T, std::shared_ptr<earl::value::Closure>>) {
+                auto clctx = std::make_shared<ClosureCtx>(ctx);
+                std::vector<std::shared_ptr<earl::value::Obj>> params = {l};
+                f->load_parameters(params, clctx);
+                std::shared_ptr<Ctx> mask = clctx;
+                (void)Interpreter::eval_stmt_block(f->block(), mask);
+            }
+        }, owner->m_event_listener.value());
+
+    }
+
     return std::make_shared<earl::value::Void>();
 }
 

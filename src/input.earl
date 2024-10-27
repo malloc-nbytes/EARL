@@ -1,7 +1,2 @@
 module Main
 
-println("here");
-
-println(Other::x);
-println(Other2::y);
-
