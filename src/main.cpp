@@ -39,6 +39,7 @@
 #include "earl-to-py.hpp"
 #include "hidden-file.hpp"
 
+static std::vector<std::string> scripts = {};
 std::vector<std::string> earl_argv = {};
 std::vector<std::string> watch_files = {};
 
@@ -82,6 +83,7 @@ usage(void) {
     std::cerr << "        -I, --include <DIR>  . . . . . . . . . Add an include directory" << std::endl;
     std::cerr << "        -i, --import <filepath>  . . . . . . . Import a file from the CLI" << std::endl;
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
+    std::cerr << "        -b  --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "            --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
@@ -107,9 +109,13 @@ usage(void) {
     std::cerr << "You can also create a configuration file by using the `--create-default-config` flag for a starting point." << std::endl << std::endl;
 
     std::cerr << "Examples:" << std::endl;
+    std::cerr << "  earl                                   # Launch the REPL" << std::endl;
+    std::cerr << "  earl --show-lets                       # Launch the REPL and print variable instantiations" << std::endl;
+    std::cerr << "  earl --version                         # Show the version" << std::endl;
+    std::cerr << "  earl --v                               # Show the version" << std::endl;
     std::cerr << "  earl script.earl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
     std::cerr << "  earl script.earl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
-    std::cerr << "  earl --show-lets                       # Launch the REPL and print variable instantiations" << std::endl;
+    std::cerr << "  earl --batch script1.earl script2.earl # Run multiple EARL scripts" << std::endl;
 
     std::exit(0);
 }
@@ -246,6 +252,16 @@ add_include_file(std::vector<std::string> &args) {
 }
 
 static void
+get_batch_scripts(std::vector<std::string> &args) {
+    while (args.size() > 0) {
+        if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
+            break;
+        scripts.push_back(std::string(args.at(0)));
+        args.erase(args.begin());
+    }
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -285,8 +301,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         get_repl_theme(args);
     else if (arg == COMMON_EARL2ARG_CREATE_DEF_CONF)
         create_default_config_file();
-    else if (arg == COMMON_EARL2ARG_IGNORE_CONF)
-        flags |= __IGNORE_CONF;
+    else if (arg == COMMON_EARL2ARG_BATCH)
+        get_batch_scripts(args);
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -317,6 +333,9 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         case COMMON_EARL1ARG_IMPORT: {
             add_import_file(args);
         } break;
+        case COMMON_EARL1ARG_BATCH: {
+            get_batch_scripts(args);
+        } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
         } break;
@@ -346,7 +365,7 @@ parse_earl_argv(std::vector<std::string> &args) {
         earl_argv.push_back(s);
 }
 
-static std::string
+static void
 handlecli(int argc, char **argv) {
     std::string filepath = "";
     std::vector<std::string> args = {};
@@ -371,10 +390,9 @@ handlecli(int argc, char **argv) {
             filepath = entry;
             earl_argv.push_back(filepath);
             args.erase(args.begin());
+            scripts.push_back(filepath);
         }
     }
-
-    return filepath;
 }
 
 int
@@ -387,107 +405,110 @@ main(int argc, char **argv) {
 
     handle_hidden_file();
     assert_repl_theme_valid();
+    handlecli(argc, argv);
 
-    std::string filepath = handlecli(argc, argv);
-
-    if ((flags & __WATCH) != 0) {
-        if (watch_files.size() == 0) {
-            std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
-            std::exit(1);
-        }
-        hot_reload::register_watch_files(watch_files);
-    }
-
-    if ((flags & __TOPY) != 0) {
-        std::unique_ptr<Lexer> lexer = nullptr;
-        std::unique_ptr<Program> program = nullptr;
-        try {
-            std::string src_code = read_file(filepath.c_str(), include_dirs);
-            lexer = lex_file(src_code, filepath, keywords, types, comment);
-        } catch (const LexerException &e) {
-            std::cerr << "Lexer error: " << e.what() << std::endl;
-        }
-        try {
-            program = Parser::parse_program(*lexer.get(), filepath);
-        } catch (const ParserException &e) {
-            std::cerr << "Parser error: " << e.what() << std::endl;
-        }
-        auto pysrc = earl_to_py(std::move(program));
-
-        if (to_py_output == "") {
-            std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
-            std::exit(EXIT_FAILURE);
-        }
-
-        if (to_py_output == "stdout")
-            std::cout << pysrc << std::endl;
-        else {
-            std::ofstream pysrc_outfile(to_py_output);
-            if (!pysrc_outfile) {
-                std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
-                std::exit(EXIT_FAILURE);
+    if (scripts.size() > 0) {
+        for (auto &filepath : scripts) {
+            if ((flags & __WATCH) != 0) {
+                if (watch_files.size() == 0) {
+                    std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
+                    std::exit(1);
+                }
+                hot_reload::register_watch_files(watch_files);
             }
-            pysrc_outfile << pysrc;
-            pysrc_outfile.close();
-        }
 
-        if (to_py_formatter != "") {
-            std::string cmd = to_py_formatter+" "+to_py_output;
-            int exit_code = system(cmd.c_str());
-            if (exit_code != 0) {
-                std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
-                std::exit(1);
+            if ((flags & __TOPY) != 0) {
+                std::unique_ptr<Lexer> lexer = nullptr;
+                std::unique_ptr<Program> program = nullptr;
+                try {
+                    std::string src_code = read_file(filepath.c_str(), include_dirs);
+                    lexer = lex_file(src_code, filepath, keywords, types, comment);
+                } catch (const LexerException &e) {
+                    std::cerr << "Lexer error: " << e.what() << std::endl;
+                }
+                try {
+                    program = Parser::parse_program(*lexer.get(), filepath);
+                } catch (const ParserException &e) {
+                    std::cerr << "Parser error: " << e.what() << std::endl;
+                }
+                auto pysrc = earl_to_py(std::move(program));
+
+                if (to_py_output == "") {
+                    std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
+                    std::exit(EXIT_FAILURE);
+                }
+
+                if (to_py_output == "stdout")
+                    std::cout << pysrc << std::endl;
+                else {
+                    std::ofstream pysrc_outfile(to_py_output);
+                    if (!pysrc_outfile) {
+                        std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+                        std::exit(EXIT_FAILURE);
+                    }
+                    pysrc_outfile << pysrc;
+                    pysrc_outfile.close();
+                }
+
+                if (to_py_formatter != "") {
+                    std::string cmd = to_py_formatter+" "+to_py_output;
+                    int exit_code = system(cmd.c_str());
+                    if (exit_code != 0) {
+                        std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
+                        std::exit(1);
+                    }
+                }
+
+                std::exit(0);
             }
-        }
-
-        std::exit(0);
-    }
-
-    if ((flags & __WATCH) != 0)
-        std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
-
-    bool locked = true;
-
-    if (filepath != "") {
-        do {
-            // No need to check for __WATCH cause this statement
-            // will not happen unless we are looping, which is
-            // already determined by __WATCH.
-            if (!locked)
-                hot_reload::watch();
-            else
-                locked = false;
 
             if ((flags & __WATCH) != 0)
-                std::cout << "=== Run: " << run_count++ << " ======================" << std::endl;
+                std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
 
-            std::unique_ptr<Lexer> lexer = nullptr;
-            std::unique_ptr<Program> program = nullptr;
-            try {
-                std::string src_code = read_file(filepath.c_str(), include_dirs);
-                lexer = lex_file(src_code, filepath, keywords, types, comment);
-            } catch (const LexerException &e) {
-                std::cerr << "Lexer error: " << e.what() << std::endl;
-                if ((flags & __WATCH) == 0)
-                    return 1;
-                continue;
+            bool locked = true;
+
+            if (filepath != "") {
+                do {
+                    // No need to check for __WATCH cause this statement
+                    // will not happen unless we are looping, which is
+                    // already determined by __WATCH.
+                    if (!locked)
+                        hot_reload::watch();
+                    else
+                        locked = false;
+
+                    if ((flags & __WATCH) != 0)
+                        std::cout << "=== Run: " << run_count++ << " ======================" << std::endl;
+
+                    std::unique_ptr<Lexer> lexer = nullptr;
+                    std::unique_ptr<Program> program = nullptr;
+                    try {
+                        std::string src_code = read_file(filepath.c_str(), include_dirs);
+                        lexer = lex_file(src_code, filepath, keywords, types, comment);
+                    } catch (const LexerException &e) {
+                        std::cerr << "Lexer error: " << e.what() << std::endl;
+                        if ((flags & __WATCH) == 0)
+                            return 1;
+                        continue;
+                    }
+                    try {
+                        program = Parser::parse_program(*lexer.get(), filepath);
+                    } catch (const ParserException &e) {
+                        std::cerr << "Parser error: " << e.what() << std::endl;
+                        if ((flags & __WATCH) == 0)
+                            return 1;
+                        continue;
+                    }
+                    try {
+                        (void)Interpreter::interpret(std::move(program), std::move(lexer));
+                    } catch (const InterpreterException &e) {
+                        std::cerr << "Interpreter error: " << e.what() << std::endl;
+                        if ((flags & __WATCH) == 0)
+                            return 1;
+                    }
+                } while ((flags & __WATCH) != 0);
             }
-            try {
-                program = Parser::parse_program(*lexer.get(), filepath);
-            } catch (const ParserException &e) {
-                std::cerr << "Parser error: " << e.what() << std::endl;
-                if ((flags & __WATCH) == 0)
-                    return 1;
-                continue;
-            }
-            try {
-                (void)Interpreter::interpret(std::move(program), std::move(lexer));
-            } catch (const InterpreterException &e) {
-                std::cerr << "Interpreter error: " << e.what() << std::endl;
-                if ((flags & __WATCH) == 0)
-                    return 1;
-            }
-        } while ((flags & __WATCH) != 0);
+        }
     }
     else {
         flags |= __REPL;
