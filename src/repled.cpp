@@ -144,7 +144,7 @@ const char *repled::msg_color(void) {
         return WHITE INVERT;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
-        return ORANGE;
+        return BROWN;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return BLUE;

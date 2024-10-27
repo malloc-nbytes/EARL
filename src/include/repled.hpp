@@ -44,6 +44,7 @@
 #define PURPLE "\033[35m"
 #define BRIGHT_PURPLE "\033[95m"
 #define ORANGE "\033[38;5;214m"
+#define BROWN "\033[38;5;94m"
 
 // BACKGROUNDS
 #define DARK_BLUE_BACKGROUND "\033[44m"
