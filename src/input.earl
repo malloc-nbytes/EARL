@@ -1,4 +1,4 @@
 module Main
 
-println("hi");
+import "std/time.earl"; as time
 

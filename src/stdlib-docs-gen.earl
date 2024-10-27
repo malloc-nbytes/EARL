@@ -846,7 +846,7 @@ fn main(convert_mode: str) {
         let f = open(jsx_output, "w");
         f.write(jsx);
         f.close();
-        println(jsx);
+        # println(jsx);
         println(f"Wrote to {jsx_output}");
     }
     else if convert_mode == "org" {
@@ -855,9 +855,6 @@ fn main(convert_mode: str) {
         let content = orig_content+autogen;
         f.write(content);
         f.close();
-
-        println(f"The following modules were written to {docsfp}");
-        println(modules);
 
         if Script::program_exists("emacs") {
             println("Found Emacs, converting EARL-language-reference.org to HTML");
@@ -870,6 +867,8 @@ fn main(convert_mode: str) {
             println("Emacs is not available on the system, cannot convert EARL-language-reference.org to HTML, ignoring...");
         }
     }
+    println(f"The following modules");
+    println(modules);
 }
 
 let mode = "";
