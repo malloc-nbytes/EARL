@@ -212,17 +212,19 @@ assert_repl_theme_valid(void) {
 static void
 get_repl_theme(std::vector<std::string> &args) {
     if (args.size() > 0) {
-        REPL_THEME = args.at(0);
-        args.erase(args.begin());
-
-        if (REPL_THEME == "list") {
+        if (args[0] == "list") {
             std::cerr << "REPL Themes:" << std::endl;
             for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
-                std::cerr << "| " << t << std::endl;
+                std::cerr << "| " << t;
+                if (REPL_THEME == t)
+                    std::cout << "        [selected]";
+                std::cout << std::endl;
             }
             std::exit(0);
         }
 
+        REPL_THEME = args.at(0);
+        args.erase(args.begin());
         // Theme checking is done in main().
     }
     else {
