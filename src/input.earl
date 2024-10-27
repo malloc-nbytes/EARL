@@ -1,4 +1,3 @@
 module Main
 
-import "std/time.earl"; as time
-
+println(__OS__);

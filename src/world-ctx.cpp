@@ -247,7 +247,7 @@ WorldCtx::enum_get(const std::string &id) {
 
 WorldCtx *
 WorldCtx::get_world(void) {
-    UNIMPLEMENTED("WorldCtx::get_world");
+    return this;
 }
 
 void

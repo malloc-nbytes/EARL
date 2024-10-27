@@ -35,11 +35,36 @@ using BuiltinIdentSig = std::shared_ptr<earl::value::Obj> (*)(std::shared_ptr<Ct
 
 std::shared_ptr<earl::value::Obj> builtin___FUNC__(std::shared_ptr<Ctx> &ctx);
 std::shared_ptr<earl::value::Obj> builtin__FILE__(std::shared_ptr<Ctx> &ctx);
+std::shared_ptr<earl::value::Obj> builtin__OS__(std::shared_ptr<Ctx> &ctx);
+std::shared_ptr<earl::value::Obj> builtin__MODULE__(std::shared_ptr<Ctx> &ctx);
 
 static const std::unordered_map<std::string, BuiltinIdentSig> builtin_idents = {
     {"__FUNC__", &builtin___FUNC__},
     {"__FILE__", &builtin__FILE__},
+    {"__OS__", &builtin__OS__},
+    {"__MODULE__", &builtin__MODULE__},
 };
+
+std::shared_ptr<earl::value::Obj>
+builtin__MODULE__(std::shared_ptr<Ctx> &ctx) {
+    auto world = ctx->get_world();
+    return std::make_shared<earl::value::Str>(world->get_mod());
+}
+
+std::shared_ptr<earl::value::Obj>
+builtin__OS__(std::shared_ptr<Ctx> &ctx) {
+#if defined(_WIN32) || defined(_WIN64)
+    return std::make_shared<earl::value::Str>("WINDOWS");
+#elif defined(__APPLE__) || defined(__MACH__)
+    return std::make_shared<earl::value::Str>("MAC");
+#elif defined(__linux__)
+    return std::make_shared<earl::value::Str>("LINUX");
+#elif defined(__unix__)
+    return std::make_shared<earl::value::Str>("UNIX");
+#else
+    return std::make_shared<earl::value::Str>("UNKNOWN");
+#endif
+}
 
 std::shared_ptr<earl::value::Obj>
 builtin__FILE__(std::shared_ptr<Ctx> &ctx) {
@@ -72,7 +97,7 @@ builtin___FUNC__(std::shared_ptr<Ctx> &ctx) {
         const std::string &id = dynamic_cast<FunctionCtx *>(ctx.get())->get_curfuncid();
         return std::make_shared<earl::value::Str>(id);
     }
-    return std::make_shared<earl::value::Option>();
+    return std::make_shared<earl::value::Str>("");
 }
 
 bool
