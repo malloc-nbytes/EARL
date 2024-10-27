@@ -84,14 +84,8 @@ std::string
 get_os_info() {
     struct utsname buffer;
     uname(&buffer);
-
     std::string sysname(buffer.sysname);
     std::string version(buffer.release);
-
-    size_t hash_pos = version.find('#');
-    if (hash_pos != std::string::npos)
-        version = version.substr(0, hash_pos);
-
     return sysname + " " + version;
 }
 
@@ -114,10 +108,30 @@ get_os_info() {
 }
 #endif
 
+static std::string
+stdlib_installed(void) {
+    std::filesystem::path path = PREFIX "/include/EARL/std";
+    if (std::filesystem::exists(path) && std::filesystem::is_directory(path))
+        return "YES";
+    return "NO";
+}
+
+static std::string
+earlmgr_installed(void) {
+    std::filesystem::path path = PREFIX "/bin/earlmgr";
+    if (std::filesystem::exists(path))
+        return "YES";
+    return "NO";
+}
+
 static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
+
     std::cerr << "EARL v" << VERSION << ", " << COMPILER_INFO << " " << get_os_info() << std::endl << std::endl;
+
+    std::cerr << "StdLib installed: " << stdlib_installed() << std::endl;
+    std::cerr << "earlmgr installed: " << earlmgr_installed() << std::endl << std::endl;
 
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
