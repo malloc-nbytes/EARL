@@ -27,6 +27,37 @@
 
 #include <termios.h>
 
+// FORGROUNDS
+#define YELLOW "\033[93m"
+#define GREEN "\033[32m"
+#define BRIGHT_GREEN "\033[92m"
+#define GRAY "\033[90m"
+#define RED "\033[31m"
+#define BLUE "\033[94m"
+#define CYAN "\033[96m"
+#define MAGENTA "\033[95m"
+#define WHITE "\033[97m"
+#define BLACK "\033[30m"
+#define CYAN "\033[96m"
+#define PINK "\033[95m"
+#define BRIGHT_PINK "\033[38;5;213m"
+#define PURPLE "\033[35m"
+#define BRIGHT_PURPLE "\033[95m"
+#define ORANGE "\033[38;5;214m"
+
+// BACKGROUNDS
+#define DARK_BLUE_BACKGROUND "\033[44m"
+
+// EFFECTS
+#define UNDERLINE "\033[4m";
+#define BOLD "\033[1m";
+#define ITALIC "\033[3m";
+#define DIM "\033[2m";
+#define INVERT "\033[7m";
+
+// RESET
+#define NOC "\033[0m"
+
 #define ENTER(ch) (ch)=='\n'
 #define BACKSPACE(ch) (ch) == 8 || (ch) == 127
 #define ESCSEQ(ch) (ch) == 27
@@ -37,7 +68,21 @@
 #define RIGHT_ARROW 'C'
 #define LEFT_ARROW 'D'
 
+extern std::string REPL_THEME;
+extern std::vector<std::string> AVAILABLE_REPL_THEMES;
+
 namespace repled {
+    const char *main_color(void);
+    const char *keyword_color(void);
+    const char *misc_color(void);
+    const char *type_color(void);
+    const char *quote_color(void);
+    const char *error_color(void);
+    const char *msg_color(void);
+    const char *stdout_color(void);
+    const char *stdout_type_color(void);
+    const char *status_ok(void);
+
     struct RawInput {
         RawInput();
         ~RawInput();

@@ -49,13 +49,6 @@
 #define EARL_REPL_HISTORY_FILENAME ".earl_history"
 #define REPL_HISTORY_MAX_FILESZ 1024 * 1024
 
-#define YELLOW "\033[93m"
-#define GREEN "\033[32m"
-#define GRAY "\033[90m"
-#define RED "\033[31m"
-#define BLUE "\033[94m"
-#define NOC "\033[0m"
-
 #define QUIT ":q"
 #define CLEAR ":c"
 #define SKIP ":skip"
@@ -75,10 +68,10 @@
 
 static std::string REPL_HIST = "";
 
-static size_t lineno = 0;
+static size_t LINENO = 0;
 static std::vector<std::string> HIST = {};
 
-static repled::SS ss;
+static repled::SS SS;
 
 static void
 try_clear_repl_history() {
@@ -180,13 +173,11 @@ noc(void) {
 }
 
 static void
-log(std::string msg, void(*color)(void) = nullptr) {
+log(std::string msg, const char *(*color)(void) = nullptr) {
     repled::clearln(0, true);
-    blue();
-    //std::cout << "[EARL] ";
     noc();
     if (color)
-        color();
+        std::cout << color();
     std::cout << msg;
     noc();
 }
@@ -267,10 +258,10 @@ import_file(std::vector<std::string> &args, std::vector<std::string> &lines, std
         const char *src_c = read_file(f.c_str(), include_dirs);
         std::string src = std::string(src_c);
         auto src_lines = split_on_newline(src);
-        lineno += src_lines.size();
+        LINENO += src_lines.size();
         std::for_each(src_lines.begin(), src_lines.end(), [&](auto &l){lines.push_back(l);});
         repled::clearln(0, true);
-        log("Imported " + f + "\n", green);
+        log("Imported " + f + "\n", repled::status_ok);
         noc();
     }
 }
@@ -287,22 +278,22 @@ analyze_new_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
         case '{': {
-            ss.braces++;
+            SS.braces++;
         } break;
         case '}': {
-            ss.braces--;
+            SS.braces--;
         } break;
         case '[':{
-            ss.brackets++;
+            SS.brackets++;
         } break;
         case ']': {
-            ss.brackets--;
+            SS.brackets--;
         } break;
         case '(': {
-            ss.parens++;
+            SS.parens++;
         } break;
         case ')': {
-            ss.parens--;
+            SS.parens--;
         } break;
         default: break;
         }
@@ -313,12 +304,12 @@ static void
 manage_removed_or_edited_line(std::string &line) {
     for (auto it = line.rbegin(); it != line.rend(); ++it) {
         switch (*it) {
-        case '{': ss.braces--; break;
-        case '}': ss.braces++; break;
-        case '[': ss.brackets--; break;
-        case ']': ss.brackets++; break;
-        case '(': ss.parens--; break;
-        case ')': ss.parens++; break;
+        case '{': SS.braces--; break;
+        case '}': SS.braces++; break;
+        case '[': SS.brackets--; break;
+        case ']': SS.brackets++; break;
+        case '(': SS.parens--; break;
+        case ')': SS.parens++; break;
         }
     }
 }
@@ -327,7 +318,7 @@ static void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         repled::clearln(0, true);
-        log("No previous entry exists\n", gray);
+        log("No previous entry exists\n", repled::msg_color);
         return;
     }
 
@@ -344,7 +335,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
             int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
             if (lnum < 0 || lnum >= (int)lines.size()) {
                 repled::clearln(0, true);
-                log("Line number is out of range for session\n", gray);
+                log("Line number is out of range for session\n", repled::msg_color);
                 return;
             }
             hist.push_back(lines[lnum]);
@@ -358,41 +349,44 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     log("Removed:\n");
     for (auto &h : hist) {
         repled::clearln(0, true);
-        red();
+        // red();
+        std::cout << repled::error_color();
         std::cout << h;
         noc();
         std::cout << std::endl;
-        --lineno;
+        --LINENO;
     }
 }
 
 static void
 edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std::string> &lines) {
-    log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", gray);
+    log("`" SKIP "` to skip current selection or `" QUIT "` to cancel the session editing\n", repled::msg_color);
     if (args.size() > 0) {
         for (auto arg : args) {
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
                 repled::clearln(0, true);
-                log("Line number is out of range for session\n", gray);
+                log("Line number is out of range for session\n", repled::msg_color);
                 return;
             }
             repled::clearln(0, true);
-            log("Editing [", gray);
-            yellow();
+            log("Editing [", repled::msg_color);
+            std::cout << repled::main_color();
+            // yellow();
             std::cout << lines.at(lnum);
-            gray();
+            std::cout << repled::msg_color();
+            // gray();
             std::cout << "]" << std::endl;
             noc();
-            std::string newline = get_special_input(ri, ss);
+            std::string newline = get_special_input(ri, SS);
             if (newline == QUIT) {
                 repled::clearln(0, true);
-                log("Quitting session editor\n", gray);
+                log("Quitting session editor\n", repled::msg_color);
                 return;
             }
             if (newline == SKIP) {
                 repled::clearln(0, true);
-                log("Skipping current selection\n", gray);
+                log("Skipping current selection\n", repled::msg_color);
             }
             else if (newline == "") {
                 manage_removed_or_edited_line(lines.at(lnum));
@@ -407,17 +401,19 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
     }
     else {
         if (lines.size() == 0) {
-            log("No lines to edit\n", gray);
+            log("No lines to edit\n", repled::msg_color);
             return;
         }
         repled::clearln(0, true);
-        log("Editing [", gray);
-        yellow();
+        log("Editing [", repled::msg_color);
+        // yellow();
+        std::cout << repled::main_color();
         std::cout << lines.back();
-        gray();
+        // gray();
+        std::cout << repled::msg_color();
         std::cout << "]" << std::endl;
         noc();
-        std::string newline = get_special_input(ri, ss);
+        std::string newline = get_special_input(ri, SS);
         manage_removed_or_edited_line(lines.at(lines.size()-1));
         if (newline == "")
             lines.erase(lines.end()-1);
@@ -431,19 +427,20 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
 static void
 clearscrn(void) {
     if (system("clear") != 0)
-        log("warning: failed to clearscrn\n", yellow);
+        log("warning: failed to clearscrn\n", repled::msg_color);
 }
 
 static void
 ls_entries(std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         repled::clearln(0, true);
-        log("Nothing appropriate\n", gray);
+        log("Nothing appropriate\n", repled::msg_color);
         return;
     }
     for (size_t i = 0; i < lines.size(); ++i) {
         repled::clearln(0, true);
-        green();
+        // green();
+        std::cout << repled::status_ok();
         std::cout << i << ": ";
         std::cout << lines[i];
         noc();
@@ -455,7 +452,7 @@ static void
 bash(std::string &line) {
     std::string cmd = line.substr(1, line.size());
     if (system(cmd.c_str()) != 0)
-        log("warning: failed to ls\n", yellow);
+        log("warning: failed to ls\n", repled::error_color);
 }
 
 static void
@@ -467,12 +464,13 @@ discard(repled::RawInput &ri, std::vector<std::string> &lines) {
 
     std::string line = "";
     while (true) {
-        red();
-        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true, ss);
+        // red();
+        std::cout << repled::error_color();
+        std::string line = repled::getln(ri, "Discard the current session? [Y/n]: ", HIST, true, SS);
         noc();
         to_lower(line);
         if (line == "" || line == "y" || line == "yes") {
-            ss.braces = ss.parens = ss.brackets = 0;
+            SS.braces = SS.parens = SS.brackets = 0;
             lines.clear();
             break;
         }
@@ -484,14 +482,14 @@ discard(repled::RawInput &ri, std::vector<std::string> &lines) {
             log("invalid input\n");
     }
 
-    lineno = 0;
+    LINENO = 0;
     std::cout << std::endl;
 }
 
 static void
 ee(void) {
-    log("Hey! This is not vim! D:\n", red);
-    log("Did you mean " QUIT "\n", gray);
+    log("Hey! This is not vim! D:\n", repled::error_color);
+    log("Did you mean " QUIT "\n", repled::msg_color);
 }
 
 static void
@@ -499,7 +497,7 @@ show_vars(std::shared_ptr<Ctx> &ctx) {
     auto vars = ctx->get_available_variable_names();
 
     if (vars.size() == 0)
-        log("Nothing appropriate\n", gray);
+        log("Nothing appropriate\n", repled::msg_color);
 
     repled::clearln(0, true);
     for (auto &v : vars) {
@@ -513,7 +511,7 @@ show_funcs(std::shared_ptr<Ctx> &ctx) {
     auto funcs = ctx->get_available_function_names();
 
     if (funcs.size() == 0)
-        log("Nothing appropriate\n", gray);
+        log("Nothing appropriate\n", repled::msg_color);
 
     for (auto &v : funcs) {
         repled::clearln(0, true);
@@ -526,37 +524,43 @@ reset(std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> vars = ctx->get_available_variable_names();
     std::vector<std::string> funcs = ctx->get_available_function_names();
 
-    log("Removing: [", gray);
+    log("Removing: [", repled::msg_color);
 
     for (int i = 0; i < vars.size(); ++i) {
-        red();
+        // red();
+        std::cout << repled::error_color();
         std::cout << vars[i];
         noc();
         if (i != vars.size()-1) {
-            gray();
+            // gray();
+            std::cout << repled::msg_color();
             std::cout << ", ";
             noc();
         }
     }
 
     if (funcs.size() > 0 && vars.size() > 0) {
-        gray();
+        // gray();
+        std::cout << repled::msg_color();
         std::cout << ", ";
         noc();
     }
 
     for (int i = 0; i < funcs.size(); ++i) {
-        red();
+        // red();
+        std::cout << repled::error_color();
         std::cout << funcs[i];
         noc();
         if (i != funcs.size()-1) {
-            gray();
+            //gray();
+            std::cout << repled::msg_color();
             std::cout << ", ";
             noc();
         }
     }
 
-    gray();
+    // gray();
+    std::cout << repled::msg_color();
     std::cout << "]" << std::endl;
     noc();
 
@@ -600,7 +604,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == AUTO)
         repled::show_prefix_trie();
     else
-        log("unknown command sequence `" + lst[0] + "`\n", gray);
+        log("unknown command sequence `" + lst[0] + "`\n", repled::msg_color);
 }
 
 std::shared_ptr<Ctx>
@@ -622,9 +626,9 @@ repl::run(std::vector<std::string> &include_dirs) {
         bool ready = false;
         std::vector<std::string> lines = {};
         while (true) {
-            bool closed_braces = !ss.braces && !ss.brackets && !ss.parens;
+            bool closed_braces = !SS.braces && !SS.brackets && !SS.parens;
 
-            auto line = repled::getln(ri, std::to_string(lineno)+": ", HIST, !closed_braces, ss);
+            auto line = repled::getln(ri, std::to_string(LINENO)+": ", HIST, !closed_braces, SS);
             analyze_new_line(line);
 
             if (line == "" && closed_braces)
@@ -639,7 +643,7 @@ repl::run(std::vector<std::string> &include_dirs) {
                     HIST.push_back(line);
                     ready = true;
                 }
-                ++lineno;
+                ++LINENO;
                 std::cout << std::endl;
                 std::cout << "\033[K";
             }
@@ -657,7 +661,7 @@ repl::run(std::vector<std::string> &include_dirs) {
         std::for_each(lines.begin(), lines.end(), [&](auto &s) {combined += s+"\n";});
         REPL_HIST += combined;
         lines.clear();
-        lineno = 0;
+        LINENO = 0;
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
@@ -688,10 +692,10 @@ repl::run(std::vector<std::string> &include_dirs) {
                         std::cout << "\033[A";
 
                         std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                        green();
+                        std::cout << repled::stdout_color();
                         (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
                         std::cout << " -> ";
-                        gray();
+                        std::cout << repled::stdout_type_color();
                         std::cout << earl::value::type_to_str(val->type())
                                   << std::string(std::string("[Enter to Evaluate]").size(), ' ')
                                   << std::endl;
