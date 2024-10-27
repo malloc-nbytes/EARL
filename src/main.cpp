@@ -117,7 +117,7 @@ get_os_info() {
 static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
-    std::cerr << "EARL v" << VERSION << " compiled with " << COMPILER_INFO << " on " << get_os_info() << std::endl << std::endl;
+    std::cerr << "EARL v" << VERSION << ", " << COMPILER_INFO << " " << get_os_info() << std::endl << std::endl;
 
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
