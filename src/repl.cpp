@@ -183,7 +183,7 @@ static void
 log(std::string msg, void(*color)(void) = nullptr) {
     repled::clearln(0, true);
     blue();
-    std::cout << "[EARL] ";
+    //std::cout << "[EARL] ";
     noc();
     if (color)
         color();
@@ -327,7 +327,7 @@ static void
 rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
     if (lines.size() == 0) {
         repled::clearln(0, true);
-        log("No previous entry exists\n");
+        log("No previous entry exists\n", gray);
         return;
     }
 
@@ -344,7 +344,7 @@ rm_entries(std::vector<std::string> &args, std::vector<std::string> &lines) {
             int lnum = i == 0 ? std::stoi(arg) : std::stoi(arg)-i;
             if (lnum < 0 || lnum >= (int)lines.size()) {
                 repled::clearln(0, true);
-                log("Line number is out of range for session\n");
+                log("Line number is out of range for session\n", gray);
                 return;
             }
             hist.push_back(lines[lnum]);
@@ -374,7 +374,7 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
             int lnum = std::stoi(arg);
             if (lnum < 0 || lnum >= (int)lines.size()) {
                 repled::clearln(0, true);
-                log("Line number is out of range for session\n");
+                log("Line number is out of range for session\n", gray);
                 return;
             }
             repled::clearln(0, true);
