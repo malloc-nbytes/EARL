@@ -34,6 +34,11 @@ Err::err_wtok(Token *tok) {
     if (!tok)
         return;
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
+
+    // Clear artifacts in REPL.
+    if ((flags & __REPL) != 0)
+        std::cout << "\033[K" << "\r" << std::flush;
+
     Token *it = tok;
     while (it && it->type() != TokenType::Semicolon) {
         std::cerr << it->lexeme();
