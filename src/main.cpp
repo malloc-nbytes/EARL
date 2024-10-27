@@ -86,12 +86,11 @@ get_os_info() {
     uname(&buffer);
 
     std::string sysname(buffer.sysname);
-
     std::string version(buffer.release);
-    size_t hashPos = version.find('#');
-    if (hashPos != std::string::npos) {
-        version = version.substr(0, hashPos);
-    }
+
+    size_t hash_pos = version.find('#');
+    if (hash_pos != std::string::npos)
+        version = version.substr(0, hash_pos);
 
     return sysname + " " + version;
 }
@@ -103,7 +102,9 @@ std::string
 get_os_info() {
     struct utsname buffer;
     uname(&buffer);
-    return buffer.sysname + " " + buffer.release + " " + buffer.version;
+    std::string sysname(buffer.sysname);
+    std::string release(buffer.release);
+    return sysname + " " + release;
 }
 
 #else
@@ -116,7 +117,7 @@ get_os_info() {
 static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
-    std::cerr << "EARL v" << VERSION << " compiled with " << COMPILER_INFO << ", " << get_os_info() << std::endl << std::endl;
+    std::cerr << "EARL v" << VERSION << " compiled with " << COMPILER_INFO << " on " << get_os_info() << std::endl << std::endl;
 
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;
