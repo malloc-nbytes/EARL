@@ -62,9 +62,61 @@ static std::string to_py_output = "";
 
 uint32_t flags = 0x00;
 
+#include <iostream>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <tchar.h>
+
+std::string
+get_os_info() {
+    OSVERSIONINFO osvi;
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osvi);
+    return "Windows " + osvi.dwMajorVersion + "."
+        + osvi.dwMinorVersion + "(Build " + osvi.dwBuildNumber + ")";
+}
+
+#elif __linux__
+#include <sys/utsname.h>
+
+std::string
+get_os_info() {
+    struct utsname buffer;
+    uname(&buffer);
+
+    std::string sysname(buffer.sysname);
+
+    std::string version(buffer.release);
+    size_t hashPos = version.find('#');
+    if (hashPos != std::string::npos) {
+        version = version.substr(0, hashPos);
+    }
+
+    return sysname + " " + version;
+}
+
+#elif __APPLE__
+#include <sys/utsname.h>
+
+std::string
+get_os_info() {
+    struct utsname buffer;
+    uname(&buffer);
+    return buffer.sysname + " " + buffer.release + " " + buffer.version;
+}
+
+#else
+std::string
+get_os_info() {
+    return "Unknown";
+}
+#endif
+
 static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
+    std::cerr << "EARL v" << VERSION << " compiled with " << COMPILER_INFO << ", " << get_os_info() << std::endl << std::endl;
 
     std::cerr << "Bugs can be reported at <zdhdev@yahoo.com>" << std::endl;
     std::cerr << "or https://github.com/malloc-nbytes/EARL/issues" << std::endl << std::endl;

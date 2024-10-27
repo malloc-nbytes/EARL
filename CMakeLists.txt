@@ -16,6 +16,24 @@ endif()
 # Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
 set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 
+# Capture compiler and version
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(COMPILER_INFO "GCC ${CMAKE_CXX_COMPILER_VERSION}")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(COMPILER_INFO "Clang ${CMAKE_CXX_COMPILER_VERSION}")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    set(COMPILER_INFO "MSVC ${MSVC_VERSION}")
+else()
+    set(COMPILER_INFO "Unknown Compiler")
+endif()
+
+# Configure a header file to pass INSTALL_PREFIX, PROJECT_VERSION, and COMPILER_INFO
+configure_file(
+    ${PROJECT_SOURCE_DIR}/src/include/config.h.in
+    ${PROJECT_SOURCE_DIR}/src/include/config.h
+    @ONLY
+)
+
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/src/include)
 
