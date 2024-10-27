@@ -30,6 +30,7 @@
 // FORGROUNDS
 #define YELLOW "\033[93m"
 #define GREEN "\033[32m"
+#define BRIGHT_GREEN "\033[92m"
 #define GRAY "\033[90m"
 #define RED "\033[31m"
 #define BLUE "\033[94m"
@@ -39,7 +40,9 @@
 #define BLACK "\033[30m"
 #define CYAN "\033[96m"
 #define PINK "\033[95m"
+#define BRIGHT_PINK "\033[38;5;213m"
 #define PURPLE "\033[35m"
+#define BRIGHT_PURPLE "\033[95m"
 #define ORANGE "\033[38;5;214m"
 
 // BACKGROUNDS

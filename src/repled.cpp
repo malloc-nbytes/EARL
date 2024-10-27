@@ -53,6 +53,14 @@ const char *repled::main_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return YELLOW;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return BRIGHT_PINK UNDERLINE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE BOLD;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 // used for identifiers, numbers, etc.
@@ -69,6 +77,14 @@ const char *repled::misc_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return PINK BOLD;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::quote_color(void) {
@@ -84,6 +100,14 @@ const char *repled::quote_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE ITALIC;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return PINK ITALIC;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE ITALIC;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::error_color(void) {
@@ -99,6 +123,14 @@ const char *repled::error_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return RED;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return RED;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE UNDERLINE;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::msg_color(void) {
@@ -106,7 +138,7 @@ const char *repled::msg_color(void) {
         return GRAY;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
-        return CYAN;
+        return GRAY;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE INVERT;
@@ -114,6 +146,14 @@ const char *repled::msg_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return BLUE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE DIM;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::stdout_color(void) {
@@ -129,6 +169,14 @@ const char *repled::stdout_color(void) {
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return PURPLE;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::stdout_type_color(void) {
@@ -139,11 +187,19 @@ const char *repled::stdout_type_color(void) {
         return BLUE;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
-        return WHITE;
+        return WHITE ITALIC;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return PINK;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE ITALIC;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 const char *repled::status_ok(void) {
@@ -154,11 +210,19 @@ const char *repled::status_ok(void) {
         return BLUE;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
-        return WHITE;
+        return WHITE INVERT;
     }
     else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+        return PURPLE BOLD;
+    }
+    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+        return WHITE;
+    }
+    assert(false && "unhandled theme");
+    return nullptr;
 }
 
 repled::PrefixTrie::PrefixTrie() : prefix(""), children(0), is_end_of_word(false) {}
@@ -291,11 +355,7 @@ get_last_word(std::string &line) {
 
 static void
 redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, bool newline = false) {
-    std::string yellow = "\033[93m";
-    std::string blue = "\033[94m";
-    std::string green = "\033[32m";
     std::string gray = "\033[90m";
-    std::string red = "\033[31m";
     std::string underline = "\033[4m";
     std::string bold = "\033[1m";
     std::string italic = "\033[3m";
@@ -464,7 +524,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
         if (bracket_ok) {
             if ((flags & __REPL_NOCOLOR) == 0)
-                std::cout << noc << bold << dim << repled::quote_color() << "< ok >" << noc << " ";
+                std::cout << noc << bold << dim << repled::status_ok() << "< ok >" << noc << " ";
             else
                 std::cout << "< ok > ";
         }
@@ -737,8 +797,10 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         repled::clearln(50);
 
         std::cout << "[";
-        if ((flags & __REPL_NOCOLOR) == 0)
-            std::cout << "\033[32m";
+        if ((flags & __REPL_NOCOLOR) == 0) {
+            // std::cout << "\033[32m";
+            std::cout << repled::status_ok();
+        }
         std::cout << "Enter to Evaluate";
         if ((flags & __REPL_NOCOLOR) == 0)
             std::cout << "\033[0m";
@@ -776,8 +838,8 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
                 switch (next1) {
                 case UP_ARROW: {
                     handle_up_arrow(c, PAD, prompt, lines_idx, line, history, ss);
-                    //c = line.size();
-                    //std::cout << "\033[" << PAD+c+1 << "G";
+                    c = line.size();
+                    std::cout << "\033[" << PAD+c+1 << "G";
                 } break;
                 case DOWN_ARROW: {
                     handle_down_arrow(c, PAD, prompt, lines_idx, line, history, ss);
