@@ -147,7 +147,8 @@ void create_default_config_file(void) {
     if (new_file) {
         std::string s = "";
         s += "# EARL Default Config File\n";
-        s += "# NOTE: Follow this config *exactly* as the parser is not human friendly!\n\n";
+        s += "# NOTE: Follow this config *exactly* as the parser is not human friendly!\n";
+        s += "#       Flags supplied through the CLI take priority over this config.\n\n";
 
         s += COMMON_EARL2ARG_WITHOUT_STDLIB "=false\n";
         s += COMMON_EARL2ARG_REPL_NOCOLOR "=false\n";
