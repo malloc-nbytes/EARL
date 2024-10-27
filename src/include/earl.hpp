@@ -823,6 +823,9 @@ namespace earl {
      * How variables are created in EARL during runtime
      */
     namespace variable {
+        using event_listener_t = std::optional<std::variant<std::shared_ptr<earl::value::FunctionRef>,
+                                                            std::shared_ptr<earl::value::Closure>>
+                                               >;
 
         /// @brief The structure to represent EARL variables
         struct Obj {
@@ -847,10 +850,10 @@ namespace earl {
             std::string get_info(void);
             uint32_t attrs(void) const;
             void disable_experimental_flag(void);
-            void set_event_listener(std::shared_ptr<earl::value::FunctionRef> &m_event_listener);
+            void set_event_listener(event_listener_t m_event_listener);
 
             // Public for speed
-            std::shared_ptr<earl::value::FunctionRef> m_event_listener;
+            event_listener_t m_event_listener;
 
         private:
             Token *m_id;
