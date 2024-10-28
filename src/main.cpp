@@ -403,6 +403,9 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         case COMMON_EARL1ARG_BATCH: {
             get_batch_scripts(args);
         } break;
+        case COMMON_EARL1ARG_VERBOSE: {
+            flags |= __VERBOSE;
+        } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
         } break;
