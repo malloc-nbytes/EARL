@@ -462,6 +462,55 @@ handlecli(int argc, char **argv) {
     }
 }
 
+static void
+to_py(std::string &filepath,
+      std::vector<std::string> keywords,
+      std::vector<std::string> types,
+      std::string comment) {
+    std::unique_ptr<Lexer> lexer = nullptr;
+    std::unique_ptr<Program> program = nullptr;
+
+    if (to_py_output == "") {
+        std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+
+    try {
+        std::string src_code = read_file(filepath.c_str(), include_dirs);
+        lexer = lex_file(src_code, filepath, keywords, types, comment);
+    } catch (const LexerException &e) {
+        std::cerr << "Lexer error: " << e.what() << std::endl;
+    }
+    try {
+        program = Parser::parse_program(*lexer.get(), filepath);
+    } catch (const ParserException &e) {
+        std::cerr << "Parser error: " << e.what() << std::endl;
+    }
+    auto pysrc = earl_to_py(std::move(program));
+
+
+    if (to_py_output == "stdout")
+        std::cout << pysrc << std::endl;
+    else {
+        std::ofstream pysrc_outfile(to_py_output);
+        if (!pysrc_outfile) {
+            std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+            std::exit(EXIT_FAILURE);
+        }
+        pysrc_outfile << pysrc;
+        pysrc_outfile.close();
+    }
+
+    if (to_py_formatter != "") {
+        std::string cmd = to_py_formatter+" "+to_py_output;
+        int exit_code = system(cmd.c_str());
+        if (exit_code != 0) {
+            std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
+            std::exit(1);
+        }
+    }
+}
+
 int
 main(int argc, char **argv) {
     ++argv; --argc;
@@ -493,49 +542,10 @@ main(int argc, char **argv) {
                 hot_reload::watch();
             else
                 locked = false;
+
             for (auto &filepath : scripts) {
-                if ((flags & __TOPY) != 0) {
-                    std::unique_ptr<Lexer> lexer = nullptr;
-                    std::unique_ptr<Program> program = nullptr;
-                    try {
-                        std::string src_code = read_file(filepath.c_str(), include_dirs);
-                        lexer = lex_file(src_code, filepath, keywords, types, comment);
-                    } catch (const LexerException &e) {
-                        std::cerr << "Lexer error: " << e.what() << std::endl;
-                    }
-                    try {
-                        program = Parser::parse_program(*lexer.get(), filepath);
-                    } catch (const ParserException &e) {
-                        std::cerr << "Parser error: " << e.what() << std::endl;
-                    }
-                    auto pysrc = earl_to_py(std::move(program));
-
-                    if (to_py_output == "") {
-                        std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
-                        std::exit(EXIT_FAILURE);
-                    }
-
-                    if (to_py_output == "stdout")
-                        std::cout << pysrc << std::endl;
-                    else {
-                        std::ofstream pysrc_outfile(to_py_output);
-                        if (!pysrc_outfile) {
-                            std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
-                            std::exit(EXIT_FAILURE);
-                        }
-                        pysrc_outfile << pysrc;
-                        pysrc_outfile.close();
-                    }
-
-                    if (to_py_formatter != "") {
-                        std::string cmd = to_py_formatter+" "+to_py_output;
-                        int exit_code = system(cmd.c_str());
-                        if (exit_code != 0) {
-                            std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
-                            std::exit(1);
-                        }
-                    }
-                }
+                if ((flags & __TOPY) != 0)
+                    to_py(filepath, keywords, types, comment);
 
                 else if (filepath != "") {
                     if ((flags & __WATCH) != 0)
