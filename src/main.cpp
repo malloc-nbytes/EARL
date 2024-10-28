@@ -474,76 +474,70 @@ main(int argc, char **argv) {
     assert_repl_theme_valid();
     handlecli(argc, argv);
 
+    if ((flags & __WATCH) != 0) {
+        if (watch_files.size() == 0) {
+            std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
+            std::exit(1);
+        }
+        hot_reload::register_watch_files(watch_files);
+        std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
+    }
+
+    bool locked = true;
     if (scripts.size() > 0) {
-        for (auto &filepath : scripts) {
-            if ((flags & __WATCH) != 0) {
-                if (watch_files.size() == 0) {
-                    std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
-                    std::exit(1);
-                }
-                hot_reload::register_watch_files(watch_files);
-            }
+        do {
+            // No need to check for __WATCH cause this statement
+            // will not happen unless we are looping, which is
+            // already determined by __WATCH.
+            if (!locked)
+                hot_reload::watch();
+            else
+                locked = false;
+            for (auto &filepath : scripts) {
+                if ((flags & __TOPY) != 0) {
+                    std::unique_ptr<Lexer> lexer = nullptr;
+                    std::unique_ptr<Program> program = nullptr;
+                    try {
+                        std::string src_code = read_file(filepath.c_str(), include_dirs);
+                        lexer = lex_file(src_code, filepath, keywords, types, comment);
+                    } catch (const LexerException &e) {
+                        std::cerr << "Lexer error: " << e.what() << std::endl;
+                    }
+                    try {
+                        program = Parser::parse_program(*lexer.get(), filepath);
+                    } catch (const ParserException &e) {
+                        std::cerr << "Parser error: " << e.what() << std::endl;
+                    }
+                    auto pysrc = earl_to_py(std::move(program));
 
-            if ((flags & __TOPY) != 0) {
-                std::unique_ptr<Lexer> lexer = nullptr;
-                std::unique_ptr<Program> program = nullptr;
-                try {
-                    std::string src_code = read_file(filepath.c_str(), include_dirs);
-                    lexer = lex_file(src_code, filepath, keywords, types, comment);
-                } catch (const LexerException &e) {
-                    std::cerr << "Lexer error: " << e.what() << std::endl;
-                }
-                try {
-                    program = Parser::parse_program(*lexer.get(), filepath);
-                } catch (const ParserException &e) {
-                    std::cerr << "Parser error: " << e.what() << std::endl;
-                }
-                auto pysrc = earl_to_py(std::move(program));
-
-                if (to_py_output == "") {
-                    std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
-                    std::exit(EXIT_FAILURE);
-                }
-
-                if (to_py_output == "stdout")
-                    std::cout << pysrc << std::endl;
-                else {
-                    std::ofstream pysrc_outfile(to_py_output);
-                    if (!pysrc_outfile) {
-                        std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+                    if (to_py_output == "") {
+                        std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
                         std::exit(EXIT_FAILURE);
                     }
-                    pysrc_outfile << pysrc;
-                    pysrc_outfile.close();
-                }
 
-                if (to_py_formatter != "") {
-                    std::string cmd = to_py_formatter+" "+to_py_output;
-                    int exit_code = system(cmd.c_str());
-                    if (exit_code != 0) {
-                        std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
-                        std::exit(1);
+                    if (to_py_output == "stdout")
+                        std::cout << pysrc << std::endl;
+                    else {
+                        std::ofstream pysrc_outfile(to_py_output);
+                        if (!pysrc_outfile) {
+                            std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+                            std::exit(EXIT_FAILURE);
+                        }
+                        pysrc_outfile << pysrc;
+                        pysrc_outfile.close();
+                    }
+
+                    if (to_py_formatter != "") {
+                        std::string cmd = to_py_formatter+" "+to_py_output;
+                        int exit_code = system(cmd.c_str());
+                        if (exit_code != 0) {
+                            std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
+                            std::exit(1);
+                        }
                     }
                 }
 
-                std::exit(0);
-            }
-
-            if ((flags & __WATCH) != 0)
-                std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
-
-            bool locked = true;
-
-            if (filepath != "") {
-                do {
-                    // No need to check for __WATCH cause this statement
-                    // will not happen unless we are looping, which is
-                    // already determined by __WATCH.
-                    if (!locked)
-                        hot_reload::watch();
-                    else
-                        locked = false;
-
+                else if (filepath != "") {
                     if ((flags & __WATCH) != 0)
                         std::cout << "=== Run: " << run_count++ << " ======================" << std::endl;
 
@@ -573,9 +567,9 @@ main(int argc, char **argv) {
                         if ((flags & __WATCH) == 0)
                             return 1;
                     }
-                } while ((flags & __WATCH) != 0);
+                }
             }
-        }
+        } while ((flags & __WATCH) != 0);
     }
     else {
         assert_repl_theme_valid();
