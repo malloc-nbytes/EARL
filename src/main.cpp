@@ -150,10 +150,10 @@ usage(void) {
     std::cerr << "        -I, --include <DIR>  . . . . . . . . . Add an include directory" << std::endl;
     std::cerr << "        -i, --import <filepath>  . . . . . . . Import a file from the CLI" << std::endl;
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
-    std::cerr << "        -b  --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
+    std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
-    std::cerr << "            --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
+    std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "            --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
     std::cerr << "            --show-bash  . . . . . . . . . . . Print all inlined bash" << std::endl;
     std::cerr << "            --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
