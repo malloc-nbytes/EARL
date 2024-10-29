@@ -4,5 +4,4 @@ use "script.sh"; as S
 
 exec S;
 
-println("HERE");
 

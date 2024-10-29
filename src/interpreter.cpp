@@ -2654,8 +2654,8 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
         else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
             auto world = ctx->get_world();
             auto path = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
-            auto bash = file_to_cxxstring(path);
-            aux(stmt->m_to, bash);
+            // auto bash = file_to_cxxstring(path);
+            aux(stmt->m_to, path);
         }
         else {
             assert(false && "illegal pipe statement");
@@ -2687,7 +2687,17 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     ER path_er = eval_expr(stmt->m_fp.get(), ctx, false);
     PackedERPreliminary perp;
     auto path_obj = unpack_ER(path_er, ctx, &perp);
-    const std::string path = path_obj->to_cxxstring();
+    std::string path = path_obj->to_cxxstring();
+
+    bool rel_single_ok = path.size() > 2 && path[0] == '.' && path[1] == '/';
+    bool rel_double_ok = path.size() > 3 && path[0] == '.' && path[1] == '.' && path[2] == '/';
+    bool tilde_ok = path.size() > 2 && path[0] == '~' && path[1] == '/';
+    bool abs_ok = path.size() > 2 && path[0] == '/';
+
+    if (!rel_single_ok && !rel_double_ok && !tilde_ok && !abs_ok) {
+        path.insert(path.begin(), '.');
+        path.insert(path.begin()+1, '/');
+    }
 
     // An alias is present, do not execute now, do it later with `exec`.
     if (stmt->m_as.has_value()) {
@@ -2697,7 +2707,7 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     }
     // No alias found, execute now.
     else
-        system_bash(file_to_cxxstring(path));
+        system_bash(path);
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2708,7 +2718,7 @@ eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
     auto world = ctx->get_world();
     const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
 
-    system_bash(file_to_cxxstring(script_path));
+    system_bash(script_path);
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
