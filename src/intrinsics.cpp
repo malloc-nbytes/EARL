@@ -64,6 +64,7 @@ Intrinsics::intrinsic_functions = {
     {"observe", &Intrinsics::intrinsic_observe},
     {"init_seed", &Intrinsics::intrinsic_init_seed},
     {"random", &Intrinsics::intrinsic_random},
+    {"__internal_isdir__", &Intrinsics::intrinsic___internal_isdir__},
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
@@ -529,6 +530,16 @@ Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &param
     for (size_t i = 0; i < earl_argv.size(); ++i)
         args.push_back(std::make_shared<earl::value::Str>(earl_argv.at(i)));
     return std::make_shared<earl::value::List>(args);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic___internal_isdir__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                         std::shared_ptr<Ctx> &ctx,
+                                         Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_isdir__", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(params[0], earl::value::Type::Str, 1, "__internal_isdir__", expr);
+    const std::string path = dynamic_cast<earl::value::Str *>(params[0].get())->value();
+    return std::make_shared<earl::value::Bool>(std::filesystem::is_directory(path));
 }
 
 std::shared_ptr<earl::value::Obj>

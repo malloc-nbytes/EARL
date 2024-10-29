@@ -1,3 +1,7 @@
 module Main
 
-println("hello");
+import "../src/std/system.earl"; as sys
+
+let path = env("HOME")+"/dev/EARL/src/";
+
+println(sys::isdir(path));

@@ -35,6 +35,17 @@ module System
 ### End
 
 ### Function
+#-- Name: isdir
+#-- Parameter: path: str
+#-- Returns: bool
+#-- Description:
+#--   Return `true` if `path` is a directory or `false` if otherwise.
+@pub fn isdir(path: str): bool {
+    return __internal_isdir__(path);
+}
+### End
+
+### Function
 #-- Name: cd
 #-- Parameter: path: str
 #-- Returns: unit
