@@ -92,6 +92,7 @@ enum class ExprTermType {
     Dict,
     FStr,
     Power,
+    Case,
 };
 
 struct StmtDef;
@@ -182,6 +183,21 @@ struct ExprModAccess : public ExprTerm {
     ExprModAccess(std::unique_ptr<ExprIdent> expr_ident,
                   std::variant<std::unique_ptr<ExprIdent>, std::unique_ptr<ExprFuncCall>> right,
                   std::shared_ptr<Token> tok);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprCase : public ExprTerm {
+    struct Case {
+        std::unique_ptr<Expr> m_lhs;
+        std::unique_ptr<Expr> m_rhs;
+        Case(std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs);
+    };
+
+    std::unique_ptr<Expr> m_expr;
+    std::vector<std::unique_ptr<Case>> m_cases;
+
+    ExprCase(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Case>> cases);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

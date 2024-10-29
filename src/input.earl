@@ -1,2 +1,9 @@
 module Main
 
+let y = 1;
+
+let x = case y of {
+    1 = y;
+    420 = 69;
+};
+
