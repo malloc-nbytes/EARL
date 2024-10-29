@@ -317,7 +317,7 @@ eval_class_instantiation(ExprFuncCall *expr,
     auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
     if (klass->is_experimental()) {
-        std::cerr << "warning: class `"+klass->id()+"` is marked as `experimental`" << std::endl;
+        WARN_WARGS("clas `%s` is marked as experimmental", klass->id().c_str());
         klass->disable_experimental_flag();
     }
 
@@ -506,7 +506,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
-            std::cerr << "warning: function `"+func->id()+"` is marked as `experimental`" << std::endl;
+            WARN_WARGS("function `%s` is marked as experimental", func->id().c_str());
             func->disable_experimental_flag();
         }
 
@@ -612,8 +612,9 @@ eval_user_defined_function(ExprFuncCall *expr,
 
         std::shared_ptr<Ctx> mask = fctx;
 
-        if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0)
-            std::cerr << "warning: function `"+func->id()+"` is marked as `experimental`" << std::endl;;
+        if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
+            WARN_WARGS("function `%s` is marked as experimental", func->id().c_str());
+        }
 
         auto res = Interpreter::eval_stmt_block(func->block(), mask);
 
@@ -746,7 +747,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
             if (lhs->has_entry(er.id)) {
                 if (lhs->is_experimental()) {
-                    std::cerr << "warning: enum `"+lhs->id()+"` is marked as `experimental`" << std::endl;
+                    WARN_WARGS("enum `%s` is marked as experimental", lhs->id().c_str());
                     lhs->disable_experimental_flag();
                 }
                 return lhs->get_entry(er.id)->value()->copy();
@@ -1797,9 +1798,12 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     ER er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     stmt->m_evald = true;
     auto value = unpack_ER(er, ctx, false);
-    if (value && value->type() != earl::value::Type::Void && ctx->type() != CtxType::World) {
+    if (value &&
+        value->type() != earl::value::Type::Void &&
+        ctx->type() != CtxType::World &&
+        ((flags & __SUPPRESS_WARNINGS) == 0)) {
         Err::err_wexpr(stmt->m_expr.get());
-        Err::warn("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
+        WARN("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
     }
     return value;
 }
@@ -2688,6 +2692,9 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     PackedERPreliminary perp;
     auto path_obj = unpack_ER(path_er, ctx, &perp);
     std::string path = path_obj->to_cxxstring();
+
+    if ((flags & __VERBOSE) != 0)
+        std::cout << "[EARL] using external script `" << path << "`" << std::endl;
 
     bool rel_single_ok = path.size() > 2 && path[0] == '.' && path[1] == '/';
     bool rel_double_ok = path.size() > 3 && path[0] == '.' && path[1] == '.' && path[2] == '/';

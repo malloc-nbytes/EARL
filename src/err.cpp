@@ -327,8 +327,18 @@ err_wstmtenum(StmtEnum *stmt) {
 }
 
 void
+err_wimportstmt_stmt(StmtImport *stmt) {
+    Err::err_wexpr(stmt->m_fp.get());
+}
+
+void
 err_wexec_stmt(StmtExec *stmt) {
     Err::err_wtok(stmt->m_ident.get());
+}
+
+void
+err_wuse_stmt(StmtUse *stmt) {
+    Err::err_wexpr(stmt->m_fp.get());
 }
 
 void
@@ -349,11 +359,12 @@ Err::err_wstmt(Stmt *stmt) {
     case StmtType::While: assert(false); break;
     case StmtType::For: assert(false); break;
     case StmtType::Foreach: assert(false); break;
-    case StmtType::Import: assert(false); break;
+    case StmtType::Import: err_wimportstmt_stmt(dynamic_cast<StmtImport *>(stmt)); break;
     case StmtType::Mod: assert(false); break;
     case StmtType::Class: assert(false); break;
     case StmtType::Match: assert(false); break;
     case StmtType::Enum: assert(false); break;
+    case StmtType::Use: err_wuse_stmt(dynamic_cast<StmtUse *>(stmt)); break;
     case StmtType::Exec: err_wexec_stmt(dynamic_cast<StmtExec *>(stmt)); break;
     default:
         assert(false && "unreachable");

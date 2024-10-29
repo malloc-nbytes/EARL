@@ -106,12 +106,18 @@ namespace Err {
         std::exit(1);                           \
     } while (0)
 
-#define WARN(msg) fprintf(stderr, "[EARL] warning: " msg "\n");
+#define WARN(msg)                                               \
+    do {                                                        \
+        if ((flags & __SUPPRESS_WARNINGS) == 0)                 \
+            fprintf(stderr, "[EARL] warning: " msg "\n");       \
+    } while (0)
 
-#define WARN_WARGS(msg, ...) \
-    do { \
-        fprintf(stderr, "[EARL] warning: " msg, __VA_ARGS__);   \
-        fprintf(stderr, "\n");                                  \
+#define WARN_WARGS(msg, ...)                                            \
+    do {                                                                \
+        if ((flags & __SUPPRESS_WARNINGS) == 0) {                       \
+            fprintf(stderr, "[EARL] warning: " msg, __VA_ARGS__);       \
+            fprintf(stderr, "\n");                                      \
+        }                                                               \
     } while (0)
 
 #endif // ERR_H

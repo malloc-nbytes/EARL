@@ -128,7 +128,7 @@ static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
 
-    std::cerr << "EARL v" << VERSION << ", " << COMPILER_INFO << " " << get_os_info() << std::endl << std::endl;
+    std::cerr << "EARL v" << VERSION << ", " << "(compiler) " << COMPILER_INFO << " (platform) " << get_os_info() << std::endl << std::endl;
 
     std::cerr << "StdLib installed: " << stdlib_installed() << std::endl;
     std::cerr << "earlmgr installed: " << earlmgr_installed() << std::endl << std::endl;
@@ -153,6 +153,7 @@ usage(void) {
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
+    std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
     std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command" << std::endl;
     std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
@@ -373,6 +374,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         get_batch_scripts(args);
     else if (arg == COMMON_EARL2ARG_ERROR_ON_BASH_FAIL)
         flags |= __ERROR_ON_BASH_FAIL;
+    else if (arg == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
+        flags |= __SUPPRESS_WARNINGS;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -414,6 +417,9 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         } break;
         case COMMON_EARL1ARG_ERROR_ON_BASH_FAIL: {
             flags |= __ERROR_ON_BASH_FAIL;
+        } break;
+        case COMMON_EARL1ARG_SUPPRESS_WARNINGS: {
+            flags |= __SUPPRESS_WARNINGS;
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);

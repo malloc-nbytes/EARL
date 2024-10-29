@@ -16,7 +16,7 @@ extern std::vector<std::string> include_dirs;
 extern std::vector<std::string> cli_import_dirs;
 extern uint32_t flags;
 
-std::vector<std::string> read_or_create_earl_file(void) {
+std::vector<std::string> read_earl_file(void) {
     std::string home_dir = std::getenv("HOME");
     std::string file_path = home_dir + "/.earl";
 
@@ -34,8 +34,6 @@ std::vector<std::string> read_or_create_earl_file(void) {
         return lines;
     }
     else {
-        std::cout << ".earl config file does not exist, creating it... (this only happens once)" << std::endl;
-        std::ofstream new_file(file_path);
         return {};
     }
 }
@@ -113,6 +111,8 @@ void parse_lines(std::vector<std::string> &lines) {
                 tf_check(value, __SHOWMUTS);
             else if (key == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
                 tf_check(value, __NO_SANITIZE_PIPES);
+            else if (key == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
+                tf_check(value, __SUPPRESS_WARNINGS);
             else if (key == COMMON_EARL2ARG_INCLUDE) {
                 auto values = get_comma_sep_values(value);
                 if (values.has_value()) {
@@ -156,6 +156,7 @@ void create_default_config_file(void) {
         s += COMMON_EARL2ARG_REPL_NOCOLOR "=false\n";
         s += COMMON_EARL2ARG_SHOWFUNS "=false\n";
         s += COMMON_EARL2ARG_CHECK "=false\n";
+        s += COMMON_EARL2ARG_SUPPRESS_WARNINGS "=false\n";
         s += COMMON_EARL2ARG_VERBOSE "=false\n";
         s += COMMON_EARL2ARG_SHOWBASH "=false\n";
         s += COMMON_EARL2ARG_ERROR_ON_BASH_FAIL "=false\n";
@@ -184,6 +185,7 @@ void create_default_config_file(void) {
 }
 
 void handle_hidden_file(void) {
-    auto lines = read_or_create_earl_file();
-    parse_lines(lines);
+    auto lines = read_earl_file();
+    if (lines.size() != 0)
+        parse_lines(lines);
 }

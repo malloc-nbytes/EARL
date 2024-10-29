@@ -60,6 +60,8 @@ void handle_2flag(std::string flag, bool set) {
         handle_flag(__SHOWMUTS, set);
     else if (flag == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
         handle_flag(__NO_SANITIZE_PIPES, set);
+    else if (flag == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
+        handle_flag(__SUPPRESS_WARNINGS, set);
     else
         throw InterpreterException("unsupported or invalid flag `"+flag+"`");
 }
@@ -75,6 +77,8 @@ void handle_1flag(char flag, bool set) {
         handle_flag(__SHOWBASH, set);
     else if (flag == COMMON_EARL1ARG_ERROR_ON_BASH_FAIL)
         handle_flag(__ERROR_ON_BASH_FAIL, set);
+    else if (flag == COMMON_EARL1ARG_SUPPRESS_WARNINGS)
+        handle_flag(__SUPPRESS_WARNINGS, set);
     else
         throw InterpreterException("unsupported or invalid flag `"+std::string(1, flag)+"`");
 }
