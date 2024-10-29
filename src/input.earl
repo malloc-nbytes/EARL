@@ -1,5 +1,5 @@
 module Main
 
-use "./script.sh"; as script
+use ".script.sh"; as S
 
-
+exec S;

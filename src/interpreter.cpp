@@ -2660,9 +2660,8 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     auto path_obj = unpack_ER(path_er, ctx, &perp);
     const std::string path = path_obj->to_cxxstring();
 
-    if (path.size() > 1 && path[0] != '.') {
+    if (path.size() > 1 && (path[0] != '.' || path[1] != '/'))
         WARN_WARGS("script `%s` does not start with `./`, `../` etc.", path.c_str());
-    }
 
     if (stmt->m_as.has_value()) {
         auto as = std::move(stmt->m_as.value());
