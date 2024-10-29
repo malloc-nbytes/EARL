@@ -327,6 +327,11 @@ err_wstmtenum(StmtEnum *stmt) {
 }
 
 void
+err_wexec_stmt(StmtExec *stmt) {
+    Err::err_wtok(stmt->m_ident.get());
+}
+
+void
 Err::err_wstmt(Stmt *stmt) {
     if (!stmt) {
         std::cerr << "[EARL] <unable to display error line at this time>" << std::endl;;
@@ -349,6 +354,7 @@ Err::err_wstmt(Stmt *stmt) {
     case StmtType::Class: assert(false); break;
     case StmtType::Match: assert(false); break;
     case StmtType::Enum: assert(false); break;
+    case StmtType::Exec: err_wexec_stmt(dynamic_cast<StmtExec *>(stmt)); break;
     default:
         assert(false && "unreachable");
     }

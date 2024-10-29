@@ -2532,15 +2532,12 @@ eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
-    ER bash_er = Interpreter::eval_expr(stmt->m_bash->m_expr.get(), ctx, false);
-    auto bash = unpack_ER(bash_er, ctx, false, nullptr);
-
-    auto get_bash_res = [&](std::string cmd) {
+    auto get_bash_res = [&](std::string cmd, Stmt *stmt) {
         std::string output = "";
         std::array<char, 256> buffer;
         FILE *pipe = popen(cmd.c_str(), "r");
         if (!pipe) {
-            Err::err_wexpr(stmt->m_bash->m_expr.get());
+            Err::err_wstmt(stmt);
             throw InterpreterException("failed to execute bash `"+cmd+"`");
         }
         while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
@@ -2562,54 +2559,75 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
         return std::make_shared<earl::value::Str>(std::move(output));
     };
 
-    std::visit([&] (auto &&rhs) {
-        using T = std::decay_t<decltype(rhs)>;
-        static_assert(std::is_same_v<T, std::shared_ptr<Token>>
-                        || std::is_same_v<T, std::unique_ptr<Expr>>);
-        // Creating a new variable.
-        if constexpr (std::is_same_v<T, std::shared_ptr<Token>>) {
-            const std::string id = rhs->m_lexeme;
+    auto aux = [&](auto &to, std::string cmd) {
+        std::visit([&] (auto &&rhs) {
+            using T = std::decay_t<decltype(rhs)>;
+            static_assert(std::is_same_v<T, std::shared_ptr<Token>>
+                          || std::is_same_v<T, std::unique_ptr<Expr>>);
 
-            if (ctx->type() == CtxType::Closure)
-                // Special case for when we declare a variable in a recursive closure.
-                dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id);
-            else {
-                if (ctx->variable_exists(id)) {
-                    std::string msg = "variable `"+id+"` is already declared";
-                    auto conflict = ctx->variable_get(id);
-                    Err::err_wconflict(rhs.get(), conflict->gettok());
-                    throw InterpreterException(msg);
+            // Creating a new variable.
+            if constexpr (std::is_same_v<T, std::shared_ptr<Token>>) {
+                const std::string id = rhs->m_lexeme;
+
+                if (ctx->type() == CtxType::Closure)
+                    // Special case for when we declare a variable in a recursive closure.
+                    dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id);
+                else {
+                    if (ctx->variable_exists(id)) {
+                        std::string msg = "variable `"+id+"` is already declared";
+                        auto conflict = ctx->variable_get(id);
+                        Err::err_wconflict(rhs.get(), conflict->gettok());
+                        throw InterpreterException(msg);
+                    }
+                }
+
+                // std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
+                auto cmd_result = get_bash_res(cmd, stmt);
+
+                if (id != "_") {
+                    // TODO: show-lets
+                    std::shared_ptr<earl::variable::Obj> var
+                        = std::make_shared<earl::variable::Obj>(rhs.get(), cmd_result, stmt->m_attrs, flatten_info(stmt->m_info));
+                    ctx->variable_add(var);
+                    cmd_result->set_owner(var.get());
                 }
             }
+            // Assigning it to something that exists.
+            else if constexpr (std::is_same_v<T, std::unique_ptr<Expr>>) {
+                auto expr_er = Interpreter::eval_expr(rhs.get(), ctx, true);
 
-            std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
-            auto cmd_result = get_bash_res(cmd);
+                if (expr_er.is_tuple_access()) {
+                    Err::err_wexpr(rhs.get());
+                    std::string msg = "cannot mutate tuple type as they are immutable";
+                    throw InterpreterException(msg);
+                }
 
-            if (id != "_") {
-                // TODO: show-lets
-                std::shared_ptr<earl::variable::Obj> var
-                    = std::make_shared<earl::variable::Obj>(rhs.get(), cmd_result, stmt->m_attrs, flatten_info(stmt->m_info));
-                ctx->variable_add(var);
-                cmd_result->set_owner(var.get());
+                // TODO: show-muts
+                // TODO: attributes
+                auto location = unpack_ER(expr_er, ctx, true);
+                // std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
+                location->mutate(get_bash_res(cmd, stmt).get(), nullptr);
             }
-        }
-        // Assigning it to something that exists.
-        else if constexpr (std::is_same_v<T, std::unique_ptr<Expr>>) {
-            auto expr_er = Interpreter::eval_expr(rhs.get(), ctx, true);
+        }, to);
+    };
 
-            if (expr_er.is_tuple_access()) {
-                Err::err_wexpr(rhs.get());
-                std::string msg = "cannot mutate tuple type as they are immutable";
-                throw InterpreterException(msg);
-            }
-
-            // TODO: show-muts
-            // TODO: attributes
-            auto location = unpack_ER(expr_er, ctx, true);
-            std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
-            location->mutate(get_bash_res(cmd).get(), nullptr);
+    std::visit([&](auto &&cmd) {
+        using T = std::decay_t<decltype(cmd)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<StmtBashLiteral>>) {
+            ER bash_er = Interpreter::eval_expr(cmd->m_expr.get(), ctx, false);
+            auto bash = unpack_ER(bash_er, ctx, false, nullptr);
+            aux(stmt->m_to, bash->to_cxxstring());
         }
-    }, stmt->m_to);
+        else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
+            auto world = ctx->get_world();
+            auto bash = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
+            aux(stmt->m_to, bash);
+        }
+        else {
+            assert(false && "illegal pipe statement");
+        }
+    }, stmt->m_bash);
+
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
@@ -2625,6 +2643,50 @@ eval_stmt_multiline_bash(StmtMultilineBash *stmt, std::shared_ptr<Ctx> &ctx) {
         const std::string msg = "bash cmd failed with exit code "+std::to_string(x);
         throw InterpreterException(msg);
     }
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Void>();
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
+    if (ctx->type() != CtxType::World) {
+        Err::err_wexpr(stmt->m_fp.get());
+        std::string msg = "`use` statements must be used in the @world context";
+        throw InterpreterException(msg);
+    }
+
+    ER path_er = eval_expr(stmt->m_fp.get(), ctx, false);
+    PackedERPreliminary perp;
+    auto path_obj = unpack_ER(path_er, ctx, &perp);
+    const std::string path = path_obj->to_cxxstring();
+
+    if (path.size() > 1 && (path[0] != '.' || path[1] != '/'))
+        WARN_WARGS("script `%s` does not start with `./`, `../` etc.", path.c_str());
+
+    if (stmt->m_as.has_value()) {
+        auto as = std::move(stmt->m_as.value());
+        auto world = dynamic_cast<WorldCtx *>(ctx.get());
+        world->add_external_shell_script(std::move(as), std::move(path), stmt->m_fp.get());
+    }
+    else {
+        int ec = system(path.c_str());
+        if (ec != 0)
+            WARN_WARGS("script `%s` failed with exit code: %d", path.c_str(), std::to_string(ec));
+    }
+
+    stmt->m_evald = true;
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
+    auto world = ctx->get_world();
+    const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
+
+    int ec = system(script_path.c_str());
+    if (ec != 0)
+        WARN_WARGS("script `%s` failed with exit code: %d", script_path.c_str(), std::to_string(ec));
+
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
@@ -2653,6 +2715,8 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Bash_Literal:    return eval_stmt_bash_lit(dynamic_cast<StmtBashLiteral *>(stmt), ctx);
     case StmtType::Pipe:            return eval_stmt_pipe(dynamic_cast<StmtPipe *>(stmt), ctx);
     case StmtType::Multiline_Bash:  return eval_stmt_multiline_bash(dynamic_cast<StmtMultilineBash *>(stmt), ctx);
+    case StmtType::Use:             return eval_stmt_use(dynamic_cast<StmtUse *>(stmt), ctx);
+    case StmtType::Exec:            return eval_stmt_exec(dynamic_cast<StmtExec *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

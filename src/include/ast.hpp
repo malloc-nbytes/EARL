@@ -60,6 +60,8 @@ enum class StmtType {
     Info,
     Pipe,
     Multiline_Bash,
+    Use,
+    Exec,
 };
 
 /// The different types an expression can be.
@@ -356,6 +358,12 @@ struct StmtBashLiteral : public Stmt {
     StmtType stmt_type() const override;
 };
 
+struct StmtExec : public Stmt {
+    std::shared_ptr<Token> m_ident;
+    StmtExec(std::shared_ptr<Token> ident);
+    StmtType stmt_type() const override;
+};
+
 struct StmtMultilineBash : public Stmt {
     std::shared_ptr<Token> m_sh;
     StmtMultilineBash(std::shared_ptr<Token> sh);
@@ -412,12 +420,12 @@ struct StmtLet : public Stmt {
 };
 
 struct StmtPipe : public Stmt {
-    std::unique_ptr<StmtBashLiteral> m_bash;
+    std::variant<std::unique_ptr<StmtBashLiteral>, std::unique_ptr<StmtExec>> m_bash;
     std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> m_to;
     uint32_t m_attrs;
     std::vector<std::string> m_info;
 
-    StmtPipe(std::unique_ptr<StmtBashLiteral> bash,
+    StmtPipe(std::variant<std::unique_ptr<StmtBashLiteral>, std::unique_ptr<StmtExec>> bash,
              std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to,
              uint32_t attrs,
              std::vector<std::string> info);
@@ -571,6 +579,14 @@ struct StmtImport : public Stmt {
                std::optional<std::shared_ptr<Token>> depth,
                std::optional<std::shared_ptr<Token>> as);
 
+    StmtType stmt_type() const override;
+};
+
+struct StmtUse : public Stmt {
+    std::unique_ptr<Expr> m_fp;
+    std::optional<std::shared_ptr<Token>> m_as;
+
+    StmtUse(std::unique_ptr<Expr> fp, std::optional<std::shared_ptr<Token>> as);
     StmtType stmt_type() const override;
 };
 

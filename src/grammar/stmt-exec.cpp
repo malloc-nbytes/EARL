@@ -27,13 +27,9 @@
 
 #include "ast.hpp"
 
-StmtPipe::StmtPipe(std::variant<std::unique_ptr<StmtBashLiteral>, std::unique_ptr<StmtExec>> bash,
-                   std::variant<std::shared_ptr<Token>, std::unique_ptr<Expr>> to,
-                   uint32_t attrs,
-                   std::vector<std::string> info)
-    : m_bash(std::move(bash)), m_to(std::move(to)), m_attrs(attrs), m_info(std::move(info)) {}
+StmtExec::StmtExec(std::shared_ptr<Token> ident)
+    : m_ident(std::move(ident)) {}
 
-StmtType
-StmtPipe::stmt_type() const {
-    return StmtType::Pipe;
+StmtType StmtExec::stmt_type() const {
+    return StmtType::Exec;
 }
