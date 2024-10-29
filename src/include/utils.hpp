@@ -59,5 +59,6 @@
 #define TODO(msg) fprintf(stderr, "[EARL TODO]: " msg "\n")
 
 int levenshtein_distance(std::string &s, std::string &t);
+std::string file_to_cxxstring(const std::string &path);
 
 #endif // UTILS_H

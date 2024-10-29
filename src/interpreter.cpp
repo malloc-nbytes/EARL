@@ -2515,11 +2515,17 @@ eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
 }
 
 static void
-system_bash(const char *cmd) {
+system_bash(const std::string &cmd) {
     if ((flags & __SHOWBASH) != 0)
         std::cout << "+ " << cmd << std::endl;
 
-    int x = system(cmd);
+    std::string full_command = "";
+    if ((flags & __ERROR_ON_BASH_FAIL) != 0)
+        full_command = "set -e; " + cmd;
+    else
+        full_command = std::string(cmd);
+
+    int x = system(full_command.c_str());
     if (x == -1)
         goto warn;
 
@@ -2553,7 +2559,7 @@ static std::shared_ptr<earl::value::Obj>
 eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
     ER bash_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     auto bash = unpack_ER(bash_er, ctx, false, nullptr);
-    system_bash(bash->to_cxxstring().c_str());
+    system_bash(bash->to_cxxstring());
     return std::make_shared<earl::value::Void>();
 }
 
@@ -2647,7 +2653,8 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
         }
         else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
             auto world = ctx->get_world();
-            auto bash = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
+            auto path = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
+            auto bash = file_to_cxxstring(path);
             aux(stmt->m_to, bash);
         }
         else {
@@ -2662,10 +2669,8 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_multiline_bash(StmtMultilineBash *stmt, std::shared_ptr<Ctx> &ctx) {
     std::string cmd = stmt->m_sh->lexeme();
-    if ((flags & __SHOWBASH) != 0)
-        std::cout << "+ " << cmd << std::endl;
 
-    system_bash(cmd.c_str());
+    system_bash(cmd);
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2684,16 +2689,15 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     auto path_obj = unpack_ER(path_er, ctx, &perp);
     const std::string path = path_obj->to_cxxstring();
 
-    if (path.size() > 1 && (path[0] != '.' || path[1] != '/'))
-        WARN_WARGS("script `%s` does not start with `./`, `../` etc.", path.c_str());
-
+    // An alias is present, do not execute now, do it later with `exec`.
     if (stmt->m_as.has_value()) {
         auto as = std::move(stmt->m_as.value());
         auto world = dynamic_cast<WorldCtx *>(ctx.get());
         world->add_external_shell_script(std::move(as), std::move(path), stmt->m_fp.get());
     }
+    // No alias found, execute now.
     else
-        system_bash(path.c_str());
+        system_bash(file_to_cxxstring(path));
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2704,7 +2708,7 @@ eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
     auto world = ctx->get_world();
     const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
 
-    system_bash(script_path.c_str());
+    system_bash(file_to_cxxstring(script_path));
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
