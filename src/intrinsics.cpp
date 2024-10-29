@@ -642,11 +642,13 @@ Intrinsics::intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl:
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_unix_system__", expr);
     const std::string cmd = params[0]->to_cxxstring();
     int exitcode = system(cmd.c_str());
-    if (exitcode == -1) {
+    if (exitcode == -1 && ((flags & __ERROR_ON_BASH_FAIL) != 0)) {
         Err::err_wexpr(expr);
         const std::string msg = "failed to execute system command `"+cmd+"`";
         throw InterpreterException(msg);
     }
+    else if (exitcode == -1)
+        WARN_WARGS("failed to execute system command `%s`", cmd.c_str());
     return std::make_shared<earl::value::Int>(exitcode);
 }
 
