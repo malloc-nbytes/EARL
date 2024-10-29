@@ -105,6 +105,8 @@ void parse_lines(std::vector<std::string> &lines) {
                 tf_check(value, __VERBOSE);
             else if (key == COMMON_EARL2ARG_SHOWBASH)
                 tf_check(value, __SHOWBASH);
+            else if (key == COMMON_EARL2ARG_ERROR_ON_BASH_FAIL)
+                tf_check(value, __ERROR_ON_BASH_FAIL);
             else if (key == COMMON_EARL2ARG_SHOWLETS)
                 tf_check(value, __SHOWLETS);
             else if (key == COMMON_EARL2ARG_SHOWMUTS)
@@ -156,6 +158,7 @@ void create_default_config_file(void) {
         s += COMMON_EARL2ARG_CHECK "=false\n";
         s += COMMON_EARL2ARG_VERBOSE "=false\n";
         s += COMMON_EARL2ARG_SHOWBASH "=false\n";
+        s += COMMON_EARL2ARG_ERROR_ON_BASH_FAIL "=false\n";
         s += COMMON_EARL2ARG_SHOWLETS "=false\n";
         s += COMMON_EARL2ARG_SHOWMUTS "=false\n";
         s += COMMON_EARL2ARG_NO_SANITIZE_PIPES "=false\n\n";

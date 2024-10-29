@@ -52,6 +52,8 @@ void handle_2flag(std::string flag, bool set) {
         handle_flag(__VERBOSE, set);
     else if (flag == COMMON_EARL2ARG_SHOWBASH)
         handle_flag(__SHOWBASH, set);
+    else if (flag == COMMON_EARL2ARG_ERROR_ON_BASH_FAIL)
+        handle_flag(__ERROR_ON_BASH_FAIL, set);
     else if (flag == COMMON_EARL2ARG_SHOWLETS)
         handle_flag(__SHOWLETS, set);
     else if (flag == COMMON_EARL2ARG_SHOWMUTS)
@@ -59,7 +61,7 @@ void handle_2flag(std::string flag, bool set) {
     else if (flag == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
         handle_flag(__NO_SANITIZE_PIPES, set);
     else
-        throw InterpreterException("invalid flag `"+flag+"`");
+        throw InterpreterException("unsupported or invalid flag `"+flag+"`");
 }
 
 void handle_1flag(char flag, bool set) {
@@ -67,6 +69,12 @@ void handle_1flag(char flag, bool set) {
         handle_flag(__CHECK, set);
     else if (flag == COMMON_EARL1ARG_WATCH)
         handle_flag(__WATCH, set);
+    else if (flag == COMMON_EARL1ARG_VERBOSE)
+        handle_flag(__VERBOSE, set);
+    else if (flag == COMMON_EARL1ARG_SHOW_BASH)
+        handle_flag(__SHOWBASH, set);
+    else if (flag == COMMON_EARL1ARG_ERROR_ON_BASH_FAIL)
+        handle_flag(__ERROR_ON_BASH_FAIL, set);
     else
-        throw InterpreterException("invalid flag `"+std::string(1, flag)+"`");
+        throw InterpreterException("unsupported or invalid flag `"+std::string(1, flag)+"`");
 }

@@ -109,7 +109,9 @@ namespace Err {
 #define WARN(msg) fprintf(stderr, "[EARL] warning: " msg "\n");
 
 #define WARN_WARGS(msg, ...) \
-    fprintf(stderr, "[EARL] warning: " msg, __VA_ARGS__); \
-    fprintf(stderr, "\n");
+    do { \
+        fprintf(stderr, "[EARL] warning: " msg, __VA_ARGS__);   \
+        fprintf(stderr, "\n");                                  \
+    } while (0)
 
 #endif // ERR_H

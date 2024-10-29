@@ -24,7 +24,10 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
+#include "err.hpp"
 #include "common.hpp"
 
 int
@@ -71,13 +74,16 @@ valid_earl_cli_flag(const std::string &flag) {
         return false;
     }
 
-    std::string trim = flag.substr(1);
-    for (auto c : trim) {
-        
-    }
-
-
-
     return false;
+}
+
+std::string
+file_to_cxxstring(const std::string &filepath) {
+    std::ifstream file(filepath);
+    if (!file)
+        throw InterpreterException("could not open file: " + filepath);
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 

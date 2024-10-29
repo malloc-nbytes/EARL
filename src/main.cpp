@@ -153,12 +153,13 @@ usage(void) {
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
+    std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command" << std::endl;
+    std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "            --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
-    std::cerr << "            --show-bash  . . . . . . . . . . . Print all inlined bash" << std::endl;
     std::cerr << "            --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
     std::cerr << "            --show-muts  . . . . . . . . . . . Print all value mutations" << std::endl;
-    std::cerr << "            --no-sanitize-pipes  . . . . . . . Do not sanitize bash pipes" << std::endl;
+    std::cerr << "            --no-sanitize-pipes  . . . . . . . Do not sanitize BASH pipes" << std::endl;
     std::cerr << "    REPL Config" << std::endl;
     std::cerr << "            --repl-nocolor . . . . . . . . . . Do not use color in the REPL" << std::endl;
     std::cerr << "            --repl-theme <theme>|list  . . . . Use a color theme in the REPL (`default` if this option is not used)" << std::endl;
@@ -370,6 +371,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         create_default_config_file();
     else if (arg == COMMON_EARL2ARG_BATCH)
         get_batch_scripts(args);
+    else if (arg == COMMON_EARL2ARG_ERROR_ON_BASH_FAIL)
+        flags |= __ERROR_ON_BASH_FAIL;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -405,6 +408,12 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         } break;
         case COMMON_EARL1ARG_VERBOSE: {
             flags |= __VERBOSE;
+        } break;
+        case COMMON_EARL1ARG_SHOW_BASH: {
+            flags |= __SHOWBASH;
+        } break;
+        case COMMON_EARL1ARG_ERROR_ON_BASH_FAIL: {
+            flags |= __ERROR_ON_BASH_FAIL;
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);

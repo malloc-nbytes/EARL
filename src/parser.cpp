@@ -1006,6 +1006,7 @@ parse_stmt_bash(Lexer &lexer) {
 static std::unique_ptr<StmtMultilineBash>
 parse_stmt_multiline_bash(Lexer &lexer) {
     auto res = std::make_unique<StmtMultilineBash>(lexer.next());
+    res->m_sh->lexeme().erase(res->m_sh->lexeme().begin());
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
     return std::move(res);
 }

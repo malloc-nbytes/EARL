@@ -2514,19 +2514,52 @@ eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
     return result;
 }
 
+static void
+system_bash(const std::string &cmd) {
+    if ((flags & __SHOWBASH) != 0)
+        std::cout << "+ " << cmd << std::endl;
+
+    std::string full_command = "";
+    if ((flags & __ERROR_ON_BASH_FAIL) != 0)
+        full_command = "set -e; " + cmd;
+    else
+        full_command = std::string(cmd);
+
+    int x = system(full_command.c_str());
+    if (x == -1)
+        goto warn;
+
+    if (WIFEXITED(x)) {
+        if (WEXITSTATUS(x) != 0)
+            goto warn;
+        goto ok;
+    }
+    else {
+        if ((flags & __ERROR_ON_BASH_FAIL) != 0) {
+            const std::string msg = "BASH command did not terminate normally with exit code: " + std::to_string(x);
+            throw InterpreterException(msg);
+        }
+        else
+            WARN_WARGS("BASH command did not terminate normally with exit code: %d", x);
+        goto ok;
+    }
+
+warn:
+    if ((flags & __ERROR_ON_BASH_FAIL) != 0) {
+        const std::string msg = "BASH command failed with exit code: " + std::to_string(x);
+        throw InterpreterException(msg);
+    }
+    WARN_WARGS("BASH command failed with exit code: %d", x);
+
+ok:
+    return;
+}
+
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
     ER bash_er = Interpreter::eval_expr(stmt->m_expr.get(), ctx, false);
     auto bash = unpack_ER(bash_er, ctx, false, nullptr);
-
-    if ((flags & __SHOWBASH) != 0)
-        std::cout << "+ " << bash->to_cxxstring() << std::endl;
-
-    int x;
-    if ((x = system(bash->to_cxxstring().c_str())) == -1) {
-        const std::string msg = "bash cmd failed with exit code "+std::to_string(x);
-        throw InterpreterException(msg);
-    }
+    system_bash(bash->to_cxxstring());
     return std::make_shared<earl::value::Void>();
 }
 
@@ -2620,7 +2653,8 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
         }
         else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
             auto world = ctx->get_world();
-            auto bash = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
+            auto path = world->get_external_script_path(cmd->m_ident->lexeme(), cmd.get());
+            auto bash = file_to_cxxstring(path);
             aux(stmt->m_to, bash);
         }
         else {
@@ -2635,14 +2669,9 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_multiline_bash(StmtMultilineBash *stmt, std::shared_ptr<Ctx> &ctx) {
     std::string cmd = stmt->m_sh->lexeme();
-    if ((flags & __SHOWBASH) != 0)
-        std::cout << "+ " << cmd << std::endl;
 
-    int x;
-    if ((x = system(cmd.c_str())) == -1) {
-        const std::string msg = "bash cmd failed with exit code "+std::to_string(x);
-        throw InterpreterException(msg);
-    }
+    system_bash(cmd);
+
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
 }
@@ -2660,19 +2689,15 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     auto path_obj = unpack_ER(path_er, ctx, &perp);
     const std::string path = path_obj->to_cxxstring();
 
-    if (path.size() > 1 && (path[0] != '.' || path[1] != '/'))
-        WARN_WARGS("script `%s` does not start with `./`, `../` etc.", path.c_str());
-
+    // An alias is present, do not execute now, do it later with `exec`.
     if (stmt->m_as.has_value()) {
         auto as = std::move(stmt->m_as.value());
         auto world = dynamic_cast<WorldCtx *>(ctx.get());
         world->add_external_shell_script(std::move(as), std::move(path), stmt->m_fp.get());
     }
-    else {
-        int ec = system(path.c_str());
-        if (ec != 0)
-            WARN_WARGS("script `%s` failed with exit code: %d", path.c_str(), std::to_string(ec));
-    }
+    // No alias found, execute now.
+    else
+        system_bash(file_to_cxxstring(path));
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
@@ -2683,9 +2708,7 @@ eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
     auto world = ctx->get_world();
     const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
 
-    int ec = system(script_path.c_str());
-    if (ec != 0)
-        WARN_WARGS("script `%s` failed with exit code: %d", script_path.c_str(), std::to_string(ec));
+    system_bash(file_to_cxxstring(script_path));
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
