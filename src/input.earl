@@ -2,4 +2,4 @@ module Main
 
 use "./script.sh"; as script
 
-exec script;
+
