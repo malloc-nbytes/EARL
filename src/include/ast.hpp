@@ -60,6 +60,8 @@ enum class StmtType {
     Info,
     Pipe,
     Multiline_Bash,
+    Use,
+    Exec,
 };
 
 /// The different types an expression can be.
@@ -356,6 +358,12 @@ struct StmtBashLiteral : public Stmt {
     StmtType stmt_type() const override;
 };
 
+struct StmtExec : public Stmt {
+    std::shared_ptr<Token> m_ident;
+    StmtExec(std::shared_ptr<Token> ident);
+    StmtType stmt_type() const override;
+};
+
 struct StmtMultilineBash : public Stmt {
     std::shared_ptr<Token> m_sh;
     StmtMultilineBash(std::shared_ptr<Token> sh);
@@ -571,6 +579,14 @@ struct StmtImport : public Stmt {
                std::optional<std::shared_ptr<Token>> depth,
                std::optional<std::shared_ptr<Token>> as);
 
+    StmtType stmt_type() const override;
+};
+
+struct StmtUse : public Stmt {
+    std::unique_ptr<Expr> m_fp;
+    std::optional<std::shared_ptr<Token>> m_as;
+
+    StmtUse(std::unique_ptr<Expr> fp, std::optional<std::shared_ptr<Token>> as);
     StmtType stmt_type() const override;
 };
 

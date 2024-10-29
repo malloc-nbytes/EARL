@@ -774,7 +774,6 @@ parse_stmt_for(Lexer &lexer) {
 std::unique_ptr<Stmt>
 parse_stmt_import(Lexer &lexer) {
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
-    // std::shared_ptr<Token> fp = Parser::parse_expect(lexer, TokenType::Strlit);
     auto fp = Parser::parse_expr(lexer);
 
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
@@ -796,7 +795,6 @@ parse_stmt_import(Lexer &lexer) {
     }
 
     return std::make_unique<StmtImport>(std::shared_ptr<Expr>(fp), std::move(depth), std::move(as));
-    assert(false && "todo");
 }
 
 std::unique_ptr<Stmt>
@@ -1012,6 +1010,34 @@ parse_stmt_multiline_bash(Lexer &lexer) {
     return std::move(res);
 }
 
+static std::unique_ptr<StmtUse>
+parse_stmt_use(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_USE);
+    auto fp = Parser::parse_expr(lexer);
+
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+
+    std::optional<std::shared_ptr<Token>> as = {};
+
+    if (lexer.peek(0) && lexer.peek(0)->type() == TokenType::Keyword &&
+        lexer.peek(0)->lexeme() == COMMON_EARLKW_AS) {
+        lexer.discard(); // as
+        as = Parser::parse_expect(lexer, TokenType::Ident);
+    }
+
+    return std::make_unique<StmtUse>(std::unique_ptr<Expr>(fp), std::move(as));
+}
+
+static std::unique_ptr<StmtExec>
+parse_stmt_exec(Lexer &lexer) {
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_EXEC);
+
+    auto id = Parser::parse_expect(lexer, TokenType::Ident);
+    (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+
+    return std::make_unique<StmtExec>(std::move(id));
+}
+
 std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
@@ -1084,6 +1110,10 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_continue(lexer);
             if (tok->lexeme() == COMMON_EARLKW_LOOP)
                 return parse_stmt_loop(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_USE)
+                return parse_stmt_use(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_EXEC)
+                return parse_stmt_exec(lexer);
             if (tok->lexeme() == COMMON_EARLKW_NONE
                     || tok->lexeme() == COMMON_EARLKW_TRUE
                     || tok->lexeme() == COMMON_EARLKW_FALSE)

@@ -110,6 +110,8 @@ struct WorldCtx : public Ctx {
     void set_module_alias(const std::string &id);
     bool has_module_alias(void) const;
     const std::string &get_module_alias(void) const;
+    void add_external_shell_script(std::shared_ptr<Token> as, std::string path, Expr *expr);
+    const std::string &get_external_script_path(const std::string &alias, Stmt *stmt);
 
     // REPL
     void add_repl_lexer(std::unique_ptr<Lexer> lexer);
@@ -126,10 +128,14 @@ private:
     std::unordered_map<std::string, std::shared_ptr<earl::value::Enum>> m_enums;
     std::string m_filepath;
     std::optional<std::string> m_module_alias;
+    std::unordered_map<std::string, std::string> m_external_bash_scripts;
 
     // REPL
     std::vector<std::unique_ptr<Lexer>> m_repl_lexers;
     std::vector<std::unique_ptr<Program>> m_repl_programs;
+
+    // External SHELL scripts.
+    std::unordered_map<std::string, std::string> m_external_shell_scripts;
 };
 
 struct FunctionCtx : public Ctx {

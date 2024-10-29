@@ -2629,6 +2629,49 @@ eval_stmt_multiline_bash(StmtMultilineBash *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
+    if (ctx->type() != CtxType::World) {
+        Err::err_wexpr(stmt->m_fp.get());
+        std::string msg = "`use` statements must be used in the @world context";
+        throw InterpreterException(msg);
+    }
+
+    ER path_er = eval_expr(stmt->m_fp.get(), ctx, false);
+    PackedERPreliminary perp;
+    auto path_obj = unpack_ER(path_er, ctx, &perp);
+    const std::string path = path_obj->to_cxxstring();
+
+    if (path.size() > 1 && path[0] != '.') {
+        WARN_WARGS("script `%s` does not start with `./`, `../` etc.", path.c_str());
+    }
+
+    if (stmt->m_as.has_value()) {
+        auto as = std::move(stmt->m_as.value());
+        auto world = dynamic_cast<WorldCtx *>(ctx.get());
+        world->add_external_shell_script(std::move(as), std::move(path), stmt->m_fp.get());
+    }
+    else {
+        int ec = system(path.c_str());
+        if (ec != 0)
+            WARN_WARGS("script `%s` failed with exit code: %d", path.c_str(), std::to_string(ec));
+    }
+
+    return std::make_shared<earl::value::Void>();
+}
+
+std::shared_ptr<earl::value::Obj>
+eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
+    auto world = ctx->get_world();
+    const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
+
+    int ec = system(script_path.c_str());
+    if (ec != 0)
+        WARN_WARGS("script `%s` failed with exit code: %d", script_path.c_str(), std::to_string(ec));
+
+    return std::make_shared<earl::value::Void>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -2653,6 +2696,8 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Bash_Literal:    return eval_stmt_bash_lit(dynamic_cast<StmtBashLiteral *>(stmt), ctx);
     case StmtType::Pipe:            return eval_stmt_pipe(dynamic_cast<StmtPipe *>(stmt), ctx);
     case StmtType::Multiline_Bash:  return eval_stmt_multiline_bash(dynamic_cast<StmtMultilineBash *>(stmt), ctx);
+    case StmtType::Use:             return eval_stmt_use(dynamic_cast<StmtUse *>(stmt), ctx);
+    case StmtType::Exec:            return eval_stmt_exec(dynamic_cast<StmtExec *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

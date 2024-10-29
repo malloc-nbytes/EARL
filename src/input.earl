@@ -1,7 +1,5 @@
 module Main
 
-import "../src/std/system.earl"; as sys
+use "./script.sh"; as script
 
-let path = env("HOME")+"/dev/EARL/src/";
-
-println(sys::isdir(path));
+exec script;

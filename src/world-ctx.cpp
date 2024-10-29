@@ -38,6 +38,28 @@ WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> progra
 WorldCtx::WorldCtx() : m_lexer(nullptr), m_program(nullptr) {}
 
 void
+WorldCtx::add_external_shell_script(std::shared_ptr<Token> as, std::string path, Expr *expr) {
+    auto already_has = m_external_bash_scripts.find(as->lexeme());
+    if (already_has != m_external_bash_scripts.end()) {
+        Err::err_wexpr(expr);
+        const std::string msg = "external script alias "+as->lexeme()+"already exists";
+        throw InterpreterException(msg);
+    }
+    m_external_bash_scripts[as->lexeme()] = std::move(path);
+}
+
+const std::string &
+WorldCtx::get_external_script_path(const std::string &alias, Stmt *stmt) {
+    auto it = m_external_bash_scripts.find(alias);
+    if (it == m_external_bash_scripts.end()) {
+        Err::err_wstmt(stmt);
+        const std::string msg = "script for alias `"+alias+"` does not exist";
+        throw InterpreterException(msg);
+    }
+    return it->second;
+}
+
+void
 WorldCtx::set_module_alias(const std::string &id) {
     m_module_alias = id;
 }
