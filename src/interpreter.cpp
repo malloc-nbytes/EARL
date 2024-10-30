@@ -1436,6 +1436,15 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(result, ERT::Literal);
 }
 
+static ER
+eval_expr_term_case(ExprCase *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER case_expr_er = eval_expr(expr->m_expr.get(), ctx, ref);
+    auto case_expr = unpack_ER(case_expr_er, ctx, ref);
+    
+
+    assert(false);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -1457,6 +1466,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
     case ExprTermType::Dict:          return eval_expr_term_dict(dynamic_cast<ExprDict *>(expr), ctx, ref);
     case ExprTermType::FStr:          return eval_expr_term_fstr(dynamic_cast<ExprFStr *>(expr), ctx, ref);
+    case ExprTermType::Case:          return eval_expr_term_case(dynamic_cast<ExprCase *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

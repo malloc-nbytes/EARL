@@ -239,6 +239,22 @@ parse_set_values(Lexer &lexer) {
     return values;
 }
 
+static std::vector<std::unique_ptr<ExprCase::Case>>
+parse_case_cases(Lexer &lexer) {
+    (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+
+    std::vector<std::unique_ptr<ExprCase::Case>> cases = {};
+    while (lexer.peek() && lexer.peek()->type() != TokenType::Rbrace) {
+        auto lhs = Parser::parse_expr(lexer, /*fail_on=*/'=');
+        (void)Parser::parse_expect(lexer, TokenType::Equals);
+        auto rhs = Parser::parse_expr(lexer);
+        (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+        cases.push_back(std::make_unique<ExprCase::Case>(std::unique_ptr<Expr>(lhs), std::unique_ptr<Expr>(rhs)));
+    }
+    (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+    return std::move(cases);
+}
+
 static Expr *
 parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Token *tok = nullptr;
@@ -386,16 +402,21 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 return left;
             if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
                 return left;
+            if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_OF)
+                return left;
 
             std::shared_ptr<Token> kw = lexer.next();
-            if (kw->lexeme() == COMMON_EARLKW_TRUE) {
+            if (kw->lexeme() == COMMON_EARLKW_TRUE)
                 return new ExprBool(std::move(kw), true);
-            }
-            else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
+            else if (kw->lexeme() == COMMON_EARLKW_FALSE)
                 return new ExprBool(std::move(kw), false);
-            }
-            else if (kw->lexeme() == COMMON_EARLKW_NONE) {
+            else if (kw->lexeme() == COMMON_EARLKW_NONE)
                 return new ExprNone(std::move(kw));
+            else if (kw->lexeme() == COMMON_EARLKW_CASE) {
+                auto case_expr = Parser::parse_expr(lexer);
+                (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_OF);
+                auto cases = parse_case_cases(lexer);
+                return new ExprCase(std::unique_ptr<Expr>(case_expr), std::move(cases));
             }
             else {
                 Err::err_wtok(kw.get());

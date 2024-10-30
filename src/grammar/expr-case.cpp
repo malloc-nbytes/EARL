@@ -30,6 +30,9 @@
 ExprCase::ExprCase(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Case>> cases)
     : m_expr(std::move(expr)), m_cases(std::move(cases)) {}
 
+ExprCase::Case::Case(std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
+    : m_lhs(std::move(lhs)), m_rhs(std::move(rhs)) {}
+
 ExprType
 ExprCase::get_type() const {
     return ExprType::Term;

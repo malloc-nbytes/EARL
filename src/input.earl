@@ -1,9 +1,26 @@
 module Main
 
-let y = 1;
+# let y = 1;
 
-let x = case y of {
-    1 = y;
-    420 = 69;
-};
+# let x = case y of {
+#     1 = y;
+#     420 = 69;
+#     _ = 0;
+# };
+
+fn trouble_function()? {
+    let lst = [];
+    return lst[99];
+}
+
+let res = trouble_function();
+
+if res.ok() {
+    println(res.value());
+}
+else {
+    println("function failed");
+}
+
+
 
