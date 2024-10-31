@@ -23,7 +23,7 @@
 module Colors
 
 ### Enum
-#-- Name: Fd
+#-- Name: Tfc
 #-- Parameter: Black: str
 #-- Parameter: Red: str
 #-- Parameter: Green: str
@@ -63,7 +63,7 @@ module Colors
 ### End
 
 ### Enum
-#-- Name: Fd
+#-- Name: Tbc
 #-- Parameter: Black: str
 #-- Parameter: Red: str
 #-- Parameter: Green: str
@@ -103,7 +103,7 @@ module Colors
 ### End
 
 ### Enum
-#-- Name: Fd
+#-- Name: Te
 #-- Parameter: Underline: str
 #-- Parameter: Bold: str
 #-- Parameter: Italic: str
