@@ -24,7 +24,6 @@ module Colors
 
 ### Enum
 #-- Name: Fd
-#-- Parameter: In: int
 #-- Parameter: Black: str
 #-- Parameter: Red: str
 #-- Parameter: Green: str
