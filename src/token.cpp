@@ -120,10 +120,23 @@ Token::Token(char *start, size_t len, TokenType type, size_t row, size_t col, st
 std::shared_ptr<Token>
 token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp) {
     (void)lexer;
-    if (type == TokenType::Strlit || type == TokenType::Bashlit) {
+    if (type == TokenType::Strlit || type == TokenType::Bashlit || type == TokenType::Charlit) {
         std::string s = "";
         for (size_t i = 0; i < len; ++i) {
-            if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 'n') {
+            if (i < len-3 &&
+                *(start+i) == '\\' &&
+                *(start+i+1) &&
+                *(start+i+1) == '0' &&
+                *(start+i+2) == '3' &&
+                *(start+i+3) == '3') {
+                s += "\033";
+                i += 3;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == '\'') {
+                s += '\'';
+                ++i;
+            }
+            else if (*(start+i) == '\\' && *(start+i+1) && *(start+i+1) == 'n') {
                 s += '\n';
                 ++i;
             }
@@ -145,13 +158,20 @@ token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, s
             }
             else if (*(start+i) == '\\' && *(start+i+1)) {
                 auto err = std::make_shared<Token>(start, len, type, row, col, fp);
-                const std::string msg = "unknown escape sequence: `\\" + std::string(1, *(start+i+1));
+                const std::string msg = "unknown escape sequence: `\\" + std::string(1, *(start+i+1)) + '`';
                 Err::err_wtok(err.get());
-                throw ParserException(msg);
+                throw LexerException(msg);
             }
             else {
                 s += *(start+i);
             }
+        }
+
+        if (type == TokenType::Charlit && s.size() > 1) {
+            auto err = std::make_shared<Token>(start, len, type, row, col, fp);
+            const std::string msg = "character literals must be of size 1";
+            Err::err_wtok(err.get());
+            throw LexerException(msg);
         }
         return std::make_shared<Token>(s, type, row, col, fp);
     }
