@@ -665,8 +665,14 @@ repl::run(std::vector<std::string> &include_dirs) {
 
         std::unique_ptr<Program> program = nullptr;
         std::unique_ptr<Lexer> lexer = nullptr;
-        lexer = lex_file(combined, "", keywords, types, comment);
 
+        try {
+            lexer = lex_file(combined, "", keywords, types, comment);
+        }
+        catch (const LexerException &e) {
+            std::cerr << "Parser error: " << e.what() << std::endl;
+            continue;
+        }
         try {
             program = Parser::parse_program(*lexer.get(), "EARL-Builtin-REPLv" VERSION);
         } catch (const ParserException &e) {
