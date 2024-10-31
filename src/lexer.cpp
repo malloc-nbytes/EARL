@@ -100,7 +100,9 @@ static size_t consume_until(const std::string &s, const std::function<bool(char)
     for (i = 0; s[i]; ++i) {
         if (!skip && predicate(s[i]))
             return i;
-        if (s[i] == '\\')
+        if (skip && s[i] == '\\')
+            skip = false;
+        else if (s[i] == '\\')
             skip = true;
         else
             skip = false;
@@ -344,19 +346,14 @@ lex_file(std::string &src,
         }
 
         else if (src[i] == '\'') {
-            std::string charlit = "";
-            ++i;
-            if (src[i] == '\\') {
-                ++i;
-                ++col;
-                std::string escape = "\\" + std::string(1, src[i]);
-                charlit = escape;
-            }
-            else
-                charlit = std::string(1, src[i]);
-            lexer->append(charlit, TokenType::Charlit, row, col, fp);
-            i += 2;
-            col += 3;
+            size_t charlit_len = consume_until(lexeme+1, [](const char c) {
+                return c == '\'';
+            });
+
+            std::shared_ptr<Token> tok = token_alloc(*lexer.get(), lexeme+1, charlit_len, TokenType::Charlit, row, col, fp);
+            lexer->append(std::move(tok));
+            i += 1 + charlit_len + 1;
+            col += 1 + charlit_len + 1;
         }
 
         else if (isalpha(src[i]) || src[i] == '_') {
