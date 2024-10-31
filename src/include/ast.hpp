@@ -194,6 +194,7 @@ struct ExprCase : public ExprTerm {
         Case(std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs);
     };
 
+    std::shared_ptr<Token> m_errtok;
     std::unique_ptr<Expr> m_expr;
     std::vector<std::unique_ptr<Case>> m_cases;
 

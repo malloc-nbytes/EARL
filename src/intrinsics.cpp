@@ -648,7 +648,7 @@ Intrinsics::intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl:
         throw InterpreterException(msg);
     }
     else if (exitcode == -1)
-        WARN_WARGS("failed to execute system command `%s`", cmd.c_str());
+        WARN_WARGS("failed to execute system command `%s`", expr, cmd.c_str());
     return std::make_shared<earl::value::Int>(exitcode);
 }
 
