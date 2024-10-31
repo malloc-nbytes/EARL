@@ -138,9 +138,9 @@ usage(void) {
 
     std::cerr << "Documentation can be found at: https://malloc-nbytes.github.io/EARL-web/" << std::endl << std::endl;
 
-    std::cerr << "Usage: earl [script (max 1 file)] [options...] -- [passed_args...]" << std::endl;
+    std::cerr << "USAGE: earl [script (max 1 file)] [options...] -- [passed_args...]" << std::endl;
     std::cerr << "|  or: provide no script to launch the REPL" << std::endl << std::endl;
-    std::cerr << "Options:" << std::endl;
+    std::cerr << "OPTIONS:" << std::endl;
     std::cerr << "    Query Flags" << std::endl;
     std::cerr << "        -h, --help . . . . . . . . . . . . . . Print this help message" << std::endl;
     std::cerr << "        -v, --version  . . . . . . . . . . . . Print version information" << std::endl;
@@ -154,8 +154,8 @@ usage(void) {
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
-    std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command" << std::endl;
-    std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH" << std::endl;
+    std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
+    std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH (-x to conform with BASH)" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "            --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
     std::cerr << "            --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
@@ -177,7 +177,7 @@ usage(void) {
 
     std::cerr << "You can also create a configuration file by using the `--create-default-config` flag for a starting point." << std::endl << std::endl;
 
-    std::cerr << "Examples:" << std::endl;
+    std::cerr << "EXAMPLES:" << std::endl;
     std::cerr << "  earl                                   # Launch the REPL" << std::endl;
     std::cerr << "  earl --show-lets                       # Launch the REPL and print variable instantiations" << std::endl;
     std::cerr << "  earl --version                         # Show the version" << std::endl;
