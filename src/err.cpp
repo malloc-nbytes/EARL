@@ -163,6 +163,11 @@ err_wfstr(ExprFStr *expr, int s) {
 }
 
 static void
+err_wcase(ExprCase *expr, int s) {
+    Err::err_wexpr(expr->m_expr.get());
+}
+
+static void
 err_wterm(ExprTerm *expr, int s) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
@@ -215,6 +220,9 @@ err_wterm(ExprTerm *expr, int s) {
     } break;
     case ExprTermType::FStr: {
         err_wfstr(dynamic_cast<ExprFStr *>(expr), s);
+    } break;
+    case ExprTermType::Case: {
+        err_wcase(dynamic_cast<ExprCase *>(expr), s);
     } break;
     default: break;
     }

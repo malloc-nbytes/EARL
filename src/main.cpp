@@ -567,7 +567,7 @@ main(int argc, char **argv) {
 
                 else if (filepath != "") {
                     if ((flags & __WATCH) != 0)
-                        std::cout << "=== Run: " << run_count++ << " ======================" << std::endl;
+                        std::cout << "=== " << run_count++ << " ======================" << std::endl;
 
                     std::unique_ptr<Lexer> lexer = nullptr;
                     std::unique_ptr<Program> program = nullptr;

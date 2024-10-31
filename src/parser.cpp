@@ -239,6 +239,29 @@ parse_set_values(Lexer &lexer) {
     return values;
 }
 
+static std::vector<std::unique_ptr<ExprCase::Case>>
+parse_case_cases(Lexer &lexer, bool &found_base_case) {
+    (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+
+    std::vector<std::unique_ptr<ExprCase::Case>> cases = {};
+    while (lexer.peek() && lexer.peek()->type() != TokenType::Rbrace) {
+        auto lhs = Parser::parse_expr(lexer, /*fail_on=*/'=');
+        (void)Parser::parse_expect(lexer, TokenType::Equals);
+        auto rhs = Parser::parse_expr(lexer);
+        (void)Parser::parse_expect(lexer, TokenType::Semicolon);
+
+        ExprIdent *base = nullptr;
+        if ((base = dynamic_cast<ExprIdent *>(lhs)) != nullptr)
+            if (base->m_tok->lexeme() == "_")
+                found_base_case = true;
+
+        cases.push_back(std::make_unique<ExprCase::Case>(std::unique_ptr<Expr>(lhs), std::unique_ptr<Expr>(rhs)));
+    }
+    (void)Parser::parse_expect(lexer, TokenType::Rbrace);
+
+    return std::move(cases);
+}
+
 static Expr *
 parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
     Token *tok = nullptr;
@@ -386,16 +409,26 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 return left;
             if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_WHEN)
                 return left;
+            if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_OF)
+                return left;
 
             std::shared_ptr<Token> kw = lexer.next();
-            if (kw->lexeme() == COMMON_EARLKW_TRUE) {
+            if (kw->lexeme() == COMMON_EARLKW_TRUE)
                 return new ExprBool(std::move(kw), true);
-            }
-            else if (kw->lexeme() == COMMON_EARLKW_FALSE) {
+            else if (kw->lexeme() == COMMON_EARLKW_FALSE)
                 return new ExprBool(std::move(kw), false);
-            }
-            else if (kw->lexeme() == COMMON_EARLKW_NONE) {
+            else if (kw->lexeme() == COMMON_EARLKW_NONE)
                 return new ExprNone(std::move(kw));
+            else if (kw->lexeme() == COMMON_EARLKW_CASE) {
+                bool found_base_case = false;
+                auto case_expr = Parser::parse_expr(lexer);
+                (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_OF);
+                auto cases = parse_case_cases(lexer, /*found_base_case=*/found_base_case);
+                if (cases.size() == 0)
+                    WARN("`case` expression has no cases", case_expr);
+                if (!found_base_case)
+                    WARN("no base case found in `case` expression", case_expr);
+                return new ExprCase(std::unique_ptr<Expr>(case_expr), std::move(cases));
             }
             else {
                 Err::err_wtok(kw.get());
@@ -1136,8 +1169,9 @@ Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_USE)
                 return parse_stmt_use(lexer);
             if (tok->lexeme() == COMMON_EARLKW_NONE
-                    || tok->lexeme() == COMMON_EARLKW_TRUE
-                    || tok->lexeme() == COMMON_EARLKW_FALSE)
+                || tok->lexeme() == COMMON_EARLKW_TRUE
+                || tok->lexeme() == COMMON_EARLKW_FALSE
+                || tok->lexeme() == COMMON_EARLKW_CASE)
                 return parse_stmt_expr(lexer);
             Err::err_wtok(tok);
             std::string msg = "invalid keyword `" + tok->lexeme() + "`";

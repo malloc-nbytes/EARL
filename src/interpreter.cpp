@@ -317,7 +317,7 @@ eval_class_instantiation(ExprFuncCall *expr,
     auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
     if (klass->is_experimental()) {
-        WARN_WARGS("clas `%s` is marked as experimmental", klass->id().c_str());
+        WARN_WARGS("clas `%s` is marked as experimmental", nullptr, klass->id().c_str());
         klass->disable_experimental_flag();
     }
 
@@ -506,7 +506,7 @@ eval_user_defined_function_wo_params(const std::string &id,
         }
 
         if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
-            WARN_WARGS("function `%s` is marked as experimental", func->id().c_str());
+            WARN_WARGS("function `%s` is marked as experimental", nullptr, func->id().c_str());
             func->disable_experimental_flag();
         }
 
@@ -613,7 +613,7 @@ eval_user_defined_function(ExprFuncCall *expr,
         std::shared_ptr<Ctx> mask = fctx;
 
         if ((func->attrs() & static_cast<uint32_t>(Attr::Experimental)) != 0) {
-            WARN_WARGS("function `%s` is marked as experimental", func->id().c_str());
+            WARN_WARGS("function `%s` is marked as experimental", nullptr, func->id().c_str());
         }
 
         auto res = Interpreter::eval_stmt_block(func->block(), mask);
@@ -747,7 +747,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
             auto lhs = dynamic_cast<earl::value::Enum *>(perp->lhs_getter_accessor.get());
             if (lhs->has_entry(er.id)) {
                 if (lhs->is_experimental()) {
-                    WARN_WARGS("enum `%s` is marked as experimental", lhs->id().c_str());
+                    WARN_WARGS("enum `%s` is marked as experimental", nullptr, lhs->id().c_str());
                     lhs->disable_experimental_flag();
                 }
                 return lhs->get_entry(er.id)->value()->copy();
@@ -1436,6 +1436,27 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(result, ERT::Literal);
 }
 
+static ER
+eval_expr_term_case(ExprCase *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
+    ER case_expr_er = eval_expr(expr->m_expr.get(), ctx, ref);
+    auto case_expr = unpack_ER(case_expr_er, ctx, ref);
+
+    for (auto &kase : expr->m_cases) {
+        auto lhs_er = eval_expr(kase->m_lhs.get(), ctx, ref);
+        auto lhs_expr = unpack_ER(lhs_er, ctx, ref);
+
+        if (lhs_expr->type() == earl::value::Type::Void || lhs_expr->eq(case_expr.get()))
+            return eval_expr(kase->m_rhs.get(), ctx, ref);
+    }
+
+    WARN("`case` expression could not find an appropriate branch.\n"
+         "Consider adding a base case using `_ = <expr>;`\n"
+         "Assigning `unit` value...", expr);
+
+    auto not_found = std::make_shared<earl::value::Void>();
+    return ER(std::move(not_found), ERT::Literal);
+}
+
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -1457,6 +1478,7 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Slice:         return eval_expr_term_slice(dynamic_cast<ExprSlice *>(expr), ctx, ref);
     case ExprTermType::Dict:          return eval_expr_term_dict(dynamic_cast<ExprDict *>(expr), ctx, ref);
     case ExprTermType::FStr:          return eval_expr_term_fstr(dynamic_cast<ExprFStr *>(expr), ctx, ref);
+    case ExprTermType::Case:          return eval_expr_term_case(dynamic_cast<ExprCase *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);
@@ -1800,10 +1822,10 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     auto value = unpack_ER(er, ctx, false);
     if (value &&
         value->type() != earl::value::Type::Void &&
-        ctx->type() != CtxType::World &&
-        ((flags & __SUPPRESS_WARNINGS) == 0)) {
-        Err::err_wexpr(stmt->m_expr.get());
-        WARN("Inplace expression will be evaluated and returned. Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`");
+        ctx->type() != CtxType::World) {
+        WARN("Inplace expression will be evaluated and returned.\n"
+             "Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`",
+             stmt->m_expr.get());
     }
     return value;
 }
@@ -2544,7 +2566,7 @@ system_bash(const std::string &cmd) {
             throw InterpreterException(msg);
         }
         else
-            WARN_WARGS("BASH command did not terminate normally with exit code: %d", x);
+            WARN_WARGS("BASH command did not terminate normally with exit code: %d", nullptr, x);
         goto ok;
     }
 
@@ -2553,7 +2575,7 @@ warn:
         const std::string msg = "BASH command failed with exit code: " + std::to_string(x);
         throw InterpreterException(msg);
     }
-    WARN_WARGS("BASH command failed with exit code: %d", x);
+    WARN_WARGS("BASH command failed with exit code: %d", nullptr, x);
 
 ok:
     return;
@@ -2816,7 +2838,7 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
         Stmt *stmt = wctx->stmt_at(i);
         if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0)) {
             WARN("A `module` statement is expected to be the first statement of every file. "
-                 "Not having this may lead to undefined behavior and break functionality.");
+                 "Not having this may lead to undefined behavior and break functionality.", nullptr);
         }
         if (stmt->stmt_type() == StmtType::Def
             || stmt->stmt_type() == StmtType::Class
