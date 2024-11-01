@@ -8,26 +8,37 @@ set_flag("-xe");
 
 let VERSION, TAG_MSG, COMMIT_MSG = ("", "", "");
 
+fn log(msg) {
+    println(
+        clrs::Tfc.Green,
+        clrs::Te.Bold,
+        "---------- ",
+        msg,
+        " ----------",
+        clrs::Te.Reset
+    );
+}
+
 @world fn final() {
     if TAG_MSG != "" {
-        println(clrs::Tfc.Green, "tagging", clrs::Te.Reset);
+        log("tagging");
         $f"git tag -a {VERSION} -m '{TAG_MSG}'";
     }
 
-    println(clrs::Tfc.Green, "updated README.html", clrs::Te.Reset);
+    log("updating README.html");
     ```
     rm README.html
     emacs --batch README.org -f org-html-export-to-html
     ```;
 
     if COMMIT_MSG != "" {
-        println(clrs::Tfc.Green, "committing", clrs::Te.Reset);
+        log("committing");
         $"git add .";
         $f"git commit -m '{COMMIT_MSG}'";
         $"git push";
     }
 
-    println(clrs::Tfc.Green, "building tarball", clrs::Te.Reset);
+    log("building tarball");
     $f"tar -czvf EARL-{VERSION}-linux.tar.gz -C build .";
 }
 
@@ -59,7 +70,6 @@ fn update_readme() {
         panic("README.org is has not been updated");
     }
 
-    println("updating README.html");
     if !scr::program_exists("emacs") {
         panic("emacs is not available on the system, failing update");
     }
@@ -97,4 +107,4 @@ update_readme();
 commit();
 final();
 
-println(clrs::Tfc.Green, "done", clrs::Te.Reset);
+log("done");
