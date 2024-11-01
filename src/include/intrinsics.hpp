@@ -243,6 +243,11 @@ namespace Intrinsics {
                   Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_copy(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                   std::shared_ptr<Ctx> &ctx,
+                   Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_tuple(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
