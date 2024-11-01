@@ -394,7 +394,13 @@ struct StmtDef : public Stmt {
     std::shared_ptr<Token> m_id;
 
     // the type below is: pair(pair(id, type), attr)
-    std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> m_args;
+    std::vector<
+        std::pair<
+            std::pair<
+                std::shared_ptr<Token>,
+                std::optional<
+                    std::shared_ptr<__Type>>>,
+            uint32_t>> m_args;
 
     std::optional<std::shared_ptr<__Type>> m_ty;
 

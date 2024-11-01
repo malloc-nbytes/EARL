@@ -37,6 +37,7 @@
 #include "config.h"
 #include "hot-reload.hpp"
 #include "earl-to-py.hpp"
+#include "autodoc.hpp"
 #include "hidden-file.hpp"
 
 static std::vector<std::string> scripts = {};
@@ -168,6 +169,7 @@ usage(void) {
     std::cerr << "                    list = list all available themes" << std::endl;
     std::cerr << "    Misc. Options" << std::endl;
     std::cerr << "            --create-default-config  . . . . . Create a default configuration file" << std::endl;
+    std::cerr << "            --autodoc <files...> . . . . . . . Create documentation from DocComments" << std::endl;
     std::cerr << "            --to-py output=O [formatter=F] . . Convert an EARL file to Python (experimental)" << std::endl;
     std::cerr << "                where" << std::endl;
     std::cerr << "                    O = stdout|<file>" << std::endl;
@@ -195,14 +197,27 @@ version() {
     exit(0);
 }
 
-static void
-gather_watch_files(std::vector<std::string> &args) {
+static std::vector<std::string>
+gather_files(std::vector<std::string> &args) {
+    std::vector<std::string> res = {};
     while (args.size() > 0) {
         if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
             break;
-        watch_files.push_back(std::string(args.at(0)));
+        res.push_back(std::string(args.at(0)));
         args.erase(args.begin());
     }
+    return res;
+}
+
+static void
+gather_watch_files(std::vector<std::string> &args) {
+    // while (args.size() > 0) {
+    //     if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
+    //         break;
+    //     watch_files.push_back(std::string(args.at(0)));
+    //     args.erase(args.begin());
+    // }
+    watch_files = gather_files(args);
 }
 
 static std::string
@@ -341,7 +356,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
         flags |= __REPL_NOCOLOR;
     else if (arg == COMMON_EARL2ARG_WATCH) {
-        gather_watch_files(args);
+        // gather_watch_files(args);
+        watch_files = gather_files(args);
         flags |= __WATCH;
     }
     else if (arg == COMMON_EARL2ARG_SHOWFUNS)
@@ -376,6 +392,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __ERROR_ON_BASH_FAIL;
     else if (arg == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
         flags |= __SUPPRESS_WARNINGS;
+    else if (arg == COMMON_EARL2ARG_AUTODOC)
+        flags |= __AUTODOC;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -397,7 +415,8 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
             flags |= __CHECK;
         } break;
         case COMMON_EARL1ARG_WATCH: {
-            gather_watch_files(args);
+            // gather_watch_files(args);
+            watch_files = gather_files(args);
             flags |= __WATCH;
         } break;
         case COMMON_EARL1ARG_INCLUDE: {
@@ -478,6 +497,31 @@ handlecli(int argc, char **argv) {
             scripts.push_back(filepath);
         }
     }
+}
+
+static void
+perform_autodocs(std::string &filepath,
+                 std::vector<std::string> keywords,
+                 std::vector<std::string> types,
+                 std::string comment) {
+
+    std::unique_ptr<Lexer> lexer = nullptr;
+    std::unique_ptr<Program> program = nullptr;
+
+    try {
+        std::string src_code = read_file(filepath.c_str(), include_dirs);
+        lexer = lex_file(src_code, filepath, keywords, types, comment);
+    } catch (const LexerException &e) {
+        std::cerr << "Lexer error: " << e.what() << std::endl;
+    }
+    try {
+        program = Parser::parse_program(*lexer.get(), filepath);
+    } catch (const ParserException &e) {
+        std::cerr << "Parser error: " << e.what() << std::endl;
+    }
+    auto mdsrc = autodoc(std::move(program), filepath);
+
+    std::cout << mdsrc << std::endl;
 }
 
 static void
@@ -562,6 +606,12 @@ main(int argc, char **argv) {
                 locked = false;
 
             for (auto &filepath : scripts) {
+                if ((flags & __AUTODOC) != 0)
+                    perform_autodocs(filepath, keywords, types, comment);
+
+                if ((flags & __AUTODOC) != 0) {
+                }
+
                 if ((flags & __TOPY) != 0)
                     to_py(filepath, keywords, types, comment);
 
