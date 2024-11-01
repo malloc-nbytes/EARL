@@ -28,7 +28,7 @@ import "std/system.rl";
 ### Function
 #-- Name: program_exists
 #-- Parameter: progname: str
-#-- Returns: str
+#-- Returns: bool
 #-- Description:
 #--   Returns `true` if `progname` exists as a program on the
 #--   machine or `false` if otherwise.
