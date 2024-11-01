@@ -26,6 +26,7 @@ fn log(msg) {
     }
 
     log("updating README.html");
+
     ```
     rm README.html
     emacs --batch README.org -f org-html-export-to-html
@@ -35,11 +36,32 @@ fn log(msg) {
         log("committing");
         $"git add .";
         $f"git commit -m '{COMMIT_MSG}'";
+    }
+
+    if case input("push to remote? [Y/n]: ") of {
+            "Y" = true;  "y" = true;
+            "N" = false; "n" = false;
+             _  = true; } {
         $"git push";
     }
 
     log("building tarball");
     $f"tar -czvf EARL-{VERSION}-linux.tar.gz -C build .";
+}
+
+fn update_EARL_web() {
+    if !case input("update EARL-web StdLib modules? [Y/n]: ") of {
+            "Y" = true;  "y" = true;
+            "N" = false; "n" = false;
+             _  = true; } {
+        return;
+    }
+
+    ```
+    cd src
+    earl stdlib-docs-gen.rl -- jsx
+    ```;
+    $"mv ./src/StdLibModules.jsx " + env("HOME") + "/dev/EARL-web/src/code-snippets/StdLibModules.jsx";
 }
 
 @world fn commit() {
@@ -104,6 +126,7 @@ fn update_readme() {
 build();
 tag();
 update_readme();
+update_EARL_web();
 commit();
 final();
 
