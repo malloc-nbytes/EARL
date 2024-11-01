@@ -24,19 +24,26 @@ jobs:
       - name: Build
         run: cmake --build build --config ${BUILD_TYPE}
 
-      # - name: Test
-      #   working-directory: build
-      #   run: make test
-
       - name: Create Tarballs
         run: |
           tar -czvf EARL-${{ github.sha }}-linux.tar.gz -C build .
+
+      - name: Upload Tarball as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tarball
+          path: EARL-${{ github.sha }}-linux.tar.gz
 
   upload:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'release'
     steps:
+      - name: Download Tarball Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: tarball
+
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         with:
