@@ -7,7 +7,7 @@ import "std/str.rl";
 #--- This file will either generate the test entrypoint
 #--- or it can be used to generate a test template.
 
-fn help() {
+fn _help() {
     println("Usage");
     println("    new <filename> <modname>", "  Creates a new test template");
     println("    gen <print> <crash>", "       Generate the test entrypoint");
@@ -155,7 +155,7 @@ fn handleargs(args) {
 let args = argv();
 
 if len(args) < 2 {
-    help();
+    _help();
 }
 
 handleargs(args);
