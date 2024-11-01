@@ -1,0 +1,1 @@
+../../src/stdlib-docs-gen.rl

@@ -178,13 +178,13 @@ usage(void) {
     std::cerr << "You can also create a configuration file by using the `--create-default-config` flag for a starting point." << std::endl << std::endl;
 
     std::cerr << "EXAMPLES:" << std::endl;
-    std::cerr << "  earl                                   # Launch the REPL" << std::endl;
-    std::cerr << "  earl --show-lets                       # Launch the REPL and print variable instantiations" << std::endl;
-    std::cerr << "  earl --version                         # Show the version" << std::endl;
-    std::cerr << "  earl --v                               # Show the version" << std::endl;
-    std::cerr << "  earl script.earl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
-    std::cerr << "  earl script.earl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
-    std::cerr << "  earl --batch script1.earl script2.earl # Run multiple EARL scripts" << std::endl;
+    std::cerr << "  earl                                 # Launch the REPL" << std::endl;
+    std::cerr << "  earl --show-lets                     # Launch the REPL and print variable instantiations" << std::endl;
+    std::cerr << "  earl --version                       # Show the version" << std::endl;
+    std::cerr << "  earl --v                             # Show the version" << std::endl;
+    std::cerr << "  earl script.rl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
+    std::cerr << "  earl script.rl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
+    std::cerr << "  earl --batch script1.rl script2.rl   # Run multiple EARL scripts" << std::endl;
 
     std::exit(0);
 }
