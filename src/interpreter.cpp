@@ -66,7 +66,7 @@ std::shared_ptr<earl::value::Obj>
 eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx);
 
 std::shared_ptr<earl::value::Obj>
-eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx);
+eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx, bool evaling_class_method = false);
 
 static std::shared_ptr<earl::value::Obj>
 unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp = nullptr);
@@ -350,7 +350,7 @@ eval_class_instantiation(ExprFuncCall *expr,
 
     // Eval methods
     for (size_t i = 0; i < class_stmt->m_methods.size(); ++i) {
-        (void)eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx());
+        (void)eval_stmt_def(class_stmt->m_methods[i].get(), klass->ctx(), /*evaling_class_method=*/true);
         if (class_stmt->m_methods[i]->m_id->lexeme() == constructor_id)
             has_constructor = true;
     }
@@ -668,7 +668,7 @@ unpack_ER(ER &er, std::shared_ptr<Ctx> &ctx, bool ref, PackedERPreliminary *perp
     // FUNCTIONS/MEMBERS/INTRINSICS
     if (er.is_function_ident()) {
         auto params = evaluate_function_parameters(static_cast<ExprFuncCall *>(er.extra), er.ctx, ref);
-        if (er.is_intrinsic()) {
+        if (!(perp && perp->lhs_getter_accessor) && er.is_intrinsic()) {
             Expr *expr = nullptr;
             if (er.extra)
                 expr = static_cast<Expr *>(er.extra);
@@ -1857,11 +1857,16 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
 }
 
 std::shared_ptr<earl::value::Obj>
-eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx) {
+eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx, bool evaling_class_method) {
     if ((flags & __VERBOSE) != 0)
         std::cout << "[EARL] defining function " << stmt->m_id->lexeme() << std::endl;
 
     const std::string &id = stmt->m_id->lexeme();
+    if (!evaling_class_method && Intrinsics::is_intrinsic(id)) {
+        std::string msg = "function `"+id+"` has already been declared as intrinsic";
+        Err::err_wstmt(stmt);
+        throw InterpreterException(msg);
+    }
     if (ctx->function_exists(id)) {
         std::string msg = "function `"+id+"` has already been declared";
         auto conflict = ctx->function_get(id);
