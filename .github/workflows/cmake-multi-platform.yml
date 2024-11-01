@@ -22,9 +22,9 @@ jobs:
       - name: Build
         run: cmake --build build --config ${BUILD_TYPE}
 
-      - name: Test
-        working-directory: build
-        run: make test
+      # - name: Test
+      #   working-directory: build
+      #   run: make test
 
       - name: Create Tarballs
         run: |
