@@ -252,7 +252,7 @@ Err::err_wexpr(Expr *expr, int s) {
 
 void
 err_wdefstmt(StmtDef *stmt) {
-    assert(false);
+    Err::err_wtok(stmt->m_id.get());
 }
 
 void
@@ -356,7 +356,7 @@ Err::err_wstmt(Stmt *stmt) {
         return;
     }
     switch (stmt->stmt_type()) {
-    case StmtType::Def: assert(false); break;
+    case StmtType::Def: err_wdefstmt(dynamic_cast<StmtDef *>(stmt)); break;
     case StmtType::Let: assert(false); break;
     case StmtType::Block: err_wblockstmt(dynamic_cast<StmtBlock *>(stmt)); break;
     case StmtType::Mut: err_wmutstmt(dynamic_cast<StmtMut *>(stmt)); break;

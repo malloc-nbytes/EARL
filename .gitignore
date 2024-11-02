@@ -1,3 +1,4 @@
+*.gz
 earl-debug-build
 earl
 main

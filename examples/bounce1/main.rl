@@ -1,9 +1,4 @@
-:i test.rl
-:show
-
-main();
-
-:reset
+module Main
 
 import "std/system.rl";
 import "std/list.rl";
@@ -19,14 +14,14 @@ class Matrix [init, r, c] {
     }
 }
 
-let speed = 80;
+let speed = 1;
 let x, y = (3., 3.);
 let dx, dy = (.77*speed/100, 1.*speed/100);
-let width, height = (10, 10);
+let width, height = (20, 20);
 let not_draws_per_sec = 1;
 let current_not_draws_per_sec = 0;
 
-let faces = ['.', 'O', '#', 'X'];
+let faces = [".", "O","X"];
 let current_face = 0;
 let emoji_screen = "";
 
@@ -47,9 +42,8 @@ let int_x = int(x);
     }
 }
 
-let counter = 0;
-
 loop {
+    sleep(900);
 
     x += dx;
     y += dy;
@@ -67,7 +61,6 @@ loop {
 
     if bounce {
         x += dx;
-
         y += dy;
     }
 
@@ -77,25 +70,10 @@ loop {
         if current_not_draws_per_sec == not_draws_per_sec {
             current_not_draws_per_sec = 0;
             draw();
-            println("testing advanced example...");
         }
     }
 
     int_y = int(y);
     int_x = int(x);
-
-    counter += 1;
 }
 
-let _ = System::cmd("clear");
-
-# ___________   _____ __________.____
-# \_   _____/  /  _  \\______   \    |
-#  |    __)_  /  /_\  \|       _/    |
-#  |        \/    |    \    |   \    |___
-# /_______  /\____|__  /____|_  /_______ \
-#         \/         \/       \/        \/
-
-#--- Invoke EARL with `earl` to start the REPL! ---#
-
-:q

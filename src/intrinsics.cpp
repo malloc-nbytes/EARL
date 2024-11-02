@@ -51,6 +51,7 @@ Intrinsics::intrinsic_functions = {
     {"println", &Intrinsics::intrinsic_println},
     {"assert", &Intrinsics::intrinsic_assert},
     {"len", &Intrinsics::intrinsic_len},
+    {"copy", &Intrinsics::intrinsic_copy},
     {"open", &Intrinsics::intrinsic_open},
     {"type", &Intrinsics::intrinsic_type},
     {"typeof", &Intrinsics::intrinsic_typeof},
@@ -518,6 +519,14 @@ Intrinsics::intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params
     }
     assert(false && "unreachable");
     return nullptr;
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_copy(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "copy", expr);
+    return params[0]->copy();
 }
 
 std::shared_ptr<earl::value::Obj>
