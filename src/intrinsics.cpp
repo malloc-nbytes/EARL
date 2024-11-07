@@ -118,6 +118,7 @@ Intrinsics::intrinsic_member_functions = {
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
     {"is_some", &Intrinsics::intrinsic_member_is_some},
+    {"unwrap_or", &Intrinsics::intrinsic_member_unwrap_or},
     // Dict
     {"insert", &Intrinsics::intrinsic_member_insert},
     {"has_key", &Intrinsics::intrinsic_member_has_key},

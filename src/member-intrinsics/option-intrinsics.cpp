@@ -36,6 +36,7 @@ Intrinsics::intrinsic_option_member_functions = {
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
     {"is_some", &Intrinsics::intrinsic_member_is_some},
+    {"unwrap_or", &Intrinsics::intrinsic_member_unwrap_or},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -74,4 +75,18 @@ Intrinsics::intrinsic_member_is_some(std::shared_ptr<earl::value::Obj> obj,
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "is_some", expr);
     return std::make_shared<earl::value::Bool>(dynamic_cast<earl::value::Option *>(obj.get())->is_some());
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_unwrap_or(std::shared_ptr<earl::value::Obj> obj,
+                                       std::vector<std::shared_ptr<earl::value::Obj>> &or_value,
+                                       std::shared_ptr<Ctx> &ctx,
+                                       Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(or_value, 1, "unwrap_or", expr);
+    auto o = dynamic_cast<earl::value::Option *>(obj.get());
+    if (o->is_none())
+        return or_value[0];
+    else
+        return o->value();
 }

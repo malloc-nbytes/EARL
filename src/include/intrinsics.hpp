@@ -430,6 +430,12 @@ namespace Intrinsics {
     /*** INTRINSIC MEMBER FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_member_unwrap_or(std::shared_ptr<earl::value::Obj> obj,
+                               std::vector<std::shared_ptr<earl::value::Obj>> &or_value,
+                               std::shared_ptr<Ctx> &ctx,
+                               Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_member_raw(std::shared_ptr<earl::value::Obj> obj,
                          std::vector<std::shared_ptr<earl::value::Obj>> &idx,
                          std::shared_ptr<Ctx> &ctx,
