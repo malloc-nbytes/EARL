@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <cassert>
 #include <memory>
+#include <iostream>
 
 #include "earl.hpp"
 #include "err.hpp"
@@ -339,9 +340,20 @@ Str::mutate(Obj *other, StmtMut *stmt) {
     ASSERT_MUTATE_COMPAT(this, other, stmt);
     ASSERT_CONSTNESS(this, stmt);
 
-    Str *otherstr = dynamic_cast<Str *>(other);
-    m_value = otherstr->m_value;
-    m_chars = otherstr->m_chars;
+    if (other->type() == earl::value::Type::Str) {
+        Str *otherstr = dynamic_cast<Str *>(other);
+        m_value = otherstr->m_value;
+        m_chars = otherstr->m_chars;
+    }
+    else if (other->type() == earl::value::Type::Char) {
+        Char *otherchar = dynamic_cast<Char *>(other);
+        m_value.clear();
+        m_chars.clear();
+        m_value.push_back(otherchar->value());
+        m_chars.push_back(nullptr);
+    }
+    else
+        assert(false && "unreachable");
 }
 
 std::shared_ptr<Obj>
