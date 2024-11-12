@@ -135,8 +135,8 @@ fn update_readme() {
         return;
     }
 
-    let TAG_MSG = input("tag message: ");
-    if tag_msg == "" {
+    TAG_MSG = input("tag message: ");
+    if TAG_MSG == "" {
         panic("empty tag message");
     }
 }

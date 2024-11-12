@@ -129,6 +129,8 @@ void parse_lines(std::vector<std::string> &lines) {
             }
             else if (key == COMMON_EARL2ARG_REPL_THEME)
                 REPL_THEME = value;
+            else if (key == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
+                tf_check(value, __DISABLE_IMPLICIT_RETURNS);
             else {
                 std::cerr << "unrecognised key: `" << key << "`, failing config..." << std::endl;
                 return;
@@ -162,7 +164,8 @@ void create_default_config_file(void) {
         s += COMMON_EARL2ARG_ERROR_ON_BASH_FAIL "=false\n";
         s += COMMON_EARL2ARG_SHOWLETS "=false\n";
         s += COMMON_EARL2ARG_SHOWMUTS "=false\n";
-        s += COMMON_EARL2ARG_NO_SANITIZE_PIPES "=false\n\n";
+        s += COMMON_EARL2ARG_NO_SANITIZE_PIPES "=false\n";
+        s += COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS "=false\n\n";
 
         s += "# Takes a comma separated list of values\n";
         s += COMMON_EARL2ARG_WATCH "=,\n";

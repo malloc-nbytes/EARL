@@ -46,8 +46,6 @@ void handle_2flag(std::string flag, bool set) {
         handle_flag(__SHOWFUNS, set);
     else if (flag == COMMON_EARL2ARG_CHECK)
         handle_flag(__CHECK, set);
-    else if (flag == COMMON_EARL2ARG_TOPY)
-        throw InterpreterException("cannot set flag `--" COMMON_EARL2ARG_TOPY "` during runtime");
     else if (flag == COMMON_EARL2ARG_VERBOSE)
         handle_flag(__VERBOSE, set);
     else if (flag == COMMON_EARL2ARG_SHOWBASH)
@@ -62,16 +60,14 @@ void handle_2flag(std::string flag, bool set) {
         handle_flag(__NO_SANITIZE_PIPES, set);
     else if (flag == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
         handle_flag(__SUPPRESS_WARNINGS, set);
+    else if (flag == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
+        handle_flag(__DISABLE_IMPLICIT_RETURNS, set);
     else
-        throw InterpreterException("unsupported or invalid flag `"+flag+"`");
+        throw InterpreterException("unsupported runtime (or invalid) flag `"+flag+"`");
 }
 
 void handle_1flag(char flag, bool set) {
-    if (flag == COMMON_EARL1ARG_CHECK)
-        handle_flag(__CHECK, set);
-    else if (flag == COMMON_EARL1ARG_WATCH)
-        handle_flag(__WATCH, set);
-    else if (flag == COMMON_EARL1ARG_VERBOSE)
+    if (flag == COMMON_EARL1ARG_VERBOSE)
         handle_flag(__VERBOSE, set);
     else if (flag == COMMON_EARL1ARG_SHOW_BASH)
         handle_flag(__SHOWBASH, set);
@@ -80,5 +76,5 @@ void handle_1flag(char flag, bool set) {
     else if (flag == COMMON_EARL1ARG_SUPPRESS_WARNINGS)
         handle_flag(__SUPPRESS_WARNINGS, set);
     else
-        throw InterpreterException("unsupported or invalid flag `"+std::string(1, flag)+"`");
+        throw InterpreterException("unsupported runtime (or invalid) flag `"+std::string(1, flag)+"`");
 }

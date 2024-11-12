@@ -1821,11 +1821,13 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     stmt->m_evald = true;
     auto value = unpack_ER(er, ctx, false);
     if (value &&
-        value->type() != earl::value::Type::Void &&
-        ctx->type() != CtxType::World) {
-        WARN("Inplace expression will be evaluated and returned.\n"
-             "Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`",
-             stmt->m_expr.get());
+        value->type() != earl::value::Type::Void
+        && ((flags & __REPL) == 0)
+        && ((flags & __DISABLE_IMPLICIT_RETURNS) != 0)) {
+        Err::err_wexpr(stmt->m_expr.get());
+        const std::string msg = "Inplace expression will be evaluated and returned.\n"
+            "Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`";
+        throw InterpreterException(msg);
     }
     return value;
 }
@@ -1839,8 +1841,6 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
         result = Interpreter::eval_stmt(block->m_stmts.at(i).get(), ctx);
         if (result && result->type() != earl::value::Type::Void)
             break;
-        // if (block->m_stmts.at(i)->stmt_type() == StmtType::Return)
-        //     break;
         if (block->m_stmts.at(i)->stmt_type() == StmtType::Return) {
             if (!result || result->type() == earl::value::Type::Void) {
                 result = std::make_shared<earl::value::Return>();

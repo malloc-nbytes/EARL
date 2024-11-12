@@ -157,6 +157,7 @@ usage(void) {
     std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
     std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH (-x to conform with BASH)" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
+    std::cerr << "            --disable-implicit-returns . . . . All returns must explicitly use the keyword `return` (does not effect REPL)" << std::endl;
     std::cerr << "            --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
     std::cerr << "            --show-lets  . . . . . . . . . . . Print all variable instantiations" << std::endl;
     std::cerr << "            --show-muts  . . . . . . . . . . . Print all value mutations" << std::endl;
@@ -376,6 +377,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __ERROR_ON_BASH_FAIL;
     else if (arg == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
         flags |= __SUPPRESS_WARNINGS;
+    else if (arg == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
+        flags |= __DISABLE_IMPLICIT_RETURNS;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
