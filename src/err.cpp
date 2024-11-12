@@ -230,12 +230,13 @@ err_wterm(ExprTerm *expr, int s) {
 
 static void
 err_wbinary(ExprBinary *expr) {
-    assert(false && "unimplemented");
+    Err::err_wexpr(expr->m_lhs.get());
+    Err::err_wexpr(expr->m_rhs.get());
 }
 
 static void
 err_wunary(ExprUnary *expr) {
-    assert(false && "unimplemented");
+    Err::err_wexpr(expr->m_expr.get());
 }
 
 void
