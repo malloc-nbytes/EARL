@@ -43,6 +43,9 @@ static std::vector<std::string> scripts = {};
 std::vector<std::string> earl_argv = {};
 std::vector<std::string> watch_files = {};
 
+// --one-shot resources
+std::string one_shot_code = "";
+
 // --repl-theme resources
 std::vector<std::string> AVAILABLE_REPL_THEMES = COMMON_EARL_REPL_THEME_ASCPL;
 std::string REPL_THEME = COMMON_EARL_REPL_THEME_DEFAULT;
@@ -152,10 +155,11 @@ usage(void) {
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
+    std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
     std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
-    std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH (-x to conform with BASH)" << std::endl;
+    std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "            --disable-implicit-returns . . . . All returns must explicitly use the keyword `return` (does not effect REPL)" << std::endl;
     std::cerr << "            --show-funs  . . . . . . . . . . . Print every function call evaluated" << std::endl;
@@ -186,6 +190,9 @@ usage(void) {
     std::cerr << "  earl script.rl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
     std::cerr << "  earl script.rl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
     std::cerr << "  earl --batch script1.rl script2.rl   # Run multiple EARL scripts" << std::endl;
+    std::cerr << "  earl --oneshot \"3 + 4;\"              # Do oneshot and print the math result" << std::endl;
+    std::cerr << "  ls $(earl -O \"env(\\\"HOME\\\");\")       # Passing the result of oneshot to `ls`" << std::endl;
+    std::cerr << "  echo $(earl -O \"\\\"hello: \\\" + argv()[1];\" -- $(whoami)) # Echo a greeting to the user using oneshot" << std::endl;
 
     std::exit(0);
 }
@@ -332,6 +339,17 @@ get_batch_scripts(std::vector<std::string> &args) {
 }
 
 static void
+handle_one_shot(std::vector<std::string> &args) {
+    earl_argv.push_back("EARL-one-shot");
+    if (args.size() == 0) {
+        std::cerr << "flag `--" COMMON_EARL2ARG_ONE_SHOT "` requires a line of code" << std::endl;
+        std::exit(1);
+    }
+    one_shot_code = args.at(0);
+    args.erase(args.begin());
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -379,6 +397,10 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __SUPPRESS_WARNINGS;
     else if (arg == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
         flags |= __DISABLE_IMPLICIT_RETURNS;
+    else if (arg == COMMON_EARL2ARG_ONE_SHOT) {
+        flags |= __ONE_SHOT;
+        handle_one_shot(args);
+    }
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -423,6 +445,10 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
         } break;
         case COMMON_EARL1ARG_SUPPRESS_WARNINGS: {
             flags |= __SUPPRESS_WARNINGS;
+        } break;
+        case COMMON_EARL1ARG_ONE_SHOT: {
+            flags |= __ONE_SHOT;
+            handle_one_shot(args);
         } break;
         default: {
             ERR_WARGS(Err::Type::Fatal, "unrecognised argument `%c`", arg[i]);
@@ -507,8 +533,8 @@ to_py(std::string &filepath,
     } catch (const ParserException &e) {
         std::cerr << "Parser error: " << e.what() << std::endl;
     }
-    auto pysrc = earl_to_py(std::move(program));
 
+    auto pysrc = earl_to_py(std::move(program));
 
     if (to_py_output == "stdout")
         std::cout << pysrc << std::endl;
@@ -532,6 +558,34 @@ to_py(std::string &filepath,
     }
 }
 
+static void
+do_one_shot(std::string &src,
+            std::vector<std::string> keywords,
+            std::vector<std::string> types,
+            std::string comment) {
+
+    std::unique_ptr<Lexer> lexer = nullptr;
+    std::unique_ptr<Program> program = nullptr;
+
+    const std::string filepath = "EARL-one-shot";
+
+    try {
+        lexer = lex_file(src, filepath, keywords, types, comment);
+    } catch (const LexerException &e) {
+        std::cerr << "Lexer error: " << e.what() << std::endl;
+    }
+    try {
+        program = Parser::parse_program(*lexer.get(), filepath);
+    } catch (const ParserException &e) {
+        std::cerr << "Parser error: " << e.what() << std::endl;
+    }
+    try {
+        (void)Interpreter::interpret(std::move(program), std::move(lexer));
+    } catch (const InterpreterException &e) {
+        std::cerr << "Interpreter error: " << e.what() << std::endl;
+    }
+}
+
 int
 main(int argc, char **argv) {
     ++argv; --argc;
@@ -543,6 +597,11 @@ main(int argc, char **argv) {
     handle_hidden_file();
     assert_repl_theme_valid();
     handlecli(argc, argv);
+
+    if ((flags & __ONE_SHOT) != 0) {
+        do_one_shot(one_shot_code, keywords, types, comment);
+        std::exit(0);
+    }
 
     if ((flags & __WATCH) != 0) {
         if (watch_files.size() == 0) {
