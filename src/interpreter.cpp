@@ -2822,6 +2822,8 @@ import_cli_import_files(std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
+    const bool one_shot = (flags & __ONE_SHOT) != 0;
+
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
@@ -2841,7 +2843,7 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
     // Also check to make sure the first statement is a module declaration.
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0)) {
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0) && !one_shot) {
             WARN("A `module` statement is expected to be the first statement of every file. "
                  "Not having this may lead to undefined behavior and break functionality.", nullptr);
         }
@@ -2855,7 +2857,12 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
         if (stmt->stmt_type() != StmtType::Def
             && stmt->stmt_type() != StmtType::Class
             && stmt->stmt_type() != StmtType::Mod) {
-            (void)Interpreter::eval_stmt(stmt, ctx);
+            auto val = Interpreter::eval_stmt(stmt, ctx);
+
+            if (one_shot) {
+                if (val && val->type() != earl::value::Type::Void)
+                    std::cout << val->to_cxxstring() << std::flush;
+            }
         }
     }
 
