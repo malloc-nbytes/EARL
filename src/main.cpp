@@ -183,15 +183,15 @@ usage(void) {
     std::cerr << "You can also create a configuration file by using the `--create-default-config` flag for a starting point." << std::endl << std::endl;
 
     std::cerr << "EXAMPLES:" << std::endl;
-    std::cerr << "  earl                                 # Launch the REPL" << std::endl;
-    std::cerr << "  earl --show-lets                     # Launch the REPL and print variable instantiations" << std::endl;
-    std::cerr << "  earl --version                       # Show the version" << std::endl;
-    std::cerr << "  earl --v                             # Show the version" << std::endl;
-    std::cerr << "  earl script.rl --verbose --check     # Turn on verbose mode and check the file" << std::endl;
-    std::cerr << "  earl script.rl -cw *.earl            # Check the file and hot reload on saving any EARL files" << std::endl;
-    std::cerr << "  earl --batch script1.rl script2.rl   # Run multiple EARL scripts" << std::endl;
-    std::cerr << "  earl --oneshot \"3 + 4;\"              # Do oneshot and print the math result" << std::endl;
-    std::cerr << "  ls $(earl -O \"env(\\\"HOME\\\");\")       # Passing the result of oneshot to `ls`" << std::endl;
+    std::cerr << "  earl                                        # Launch the REPL" << std::endl;
+    std::cerr << "  earl --show-lets                            # Launch the REPL and print variable instantiations" << std::endl;
+    std::cerr << "  earl --version                              # Show the version" << std::endl;
+    std::cerr << "  earl --v                                    # Show the version" << std::endl;
+    std::cerr << "  earl script.rl --verbose --check            # Turn on verbose mode and check the file" << std::endl;
+    std::cerr << "  earl script.rl -cw *.earl                   # Check the file and hot reload on saving any EARL files" << std::endl;
+    std::cerr << "  earl --batch script1.rl script2.rl          # Run multiple EARL scripts" << std::endl;
+    std::cerr << "  earl --oneshot \"3 + 4;\"                     # Do oneshot and print the math result" << std::endl;
+    std::cerr << "  earl -i std/math.rl --oneshot \"Math::PI;\"   # Use oneshot and import math.rl to print PI" << std::endl;
     std::cerr << "  echo $(earl -O \"\\\"hello: \\\" + argv()[1];\" -- $(whoami)) # Echo a greeting to the user using oneshot" << std::endl;
 
     std::exit(0);
