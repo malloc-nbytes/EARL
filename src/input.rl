@@ -1,7 +1,8 @@
 module Main
 
-with y = 3, x = 5, z = 4 in
-let a = x+y+z;
+with x = 9 in
+for i in 0 to x {
+    with dx = i in
+    println(dx);
+}
 
-println(a);
-# println(x);
