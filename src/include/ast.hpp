@@ -62,6 +62,7 @@ enum class StmtType {
     Multiline_Bash,
     Use,
     Exec,
+    With,
 };
 
 /// The different types an expression can be.
@@ -433,6 +434,15 @@ struct StmtLet : public Stmt {
             std::unique_ptr<Expr> expr,
             uint32_t attrs,
             std::vector<std::string> info);
+    StmtType stmt_type() const override;
+};
+
+struct StmtWith : public Stmt {
+    std::vector<std::shared_ptr<Token>> m_ids;
+    std::vector<std::unique_ptr<Expr>> m_exprs;
+    std::unique_ptr<Stmt> m_stmt;
+
+    StmtWith(std::vector<std::shared_ptr<Token>> ids, std::vector<std::unique_ptr<Expr>> exprs, std::unique_ptr<Stmt> stmt);
     StmtType stmt_type() const override;
 };
 

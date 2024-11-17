@@ -1,12 +1,7 @@
 module Main
 
-fn f() {
-    for i in 0 to 10 {
-        if i == 5 {
-            (1..=10).map(|k|{k;});
-        }
-    }
-    0;
-}
+with y = 3, x = 5, z = 4 in
+let a = x+y+z;
 
-println(f());
+println(a);
+# println(x);
