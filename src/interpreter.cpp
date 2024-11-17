@@ -2747,7 +2747,7 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
-std::shared_ptr<earl::value::Obj>
+static std::shared_ptr<earl::value::Obj>
 eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
     auto world = ctx->get_world();
     const std::string &script_path = world->get_external_script_path(stmt->m_ident->lexeme(), stmt);
@@ -2756,6 +2756,62 @@ eval_stmt_exec(StmtExec *stmt, std::shared_ptr<Ctx> &ctx) {
 
     stmt->m_evald = true;
     return std::make_shared<earl::value::Void>();
+}
+
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
+    if (ctx->type() == CtxType::Closure)
+        // Special case for when we declare a variable in a recursive closure.
+        for (auto &id : stmt->m_ids)
+            dynamic_cast<ClosureCtx *>(ctx.get())->assert_variable_does_not_exist_for_recursive_cl(id->lexeme());
+    else {
+        int i = 0;
+        for (auto &id : stmt->m_ids) {
+            if (ctx->variable_exists(id->lexeme())) {
+                std::string msg = "variable `"+id->lexeme()+"` is already declared";
+                auto conflict = ctx->variable_get(id->lexeme());
+                Err::err_wconflict(stmt->m_ids.at(i).get(), conflict->gettok());
+                throw InterpreterException(msg);
+                ++i;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < stmt->m_ids.size(); ++i) {
+        std::shared_ptr<earl::value::Obj> value = nullptr;
+        const std::string &id = stmt->m_ids.at(i)->lexeme();
+        ER rhs = Interpreter::eval_expr(stmt->m_exprs.at(i).get(), ctx, false);
+
+        if (!rhs.is_class_instant()) {
+            PackedERPreliminary perp(nullptr);
+            if (rhs.is_list_access())
+                value = unpack_ER(rhs, ctx, false, /*perp=*/&perp)->copy();
+            else
+                value = unpack_ER(rhs, ctx, false, /*perp=*/&perp);
+        }
+        else
+            value = unpack_ER(rhs, ctx, false);
+
+        if ((flags & __SHOWLETS) != 0)
+            std::cout << "[EARL show-lets] WHERE " << id << " = " << value->to_cxxstring() << std::endl;
+
+        if (id == "_")
+            return std::make_shared<earl::value::Void>();
+
+        std::shared_ptr<earl::variable::Obj> var
+            = std::make_shared<earl::variable::Obj>(stmt->m_ids.at(i).get(), value, 0x0, "");
+        ctx->variable_add(var);
+        value->set_owner(var.get());
+    }
+
+    auto res = Interpreter::eval_stmt(stmt->m_stmt.get(), ctx);
+
+    for (size_t i = 0; i < stmt->m_ids.size(); ++i) {
+        ctx->variable_remove(stmt->m_ids.at(i)->lexeme());
+    }
+
+    stmt->m_evald = true;
+    return res;
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -2784,6 +2840,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Multiline_Bash:  return eval_stmt_multiline_bash(dynamic_cast<StmtMultilineBash *>(stmt), ctx);
     case StmtType::Use:             return eval_stmt_use(dynamic_cast<StmtUse *>(stmt), ctx);
     case StmtType::Exec:            return eval_stmt_exec(dynamic_cast<StmtExec *>(stmt), ctx);
+    case StmtType::With:            return eval_stmt_with(dynamic_cast<StmtWith *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";

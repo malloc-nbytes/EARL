@@ -1,12 +1,8 @@
 module Main
 
-fn f() {
-    for i in 0 to 10 {
-        if i == 5 {
-            (1..=10).map(|k|{k;});
-        }
-    }
-    0;
+with x = 9 in
+for i in 0 to x {
+    with dx = i in
+    println(dx);
 }
 
-println(f());

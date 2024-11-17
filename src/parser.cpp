@@ -411,6 +411,8 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 return left;
             if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_OF)
                 return left;
+            if (lexer.peek(0) && lexer.peek()->lexeme() == COMMON_EARLKW_IN)
+                return left;
 
             std::shared_ptr<Token> kw = lexer.next();
             if (kw->lexeme() == COMMON_EARLKW_TRUE)
@@ -1101,6 +1103,28 @@ parse_stmt_pipe(Lexer &lexer,
 
 }
 
+static std::unique_ptr<StmtWith>
+parst_stmt_with(Lexer &lexer) {
+    (void)lexer.discard(); // with
+
+    std::vector<std::shared_ptr<Token>> ids = {};
+    std::vector<std::unique_ptr<Expr>> exprs = {};
+
+    while (1) {
+        ids.push_back(Parser::parse_expect(lexer, TokenType::Ident));
+        (void)Parser::parse_expect(lexer, TokenType::Equals);
+        exprs.push_back(std::unique_ptr<Expr>(Parser::parse_expr(lexer)));
+
+        if (lexer.peek() && lexer.peek()->type() != TokenType::Comma)
+            break;
+        else
+            lexer.discard(); // ,
+    }
+
+    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
+    return std::make_unique<StmtWith>(std::move(ids), std::move(exprs), Parser::parse_stmt(lexer));
+}
+
 std::unique_ptr<Stmt>
 Parser::parse_stmt(Lexer &lexer) {
 
@@ -1168,6 +1192,8 @@ Parser::parse_stmt(Lexer &lexer) {
                 return parse_stmt_loop(lexer);
             if (tok->lexeme() == COMMON_EARLKW_USE)
                 return parse_stmt_use(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_WITH)
+                return parst_stmt_with(lexer);
             if (tok->lexeme() == COMMON_EARLKW_NONE
                 || tok->lexeme() == COMMON_EARLKW_TRUE
                 || tok->lexeme() == COMMON_EARLKW_FALSE
