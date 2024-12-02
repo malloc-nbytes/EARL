@@ -83,7 +83,7 @@ module Main
 import "std/system.rl";
 import "std/utils.rl";
 import "std/io.rl";
-import "std/str.rl";
+import "std/datatypes/str.rl";
 import "std/script.rl";
 
 enum State {

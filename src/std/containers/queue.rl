@@ -52,6 +52,7 @@ module Queue
         }
         this.lst.pop(0);
     }
+    ### End
 
     ### Method
     #-- Name: front
