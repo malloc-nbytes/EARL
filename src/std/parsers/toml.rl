@@ -24,7 +24,7 @@
 
 module TOML
 
-import "std/str.rl";
+import "std/datatypes/str.rl";
 import "std/io.rl";
 import "std/assert.rl";
 

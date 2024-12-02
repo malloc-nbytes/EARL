@@ -1,8 +1,7 @@
 module Main
 
-with x = 9 in
-for i in 0 to x {
-    with dx = i in
-    println(dx);
-}
+import "std/containers/interval-tree.rl";
 
+let t = IntervalTree::T([(12, 15)]);
+
+println(t.overlapping(13, 14));

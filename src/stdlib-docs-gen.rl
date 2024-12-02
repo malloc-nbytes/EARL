@@ -804,8 +804,20 @@ fn ready_input(fp) {
     return lines;
 }
 
+fn iterdir(path) {
+    if System::isdir(path) {
+        let files = [];
+        foreach f in System::ls(path) {
+            files += iterdir(f);
+        }
+        return files;
+    }
+    return [path];
+}
+
 fn main(convert_mode: str) {
-    let stdlib = System::ls("std/");
+    # let stdlib = System::ls("std/");
+    let stdlib = iterdir("std/");
     let autogen = "";
     let docsfporg = "../EARL-language-reference.org";
     let modules = [];
@@ -846,7 +858,6 @@ fn main(convert_mode: str) {
         let f = open(jsx_output, "w");
         f.write(jsx);
         f.close();
-        # println(jsx);
         println(f"Wrote to {jsx_output}");
     }
     else if convert_mode == "org" {

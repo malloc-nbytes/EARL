@@ -1,7 +1,7 @@
 module EncryptionModuleTests
 
 import "std/assert.rl";
-import "std/encryption.rl";
+import "std/algorithms/encryption.rl";
 import "test-utils.rl";
 
 Assert::FILE = __FILE__;

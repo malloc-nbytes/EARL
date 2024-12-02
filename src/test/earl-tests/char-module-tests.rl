@@ -1,7 +1,7 @@
 module CharModuleTests
 
 import "std/assert.rl";
-import "std/char.rl";
+import "std/datatypes/char.rl";
 import "test-utils.rl";
 
 Assert::FILE = __FILE__;

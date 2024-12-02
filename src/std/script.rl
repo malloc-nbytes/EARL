@@ -22,7 +22,7 @@
 
 module Script
 
-import "std/str.rl";
+import "std/datatypes/str.rl";
 import "std/system.rl";
 
 ### Function

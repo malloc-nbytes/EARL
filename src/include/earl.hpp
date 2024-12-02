@@ -931,7 +931,8 @@ earl::value::Dict<T>::ktype(void) const {
     return m_kty;
 }
 
-template <typename T> std::shared_ptr<earl::value::Obj>
+template <typename T>
+std::shared_ptr<earl::value::Obj>
 earl::value::Dict<T>::nth(earl::value::Obj *key, Expr *expr) {
     if constexpr (std::is_same_v<T, int>) {
         if (key->type() != earl::value::Type::Int) {

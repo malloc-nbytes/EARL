@@ -2,7 +2,7 @@ module TestMgr
 
 import "std/system.rl";
 import "std/io.rl";
-import "std/str.rl";
+import "std/datatypes/str.rl";
 
 #--- This file will either generate the test entrypoint
 #--- or it can be used to generate a test template.

@@ -6,7 +6,7 @@ main();
 :reset
 
 import "std/system.rl";
-import "std/list.rl";
+import "std/datatypes/list.rl";
 import "std/math.rl";
 
 class Matrix [init, r, c] {

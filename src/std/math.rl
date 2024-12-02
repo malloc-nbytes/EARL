@@ -22,7 +22,7 @@
 
 module Math
 
-import "std/list.rl";
+import "std/datatypes/list.rl";
 
 ### Function
 #-- Name: max
