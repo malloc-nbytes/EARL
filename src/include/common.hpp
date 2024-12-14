@@ -33,6 +33,8 @@
  * A few things that are useful throughout the entire project.
  */
 
+static std::string __internal_cwd = "";
+
 extern std::vector<std::string> earl_argv;
 
 extern uint32_t flags;

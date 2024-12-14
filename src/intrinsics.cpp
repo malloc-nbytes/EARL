@@ -69,7 +69,7 @@ Intrinsics::intrinsic_functions = {
     {"__internal_move__", &Intrinsics::intrinsic___internal_move__},
     {"__internal_mkdir__", &Intrinsics::intrinsic___internal_mkdir__},
     {"__internal_ls__", &Intrinsics::intrinsic___internal_ls__},
-    {"__internal_cd__", &Intrinsics::intrinsic___internal_cd__},
+    {"cd", &Intrinsics::intrinsic_cd},
     {"__internal_unix_system__", &Intrinsics::intrinsic___internal_unix_system__},
     {"__internal_unix_system_woutput__", &Intrinsics::intrinsic___internal_unix_system_woutput__},
     {"fprintln", &Intrinsics::intrinsic_fprintln},
@@ -626,9 +626,9 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic___internal_cd__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                          std::shared_ptr<Ctx> &ctx,
-                          Expr *expr) {
+Intrinsics::intrinsic_cd(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr) {
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 1, "__internal_cd__", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1,

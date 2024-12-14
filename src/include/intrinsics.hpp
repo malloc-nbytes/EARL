@@ -413,9 +413,9 @@ namespace Intrinsics {
                               Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
-    intrinsic___internal_cd__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
-                              std::shared_ptr<Ctx> &ctx,
-                              Expr *expr);
+    intrinsic_cd(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                 std::shared_ptr<Ctx> &ctx,
+                 Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl::value::Obj>> &params,
