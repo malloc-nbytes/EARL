@@ -32,7 +32,12 @@
 
 WorldCtx::WorldCtx(std::unique_ptr<Lexer> lexer, std::unique_ptr<Program> program)
     : m_lexer(std::move(lexer)), m_program(std::move(program)) {
-    m_filepath = m_program->m_filepath;
+
+    // Hotfix 12-15-24 v0.8.6:
+    // Combining -w and -O flags then having a syntax
+    // error in oneshot (-O) would cause a segfault.
+    if (m_program)
+        m_filepath = m_program->m_filepath;
 }
 
 WorldCtx::WorldCtx() : m_lexer(nullptr), m_program(nullptr) {}

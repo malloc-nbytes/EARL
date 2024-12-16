@@ -45,16 +45,16 @@ module System
 }
 ### End
 
-### Function
-#-- Name: cd
-#-- Parameter: path: str
-#-- Returns: unit
-#-- Description:
-#--   Change the current working directory to `path`.
-@pub fn cd(path: str): unit {
-    __internal_cd__(path);
-}
-### End
+# ### Function
+# #-- Name: cd
+# #-- Parameter: path: str
+# #-- Returns: unit
+# #-- Description:
+# #--   Change the current working directory to `path`.
+# @pub fn cd(path: str): unit {
+#     __internal_cd__(path);
+# }
+# ### End
 
 ### Function
 #-- Name: mkdir
