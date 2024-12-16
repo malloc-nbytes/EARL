@@ -74,7 +74,7 @@ fn parse_lines(lines: list): dictionary {
     return d;
 }
 
-@pub @experimental
+@pub
 fn parse(fp: str): dictionary {
     let lines = IO::file_to_str(fp)
                     .split("\n")
