@@ -598,11 +598,6 @@ main(int argc, char **argv) {
     assert_repl_theme_valid();
     handlecli(argc, argv);
 
-    if ((flags & __ONE_SHOT) != 0) {
-        do_one_shot(one_shot_code, keywords, types, comment);
-        std::exit(0);
-    }
-
     if ((flags & __WATCH) != 0) {
         if (watch_files.size() == 0) {
             std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
@@ -613,7 +608,7 @@ main(int argc, char **argv) {
     }
 
     bool locked = true;
-    if (scripts.size() > 0) {
+    if (scripts.size() > 0 || (flags & __ONE_SHOT) != 0) {
         do {
             // No need to check for __WATCH cause this statement
             // will not happen unless we are looping, which is
@@ -623,39 +618,43 @@ main(int argc, char **argv) {
             else
                 locked = false;
 
-            for (auto &filepath : scripts) {
-                if ((flags & __TOPY) != 0)
-                    to_py(filepath, keywords, types, comment);
+            if ((flags & __ONE_SHOT) != 0)
+                do_one_shot(one_shot_code, keywords, types, comment);
+            else {
+                for (auto &filepath : scripts) {
+                    if ((flags & __TOPY) != 0)
+                        to_py(filepath, keywords, types, comment);
 
-                else if (filepath != "") {
-                    if ((flags & __WATCH) != 0)
-                        std::cout << "=== " << run_count++ << " ======================" << std::endl;
+                    else if (filepath != "") {
+                        if ((flags & __WATCH) != 0)
+                            std::cout << "=== " << run_count++ << " ======================" << std::endl;
 
-                    std::unique_ptr<Lexer> lexer = nullptr;
-                    std::unique_ptr<Program> program = nullptr;
-                    try {
-                        std::string src_code = read_file(filepath.c_str(), include_dirs);
-                        lexer = lex_file(src_code, filepath, keywords, types, comment);
-                    } catch (const LexerException &e) {
-                        std::cerr << "Lexer error: " << e.what() << std::endl;
-                        if ((flags & __WATCH) == 0)
-                            return 1;
-                        continue;
-                    }
-                    try {
-                        program = Parser::parse_program(*lexer.get(), filepath);
-                    } catch (const ParserException &e) {
-                        std::cerr << "Parser error: " << e.what() << std::endl;
-                        if ((flags & __WATCH) == 0)
-                            return 1;
-                        continue;
-                    }
-                    try {
-                        (void)Interpreter::interpret(std::move(program), std::move(lexer));
-                    } catch (const InterpreterException &e) {
-                        std::cerr << "Interpreter error: " << e.what() << std::endl;
-                        if ((flags & __WATCH) == 0)
-                            return 1;
+                        std::unique_ptr<Lexer> lexer = nullptr;
+                        std::unique_ptr<Program> program = nullptr;
+                        try {
+                            std::string src_code = read_file(filepath.c_str(), include_dirs);
+                            lexer = lex_file(src_code, filepath, keywords, types, comment);
+                        } catch (const LexerException &e) {
+                            std::cerr << "Lexer error: " << e.what() << std::endl;
+                            if ((flags & __WATCH) == 0)
+                                return 1;
+                            continue;
+                        }
+                        try {
+                            program = Parser::parse_program(*lexer.get(), filepath);
+                        } catch (const ParserException &e) {
+                            std::cerr << "Parser error: " << e.what() << std::endl;
+                            if ((flags & __WATCH) == 0)
+                                return 1;
+                            continue;
+                        }
+                        try {
+                            (void)Interpreter::interpret(std::move(program), std::move(lexer));
+                        } catch (const InterpreterException &e) {
+                            std::cerr << "Interpreter error: " << e.what() << std::endl;
+                            if ((flags & __WATCH) == 0)
+                                return 1;
+                        }
                     }
                 }
             }
