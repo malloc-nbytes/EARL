@@ -55,6 +55,7 @@ std::vector<std::string> include_dirs = {};
 
 // --import resources
 std::vector<std::string> cli_import_dirs = {};
+std::vector<std::string> one_shot_cli_import_dirs_copy = {};
 
 // --watch resources
 static size_t run_count = 1;
@@ -267,6 +268,7 @@ install_prefix(void) {
 static void
 add_import_file(std::vector<std::string> &args) {
     if (args.size() > 0) {
+        one_shot_cli_import_dirs_copy.push_back(args.at(0));
         cli_import_dirs.push_back(args.at(0));
         args.erase(args.begin());
     }
@@ -563,6 +565,9 @@ do_one_shot(std::string &src,
             std::vector<std::string> keywords,
             std::vector<std::string> types,
             std::string comment) {
+
+    if (one_shot_cli_import_dirs_copy.size() != cli_import_dirs.size())
+        cli_import_dirs = one_shot_cli_import_dirs_copy;
 
     std::unique_ptr<Lexer> lexer = nullptr;
     std::unique_ptr<Program> program = nullptr;
