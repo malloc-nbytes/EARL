@@ -22,6 +22,8 @@
 
 module IO
 
+import "std/system.rl";
+
 ### Enum
 #-- Name: Fd
 #-- Parameter: In: int
@@ -90,3 +92,27 @@ module IO
     __internal_move__(path_from, path_to);
 }
 ### End
+
+fn __walkdir(@const @ref dir, @ref files) {
+    foreach f in System::ls(dir) {
+        if System::isdir(f) {
+            __walkdir(f, files);
+        }
+        else {
+            files.append(f);
+        }
+    }
+}
+
+### Function
+#-- Name: walkdir
+#-- Parameter: dir: str
+#-- Returns: list<str>
+#-- Description:
+#--   Walks the directory `dir` recursively, returning
+#--   all files found.
+@pub fn walkdir(dir) {
+    let files = [];
+    __walkdir(dir, files);
+    return files;
+}
