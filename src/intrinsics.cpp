@@ -114,6 +114,8 @@ Intrinsics::intrinsic_member_functions = {
     {"writelines", &Intrinsics::intrinsic_member_writelines},
     // Char
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    // Int
+    {"utf8", &Intrinsics::intrinsic_member_utf8},
     // Option
     {"unwrap", &Intrinsics::intrinsic_member_unwrap},
     {"is_none", &Intrinsics::intrinsic_member_is_none},
@@ -154,7 +156,7 @@ Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
         return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 
     switch (static_cast<earl::value::Type>(ty)) {
-    case earl::value::Type::Int: return false;
+    case earl::value::Type::Int: return Intrinsics::intrinsic_int_member_functions.find(id) != Intrinsics::intrinsic_int_member_functions.end();
     case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.find(id) != Intrinsics::intrinsic_char_member_functions.end();
     case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.find(id) != Intrinsics::intrinsic_str_member_functions.end();
     case earl::value::Type::Bool: return false;
@@ -181,7 +183,7 @@ Intrinsics::call_member(const std::string &id,
                         Expr *expr) {
 
     switch (type) {
-    case earl::value::Type::Int: assert(false);
+    case earl::value::Type::Int: return Intrinsics::intrinsic_int_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::Bool: assert(false);

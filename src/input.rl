@@ -1,4 +1,5 @@
 module Main
 
-let text = "Hello, my number is 123-456-7890.";
-let r = Regex(r"\d{3}-\d{3}-\d{4}");
+for i in 97 to 97+26 {
+    println(i.utf8());
+}

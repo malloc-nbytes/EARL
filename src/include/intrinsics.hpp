@@ -168,6 +168,7 @@ namespace Intrinsics {
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_list_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_str_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_char_member_functions;
+    extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_int_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_option_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_file_member_functions;
     extern const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction> intrinsic_tuple_member_functions;
@@ -560,6 +561,12 @@ namespace Intrinsics {
                            std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                            std::shared_ptr<Ctx> &ctx,
                            Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_utf8(std::shared_ptr<earl::value::Obj> obj,
+                          std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_member_unwrap(std::shared_ptr<earl::value::Obj> obj,
