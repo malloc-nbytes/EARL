@@ -144,6 +144,7 @@ namespace earl {
             Return,
             FunctionRef,
             ClassRef,
+            Predicate,
         };
 
         struct Obj;
@@ -261,6 +262,19 @@ namespace earl {
 
         private:
             std::shared_ptr<earl::function::Obj> m_fun;
+        };
+
+        struct Predicate : public Obj {
+            Predicate(std::shared_ptr<Token> op, std::unique_ptr<Obj> right);
+
+            // Implements
+            Type type(void) const                                                         override;
+            std::string to_cxxstring(void)                                                override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+
+        private:
+            std::shared_ptr<Token> m_op;
+            std::unique_ptr<Obj> m_right;
         };
 
         struct ClassRef : public Obj {

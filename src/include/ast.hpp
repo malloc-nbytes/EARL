@@ -94,6 +94,7 @@ enum class ExprTermType {
     FStr,
     Power,
     Case,
+    Predicate,
 };
 
 struct StmtDef;
@@ -200,6 +201,15 @@ struct ExprCase : public ExprTerm {
     std::vector<std::unique_ptr<Case>> m_cases;
 
     ExprCase(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Case>> cases);
+    ExprType get_type() const override;
+    ExprTermType get_term_type() const override;
+};
+
+struct ExprPredicate : public ExprTerm {
+    std::shared_ptr<Token> m_op;
+    std::unique_ptr<Expr> m_rhs;
+
+    ExprPredicate(std::shared_ptr<Token> op, std::unique_ptr<Expr> rhs);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

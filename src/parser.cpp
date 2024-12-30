@@ -291,6 +291,16 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             auto values = parse_set_values(lexer);
             left = new ExprDict(std::move(values), tok);
         } break;
+        case TokenType::Bang_Equals:
+        case TokenType::Double_Equals:
+        case TokenType::Greaterthan_Equals:
+        case TokenType::Lessthan_Equals:
+        case TokenType::Lessthan:
+        case TokenType::Greaterthan: {
+            auto op = lexer.next();
+            auto right = Parser::parse_expr(lexer);
+            left = new ExprPredicate(std::move(op), std::move(std::unique_ptr<Expr>(right)));
+        } break;
         case TokenType::Lparen: {
             auto tok = lexer.next(); // (
             bool trailing_comma = false;

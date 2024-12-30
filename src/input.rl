@@ -1,5 +1,6 @@
 module Main
 
-for i in 97 to 97+26 {
-    println(i.utf8());
-}
+let f = != "";
+
+# let lst = 1..=5;
+# println(lst.filter(!= ""));
