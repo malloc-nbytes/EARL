@@ -34,6 +34,8 @@
 #include "common.hpp"
 #include "parser.hpp"
 
+#define lexer_speek(l) lexer.peek(l) && lexer.peek(l)
+
 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>>
 parse_stmt_def_args(Lexer &lexer);
 
@@ -290,16 +292,6 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             auto tok = lexer.next();
             auto values = parse_set_values(lexer);
             left = new ExprDict(std::move(values), tok);
-        } break;
-        case TokenType::Bang_Equals:
-        case TokenType::Double_Equals:
-        case TokenType::Greaterthan_Equals:
-        case TokenType::Lessthan_Equals:
-        case TokenType::Lessthan:
-        case TokenType::Greaterthan: {
-            auto op = lexer.next();
-            auto right = Parser::parse_expr(lexer);
-            left = new ExprPredicate(std::move(op), std::move(std::unique_ptr<Expr>(right)));
         } break;
         case TokenType::Lparen: {
             auto tok = lexer.next(); // (
@@ -606,6 +598,23 @@ parse_range_expr(Lexer &lexer, char fail_on = '\0') {
 
 Expr *
 Parser::parse_expr(Lexer &lexer, char fail_on) {
+    // Check for predicate expressions.
+    if (lexer.peek()) {
+        auto cur = lexer.peek();
+        auto t = cur->type();
+        if (cur
+            && (t == TokenType::Double_Equals
+                || t == TokenType::Bang_Equals
+                || t == TokenType::Lessthan
+                || t == TokenType::Greaterthan
+                || t == TokenType::Lessthan_Equals
+                || t == TokenType::Greaterthan_Equals)) {
+            auto op = lexer.next();
+            auto right = parse_expr(lexer, fail_on);
+            return new ExprPredicate(op, std::unique_ptr<Expr>(right));
+        }
+    }
+
     return parse_range_expr(lexer, fail_on);
 }
 

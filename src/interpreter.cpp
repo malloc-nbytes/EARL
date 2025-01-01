@@ -1460,7 +1460,9 @@ eval_expr_term_case(ExprCase *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 static ER
 eval_expr_term_predicate(ExprPredicate *expr, std::shared_ptr<Ctx> ctx, bool ref) {
     ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
-    assert(false);
+    auto rhs_value = unpack_ER(rhs, ctx, true);
+    auto result = std::make_shared<earl::value::Predicate>(expr->m_op.get(), std::move(rhs_value));
+    return ER(result, ERT::Literal);
 }
 
 ER

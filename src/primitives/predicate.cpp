@@ -31,20 +31,41 @@
 
 using namespace earl::value;
 
-Predicate::Predicate(std::shared_ptr<Token> op, std::unique_ptr<Obj> right)
-    : m_op(op), m_right(std::move(right)) {}
+Predicate::Predicate(Token *op, std::shared_ptr<Obj> right)
+    : m_op(op), m_right(right) {}
 
 Type
 Predicate::type(void) const {
-    assert(false);
+    return Type::Predicate;
 }
 
 std::string
 Predicate::to_cxxstring(void) {
-    assert(false);
+    return "< Predicate {" + m_op->lexeme() + ' ' + m_right->to_cxxstring() + "} >";
 }
 
 std::shared_ptr<Obj>
 Predicate::copy(void) {
+    return std::make_shared<Predicate>(m_op, m_right);
+}
+
+std::shared_ptr<Obj>
+Predicate::check(Obj *obj, std::shared_ptr<Ctx> &ctx) const {
+    switch (m_op->type()) {
+    case TokenType::Lessthan:
+    case TokenType::Greaterthan:
+    case TokenType::Lessthan_Equals:
+    case TokenType::Greaterthan_Equals: {
+        return obj->gtequality(m_op, m_right.get());
+    } break;
+    case TokenType::Double_Equals:
+    case TokenType::Bang_Equals: {
+        return obj->equality(m_op, m_right.get());
+    } break;
+    default: {
+        assert(false && "unreachable");
+    } break;
+    }
+
     assert(false);
 }

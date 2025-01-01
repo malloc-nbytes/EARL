@@ -133,7 +133,7 @@ namespace earl {
             /** EARL dictionary types */
             DictInt,
             DictStr,
-            DictFloat,
+            DictFloat, // 20
             DictChar,
             /** EARL type keyword type */
             TypeKW,
@@ -264,19 +264,6 @@ namespace earl {
             std::shared_ptr<earl::function::Obj> m_fun;
         };
 
-        struct Predicate : public Obj {
-            Predicate(std::shared_ptr<Token> op, std::unique_ptr<Obj> right);
-
-            // Implements
-            Type type(void) const                                                         override;
-            std::string to_cxxstring(void)                                                override;
-            std::shared_ptr<Obj> copy(void)                                               override;
-
-        private:
-            std::shared_ptr<Token> m_op;
-            std::unique_ptr<Obj> m_right;
-        };
-
         struct ClassRef : public Obj {
             ClassRef(StmtClass *stmt);
             const std::vector<std::string> &get_info(void);
@@ -401,6 +388,21 @@ namespace earl {
 
         private:
             bool m_value;
+        };
+
+        struct Predicate : public Obj {
+            Predicate(Token *op, std::shared_ptr<Obj> right);
+
+            // Implements
+            Type type(void) const                                                         override;
+            std::string to_cxxstring(void)                                                override;
+            std::shared_ptr<Obj> copy(void)                                               override;
+
+            std::shared_ptr<Obj> check(Obj *obj, std::shared_ptr<Ctx> &ctx) const;
+
+        private:
+            Token *m_op;
+            std::shared_ptr<Obj> m_right;
         };
 
         struct Char : public Obj {

@@ -217,7 +217,8 @@ std::shared_ptr<Str>
 Str::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
     this->update_changed();
 
-    Closure *cl = dynamic_cast<Closure *>(closure);
+    // Closure *cl = dynamic_cast<Closure *>(closure);
+    void *cl = closure;
 
     auto acc = std::make_shared<Str>();
 
@@ -233,10 +234,17 @@ Str::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
             cx = m_chars.at(i);
             m_changed.push_back(i);
         }
-        std::vector<std::shared_ptr<Obj>> values = {cx};
-        std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
-        if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-            acc->append(cx.get());
+        if (closure->type() == earl::value::Type::Closure) {
+            std::vector<std::shared_ptr<Obj>> values = {cx};
+            std::shared_ptr<Obj> filter_result = ((Closure *)cl)->call(values, ctx);
+            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+                acc->append(cx.get());
+        }
+        else { // Predicate
+            std::shared_ptr<Obj> filter_result = ((Predicate *)cl)->check(cx.get(), ctx);
+            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+                acc->append(cx.get());
+        }
     }
 
     return acc;
