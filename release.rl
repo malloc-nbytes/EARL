@@ -135,6 +135,7 @@ fn update_readme() {
         return;
     }
 
+    println("Note: current EARL version in ./build/: ", VERSION);
     TAG_MSG = input("tag message: ");
     if TAG_MSG == "" {
         panic("empty tag message");
