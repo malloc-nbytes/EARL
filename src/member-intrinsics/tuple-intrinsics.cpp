@@ -38,5 +38,3 @@ Intrinsics::intrinsic_tuple_member_functions = {
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"contains", &Intrinsics::intrinsic_member_contains},
 };
-
-
