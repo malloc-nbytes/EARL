@@ -224,6 +224,11 @@ namespace Intrinsics {
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_flush(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                    std::shared_ptr<Ctx> &ctx,
+                    Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_unset_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                          std::shared_ptr<Ctx> &ctx,
                          Expr *expr);
