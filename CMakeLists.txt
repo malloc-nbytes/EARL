@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Define INSTALL_PREFIX and PROJECT_VERSION as cache variables
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
 set(PROJECT_VERSION ${PROJECT_VERSION} CACHE STRING "The project version")
+set(STDLIB_BAKE OFF CACHE BOOL "Include the stdlib in the build")
 
 # Set default INSTALL_PREFIX if not specified
 if(NOT INSTALL_PREFIX)
@@ -16,18 +17,6 @@ endif()
 # Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
 set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 
-# Capture compiler and version
-# if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#     set(COMPILER_INFO "GCC ${CMAKE_CXX_COMPILER_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#     set(COMPILER_INFO "Clang ${CMAKE_CXX_COMPILER_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-#     set(COMPILER_INFO "MSVC ${MSVC_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-#     set(COMPILER_INFO "AppleClang ${CMAKE_CXX_COMPILER_VERSION}")
-# else()
-#     set(COMPILER_INFO "Unknown Compiler: ${CMAKE_CXX_COMPILER_ID}")
-# endif()
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler Info: ${COMPILER_INFO}")
 
@@ -37,6 +26,10 @@ configure_file(
     ${PROJECT_SOURCE_DIR}/src/include/config.h
     @ONLY
 )
+
+if(STDLIB_BAKE)
+    message(STATUS "Standard library will be baked into the build.")
+endif()
 
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/src/include)
