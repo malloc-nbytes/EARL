@@ -36,6 +36,9 @@
 #include "utils.hpp"
 #include "common.hpp"
 #include "config.h"
+#ifdef STDLIB_BAKE
+#include "bake.hpp"
+#endif
 
 Lexer::Lexer() : m_hd(nullptr), m_tl(nullptr), m_len(0) {}
 
@@ -148,8 +151,29 @@ try_comment(char *src, std::string &comment) {
     return false;
 }
 
-char *
+std::string
+sanatize_stdlib_bake_fp(const char *fp) {
+    std::string res = "";
+
+    for (size_t i = 0; fp[i]; ++i) {
+        if (fp[i] == '/' || fp[i] == '.')
+            res += '_';
+        else
+            res += fp[i];
+    }
+
+    return res;
+}
+
+const char *
 read_file(const char *filepath, std::vector<std::string> &include_dirs) {
+#ifdef STDLIB_BAKE
+    auto baked_path = sanatize_stdlib_bake_fp(filepath);
+    auto it = baked_stdlib.find(baked_path);
+    if (it != baked_stdlib.end() && ((flags & __WITHOUT_STDLIB) == 0))
+        return it->second;
+#endif
+
     const char *search_path = PREFIX "/include/EARL/";
     char full_path[256];
 

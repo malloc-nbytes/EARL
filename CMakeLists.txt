@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Define INSTALL_PREFIX and PROJECT_VERSION as cache variables
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
 set(PROJECT_VERSION ${PROJECT_VERSION} CACHE STRING "The project version")
-set(STDLIB_BAKE OFF CACHE BOOL "Include the stdlib in the build")
 
 # Set default INSTALL_PREFIX if not specified
 if(NOT INSTALL_PREFIX)
@@ -20,16 +19,22 @@ set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler Info: ${COMPILER_INFO}")
 
-# Configure a header file to pass INSTALL_PREFIX, PROJECT_VERSION, and COMPILER_INFO
+if(NOT DEFINED STDLIB_BAKE)
+    set(STDLIB_BAKE OFF CACHE BOOL "Enable STDLIB_BAKE")
+endif()
+
+# Check if STDLIB_BAKE is ON
+if(STDLIB_BAKE STREQUAL "ON")
+    set(STDLIB_BAKE_DEFINE "#define STDLIB_BAKE")
+else()
+    set(STDLIB_BAKE_DEFINE "")
+endif()
+
 configure_file(
     ${PROJECT_SOURCE_DIR}/src/include/config.h.in
     ${PROJECT_SOURCE_DIR}/src/include/config.h
     @ONLY
 )
-
-if(STDLIB_BAKE)
-    message(STATUS "Standard library will be baked into the build.")
-endif()
 
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/src/include)
