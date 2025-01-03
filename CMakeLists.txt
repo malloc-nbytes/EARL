@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25.1)
-project(EARL VERSION 0.8.8)
+project(EARL VERSION 0.8.9)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -16,22 +16,38 @@ endif()
 # Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
 set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 
-# Capture compiler and version
-# if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#     set(COMPILER_INFO "GCC ${CMAKE_CXX_COMPILER_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#     set(COMPILER_INFO "Clang ${CMAKE_CXX_COMPILER_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-#     set(COMPILER_INFO "MSVC ${MSVC_VERSION}")
-# elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-#     set(COMPILER_INFO "AppleClang ${CMAKE_CXX_COMPILER_VERSION}")
-# else()
-#     set(COMPILER_INFO "Unknown Compiler: ${CMAKE_CXX_COMPILER_ID}")
-# endif()
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler Info: ${COMPILER_INFO}")
 
-# Configure a header file to pass INSTALL_PREFIX, PROJECT_VERSION, and COMPILER_INFO
+if(NOT DEFINED PORTABLE)
+    set(PORTABLE OFF CACHE BOOL "Enable PORTABLE")
+endif()
+
+if(PORTABLE STREQUAL "ON")
+    set(PORTABLE_DEFINE "#define PORTABLE")
+
+    # Run the bake.py script and capture stdout
+    execute_process(
+        COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE bake_result
+        OUTPUT_VARIABLE bake_output
+        ERROR_VARIABLE bake_error
+    )
+
+    if(bake_output)
+        message(STATUS "${bake_output}")
+    endif()
+
+    if(NOT bake_result EQUAL 0)
+        message(FATAL_ERROR "Error running bake.py: ${bake_error}")
+    else()
+        message(STATUS "Successfully ran bake.py")
+    endif()
+else()
+    set(PORTABLE_DEFINE "")
+endif()
+
 configure_file(
     ${PROJECT_SOURCE_DIR}/src/include/config.h.in
     ${PROJECT_SOURCE_DIR}/src/include/config.h
@@ -64,10 +80,14 @@ configure_file(
 install(TARGETS earl DESTINATION bin)
 
 # Install the contents of the src/std directory
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
-    DESTINATION include/EARL/std
-    FILES_MATCHING PATTERN "*.*"
-)
+if(NOT PORTABLE STREQUAL "ON")
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
+        DESTINATION include/EARL/std
+        FILES_MATCHING PATTERN "*.*"
+    )
+else()
+    message(STATUS "PORTABLE is ON, skipping installation of std directory.")
+endif()
 
 # Find Doxygen
 find_package(Doxygen)

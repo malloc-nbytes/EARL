@@ -132,10 +132,23 @@ static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
 
-    std::cerr << "EARL v" << VERSION << ", " << "(compiler) " << COMPILER_INFO << " (platform) " << get_os_info() << std::endl << std::endl;
+#ifdef PORTABLE
+    std::cerr << "EARL <portable> v";
+#else
+    std::cerr << "EARL v";
+#endif
+
+    std::cerr << VERSION << ", " << "(compiler) " << COMPILER_INFO << ", (platform) " << get_os_info() << std::endl << std::endl;
 
     std::cerr << "StdLib installed: " << stdlib_installed() << std::endl;
-    std::cerr << "earlmgr installed: " << earlmgr_installed() << std::endl << std::endl;
+    std::cerr << "earlmgr installed: " << earlmgr_installed() << std::endl;
+
+    std::cerr << "Builtin StdLib: ";
+#ifdef PORTABLE
+    std::cerr << "YES" << std::endl << std::endl;
+#else
+    std::cerr << "NO" << std::endl << std::endl;
+#endif
 
     std::cerr << "The GitHub repository is located at: https://github.com/malloc-nbytes/EARL/" << std::endl << std::endl;
 
@@ -151,14 +164,15 @@ usage(void) {
     std::cerr << "        -h, --help . . . . . . . . . . . . . . Print this help message" << std::endl;
     std::cerr << "        -v, --version  . . . . . . . . . . . . Print version information" << std::endl;
     std::cerr << "            --install-prefix . . . . . . . . . Print the installation prefix" << std::endl;
+    std::cerr << "            --is-portable  . . . . . . . . . . Show whether EARL portable is installed" << std::endl;
     std::cerr << "    Prelude Config" << std::endl;
     std::cerr << "        -c, --check  . . . . . . . . . . . . . Only parse the file given" << std::endl;
     std::cerr << "        -I, --include <DIR>  . . . . . . . . . Add an include directory" << std::endl;
     std::cerr << "        -i, --import <filepath>  . . . . . . . Import a file from the CLI" << std::endl;
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
-    std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
+    std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
     std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
@@ -250,6 +264,16 @@ handle_to_py_flag(std::vector<std::string> &args) {
 static void
 install_prefix(void) {
     std::cout << "[EARL install-prefix] EARL and StdLib installed at " << PREFIX << std::endl;
+    std::exit(0);
+}
+
+static void
+show_is_portable(void) {
+#ifdef PORTABLE
+    std::cout << "YES" << std::endl;
+#else
+    std::cout << "NO" << std::endl;
+#endif
     std::exit(0);
 }
 
@@ -391,6 +415,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __ONE_SHOT;
         handle_one_shot(args);
     }
+    else if (arg == COMMON_EARL2ARG_PORTABLE)
+        show_is_portable();
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
