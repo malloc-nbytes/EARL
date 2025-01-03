@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25.1)
-project(EARL VERSION 0.8.8)
+project(EARL VERSION 0.8.9)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
