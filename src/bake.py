@@ -53,4 +53,4 @@ def embed_files(input_dir, output_file):
         out.write("};\n")
 
 if __name__ == "__main__":
-    embed_files('std/', 'include/bake.hpp')
+    embed_files('src/std/', 'src/include/bake.hpp')

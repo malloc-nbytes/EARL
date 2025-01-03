@@ -23,9 +23,27 @@ if(NOT DEFINED STDLIB_BAKE)
     set(STDLIB_BAKE OFF CACHE BOOL "Enable STDLIB_BAKE")
 endif()
 
-# Check if STDLIB_BAKE is ON
 if(STDLIB_BAKE STREQUAL "ON")
     set(STDLIB_BAKE_DEFINE "#define STDLIB_BAKE")
+
+    # Run the bake.py script and capture stdout
+    execute_process(
+        COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        RESULT_VARIABLE bake_result
+        OUTPUT_VARIABLE bake_output
+        ERROR_VARIABLE bake_error
+    )
+
+    if(bake_output)
+        message(STATUS "${bake_output}")
+    endif()
+
+    if(NOT bake_result EQUAL 0)
+        message(FATAL_ERROR "Error running bake.py: ${bake_error}")
+    else()
+        message(STATUS "Successfully ran bake.py")
+    endif()
 else()
     set(STDLIB_BAKE_DEFINE "")
 endif()
@@ -62,10 +80,14 @@ configure_file(
 install(TARGETS earl DESTINATION bin)
 
 # Install the contents of the src/std directory
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
-    DESTINATION include/EARL/std
-    FILES_MATCHING PATTERN "*.*"
-)
+if(NOT STDLIB_BAKE STREQUAL "ON")
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
+        DESTINATION include/EARL/std
+        FILES_MATCHING PATTERN "*.*"
+    )
+else()
+    message(STATUS "STDLIB_BAKE is ON, skipping installation of std directory.")
+endif()
 
 # Find Doxygen
 find_package(Doxygen)
