@@ -36,7 +36,7 @@
 #include "utils.hpp"
 #include "common.hpp"
 #include "config.h"
-#ifdef STDLIB_BAKE
+#ifdef PORTABLE
 #include "bake.hpp"
 #endif
 
@@ -167,7 +167,7 @@ sanatize_stdlib_bake_fp(const char *fp) {
 
 const char *
 read_file(const char *filepath, std::vector<std::string> &include_dirs) {
-#ifdef STDLIB_BAKE
+#ifdef PORTABLE
     auto baked_path = sanatize_stdlib_bake_fp(filepath);
     auto it = baked_stdlib.find(baked_path);
     if (it != baked_stdlib.end() && ((flags & __WITHOUT_STDLIB) == 0))

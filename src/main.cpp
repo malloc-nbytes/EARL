@@ -132,7 +132,7 @@ static void
 usage(void) {
     std::cerr << "(MIT License) Copyright (c) 2023 malloc-nbytes" << std::endl << std::endl;
 
-#ifdef STDLIB_BAKE
+#ifdef PORTABLE
     std::cerr << "EARL <portable> v";
 #else
     std::cerr << "EARL v";
@@ -144,7 +144,7 @@ usage(void) {
     std::cerr << "earlmgr installed: " << earlmgr_installed() << std::endl;
 
     std::cerr << "Builtin StdLib: ";
-#ifdef STDLIB_BAKE
+#ifdef PORTABLE
     std::cerr << "YES" << std::endl << std::endl;
 #else
     std::cerr << "NO" << std::endl << std::endl;
@@ -269,7 +269,7 @@ install_prefix(void) {
 
 static void
 show_is_portable(void) {
-#ifdef STDLIB_BAKE
+#ifdef PORTABLE
     std::cout << "YES" << std::endl;
 #else
     std::cout << "NO" << std::endl;

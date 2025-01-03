@@ -19,12 +19,12 @@ set(CMAKE_INSTALL_PREFIX ${INSTALL_PREFIX})
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Compiler Info: ${COMPILER_INFO}")
 
-if(NOT DEFINED STDLIB_BAKE)
-    set(STDLIB_BAKE OFF CACHE BOOL "Enable STDLIB_BAKE")
+if(NOT DEFINED PORTABLE)
+    set(PORTABLE OFF CACHE BOOL "Enable PORTABLE")
 endif()
 
-if(STDLIB_BAKE STREQUAL "ON")
-    set(STDLIB_BAKE_DEFINE "#define STDLIB_BAKE")
+if(PORTABLE STREQUAL "ON")
+    set(PORTABLE_DEFINE "#define PORTABLE")
 
     # Run the bake.py script and capture stdout
     execute_process(
@@ -45,7 +45,7 @@ if(STDLIB_BAKE STREQUAL "ON")
         message(STATUS "Successfully ran bake.py")
     endif()
 else()
-    set(STDLIB_BAKE_DEFINE "")
+    set(PORTABLE_DEFINE "")
 endif()
 
 configure_file(
@@ -80,13 +80,13 @@ configure_file(
 install(TARGETS earl DESTINATION bin)
 
 # Install the contents of the src/std directory
-if(NOT STDLIB_BAKE STREQUAL "ON")
+if(NOT PORTABLE STREQUAL "ON")
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/std/
         DESTINATION include/EARL/std
         FILES_MATCHING PATTERN "*.*"
     )
 else()
-    message(STATUS "STDLIB_BAKE is ON, skipping installation of std directory.")
+    message(STATUS "PORTABLE is ON, skipping installation of std directory.")
 endif()
 
 # Find Doxygen
