@@ -38,3 +38,9 @@ size_t
 StmtExpr::get_lineno() const {
     return m_expr->get_lineno();
 }
+
+void
+StmtExpr::dump() const {
+    m_expr->dump();
+}
+

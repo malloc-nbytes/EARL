@@ -38,3 +38,8 @@ size_t
 StmtBashLiteral::get_lineno() const {
     return m_expr->get_lineno();
 }
+
+void
+StmtBashLiteral::dump() const {
+    m_expr->dump();
+}

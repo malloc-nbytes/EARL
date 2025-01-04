@@ -42,5 +42,15 @@ ExprPredicate::get_term_type() const {
 
 size_t
 ExprPredicate::get_lineno() const {
-    return m_op->m_col;
+    return m_op->m_row;
+}
+
+void
+ExprPredicate::dump() const {
+    token_dump_until_semi(m_op.get());
+}
+
+Token *
+ExprPredicate::get_tok() const {
+    return m_op.get();
 }

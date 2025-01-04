@@ -42,5 +42,15 @@ ExprTuple::get_term_type() const {
 
 size_t
 ExprTuple::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+ExprTuple::dump() const {
+    token_dump_until_semi(m_tok.get());
+}
+
+Token *
+ExprTuple::get_tok() const {
+    return m_tok.get();
 }

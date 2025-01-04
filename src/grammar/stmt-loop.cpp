@@ -38,5 +38,10 @@ StmtLoop::stmt_type() const {
 
 size_t
 StmtLoop::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+StmtLoop::dump() const {
+    token_dump_until_semi(m_tok.get());
 }

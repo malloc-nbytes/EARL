@@ -195,7 +195,9 @@ parse_identifier_or_funccall(Lexer &lexer) {
     auto group = try_parse_funccall(lexer);
 
     if (group.has_value())
-        return std::make_unique<ExprFuncCall>(std::move(ident), std::move(group.value()), ident->m_tok);
+        return std::make_unique<ExprFuncCall>(std::move(ident),
+                                              std::move(group.value()),
+                                              ident->m_tok.get());
 
     return ident;
 }
@@ -303,7 +305,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                 std::vector<std::unique_ptr<Expr>> unique_tuple = {};
                 for (size_t i = 0; i < tuple.size(); ++i)
                     unique_tuple.push_back(std::unique_ptr<Expr>(tuple[i]));
-                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple), tok);
+                left = new ExprFuncCall(std::unique_ptr<Expr>(left), std::move(unique_tuple), left->get_tok());
             }
             // Tuple
             else if (tuple.size() > 1 || trailing_comma) {
@@ -362,7 +364,7 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
                     throw ParserException(msg);
                 }
                 (void)Parser::parse_expect(lexer, TokenType::Rbracket);
-                left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(idx), tok);
+                left = new ExprArrayAccess(std::unique_ptr<Expr>(left), std::unique_ptr<Expr>(idx), left->get_tok());
             }
             else {
                 auto tok = lexer.next(); // [

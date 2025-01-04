@@ -29,7 +29,7 @@
 
 ExprFuncCall::ExprFuncCall(std::unique_ptr<Expr> left,
                            std::vector<std::unique_ptr<Expr>> params,
-                           std::shared_ptr<Token> tok)
+                           Token *tok)
     : m_left(std::move(left)), m_params(std::move(params)), m_tok(tok) {}
 
 ExprType
@@ -44,6 +44,15 @@ ExprFuncCall::get_term_type() const {
 
 size_t
 ExprFuncCall::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
 }
 
+void
+ExprFuncCall::dump() const {
+    token_dump_until_semi(m_tok);
+}
+
+Token *
+ExprFuncCall::get_tok() const {
+    return m_tok;
+}

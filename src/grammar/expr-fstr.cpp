@@ -41,5 +41,15 @@ ExprFStr::get_term_type() const {
 
 size_t
 ExprFStr::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+ExprFStr::dump() const {
+    token_dump_until_semi(m_tok.get());
+}
+
+Token *
+ExprFStr::get_tok() const {
+    return m_tok.get();
 }

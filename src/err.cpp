@@ -104,7 +104,7 @@ err_wbool(ExprBool *expr, int s) {
 
 static void
 err_warray_access(ExprArrayAccess *expr, int s) {
-    Err::err_wtok(expr->m_tok.get());
+    Err::err_wtok(expr->m_tok);
 }
 
 static void
@@ -134,7 +134,7 @@ err_wlistlit(ExprListLit *expr, int s) {
 
 static void
 err_wfunccall(ExprFuncCall *expr, int s) {
-    Err::err_wtok(expr->m_tok.get());
+    Err::err_wtok(expr->m_tok);
 }
 
 static void

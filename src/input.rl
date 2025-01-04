@@ -1,3 +1,3 @@
 module Main
-println("hello");
-println("world");
+
+let x = 1;

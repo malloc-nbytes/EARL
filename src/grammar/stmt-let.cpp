@@ -26,6 +26,7 @@
 #include <memory>
 
 #include "ast.hpp"
+#include "token.hpp"
 
 StmtLet::StmtLet(std::vector<std::shared_ptr<Token>> ids,
                  std::vector<std::shared_ptr<__Type>> tys,
@@ -47,5 +48,10 @@ StmtLet::stmt_type() const {
 
 size_t
 StmtLet::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+StmtLet::dump() const {
+    token_dump_until_semi(m_tok.get());
 }

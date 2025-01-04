@@ -36,5 +36,10 @@ StmtMod::stmt_type() const {
 
 size_t
 StmtMod::get_lineno() const {
-    return m_id->m_col;
+    return m_id->m_row;
+}
+
+void
+StmtMod::dump() const {
+    token_dump_until_semi(m_id.get());
 }

@@ -69,7 +69,7 @@ enum class TokenType {
     Colon,
     Sym_Len, // DO NOT USE! Used for the length of symbols. (deprecated)
 
-    Double_Ampersand,
+    Double_Ampersand, // 30
     Double_Pipe,
     Greaterthan_Equals,
     Lessthan_Equals,
@@ -79,7 +79,7 @@ enum class TokenType {
     Minus_Equals,
     Asterisk_Equals,
     Forwardslash_Equals,
-    Percent_Equals,
+    Percent_Equals, // 40
     RightArrow,
     Double_Period,
     Double_Colon,
@@ -91,7 +91,7 @@ enum class TokenType {
     // Bitwise
     Backtick_Pipe,
     Backtick_Ampersand,
-    Backtick_Tilde,
+    Backtick_Tilde, // 50
     Backtick_Caret,
 
     Backtick_Pipe_Equals,
@@ -104,7 +104,7 @@ enum class TokenType {
     Strlit,
     Charlit,
     Floatlit,
-    Ident,
+    Ident, // 60
     Keyword,
     Type,
     Bashlit,
@@ -165,6 +165,6 @@ std::shared_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenT
 /// @brief Prints tokens from the current token to the end of line.
 /// @param tok The token to start from
 /// @param padding The number of spaces to prepend the output
-void token_dump_until_eol(Token *tok, int padding = 2);
+void token_dump_until_semi(Token *tok, int padding = 0);
 
 #endif // TOKEN_H

@@ -37,5 +37,10 @@ StmtExec::stmt_type() const {
 
 size_t
 StmtExec::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+StmtExec::dump() const {
+    token_dump_until_semi(m_tok.get());
 }

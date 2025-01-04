@@ -33,6 +33,7 @@
 #include "err.hpp"
 #include "token.hpp"
 #include "lexer.hpp"
+#include "common.hpp"
 
 std::string
 tokentype_to_str(TokenType type) {
@@ -189,19 +190,30 @@ Token::type(void) const {
 }
 
 void
-token_dump_until_eol(Token *tok, int padding) {
+token_dump_until_semi(Token *tok, int padding) {
+    // For the REPL
+    if ((flags & __REPL) != 0)
+        std::cout << "\033[K" << "\r" << std::flush;
+
     for (int i = 0; i < padding; ++i)
-        std::cout << ' ';
-    while (tok && tok->type() != TokenType::Semicolon) {
-        std::cout << tok->lexeme();
+        std::cout << "    ";
 
-        if (tok->m_next && tok->m_next->type() != TokenType::Semicolon) {
+    Token *it = tok;
+    while (it && it->type() != TokenType::Semicolon) {
+        if (it->type() == TokenType::Strlit)
+            std::cout << "\"" << it->lexeme() << "\"";
+        else if (it->type() == TokenType::Charlit)
+            std::cout << "'" << it->lexeme() << "'";
+        else
+            std::cout << it->lexeme();
+        if (it->m_next && it->m_next->type() != TokenType::Semicolon)
             std::cout << ' ';
-        }
-
-        tok = tok->m_next.get();
+        it = it->m_next.get();
     }
 
-    std::cout << std::endl;
+    if (it && it->type() == TokenType::Semicolon)
+        std::cout << ';';
+
+    std::cout << '\n';
 }
 

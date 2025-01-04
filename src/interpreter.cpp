@@ -369,7 +369,7 @@ eval_class_instantiation(ExprFuncCall *expr,
 static std::vector<std::shared_ptr<earl::value::Obj>>
 evaluate_function_parameters(ExprFuncCall *funccall, std::shared_ptr<Ctx> ctx, bool ref) {
     std::vector<std::shared_ptr<earl::value::Obj>> res = {};
-    PackedERPreliminary perp(nullptr, /*this_=*/false, /*errtok=*/funccall->m_tok.get());
+    PackedERPreliminary perp(nullptr, /*this_=*/false, /*errtok=*/funccall->m_tok);
     for (size_t i = 0; i < funccall->m_params.size(); ++i) {
         ER er = Interpreter::eval_expr(funccall->m_params[i].get(), ctx, ref);
         res.push_back(unpack_ER(er, ctx, ref, /*perp=*/&perp));
@@ -2836,6 +2836,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     if ((flags && __DEBUG) != 0) {
         for (const auto &bp : breakpoints) {
             if (is_number(bp) && stmt->get_lineno() == std::stoi(bp)) {
+                stmt->dump();
             }
         }
     }

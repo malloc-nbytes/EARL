@@ -26,6 +26,7 @@
 #include <memory>
 
 #include "ast.hpp"
+#include "token.hpp"
 
 StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts, std::shared_ptr<Token> tok)
     : m_stmts(std::move(stmts)), m_tok(std::move(tok)) {}
@@ -37,5 +38,10 @@ StmtBlock::stmt_type() const {
 
 size_t
 StmtBlock::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+StmtBlock::dump() const {
+    token_dump_until_semi(m_tok.get());
 }

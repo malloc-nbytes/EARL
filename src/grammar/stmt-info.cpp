@@ -40,3 +40,9 @@ StmtInfo::get_lineno() const {
     return 0;
 }
 
+void
+StmtInfo::dump() const {
+    (void)0x0;
+}
+
+

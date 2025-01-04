@@ -45,5 +45,15 @@ ExprCase::get_term_type() const {
 
 size_t
 ExprCase::get_lineno() const {
-    return m_errtok->m_col;
+    return m_errtok->m_row;
+}
+
+void
+ExprCase::dump() const {
+    token_dump_until_semi(m_errtok.get());
+}
+
+Token *
+ExprCase::get_tok() const {
+    return m_errtok.get();
 }

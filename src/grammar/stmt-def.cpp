@@ -49,5 +49,10 @@ StmtDef::stmt_type() const {
 
 size_t
 StmtDef::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+StmtDef::dump() const {
+    token_dump_until_semi(m_tok.get());
 }

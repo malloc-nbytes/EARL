@@ -40,3 +40,12 @@ ExprBinary::get_lineno() const {
     return m_lhs->get_lineno();
 }
 
+void
+ExprBinary::dump() const {
+    m_lhs->dump();
+}
+
+Token *
+ExprBinary::get_tok() const {
+    return m_lhs->get_tok();
+}

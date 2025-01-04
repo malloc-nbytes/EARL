@@ -27,7 +27,7 @@
 
 #include "ast.hpp"
 
-ExprArrayAccess::ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr, std::shared_ptr<Token> tok)
+ExprArrayAccess::ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr, Token *tok)
     : m_left(std::move(left)), m_expr(std::move(expr)), m_tok(tok) {}
 
 ExprType
@@ -42,5 +42,15 @@ ExprArrayAccess::get_term_type() const {
 
 size_t
 ExprArrayAccess::get_lineno() const {
-    return m_tok->m_col;
+    return m_tok->m_row;
+}
+
+void
+ExprArrayAccess::dump() const {
+    token_dump_until_semi(m_tok);
+}
+
+Token *
+ExprArrayAccess::get_tok() const {
+    return m_tok;
 }

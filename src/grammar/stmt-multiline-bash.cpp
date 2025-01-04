@@ -36,6 +36,11 @@ StmtMultilineBash::stmt_type() const {
 
 size_t
 StmtMultilineBash::get_lineno() const {
-    return m_sh->m_col;
+    return m_sh->m_row;
+}
+
+void
+StmtMultilineBash::dump() const {
+    token_dump_until_semi(m_sh.get());
 }
 

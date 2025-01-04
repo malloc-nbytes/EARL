@@ -43,3 +43,9 @@ size_t
 StmtMut::get_lineno() const {
     return m_left->get_lineno();
 }
+
+void
+StmtMut::dump() const {
+    return m_left->dump();
+}
+

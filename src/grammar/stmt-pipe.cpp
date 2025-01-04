@@ -54,3 +54,20 @@ StmtPipe::get_lineno() const {
         }
     }, m_bash);
 }
+
+void
+StmtPipe::dump() const {
+    std::visit([](auto &&exe) {
+        using T = std::decay_t<decltype(exe)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<StmtBashLiteral>>) {
+            exe->dump();
+        }
+        else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
+            exe->dump();
+        }
+        else {
+            assert(false && "unreachable");
+        }
+    }, m_bash);
+}
+
