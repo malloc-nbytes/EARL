@@ -41,5 +41,5 @@ ExprFloatLit::get_term_type() const {
 
 size_t
 ExprFloatLit::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

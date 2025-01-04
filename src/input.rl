@@ -1,3 +1,3 @@
 module Main
-
-println("hello world");
+println("hello");
+println("world");

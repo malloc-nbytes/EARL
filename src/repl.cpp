@@ -573,7 +573,6 @@ reset(std::shared_ptr<Ctx> &ctx) {
 
 static void
 set_breakpoint(std::vector<std::string> &args) {
-    std::cout << args.size() << std::endl;
     if (args.size() < 1) {
         std::cout << repled::error_color();
         std::cerr << "cannot set breakpoint with no identifier or line number" << std::endl;

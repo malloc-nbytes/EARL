@@ -37,6 +37,6 @@ StmtContinue::stmt_type() const {
 
 size_t
 StmtContinue::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }
 

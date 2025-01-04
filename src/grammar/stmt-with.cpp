@@ -28,8 +28,14 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-StmtWith::StmtWith(std::vector<std::shared_ptr<Token>> ids, std::vector<std::unique_ptr<Expr>> exprs, std::unique_ptr<Stmt> stmt)
-    : m_ids(std::move(ids)), m_exprs(std::move(exprs)), m_stmt(std::move(stmt)) {}
+StmtWith::StmtWith(std::vector<std::shared_ptr<Token>> ids,
+                   std::vector<std::unique_ptr<Expr>> exprs,
+                   std::unique_ptr<Stmt> stmt,
+                   std::shared_ptr<Token> tok)
+    : m_ids(std::move(ids)),
+      m_exprs(std::move(exprs)),
+      m_stmt(std::move(stmt)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtWith::stmt_type() const {
@@ -38,5 +44,5 @@ StmtWith::stmt_type() const {
 
 size_t
 StmtWith::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

@@ -414,7 +414,9 @@ struct StmtBashLiteral : public Stmt {
 
 struct StmtExec : public Stmt {
     std::shared_ptr<Token> m_ident;
-    StmtExec(std::shared_ptr<Token> ident);
+    std::shared_ptr<Token> m_tok;
+
+    StmtExec(std::shared_ptr<Token> ident, std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -443,12 +445,15 @@ struct StmtDef : public Stmt {
     uint32_t m_attrs;
     std::vector<std::string> m_info;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtDef(std::shared_ptr<Token> id,
             std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>> args,
             std::optional<std::shared_ptr<__Type>> ty,
             std::unique_ptr<StmtBlock> block,
             uint32_t attrs,
-            std::vector<std::string> info);
+            std::vector<std::string> info,
+            std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -468,11 +473,14 @@ struct StmtLet : public Stmt {
 
     std::vector<std::string> m_info;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtLet(std::vector<std::shared_ptr<Token>> ids,
             std::vector<std::shared_ptr<__Type>> tys,
             std::unique_ptr<Expr> expr,
             uint32_t attrs,
-            std::vector<std::string> info);
+            std::vector<std::string> info,
+            std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -482,7 +490,12 @@ struct StmtWith : public Stmt {
     std::vector<std::unique_ptr<Expr>> m_exprs;
     std::unique_ptr<Stmt> m_stmt;
 
-    StmtWith(std::vector<std::shared_ptr<Token>> ids, std::vector<std::unique_ptr<Expr>> exprs, std::unique_ptr<Stmt> stmt);
+    std::shared_ptr<Token> m_tok;
+
+    StmtWith(std::vector<std::shared_ptr<Token>> ids,
+             std::vector<std::unique_ptr<Expr>> exprs,
+             std::unique_ptr<Stmt> stmt,
+             std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -505,8 +518,9 @@ struct StmtPipe : public Stmt {
 struct StmtBlock : public Stmt {
     /// @brief A vector of statements that is in the block
     std::vector<std::unique_ptr<Stmt>> m_stmts;
+    std::shared_ptr<Token> m_tok;
 
-    StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts);
+    StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts, std::shared_ptr<Token> tok);
     void add_stmt(std::unique_ptr<Stmt> stmt);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -522,7 +536,9 @@ struct StmtMut : public Stmt {
 
     std::shared_ptr<Token> m_equals;
 
-    StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, std::shared_ptr<Token> m_equals);
+    StmtMut(std::unique_ptr<Expr> left,
+            std::unique_ptr<Expr> right,
+            std::shared_ptr<Token> m_equals);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -548,9 +564,12 @@ struct StmtIf : public Stmt {
     /// @brief The `block` of the else part of the `if` statement.
     std::optional<std::unique_ptr<StmtBlock>> m_else;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtIf(std::unique_ptr<Expr> expr,
            std::unique_ptr<StmtBlock> block,
-           std::optional<std::unique_ptr<StmtBlock>> else_);
+           std::optional<std::unique_ptr<StmtBlock>> else_,
+           std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -591,7 +610,11 @@ struct StmtWhile : public Stmt {
     /// @brief The block of the while loop to loop
     std::unique_ptr<StmtBlock> m_block;
 
-    StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block);
+    std::shared_ptr<Token> m_tok;
+
+    StmtWhile(std::unique_ptr<Expr> expr,
+              std::unique_ptr<StmtBlock> block,
+              std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -617,10 +640,13 @@ struct StmtForeach : public Stmt {
 
     uint32_t m_attrs;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtForeach(std::vector<std::shared_ptr<Token>> enumerators,
                 std::unique_ptr<Expr> expr,
                 std::unique_ptr<StmtBlock> block,
-                uint32_t attrs);
+                uint32_t attrs,
+                std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -639,10 +665,13 @@ struct StmtFor : public Stmt {
     /// @brief The block for the loop to execute
     std::unique_ptr<StmtBlock> m_block;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtFor(std::shared_ptr<Token> enumerator,
             std::unique_ptr<Expr> start,
             std::unique_ptr<Expr> end,
-            std::unique_ptr<StmtBlock> block);
+            std::unique_ptr<StmtBlock> block,
+            std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -654,10 +683,12 @@ struct StmtImport : public Stmt {
     std::optional<std::shared_ptr<Token>> m_depth;
     std::optional<std::shared_ptr<Token>> m_as;
     uint32_t __m_depth;
+    std::shared_ptr<Token> m_tok;
 
     StmtImport(std::shared_ptr<Expr> fp,
                std::optional<std::shared_ptr<Token>> depth,
-               std::optional<std::shared_ptr<Token>> as);
+               std::optional<std::shared_ptr<Token>> as,
+               std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -666,8 +697,11 @@ struct StmtImport : public Stmt {
 struct StmtUse : public Stmt {
     std::unique_ptr<Expr> m_fp;
     std::optional<std::shared_ptr<Token>> m_as;
+    std::shared_ptr<Token> m_tok;
 
-    StmtUse(std::unique_ptr<Expr> fp, std::optional<std::shared_ptr<Token>> as);
+    StmtUse(std::unique_ptr<Expr> fp,
+            std::optional<std::shared_ptr<Token>> as,
+            std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -691,12 +725,15 @@ struct StmtClass : public Stmt {
     std::vector<std::unique_ptr<StmtDef>> m_methods;
     std::vector<std::string> m_info;
 
+    std::shared_ptr<Token> m_tok;
+
     StmtClass(std::shared_ptr<Token> id,
               uint32_t attrs,
               std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
               std::vector<std::unique_ptr<StmtLet>> members,
               std::vector<std::unique_ptr<StmtDef>> methods,
-              std::vector<std::string> info);
+              std::vector<std::string> info,
+              std::shared_ptr<Token> tok);
 
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
@@ -719,8 +756,11 @@ struct StmtMatch : public Stmt {
 
     std::unique_ptr<Expr> m_expr;
     std::vector<std::unique_ptr<Branch>> m_branches;
+    std::shared_ptr<Token> m_tok;
 
-    StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Branch>> branches);
+    StmtMatch(std::unique_ptr<Expr> expr,
+              std::vector<std::unique_ptr<Branch>> branches,
+              std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };
@@ -730,12 +770,14 @@ struct StmtEnum : public Stmt {
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> m_elems;
     uint32_t m_attrs;
     std::vector<std::string> m_info;
+    std::shared_ptr<Token> m_tok;
 
     StmtEnum(std::shared_ptr<Token> id,
              std::vector<std::pair<std::shared_ptr<Token>,
              std::unique_ptr<Expr>>> elems,
              uint32_t attrs,
-             std::vector<std::string> info);
+             std::vector<std::string> info,
+             std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
     size_t get_lineno() const override;
 };

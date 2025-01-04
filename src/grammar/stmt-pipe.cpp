@@ -24,6 +24,7 @@
 
 #include <cassert>
 #include <memory>
+#include <variant>
 
 #include "ast.hpp"
 
@@ -40,5 +41,16 @@ StmtPipe::stmt_type() const {
 
 size_t
 StmtPipe::get_lineno() const {
-    assert(false);
+    return std::visit([](auto &&exe) {
+        using T = std::decay_t<decltype(exe)>;
+        if constexpr (std::is_same_v<T, std::unique_ptr<StmtBashLiteral>>) {
+            return exe->get_lineno();
+        }
+        else if constexpr (std::is_same_v<T, std::unique_ptr<StmtExec>>) {
+            return exe->get_lineno();
+        }
+        else {
+            assert(false && "unreachable");
+        }
+    }, m_bash);
 }

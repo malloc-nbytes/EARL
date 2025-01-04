@@ -28,8 +28,10 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-StmtUse::StmtUse(std::unique_ptr<Expr> fp, std::optional<std::shared_ptr<Token>> as)
-    : m_fp(std::move(fp)), m_as(as) {}
+StmtUse::StmtUse(std::unique_ptr<Expr> fp,
+                 std::optional<std::shared_ptr<Token>> as,
+                 std::shared_ptr<Token> tok)
+    : m_fp(std::move(fp)), m_as(as), m_tok(std::move(tok)) {}
 
 StmtType
 StmtUse::stmt_type() const {
@@ -38,5 +40,6 @@ StmtUse::stmt_type() const {
 
 size_t
 StmtUse::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }
+

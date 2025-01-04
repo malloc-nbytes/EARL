@@ -31,12 +31,14 @@ StmtLet::StmtLet(std::vector<std::shared_ptr<Token>> ids,
                  std::vector<std::shared_ptr<__Type>> tys,
                  std::unique_ptr<Expr> expr,
                  uint32_t attrs,
-                 std::vector<std::string> info)
+                 std::vector<std::string> info,
+                 std::shared_ptr<Token> tok)
     : m_ids(ids),
-      m_tys(tys)
-    , m_expr(std::move(expr)),
+      m_tys(tys),
+      m_expr(std::move(expr)),
       m_attrs(attrs),
-      m_info(std::move(info)) {}
+      m_info(std::move(info)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtLet::stmt_type() const {
@@ -45,5 +47,5 @@ StmtLet::stmt_type() const {
 
 size_t
 StmtLet::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

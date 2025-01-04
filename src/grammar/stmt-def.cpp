@@ -32,13 +32,15 @@ StmtDef::StmtDef(std::shared_ptr<Token> id,
                  std::optional<std::shared_ptr<__Type>> ty,
                  std::unique_ptr<StmtBlock> block,
                  uint32_t attrs,
-                 std::vector<std::string> info) :
+                 std::vector<std::string> info,
+                 std::shared_ptr<Token> tok) :
     m_id(id),
     m_args(args),
     m_ty(ty),
     m_block(std::move(block)),
     m_attrs(attrs),
-    m_info(std::move(info)) {}
+    m_info(std::move(info)),
+    m_tok(std::move(tok)) {}
 
 StmtType
 StmtDef::stmt_type() const {
@@ -47,5 +49,5 @@ StmtDef::stmt_type() const {
 
 size_t
 StmtDef::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

@@ -42,5 +42,5 @@ ExprPredicate::get_term_type() const {
 
 size_t
 ExprPredicate::get_lineno() const {
-    assert(false);
+    return m_op->m_col;
 }

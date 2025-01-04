@@ -2836,7 +2836,6 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     if ((flags && __DEBUG) != 0) {
         for (const auto &bp : breakpoints) {
             if (is_number(bp) && stmt->get_lineno() == std::stoi(bp)) {
-                std::cout << "HERE: " << bp << std::endl;
             }
         }
     }

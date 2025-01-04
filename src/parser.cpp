@@ -631,7 +631,7 @@ Parser::parse_stmt_mut(Lexer &lexer) {
 
 std::unique_ptr<StmtIf>
 Parser::parse_stmt_if(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IF);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IF);
 
     Expr *expr = Parser::parse_expr(lexer, /*fail_on=*/'{');
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
@@ -645,20 +645,21 @@ Parser::parse_stmt_if(Lexer &lexer) {
     bool tok2_if = tok2 && (tok2->type() == TokenType::Keyword && tok2->lexeme() == COMMON_EARLKW_IF);
 
     if (tok1_else && tok2_if) {
-        lexer.discard();
+        auto start = lexer.next();
         std::vector<std::unique_ptr<Stmt>> tmp;
         std::unique_ptr<StmtIf> nested_if = parse_stmt_if(lexer);
         tmp.push_back(std::move(nested_if));
-        else_ = std::make_unique<StmtBlock>(std::move(tmp));
+        else_ = std::make_unique<StmtBlock>(std::move(tmp), std::move(start));
     }
     else if (tok1_else) {
-        Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ELSE);
+        (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ELSE);
         else_ = parse_stmt_block(lexer);
     }
 
     return std::make_unique<StmtIf>(std::unique_ptr<Expr>(expr),
                                     std::move(block),
-                                    std::move(else_));
+                                    std::move(else_),
+                                    std::move(start));
 }
 
 std::unique_ptr<StmtLet>
@@ -695,7 +696,12 @@ Parser::parse_stmt_let(Lexer &lexer, uint32_t attrs, std::vector<std::string> in
     }
 
     (void)parse_expect(lexer, TokenType::Semicolon);
-    return std::make_unique<StmtLet>(std::move(ids), std::move(tys), std::unique_ptr<Expr>(expr), attrs, std::move(info));
+    return std::make_unique<StmtLet>(std::move(ids),
+                                     std::move(tys),
+                                     std::unique_ptr<Expr>(expr),
+                                     attrs,
+                                     std::move(info),
+                                     std::move(errtok));
 }
 
 std::unique_ptr<StmtExpr>
@@ -707,7 +713,7 @@ Parser::parse_stmt_expr(Lexer &lexer) {
 
 std::unique_ptr<StmtBlock>
 Parser::parse_stmt_block(Lexer &lexer) {
-    (void)Parser::parse_expect(lexer, TokenType::Lbrace);
+    auto start = Parser::parse_expect(lexer, TokenType::Lbrace);
 
     std::vector<std::unique_ptr<Stmt>> stmts;
 
@@ -718,7 +724,7 @@ Parser::parse_stmt_block(Lexer &lexer) {
 
     (void)Parser::parse_expect(lexer, TokenType::Rbrace);
 
-    return std::make_unique<StmtBlock>(std::move(stmts));
+    return std::make_unique<StmtBlock>(std::move(stmts), std::move(start));
 }
 
 std::vector<std::pair<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>, uint32_t>>
@@ -752,7 +758,7 @@ parse_stmt_def_args(Lexer &lexer) {
 
 std::unique_ptr<StmtDef>
 Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
-    (void)parse_expect_keyword(lexer, COMMON_EARLKW_FN);
+    auto start = parse_expect_keyword(lexer, COMMON_EARLKW_FN);
 
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     std::optional<std::shared_ptr<__Type>> ty = {};
@@ -768,7 +774,8 @@ Parser::parse_stmt_def(Lexer &lexer, uint32_t attrs, std::vector<std::string> in
                                      std::move(ty),
                                      std::move(block),
                                      attrs,
-                                     std::move(info));
+                                     std::move(info),
+                                     std::move(start));
 }
 
 std::unique_ptr<StmtReturn>
@@ -785,15 +792,17 @@ parse_stmt_return(Lexer &lexer) {
 
 std::unique_ptr<StmtWhile>
 parse_stmt_while(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WHILE);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WHILE);
     Expr *expr = Parser::parse_expr(lexer, /*fail_on=*/'{');
     std::unique_ptr<StmtBlock> block = Parser::parse_stmt_block(lexer);
-    return std::make_unique<StmtWhile>(std::unique_ptr<Expr>(expr), std::move(block));
+    return std::make_unique<StmtWhile>(std::unique_ptr<Expr>(expr),
+                                       std::move(block),
+                                       std::move(start));
 }
 
 std::unique_ptr<StmtForeach>
 parse_stmt_foreach(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOREACH);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOREACH);
     uint32_t attrs = gather_attrs(lexer);
     auto enumerators = parse_comma_sep_idents_as_toks(lexer);
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
@@ -802,12 +811,13 @@ parse_stmt_foreach(Lexer &lexer) {
     return std::make_unique<StmtForeach>(std::move(enumerators),
                                          std::unique_ptr<Expr>(expr),
                                          std::move(block),
-                                         attrs);
+                                         attrs,
+                                         std::move(start));
 }
 
 std::unique_ptr<StmtFor>
 parse_stmt_for(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_FOR);
 
     std::shared_ptr<Token> enumerator = Parser::parse_expect(lexer, TokenType::Ident);
 
@@ -822,12 +832,13 @@ parse_stmt_for(Lexer &lexer) {
     return std::make_unique<StmtFor>(std::move(enumerator),
                                      std::unique_ptr<Expr>(start_expr),
                                      std::unique_ptr<Expr>(end_expr),
-                                     std::move(block));
+                                     std::move(block),
+                                     std::move(start));
 }
 
 std::unique_ptr<Stmt>
 parse_stmt_import(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IMPORT);
     auto fp = Parser::parse_expr(lexer);
 
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
@@ -848,7 +859,10 @@ parse_stmt_import(Lexer &lexer) {
         as = Parser::parse_expect(lexer, TokenType::Ident);
     }
 
-    return std::make_unique<StmtImport>(std::shared_ptr<Expr>(fp), std::move(depth), std::move(as));
+    return std::make_unique<StmtImport>(std::shared_ptr<Expr>(fp),
+                                        std::move(depth),
+                                        std::move(as),
+                                        std::move(start));
 }
 
 std::unique_ptr<Stmt>
@@ -892,7 +906,7 @@ parse_stmt_class_constructor_arguments(Lexer &lexer) {
 
 std::unique_ptr<StmtClass>
 parse_stmt_class(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_CLASS);
 
     std::shared_ptr<Token> class_id = Parser::parse_expect(lexer, TokenType::Ident);
 
@@ -947,7 +961,8 @@ parse_stmt_class(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
                                        std::move(constructor_args),
                                        std::move(members),
                                        std::move(methods),
-                                       std::move(info));
+                                       std::move(info),
+                                       std::move(start));
 }
 
 static std::unique_ptr<StmtMatch::Branch>
@@ -986,7 +1001,7 @@ parse_branches(Lexer &lexer) {
 
 std::unique_ptr<StmtMatch>
 parse_stmt_match(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MATCH);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_MATCH);
 
     // The expression to match against
     Expr *expr = Parser::parse_expr(lexer, /*fail_on=*/'{');
@@ -998,7 +1013,9 @@ parse_stmt_match(Lexer &lexer) {
 
     (void)Parser::parse_expect(lexer, TokenType::Rbrace);
 
-    return std::make_unique<StmtMatch>(std::unique_ptr<Expr>(expr), std::move(branches));
+    return std::make_unique<StmtMatch>(std::unique_ptr<Expr>(expr),
+                                       std::move(branches),
+                                       std::move(start));
 }
 
 std::unique_ptr<StmtBreak>
@@ -1017,7 +1034,7 @@ parse_stmt_continue(Lexer &lexer) {
 
 std::unique_ptr<StmtEnum>
 parse_stmt_enum(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_ENUM);
     std::shared_ptr<Token> id = Parser::parse_expect(lexer, TokenType::Ident);
     std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems = {};
     Parser::parse_expect(lexer, TokenType::Lbrace);
@@ -1040,7 +1057,11 @@ parse_stmt_enum(Lexer &lexer, uint32_t attrs, std::vector<std::string> info) {
             break;
         }
     }
-    return std::make_unique<StmtEnum>(std::move(id), std::move(elems), attrs, std::move(info));
+    return std::make_unique<StmtEnum>(std::move(id),
+                                      std::move(elems),
+                                      attrs,
+                                      std::move(info),
+                                      std::move(start));
 }
 
 static std::unique_ptr<StmtLoop>
@@ -1067,7 +1088,7 @@ parse_stmt_multiline_bash(Lexer &lexer) {
 
 static std::unique_ptr<StmtUse>
 parse_stmt_use(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_USE);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_USE);
     auto fp = Parser::parse_expr(lexer);
 
     (void)Parser::parse_expect(lexer, TokenType::Semicolon);
@@ -1080,14 +1101,16 @@ parse_stmt_use(Lexer &lexer) {
         as = Parser::parse_expect(lexer, TokenType::Ident);
     }
 
-    return std::make_unique<StmtUse>(std::unique_ptr<Expr>(fp), std::move(as));
+    return std::make_unique<StmtUse>(std::unique_ptr<Expr>(fp),
+                                     std::move(as),
+                                     std::move(start));
 }
 
 static std::unique_ptr<StmtExec>
 parse_stmt_exec(Lexer &lexer) {
-    (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_EXEC);
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_EXEC);
     auto id = Parser::parse_expect(lexer, TokenType::Ident);
-    return std::make_unique<StmtExec>(std::move(id));
+    return std::make_unique<StmtExec>(std::move(id), std::move(start));
 }
 
 static bool
@@ -1124,7 +1147,7 @@ parse_stmt_pipe(Lexer &lexer,
 
 static std::unique_ptr<StmtWith>
 parst_stmt_with(Lexer &lexer) {
-    (void)lexer.discard(); // with
+    auto start = Parser::parse_expect_keyword(lexer, COMMON_EARLKW_WITH);
 
     std::vector<std::shared_ptr<Token>> ids = {};
     std::vector<std::unique_ptr<Expr>> exprs = {};
@@ -1141,7 +1164,10 @@ parst_stmt_with(Lexer &lexer) {
     }
 
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
-    return std::make_unique<StmtWith>(std::move(ids), std::move(exprs), Parser::parse_stmt(lexer));
+    return std::make_unique<StmtWith>(std::move(ids),
+                                      std::move(exprs),
+                                      Parser::parse_stmt(lexer),
+                                      std::move(start));
 }
 
 std::unique_ptr<Stmt>

@@ -30,7 +30,9 @@
 StmtMut::StmtMut(std::unique_ptr<Expr> left,
                  std::unique_ptr<Expr> right,
                  std::shared_ptr<Token> equals)
-    : m_left(std::move(left)), m_right(std::move(right)), m_equals(equals) {}
+    : m_left(std::move(left)),
+      m_right(std::move(right)),
+      m_equals(equals) {}
 
 StmtType
 StmtMut::stmt_type() const {
@@ -39,5 +41,5 @@ StmtMut::stmt_type() const {
 
 size_t
 StmtMut::get_lineno() const {
-    assert(false);
+    return m_left->get_lineno();
 }

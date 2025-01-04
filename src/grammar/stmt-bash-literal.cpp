@@ -36,5 +36,5 @@ StmtType StmtBashLiteral::stmt_type() const {
 
 size_t
 StmtBashLiteral::get_lineno() const {
-    assert(false);
+    return m_expr->get_lineno();
 }

@@ -32,9 +32,10 @@ StmtClass::StmtClass(std::shared_ptr<Token> id,
                      std::vector<std::pair<std::shared_ptr<Token>, std::optional<std::shared_ptr<__Type>>>> constructor_args,
                      std::vector<std::unique_ptr<StmtLet>> members,
                      std::vector<std::unique_ptr<StmtDef>> methods,
-                     std::vector<std::string> info)
+                     std::vector<std::string> info,
+                     std::shared_ptr<Token> tok)
     : m_id(id), m_attrs(attrs), m_constructor_args(std::move(constructor_args)),
-      m_members(std::move(members)), m_methods(std::move(methods)), m_info(std::move(info)) {}
+      m_members(std::move(members)), m_methods(std::move(methods)), m_info(std::move(info)), m_tok(std::move(tok)) {}
 
 StmtType
 StmtClass::stmt_type() const {
@@ -43,5 +44,5 @@ StmtClass::stmt_type() const {
 
 size_t
 StmtClass::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

@@ -37,5 +37,5 @@ ExprUnary::get_type() const {
 
 size_t
 ExprUnary::get_lineno() const {
-    assert(false);
+    return m_op->m_col;
 }

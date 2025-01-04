@@ -30,8 +30,9 @@
 
 StmtImport::StmtImport(std::shared_ptr<Expr> fp,
                        std::optional<std::shared_ptr<Token>> depth,
-                       std::optional<std::shared_ptr<Token>> as)
-    : m_fp(fp), m_depth(depth), m_as(as) {
+                       std::optional<std::shared_ptr<Token>> as,
+                       std::shared_ptr<Token> tok)
+    : m_fp(fp), m_depth(depth), m_as(as), m_tok(std::move(tok)) {
     // __m_depth = m_depth->lexeme() == COMMON_EARLKW_ALMOST ? COMMON_DEPTH_ALMOST : COMMON_DEPTH_FULL;
     if (!m_depth.has_value())
         __m_depth = COMMON_DEPTH_FULL;
@@ -48,5 +49,5 @@ StmtImport::stmt_type() const {
 
 size_t
 StmtImport::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

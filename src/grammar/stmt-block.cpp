@@ -27,7 +27,8 @@
 
 #include "ast.hpp"
 
-StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts) : m_stmts(std::move(stmts)) {}
+StmtBlock::StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts, std::shared_ptr<Token> tok)
+    : m_stmts(std::move(stmts)), m_tok(std::move(tok)) {}
 
 StmtType
 StmtBlock::stmt_type() const {
@@ -36,5 +37,5 @@ StmtBlock::stmt_type() const {
 
 size_t
 StmtBlock::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

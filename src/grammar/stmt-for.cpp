@@ -30,11 +30,13 @@
 StmtFor::StmtFor(std::shared_ptr<Token> enumerator,
                  std::unique_ptr<Expr> start,
                  std::unique_ptr<Expr> end,
-                 std::unique_ptr<StmtBlock> block)
+                 std::unique_ptr<StmtBlock> block,
+                 std::shared_ptr<Token> tok)
     : m_enumerator(enumerator),
       m_start(std::move(start)),
       m_end(std::move(end)),
-      m_block(std::move(block)) {}
+      m_block(std::move(block)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtFor::stmt_type() const {
@@ -43,6 +45,6 @@ StmtFor::stmt_type() const {
 
 size_t
 StmtFor::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }
 

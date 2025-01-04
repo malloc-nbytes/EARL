@@ -34,10 +34,9 @@
  */
 
 static std::string __internal_cwd = "";
-static std::vector<std::string> breakpoints = {};
 
+extern std::vector<std::string> breakpoints;
 extern std::vector<std::string> earl_argv;
-
 extern uint32_t flags;
 
 #define __WITHOUT_STDLIB 1 << 0

@@ -27,8 +27,10 @@
 
 #include "ast.hpp"
 
-StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block)
-    : m_expr(std::move(expr)), m_block(std::move(block)) {}
+StmtWhile::StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block, std::shared_ptr<Token> tok)
+    : m_expr(std::move(expr)),
+      m_block(std::move(block)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtWhile::stmt_type() const {
@@ -37,5 +39,5 @@ StmtWhile::stmt_type() const {
 
 size_t
 StmtWhile::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

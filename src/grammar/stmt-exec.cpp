@@ -27,8 +27,8 @@
 
 #include "ast.hpp"
 
-StmtExec::StmtExec(std::shared_ptr<Token> ident)
-    : m_ident(std::move(ident)) {}
+StmtExec::StmtExec(std::shared_ptr<Token> ident, std::shared_ptr<Token> tok)
+    : m_ident(std::move(ident)), m_tok(std::move(tok)) {}
 
 StmtType
 StmtExec::stmt_type() const {
@@ -37,5 +37,5 @@ StmtExec::stmt_type() const {
 
 size_t
 StmtExec::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

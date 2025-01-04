@@ -36,5 +36,5 @@ StmtMod::stmt_type() const {
 
 size_t
 StmtMod::get_lineno() const {
-    assert(false);
+    return m_id->m_col;
 }

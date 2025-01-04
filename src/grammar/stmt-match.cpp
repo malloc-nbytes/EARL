@@ -30,10 +30,16 @@
 StmtMatch::Branch::Branch(std::vector<std::unique_ptr<Expr>> expr,
                           std::optional<std::unique_ptr<Expr>> when,
                           std::unique_ptr<StmtBlock> block)
-    : m_expr(std::move(expr)), m_when(std::move(when)), m_block(std::move(block)) {}
+    : m_expr(std::move(expr)),
+      m_when(std::move(when)),
+      m_block(std::move(block)) {}
 
-StmtMatch::StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<StmtMatch::Branch>> branches)
-    : m_expr(std::move(expr)), m_branches(std::move(branches)) {}
+StmtMatch::StmtMatch(std::unique_ptr<Expr> expr,
+                     std::vector<std::unique_ptr<StmtMatch::Branch>> branches,
+                     std::shared_ptr<Token> tok)
+    : m_expr(std::move(expr)),
+      m_branches(std::move(branches)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtMatch::stmt_type() const {
@@ -42,5 +48,5 @@ StmtMatch::stmt_type() const {
 
 size_t
 StmtMatch::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

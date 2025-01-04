@@ -45,5 +45,5 @@ ExprCase::get_term_type() const {
 
 size_t
 ExprCase::get_lineno() const {
-    assert(false);
+    return m_errtok->m_col;
 }

@@ -36,5 +36,5 @@ StmtReturn::stmt_type() const {
 
 size_t
 StmtReturn::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

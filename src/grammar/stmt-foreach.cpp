@@ -30,11 +30,13 @@
 StmtForeach::StmtForeach(std::vector<std::shared_ptr<Token>> enumerators,
                          std::unique_ptr<Expr> expr,
                          std::unique_ptr<StmtBlock> block,
-                         uint32_t attrs)
+                         uint32_t attrs,
+                         std::shared_ptr<Token> tok)
     : m_enumerators(enumerators),
       m_expr(std::move(expr)),
       m_block(std::move(block)),
-      m_attrs(attrs) {}
+      m_attrs(attrs),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtForeach::stmt_type() const {
@@ -43,5 +45,5 @@ StmtForeach::stmt_type() const {
 
 size_t
 StmtForeach::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

@@ -29,8 +29,12 @@
 
 StmtIf::StmtIf(std::unique_ptr<Expr> expr,
                std::unique_ptr<StmtBlock> block,
-               std::optional<std::unique_ptr<StmtBlock>> else_)
-    : m_expr(std::move(expr)), m_block(std::move(block)), m_else(std::move(else_)) {}
+               std::optional<std::unique_ptr<StmtBlock>> else_,
+               std::shared_ptr<Token> tok)
+    : m_expr(std::move(expr)),
+      m_block(std::move(block)),
+      m_else(std::move(else_)),
+      m_tok(std::move(tok)) {}
 
 StmtType
 StmtIf::stmt_type() const {
@@ -39,6 +43,6 @@ StmtIf::stmt_type() const {
 
 size_t
 StmtIf::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }
 

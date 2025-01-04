@@ -30,8 +30,9 @@
 StmtEnum::StmtEnum(std::shared_ptr<Token> id,
                    std::vector<std::pair<std::shared_ptr<Token>, std::unique_ptr<Expr>>> elems,
                    uint32_t attrs,
-                   std::vector<std::string> info)
-    : m_id(std::move(id)), m_elems(std::move(elems)), m_attrs(attrs), m_info(std::move(info)) {}
+                   std::vector<std::string> info,
+                   std::shared_ptr<Token> tok)
+    : m_id(std::move(id)), m_elems(std::move(elems)), m_attrs(attrs), m_info(std::move(info)), m_tok(std::move(tok)) {}
 
 StmtType
 StmtEnum::stmt_type() const {
@@ -40,5 +41,5 @@ StmtEnum::stmt_type() const {
 
 size_t
 StmtEnum::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }

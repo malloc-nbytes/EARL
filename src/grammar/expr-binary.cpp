@@ -37,6 +37,6 @@ ExprBinary::get_type() const {
 
 size_t
 ExprBinary::get_lineno() const {
-    assert(false);
+    return m_lhs->get_lineno();
 }
 

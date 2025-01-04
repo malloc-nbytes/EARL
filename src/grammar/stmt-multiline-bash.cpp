@@ -36,6 +36,6 @@ StmtMultilineBash::stmt_type() const {
 
 size_t
 StmtMultilineBash::get_lineno() const {
-    assert(false);
+    return m_sh->m_col;
 }
 

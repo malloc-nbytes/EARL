@@ -46,6 +46,9 @@ std::vector<std::string> watch_files = {};
 // --one-shot resources
 std::string one_shot_code = "";
 
+// --debug resources
+std::vector<std::string> breakpoints = {};
+
 // --repl-theme resources
 std::vector<std::string> AVAILABLE_REPL_THEMES = COMMON_EARL_REPL_THEME_ASCPL;
 std::string REPL_THEME = COMMON_EARL_REPL_THEME_DEFAULT;

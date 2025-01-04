@@ -42,5 +42,5 @@ ExprTuple::get_term_type() const {
 
 size_t
 ExprTuple::get_lineno() const {
-    assert(false);
+    return m_tok->m_col;
 }
