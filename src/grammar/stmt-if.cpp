@@ -37,3 +37,8 @@ StmtIf::stmt_type() const {
     return StmtType::If;
 }
 
+size_t
+StmtIf::get_lineno() const {
+    assert(false);
+}
+

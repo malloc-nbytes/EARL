@@ -39,3 +39,8 @@ ExprTermType
 ExprArrayAccess::get_term_type() const {
     return ExprTermType::Array_Access;
 }
+
+size_t
+ExprArrayAccess::get_lineno() const {
+    assert(false);
+}

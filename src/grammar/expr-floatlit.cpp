@@ -39,3 +39,7 @@ ExprFloatLit::get_term_type() const {
     return ExprTermType::Float_Literal;
 }
 
+size_t
+ExprFloatLit::get_lineno() const {
+    assert(false);
+}

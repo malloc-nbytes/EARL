@@ -42,3 +42,8 @@ ExprFuncCall::get_term_type() const {
     return ExprTermType::Func_Call;
 }
 
+size_t
+ExprFuncCall::get_lineno() const {
+    assert(false);
+}
+

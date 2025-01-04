@@ -41,3 +41,8 @@ ExprTermType
 ExprGet::get_term_type() const {
     return ExprTermType::Get;
 }
+
+size_t
+ExprGet::get_lineno() const {
+    assert(false);
+}

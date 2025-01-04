@@ -2823,6 +2823,14 @@ eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
     return res;
 }
 
+// static bool
+// is_number(const std::string &n) {
+//     for (size_t i = 0; i < n.size(); ++i)
+//         if (!std::isdigit(n[i]))
+//             return false;
+//     return true;
+// }
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {

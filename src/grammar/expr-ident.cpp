@@ -39,3 +39,7 @@ ExprIdent::get_term_type() const {
     return ExprTermType::Ident;
 }
 
+size_t
+ExprIdent::get_lineno() const {
+    assert(false);
+}

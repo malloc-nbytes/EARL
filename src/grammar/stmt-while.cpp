@@ -34,3 +34,8 @@ StmtType
 StmtWhile::stmt_type() const {
     return StmtType::While;
 }
+
+size_t
+StmtWhile::get_lineno() const {
+    assert(false);
+}

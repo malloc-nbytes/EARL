@@ -39,3 +39,8 @@ ExprTermType
 ExprTuple::get_term_type() const {
     return ExprTermType::Tuple;
 }
+
+size_t
+ExprTuple::get_lineno() const {
+    assert(false);
+}

@@ -173,6 +173,7 @@ usage(void) {
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
+    std::cerr << "            --debug  . . . . . . . . . . . . . Run in debug mode" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
     std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
@@ -417,6 +418,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     }
     else if (arg == COMMON_EARL2ARG_PORTABLE)
         show_is_portable();
+    else if (arg == COMMON_EARL2ARG_DEBUG)
+        flags |= __DEBUG;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -605,6 +608,16 @@ do_one_shot(std::string &src,
     }
 }
 
+void
+launch_repl(void) {
+    assert_repl_theme_valid();
+    flags |= __REPL;
+    earl_argv.push_back("EARL-REPLv" VERSION);
+    std::cout << "EARL REPL v" << VERSION << '\n';
+    std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
+    repl::run(include_dirs, scripts);
+}
+
 int
 main(int argc, char **argv) {
     ++argv; --argc;
@@ -616,6 +629,10 @@ main(int argc, char **argv) {
     handle_hidden_file();
     assert_repl_theme_valid();
     handlecli(argc, argv);
+
+    if ((flags & __DEBUG) != 0) {
+        launch_repl();
+    }
 
     if ((flags & __WATCH) != 0) {
         if (watch_files.size() == 0) {
@@ -680,12 +697,7 @@ main(int argc, char **argv) {
         } while ((flags & __WATCH) != 0);
     }
     else {
-        assert_repl_theme_valid();
-        flags |= __REPL;
-        earl_argv.push_back("EARL-REPLv" VERSION);
-        std::cout << "EARL REPL v" << VERSION << '\n';
-        std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
-        repl::run(include_dirs);
+        launch_repl();
     }
 
     return 0;

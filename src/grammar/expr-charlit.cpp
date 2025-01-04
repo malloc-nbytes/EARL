@@ -38,3 +38,8 @@ ExprTermType
 ExprCharLit::get_term_type() const {
     return ExprTermType::Char_Literal;
 }
+
+size_t
+ExprCharLit::get_lineno() const {
+    assert(false);
+}

@@ -34,3 +34,9 @@ ExprType
 ExprBinary::get_type() const {
     return ExprType::Binary;
 }
+
+size_t
+ExprBinary::get_lineno() const {
+    assert(false);
+}
+

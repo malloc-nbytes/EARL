@@ -31,7 +31,12 @@
 StmtLoop::StmtLoop(std::shared_ptr<Token> tok, std::unique_ptr<StmtBlock> block)
     : m_tok(tok), m_block(std::move(block)) {}
 
-StmtType StmtLoop::stmt_type() const {
+StmtType
+StmtLoop::stmt_type() const {
     return StmtType::Loop;
 }
 
+size_t
+StmtLoop::get_lineno() const {
+    assert(false);
+}

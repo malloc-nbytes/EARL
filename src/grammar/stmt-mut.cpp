@@ -37,3 +37,7 @@ StmtMut::stmt_type() const {
     return StmtType::Mut;
 }
 
+size_t
+StmtMut::get_lineno() const {
+    assert(false);
+}

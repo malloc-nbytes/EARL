@@ -41,3 +41,8 @@ ExprTermType
 ExprModAccess::get_term_type() const {
     return ExprTermType::Mod_Access;
 }
+
+size_t
+ExprModAccess::get_lineno() const {
+    assert(false);
+}

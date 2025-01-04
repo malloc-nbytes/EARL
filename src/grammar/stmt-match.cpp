@@ -39,3 +39,8 @@ StmtType
 StmtMatch::stmt_type() const {
     return StmtType::Match;
 }
+
+size_t
+StmtMatch::get_lineno() const {
+    assert(false);
+}

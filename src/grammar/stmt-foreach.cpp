@@ -41,3 +41,7 @@ StmtForeach::stmt_type() const {
     return StmtType::Foreach;
 }
 
+size_t
+StmtForeach::get_lineno() const {
+    assert(false);
+}

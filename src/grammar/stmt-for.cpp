@@ -40,3 +40,9 @@ StmtType
 StmtFor::stmt_type() const {
     return StmtType::For;
 }
+
+size_t
+StmtFor::get_lineno() const {
+    assert(false);
+}
+

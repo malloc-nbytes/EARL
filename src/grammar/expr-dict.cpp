@@ -34,6 +34,12 @@ ExprType ExprDict::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprDict::get_term_type() const {
+ExprTermType
+ExprDict::get_term_type() const {
     return ExprTermType::Dict;
+}
+
+size_t
+ExprDict::get_lineno() const {
+    assert(false);
 }

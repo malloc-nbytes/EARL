@@ -34,3 +34,8 @@ ExprType
 ExprUnary::get_type() const {
     return ExprType::Unary;
 }
+
+size_t
+ExprUnary::get_lineno() const {
+    assert(false);
+}

@@ -35,3 +35,8 @@ StmtType
 StmtWith::stmt_type() const {
     return StmtType::With;
 }
+
+size_t
+StmtWith::get_lineno() const {
+    assert(false);
+}

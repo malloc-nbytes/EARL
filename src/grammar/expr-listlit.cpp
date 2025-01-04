@@ -39,3 +39,8 @@ ExprTermType
 ExprListLit::get_term_type() const {
     return ExprTermType::List_Literal;
 }
+
+size_t
+ExprListLit::get_lineno() const {
+    assert(false);
+}

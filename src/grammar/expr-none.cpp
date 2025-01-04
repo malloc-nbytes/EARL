@@ -38,3 +38,8 @@ ExprTermType
 ExprNone::get_term_type() const {
     return ExprTermType::None;
 }
+
+size_t
+ExprNone::get_lineno() const {
+    assert(false);
+}

@@ -33,3 +33,8 @@ StmtType
 StmtBreak::stmt_type() const {
     return StmtType::Break;
 }
+
+size_t
+StmtBreak::get_lineno() const {
+    assert(false);
+}

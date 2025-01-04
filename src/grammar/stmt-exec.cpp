@@ -30,6 +30,12 @@
 StmtExec::StmtExec(std::shared_ptr<Token> ident)
     : m_ident(std::move(ident)) {}
 
-StmtType StmtExec::stmt_type() const {
+StmtType
+StmtExec::stmt_type() const {
     return StmtType::Exec;
+}
+
+size_t
+StmtExec::get_lineno() const {
+    assert(false);
 }

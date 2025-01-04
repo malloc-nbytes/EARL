@@ -33,3 +33,8 @@ StmtBashLiteral::StmtBashLiteral(std::unique_ptr<Expr> expr)
 StmtType StmtBashLiteral::stmt_type() const {
     return StmtType::Bash_Literal;
 }
+
+size_t
+StmtBashLiteral::get_lineno() const {
+    assert(false);
+}

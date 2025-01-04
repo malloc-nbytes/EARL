@@ -45,3 +45,8 @@ StmtType
 StmtImport::stmt_type() const {
     return StmtType::Import;
 }
+
+size_t
+StmtImport::get_lineno() const {
+    assert(false);
+}

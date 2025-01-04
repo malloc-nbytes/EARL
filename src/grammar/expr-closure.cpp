@@ -41,3 +41,8 @@ ExprTermType
 ExprClosure::get_term_type() const {
     return ExprTermType::Closure;
 }
+
+size_t
+ExprClosure::get_lineno() const {
+    assert(false);
+}

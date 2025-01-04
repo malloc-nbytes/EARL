@@ -37,3 +37,8 @@ StmtType
 StmtEnum::stmt_type() const {
     return StmtType::Enum;
 }
+
+size_t
+StmtEnum::get_lineno() const {
+    assert(false);
+}

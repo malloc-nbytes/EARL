@@ -34,3 +34,7 @@ StmtMod::stmt_type() const {
     return StmtType::Mod;
 }
 
+size_t
+StmtMod::get_lineno() const {
+    assert(false);
+}

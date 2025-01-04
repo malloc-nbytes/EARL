@@ -38,3 +38,8 @@ ExprTermType
 ExprFStr::get_term_type() const {
     return ExprTermType::FStr;
 }
+
+size_t
+ExprFStr::get_lineno() const {
+    assert(false);
+}

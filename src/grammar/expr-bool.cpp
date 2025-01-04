@@ -40,3 +40,7 @@ ExprBool::get_term_type() const {
     return ExprTermType::Bool;
 }
 
+size_t
+ExprBool::get_lineno() const {
+    assert(false);
+}

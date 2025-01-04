@@ -43,3 +43,7 @@ StmtLet::stmt_type() const {
     return StmtType::Let;
 }
 
+size_t
+StmtLet::get_lineno() const {
+    assert(false);
+}

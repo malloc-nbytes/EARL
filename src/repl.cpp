@@ -63,8 +63,10 @@
 #define FUNCS ":funcs"
 #define RESET ":reset"
 #define AUTO ":auto"
+#define RUN ":run"
+#define BREAKPOINT ":b"
 
-#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO}
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT}
 
 static std::string REPL_HIST = "";
 
@@ -72,6 +74,8 @@ static size_t LINENO = 0;
 static std::vector<std::string> HIST = {};
 
 static repled::SS SS;
+
+static bool repl_debug_run = false;
 
 static void
 try_clear_repl_history() {
@@ -568,6 +572,19 @@ reset(std::shared_ptr<Ctx> &ctx) {
 }
 
 static void
+set_breakpoint(std::vector<std::string> &args) {
+    std::cout << args.size() << std::endl;
+    if (args.size() < 1) {
+        std::cout << repled::error_color();
+        std::cerr << "cannot set breakpoint with no identifier or line number" << std::endl;
+        noc();
+        return;
+    }
+    for (const auto &arg : args)
+        breakpoints.push_back(arg);
+}
+
+static void
 handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string> &lines, std::vector<std::string> &include_dirs, std::shared_ptr<Ctx> &ctx) {
     std::vector<std::string> lst = split_on_space(line);
     std::vector<std::string> args(lst.begin()+1, lst.end());
@@ -603,12 +620,18 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
         help();
     else if (lst[0] == AUTO)
         repled::show_prefix_trie();
+    else if (lst[0] == RUN) {
+        repl_debug_run = true;
+    }
+    else if (lst[0] == BREAKPOINT) {
+        set_breakpoint(args);
+    }
     else
         log("unknown command sequence `" + lst[0] + "`\n", repled::msg_color);
 }
 
 std::shared_ptr<Ctx>
-repl::run(std::vector<std::string> &include_dirs) {
+repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scripts) {
     try_clear_repl_history();
 
     repled::init(CMD_OPTION_ASCPL);
@@ -636,6 +659,8 @@ repl::run(std::vector<std::string> &include_dirs) {
             else if (line[0] == ':') {
                 repled::clearln(line.size());
                 handle_repl_arg(ri, line, lines, include_dirs, ctx);
+                if (((flags & __DEBUG) != 0) && repl_debug_run)
+                    break;
             }
             else {
                 if (line != "") {
@@ -651,9 +676,9 @@ repl::run(std::vector<std::string> &include_dirs) {
 
         if (lines.size() != 0)
             repled::clearln(lines.back().size());
-        else {
+        else
             std::cout << std::endl;
-        }
+
         repled::clearln(0, true);
 
         std::string combined = "";
@@ -667,7 +692,14 @@ repl::run(std::vector<std::string> &include_dirs) {
         std::unique_ptr<Lexer> lexer = nullptr;
 
         try {
-            lexer = lex_file(combined, "", keywords, types, comment);
+            if ((flags & __DEBUG) != 0) {
+                const char *fp = scripts[0].c_str();
+                const char *src = read_file(fp, include_dirs);
+                std::string src2 = std::string(src);
+                lexer = lex_file(src2, "", keywords, types, comment);
+            }
+            else
+                lexer = lex_file(combined, "", keywords, types, comment);
         }
         catch (const LexerException &e) {
             std::cerr << "Parser error: " << e.what() << std::endl;

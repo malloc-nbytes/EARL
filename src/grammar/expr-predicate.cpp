@@ -39,3 +39,8 @@ ExprTermType
 ExprPredicate::get_term_type() const {
     return ExprTermType::Predicate;
 }
+
+size_t
+ExprPredicate::get_lineno() const {
+    assert(false);
+}

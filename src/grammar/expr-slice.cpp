@@ -34,6 +34,12 @@ ExprType ExprSlice::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprSlice::get_term_type() const {
+ExprTermType
+ExprSlice::get_term_type() const {
     return ExprTermType::Slice;
+}
+
+size_t
+ExprSlice::get_lineno() const {
+    assert(false);
 }

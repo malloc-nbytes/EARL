@@ -35,4 +35,8 @@ StmtInfo::stmt_type() const {
     return StmtType::Info;
 }
 
+size_t
+StmtInfo::get_lineno() const {
+    assert(false);
+}
 

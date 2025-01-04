@@ -37,3 +37,8 @@ StmtType
 StmtPipe::stmt_type() const {
     return StmtType::Pipe;
 }
+
+size_t
+StmtPipe::get_lineno() const {
+    assert(false);
+}

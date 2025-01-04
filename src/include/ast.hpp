@@ -115,6 +115,7 @@ struct Expr {
     /// @brief The get expression type
     /// @returns The type of the expression
     virtual ExprType get_type() const = 0;
+    virtual size_t get_lineno() const = 0;
 };
 
 /// @brief The Expression Term class
@@ -133,6 +134,7 @@ struct ExprTuple : public ExprTerm {
     ExprTuple(std::vector<std::unique_ptr<Expr>> exprs, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprDict : public ExprTerm {
@@ -143,6 +145,7 @@ struct ExprDict : public ExprTerm {
              std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprArrayAccess : public ExprTerm {
@@ -153,6 +156,7 @@ struct ExprArrayAccess : public ExprTerm {
     ExprArrayAccess(std::unique_ptr<Expr> left, std::unique_ptr<Expr> expr, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Identifier class
@@ -163,6 +167,7 @@ struct ExprIdent : public ExprTerm {
     ExprIdent(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprGet : public ExprTerm {
@@ -175,6 +180,7 @@ struct ExprGet : public ExprTerm {
             std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprModAccess : public ExprTerm {
@@ -187,6 +193,7 @@ struct ExprModAccess : public ExprTerm {
                   std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprCase : public ExprTerm {
@@ -203,6 +210,7 @@ struct ExprCase : public ExprTerm {
     ExprCase(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Case>> cases);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprPredicate : public ExprTerm {
@@ -212,6 +220,7 @@ struct ExprPredicate : public ExprTerm {
     ExprPredicate(std::shared_ptr<Token> op, std::unique_ptr<Expr> rhs);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Integer Literal class
@@ -222,6 +231,7 @@ struct ExprIntLit : public ExprTerm {
     ExprIntLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Float Literal class
@@ -232,6 +242,7 @@ struct ExprFloatLit : public ExprTerm {
     ExprFloatLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression String Literal class
@@ -242,6 +253,7 @@ struct ExprStrLit : public ExprTerm {
     ExprStrLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprFStr : public ExprTerm {
@@ -250,6 +262,7 @@ struct ExprFStr : public ExprTerm {
     ExprFStr(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprCharLit : public ExprTerm {
@@ -258,6 +271,7 @@ struct ExprCharLit : public ExprTerm {
     ExprCharLit(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Bool class
@@ -268,6 +282,7 @@ struct ExprBool : public ExprTerm {
     ExprBool(std::shared_ptr<Token> tok, bool value);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression None class
@@ -277,6 +292,7 @@ struct ExprNone : public ExprTerm {
     ExprNone(std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprClosure : public ExprTerm {
@@ -289,6 +305,7 @@ struct ExprClosure : public ExprTerm {
                 std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Function Call class
@@ -306,6 +323,7 @@ struct ExprFuncCall : public ExprTerm {
     ExprFuncCall(std::unique_ptr<Expr> id, std::vector<std::unique_ptr<Expr>> params, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression List Literal class
@@ -317,6 +335,7 @@ struct ExprListLit : public ExprTerm {
     ExprListLit(std::vector<std::unique_ptr<Expr>> elems, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprRange : public ExprTerm {
@@ -328,6 +347,7 @@ struct ExprRange : public ExprTerm {
     ExprRange(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end, bool inclusive, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprSlice : public ExprTerm {
@@ -338,6 +358,7 @@ struct ExprSlice : public ExprTerm {
     ExprSlice(std::optional<std::unique_ptr<Expr>> start, std::optional<std::unique_ptr<Expr>> end, std::shared_ptr<Token> tok);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct ExprUnary : public Expr {
@@ -346,6 +367,7 @@ struct ExprUnary : public Expr {
 
     ExprUnary(std::shared_ptr<Token> op, std::unique_ptr<Expr> expr);
     ExprType get_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Expression Binary class
@@ -361,6 +383,7 @@ struct ExprBinary : public Expr {
 
     ExprBinary(std::unique_ptr<Expr> lhs, std::shared_ptr<Token> op, std::unique_ptr<Expr> rhs);
     ExprType get_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The base Statement class
@@ -370,6 +393,7 @@ struct Stmt {
     /// @brief Get the statement type
     /// @returns The type of the statement
     virtual StmtType stmt_type() const = 0;
+    virtual size_t get_lineno() const = 0;
 
     bool m_evald = false;
 };
@@ -378,24 +402,28 @@ struct StmtInfo : public Stmt {
     std::string m_info;
     StmtInfo(std::string info);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtBashLiteral : public Stmt {
     std::unique_ptr<Expr> m_expr;
     StmtBashLiteral(std::unique_ptr<Expr> expr);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtExec : public Stmt {
     std::shared_ptr<Token> m_ident;
     StmtExec(std::shared_ptr<Token> ident);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtMultilineBash : public Stmt {
     std::shared_ptr<Token> m_sh;
     StmtMultilineBash(std::shared_ptr<Token> sh);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Definition Class
@@ -423,6 +451,7 @@ struct StmtDef : public Stmt {
             std::vector<std::string> info);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Let class
@@ -445,6 +474,7 @@ struct StmtLet : public Stmt {
             uint32_t attrs,
             std::vector<std::string> info);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtWith : public Stmt {
@@ -454,6 +484,7 @@ struct StmtWith : public Stmt {
 
     StmtWith(std::vector<std::shared_ptr<Token>> ids, std::vector<std::unique_ptr<Expr>> exprs, std::unique_ptr<Stmt> stmt);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtPipe : public Stmt {
@@ -467,6 +498,7 @@ struct StmtPipe : public Stmt {
              uint32_t attrs,
              std::vector<std::string> info);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Block class
@@ -477,6 +509,7 @@ struct StmtBlock : public Stmt {
     StmtBlock(std::vector<std::unique_ptr<Stmt>> stmts);
     void add_stmt(std::unique_ptr<Stmt> stmt);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Mutation class
@@ -491,6 +524,7 @@ struct StmtMut : public Stmt {
 
     StmtMut(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right, std::shared_ptr<Token> m_equals);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Expression class
@@ -500,6 +534,7 @@ struct StmtExpr : public Stmt {
 
     StmtExpr(std::unique_ptr<Expr> expr);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement If class
@@ -518,6 +553,7 @@ struct StmtIf : public Stmt {
            std::optional<std::unique_ptr<StmtBlock>> else_);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Return class
@@ -528,6 +564,7 @@ struct StmtReturn : public Stmt {
 
     StmtReturn(std::optional<std::unique_ptr<Expr>> expr, std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement Break class
@@ -536,12 +573,14 @@ struct StmtBreak : public Stmt {
 
     StmtBreak(std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtContinue : public Stmt {
     std::shared_ptr<Token> m_tok;
     StmtContinue(std::shared_ptr<Token> tok);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement While class
@@ -554,6 +593,7 @@ struct StmtWhile : public Stmt {
 
     StmtWhile(std::unique_ptr<Expr> expr, std::unique_ptr<StmtBlock> block);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtLoop : public Stmt {
@@ -562,6 +602,7 @@ struct StmtLoop : public Stmt {
 
     StmtLoop(std::shared_ptr<Token> tok, std::unique_ptr<StmtBlock> block);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Statement For class
@@ -582,6 +623,7 @@ struct StmtForeach : public Stmt {
                 uint32_t attrs);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtFor : public Stmt {
@@ -603,6 +645,7 @@ struct StmtFor : public Stmt {
             std::unique_ptr<StmtBlock> block);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtImport : public Stmt {
@@ -617,6 +660,7 @@ struct StmtImport : public Stmt {
                std::optional<std::shared_ptr<Token>> as);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtUse : public Stmt {
@@ -625,6 +669,7 @@ struct StmtUse : public Stmt {
 
     StmtUse(std::unique_ptr<Expr> fp, std::optional<std::shared_ptr<Token>> as);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtMod : public Stmt {
@@ -632,6 +677,7 @@ struct StmtMod : public Stmt {
 
     StmtMod(std::shared_ptr<Token> id);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtClass : public Stmt {
@@ -653,6 +699,7 @@ struct StmtClass : public Stmt {
               std::vector<std::string> info);
 
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtMatch : public Stmt {
@@ -675,6 +722,7 @@ struct StmtMatch : public Stmt {
 
     StmtMatch(std::unique_ptr<Expr> expr, std::vector<std::unique_ptr<Branch>> branches);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 struct StmtEnum : public Stmt {
@@ -689,6 +737,7 @@ struct StmtEnum : public Stmt {
              uint32_t attrs,
              std::vector<std::string> info);
     StmtType stmt_type() const override;
+    size_t get_lineno() const override;
 };
 
 /// @brief The Program class. It is the starting point

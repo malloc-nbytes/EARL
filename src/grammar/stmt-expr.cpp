@@ -34,3 +34,7 @@ StmtExpr::stmt_type() const {
     return StmtType::Stmt_Expr;
 }
 
+size_t
+StmtExpr::get_lineno() const {
+    assert(false);
+}

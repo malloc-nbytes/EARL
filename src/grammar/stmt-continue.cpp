@@ -35,3 +35,8 @@ StmtContinue::stmt_type() const {
     return StmtType::Continue;
 }
 
+size_t
+StmtContinue::get_lineno() const {
+    assert(false);
+}
+

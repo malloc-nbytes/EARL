@@ -44,3 +44,8 @@ StmtType
 StmtDef::stmt_type() const {
     return StmtType::Def;
 }
+
+size_t
+StmtDef::get_lineno() const {
+    assert(false);
+}

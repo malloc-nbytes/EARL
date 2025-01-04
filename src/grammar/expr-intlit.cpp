@@ -39,3 +39,7 @@ ExprIntLit::get_term_type() const {
     return ExprTermType::Int_Literal;
 }
 
+size_t
+ExprIntLit::get_lineno() const {
+    assert(false);
+}

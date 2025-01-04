@@ -42,3 +42,8 @@ ExprTermType
 ExprCase::get_term_type() const {
     return ExprTermType::Case;
 }
+
+size_t
+ExprCase::get_lineno() const {
+    assert(false);
+}

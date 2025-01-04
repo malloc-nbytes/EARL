@@ -29,6 +29,13 @@
 
 StmtMultilineBash::StmtMultilineBash(std::shared_ptr<Token> sh) : m_sh(sh) {}
 
-StmtType StmtMultilineBash::stmt_type() const {
+StmtType
+StmtMultilineBash::stmt_type() const {
     return StmtType::Multiline_Bash;
 }
+
+size_t
+StmtMultilineBash::get_lineno() const {
+    assert(false);
+}
+

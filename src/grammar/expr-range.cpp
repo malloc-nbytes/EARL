@@ -34,6 +34,12 @@ ExprType ExprRange::get_type() const {
     return ExprType::Term;
 }
 
-ExprTermType ExprRange::get_term_type() const {
+ExprTermType
+ExprRange::get_term_type() const {
     return ExprTermType::Range;
+}
+
+size_t
+ExprRange::get_lineno() const {
+    assert(false);
 }
