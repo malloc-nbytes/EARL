@@ -66,8 +66,17 @@
 #define RUN ":run"
 #define BREAKPOINT ":b"
 #define STEP ":s"
+#define CONTINUE ":continue"
 
-#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT, STEP}
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT, STEP, CONTINUE}
+
+enum class DebugStatus {
+    None = 0,
+    Step,
+    Continue,
+};
+
+static DebugStatus debug_status = DebugStatus::None;
 
 static std::string REPL_HIST = "";
 
@@ -625,30 +634,32 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     }
     else if (lst[0] == BREAKPOINT)
         set_breakpoint(args);
+    else if (lst[0] == STEP)
+        debug_status = DebugStatus::Step;
+    else if (lst[0] == CONTINUE)
+        debug_status = DebugStatus::Continue;
     else
         log("unknown command sequence `" + lst[0] + "`\n", repled::msg_color);
 }
 
 void
 print_value(std::shared_ptr<earl::value::Obj> &val, std::shared_ptr<Ctx> &ctx) {
-    if (val) {
-        repled::clearln(0, true);
+    repled::clearln(0, true);
 
-        // Clear next line
-        std::cout << "\033[1E";
-        repled::clearln(0);
-        std::cout << "\033[A";
+    // Clear next line
+    std::cout << "\033[1E";
+    repled::clearln(0);
+    std::cout << "\033[A";
 
-        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-        std::cout << repled::stdout_color();
-        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
-        std::cout << " -> ";
-        std::cout << repled::stdout_type_color();
-        std::cout << earl::value::type_to_str(val->type())
-                  << std::string(std::string("[Enter to Evaluate]").size(), ' ')
-                  << std::endl;
-        noc();
-    }
+    std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+    std::cout << repled::stdout_color();
+    (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
+    std::cout << " -> ";
+    std::cout << repled::stdout_type_color();
+    std::cout << earl::value::type_to_str(val->type())
+              << std::string(std::string("[Enter to Evaluate]").size(), ' ')
+              << std::endl;
+    noc();
 }
 
 std::shared_ptr<Ctx>
@@ -740,7 +751,7 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
         wctx->add_repl_lexer(std::move(lexer));
         wctx->add_repl_program(std::move(program));
 
-        bool broke = false;
+        bool debug_breakpoint_hit = false;
         for (size_t i = 0; i < wctx->stmts_len(); ++i) {
             Stmt *stmt = wctx->stmt_at(i);
             if (!stmt->m_evald) {
@@ -748,19 +759,17 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
                     auto val = Interpreter::eval_stmt(stmt, ctx);
 
                     for (const auto &bp : breakpoints) {
-                        if (broke || (is_number(bp) && std::stoi(bp) == stmt->get_lineno())) {
-                            broke = true;
+                        if (debug_breakpoint_hit || (is_number(bp) && std::stoi(bp) == stmt->get_lineno())) {
+                            debug_breakpoint_hit = true;
                             stmt->dump();
 
                         debug:
                             auto inp = repled::getln(ri, ">>> ", HIST, false, SS);
 
-                            if (inp == ":s" || inp == "") {
+                            if (inp == "")
                                 goto step;
-                            }
-                            else if (inp.size() > 0 && inp[0] == ':') {
+                            else if (inp.size() > 0 && inp[0] == ':')
                                 handle_repl_arg(ri, inp, lines, include_dirs, ctx);
-                            }
                             else if (inp.size() > 0) {
                                 auto debug_lexer = lex_file(inp, "", keywords, types, comment);
                                 auto debug_program = Parser::parse_program(*debug_lexer.get(), "EARL-Builtin-REPLv" VERSION);
@@ -768,41 +777,39 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
                                 WorldCtx *debug_wctx = dynamic_cast<WorldCtx*>(debug_ctx.get());
                                 debug_wctx->add_repl_lexer(std::move(debug_lexer));
                                 debug_wctx->add_repl_program(std::move(debug_program));
-                                auto VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
-                                print_value(VAL, debug_ctx);
+                                std::shared_ptr<earl::value::Obj> VAL = nullptr;
+                                try {
+                                    VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
+                                }
+                                catch (InterpreterException &e) {
+                                    std::cerr << "[DEBUG] Interpreter error: " << e.what() << std::endl;
+                                    goto debug;
+                                }
+                                if (VAL)
+                                    print_value(VAL, debug_ctx);
                                 goto debug;
                             }
                             else {
-                                broke = false;
+                                debug_breakpoint_hit = false;
                                 goto not_step;
+                            }
+
+                            if (debug_status == DebugStatus::Step)
+                                goto step;
+                            if (debug_status == DebugStatus::Continue) {
+                                debug_breakpoint_hit = false;
                             }
                         }
                     }
 
-                    if (!broke)
+                    if (!debug_breakpoint_hit)
                         goto not_step;
                 step:
                     continue;
 
                 not_step:
-                    if (val) {
-                        repled::clearln(0, true);
-
-                        // Clear next line
-                        std::cout << "\033[1E";
-                        repled::clearln(0);
-                        std::cout << "\033[A";
-
-                        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
-                        std::cout << repled::stdout_color();
-                        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
-                        std::cout << " -> ";
-                        std::cout << repled::stdout_type_color();
-                        std::cout << earl::value::type_to_str(val->type())
-                                  << std::string(std::string("[Enter to Evaluate]").size(), ' ')
-                                  << std::endl;
-                        noc();
-                    }
+                    if (val)
+                        print_value(val, ctx);
                 }
                 catch (InterpreterException &e) {
                     std::cerr << "Interpreter error: " << e.what() << std::endl;
