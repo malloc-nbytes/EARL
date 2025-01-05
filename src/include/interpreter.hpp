@@ -88,6 +88,7 @@ namespace Interpreter {
     std::shared_ptr<earl::value::Obj> eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx);
     std::shared_ptr<earl::value::Obj> eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
     void typecheck(__Type *ty, earl::value::Obj *value, std::shared_ptr<Ctx> &ctx);
+    void run_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx);
 };
 
 #endif // INTERPRETER_H

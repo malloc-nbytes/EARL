@@ -65,8 +65,9 @@
 #define AUTO ":auto"
 #define RUN ":run"
 #define BREAKPOINT ":b"
+#define STEP ":s"
 
-#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT}
+#define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT, STEP}
 
 static std::string REPL_HIST = "";
 
@@ -622,11 +623,32 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == RUN) {
         repl_debug_run = true;
     }
-    else if (lst[0] == BREAKPOINT) {
+    else if (lst[0] == BREAKPOINT)
         set_breakpoint(args);
-    }
     else
         log("unknown command sequence `" + lst[0] + "`\n", repled::msg_color);
+}
+
+void
+print_value(std::shared_ptr<earl::value::Obj> &val, std::shared_ptr<Ctx> &ctx) {
+    if (val) {
+        repled::clearln(0, true);
+
+        // Clear next line
+        std::cout << "\033[1E";
+        repled::clearln(0);
+        std::cout << "\033[A";
+
+        std::vector<std::shared_ptr<earl::value::Obj>> params = {val};
+        std::cout << repled::stdout_color();
+        (void)Intrinsics::intrinsic_print(params, ctx, nullptr);
+        std::cout << " -> ";
+        std::cout << repled::stdout_type_color();
+        std::cout << earl::value::type_to_str(val->type())
+                  << std::string(std::string("[Enter to Evaluate]").size(), ' ')
+                  << std::endl;
+        noc();
+    }
 }
 
 std::shared_ptr<Ctx>
@@ -643,6 +665,8 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
 
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>();
     read_repl_history();
+
+    bool debug_first = false;
 
     while (true) {
         bool ready = false;
@@ -691,7 +715,8 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
         std::unique_ptr<Lexer> lexer = nullptr;
 
         try {
-            if ((flags & __DEBUG) != 0) {
+            if (!debug_first && ((flags & __DEBUG) != 0)) {
+                debug_first = true;
                 const char *fp = scripts[0].c_str();
                 const char *src = read_file(fp, include_dirs);
                 std::string src2 = std::string(src);
@@ -701,7 +726,7 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
                 lexer = lex_file(combined, "", keywords, types, comment);
         }
         catch (const LexerException &e) {
-            std::cerr << "Parser error: " << e.what() << std::endl;
+            std::cerr << "Lexer error: " << e.what() << std::endl;
             continue;
         }
         try {
@@ -715,11 +740,51 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
         wctx->add_repl_lexer(std::move(lexer));
         wctx->add_repl_program(std::move(program));
 
+        bool broke = false;
         for (size_t i = 0; i < wctx->stmts_len(); ++i) {
             Stmt *stmt = wctx->stmt_at(i);
             if (!stmt->m_evald) {
                 try {
                     auto val = Interpreter::eval_stmt(stmt, ctx);
+
+                    for (const auto &bp : breakpoints) {
+                        if (broke || (is_number(bp) && std::stoi(bp) == stmt->get_lineno())) {
+                            broke = true;
+                            stmt->dump();
+
+                        debug:
+                            auto inp = repled::getln(ri, ">>> ", HIST, false, SS);
+
+                            if (inp == ":s" || inp == "") {
+                                goto step;
+                            }
+                            else if (inp.size() > 0 && inp[0] == ':') {
+                                handle_repl_arg(ri, inp, lines, include_dirs, ctx);
+                            }
+                            else if (inp.size() > 0) {
+                                auto debug_lexer = lex_file(inp, "", keywords, types, comment);
+                                auto debug_program = Parser::parse_program(*debug_lexer.get(), "EARL-Builtin-REPLv" VERSION);
+                                std::shared_ptr<Ctx> debug_ctx = std::make_shared<WorldCtx>();
+                                WorldCtx *debug_wctx = dynamic_cast<WorldCtx*>(debug_ctx.get());
+                                debug_wctx->add_repl_lexer(std::move(debug_lexer));
+                                debug_wctx->add_repl_program(std::move(debug_program));
+                                auto VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
+                                print_value(VAL, debug_ctx);
+                                goto debug;
+                            }
+                            else {
+                                broke = false;
+                                goto not_step;
+                            }
+                        }
+                    }
+
+                    if (!broke)
+                        goto not_step;
+                step:
+                    continue;
+
+                not_step:
                     if (val) {
                         repled::clearln(0, true);
 

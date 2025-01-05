@@ -60,5 +60,6 @@
 
 int levenshtein_distance(std::string &s, std::string &t);
 std::string file_to_cxxstring(const std::string &path);
+bool is_number(const std::string &n);
 
 #endif // UTILS_H

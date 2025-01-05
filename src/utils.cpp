@@ -87,3 +87,11 @@ file_to_cxxstring(const std::string &filepath) {
     return buffer.str();
 }
 
+bool
+is_number(const std::string &n) {
+    for (size_t i = 0; i < n.size(); ++i)
+        if (!std::isdigit(n[i]))
+            return false;
+    return true;
+}
+

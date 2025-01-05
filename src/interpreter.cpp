@@ -2823,24 +2823,8 @@ eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
     return res;
 }
 
-static bool
-is_number(const std::string &n) {
-    for (size_t i = 0; i < n.size(); ++i)
-        if (!std::isdigit(n[i]))
-            return false;
-    return true;
-}
-
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
-    if ((flags && __DEBUG) != 0) {
-        for (const auto &bp : breakpoints) {
-            if (is_number(bp) && stmt->get_lineno() == std::stoi(bp)) {
-                stmt->dump();
-            }
-        }
-    }
-
     switch (stmt->stmt_type()) {
     case StmtType::Def:             return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
     case StmtType::Let:             return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);
@@ -2902,6 +2886,11 @@ import_cli_import_files(std::shared_ptr<Ctx> &ctx) {
     }
 }
 
+void
+Interpreter::run_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+    (void)Interpreter::eval_stmt(stmt, ctx);
+}
+
 std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
     const bool one_shot = (flags & __ONE_SHOT) != 0;
@@ -2950,3 +2939,4 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
 
     return ctx;
 }
+
