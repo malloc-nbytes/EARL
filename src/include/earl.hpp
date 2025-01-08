@@ -548,6 +548,7 @@ namespace earl {
             void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Tuple> rev(void);
             std::shared_ptr<Bool> contains(Obj *value);
+            std::shared_ptr<Obj> fold(Closure *closure, std::shared_ptr<Obj> acc, std::shared_ptr<Ctx> &ctx);
 
             // Implements
             Type type(void) const                                                         override;

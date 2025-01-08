@@ -37,4 +37,5 @@ Intrinsics::intrinsic_tuple_member_functions = {
     {"foreach", &Intrinsics::intrinsic_member_foreach},
     {"rev", &Intrinsics::intrinsic_member_rev},
     {"contains", &Intrinsics::intrinsic_member_contains},
+    {"fold", &Intrinsics::intrinsic_member_fold},
 };

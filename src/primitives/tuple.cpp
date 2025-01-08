@@ -120,6 +120,16 @@ Tuple::rev(void) {
     return tuple;
 }
 
+std::shared_ptr<Obj>
+Tuple::fold(Closure *closure, std::shared_ptr<Obj> acc, std::shared_ptr<Ctx> &ctx) {
+    for (size_t i = 0; i < m_values.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> values = {m_values.at(i), acc};
+        acc = closure->call(values, ctx);
+    }
+
+    return acc;
+}
+
 /*** OVERRIDES ***/
 Type
 Tuple::type(void) const {
