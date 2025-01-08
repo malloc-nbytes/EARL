@@ -42,6 +42,9 @@
 #include "common.hpp"
 #include "earl.hpp"
 #include "lexer.hpp"
+#include "repl.hpp"
+#include "repled.hpp"
+#include "config.h"
 
 using namespace Interpreter;
 
@@ -2825,6 +2828,44 @@ eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
+    std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
+    std::vector<std::string> types    = {};
+    std::string comment               = COMMON_EARL_COMMENT;
+
+    if ((flags & __DEBUG) != 0) {
+        for (const auto &bp : breakpoints) {
+            if (DEBUG_BREAKPOINT_HIT || is_number(bp) && std::stoi(bp) == stmt->get_lineno()) {
+                DEBUG_BREAKPOINT_HIT = true;
+                stmt->dump();
+
+            debug:
+                auto inp = repled::getln(ri, "> ", HIST, false, SS);
+                std::cout << std::endl;
+                if (inp == "")
+                    (void)0x0;
+                else {
+                    auto debug_lexer = lex_file(inp, "", keywords, types, comment);
+                    auto debug_program = Parser::parse_program(*debug_lexer.get(), "EARL-Builtin-REPLv" VERSION);
+                    std::shared_ptr<Ctx> debug_ctx = std::make_shared<WorldCtx>();
+                    WorldCtx *debug_wctx = dynamic_cast<WorldCtx*>(debug_ctx.get());
+                    debug_wctx->add_repl_lexer(std::move(debug_lexer));
+                    debug_wctx->add_repl_program(std::move(debug_program));
+                    std::shared_ptr<earl::value::Obj> VAL = nullptr;
+                    try {
+                        VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
+                    }
+                    catch (InterpreterException &e) {
+                        std::cerr << "[DEBUG] Interpreter error: " << e.what() << std::endl;
+                        goto debug;
+                    }
+                    if (VAL)
+                        repl::print_value(VAL, debug_ctx);
+                    goto debug;
+                }
+            }
+        }
+    }
+
     switch (stmt->stmt_type()) {
     case StmtType::Def:             return eval_stmt_def(dynamic_cast<StmtDef *>(stmt), ctx);
     case StmtType::Let:             return eval_stmt_let(dynamic_cast<StmtLet *>(stmt), ctx);

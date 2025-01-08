@@ -70,22 +70,14 @@
 
 #define CMD_OPTION_ASCPL {QUIT, CLEAR, SKIP, HELP, RM_ENTRY, EDIT_ENTRY, LIST_ENTRIES, IMPORT, DISCARD, VARS, FUNCS, RESET, AUTO, RUN, BREAKPOINT, STEP, CONTINUE}
 
-enum class DebugStatus {
-    None = 0,
-    Step,
-    Continue,
-};
-
-static DebugStatus debug_status = DebugStatus::None;
-
-static std::string REPL_HIST = "";
-
-static size_t LINENO = 0;
-static std::vector<std::string> HIST = {};
-
-static repled::SS SS;
-
-static bool repl_debug_run = false;
+DebugStatus debug_status = DebugStatus::None;
+std::string REPL_HIST = "";
+size_t LINENO = 0;
+std::vector<std::string> HIST = {};
+repled::SS SS;
+bool REPL_DEBUG_RUN = false;
+repled::RawInput ri;
+bool DEBUG_BREAKPOINT_HIT = false;
 
 static void
 try_clear_repl_history() {
@@ -630,7 +622,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == AUTO)
         repled::show_prefix_trie();
     else if (lst[0] == RUN) {
-        repl_debug_run = true;
+        REPL_DEBUG_RUN = true;
     }
     else if (lst[0] == BREAKPOINT)
         set_breakpoint(args);
@@ -643,7 +635,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
 }
 
 void
-print_value(std::shared_ptr<earl::value::Obj> &val, std::shared_ptr<Ctx> &ctx) {
+repl::print_value(std::shared_ptr<earl::value::Obj> &val, std::shared_ptr<Ctx> &ctx) {
     repled::clearln(0, true);
 
     // Clear next line
@@ -668,8 +660,6 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
 
     repled::init(CMD_OPTION_ASCPL);
 
-    repled::RawInput ri;
-
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
     std::vector<std::string> types    = {};
     std::string comment               = COMMON_EARL_COMMENT;
@@ -693,7 +683,7 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
             else if (line[0] == ':') {
                 repled::clearln(line.size());
                 handle_repl_arg(ri, line, lines, include_dirs, ctx);
-                if (((flags & __DEBUG) != 0) && repl_debug_run)
+                if (((flags & __DEBUG) != 0) && REPL_DEBUG_RUN)
                     break;
             }
             else {
@@ -758,56 +748,56 @@ repl::run(std::vector<std::string> &include_dirs, std::vector<std::string> &scri
                 try {
                     auto val = Interpreter::eval_stmt(stmt, ctx);
 
-                    for (const auto &bp : breakpoints) {
-                        if (debug_breakpoint_hit || (is_number(bp) && std::stoi(bp) == stmt->get_lineno())) {
-                            debug_breakpoint_hit = true;
-                            stmt->dump();
+                //     for (const auto &bp : breakpoints) {
+                //         if (debug_breakpoint_hit || (is_number(bp) && std::stoi(bp) == stmt->get_lineno())) {
+                //             debug_breakpoint_hit = true;
+                //             stmt->dump();
 
-                        debug:
-                            auto inp = repled::getln(ri, ">>> ", HIST, false, SS);
+                //         debug:
+                //             auto inp = repled::getln(ri, "[DEBUG]: ", HIST, false, SS);
 
-                            if (inp == "")
-                                goto step;
-                            else if (inp.size() > 0 && inp[0] == ':')
-                                handle_repl_arg(ri, inp, lines, include_dirs, ctx);
-                            else if (inp.size() > 0) {
-                                auto debug_lexer = lex_file(inp, "", keywords, types, comment);
-                                auto debug_program = Parser::parse_program(*debug_lexer.get(), "EARL-Builtin-REPLv" VERSION);
-                                std::shared_ptr<Ctx> debug_ctx = std::make_shared<WorldCtx>();
-                                WorldCtx *debug_wctx = dynamic_cast<WorldCtx*>(debug_ctx.get());
-                                debug_wctx->add_repl_lexer(std::move(debug_lexer));
-                                debug_wctx->add_repl_program(std::move(debug_program));
-                                std::shared_ptr<earl::value::Obj> VAL = nullptr;
-                                try {
-                                    VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
-                                }
-                                catch (InterpreterException &e) {
-                                    std::cerr << "[DEBUG] Interpreter error: " << e.what() << std::endl;
-                                    goto debug;
-                                }
-                                if (VAL)
-                                    print_value(VAL, debug_ctx);
-                                goto debug;
-                            }
-                            else {
-                                debug_breakpoint_hit = false;
-                                goto not_step;
-                            }
+                //             if (inp == "")
+                //                 goto step;
+                //             else if (inp.size() > 0 && inp[0] == ':')
+                //                 handle_repl_arg(ri, inp, lines, include_dirs, ctx);
+                //             else if (inp.size() > 0) {
+                //                 auto debug_lexer = lex_file(inp, "", keywords, types, comment);
+                //                 auto debug_program = Parser::parse_program(*debug_lexer.get(), "EARL-Builtin-REPLv" VERSION);
+                //                 std::shared_ptr<Ctx> debug_ctx = std::make_shared<WorldCtx>();
+                //                 WorldCtx *debug_wctx = dynamic_cast<WorldCtx*>(debug_ctx.get());
+                //                 debug_wctx->add_repl_lexer(std::move(debug_lexer));
+                //                 debug_wctx->add_repl_program(std::move(debug_program));
+                //                 std::shared_ptr<earl::value::Obj> VAL = nullptr;
+                //                 try {
+                //                     VAL = Interpreter::eval_stmt(debug_wctx->stmt_at(0), ctx);
+                //                 }
+                //                 catch (InterpreterException &e) {
+                //                     std::cerr << "[DEBUG] Interpreter error: " << e.what() << std::endl;
+                //                     goto debug;
+                //                 }
+                //                 if (VAL)
+                //                     print_value(VAL, debug_ctx);
+                //                 goto debug;
+                //             }
+                //             else {
+                //                 debug_breakpoint_hit = false;
+                //                 goto not_step;
+                //             }
 
-                            if (debug_status == DebugStatus::Step)
-                                goto step;
-                            if (debug_status == DebugStatus::Continue) {
-                                debug_breakpoint_hit = false;
-                            }
-                        }
-                    }
+                //             if (debug_status == DebugStatus::Step)
+                //                 goto step;
+                //             if (debug_status == DebugStatus::Continue) {
+                //                 debug_breakpoint_hit = false;
+                //             }
+                //         }
+                //     }
 
-                    if (!debug_breakpoint_hit)
-                        goto not_step;
-                step:
-                    continue;
+                //     if (!debug_breakpoint_hit)
+                //         goto not_step;
+                // step:
+                //     continue;
 
-                not_step:
+                // not_step:
                     if (val)
                         print_value(val, ctx);
                 }

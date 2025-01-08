@@ -210,8 +210,8 @@ Intrinsics::intrinsic_member_fold(std::shared_ptr<earl::value::Obj> obj,
                                    std::vector<std::shared_ptr<earl::value::Obj>> &values,
                                    std::shared_ptr<Ctx> &ctx,
                                    Expr *expr) {
-    __INTR_ARGS_MUSTBE_SIZE(values, 2, "foldr", expr);
-    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Closure, 1, "foldr", expr);
+    __INTR_ARGS_MUSTBE_SIZE(values, 2, "fold", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(values[0], earl::value::Type::Closure, 1, "fold", expr);
     auto cl = std::dynamic_pointer_cast<earl::value::Closure>(values[0]);
     return dynamic_cast<earl::value::List *>(obj.get())->fold(cl.get(), values[1], ctx);
 }
