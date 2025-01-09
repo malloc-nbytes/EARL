@@ -105,7 +105,7 @@ Str::value(void) {
 }
 
 std::shared_ptr<Char>
-Str::nth(Obj *idx, Expr *expr) {
+Str::nth(Obj *idx, const Expr *const expr) {
     if (idx->type() != Type::Int) {
         Err::err_wexpr(expr);
         std::string msg = "invalid index when accessing value in a str";

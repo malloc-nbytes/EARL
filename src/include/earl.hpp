@@ -604,7 +604,7 @@ namespace earl {
             const std::string &value_asref(void) const;
             std::vector<std::shared_ptr<Char>> value_as_earlchar(void);
             std::shared_ptr<Char> __get_elem(size_t idx);
-            std::shared_ptr<Char> nth(Obj *idx, Expr *expr);
+            std::shared_ptr<Char> nth(Obj *idx, const Expr *const expr);
             std::shared_ptr<List> split(Obj *delim, Expr *expr);
             std::shared_ptr<Str> substr(Obj *idx1, Obj *idx2, Expr *expr);
             void pop(Obj *idx, Expr *expr);
