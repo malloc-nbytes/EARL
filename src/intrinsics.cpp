@@ -126,6 +126,8 @@ Intrinsics::intrinsic_member_functions = {
     {"insert", &Intrinsics::intrinsic_member_insert},
     {"has_key", &Intrinsics::intrinsic_member_has_key},
     {"has_value", &Intrinsics::intrinsic_member_has_value},
+    // Bool
+    {"ifelse", &Intrinsics::intrinsic_member_ifelse},
     // Time
     {"readable", &Intrinsics::intrinsic_member_readable},
     {"years", &Intrinsics::intrinsic_member_years},
@@ -157,19 +159,19 @@ Intrinsics::is_member_intrinsic(const std::string &id, int ty) {
         return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
 
     switch (static_cast<earl::value::Type>(ty)) {
-    case earl::value::Type::Int: return Intrinsics::intrinsic_int_member_functions.find(id) != Intrinsics::intrinsic_int_member_functions.end();
-    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.find(id) != Intrinsics::intrinsic_char_member_functions.end();
-    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.find(id) != Intrinsics::intrinsic_str_member_functions.end();
-    case earl::value::Type::Bool: return false;
-    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.find(id) != Intrinsics::intrinsic_list_member_functions.end();
-    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
-    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.find(id) != Intrinsics::intrinsic_file_member_functions.end();
-    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.find(id) != Intrinsics::intrinsic_tuple_member_functions.end();
+    case earl::value::Type::Int:       return Intrinsics::intrinsic_int_member_functions.find(id)    != Intrinsics::intrinsic_int_member_functions.end();
+    case earl::value::Type::Char:      return Intrinsics::intrinsic_char_member_functions.find(id)   != Intrinsics::intrinsic_char_member_functions.end();
+    case earl::value::Type::Str:       return Intrinsics::intrinsic_str_member_functions.find(id)    != Intrinsics::intrinsic_str_member_functions.end();
+    case earl::value::Type::Bool:      return Intrinsics::intrinsic_bool_member_functions.find(id)   != Intrinsics::intrinsic_bool_member_functions.end();
+    case earl::value::Type::List:      return Intrinsics::intrinsic_list_member_functions.find(id)   != Intrinsics::intrinsic_list_member_functions.end();
+    case earl::value::Type::Option:    return Intrinsics::intrinsic_option_member_functions.find(id) != Intrinsics::intrinsic_option_member_functions.end();
+    case earl::value::Type::File:      return Intrinsics::intrinsic_file_member_functions.find(id)   != Intrinsics::intrinsic_file_member_functions.end();
+    case earl::value::Type::Tuple:     return Intrinsics::intrinsic_tuple_member_functions.find(id)  != Intrinsics::intrinsic_tuple_member_functions.end();
     case earl::value::Type::DictInt:
     case earl::value::Type::DictStr:
     case earl::value::Type::DictChar:
-    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.find(id) != Intrinsics::intrinsic_dict_member_functions.end();
-    case earl::value::Type::Time: return Intrinsics::intrinsic_time_member_functions.find(id) != Intrinsics::intrinsic_time_member_functions.end();
+    case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.find(id)   != Intrinsics::intrinsic_dict_member_functions.end();
+    case earl::value::Type::Time:      return Intrinsics::intrinsic_time_member_functions.find(id)   != Intrinsics::intrinsic_time_member_functions.end();
     default: return false;
     }
     return Intrinsics::intrinsic_member_functions.find(id) != Intrinsics::intrinsic_member_functions.end();
@@ -184,19 +186,19 @@ Intrinsics::call_member(const std::string &id,
                         Expr *expr) {
 
     switch (type) {
-    case earl::value::Type::Int: return Intrinsics::intrinsic_int_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Char: return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Str: return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Bool: assert(false);
-    case earl::value::Type::List: return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Option: return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::File: return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Tuple: return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Int:       return Intrinsics::intrinsic_int_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Char:      return Intrinsics::intrinsic_char_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Str:       return Intrinsics::intrinsic_str_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Bool:      return Intrinsics::intrinsic_bool_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::List:      return Intrinsics::intrinsic_list_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Option:    return Intrinsics::intrinsic_option_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::File:      return Intrinsics::intrinsic_file_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Tuple:     return Intrinsics::intrinsic_tuple_member_functions.at(id)(accessor, params, ctx, expr);
     case earl::value::Type::DictInt:
     case earl::value::Type::DictStr:
     case earl::value::Type::DictChar:
     case earl::value::Type::DictFloat: return Intrinsics::intrinsic_dict_member_functions.at(id)(accessor, params, ctx, expr);
-    case earl::value::Type::Time: return Intrinsics::intrinsic_time_member_functions.at(id)(accessor, params, ctx, expr);
+    case earl::value::Type::Time:      return Intrinsics::intrinsic_time_member_functions.at(id)(accessor, params, ctx, expr);
     default: assert(false);
     }
 }
@@ -937,8 +939,8 @@ Intrinsics::intrinsic_fprint(std::vector<std::shared_ptr<earl::value::Obj>> &par
                              std::shared_ptr<Ctx> &ctx,
                              Expr *expr) {
     (void)ctx;
-    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprintln", expr);
-    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprintln", expr);
+    __MEMBER_INTR_ARGS_MUSTNOT_BE_0(params, "fprint", expr);
+    __MEMBER_INTR_ARG_MUSTBE_TYPE_COMPAT_OR(params[0], earl::value::Type::Int, earl::value::Type::File, 1, "fprint", expr);
     std::ostream *stream = nullptr;
     if (params[0]->type() == earl::value::Type::Int) {
         auto *st = dynamic_cast<earl::value::Int *>(params[0].get());

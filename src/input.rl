@@ -1,3 +1,5 @@
 module Main
 
-println(0xFFF);
+let b = true;
+
+println(b.ifelse(1, 2));
