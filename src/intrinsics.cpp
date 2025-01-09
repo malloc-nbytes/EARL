@@ -107,6 +107,8 @@ Intrinsics::intrinsic_member_functions = {
     {"substr", &Intrinsics::intrinsic_member_substr},
     {"trim", &Intrinsics::intrinsic_member_trim},// UNIMPLEMENTED
     {"remove_lines", &Intrinsics::intrinsic_member_remove_lines},// UNIMPLEMENTED
+    {"startswith", &Intrinsics::intrinsic_member_startswith},
+    {"endswith", &Intrinsics::intrinsic_member_endswith},
     // File
     {"dump", &Intrinsics::intrinsic_member_dump},
     {"close", &Intrinsics::intrinsic_member_close},

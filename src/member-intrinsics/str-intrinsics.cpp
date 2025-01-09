@@ -42,6 +42,8 @@ Intrinsics::intrinsic_str_member_functions = {
     {"substr", &Intrinsics::intrinsic_member_substr},
     {"trim", &Intrinsics::intrinsic_member_trim},
     {"contains", &Intrinsics::intrinsic_member_contains},
+    {"startswith", &Intrinsics::intrinsic_member_startswith},
+    {"endswith", &Intrinsics::intrinsic_member_endswith},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -87,4 +89,24 @@ Intrinsics::intrinsic_member_remove_lines(std::shared_ptr<earl::value::Obj> obj,
     (void)unused;
     (void)ctx;
     UNIMPLEMENTED("Intrinsics::intrinsic_member_remove_lines");
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_startswith(std::shared_ptr<earl::value::Obj> obj,
+                                        std::vector<std::shared_ptr<earl::value::Obj>> &str,
+                                        std::shared_ptr<Ctx> &ctx,
+                                        Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(str, 1, "startswith", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(str[0], earl::value::Type::Str, 1, "startswith", expr);
+    return dynamic_cast<earl::value::Str *>(obj.get())->startswith(dynamic_cast<earl::value::Str *>(str[0].get()));
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_endswith(std::shared_ptr<earl::value::Obj> obj,
+                                      std::vector<std::shared_ptr<earl::value::Obj>> &str,
+                                      std::shared_ptr<Ctx> &ctx,
+                                      Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(str, 1, "startswith", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(str[0], earl::value::Type::Str, 1, "startswith", expr);
+    return dynamic_cast<earl::value::Str *>(obj.get())->endswith(dynamic_cast<earl::value::Str *>(str[0].get()));
 }

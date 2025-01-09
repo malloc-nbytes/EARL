@@ -60,6 +60,44 @@ Str::trim(Expr *expr) {
     return std::make_shared<earl::value::Str>(m_value.substr(first, last-first+1));
 }
 
+const std::string &
+Str::value_asref(void) const {
+    return m_value;
+}
+
+std::shared_ptr<Bool>
+Str::startswith(const Str *const str) const {
+    const std::string &orig = this->value_asref();
+    const std::string &other = str->value_asref();
+
+    if (other.size() > orig.size())
+        return std::make_shared<earl::value::Bool>(false);
+
+    for (size_t i = 0; i < other.size(); ++i) {
+        if (other[i] != orig[i])
+            return std::make_shared<earl::value::Bool>(false);
+    }
+
+    return std::make_shared<earl::value::Bool>(true);
+}
+
+std::shared_ptr<Bool>
+Str::endswith(const Str *const str) const {
+    const std::string &orig = this->value_asref();
+    const std::string &other = str->value_asref();
+
+    if (other.size() > orig.size())
+        return std::make_shared<earl::value::Bool>(false);
+
+    size_t start = orig.size() - other.size();
+    for (size_t i = 0; i < other.size(); ++i) {
+        if (other[i] != orig[start+i])
+            return std::make_shared<earl::value::Bool>(false);
+    }
+
+    return std::make_shared<earl::value::Bool>(true);
+}
+
 std::string
 Str::value(void) {
     this->update_changed();

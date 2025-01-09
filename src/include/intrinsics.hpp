@@ -512,17 +512,17 @@ namespace Intrinsics {
                          std::shared_ptr<Ctx> &ctx,
                          Expr *expr);
 
-    // std::shared_ptr<earl::value::Obj>
-    // intrinsic_member_startswith(std::shared_ptr<earl::value::Obj> obj,
-    //                             std::vector<std::shared_ptr<earl::value::Obj>> &values,
-    //                             std::shared_ptr<Ctx> &ctx,
-    //                             Expr *expr);
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_startswith(std::shared_ptr<earl::value::Obj> obj,
+                                std::vector<std::shared_ptr<earl::value::Obj>> &str,
+                                std::shared_ptr<Ctx> &ctx,
+                                Expr *expr);
 
-    // std::shared_ptr<earl::value::Obj>
-    // intrinsic_member_startswith(std::shared_ptr<earl::value::Obj> obj,
-    //                             std::vector<std::shared_ptr<earl::value::Obj>> &values,
-    //                             std::shared_ptr<Ctx> &ctx,
-    //                             Expr *expr);
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_endswith(std::shared_ptr<earl::value::Obj> obj,
+                              std::vector<std::shared_ptr<earl::value::Obj>> &str,
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
     intrinsic_member_contains(std::shared_ptr<earl::value::Obj> obj,
