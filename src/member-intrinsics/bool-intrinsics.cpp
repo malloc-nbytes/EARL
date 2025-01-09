@@ -54,5 +54,3 @@ Intrinsics::intrinsic_member_toggle(std::shared_ptr<earl::value::Obj> obj,
     dynamic_cast<earl::value::Bool *>(obj.get())->toggle();
     return std::make_shared<earl::value::Void>();
 }
-
-

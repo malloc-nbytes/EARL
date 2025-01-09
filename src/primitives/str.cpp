@@ -51,6 +51,15 @@ Str::update_changed(void) {
     m_changed.clear();
 }
 
+std::shared_ptr<earl::value::Str>
+Str::trim(Expr *expr) {
+    size_t first = m_value.find_first_not_of(" \n\t");
+    if (first == std::string::npos)
+        return std::make_shared<earl::value::Str>("");
+    size_t last = m_value.find_last_not_of(" \n\t");
+    return std::make_shared<earl::value::Str>(m_value.substr(first, last-first+1));
+}
+
 std::string
 Str::value(void) {
     this->update_changed();
@@ -130,20 +139,33 @@ Str::substr(Obj *idx1, Obj *idx2, Expr *expr) {
 }
 
 void
-Str::pop(Obj *idx, Expr *expr) {
-    (void)expr;
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
-    int I = idx1->value();
-
-    if (I >= m_value.size()) {
+Str::remove_char(int idx, Expr *expr) {
+    if (idx >= m_value.size()) {
         Err::err_wexpr(expr);
-        const std::string msg = "index "+std::to_string(I)+" is out of range of length "+std::to_string(m_value.size());
+        const std::string msg = "index "+std::to_string(idx)+" is out of range of length "+std::to_string(m_value.size());
         throw InterpreterException(msg);
     }
 
     this->update_changed();
-    m_value.erase(m_value.begin() + I);
-    m_chars.erase(m_chars.begin() + I);
+    m_value.erase(m_value.begin() + idx);
+    m_chars.erase(m_chars.begin() + idx);
+}
+
+void
+Str::pop(Obj *idx, Expr *expr) {
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
+    int I = idx1->value();
+    this->remove_char(I, expr);
+
+    // if (I >= m_value.size()) {
+    //     Err::err_wexpr(expr);
+    //     const std::string msg = "index "+std::to_string(I)+" is out of range of length "+std::to_string(m_value.size());
+    //     throw InterpreterException(msg);
+    // }
+
+    // this->update_changed();
+    // m_value.erase(m_value.begin() + I);
+    // m_chars.erase(m_chars.begin() + I);
 }
 
 std::shared_ptr<Obj>

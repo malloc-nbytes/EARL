@@ -617,6 +617,8 @@ namespace earl {
             void foreach(Obj *closure, std::shared_ptr<Ctx> &ctx);
             std::shared_ptr<Bool> contains(Char *value);
             void update_changed(void);
+            std::shared_ptr<earl::value::Str> trim(Expr *expr);
+            void remove_char(int idx, Expr *expr);
 
             // Implements
             Type type(void) const                                                         override;

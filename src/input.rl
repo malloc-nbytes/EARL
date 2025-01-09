@@ -1,10 +1,7 @@
 module Main
 
-let b = true;
+let s = "    hello world";
+println(s.trim());
 
-println(b.ifelse(1, 2));
-
-println(b);
-b.toggle();
-println(b);
-
+# println("hello world".startswith("hel"));
+# println("hello world".endswith("ld"));
