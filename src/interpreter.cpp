@@ -825,7 +825,13 @@ eval_expr_term_ident(ExprIdent *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
 // RETURNS ACTUAL EVALUATED VALUE IN ER
 static ER
 eval_expr_term_intlit(ExprIntLit *expr) {
-    auto value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme()));
+    std::shared_ptr<earl::value::Obj> value = nullptr;
+
+    if (expr->m_base == 10)
+        value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme()));
+    else
+        value = std::make_shared<earl::value::Int>(std::stoi(expr->m_tok->lexeme(), nullptr, 16));
+
     return ER(value, ERT::Literal);
 }
 

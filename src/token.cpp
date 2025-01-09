@@ -96,6 +96,7 @@ tokentype_to_str(TokenType type) {
     case TokenType::Strlit:                     return "STRLIT";
     case TokenType::Charlit:                    return "CHARLIT";
     case TokenType::Floatlit:                   return "FLOATLIT";
+    case TokenType::Hexlit:                     return "HEXLIT";
     case TokenType::Ident:                      return "IDENTIFIER";
     case TokenType::Keyword:                    return "KEYWORD";
     case TokenType::Type:                       return "TYPE";
