@@ -391,6 +391,18 @@ lex_file(std::string &src,
             col += ident.size()+1;
         }
 
+        else if (src[i] == '0' && src[i+1] && src[i+1] == 'x') {
+            std::string hex = "0x";
+            i += 2, col += 2;
+            while (src[i] && (isdigit(src[i])
+                || (src[i] >= 65 && src[i] <= 70)
+                || (src[i] >= 97 && src[i] <= 102))) {
+                hex += src[i];
+                ++i, ++col;
+            }
+            lexer->append(hex, TokenType::Hexlit, row, col, fp);
+        }
+
         else if (isdigit(src[i])) {
             std::string digit = "";
             while (isdigit(src[i]))

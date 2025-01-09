@@ -325,8 +325,11 @@ parse_primary_expr(Lexer &lexer, char fail_on = '\0') {
             auto tok = lexer.next();
             left = new ExprGet(std::unique_ptr<Expr>(left), parse_identifier_or_funccall(lexer), tok);
         } break;
+        case TokenType::Hexlit: {
+            left = new ExprIntLit(lexer.next(), /*base=*/16);
+        } break;
         case TokenType::Intlit: {
-            left = new ExprIntLit(lexer.next());
+            left = new ExprIntLit(lexer.next(), /*base=*/10);
         } break;
         case TokenType::Floatlit: {
             left = new ExprFloatLit(lexer.next());

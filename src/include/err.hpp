@@ -81,7 +81,7 @@ namespace Err {
     void err_wtok(Token *tok);
     void err_w2tok(Token *tok1, Token *tok2);
     void err_wconflict(Token *tok1, Token *tok2);
-    void err_wexpr(Expr *expr, int s=0);
+    void err_wexpr(const Expr *const expr, int s=0);
     void err_wstmt(Stmt *stmt);
 
     void warn(std::string msg, Token *tok = nullptr);

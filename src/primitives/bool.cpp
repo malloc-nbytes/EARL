@@ -38,6 +38,11 @@ Bool::value(void) {
     return m_value;
 }
 
+void
+Bool::toggle(void) {
+    m_value = !m_value;
+}
+
 Type
 Bool::type(void) const {
     return Type::Bool;

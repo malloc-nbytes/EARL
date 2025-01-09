@@ -218,8 +218,9 @@ struct ExprPredicate : public ExprTerm {
 struct ExprIntLit : public ExprTerm {
     /// @brief The token of the integer literal
     std::shared_ptr<Token> m_tok;
+    uint8_t m_base;
 
-    ExprIntLit(std::shared_ptr<Token> tok);
+    ExprIntLit(std::shared_ptr<Token> tok, uint8_t base = 10);
     ExprType get_type() const override;
     ExprTermType get_term_type() const override;
 };

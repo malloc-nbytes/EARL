@@ -104,6 +104,7 @@ enum class TokenType {
     Strlit,
     Charlit,
     Floatlit,
+    Hexlit,
     Ident,
     Keyword,
     Type,

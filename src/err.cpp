@@ -78,175 +78,175 @@ Err::warn(std::string msg, Token *tok) {
 }
 
 static void
-err_wfloatlit(ExprFloatLit *expr, int s) {
+err_wfloatlit(const ExprFloatLit *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wtuple(ExprTuple *expr, int s) {
+err_wtuple(const ExprTuple *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wclosure(ExprClosure *expr, int s) {
+err_wclosure(const ExprClosure *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wnone(ExprNone *expr, int s) {
+err_wnone(const ExprNone *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wbool(ExprBool *expr, int s) {
+err_wbool(const ExprBool *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_warray_access(ExprArrayAccess *expr, int s) {
+err_warray_access(const ExprArrayAccess *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wmod_access(ExprModAccess *expr, int s) {
+err_wmod_access(const ExprModAccess *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wget(ExprGet *expr, int s) {
+err_wget(const ExprGet *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wslice(ExprSlice *expr, int s) {
+err_wslice(const ExprSlice *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wrange(ExprRange *expr, int s) {
+err_wrange(const ExprRange *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wlistlit(ExprListLit *expr, int s) {
+err_wlistlit(const ExprListLit *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wfunccall(ExprFuncCall *expr, int s) {
+err_wfunccall(const ExprFuncCall *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wcharlit(ExprCharLit *expr, int s) {
+err_wcharlit(const ExprCharLit *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wstrlit(ExprStrLit *expr, int s) {
+err_wstrlit(const ExprStrLit *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wintlit(ExprIntLit *expr, int s) {
+err_wintlit(const ExprIntLit *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wident(ExprIdent *expr, int s) {
+err_wident(const ExprIdent *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wfstr(ExprFStr *expr, int s) {
+err_wfstr(const ExprFStr *const expr, int s) {
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
-err_wcase(ExprCase *expr, int s) {
+err_wcase(const ExprCase *const expr, int s) {
     Err::err_wexpr(expr->m_expr.get());
 }
 
 static void
-err_wterm(ExprTerm *expr, int s) {
+err_wterm(const ExprTerm *const expr, int s) {
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
-        err_wident(dynamic_cast<ExprIdent *>(expr), s);
+        err_wident(dynamic_cast<const ExprIdent *>(expr), s);
     } break;
     case ExprTermType::Int_Literal: {
-        err_wintlit(dynamic_cast<ExprIntLit *>(expr), s);
+        err_wintlit(dynamic_cast<const ExprIntLit *>(expr), s);
     } break;
     case ExprTermType::Str_Literal: {
-        err_wstrlit(dynamic_cast<ExprStrLit *>(expr), s);
+        err_wstrlit(dynamic_cast<const ExprStrLit *>(expr), s);
     } break;
     case ExprTermType::Char_Literal: {
-        err_wcharlit(dynamic_cast<ExprCharLit *>(expr), s);
+        err_wcharlit(dynamic_cast<const ExprCharLit *>(expr), s);
     } break;
     case ExprTermType::Func_Call: {
-        err_wfunccall(dynamic_cast<ExprFuncCall *>(expr), s);
+        err_wfunccall(dynamic_cast<const ExprFuncCall *>(expr), s);
     } break;
     case ExprTermType::List_Literal: {
-        err_wlistlit(dynamic_cast<ExprListLit *>(expr), s);
+        err_wlistlit(dynamic_cast<const ExprListLit *>(expr), s);
     } break;
     case ExprTermType::Range: {
-        err_wrange(dynamic_cast<ExprRange *>(expr), s);
+        err_wrange(dynamic_cast<const ExprRange *>(expr), s);
     } break;
     case ExprTermType::Slice: {
-        err_wslice(dynamic_cast<ExprSlice *>(expr), s);
+        err_wslice(dynamic_cast<const ExprSlice *>(expr), s);
     } break;
     case ExprTermType::Get: {
-        err_wget(dynamic_cast<ExprGet *>(expr), s);
+        err_wget(dynamic_cast<const ExprGet *>(expr), s);
     } break;
     case ExprTermType::Mod_Access: {
-        err_wmod_access(dynamic_cast<ExprModAccess *>(expr), s);
+        err_wmod_access(dynamic_cast<const ExprModAccess *>(expr), s);
     } break;
     case ExprTermType::Array_Access: {
-        err_warray_access(dynamic_cast<ExprArrayAccess *>(expr), s);
+        err_warray_access(dynamic_cast<const ExprArrayAccess *>(expr), s);
     } break;
     case ExprTermType::Bool: {
-        err_wbool(dynamic_cast<ExprBool *>(expr), s);
+        err_wbool(dynamic_cast<const ExprBool *>(expr), s);
     } break;
     case ExprTermType::None: {
-        err_wnone(dynamic_cast<ExprNone *>(expr), s);
+        err_wnone(dynamic_cast<const ExprNone *>(expr), s);
     } break;
     case ExprTermType::Closure: {
-        err_wclosure(dynamic_cast<ExprClosure *>(expr), s);
+        err_wclosure(dynamic_cast<const ExprClosure *>(expr), s);
     } break;
     case ExprTermType::Tuple: {
-        err_wtuple(dynamic_cast<ExprTuple *>(expr), s);
+        err_wtuple(dynamic_cast<const ExprTuple *>(expr), s);
     } break;
     case ExprTermType::Float_Literal: {
-        err_wfloatlit(dynamic_cast<ExprFloatLit *>(expr), s);
+        err_wfloatlit(dynamic_cast<const ExprFloatLit *>(expr), s);
     } break;
     case ExprTermType::FStr: {
-        err_wfstr(dynamic_cast<ExprFStr *>(expr), s);
+        err_wfstr(dynamic_cast<const ExprFStr *>(expr), s);
     } break;
     case ExprTermType::Case: {
-        err_wcase(dynamic_cast<ExprCase *>(expr), s);
+        err_wcase(dynamic_cast<const ExprCase *>(expr), s);
     } break;
     default: break;
     }
 }
 
 static void
-err_wbinary(ExprBinary *expr) {
+err_wbinary(const ExprBinary *const expr) {
     Err::err_wexpr(expr->m_lhs.get());
     Err::err_wexpr(expr->m_rhs.get());
 }
 
 static void
-err_wunary(ExprUnary *expr) {
+err_wunary(const ExprUnary *const expr) {
     Err::err_wexpr(expr->m_expr.get());
 }
 
 void
-Err::err_wexpr(Expr *expr, int s) {
+Err::err_wexpr(const Expr *const expr, int s) {
     if (!expr)
         return;
     switch (expr->get_type()) {
-    case ExprType::Term: err_wterm(dynamic_cast<ExprTerm *>(expr), s); break;
-    case ExprType::Binary: err_wbinary(dynamic_cast<ExprBinary *>(expr)); break;
-    case ExprType::Unary: err_wunary(dynamic_cast<ExprUnary *>(expr)); break;
+    case ExprType::Term: err_wterm(dynamic_cast<const ExprTerm *>(expr), s); break;
+    case ExprType::Binary: err_wbinary(dynamic_cast<const ExprBinary *>(expr)); break;
+    case ExprType::Unary: err_wunary(dynamic_cast<const ExprUnary *>(expr)); break;
     default: break;
     }
 }

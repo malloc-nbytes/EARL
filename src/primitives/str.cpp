@@ -51,6 +51,53 @@ Str::update_changed(void) {
     m_changed.clear();
 }
 
+std::shared_ptr<earl::value::Str>
+Str::trim(Expr *expr) {
+    size_t first = m_value.find_first_not_of(" \n\t");
+    if (first == std::string::npos)
+        return std::make_shared<earl::value::Str>("");
+    size_t last = m_value.find_last_not_of(" \n\t");
+    return std::make_shared<earl::value::Str>(m_value.substr(first, last-first+1));
+}
+
+const std::string &
+Str::value_asref(void) const {
+    return m_value;
+}
+
+std::shared_ptr<Bool>
+Str::startswith(const Str *const str) const {
+    const std::string &orig = this->value_asref();
+    const std::string &other = str->value_asref();
+
+    if (other.size() > orig.size())
+        return std::make_shared<earl::value::Bool>(false);
+
+    for (size_t i = 0; i < other.size(); ++i) {
+        if (other[i] != orig[i])
+            return std::make_shared<earl::value::Bool>(false);
+    }
+
+    return std::make_shared<earl::value::Bool>(true);
+}
+
+std::shared_ptr<Bool>
+Str::endswith(const Str *const str) const {
+    const std::string &orig = this->value_asref();
+    const std::string &other = str->value_asref();
+
+    if (other.size() > orig.size())
+        return std::make_shared<earl::value::Bool>(false);
+
+    size_t start = orig.size() - other.size();
+    for (size_t i = 0; i < other.size(); ++i) {
+        if (other[i] != orig[start+i])
+            return std::make_shared<earl::value::Bool>(false);
+    }
+
+    return std::make_shared<earl::value::Bool>(true);
+}
+
 std::string
 Str::value(void) {
     this->update_changed();
@@ -58,7 +105,7 @@ Str::value(void) {
 }
 
 std::shared_ptr<Char>
-Str::nth(Obj *idx, Expr *expr) {
+Str::nth(Obj *idx, const Expr *const expr) {
     if (idx->type() != Type::Int) {
         Err::err_wexpr(expr);
         std::string msg = "invalid index when accessing value in a str";
@@ -130,20 +177,33 @@ Str::substr(Obj *idx1, Obj *idx2, Expr *expr) {
 }
 
 void
-Str::pop(Obj *idx, Expr *expr) {
-    (void)expr;
-    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
-    int I = idx1->value();
-
-    if (I >= m_value.size()) {
+Str::remove_char(int idx, Expr *expr) {
+    if (idx >= m_value.size()) {
         Err::err_wexpr(expr);
-        const std::string msg = "index "+std::to_string(I)+" is out of range of length "+std::to_string(m_value.size());
+        const std::string msg = "index "+std::to_string(idx)+" is out of range of length "+std::to_string(m_value.size());
         throw InterpreterException(msg);
     }
 
     this->update_changed();
-    m_value.erase(m_value.begin() + I);
-    m_chars.erase(m_chars.begin() + I);
+    m_value.erase(m_value.begin() + idx);
+    m_chars.erase(m_chars.begin() + idx);
+}
+
+void
+Str::pop(Obj *idx, Expr *expr) {
+    auto *idx1 = dynamic_cast<earl::value::Int *>(idx);
+    int I = idx1->value();
+    this->remove_char(I, expr);
+
+    // if (I >= m_value.size()) {
+    //     Err::err_wexpr(expr);
+    //     const std::string msg = "index "+std::to_string(I)+" is out of range of length "+std::to_string(m_value.size());
+    //     throw InterpreterException(msg);
+    // }
+
+    // this->update_changed();
+    // m_value.erase(m_value.begin() + I);
+    // m_chars.erase(m_chars.begin() + I);
 }
 
 std::shared_ptr<Obj>
