@@ -128,6 +128,7 @@ Intrinsics::intrinsic_member_functions = {
     {"has_value", &Intrinsics::intrinsic_member_has_value},
     // Bool
     {"ifelse", &Intrinsics::intrinsic_member_ifelse},
+    {"toggle", &Intrinsics::intrinsic_member_toggle},
     // Time
     {"readable", &Intrinsics::intrinsic_member_readable},
     {"years", &Intrinsics::intrinsic_member_years},

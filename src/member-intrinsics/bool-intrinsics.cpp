@@ -33,6 +33,7 @@
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_bool_member_functions = {
     {"ifelse", &Intrinsics::intrinsic_member_ifelse},
+    {"toggle", &Intrinsics::intrinsic_member_toggle},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -41,8 +42,17 @@ Intrinsics::intrinsic_member_ifelse(std::shared_ptr<earl::value::Obj> obj,
                                     std::shared_ptr<Ctx> &ctx,
                                     Expr *expr) {
     __INTR_ARGS_MUSTBE_SIZE(params, 2, "ifelse", expr);
-    auto b = dynamic_cast<earl::value::Bool *>(obj.get());
-    if (b->value())
-        return params[0];
-    return params[1];
+    return dynamic_cast<earl::value::Bool *>(obj.get())->value() ? params[0] : params[1];
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_toggle(std::shared_ptr<earl::value::Obj> obj,
+                                    std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                    std::shared_ptr<Ctx> &ctx,
+                                    Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "toggle", expr);
+    dynamic_cast<earl::value::Bool *>(obj.get())->toggle();
+    return std::make_shared<earl::value::Void>();
+}
+
+

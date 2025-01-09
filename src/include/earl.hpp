@@ -374,6 +374,7 @@ namespace earl {
 
             /// @brief Get the underlying integer value
             bool value(void);
+            void toggle(void);
 
             // Implements
             Type type(void) const                                                         override;

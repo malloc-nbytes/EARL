@@ -453,6 +453,12 @@ namespace Intrinsics {
                             Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_member_toggle(std::shared_ptr<earl::value::Obj> obj,
+                            std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                            std::shared_ptr<Ctx> &ctx,
+                            Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_member_unwrap_or(std::shared_ptr<earl::value::Obj> obj,
                                std::vector<std::shared_ptr<earl::value::Obj>> &or_value,
                                std::shared_ptr<Ctx> &ctx,
