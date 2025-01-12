@@ -1,6 +1,17 @@
 module Main
 
-# $"cat ../src/1.in" |> let content;
-$"whoami" |> let content;
+fn f(cl) {
+    println(cl('a'));
+}
 
-println(content);
+f(== 'b');
+
+# import "std/parsers/toml.rl"; as P
+
+# let d = P::parse(env("HOME") + "/.earlmgr");
+
+# foreach dep in d["dependencies.sstream"].unwrap()["deps"].unwrap() {
+#     println(dep);
+# }
+
+# P::dump(d);

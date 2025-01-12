@@ -175,29 +175,21 @@ List::append_copy(std::shared_ptr<Obj> value) {
 
 std::shared_ptr<List>
 List::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
+    Closure *cl = dynamic_cast<Closure *>(closure);
+
     auto copy = std::make_shared<List>();
     std::vector<std::shared_ptr<Obj>> keep_values={};
 
-    if (closure->type() == earl::value::Type::Closure) {
-        Closure *cl = dynamic_cast<Closure *>(closure);
-        for (size_t i = 0; i < m_value.size(); ++i) {
-            std::vector<std::shared_ptr<Obj>> values = {m_value.at(i)};
-            std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
-            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-                keep_values.push_back(m_value.at(i)->copy());
-        }
-
-    }
-    else {
-        Predicate *pred = dynamic_cast<Predicate *>(closure);
-        for (size_t i = 0; i < m_value.size(); ++i) {
-            std::shared_ptr<Obj> filter_result = pred->check(m_value.at(i).get(), ctx);
-            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-                keep_values.push_back(m_value.at(i)->copy());
-        }
+    for (size_t i = 0; i < m_value.size(); ++i) {
+        std::vector<std::shared_ptr<Obj>> values = {m_value.at(i)};
+        std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
+        assert(filter_result->type() == Type::Bool);
+        if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+            keep_values.push_back(m_value.at(i)->copy());
     }
 
     copy->append(keep_values);
+
     return copy;
 }
 

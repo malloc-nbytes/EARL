@@ -612,9 +612,21 @@ Parser::parse_expr(Lexer &lexer, char fail_on) {
                 || t == TokenType::Greaterthan
                 || t == TokenType::Lessthan_Equals
                 || t == TokenType::Greaterthan_Equals)) {
+
             auto op = lexer.next();
-            auto right = parse_expr(lexer, fail_on);
-            return new ExprPredicate(op, std::unique_ptr<Expr>(right));
+            auto right = std::unique_ptr<Expr>(parse_expr(lexer, fail_on));
+            auto argtok = std::make_shared<Token>("__predicate_identifier__", TokenType::Ident, 0, 0, "");
+            auto left = std::make_unique<ExprIdent>(argtok);
+            std::vector<std::pair<std::shared_ptr<Token>, uint32_t>> args = {
+                std::make_pair(std::move(argtok), 0x0)
+            };
+            auto bin = std::make_unique<ExprBinary>(std::move(left), op, std::move(right));
+            auto ret = std::make_unique<StmtReturn>(std::move(bin), op);
+            std::vector<std::unique_ptr<Stmt>> stmts = {};
+            stmts.push_back(std::move(ret));
+            auto block = std::make_unique<StmtBlock>(std::move(stmts));
+
+            return new ExprClosure(std::move(args), std::move(block), op);
         }
     }
 

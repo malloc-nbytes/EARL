@@ -1463,14 +1463,6 @@ eval_expr_term_case(ExprCase *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     return ER(std::move(not_found), ERT::Literal);
 }
 
-static ER
-eval_expr_term_predicate(ExprPredicate *expr, std::shared_ptr<Ctx> ctx, bool ref) {
-    ER rhs = Interpreter::eval_expr(expr->m_rhs.get(), ctx, ref);
-    auto rhs_value = unpack_ER(rhs, ctx, true);
-    auto result = std::make_shared<earl::value::Predicate>(expr->m_op.get(), std::move(rhs_value));
-    return ER(result, ERT::Literal);
-}
-
 ER
 eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     switch (expr->get_term_type()) {
@@ -1493,7 +1485,6 @@ eval_expr_term(ExprTerm *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
     case ExprTermType::Dict:          return eval_expr_term_dict(dynamic_cast<ExprDict *>(expr), ctx, ref);
     case ExprTermType::FStr:          return eval_expr_term_fstr(dynamic_cast<ExprFStr *>(expr), ctx, ref);
     case ExprTermType::Case:          return eval_expr_term_case(dynamic_cast<ExprCase *>(expr), ctx, ref);
-    case ExprTermType::Predicate:     return eval_expr_term_predicate(dynamic_cast<ExprPredicate *>(expr), ctx, ref);
     default: {
         std::string msg = "unknown term: `"+std::to_string((int)expr->get_term_type())+"`";
         throw InterpreterException(msg);

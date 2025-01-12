@@ -70,25 +70,17 @@ Tuple::back(void) {
 
 std::shared_ptr<Tuple>
 Tuple::filter(Obj *closure, std::shared_ptr<Ctx> &ctx) {
-    // Closure *cl = dynamic_cast<Closure *>(closure);
-    void *cl = closure;
+    Closure *cl = dynamic_cast<Closure *>(closure);
 
     auto copy = std::make_shared<Tuple>();
     std::vector<std::shared_ptr<Obj>> keep_values = {};
 
     for (size_t i = 0; i < m_values.size(); ++i) {
-        std::shared_ptr<Obj> filter_result = nullptr;
-        if (closure->type() == earl::value::Type::Closure) {
-            std::vector<std::shared_ptr<Obj>> values = {m_values.at(i)};
-            filter_result = ((Closure *)cl)->call(values, ctx);
-            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-                keep_values.push_back(m_values.at(i)->copy());
-        }
-        else {
-            filter_result = ((Predicate *)cl)->check(m_values.at(i).get(), ctx);
-            if (dynamic_cast<Bool *>(filter_result.get())->boolean())
-                keep_values.push_back(m_values.at(i)->copy());
-        }
+        std::vector<std::shared_ptr<Obj>> values = {m_values.at(i)};
+        std::shared_ptr<Obj> filter_result = cl->call(values, ctx);
+        assert(filter_result->type() == Type::Bool);
+        if (dynamic_cast<Bool *>(filter_result.get())->boolean())
+            keep_values.push_back(m_values.at(i)->copy());
     }
 
     std::for_each(keep_values.begin(), keep_values.end(), [&](auto &v) {copy->m_values.push_back(v);});
