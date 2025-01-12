@@ -35,6 +35,8 @@
 #include "ast.hpp"
 #include "token.hpp"
 
+/// \brief Make sure that both obj0 and obj1 are compatible with
+/// all binary opterations.
 #define ASSERT_BINOP_COMPAT(obj0, obj1, op)                             \
     do {                                                                \
         if (!type_is_compatable(obj0, obj1)) {                          \
@@ -45,6 +47,8 @@
         }                                                               \
     } while (0)
 
+/// \brief Make sure that obj0 and obj1 are the same type
+/// for binary operations.
 #define ASSERT_BINOP_EXACT(obj0, obj1, op)                              \
     do {                                                                \
         if (obj0->type() != obj1->type()) {                             \
@@ -55,6 +59,7 @@
         }                                                               \
     } while (0)
 
+/// \brief Make sure that obj0 and obj1 are compatable for mutation.
 #define ASSERT_MUTATE_COMPAT(obj0, obj1, stmt)                          \
     do {                                                                \
         if (!type_is_compatable(obj0, obj1)) {                          \
@@ -65,6 +70,7 @@
         }                                                               \
     } while (0)
 
+/// \brief If obj is const, fail.
 #define ASSERT_CONSTNESS(obj, stmt)                                     \
     do {                                                                \
         if (obj->is_const()) {                                          \

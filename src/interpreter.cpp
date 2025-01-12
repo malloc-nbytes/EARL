@@ -2612,6 +2612,7 @@ eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
     auto get_bash_res = [&](std::string cmd, Stmt *stmt) {
+        bool sanatize = (flags & __NO_SANITIZE_PIPES) == 0;
         std::string output = "";
         std::array<char, 256> buffer;
         FILE *pipe = popen(cmd.c_str(), "r");
@@ -2619,16 +2620,20 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
             Err::err_wstmt(stmt);
             throw InterpreterException("failed to execute bash `"+cmd+"`");
         }
-        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr)
+        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
             output += buffer.data();
+        }
         int ec = pclose(pipe);
         if (ec == -1) {
             const std::string msg = "command `"+cmd+"` failed to exit";
             throw InterpreterException(msg);
         }
-        if (output.size() > 1)
+        if (sanatize && output.size() > 1
+            && (output.back() == ' '
+                || output.back() == '\n'
+                || output.back() == '\t'))
             output.erase(output.size()-1);
-        if (((flags & __NO_SANITIZE_PIPES) == 0)
+        if (sanatize
             && output.size() == 1
             && (output == " "
                 || output == "\n"
@@ -2684,7 +2689,6 @@ eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
                 // TODO: show-muts
                 // TODO: attributes
                 auto location = unpack_ER(expr_er, ctx, true);
-                // std::string cmd = dynamic_cast<earl::value::Str *>(bash.get())->value();
                 location->mutate(get_bash_res(cmd, stmt).get(), nullptr);
             }
         }, to);
