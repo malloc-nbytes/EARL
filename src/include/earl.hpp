@@ -150,7 +150,6 @@ namespace earl {
             Return,
             FunctionRef,
             ClassRef,
-            Predicate,
         };
 
         struct Obj;
@@ -395,21 +394,6 @@ namespace earl {
 
         private:
             bool m_value;
-        };
-
-        struct Predicate : public Obj {
-            Predicate(Token *op, std::shared_ptr<Obj> right);
-
-            // Implements
-            Type type(void) const                                                         override;
-            std::string to_cxxstring(void)                                                override;
-            std::shared_ptr<Obj> copy(void)                                               override;
-
-            std::shared_ptr<Obj> check(Obj *obj, std::shared_ptr<Ctx> &ctx) const;
-
-        private:
-            Token *m_op;
-            std::shared_ptr<Obj> m_right;
         };
 
         struct Char : public Obj {

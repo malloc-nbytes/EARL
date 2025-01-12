@@ -35,14 +35,35 @@ fn parse_section_name(line) {
     return id;
 }
 
+fn gather_items_from_str(items: str): list {
+    items.pop(0);
+    let i, lst = (0, []);
+    while items[i] != ']' {
+        if items[i] == '"' {
+            gather_until(items.substr(i, len(items)-1), == '"');
+        }
+    }
+    return lst;
+}
+
 fn parse_assignment(line) {
     Assert::FUNC = __FUNC__;
 
     let parts = line.split("=");
     Assert::eq(len(parts), 2);
     let id, value = (parts[0], parts[1]);
+
     Str::trim(id);
     Str::trim(value);
+
+    if len(value) && value[0] == '[' && value.back() == ']' {
+        value.pop(0);
+        value.pop(len(value)-1);
+        let items: list = value.split(",").filter(!= "");
+        items.foreach(|@ref i| { i = i.trim(); });
+        return (id, items);
+    }
+
     return (id, value);
 }
 
@@ -74,8 +95,7 @@ fn parse_lines(lines: list): dictionary {
     return d;
 }
 
-@pub
-fn parse(fp: str): dictionary {
+@pub fn parse(fp: str): dictionary {
     let lines = IO::file_to_str(fp)
                     .split("\n")
                     .filter(|s| {

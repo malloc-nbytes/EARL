@@ -94,8 +94,7 @@ Intrinsics::intrinsic_member_filter(std::shared_ptr<earl::value::Obj> obj,
                                     std::shared_ptr<Ctx> &ctx,
                                     Expr *expr) {
     __INTR_ARGS_MUSTBE_SIZE(closure, 1, "filter", expr);
-    // __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter", expr);
-    __INTR_ARG_MUSTBE_TYPE_COMPAT_OR(closure[0], earl::value::Type::Closure, earl::value::Type::Predicate, 1, "filter", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(closure[0], earl::value::Type::Closure, 1, "filter", expr);
     if (obj->type() == earl::value::Type::List)
         return dynamic_cast<earl::value::List *>(obj.get())->filter(closure.at(0).get(), ctx);
     else if (obj->type() == earl::value::Type::Tuple)

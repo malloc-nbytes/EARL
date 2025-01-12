@@ -22,6 +22,24 @@
 
 module Str
 
+import "std/datatypes/char.rl";
+
+### Function
+#-- Name: isnum
+#-- Parameter: s: str
+#-- Returns: bool
+#-- Description:
+#--   Check to see if the string `s` is a number.
+@pub fn isnum(s) {
+    foreach c in s {
+        if !Char::isnum(c) {
+            return false;
+        }
+    }
+    return true;
+}
+### End
+
 ### Function
 #-- Name: to_list
 #-- Parameter: s: @ref str

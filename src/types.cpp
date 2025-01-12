@@ -96,10 +96,6 @@ static const std::unordered_map<earl::value::Type, std::vector<earl::value::Type
             earl::value::Type::Closure,
         }
     },
-    {earl::value::Type::Predicate, {
-            earl::value::Type::Predicate,
-        }
-    },
 };
 
 std::string earl::value::type_to_str(earl::value::Type ty) {
@@ -128,7 +124,6 @@ std::string earl::value::type_to_str(earl::value::Type ty) {
     case earl::value::Type::Return:      return "unit";
     case earl::value::Type::FunctionRef: return "FunctionRef";
     case earl::value::Type::ClassRef:    return "ClassRef";
-    case earl::value::Type::Predicate:   return "Predicate";
     default: ERR_WARGS(Err::Type::Fatal, "unknown type of id (%d) in processing", (int)ty);
     }
 }
