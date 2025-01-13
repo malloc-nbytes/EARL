@@ -59,6 +59,30 @@ module Char
 ### End
 
 ### Function
+#-- Name: islower
+#-- Parameter: c: char
+#-- Returns: bool
+#-- Description:
+#--   Takes the char `c` and returns whether or not it is lowercase.
+@pub fn islower(c) {
+    with n = c.ascii() in
+    return n >= 97 && n <= 122;
+}
+### End
+
+### Function
+#-- Name: isupper
+#-- Parameter: c: char
+#-- Returns: bool
+#-- Description:
+#--   Takes the char `c` and returns whether or not it is uppercase.
+@pub fn isupper(c) {
+    with n = c.ascii() in
+    return n >= 65 && n <= 90;
+}
+### End
+
+### Function
 #-- Name: tolower
 #-- Parameter: c: char
 #-- Returns: char

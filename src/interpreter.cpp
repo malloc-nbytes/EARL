@@ -317,7 +317,7 @@ eval_class_instantiation(ExprFuncCall *expr,
     auto klass = std::make_shared<earl::value::Class>(class_stmt, class_ctx);
 
     if (klass->is_experimental()) {
-        WARN_WARGS("clas `%s` is marked as experimmental", nullptr, klass->id().c_str());
+        WARN_WARGS("class `%s` is marked as experimmental", nullptr, klass->id().c_str());
         klass->disable_experimental_flag();
     }
 
