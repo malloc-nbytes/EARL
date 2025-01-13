@@ -603,6 +603,18 @@ namespace Intrinsics {
                            Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_member_isupper(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_member_islower(std::shared_ptr<earl::value::Obj> obj,
+                             std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_member_utf8(std::shared_ptr<earl::value::Obj> obj,
                           std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                           std::shared_ptr<Ctx> &ctx,

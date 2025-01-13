@@ -41,6 +41,16 @@ Char::value(void) {
     return m_value;
 }
 
+std::shared_ptr<Bool>
+Char::isupper(void) const {
+    return std::make_shared<Bool>(std::isupper(m_value));
+}
+
+std::shared_ptr<Bool>
+Char::islower(void) const {
+    return std::make_shared<Bool>(std::islower(m_value));
+}
+
 Type
 Char::type(void) const {
     return Type::Char;

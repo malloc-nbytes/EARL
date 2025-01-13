@@ -117,6 +117,8 @@ Intrinsics::intrinsic_member_functions = {
     {"writelines", &Intrinsics::intrinsic_member_writelines},
     // Char
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    {"islower", &Intrinsics::intrinsic_member_islower},
+    {"isupper", &Intrinsics::intrinsic_member_isupper},
     // Int
     {"utf8", &Intrinsics::intrinsic_member_utf8},
     // Option

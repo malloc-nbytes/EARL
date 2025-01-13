@@ -33,6 +33,8 @@
 const std::unordered_map<std::string, Intrinsics::IntrinsicMemberFunction>
 Intrinsics::intrinsic_char_member_functions = {
     {"ascii", &Intrinsics::intrinsic_member_ascii},
+    {"islower", &Intrinsics::intrinsic_member_islower},
+    {"isupper", &Intrinsics::intrinsic_member_isupper},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -42,8 +44,26 @@ Intrinsics::intrinsic_member_ascii(std::shared_ptr<earl::value::Obj> obj,
                                    Expr *expr) {
     (void)unused;
     (void)ctx;
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "ascii", expr);
     auto char_ = dynamic_cast<earl::value::Char *>(obj.get());
     int value = static_cast<int>(char_->value());
     return std::make_shared<earl::value::Int>(value);
 }
 
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_isupper(std::shared_ptr<earl::value::Obj> obj,
+                         std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "isupper", expr);
+    return dynamic_cast<earl::value::Char *>(obj.get())->isupper();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_islower(std::shared_ptr<earl::value::Obj> obj,
+                         std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "islower", expr);
+    return dynamic_cast<earl::value::Char *>(obj.get())->islower();
+}

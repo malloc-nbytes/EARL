@@ -402,6 +402,8 @@ namespace earl {
 
             /// @brief Get the underlying string value
             char value(void);
+            std::shared_ptr<Bool> isupper(void) const;
+            std::shared_ptr<Bool> islower(void) const;
 
             // Implements
             Type type(void) const                                                         override;
