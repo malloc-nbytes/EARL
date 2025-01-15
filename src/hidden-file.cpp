@@ -188,6 +188,9 @@ void create_default_config_file(void) {
 }
 
 void handle_hidden_file(void) {
+    if ((flags & __NO_CONFIG) != 0)
+        return;
+
     auto lines = read_earl_file();
     if (lines.size() != 0)
         parse_lines(lines);

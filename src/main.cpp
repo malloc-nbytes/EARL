@@ -172,6 +172,7 @@ usage(void) {
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
+    std::cerr << "            --no-config  . . . . . . . . . . . Do not use the config file" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
@@ -417,6 +418,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     }
     else if (arg == COMMON_EARL2ARG_PORTABLE)
         show_is_portable();
+    else if (arg == COMMON_EARL2ARG_NO_CONFIG)
+        flags |= __NO_CONFIG;
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -613,9 +616,9 @@ main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
-    handle_hidden_file();
-    assert_repl_theme_valid();
     handlecli(argc, argv);
+    assert_repl_theme_valid();
+    handle_hidden_file();
 
     if ((flags & __WATCH) != 0) {
         if (watch_files.size() == 0) {
