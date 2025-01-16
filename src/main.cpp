@@ -43,6 +43,9 @@ static std::vector<std::string> scripts = {};
 std::vector<std::string> earl_argv = {};
 std::vector<std::string> watch_files = {};
 
+// --repl-welcome resources
+std::string repl_welcome_msg = "";
+
 // --one-shot resources
 std::string one_shot_code = "";
 
@@ -186,6 +189,7 @@ usage(void) {
     std::cerr << "            --no-sanitize-pipes  . . . . . . . Do not sanitize BASH pipes" << std::endl;
     std::cerr << "    REPL Config" << std::endl;
     std::cerr << "            --repl-nocolor . . . . . . . . . . Do not use color in the REPL" << std::endl;
+    std::cerr << "            --repl-welcome . . . . . . . . . . Display a welcome message in the REPL" << std::endl;
     std::cerr << "            --repl-theme <theme>|list  . . . . Use a color theme in the REPL (`default` if this option is not used)" << std::endl;
     std::cerr << "                where" << std::endl;
     std::cerr << "                    list = list all available themes" << std::endl;
@@ -365,6 +369,16 @@ handle_one_shot(std::vector<std::string> &args) {
 }
 
 static void
+handle_repl_welcome(std::vector<std::string> &args) {
+    if (args.size() == 0) {
+        std::cerr << "flag `--" COMMON_EARL2ARG_REPL_WELCOME "` requires a message" << std::endl;
+        std::exit(1);
+    }
+    repl_welcome_msg = args.at(0);
+    args.erase(args.begin());
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -420,6 +434,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         show_is_portable();
     else if (arg == COMMON_EARL2ARG_NO_CONFIG)
         flags |= __NO_CONFIG;
+    else if (arg == COMMON_EARL2ARG_REPL_WELCOME)
+        handle_repl_welcome(args);
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -686,7 +702,10 @@ main(int argc, char **argv) {
         assert_repl_theme_valid();
         flags |= __REPL;
         earl_argv.push_back("EARL-REPLv" VERSION);
-        std::cout << "EARL REPL v" << VERSION << '\n';
+        if (repl_welcome_msg != "")
+            std::cout << repl_welcome_msg << '\n';
+        else
+            std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
         repl::run(include_dirs);
     }
