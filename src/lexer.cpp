@@ -181,7 +181,7 @@ read_file(const char *filepath, std::vector<std::string> &include_dirs) {
     snprintf(full_path, sizeof(full_path), "%s%s", search_path, filepath);
     FILE *f = nullptr;
 
-    if ((flags & __WITHOUT_STDLIB) == 0)
+    if ((config::runtime::flags & __WITHOUT_STDLIB) == 0)
         f = fopen(full_path, "rb");
 
     // If not found in PREFIX path, search in include_dirs
@@ -450,7 +450,7 @@ lex_file(std::string &src,
 
     lexer->append(token_alloc(*lexer.get(), nullptr, 0, TokenType::Eof, row, col, fp));
 
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] lex'd file " << fp << " (#tokens=" << lexer->m_len << ")" << std::endl;
 
     return lexer;

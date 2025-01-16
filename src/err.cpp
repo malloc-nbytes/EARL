@@ -36,7 +36,7 @@ Err::err_wtok(Token *tok) {
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
 
     // Clear artifacts in REPL.
-    if ((flags & __REPL) != 0)
+    if ((config::runtime::flags & __REPL) != 0)
         std::cout << "\033[K" << "\r" << std::flush;
 
     Token *it = tok;
@@ -66,7 +66,7 @@ Err::err_w2tok(Token *tok1, Token *tok2) {
 void
 Err::err_wconflict(Token *newtok, Token *orig) {
     err_wtok(newtok);
-    if ((flags & __WATCH) == 0)
+    if ((config::runtime::flags & __WATCH) == 0)
         std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << ": <---- conflict\n";
 }
 

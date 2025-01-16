@@ -1295,7 +1295,7 @@ Parser::parse_stmt(Lexer &lexer) {
 
 std::unique_ptr<Program>
 Parser::parse_program(Lexer &lexer, const std::string filepath, std::string from) {
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] parsing file " << filepath << std::endl;
 
     std::vector<std::unique_ptr<Stmt>> stmts;
@@ -1303,7 +1303,7 @@ Parser::parse_program(Lexer &lexer, const std::string filepath, std::string from
     while (lexer.peek(0) && lexer.peek()->type() != TokenType::Eof)
         stmts.push_back(parse_stmt(lexer));
 
-    if (((flags & __CHECK) != 0) || ((flags & __VERBOSE) != 0)) {
+    if (((config::runtime::flags & __CHECK) != 0) || ((config::runtime::flags & __VERBOSE) != 0)) {
         if (from != "")
             std::cout << "[EARL check] (src=" << from << ") ";
         else

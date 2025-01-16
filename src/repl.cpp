@@ -138,37 +138,37 @@ read_repl_history() {
 
 static void
 yellow(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << YELLOW;
 }
 
 static void
 blue(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << BLUE;
 }
 
 static void
 green(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << GREEN;
 }
 
 static void
 gray(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << GRAY;
 }
 
 static void
 red(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << RED;
 }
 
 static void
 noc(void) {
-    if ((flags & __REPL_NOCOLOR) == 0)
+    if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
         std::cout << NOC;
 }
 

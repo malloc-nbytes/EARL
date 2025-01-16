@@ -10,12 +10,6 @@
 #include "hidden-file.hpp"
 #include "common.hpp"
 
-extern std::vector<std::string> watch_files;
-extern std::string REPL_THEME;
-extern std::vector<std::string> include_dirs;
-extern std::vector<std::string> cli_import_dirs;
-extern uint32_t flags;
-
 std::vector<std::string> read_earl_file(void) {
     std::string home_dir = std::getenv("HOME");
     std::string file_path = home_dir + "/.earl";
@@ -41,9 +35,9 @@ std::vector<std::string> read_earl_file(void) {
 void parse_lines(std::vector<std::string> &lines) {
     auto tf_check = [&](auto &ans, uint32_t flag) {
         if (ans == "true")
-            flags |= flag;
+            config::runtime::flags |= flag;
         else if (ans == "false")
-            flags &= ~flag;
+            config::runtime::flags &= ~flag;
         else
             std::cerr << "invalid value: `" << ans << "`, expecting true or false" << std::endl;
     };
@@ -74,7 +68,7 @@ void parse_lines(std::vector<std::string> &lines) {
         ans.erase(ans.find_last_not_of(" \t") + 1);
         if (ans.empty())
             return;
-        repl_welcome_msg = ans;
+        config::repl::welcome::msg = ans;
     };
 
     for (const auto &line : lines) {
@@ -99,8 +93,8 @@ void parse_lines(std::vector<std::string> &lines) {
                 auto values = get_comma_sep_values(value);
                 if (values.has_value()) {
                     for (const auto &v : values.value())
-                        watch_files.push_back(get_name(v));
-                    flags |= __WATCH;
+                        config::prelude::watch::files.push_back(get_name(v));
+                    config::runtime::flags |= __WATCH;
                 }
             }
             else if (key == COMMON_EARL2ARG_SHOWFUNS)
@@ -125,18 +119,18 @@ void parse_lines(std::vector<std::string> &lines) {
                 auto values = get_comma_sep_values(value);
                 if (values.has_value()) {
                     for (const auto &v : values.value())
-                        include_dirs.push_back(get_name(v));
+                        config::prelude::include::dirs.push_back(get_name(v));
                 }
             }
             else if (key == COMMON_EARL2ARG_IMPORT) {
                 auto values = get_comma_sep_values(value);
                 if (values.has_value()) {
                     for (const auto &v : values.value())
-                        cli_import_dirs.push_back(get_name(v));
+                        config::prelude::import::dirs.push_back(get_name(v));
                 }
             }
             else if (key == COMMON_EARL2ARG_REPL_THEME)
-                REPL_THEME = value;
+                config::repl::theme::selected = value;
             else if (key == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
                 tf_check(value, __DISABLE_IMPLICIT_RETURNS);
             else if (key == COMMON_EARL2ARG_REPL_WELCOME)
@@ -201,9 +195,6 @@ void create_default_config_file(void) {
 }
 
 void handle_hidden_file(void) {
-    if ((flags & __NO_CONFIG) != 0)
-        return;
-
     auto lines = read_earl_file();
     if (lines.size() != 0)
         parse_lines(lines);

@@ -560,8 +560,8 @@ Intrinsics::intrinsic_argv(std::vector<std::shared_ptr<earl::value::Obj>> &param
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(params, 0, "argv", expr);
     std::vector<std::shared_ptr<earl::value::Obj>> args = {};
-    for (size_t i = 0; i < earl_argv.size(); ++i)
-        args.push_back(std::make_shared<earl::value::Str>(earl_argv.at(i)));
+    for (size_t i = 0; i < config::runtime::argv.size(); ++i)
+        args.push_back(std::make_shared<earl::value::Str>(config::runtime::argv.at(i)));
     return std::make_shared<earl::value::List>(args);
 }
 
@@ -675,7 +675,7 @@ Intrinsics::intrinsic___internal_unix_system__(std::vector<std::shared_ptr<earl:
     __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "__internal_unix_system__", expr);
     const std::string cmd = params[0]->to_cxxstring();
     int exitcode = system(cmd.c_str());
-    if (exitcode == -1 && ((flags & __ERROR_ON_BASH_FAIL) != 0)) {
+    if (exitcode == -1 && ((config::runtime::flags & __ERROR_ON_BASH_FAIL) != 0)) {
         Err::err_wexpr(expr);
         const std::string msg = "failed to execute system command `"+cmd+"`";
         throw InterpreterException(msg);
@@ -801,7 +801,7 @@ __intrinsic_print(std::shared_ptr<earl::value::Obj> param, std::ostream *stream 
         stream = &std::cout;
     *stream << param->to_cxxstring();
     // Clearing for the REPL
-    if ((flags & __REPL) != 0)
+    if ((config::runtime::flags & __REPL) != 0)
         *stream << "\033[K" << std::flush;
 }
 

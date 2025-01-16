@@ -69,9 +69,6 @@
 #define RIGHT_ARROW 'C'
 #define LEFT_ARROW 'D'
 
-extern std::string REPL_THEME;
-extern std::vector<std::string> AVAILABLE_REPL_THEMES;
-
 namespace repled {
     const char *main_color(void);
     const char *keyword_color(void);

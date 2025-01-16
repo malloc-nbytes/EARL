@@ -30,9 +30,9 @@
 
 void handle_flag(unsigned flag, bool set) {
     if (set)
-        flags |= flag;
+        config::runtime::flags |= flag;
     else
-        flags &= ~flag;
+        config::runtime::flags &= ~flag;
 }
 
 void handle_2flag(std::string flag, bool set) {

@@ -108,7 +108,7 @@ namespace Err {
 
 #define WARN(msg, expr)                                         \
     do {                                                        \
-        if ((flags & __SUPPRESS_WARNINGS) == 0) {               \
+        if ((config::runtime::flags & __SUPPRESS_WARNINGS) == 0) {               \
             Err::err_wexpr(expr);                               \
             fprintf(stderr, "[EARL] warning: " msg "\n");       \
         }                                                       \
@@ -116,7 +116,7 @@ namespace Err {
 
 #define WARN_WARGS(msg, expr, ...)                                      \
     do {                                                                \
-        if ((flags & __SUPPRESS_WARNINGS) == 0) {                       \
+        if ((config::runtime::flags & __SUPPRESS_WARNINGS) == 0) {                       \
             Err::err_wexpr(expr);                                       \
             fprintf(stderr, "[EARL] warning: " msg, __VA_ARGS__);       \
             fprintf(stderr, "\n");                                      \

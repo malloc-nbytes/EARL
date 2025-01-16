@@ -456,7 +456,7 @@ eval_user_defined_function_wo_params(const std::string &id,
     }
 
     if (func_exists || var_exists) {
-        if (((flags & __SHOWFUNS) != 0) || ((flags & __VERBOSE) != 0))
+        if (((config::runtime::flags & __SHOWFUNS) != 0) || ((config::runtime::flags & __VERBOSE) != 0))
             std::cout << "[EARL show-funs] " << id << std::endl;
 
         std::shared_ptr<earl::function::Obj> func = nullptr;
@@ -571,7 +571,7 @@ eval_user_defined_function(ExprFuncCall *expr,
     }
 
     if (func_exists || var_exists) {
-        if ((flags & __SHOWFUNS) != 0)
+        if ((config::runtime::flags & __SHOWFUNS) != 0)
             std::cout << "[EARL show-funs] " << id << '\n';
 
         std::shared_ptr<earl::function::Obj> func = nullptr;
@@ -1728,7 +1728,7 @@ eval_stmt_let_wmultiple_vars(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
 
     int i = 0;
     for (auto &tok : stmt->m_ids) {
-        if ((flags & __SHOWLETS) != 0)
+        if ((config::runtime::flags & __SHOWLETS) != 0)
             std::cout << "[EARL show-lets] "
                       << stmt->m_ids.at(i)->lexeme()
                       << " = "
@@ -1797,7 +1797,7 @@ eval_stmt_let(StmtLet *stmt, std::shared_ptr<Ctx> &ctx) {
     else
         value = unpack_ER(rhs, ctx, ref);
 
-    if ((flags & __SHOWLETS) != 0)
+    if ((config::runtime::flags & __SHOWLETS) != 0)
         std::cout << "[EARL show-lets] " << id << " = " << value->to_cxxstring() << std::endl;
 
     if (id == "_")
@@ -1828,8 +1828,8 @@ eval_stmt_expr(StmtExpr *stmt, std::shared_ptr<Ctx> &ctx) {
     auto value = unpack_ER(er, ctx, false);
     if (value &&
         value->type() != earl::value::Type::Void
-        && ((flags & __REPL) == 0)
-        && ((flags & __DISABLE_IMPLICIT_RETURNS) != 0)) {
+        && ((config::runtime::flags & __REPL) == 0)
+        && ((config::runtime::flags & __DISABLE_IMPLICIT_RETURNS) != 0)) {
         Err::err_wexpr(stmt->m_expr.get());
         const std::string msg = "Inplace expression will be evaluated and returned.\n"
             "Either explicitly `return` or assign the unused value to a unit binding: `let _ = <expr>;`";
@@ -1864,7 +1864,7 @@ Interpreter::eval_stmt_block(StmtBlock *block, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_def(StmtDef *stmt, std::shared_ptr<Ctx> &ctx, bool evaling_class_method) {
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] defining function " << stmt->m_id->lexeme() << std::endl;
 
     const std::string &id = stmt->m_id->lexeme();
@@ -1948,7 +1948,7 @@ eval_stmt_mut(StmtMut *stmt, std::shared_ptr<Ctx> &ctx) {
     auto l = unpack_ER(left_er, ctx, true);
     auto r = unpack_ER(right_er, ctx, false);
 
-    bool showmuts = (flags & __SHOWMUTS) != 0;
+    bool showmuts = (config::runtime::flags & __SHOWMUTS) != 0;
 
     if (showmuts) {
         auto lvar_owner = l->borrow_owner();
@@ -2295,7 +2295,7 @@ eval_stmt_for(StmtFor *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] defining class " << stmt->m_id->lexeme() << std::endl;
     dynamic_cast<WorldCtx *>(ctx.get())->define_class(stmt);
     stmt->m_evald = true;
@@ -2304,7 +2304,7 @@ eval_stmt_class(StmtClass *stmt, std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<earl::value::Obj>
 eval_stmt_mod(StmtMod *stmt, std::shared_ptr<Ctx> &ctx) {
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] found module " << stmt->m_id->lexeme() << std::endl;
     dynamic_cast<WorldCtx *>(ctx.get())->set_mod(stmt->m_id->lexeme());
     stmt->m_evald = true;
@@ -2327,14 +2327,14 @@ eval_stmt_import(StmtImport *stmt, std::shared_ptr<Ctx> &ctx) {
     PackedERPreliminary perp;
     auto path_obj                     = unpack_ER(path_er, ctx, &perp);
     std::string path                  = path_obj->to_cxxstring();
-    std::string src_code              = read_file(path.c_str(), include_dirs);
+    std::string src_code              = read_file(path.c_str(), config::prelude::include::dirs);
     std::unique_ptr<Lexer> lexer      = lex_file(src_code,
                                                  path,
                                                  keywords,
                                                  types,
                                                  comment);
     std::unique_ptr<Program> program = nullptr;
-    if ((flags & __CHECK) != 0)
+    if ((config::runtime::flags & __CHECK) != 0)
         program = Parser::parse_program(*lexer.get(), path, /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
     else
         program = Parser::parse_program(*lexer.get(), path);
@@ -2453,7 +2453,7 @@ eval_stmt_match(StmtMatch *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_enum(StmtEnum *stmt, std::shared_ptr<Ctx> &ctx) {
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] defining enum " << stmt->m_id->lexeme() << std::endl;
 
     if (ctx->type() != CtxType::World) {
@@ -2553,11 +2553,11 @@ eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
 
 static void
 system_bash(const std::string &cmd) {
-    if ((flags & __SHOWBASH) != 0)
+    if ((config::runtime::flags & __SHOWBASH) != 0)
         std::cout << "+ " << cmd << std::endl;
 
     std::string full_command = "";
-    if ((flags & __ERROR_ON_BASH_FAIL) != 0)
+    if ((config::runtime::flags & __ERROR_ON_BASH_FAIL) != 0)
         full_command = "set -e; " + cmd;
     else
         full_command = std::string(cmd);
@@ -2572,7 +2572,7 @@ system_bash(const std::string &cmd) {
         goto ok;
     }
     else {
-        if ((flags & __ERROR_ON_BASH_FAIL) != 0) {
+        if ((config::runtime::flags & __ERROR_ON_BASH_FAIL) != 0) {
             const std::string msg = "BASH command did not terminate normally with exit code: " + std::to_string(x);
             throw InterpreterException(msg);
         }
@@ -2582,7 +2582,7 @@ system_bash(const std::string &cmd) {
     }
 
 warn:
-    if ((flags & __ERROR_ON_BASH_FAIL) != 0) {
+    if ((config::runtime::flags & __ERROR_ON_BASH_FAIL) != 0) {
         const std::string msg = "BASH command failed with exit code: " + std::to_string(x);
         throw InterpreterException(msg);
     }
@@ -2603,7 +2603,7 @@ eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
     auto get_bash_res = [&](std::string cmd, Stmt *stmt) {
-        bool sanatize = (flags & __NO_SANITIZE_PIPES) == 0;
+        bool sanatize = (config::runtime::flags & __NO_SANITIZE_PIPES) == 0;
         std::string output = "";
         std::array<char, 256> buffer;
         FILE *pipe = popen(cmd.c_str(), "r");
@@ -2730,7 +2730,7 @@ eval_stmt_use(StmtUse *stmt, std::shared_ptr<Ctx> &ctx) {
     auto path_obj = unpack_ER(path_er, ctx, &perp);
     std::string path = path_obj->to_cxxstring();
 
-    if ((flags & __VERBOSE) != 0)
+    if ((config::runtime::flags & __VERBOSE) != 0)
         std::cout << "[EARL] using external script `" << path << "`" << std::endl;
 
     bool rel_single_ok = path.size() > 2 && path[0] == '.' && path[1] == '/';
@@ -2802,7 +2802,7 @@ eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
         else
             value = unpack_ER(rhs, ctx, false);
 
-        if ((flags & __SHOWLETS) != 0)
+        if ((config::runtime::flags & __SHOWLETS) != 0)
             std::cout << "[EARL show-lets] WHERE " << id << " = " << value->to_cxxstring() << std::endl;
 
         if (id == "_")
@@ -2861,23 +2861,23 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
 static void
 import_cli_import_files(std::shared_ptr<Ctx> &ctx) {
     // Need to move so these files do not import other cli imports.
-    auto cli_import_copy = std::move(cli_import_dirs);
-    cli_import_dirs.clear();
+    auto cli_import_copy = std::move(config::prelude::import::dirs);
+    config::prelude::import::dirs.clear();
     while (cli_import_copy.size() > 0) {
         auto f = cli_import_copy.at(0);
         cli_import_copy.erase(cli_import_copy.begin());
 
-        if ((flags & __VERBOSE) != 0)
+        if ((config::runtime::flags & __VERBOSE) != 0)
             std::cout << "[EARL] importing file `" << f << "` from command line flag" << std::endl;
 
         std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;
         std::vector<std::string> types    = {};
         std::string comment               = COMMON_EARL_COMMENT;
-        std::string src_code              = read_file(f.c_str(), include_dirs);
+        std::string src_code              = read_file(f.c_str(), config::prelude::include::dirs);
         std::unique_ptr<Lexer> lexer      = lex_file(src_code, f, keywords, types, comment);
         std::unique_ptr<Program> program  = nullptr;
 
-        if ((flags & __CHECK) != 0)
+        if ((config::runtime::flags & __CHECK) != 0)
             program = Parser::parse_program(*lexer.get(), f, /*from=*/dynamic_cast<WorldCtx *>(ctx.get())->get_filepath());
         else
             program = Parser::parse_program(*lexer.get(), f);
@@ -2889,12 +2889,12 @@ import_cli_import_files(std::shared_ptr<Ctx> &ctx) {
 
 std::shared_ptr<Ctx>
 Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> lexer) {
-    const bool one_shot = (flags & __ONE_SHOT) != 0;
+    const bool one_shot = (config::runtime::flags & __ONE_SHOT) != 0;
 
     std::shared_ptr<Ctx> ctx = std::make_shared<WorldCtx>(std::move(lexer), std::move(program));
     WorldCtx *wctx = dynamic_cast<WorldCtx *>(ctx.get());
 
-    if ((flags & __CHECK) != 0) {
+    if ((config::runtime::flags & __CHECK) != 0) {
         for (size_t i = 0; i < wctx->stmts_len(); ++i) {
             Stmt *stmt = wctx->stmt_at(i);
             if (stmt->stmt_type() == StmtType::Import)
@@ -2903,14 +2903,14 @@ Interpreter::interpret(std::unique_ptr<Program> program, std::unique_ptr<Lexer> 
         return ctx;
     }
 
-    if (cli_import_dirs.size() > 0)
+    if (config::prelude::import::dirs.size() > 0)
         import_cli_import_files(ctx);
 
     // Collect all function definitions and class definitions first...
     // Also check to make sure the first statement is a module declaration.
     for (size_t i = 0; i < wctx->stmts_len(); ++i) {
         Stmt *stmt = wctx->stmt_at(i);
-        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((flags & __REPL) == 0) && !one_shot) {
+        if (i == 0 && stmt->stmt_type() != StmtType::Mod && ((config::runtime::flags & __REPL) == 0) && !one_shot) {
             WARN("A `module` statement is expected to be the first statement of every file. "
                  "Not having this may lead to undefined behavior and break functionality.", nullptr);
         }

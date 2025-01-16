@@ -40,40 +40,49 @@
 #include "earl-to-py.hpp"
 #include "hidden-file.hpp"
 
-static std::vector<std::string> scripts = {};
-std::vector<std::string> earl_argv = {};
-std::vector<std::string> watch_files = {};
+namespace config {
+    namespace prelude {
+        namespace watch {
+            std::vector<std::string> files = {};
+            size_t run_count = 1;
+        };
+        namespace one_shot {
+            std::string code = "";
+        };
+        namespace time {
+            std::chrono::time_point<std::chrono::high_resolution_clock> start;
+            std::chrono::time_point<std::chrono::high_resolution_clock> end;
+        };
+        namespace include {
+            std::vector<std::string> dirs = {};
+        };
+        namespace import {
+            std::vector<std::string> dirs = {};
+        };
+        namespace topy {
+            std::string formatter = "";
+            std::string output = "";
+        };
+        std::vector<std::string> scripts = {};
+    };
 
-// --time resources
-static std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
+    namespace runtime {
+        std::vector<std::string> argv = {};
+        uint32_t flags = 0x00;
+    };
 
-// --repl-welcome resources
-std::string repl_welcome_msg = "";
+    namespace repl {
+        namespace welcome {
+            std::string msg = "";
+        };
+        namespace theme {
+            std::vector<std::string> available = COMMON_EARL_REPL_THEME_ASCPL;
+            std::string selected = COMMON_EARL_REPL_THEME_DEFAULT;
+        };
+    };
+};
 
-// --one-shot resources
-std::string one_shot_code = "";
-
-// --repl-theme resources
-std::vector<std::string> AVAILABLE_REPL_THEMES = COMMON_EARL_REPL_THEME_ASCPL;
-std::string REPL_THEME = COMMON_EARL_REPL_THEME_DEFAULT;
-
-// --include resources
-std::vector<std::string> include_dirs = {};
-
-// --import resources
-std::vector<std::string> cli_import_dirs = {};
-std::vector<std::string> one_shot_cli_import_dirs_copy = {};
-
-// --watch resources
-static size_t run_count = 1;
-
-// --to-py resources
-static std::string to_py_formatter = "";
-static std::string to_py_output = "";
-
-uint32_t flags = 0x00;
-
-#include <iostream>
+static std::vector<std::string> one_shot_cli_import_dirs_copy = {};
 
 #ifdef _WIN32
 #include <windows.h>
@@ -180,7 +189,6 @@ usage(void) {
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
     std::cerr << "            --time . . . . . . . . . . . . . . Time execution" << std::endl;
-    std::cerr << "            --no-config  . . . . . . . . . . . Do not use the config file" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
@@ -221,7 +229,7 @@ gather_watch_files(std::vector<std::string> &args) {
     while (args.size() > 0) {
         if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
             break;
-        watch_files.push_back(std::string(args.at(0)));
+        config::prelude::watch::files.push_back(std::string(args.at(0)));
         args.erase(args.begin());
     }
 }
@@ -246,7 +254,7 @@ try_guess_wrong_arg(std::string &arg) {
 static void
 handle_to_py_flag(std::vector<std::string> &args) {
     std::cout << "warning: flag `--" << COMMON_EARL2ARG_TOPY << "` is experimental and may not work correctly" << std::endl;
-    flags |= __TOPY;
+    config::runtime::flags |= __TOPY;
     while (args.size() != 0 && args[0][0] != '-') {
         const std::string &option = args.at(0);
         std::string left = "", right = "";
@@ -255,9 +263,9 @@ handle_to_py_flag(std::vector<std::string> &args) {
             left = option.substr(0, pos);
             right = option.substr(pos+1);
             if (left == "formatter")
-                to_py_formatter = right;
+                config::prelude::topy::formatter = right;
             else if (left == "output")
-                to_py_output = right;
+                config::prelude::topy::output = right;
             else {
                 std::cerr << "error: invalid option `" << left <<  "` for `--" << COMMON_EARL2ARG_TOPY << "`";
                 std::exit(EXIT_FAILURE);
@@ -291,7 +299,7 @@ static void
 add_import_file(std::vector<std::string> &args) {
     if (args.size() > 0) {
         one_shot_cli_import_dirs_copy.push_back(args.at(0));
-        cli_import_dirs.push_back(args.at(0));
+        config::prelude::import::dirs.push_back(args.at(0));
         args.erase(args.begin());
     }
     else {
@@ -304,13 +312,13 @@ static void
 assert_repl_theme_valid(void) {
     bool found = false;
     for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
-        if (REPL_THEME == t) {
+        if (config::repl::theme::selected == t) {
             found = true;
             break;
         }
     }
     if (!found) {
-        std::cerr << "invalid theme: `" << REPL_THEME << "`" << std::endl;
+        std::cerr << "invalid theme: `" << config::repl::theme::selected << "`" << std::endl;
         std::cerr << "see `--" << COMMON_EARL2ARG_REPL_THEME << " list` to view all themes" << std::endl;
         std::exit(1);
     }
@@ -323,14 +331,14 @@ get_repl_theme(std::vector<std::string> &args) {
             std::cerr << "REPL Themes:" << std::endl;
             for (auto t : COMMON_EARL_REPL_THEME_ASCPL) {
                 std::cerr << "| " << t;
-                if (REPL_THEME == t)
+                if (config::repl::theme::selected == t)
                     std::cout << "        [selected]";
                 std::cout << std::endl;
             }
             std::exit(0);
         }
 
-        REPL_THEME = args.at(0);
+        config::repl::theme::selected = args.at(0);
         args.erase(args.begin());
         // Theme checking is done in main().
     }
@@ -343,7 +351,7 @@ get_repl_theme(std::vector<std::string> &args) {
 static void
 add_include_file(std::vector<std::string> &args) {
     if (args.size() > 0) {
-        include_dirs.push_back(args.at(0));
+        config::prelude::include::dirs.push_back(args.at(0));
         args.erase(args.begin());
     }
     else {
@@ -357,19 +365,19 @@ get_batch_scripts(std::vector<std::string> &args) {
     while (args.size() > 0) {
         if (!std::filesystem::exists(std::filesystem::path(args.at(0))))
             break;
-        scripts.push_back(std::string(args.at(0)));
+        config::prelude::scripts.push_back(std::string(args.at(0)));
         args.erase(args.begin());
     }
 }
 
 static void
 handle_one_shot(std::vector<std::string> &args) {
-    earl_argv.push_back("EARL-one-shot");
+    config::runtime::argv.push_back("EARL-one-shot");
     if (args.size() == 0) {
         std::cerr << "flag `--" COMMON_EARL2ARG_ONE_SHOT "` requires a line of code" << std::endl;
         std::exit(1);
     }
-    one_shot_code = args.at(0);
+    config::prelude::one_shot::code = args.at(0);
     args.erase(args.begin());
 }
 
@@ -379,48 +387,48 @@ handle_repl_welcome(std::vector<std::string> &args) {
         std::cerr << "flag `--" COMMON_EARL2ARG_REPL_WELCOME "` requires a message" << std::endl;
         std::exit(1);
     }
-    repl_welcome_msg = args.at(0);
+    config::repl::welcome::msg = args.at(0);
     args.erase(args.begin());
 }
 
 static void
 handle_time(void) {
-    flags |= __TIME;
-    time_start = std::chrono::high_resolution_clock::now();
+    config::runtime::flags |= __TIME;
+    config::prelude::time::start = std::chrono::high_resolution_clock::now();
 }
 
 static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
-        flags |= __WITHOUT_STDLIB;
+        config::runtime::flags |= __WITHOUT_STDLIB;
     else if (arg == COMMON_EARL2ARG_HELP)
         usage();
     else if (arg == COMMON_EARL2ARG_VERSION)
         version();
     else if (arg == COMMON_EARL2ARG_REPL_NOCOLOR)
-        flags |= __REPL_NOCOLOR;
+        config::runtime::flags |= __REPL_NOCOLOR;
     else if (arg == COMMON_EARL2ARG_WATCH) {
         gather_watch_files(args);
-        flags |= __WATCH;
+        config::runtime::flags |= __WATCH;
     }
     else if (arg == COMMON_EARL2ARG_SHOWFUNS)
-        flags |= __SHOWFUNS;
+        config::runtime::flags |= __SHOWFUNS;
     else if (arg == COMMON_EARL2ARG_CHECK)
-        flags |= __CHECK;
+        config::runtime::flags |= __CHECK;
     else if (arg == COMMON_EARL2ARG_TOPY)
         handle_to_py_flag(args);
     else if (arg == COMMON_EARL2ARG_VERBOSE)
-        flags |= __VERBOSE;
+        config::runtime::flags |= __VERBOSE;
     else if (arg == COMMON_EARL2ARG_INSTALL_PREFIX)
         install_prefix();
     else if (arg == COMMON_EARL2ARG_SHOWBASH)
-        flags |= __SHOWBASH;
+        config::runtime::flags |= __SHOWBASH;
     else if (arg == COMMON_EARL2ARG_SHOWLETS)
-        flags |= __SHOWLETS;
+        config::runtime::flags |= __SHOWLETS;
     else if (arg == COMMON_EARL2ARG_SHOWMUTS)
-        flags |= __SHOWMUTS;
+        config::runtime::flags |= __SHOWMUTS;
     else if (arg == COMMON_EARL2ARG_NO_SANITIZE_PIPES)
-        flags |= __NO_SANITIZE_PIPES;
+        config::runtime::flags |= __NO_SANITIZE_PIPES;
     else if (arg == COMMON_EARL2ARG_INCLUDE)
         add_include_file(args);
     else if (arg == COMMON_EARL2ARG_IMPORT)
@@ -432,19 +440,17 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     else if (arg == COMMON_EARL2ARG_BATCH)
         get_batch_scripts(args);
     else if (arg == COMMON_EARL2ARG_ERROR_ON_BASH_FAIL)
-        flags |= __ERROR_ON_BASH_FAIL;
+        config::runtime::flags |= __ERROR_ON_BASH_FAIL;
     else if (arg == COMMON_EARL2ARG_SUPPRESS_WARNINGS)
-        flags |= __SUPPRESS_WARNINGS;
+        config::runtime::flags |= __SUPPRESS_WARNINGS;
     else if (arg == COMMON_EARL2ARG_DISABLE_IMPLICIT_RETURNS)
-        flags |= __DISABLE_IMPLICIT_RETURNS;
+        config::runtime::flags |= __DISABLE_IMPLICIT_RETURNS;
     else if (arg == COMMON_EARL2ARG_ONE_SHOT) {
-        flags |= __ONE_SHOT;
+        config::runtime::flags |= __ONE_SHOT;
         handle_one_shot(args);
     }
     else if (arg == COMMON_EARL2ARG_PORTABLE)
         show_is_portable();
-    else if (arg == COMMON_EARL2ARG_NO_CONFIG)
-        flags |= __NO_CONFIG;
     else if (arg == COMMON_EARL2ARG_REPL_WELCOME)
         handle_repl_welcome(args);
     else if (arg == COMMON_EARL2ARG_TIME)
@@ -467,11 +473,11 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
             version();
         } break;
         case COMMON_EARL1ARG_CHECK: {
-            flags |= __CHECK;
+            config::runtime::flags |= __CHECK;
         } break;
         case COMMON_EARL1ARG_WATCH: {
             gather_watch_files(args);
-            flags |= __WATCH;
+            config::runtime::flags |= __WATCH;
         } break;
         case COMMON_EARL1ARG_INCLUDE: {
             add_include_file(args);
@@ -483,19 +489,19 @@ parse_1hypharg(std::string arg, std::vector<std::string> &args) {
             get_batch_scripts(args);
         } break;
         case COMMON_EARL1ARG_VERBOSE: {
-            flags |= __VERBOSE;
+            config::runtime::flags |= __VERBOSE;
         } break;
         case COMMON_EARL1ARG_SHOW_BASH: {
-            flags |= __SHOWBASH;
+            config::runtime::flags |= __SHOWBASH;
         } break;
         case COMMON_EARL1ARG_ERROR_ON_BASH_FAIL: {
-            flags |= __ERROR_ON_BASH_FAIL;
+            config::runtime::flags |= __ERROR_ON_BASH_FAIL;
         } break;
         case COMMON_EARL1ARG_SUPPRESS_WARNINGS: {
-            flags |= __SUPPRESS_WARNINGS;
+            config::runtime::flags |= __SUPPRESS_WARNINGS;
         } break;
         case COMMON_EARL1ARG_ONE_SHOT: {
-            flags |= __ONE_SHOT;
+            config::runtime::flags |= __ONE_SHOT;
             handle_one_shot(args);
         } break;
         default: {
@@ -524,7 +530,7 @@ static void
 parse_earl_argv(std::vector<std::string> &args) {
     args.erase(args.begin());
     for (auto &s : args)
-        earl_argv.push_back(s);
+        config::runtime::argv.push_back(s);
 }
 
 static void
@@ -550,9 +556,9 @@ handlecli(int argc, char **argv) {
             if (filepath != "")
                 ERR(Err::Type::Fatal, "too many input files provided");
             filepath = entry;
-            earl_argv.push_back(filepath);
+            config::runtime::argv.push_back(filepath);
             args.erase(args.begin());
-            scripts.push_back(filepath);
+            config::prelude::scripts.push_back(filepath);
         }
     }
 }
@@ -565,13 +571,13 @@ to_py(std::string &filepath,
     std::unique_ptr<Lexer> lexer = nullptr;
     std::unique_ptr<Program> program = nullptr;
 
-    if (to_py_output == "") {
+    if (config::prelude::topy::output == "") {
         std::cerr << "[EARL] error: missing output filepath for flag `--" << COMMON_EARL2ARG_TOPY << "`" << std::endl;
         std::exit(EXIT_FAILURE);
     }
 
     try {
-        std::string src_code = read_file(filepath.c_str(), include_dirs);
+        std::string src_code = read_file(filepath.c_str(), config::prelude::include::dirs);
         lexer = lex_file(src_code, filepath, keywords, types, comment);
     } catch (const LexerException &e) {
         std::cerr << "Lexer error: " << e.what() << std::endl;
@@ -584,20 +590,20 @@ to_py(std::string &filepath,
 
     auto pysrc = earl_to_py(std::move(program));
 
-    if (to_py_output == "stdout")
+    if (config::prelude::topy::output == "stdout")
         std::cout << pysrc << std::endl;
     else {
-        std::ofstream pysrc_outfile(to_py_output);
+        std::ofstream pysrc_outfile(config::prelude::topy::output);
         if (!pysrc_outfile) {
-            std::cerr << "[EARL] error: opening file: " << to_py_output << std::endl;
+            std::cerr << "[EARL] error: opening file: " << config::prelude::topy::output << std::endl;
             std::exit(EXIT_FAILURE);
         }
         pysrc_outfile << pysrc;
         pysrc_outfile.close();
     }
 
-    if (to_py_formatter != "") {
-        std::string cmd = to_py_formatter+" "+to_py_output;
+    if (config::prelude::topy::formatter != "") {
+        std::string cmd = config::prelude::topy::formatter+" "+config::prelude::topy::output;
         int exit_code = system(cmd.c_str());
         if (exit_code != 0) {
             std::cerr << "[EARL] error: formatting failed with code " << exit_code << std::endl;
@@ -612,8 +618,8 @@ do_one_shot(std::string &src,
             std::vector<std::string> types,
             std::string comment) {
 
-    if (one_shot_cli_import_dirs_copy.size() != cli_import_dirs.size())
-        cli_import_dirs = one_shot_cli_import_dirs_copy;
+    if (one_shot_cli_import_dirs_copy.size() != config::prelude::import::dirs.size())
+        config::prelude::import::dirs = one_shot_cli_import_dirs_copy;
 
     std::unique_ptr<Lexer> lexer = nullptr;
     std::unique_ptr<Program> program = nullptr;
@@ -645,21 +651,21 @@ main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
-    handlecli(argc, argv);
     assert_repl_theme_valid();
     handle_hidden_file();
+    handlecli(argc, argv);
 
-    if ((flags & __WATCH) != 0) {
-        if (watch_files.size() == 0) {
+    if ((config::runtime::flags & __WATCH) != 0) {
+        if (config::prelude::watch::files.size() == 0) {
             std::cerr << "Cannot use flag `" << COMMON_EARL2ARG_WATCH << "` with no watch files\n";
             std::exit(1);
         }
-        hot_reload::register_watch_files(watch_files);
+        hot_reload::register_watch_files(config::prelude::watch::files);
         std::cout << "[EARL] Now watching files and will hot reload on file save" << std::endl;
     }
 
     bool locked = true;
-    if (scripts.size() > 0 || (flags & __ONE_SHOT) != 0) {
+    if (config::prelude::scripts.size() > 0 || (config::runtime::flags & __ONE_SHOT) != 0) {
         do {
             // No need to check for __WATCH cause this statement
             // will not happen unless we are looping, which is
@@ -669,25 +675,25 @@ main(int argc, char **argv) {
             else
                 locked = false;
 
-            if ((flags & __ONE_SHOT) != 0)
-                do_one_shot(one_shot_code, keywords, types, comment);
+            if ((config::runtime::flags & __ONE_SHOT) != 0)
+                do_one_shot(config::prelude::one_shot::code, keywords, types, comment);
             else {
-                for (auto &filepath : scripts) {
-                    if ((flags & __TOPY) != 0)
+                for (auto &filepath : config::prelude::scripts) {
+                    if ((config::runtime::flags & __TOPY) != 0)
                         to_py(filepath, keywords, types, comment);
 
                     else if (filepath != "") {
-                        if ((flags & __WATCH) != 0)
-                            std::cout << "=== " << run_count++ << " ======================" << std::endl;
+                        if ((config::runtime::flags & __WATCH) != 0)
+                            std::cout << "=== " << config::prelude::watch::run_count++ << " ======================" << std::endl;
 
                         std::unique_ptr<Lexer> lexer = nullptr;
                         std::unique_ptr<Program> program = nullptr;
                         try {
-                            std::string src_code = read_file(filepath.c_str(), include_dirs);
+                            std::string src_code = read_file(filepath.c_str(), config::prelude::include::dirs);
                             lexer = lex_file(src_code, filepath, keywords, types, comment);
                         } catch (const LexerException &e) {
                             std::cerr << "Lexer error: " << e.what() << std::endl;
-                            if ((flags & __WATCH) == 0)
+                            if ((config::runtime::flags & __WATCH) == 0)
                                 return 1;
                             continue;
                         }
@@ -695,7 +701,7 @@ main(int argc, char **argv) {
                             program = Parser::parse_program(*lexer.get(), filepath);
                         } catch (const ParserException &e) {
                             std::cerr << "Parser error: " << e.what() << std::endl;
-                            if ((flags & __WATCH) == 0)
+                            if ((config::runtime::flags & __WATCH) == 0)
                                 return 1;
                             continue;
                         }
@@ -703,29 +709,29 @@ main(int argc, char **argv) {
                             (void)Interpreter::interpret(std::move(program), std::move(lexer));
                         } catch (const InterpreterException &e) {
                             std::cerr << "Interpreter error: " << e.what() << std::endl;
-                            if ((flags & __WATCH) == 0)
+                            if ((config::runtime::flags & __WATCH) == 0)
                                 return 1;
                         }
                     }
                 }
             }
-        } while ((flags & __WATCH) != 0);
+        } while ((config::runtime::flags & __WATCH) != 0);
     }
     else {
         assert_repl_theme_valid();
-        flags |= __REPL;
-        earl_argv.push_back("EARL-REPLv" VERSION);
-        if (repl_welcome_msg != "")
-            std::cout << repl_welcome_msg << '\n';
+        config::runtime::flags |= __REPL;
+        config::runtime::argv.push_back("EARL-REPLv" VERSION);
+        if (config::repl::welcome::msg != "")
+            std::cout << config::repl::welcome::msg << '\n';
         else
             std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
-        repl::run(include_dirs);
+        repl::run(config::prelude::include::dirs);
     }
 
-    if ((flags & __TIME) != 0) {
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - time_start;
+    if ((config::runtime::flags & __TIME) != 0) {
+        config::prelude::time::end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = config::prelude::time::end - config::prelude::time::start;
         std::cout << "[EARL time] Execution time: " << elapsed.count() << " seconds" << std::endl;
     }
 

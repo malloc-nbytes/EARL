@@ -41,22 +41,22 @@ static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 static repled::PrefixTrie TRIE;
 
 const char *repled::main_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return YELLOW;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return CYAN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE INVERT;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return YELLOW;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return BRIGHT_PINK UNDERLINE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE BOLD;
     }
     assert(false && "unhandled theme");
@@ -65,22 +65,22 @@ const char *repled::main_color(void) {
 
 // used for identifiers, numbers, etc.
 const char *repled::misc_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return "";
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return CYAN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE BOLD;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return PINK BOLD;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE;
     }
     assert(false && "unhandled theme");
@@ -88,22 +88,22 @@ const char *repled::misc_color(void) {
 }
 
 const char *repled::quote_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return GREEN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return BLUE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE INVERT;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE ITALIC;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return PINK ITALIC;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE ITALIC;
     }
     assert(false && "unhandled theme");
@@ -111,22 +111,22 @@ const char *repled::quote_color(void) {
 }
 
 const char *repled::error_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return RED;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return RED;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return RED;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return RED;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return RED;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE UNDERLINE;
     }
     assert(false && "unhandled theme");
@@ -134,22 +134,22 @@ const char *repled::error_color(void) {
 }
 
 const char *repled::msg_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return GRAY;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return GRAY;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE INVERT;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return BROWN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return BLUE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE DIM;
     }
     assert(false && "unhandled theme");
@@ -157,22 +157,22 @@ const char *repled::msg_color(void) {
 }
 
 const char *repled::stdout_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return GREEN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return CYAN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return PURPLE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE;
     }
     assert(false && "unhandled theme");
@@ -180,22 +180,22 @@ const char *repled::stdout_color(void) {
 }
 
 const char *repled::stdout_type_color(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return GRAY;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return BLUE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE ITALIC;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return PINK;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE ITALIC;
     }
     assert(false && "unhandled theme");
@@ -203,22 +203,22 @@ const char *repled::stdout_type_color(void) {
 }
 
 const char *repled::status_ok(void) {
-    if (REPL_THEME == COMMON_EARL_REPL_THEME_DEFAULT) {
+    if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
         return GREEN;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_AQUA) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_AQUA) {
         return BLUE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_WHITEBOARD) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_WHITEBOARD) {
         return WHITE INVERT;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_HALLOWEEN) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_HALLOWEEN) {
         return ORANGE;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_CHERRYBLOSSOM) {
         return PURPLE BOLD;
     }
-    else if (REPL_THEME == COMMON_EARL_REPL_THEME_COLORBLIND) {
+    else if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_COLORBLIND) {
         return WHITE;
     }
     assert(false && "unhandled theme");
@@ -389,19 +389,19 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             // If a word has been built, check if it's a keyword or type
             if (!current_word.empty()) {
                 if (is_keyword(current_word)) {
-                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                    if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << repled::main_color() << italic << bold << current_word;
                     else
                         std::cout << current_word;
                 }
                 else if (is_type(current_word)) {
-                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                    if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << repled::main_color() << current_word;
                     else
                         std::cout << current_word;
                 }
                 else {
-                    if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                    if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                         std::cout << noc << repled::misc_color() << current_word;
                     else
                         std::cout << current_word;
@@ -412,7 +412,7 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
             // Handle string literals (double quotes)
             if (line[i] == '"') {
                 in_quote = true;
-                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << repled::quote_color() << line[i];
                 else
                     std::cout << line[i];
@@ -424,13 +424,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     in_quote = false;
                 if (j < line.size())
                     std::cout << line[j];
-                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
                 i = j + 1;
             }
             // Handle character literals (single quotes)
             else if (line[i] == '\'') {
-                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << repled::quote_color() << line[i];
                 else
                     std::cout << line[i];
@@ -440,13 +440,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
                     std::cout << line[j++];
                 if (j < line.size())
                     std::cout << line[j];
-                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc;
                 i = j + 1;
             }
             else {
                 // Print spaces or other non-alphabetic characters normally
-                if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                     std::cout << noc << line[i];
                 else
                     std::cout << line[i];
@@ -462,19 +462,19 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
     // Handle the last word in case the line ends without a space
     if (!current_word.empty()) {
         if (is_keyword(current_word)) {
-            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+            if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << repled::main_color() << current_word;
             else
                 std::cout << current_word;
         }
         else if (is_type(current_word)) {
-            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+            if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << repled::main_color() << current_word;
             else
                 std::cout << current_word;
         }
         else {
-            if ((flags & __REPL_NOCOLOR) == 0 && !comment)
+            if ((config::runtime::flags & __REPL_NOCOLOR) == 0 && !comment)
                 std::cout << noc << repled::misc_color() << current_word;
             else
                 std::cout << current_word;
@@ -523,13 +523,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         }
 
         if (bracket_ok) {
-            if ((flags & __REPL_NOCOLOR) == 0)
+            if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
                 std::cout << noc << bold << dim << repled::status_ok() << "< ok >" << noc << " ";
             else
                 std::cout << "< ok > ";
         }
         else {
-            if ((flags & __REPL_NOCOLOR) == 0)
+            if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
                 std::cout << noc << dim << italic << "< " << bracket_msg << ">" << noc << " ";
             else
                 std::cout << "< " << bracket_msg << "> ";
@@ -543,20 +543,20 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
 
         std::vector<std::string> completions = TRIE.get_completions(last_word);
 
-        if ((flags & __REPL_NOCOLOR) == 0)
+        if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
             std::cout << gray << "| ";
         else
             std::cout << "| ";
 
         for (size_t i = 0; i < completions.size() && i < 7; ++i) {
             if (completions[i] == last_word) {
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
                     std::cout << repled::main_color() << underline << completions[i] << noc << gray << " | ";
                 else
                     std::cout << completions[i] << " | ";
             }
             else {
-                if ((flags & __REPL_NOCOLOR) == 0)
+                if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
                     std::cout << gray << completions[i] << " | ";
                 else
                     std::cout << completions[i] << " | ";
@@ -797,12 +797,12 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         repled::clearln(50);
 
         std::cout << "[";
-        if ((flags & __REPL_NOCOLOR) == 0) {
+        if ((config::runtime::flags & __REPL_NOCOLOR) == 0) {
             // std::cout << "\033[32m";
             std::cout << repled::status_ok();
         }
         std::cout << "Enter to Evaluate";
-        if ((flags & __REPL_NOCOLOR) == 0)
+        if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
             std::cout << "\033[0m";
 
         std::cout << "]" << "\033[" << PAD+1 << "G" << std::flush;
