@@ -35,6 +35,8 @@ Intrinsics::intrinsic_char_member_functions = {
     {"ascii", &Intrinsics::intrinsic_member_ascii},
     {"islower", &Intrinsics::intrinsic_member_islower},
     {"isupper", &Intrinsics::intrinsic_member_isupper},
+    {"toupper", &Intrinsics::intrinsic_member_toupper},
+    {"tolower", &Intrinsics::intrinsic_member_tolower},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -66,4 +68,22 @@ Intrinsics::intrinsic_member_islower(std::shared_ptr<earl::value::Obj> obj,
                          Expr *expr) {
     __INTR_ARGS_MUSTBE_SIZE(unused, 0, "islower", expr);
     return dynamic_cast<earl::value::Char *>(obj.get())->islower();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_tolower(std::shared_ptr<earl::value::Obj> obj,
+                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "tolower", expr);
+    return dynamic_cast<earl::value::Char *>(obj.get())->tolower();
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_toupper(std::shared_ptr<earl::value::Obj> obj,
+                                     std::vector<std::shared_ptr<earl::value::Obj>> &unused,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(unused, 0, "toupper", expr);
+    return dynamic_cast<earl::value::Char *>(obj.get())->toupper();
 }

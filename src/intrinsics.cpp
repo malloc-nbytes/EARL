@@ -119,6 +119,8 @@ Intrinsics::intrinsic_member_functions = {
     {"ascii", &Intrinsics::intrinsic_member_ascii},
     {"islower", &Intrinsics::intrinsic_member_islower},
     {"isupper", &Intrinsics::intrinsic_member_isupper},
+    {"toupper", &Intrinsics::intrinsic_member_toupper},
+    {"tolower", &Intrinsics::intrinsic_member_tolower},
     // Int
     {"utf8", &Intrinsics::intrinsic_member_utf8},
     // Option

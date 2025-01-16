@@ -404,6 +404,8 @@ namespace earl {
             char value(void);
             std::shared_ptr<Bool> isupper(void) const;
             std::shared_ptr<Bool> islower(void) const;
+            std::shared_ptr<Char> toupper(void) const;
+            std::shared_ptr<Char> tolower(void) const;
 
             // Implements
             Type type(void) const                                                         override;

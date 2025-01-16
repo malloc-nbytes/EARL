@@ -51,6 +51,16 @@ Char::islower(void) const {
     return std::make_shared<Bool>(std::islower(m_value));
 }
 
+std::shared_ptr<Char>
+Char::toupper(void) const {
+    return std::make_shared<Char>(std::toupper(m_value));
+}
+
+std::shared_ptr<Char>
+Char::tolower(void) const {
+    return std::make_shared<Char>(std::tolower(m_value));
+}
+
 Type
 Char::type(void) const {
     return Type::Char;
