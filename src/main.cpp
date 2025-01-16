@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <iostream>
+#include <chrono>
 
 #include "err.hpp"
 #include "parser.hpp"
@@ -42,6 +43,9 @@
 static std::vector<std::string> scripts = {};
 std::vector<std::string> earl_argv = {};
 std::vector<std::string> watch_files = {};
+
+// --time resources
+static std::chrono::time_point<std::chrono::high_resolution_clock> time_start;
 
 // --repl-welcome resources
 std::string repl_welcome_msg = "";
@@ -175,11 +179,12 @@ usage(void) {
     std::cerr << "        -w, --watch [files...] . . . . . . . . Watch files for changes and hot reload on save" << std::endl;
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
+    std::cerr << "            --time . . . . . . . . . . . . . . Time execution" << std::endl;
     std::cerr << "            --no-config  . . . . . . . . . . . Do not use the config file" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
-    std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command (-e to conform with BASH)" << std::endl;
+    std::cerr << "        -e, --error-on-bash-fail . . . . . . . Stop the program on a failed BASH command" << std::endl;
     std::cerr << "        -x, --print-bash-execution . . . . . . Print all inlined BASH" << std::endl;
     std::cerr << "        -V, --verbose  . . . . . . . . . . . . Enable verbose mode" << std::endl;
     std::cerr << "            --disable-implicit-returns . . . . All returns must explicitly use the keyword `return` (does not effect REPL)" << std::endl;
@@ -379,6 +384,12 @@ handle_repl_welcome(std::vector<std::string> &args) {
 }
 
 static void
+handle_time(void) {
+    flags |= __TIME;
+    time_start = std::chrono::high_resolution_clock::now();
+}
+
+static void
 parse_2hypharg(std::string arg, std::vector<std::string> &args) {
     if (arg == COMMON_EARL2ARG_WITHOUT_STDLIB)
         flags |= __WITHOUT_STDLIB;
@@ -436,6 +447,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         flags |= __NO_CONFIG;
     else if (arg == COMMON_EARL2ARG_REPL_WELCOME)
         handle_repl_welcome(args);
+    else if (arg == COMMON_EARL2ARG_TIME)
+        handle_time();
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;
@@ -708,6 +721,12 @@ main(int argc, char **argv) {
             std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
         repl::run(include_dirs);
+    }
+
+    if ((flags & __TIME) != 0) {
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - time_start;
+        std::cout << "[EARL time] Execution time: " << elapsed.count() << " seconds" << std::endl;
     }
 
     return 0;
