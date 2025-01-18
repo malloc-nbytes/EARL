@@ -79,6 +79,9 @@ static repled::SS SS;
 
 static void
 try_clear_repl_history() {
+#ifdef _WIN32
+    return;
+#endif
     const char* home_dir = std::getenv("HOME");
     if (home_dir == nullptr) {
         std::cerr << "Unable to get home directory path. Will not clear REPL history." << std::endl;
@@ -110,6 +113,9 @@ try_clear_repl_history() {
 
 static void
 save_repl_history() {
+#ifdef _WIN32
+    return;
+#endif
     const char *home_dir = std::getenv("HOME");
     if (home_dir == nullptr)
         std::cerr << "Unable to get home directory path. Will not save REPL history." << std::endl;
@@ -123,6 +129,9 @@ save_repl_history() {
 
 static void
 read_repl_history() {
+#ifdef _WIN32
+    return;
+#endif
     const char *home_dir = std::getenv("HOME");
     if (home_dir == nullptr)
         return;
@@ -428,10 +437,16 @@ edit_entry(repled::RawInput &ri, std::vector<std::string> &args, std::vector<std
     }
 }
 
-static void
-clearscrn(void) {
+void
+repl::clearscrn(repled::RawInput &ri) {
+#ifdef _WIN32
+    if (system("cls") != 0)
+        log("warning: failed to clearscrn\n", repled::msg_color);
+    ri.restore_raw_input_mode();
+#else
     if (system("clear") != 0)
         log("warning: failed to clearscrn\n", repled::msg_color);
+#endif
 }
 
 static void
@@ -585,7 +600,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
     else if (lst[0] == IMPORT)
         import_file(args, lines, include_dirs);
     else if (lst[0] == CLEAR)
-        clearscrn();
+        repl::clearscrn(ri);
     else if (lst[0] == QUIT) {
         std::cout << "\033[1E";
         repled::clearln(50);

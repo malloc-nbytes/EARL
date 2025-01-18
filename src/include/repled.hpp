@@ -89,6 +89,7 @@ namespace repled {
         RawInput();
         ~RawInput();
         char get_char();
+        void restore_raw_input_mode(void);
     private:
 #ifdef _WIN32
         HANDLE h_console;

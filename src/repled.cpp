@@ -34,6 +34,7 @@
 #include <unistd.h>
 #endif
 
+#include "repl.hpp"
 #include "common.hpp"
 #include "repled.hpp"
 #include "utils.hpp"
@@ -344,6 +345,21 @@ repled::RawInput::get_char() {
     read(STDIN_FILENO, &ch, 1);
 #endif
     return ch;
+}
+
+void
+repled::RawInput::restore_raw_input_mode(void) {
+#ifdef _WIN32
+    dw_mode = 0;
+    h_console = GetStdHandle(STD_INPUT_HANDLE);
+    GetConsoleMode(h_console, &dw_mode);
+    SetConsoleMode(h_console, dw_mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
+#else
+    tcgetattr(STDIN_FILENO, &old_termios);
+    termios raw = old_termios;
+    raw.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+#endif
 }
 
 static bool
@@ -790,11 +806,10 @@ delete_word_from_cursor(std::string &prompt, int &c, int pad, std::string &line,
 }
 
 void
-handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line, repled::SS &ss) {
-    if (system("clear") == 0) {
-        std::cout << prompt << line;
-        std::cout << "\033[" << c+pad+1 << "G" << std::flush;
-    }
+handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line, repled::SS &ss, repled::RawInput &ri) {
+    repl::clearscrn(ri);
+    std::cout << prompt << line;
+    std::cout << "\033[" << c+pad+1 << "G" << std::flush;
     redraw_line(line, prompt, 0, ss);
 }
 
@@ -817,10 +832,8 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
         repled::clearln(50);
 
         std::cout << "[";
-        if ((config::runtime::flags & __REPL_NOCOLOR) == 0) {
-            // std::cout << "\033[32m";
+        if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
             std::cout << repled::status_ok();
-        }
         std::cout << "Enter to Evaluate";
         if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
             std::cout << "\033[0m";
@@ -843,7 +856,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             ready = false;
         }
 
-        if (ENTER(ch)) {
+        if (ENTER(ch) || ch == '\r') {
             redraw_line(line, prompt, PAD-1, ss, /*newline=*/true);
             break;
         }
@@ -893,7 +906,7 @@ repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &histor
             }
         }
         else if (ch == 0x0C) { // ctrl+l
-            handle_clear_screen(prompt, c, PAD, line, ss);
+            handle_clear_screen(prompt, c, PAD, line, ss, RI);
             handle_jump_to_beginning_line(c, PAD, line, history);
         }
         else if (ch == 0x01) // ctrl+a

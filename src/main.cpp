@@ -645,8 +645,10 @@ main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
-    /*assert_repl_theme_valid();
-    handle_hidden_file();*/
+#ifndef _WIN32
+    assert_repl_theme_valid();
+    handle_hidden_file();
+#endif
     handlecli(argc, argv);
 
     if ((config::runtime::flags & __WATCH) != 0) {
@@ -711,8 +713,10 @@ main(int argc, char **argv) {
             }
         } while ((config::runtime::flags & __WATCH) != 0);
     }
-    /*else {
+    else {
+#ifndef _WIN32
         assert_repl_theme_valid();
+#endif
         config::runtime::flags |= __REPL;
         config::runtime::argv.push_back("EARL-REPLv" VERSION);
         if (config::repl::welcome::msg != "")
@@ -721,7 +725,7 @@ main(int argc, char **argv) {
             std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
         repl::run(config::prelude::include::dirs);
-    }*/
+    }
 
     if ((config::runtime::flags & __TIME) != 0) {
         config::prelude::time::end = std::chrono::high_resolution_clock::now();
