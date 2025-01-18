@@ -30,10 +30,9 @@ endif()
 if(PORTABLE STREQUAL "ON")
     set(PORTABLE_DEFINE "#define PORTABLE")
 
-    # Run the bake.py script and capture stdout only for Windows
     if(WIN32)
         execute_process(
-            COMMAND python ${PROJECT_SOURCE_DIR}/src/bake.py
+            COMMAND python ${PROJECT_SOURCE_DIR}/src/bake.py ../src/std/ ../src/include/bake.hpp
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             RESULT_VARIABLE bake_result
             OUTPUT_VARIABLE bake_output
@@ -50,9 +49,8 @@ if(PORTABLE STREQUAL "ON")
             message(STATUS "Successfully ran bake.py on Windows")
         endif()
     else()
-        # For non-Windows platforms, handle accordingly (as your original code does)
         execute_process(
-            COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py
+            COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py src/std/ src/include/bake.hpp
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             RESULT_VARIABLE bake_result
             OUTPUT_VARIABLE bake_output
