@@ -896,7 +896,7 @@ eval_expr_term_mod_access(ExprModAccess *expr, std::shared_ptr<Ctx> &ctx, bool r
         auto world = dynamic_cast<WorldCtx *>(klass->get_world_owner().get());
         ctx_ptr = world->get_import(left_id);
     }
-    else if (ctx->type() == CtxType::Closure) {
+    else {
         auto world = dynamic_cast<ClosureCtx *>(ctx.get())->get_outer_world_owner();
         ctx_ptr = dynamic_cast<WorldCtx *>(world.get())->get_import(left_id);
     }
@@ -2551,8 +2551,9 @@ eval_stmt_loop(StmtLoop *stmt, std::shared_ptr<Ctx> &ctx) {
     return result;
 }
 
+
 static void
-system_bash(const std::string &cmd) {
+system_bash(const std::string& cmd) {
     if ((config::runtime::flags & __SHOWBASH) != 0)
         std::cout << "+ " << cmd << std::endl;
 
@@ -2562,6 +2563,9 @@ system_bash(const std::string &cmd) {
     else
         full_command = std::string(cmd);
 
+#ifdef _WIN32
+    int x = system(full_command.c_str());
+#else
     int x = system(full_command.c_str());
     if (x == -1)
         goto warn;
@@ -2580,6 +2584,7 @@ system_bash(const std::string &cmd) {
             WARN_WARGS("BASH command did not terminate normally with exit code: %d", nullptr, x);
         goto ok;
     }
+#endif
 
 warn:
     if ((config::runtime::flags & __ERROR_ON_BASH_FAIL) != 0) {
@@ -2600,40 +2605,60 @@ eval_stmt_bash_lit(StmtBashLiteral *stmt, std::shared_ptr<Ctx> ctx) {
     return std::make_shared<earl::value::Void>();
 }
 
+#ifdef _WIN32
+std::shared_ptr<earl::value::Str>
+get_bash_res(std::string cmd, Stmt *stmt) {
+    bool sanitize = (config::runtime::flags & __NO_SANITIZE_PIPES) == 0;
+    std::string output = "";
+    FILE* pipe = _popen(cmd.c_str(), "r");
+    if (!pipe) {
+        Err::err_wstmt(stmt);
+        throw InterpreterException("failed to execute bash `" + cmd + "`");
+    }
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        output += buffer;
+    }
+    int ec = _pclose(pipe);
+    if (ec == -1) {
+        const std::string msg = "command `" + cmd + "` failed to exit";
+        throw InterpreterException(msg);
+    }
+    if (sanitize && output.size() > 1 && (output.back() == ' ' || output.back() == '\n' || output.back() == '\t'))
+        output.erase(output.size() - 1);
+    if (sanitize && output.size() == 1 && (output == " " || output == "\n" || output == "\r" || output == "\t"))
+        output = "";
+    return std::make_shared<earl::value::Str>(output);
+}
+#else
+std::shared_ptr<earl::value::Str>
+get_bash_res(std::string cmd, Stmt *stmt) {
+    bool sanitize = (config::runtime::flags & __NO_SANITIZE_PIPES) == 0;
+    std::string output = "";
+    std::array<char, 256> buffer;
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+        Err::err_wstmt(stmt);
+        throw InterpreterException("failed to execute bash `" + cmd + "`");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
+        output += buffer.data();
+    }
+    int ec = pclose(pipe);
+    if (ec == -1) {
+        const std::string msg = "command `" + cmd + "` failed to exit";
+        throw InterpreterException(msg);
+    }
+    if (sanitize && output.size() > 1 && (output.back() == ' ' || output.back() == '\n' || output.back() == '\t'))
+        output.erase(output.size() - 1);
+    if (sanitize && output.size() == 1 && (output == " " || output == "\n" || output == "\r" || output == "\t"))
+        output = "";
+    return std::make_shared<earl::value::Str>(output);
+}
+#endif
+
 static std::shared_ptr<earl::value::Obj>
 eval_stmt_pipe(StmtPipe *stmt, std::shared_ptr<Ctx> ctx) {
-    auto get_bash_res = [&](std::string cmd, Stmt *stmt) {
-        bool sanatize = (config::runtime::flags & __NO_SANITIZE_PIPES) == 0;
-        std::string output = "";
-        std::array<char, 256> buffer;
-        FILE *pipe = popen(cmd.c_str(), "r");
-        if (!pipe) {
-            Err::err_wstmt(stmt);
-            throw InterpreterException("failed to execute bash `"+cmd+"`");
-        }
-        while (fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-            output += buffer.data();
-        }
-        int ec = pclose(pipe);
-        if (ec == -1) {
-            const std::string msg = "command `"+cmd+"` failed to exit";
-            throw InterpreterException(msg);
-        }
-        if (sanatize && output.size() > 1
-            && (output.back() == ' '
-                || output.back() == '\n'
-                || output.back() == '\t'))
-            output.erase(output.size()-1);
-        if (sanatize
-            && output.size() == 1
-            && (output == " "
-                || output == "\n"
-                || output == "\r"
-                || output == "\t"))
-            output = "";
-        return std::make_shared<earl::value::Str>(std::move(output));
-    };
-
     auto aux = [&](auto &to, std::string cmd) {
         std::visit([&] (auto &&rhs) {
             using T = std::decay_t<decltype(rhs)>;

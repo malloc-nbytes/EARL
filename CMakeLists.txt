@@ -8,9 +8,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
 set(PROJECT_VERSION ${PROJECT_VERSION} CACHE STRING "The project version")
 
-# Set default INSTALL_PREFIX if not specified
+# Set default INSTALL_PREFIX based on platform
 if(NOT INSTALL_PREFIX)
-    set(INSTALL_PREFIX "/usr/local")
+    if(WIN32)
+        set(INSTALL_PREFIX "C:/Program Files/Earl" CACHE STRING "The installation prefix for Windows")
+    else()
+        set(INSTALL_PREFIX "/usr/local" CACHE STRING "The installation prefix for Linux/Unix")
+    endif()
 endif()
 
 # Set the CMAKE_INSTALL_PREFIX to the INSTALL_PREFIX variable
@@ -26,24 +30,46 @@ endif()
 if(PORTABLE STREQUAL "ON")
     set(PORTABLE_DEFINE "#define PORTABLE")
 
-    # Run the bake.py script and capture stdout
-    execute_process(
-        COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        RESULT_VARIABLE bake_result
-        OUTPUT_VARIABLE bake_output
-        ERROR_VARIABLE bake_error
-    )
+    # Run the bake.py script and capture stdout only for Windows
+    if(WIN32)
+        execute_process(
+            COMMAND python ${PROJECT_SOURCE_DIR}/src/bake.py
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            RESULT_VARIABLE bake_result
+            OUTPUT_VARIABLE bake_output
+            ERROR_VARIABLE bake_error
+        )
 
-    if(bake_output)
-        message(STATUS "${bake_output}")
-    endif()
+        if(bake_output)
+            message(STATUS "${bake_output}")
+        endif()
 
-    if(NOT bake_result EQUAL 0)
-        message(FATAL_ERROR "Error running bake.py: ${bake_error}")
+        if(NOT bake_result EQUAL 0)
+            message(FATAL_ERROR "Error running bake.py: ${bake_error}")
+        else()
+            message(STATUS "Successfully ran bake.py on Windows")
+        endif()
     else()
-        message(STATUS "Successfully ran bake.py")
+        # For non-Windows platforms, handle accordingly (as your original code does)
+        execute_process(
+            COMMAND python3 ${PROJECT_SOURCE_DIR}/src/bake.py
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            RESULT_VARIABLE bake_result
+            OUTPUT_VARIABLE bake_output
+            ERROR_VARIABLE bake_error
+        )
+
+        if(bake_output)
+            message(STATUS "${bake_output}")
+        endif()
+
+        if(NOT bake_result EQUAL 0)
+            message(FATAL_ERROR "Error running bake.py: ${bake_error}")
+        else()
+            message(STATUS "Successfully ran bake.py")
+        endif()
     endif()
+
 else()
     set(PORTABLE_DEFINE "")
 endif()
@@ -95,7 +121,7 @@ find_package(Doxygen)
 # Add documentation target if Doxygen is found
 if(DOXYGEN_FOUND)
     set(DOXYGEN_IN "${PROJECT_SOURCE_DIR}/src/Doxyfile")
-    set(DOXYGEN_OUT "${PROJECT_BINARY_DIR}/docs")
+    set(DOXYGEN_OUT "${CMAKE_BINARY_DIR}/docs")
 
     add_custom_target(docs
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}

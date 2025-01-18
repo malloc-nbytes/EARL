@@ -88,7 +88,7 @@ namespace Parser {
     /// to use to expect the next token to be of type `expected`.
     /// @param lexer The lexer with the linked list of tokens
     /// @param expected The type to expect
-    std::shared_ptr<Token> parse_expect(Lexer &lexer, TokenType expected);
+    std::shared_ptr<Token> parse_expect(Lexer &lexer, enum TokenType expected);
 };
 
 #endif // PARSER_H

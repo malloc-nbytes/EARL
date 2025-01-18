@@ -22,13 +22,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <unistd.h>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <sstream>
 #include <algorithm>
 #include <functional>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 #include "common.hpp"
 #include "repled.hpp"
@@ -309,20 +313,36 @@ std::vector<std::string> repled::PrefixTrie::get_completions(std::string prefix)
 repled::SS::SS() : braces(0), brackets(0), parens(0) {}
 
 repled::RawInput::RawInput() {
+#ifdef _WIN32
+    dw_mode = 0;
+    h_console = GetStdHandle(STD_INPUT_HANDLE);
+    GetConsoleMode(h_console, &dw_mode);
+    SetConsoleMode(h_console, dw_mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
+#else
     tcgetattr(STDIN_FILENO, &old_termios);
     termios raw = old_termios;
     raw.c_lflag &= ~(ECHO | ICANON);
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+#endif
 }
 
 repled::RawInput::~RawInput() {
+#ifdef _WIN32
+    SetConsoleMode(h_console, dw_mode);
+#else
     tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+#endif
 }
 
 char
 repled::RawInput::get_char() {
     char ch;
+#ifdef _WIN32
+    DWORD read;
+    ReadConsole(h_console, &ch, 1, &read, NULL);
+#else
     read(STDIN_FILENO, &ch, 1);
+#endif
     return ch;
 }
 

@@ -25,7 +25,11 @@
 #ifndef REPLED_H
 #define REPLED_H
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <termios.h>
+#endif
 
 // FORGROUNDS
 #define YELLOW "\033[93m"
@@ -86,7 +90,12 @@ namespace repled {
         ~RawInput();
         char get_char();
     private:
+#ifdef _WIN32
+        HANDLE h_console;
+        DWORD dw_mode;
+#else
         struct termios old_termios;
+#endif
     };
 
     struct SS {
@@ -111,7 +120,7 @@ namespace repled {
     };
 
     void clearln(int sz, bool flush=false);
-    void out_lineno(bool flush=false);
+    // void out_lineno(bool flush=false);
     void handle_backspace(std::string prompt, char ch, int &c, int pad, std::string &line, std::vector<std::string> &lines, repled::SS &ss);
     void handle_newline(int &lines_idx, std::string &line, std::vector<std::string> &lines);
     void handle_up_arrow(int c, int pad, std::string prompt, int &lines_idx, std::string &line, std::vector<std::string> &lines, repled::SS &ss);

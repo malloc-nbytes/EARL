@@ -531,6 +531,8 @@ expr_to_py(Expr *expr, Context &ctx) {
     } break;
     default: assert(false && "unreachable"); break;
     }
+    assert(false && "unreachable");
+    std::exit(1);
 }
 
 static void

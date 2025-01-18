@@ -114,15 +114,15 @@ enum class TokenType {
     Total_Len
 };
 
-std::string tokentype_to_str(TokenType type);
+std::string tokentype_to_str(enum TokenType type);
 
 /// @brief The definition of a token.
 struct Token {
     Token(char *start, size_t len,
-          TokenType type,
+          enum TokenType type,
           size_t row, size_t col, std::string &fp);
 
-    Token(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
+    Token(std::string lexeme, enum TokenType type, size_t row, size_t col, std::string fp);
 
     Token(const Token &) = delete;
 
@@ -132,7 +132,7 @@ struct Token {
     std::string m_lexeme;
 
     /// @brief The type of the token
-    TokenType m_type;
+    enum TokenType m_type;
 
     /// @brief The row of the token
     size_t m_row;
@@ -150,7 +150,7 @@ struct Token {
     std::string &lexeme(void);
 
     /// @brief Get the `type` of the current token
-    TokenType type(void) const;
+    enum TokenType type(void) const;
 };
 
 /// @brief Allocate a `Token` using an `Arena Allocator`
@@ -161,7 +161,7 @@ struct Token {
 /// @param row The row of the token
 /// @param col The column of the token
 /// @param fp The filepath of the token
-std::shared_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, TokenType type, size_t row, size_t col, std::string fp);
+std::shared_ptr<Token> token_alloc(Lexer &lexer, char *start, size_t len, enum TokenType type, size_t row, size_t col, std::string fp);
 
 /// @brief Prints tokens from the current token to the end of line.
 /// @param tok The token to start from

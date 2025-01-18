@@ -85,16 +85,10 @@ namespace config {
 static std::vector<std::string> one_shot_cli_import_dirs_copy = {};
 
 #ifdef _WIN32
-#include <windows.h>
-#include <tchar.h>
 
 std::string
 get_os_info() {
-    OSVERSIONINFO osvi;
-    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    GetVersionEx(&osvi);
-    return "Windows " + osvi.dwMajorVersion + "."
-        + osvi.dwMinorVersion + "(Build " + osvi.dwBuildNumber + ")";
+    return "Windows";
 }
 
 #elif __linux__
@@ -651,8 +645,8 @@ main(int argc, char **argv) {
     std::vector<std::string> types = {};
     std::string comment = "#";
 
-    assert_repl_theme_valid();
-    handle_hidden_file();
+    /*assert_repl_theme_valid();
+    handle_hidden_file();*/
     handlecli(argc, argv);
 
     if ((config::runtime::flags & __WATCH) != 0) {
@@ -717,7 +711,7 @@ main(int argc, char **argv) {
             }
         } while ((config::runtime::flags & __WATCH) != 0);
     }
-    else {
+    /*else {
         assert_repl_theme_valid();
         config::runtime::flags |= __REPL;
         config::runtime::argv.push_back("EARL-REPLv" VERSION);
@@ -727,7 +721,7 @@ main(int argc, char **argv) {
             std::cout << "EARL REPL v" << VERSION << '\n';
         std::cout << "Use `:help` for help and `:q` or C-c to quit" << std::endl;
         repl::run(config::prelude::include::dirs);
-    }
+    }*/
 
     if ((config::runtime::flags & __TIME) != 0) {
         config::prelude::time::end = std::chrono::high_resolution_clock::now();

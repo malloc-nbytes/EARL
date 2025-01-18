@@ -30,9 +30,14 @@
 #include <fstream>
 #include <filesystem>
 #include <ctime>
-#include <unistd.h>
 #include <random>
 #include <variant>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 #include "intrinsics.hpp"
 #include "err.hpp"
@@ -208,6 +213,8 @@ Intrinsics::call_member(const std::string &id,
     case earl::value::Type::Time:      return Intrinsics::intrinsic_time_member_functions.at(id)(accessor, params, ctx, expr);
     default: assert(false);
     }
+    assert(false && "unreachable");
+    return nullptr;
 }
 
 std::shared_ptr<earl::value::Obj>
@@ -634,7 +641,7 @@ Intrinsics::intrinsic___internal_ls__(std::vector<std::shared_ptr<earl::value::O
 
     try {
         for (const auto &entry : std::filesystem::directory_iterator(path))
-            items.push_back(std::make_shared<earl::value::Str>(entry.path()));
+            items.push_back(std::make_shared<earl::value::Str>(entry.path().string()));
     }
     catch (const std::filesystem::filesystem_error &e) {
         Err::err_wexpr(expr);
@@ -658,11 +665,19 @@ Intrinsics::intrinsic_cd(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                   "__internal_cd__", expr);
     const std::string &new_dir = params[0]->to_cxxstring();
 
+#ifdef _WIN32
+    if (SetCurrentDirectory(new_dir.c_str()) == 0) {
+        Err::err_wexpr(expr);
+        const std::string msg = "failed to change directory";
+        throw InterpreterException(msg);
+    }
+#else
     if (chdir(new_dir.c_str()) != 0) {
         Err::err_wexpr(expr);
         const std::string msg = "failed to change directory";
         throw InterpreterException(msg);
     }
+#endif
 
     return std::make_shared<earl::value::Void>();
 }
@@ -696,7 +711,12 @@ Intrinsics::intrinsic___internal_unix_system_woutput__(
     std::array<char, 256> buffer;
     std::string output = "";
 
+#ifdef _WIN32
+    FILE* pipe = _popen(cmd.c_str(), "r");
+#else
     FILE *pipe = popen(cmd.c_str(), "r");
+#endif
+
     if (!pipe) {
         Err::err_wexpr(expr);
         const std::string msg = "failed to execute system command `" + cmd + "`";
@@ -707,7 +727,11 @@ Intrinsics::intrinsic___internal_unix_system_woutput__(
         output += buffer.data();
     }
 
+#ifdef _WIN32
+    int ec = _pclose(pipe);
+#else
     int ec = pclose(pipe);
+#endif
     if (ec == -1) {
         Err::err_wexpr(expr);
         const std::string msg = "failed to execute system command `" + cmd + "`";
@@ -720,7 +744,6 @@ Intrinsics::intrinsic___internal_unix_system_woutput__(
     };
     return std::make_shared<earl::value::Tuple>(std::move(res));
 }
-
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_type(std::vector<std::shared_ptr<earl::value::Obj>> &params,
@@ -919,16 +942,18 @@ Intrinsics::intrinsic_fprintln(std::vector<std::shared_ptr<earl::value::Obj>> &p
     if (params[0]->type() == earl::value::Type::Int) {
         auto *st = dynamic_cast<earl::value::Int *>(params[0].get());
         switch (st->value()) {
-        case 0:
+        case 0: {
             assert(false && "unimplemented");
-        case 1:
+        } break;
+        case 1: {
             stream = &std::cout;
-            break;
-        case 2:
+        } break;
+        case 2: {
             stream = &std::cerr;
-            break;
-        default:
+        } break;
+        default: {
             assert(false && "unimplemented");
+        } break;
         }
     }
     else {
@@ -1000,7 +1025,11 @@ Intrinsics::intrinsic_sleep(std::vector<std::shared_ptr<earl::value::Obj>> &time
     (void)ctx;
     __INTR_ARGS_MUSTBE_SIZE(time, 1, "sleep", expr);
     __INTR_ARG_MUSTBE_TYPE_COMPAT_EXACT(time[0], earl::value::Type::Int, 1, "sleep", expr);
+#ifdef _WIN32
+    Sleep(dynamic_cast<earl::value::Int*>(time[0].get())->value() / 1000);
+#else
     usleep(dynamic_cast<earl::value::Int *>(time[0].get())->value());
+#endif
     return std::make_shared<earl::value::Void>();
 }
 

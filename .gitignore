@@ -9,6 +9,7 @@ config.h
 stamp-h1
 *.swp
 .vscode
+.vs
 *.tex
 *.pdf
 *.sty

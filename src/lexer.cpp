@@ -170,7 +170,7 @@ read_file(const char *filepath, std::vector<std::string> &include_dirs) {
 #ifdef PORTABLE
     auto baked_path = sanatize_stdlib_bake_fp(filepath);
     auto it = baked_stdlib.find(baked_path);
-    if (it != baked_stdlib.end() && ((flags & __WITHOUT_STDLIB) == 0))
+    if (it != baked_stdlib.end() && ((config::runtime::flags & __WITHOUT_STDLIB) == 0))
         return it->second;
 #endif
 
@@ -245,10 +245,6 @@ lex_file(std::string &src,
          std::vector<std::string> &keywords,
          std::vector<std::string> &types,
          std::string &comment) {
-    (void)is_keyword;
-    (void)is_type;
-    (void)issym;
-    (void)try_comment;
     (void)types;
     (void)comment;
     std::unique_ptr<Lexer> lexer = std::make_unique<Lexer>();
@@ -423,6 +419,10 @@ lex_file(std::string &src,
         }
 
         else {
+// Windows bugfix at EOF
+#ifdef _WIN32
+            size_t old_i = i;
+#endif
             std::string buf = "";
             while (src[i] && !isalnum(src[i]) && src[i] != '_')
                 buf += src[i++];
@@ -445,6 +445,11 @@ lex_file(std::string &src,
                     --i;
                 }
             }
+// Windows bugfix at EOF
+#ifdef _WIN32
+            if (old_i == i)
+                ++row, ++i;
+#endif
         }
     }
 

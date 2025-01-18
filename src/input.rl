@@ -1,4 +1,7 @@
 module Main
 
-let x = 1;
-println(argv());
+class Point [x, y] {
+	@pub let x, y = (x, y);
+}
+
+println(Point(1, 2));

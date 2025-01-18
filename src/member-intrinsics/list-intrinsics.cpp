@@ -221,4 +221,5 @@ Intrinsics::intrinsic_member_fold(std::shared_ptr<earl::value::Obj> obj,
         return dynamic_cast<earl::value::Tuple *>(obj.get())->fold(cl.get(), values[1], ctx);
     }
     assert(false && "unreachable");
+    return nullptr;
 }

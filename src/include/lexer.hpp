@@ -71,7 +71,7 @@ struct Lexer {
     /// @param tok The token to append
     void append(std::shared_ptr<Token> tok);
 
-    void append(std::string lexeme, TokenType type, size_t row, size_t col, std::string fp);
+    void append(std::string lexeme, enum TokenType type, size_t row, size_t col, std::string fp);
 
     /// @brief The same as `Lexer::next()` except it does not give
     /// back the token that was consumed.

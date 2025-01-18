@@ -29,8 +29,12 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-#include <unistd.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <termios.h>
+#include <unistd.h>
+#endif
 
 #include "config.h"
 #include "repl.hpp"

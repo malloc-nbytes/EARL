@@ -52,5 +52,13 @@ def embed_files(input_dir, output_file):
 
         out.write("};\n")
 
+def help():
+    print("Usage: bake.py <std_path> <output.hpp>")
+    exit(1)
+
 if __name__ == "__main__":
-    embed_files('src/std/', 'src/include/bake.hpp')
+    if len(sys.argv) < 3:
+        help()
+    std_path = sys.argv[1]
+    bake_path = sys.argv[2]
+    embed_files(std_path, bake_path)
