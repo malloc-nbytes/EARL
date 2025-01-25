@@ -224,76 +224,151 @@ namespace Intrinsics {
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
+    /// @brief Flush stdout
+    /// @param unused Unused (size: 0)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
     std::shared_ptr<earl::value::Obj>
     intrinsic_flush(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
 
+    /// @brief Unset a runtime flag
+    /// @param params All flags as strings (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
     std::shared_ptr<earl::value::Obj>
     intrinsic_unset_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                          std::shared_ptr<Ctx> &ctx,
                          Expr *expr);
 
+    /// @brief Set a runtime flag
+    /// @param params All flags as strings (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
     std::shared_ptr<earl::value::Obj>
     intrinsic_set_flag(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                        std::shared_ptr<Ctx> &ctx,
                        Expr *expr);
 
+    /// @brief Find the cosine
+    /// @param x The integer (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Integer EARL value object
     std::shared_ptr<earl::value::Obj>
-    intrinsic_cos(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+    intrinsic_cos(std::vector<std::shared_ptr<earl::value::Obj>> &x,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
+    /// @brief Find the sine
+    /// @param x The integer (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Integer EARL value object
     std::shared_ptr<earl::value::Obj>
-    intrinsic_sin(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+    intrinsic_sin(std::vector<std::shared_ptr<earl::value::Obj>> &x,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
+    /// @brief Get the doc comments of identifiers
+    /// @param ident The identifier (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return String EARL value object
     std::shared_ptr<earl::value::Obj>
-    intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+    intrinsic_help(std::vector<std::shared_ptr<earl::value::Obj>> &ident,
                    std::shared_ptr<Ctx> &ctx,
                    Expr *expr);
 
+    /// @brief Get the length of a list/tuple/str etc.
+    /// @param params The list (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Integer EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_len(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
+    /// @brief Copy a value
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Any EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_copy(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                    std::shared_ptr<Ctx> &ctx,
                    Expr *expr);
 
+    /// @brief Cast to a tuple
+    /// @param params The values (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Tuple EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_tuple(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
 
+    /// @brief Cast to a list
+    /// @param params The values (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return List EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_list(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
 
+    /// @brief Cast to a bool
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Bool EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_bool(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                    std::shared_ptr<Ctx> &ctx,
                    Expr *expr);
 
+    /// @brief Cast to a string
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Str EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_str(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
+    /// @brief Cast to an int
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Integer EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_int(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                   std::shared_ptr<Ctx> &ctx,
                   Expr *expr);
 
+    /// @brief Cast to a float
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Float EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_float(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                     std::shared_ptr<Ctx> &ctx,
                     Expr *expr);
 
+    /// @brief Cast to a float
+    /// @param params The value (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return Float EARL value object
     std::shared_ptr<earl::value::Obj>
     intrinsic_unit(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                                std::shared_ptr<Ctx> &ctx,

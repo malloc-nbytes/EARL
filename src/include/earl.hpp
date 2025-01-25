@@ -98,57 +98,86 @@ namespace earl {
      * the underlying data of EARL.
      */
     namespace value {
+
         /// @brief The intrinsic types of EARL
         enum class Type {
+
             /** EARL 32bit integer type */
             Int=0,
+
             /** EARL floating integer (double) type */
             Float,
+
             /** EARL boolean type */
             Bool,
+
             /** EARL string type */
             Str,
+
             /** EARL char type */
             Char,
+
             /** EARL UNIT type (used when eval's don't return anything) */
             Void,
+
             /** EARL list type (holds any value including a mix of datatypes) */
             List,
+
             /** EARL module type. Used for member access of a module. */
             Module,
+
             /** EARL file type */
             File,
+
             /** EARL option type */
             Option,
+
             /** EARL This type for getting class members */
             This, // 10
+
             /** EARL closure type */
             Closure,
+
             /** EARL OS type */
             OS,
+
             /** EARL break type */
             Break,
+
             /** EARL class type */
             Class,
+
             /** EARL enum type */
             Enum,
+
             /** EARL tuple type */
             Tuple,
+
             /** EARL slice type */
             Slice,
+
             /** EARL dictionary types */
             DictInt,
             DictStr,
             DictFloat, // 20
             DictChar,
+
             /** EARL type keyword type */
             TypeKW,
+
             /** EARL date type */
             Time,
-            /** EARL continue keyword */
+
+            /** EARL continue keyword (no longer used) */
             Continue,
+
+            /** EARL return keyword (no longer used) */
             Return,
+
+            /** EARL function reference type */
             FunctionRef,
+
+            /** EARL class reference type */
             ClassRef,
         };
 
@@ -164,12 +193,22 @@ namespace earl {
         using Iterator          = std::variant<ListIterator, StrIterator, DictIntIterator, DictCharIterator, DictFloatIterator, DictStrIterator>;
 
         /// @brief The base abstract class that all
-        /// EARL values inherit from
+        ///        EARL value objects inherit from
         struct Obj {
             virtual ~Obj() {}
 
+            /// @brief Borrow the owner of the value as a ptr.
+            ///        This function is used in the intrinsic function
+            ///        observe()
+            /// @return A pointer to the owner.
             virtual earl::variable::Obj *borrow_owner(void);
+
+            /// @brief Get the doc comments from this value's owner
+            /// @return string of the doc comment(s)
             virtual std::string get_info_from_owner(void);
+
+            /// @brief Set the owner of this value
+            /// @param owner The owner to set
             virtual void set_owner(earl::variable::Obj *owner);
 
             /// @brief Set this value as constant
@@ -179,27 +218,32 @@ namespace earl {
             virtual void unset_const(void);
 
             /// @brief Check if this value is constant
+            /// @return True if constant, false if otherwise
             virtual bool is_const(void) const;
 
             /// @brief Get the type of the value
+            /// @return The type of this value
             virtual Type type(void) const = 0;
 
             /// @brief Perform a binary operation on THIS
-            /// value with another value
+            ///        value with another value
             /// @param op The binary operator
             /// @param other The object to perform the binop with
+            /// @return A value object of the result of the binary operation
             virtual std::shared_ptr<Obj> binop(Token *op, Obj *other);
 
             /// @brief Get the evaluation when put into
-            /// a conditional to evaluate to either true or false
+            ///        a conditional to evaluate to either true or false
             virtual bool boolean(void);
 
             /// @brief Modify the underlying data of THIS value
             /// with the underlying value of another object
             /// @param other The value to mutate THIS instance with
+            /// @param stmt The statement (used for error reporting)
             virtual void mutate(Obj *other, StmtMut *stmt);
 
             /// @brief Copy THIS instance
+            /// @return A value object of the copy
             virtual std::shared_ptr<Obj> copy(void);
 
             /// @brief Check the equality of two objects, not just by their values.
@@ -237,26 +281,79 @@ namespace earl {
             /// @brief Advance the iterator
             /// @param it The iterator to advance
             virtual void iter_next(Iterator &it);
+
+            /// @brief Add two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object to add
             virtual std::shared_ptr<Obj> add(Token *op, Obj *other);
+
+            /// @brief Subtract two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object to subtract
             virtual std::shared_ptr<Obj> sub(Token *op, Obj *other);
+
+            /// @brief Multiplay two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object to multiply
             virtual std::shared_ptr<Obj> multiply(Token *op, Obj *other);
+
+            /// @brief Divide two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object to divide
             virtual std::shared_ptr<Obj> divide(Token *op, Obj *other);
+
+            /// @brief Mod two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object to mod
             virtual std::shared_ptr<Obj> modulo(Token *op, Obj *other);
+
+            /// @brief Power two value objects together
+            /// @param op The binary operator
+            /// @param other The other value object that is the power
             virtual std::shared_ptr<Obj> power(Token *op, Obj *other);
+
+            /// @brief Find greater than or equal to equality of two value objects
+            /// @param op The binary operator
+            /// @param other The other value object to compare
             virtual std::shared_ptr<Obj> gtequality(Token *op, Obj *other);
+
+            /// @brief Find the equality of two value objects
+            /// @param op The binary operator
+            /// @param other The other value object to compare
             virtual std::shared_ptr<Obj> equality(Token *op, Obj *other);
+
+            /// @brief Perform bitwise operations on two value objects
+            /// @param op The binary operator
+            /// @param other The other value object to use
             virtual std::shared_ptr<Obj> bitwise(Token *op, Obj *other);
+
+            /// @brief Bitshift a value object with another
+            /// @param op The binary operator
+            /// @param other The other value object to use
             virtual std::shared_ptr<Obj> bitshift(Token *op, Obj *other);
 
         protected:
+            /// @brief The value object is constant
             bool m_const = false;
+
+            /// @brief The value object is iterable
             bool m_iterable = false;
+
+            /// @brief The owner of this value object
             earl::variable::Obj *m_var_owner = nullptr;
         };
 
+        /// @brief The function reference value object. It is created
+        ///        by using a function identifier without parens.
         struct FunctionRef : public Obj {
             FunctionRef(std::shared_ptr<earl::function::Obj> fun);
+
+            /// @brief Get a copy of the function
+            /// @return The copy of m_fun
             std::shared_ptr<earl::function::Obj> value(void);
+
+            /// @brief Get the embedded doc comments in the function
+            /// @return A string of all doc comments
             const std::vector<std::string> &get_info(void);
 
             // Implements
@@ -266,12 +363,21 @@ namespace earl {
             std::shared_ptr<Obj> copy(void)                                               override;
 
         private:
+            /// @brief The actual EARL function
             std::shared_ptr<earl::function::Obj> m_fun;
         };
 
+        /// @brief The class reference value object. It is created
+        ///        by using a class identifier without parens.
         struct ClassRef : public Obj {
             ClassRef(StmtClass *stmt);
+
+            /// @brief Get the embedded doc comments in the class
+            /// @return A string of all doc comments
             const std::vector<std::string> &get_info(void);
+
+            /// @brief Get the class statement
+            /// @return The statement m_stmt
             StmtClass *get_stmt(void);
 
             // Implements
@@ -310,8 +416,10 @@ namespace earl {
             void fill(int value);
 
             /// @brief Get the underlying integer value
+            /// @return a copy of m_value
             int value(void);
 
+            /// @brief Increment m_value by 1
             void incr(void);
 
             // Implements
