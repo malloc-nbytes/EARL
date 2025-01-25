@@ -1,4 +1,1 @@
-module Main
-
-let x = 1;
-println(argv());
+let x = (2 * (3 + 1)) / 2;
