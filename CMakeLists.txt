@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.25.1)
-project(EARL VERSION 0.9.3)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+project(EARL VERSION 0.0.1)
 
 # Define INSTALL_PREFIX and PROJECT_VERSION as cache variables
 set(INSTALL_PREFIX "" CACHE STRING "The installation prefix")
@@ -59,11 +56,8 @@ include_directories(${PROJECT_SOURCE_DIR}/src/include)
 
 # Source files
 file(GLOB_RECURSE SOURCES
-    src/*.cpp
-    src/grammar/*.cpp
-    src/primitives/*.cpp
-    src/member-intrinsics/*.cpp
-    src/main.cpp
+    src/*.c
+    src/main.c
 )
 
 # Add executable
