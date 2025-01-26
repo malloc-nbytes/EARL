@@ -30,7 +30,7 @@ struct arena
 arena_create(size_t *bytes) {
         size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
         return (struct arena) {
-                .mem = (uint8_t *)utils_s_malloc(sizeof(uint8_t) * N, NULL, NULL),
+                .mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL),
                 .len = 0,
                 .cap = N,
         };
@@ -39,7 +39,7 @@ arena_create(size_t *bytes) {
 void
 arena_create_from(struct arena *arena, size_t *bytes) {
         size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-        arena->mem = (uint8_t *)utils_s_malloc(sizeof(uint8_t) * N, NULL, NULL);
+        arena->mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL);
         arena->len = 0;
         arena->cap = N;
 }

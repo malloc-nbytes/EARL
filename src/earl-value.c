@@ -31,7 +31,7 @@
 struct earl_value *
 earl_value_alloc(enum earl_value_type type, void *data) {
         struct earl_value *v =
-            utils_s_malloc(sizeof(struct earl_value), NULL, NULL);
+            s_malloc(sizeof(struct earl_value), NULL, NULL);
         v->type = type;
         switch (type) {
         case EARL_VALUE_TYPE_INTEGER: {

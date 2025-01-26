@@ -33,7 +33,7 @@
         fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);  \
         exit(1);
 
-#define utils_da_append(arr, len, cap, ty, value)                          \
+#define da_append(arr, len, cap, ty, value)                                \
         do {                                                               \
                 if ((cap) == 0)                                            \
                         fprintf(stderr, "utils_da_append: `cap` is 0\n");  \
@@ -50,17 +50,17 @@
 /// @param arena (optional) The arena to use for the allocator
 /// @param allocator (optional) The allocator to use
 /// @return A pointer to the allocated memory
-void *utils_s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena *, size_t));
+void *s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena *, size_t));
 
 /// @brief Read in a file to a cstr
 /// @param fp The filepath
 /// @return A const char * of the file's contents
-char *utils_read_file(const char *fp);
+char *read_file(const char *fp);
 
 /// @brief Compare two strings to see if they are equal
 /// @param s1 The first string
 /// @param s2 The second string
 /// @return 1 if they are equal, 0 if not
-int utils_streq(const char *s1, const char *s2);
+int streq(const char *s1, const char *s2);
 
 #endif // UTILS_H

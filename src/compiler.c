@@ -39,10 +39,10 @@ void cc_expr(struct expr *expr, struct cc *cc);
 
 void
 push_opcode(struct cc *cc, enum opcode opc, size_t *cpidx) {
-        utils_da_append(cc->opcode, cc->opc_len, cc->opc_cap, enum opcode *,
+        da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, enum opcode *,
                         opc);
         if (cpidx)
-                utils_da_append(cc->opcode, cc->opc_len, cc->opc_cap,
+                da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap,
                                 enum opcode *, *cpidx);
 }
 
@@ -172,7 +172,13 @@ cc_stmt_let(struct stmt_let *stmt, struct cc *cc) {
         const char *id = stmt->identifier->lx;
         ctx_assert_var_not_in_scope(cc->ctx, id);
         cc_expr(stmt->expr, cc);
+
         ctx_add_var_to_scope(cc->ctx, id);
+
+        da_append(cc->gl_syms.data, cc->gl_syms.len, cc->gl_syms.cap, const char **, id);
+
+        size_t idx = cc_push_constant(cc, EARL_VALUE_TYPE_INTEGER, (void *)&(int){cc->gl_syms.len-1});
+        push_opcode(cc, OPCODE_STORE, &idx);
 }
 
 void
@@ -201,15 +207,15 @@ compile_stmt(struct stmt *stmt, struct cc *cc) {
 size_t
 cc_push_constant(struct cc *cc, enum earl_value_type type, void *data) {
         struct earl_value *v = earl_value_alloc(type, data);
-        utils_da_append(cc->cp, cc->cp_len, cc->cp_cap, struct earl_value **, v);
-        return cc->cp_len-1;
+        da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, struct earl_value **, v);
+        return cc->const_pool.len-1;
 }
 
 void
 cc_dump_opcode(const struct cc cc) {
         printf("Dumping compiled opcode\n");
-        for (size_t i = 0; i < cc.opc_len; ++i)
-                printf("--- %#x\n", cc.opcode[i]);
+        for (size_t i = 0; i < cc.opcode.len; ++i)
+                printf("--- %#x\n", cc.opcode.data[i]);
 }
 
 struct cc
@@ -219,19 +225,22 @@ cc_compile(struct program *prog) {
         const size_t CAP = 32;
 
         struct cc cc = (struct cc) {
-                .opcode = utils_s_malloc(sizeof(enum opcode) * CAP, NULL, NULL),
-                .opc_len = 0,
-                .opc_cap = CAP,
-
                 .ctx = &ctx,
-
-                .cp = utils_s_malloc(sizeof(struct earl_value *) * CAP, NULL, NULL),
-                .cp_len = 0,
-                .cp_cap = CAP,
-
-                .symbols = utils_s_malloc(sizeof(const char *) * CAP, NULL, NULL),
-                .sym_len = 0,
-                .sym_cap = CAP,
+                .opcode = {
+                        .data = s_malloc(sizeof(enum opcode) * CAP, NULL, NULL),
+                        .len = 0,
+                        .cap = CAP,
+                },
+                .const_pool = {
+                        .data = s_malloc(sizeof(struct earl_value *) * CAP, NULL, NULL),
+                        .len = 0,
+                        .cap = CAP,
+                },
+                .gl_syms = {
+                        .data = s_malloc(sizeof(const char *) * CAP, NULL, NULL),
+                        .len = 0,
+                        .cap = CAP,
+                },
         };
 
         for (size_t i = 0; i < prog->stmts_len; ++i)

@@ -34,9 +34,9 @@ ctx_create(unsigned long (*scope_hash)(const char *),
            unsigned long (*fscope_hash)(const char *),
            void (*fscope_destr)(uint8_t *)) {
         struct ctx ctx = (struct ctx) {
-                .scope = utils_s_malloc(sizeof(struct s_uset) * 2, NULL, NULL),
+                .scope = s_malloc(sizeof(struct s_uset) * 2, NULL, NULL),
                 .scope_len = 1, .scope_cap = 2,
-                .fscope = utils_s_malloc(sizeof(struct s_umap) * 2, NULL, NULL),
+                .fscope = s_malloc(sizeof(struct s_umap) * 2, NULL, NULL),
                 .fscope_len = 1, .fscope_cap = 2,
         };
 
@@ -84,13 +84,13 @@ ctx_assert_var_not_in_scope(struct ctx *ctx, const char *id) {
 void
 ctx_push_scope(struct ctx *ctx) {
         struct s_uset set = s_uset_create(ctx->scope[0].hash);
-        utils_da_append(ctx->scope, ctx->scope_len, ctx->scope_cap, struct s_uset *, set);
+        da_append(ctx->scope, ctx->scope_len, ctx->scope_cap, struct s_uset *, set);
 }
 
 void
 ctx_push_fscope(struct ctx *ctx) {
         struct s_umap map = s_umap_create(ctx->fscope[0].hash, ctx->fscope[0].destroy_value);
-        utils_da_append(ctx->fscope, ctx->fscope_len, ctx->fscope_cap, struct s_umap *, map);
+        da_append(ctx->fscope, ctx->fscope_len, ctx->fscope_cap, struct s_umap *, map);
 }
 
 void

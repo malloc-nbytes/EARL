@@ -29,7 +29,7 @@
 #include "utils.h"
 
 void *
-utils_s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena *, size_t)) {
+s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena *, size_t)) {
         void *p = allocator ? allocator(arena, bytes) : malloc(bytes);
         if (!p) {
                 fprintf(stderr, "could not safely allocate %zu bytes\n", bytes);
@@ -39,7 +39,7 @@ utils_s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena
 }
 
 char *
-utils_read_file(const char *fp) {
+read_file(const char *fp) {
         FILE *file = fopen(fp, "r");
         if (!file) {
                 perror("Failed to open file");
@@ -56,7 +56,7 @@ utils_read_file(const char *fp) {
                 return NULL;
         }
 
-        char *buffer = (char *)utils_s_malloc(size + 1, NULL, NULL);
+        char *buffer = (char *)s_malloc(size + 1, NULL, NULL);
         if (!buffer) {
                 perror("Failed to allocate memory");
                 fclose(file);
@@ -78,6 +78,6 @@ utils_read_file(const char *fp) {
 }
 
 int
-utils_streq(const char *s1, const char *s2) {
+streq(const char *s1, const char *s2) {
         return strcmp(s1, s2) == 0;
 }

@@ -36,7 +36,7 @@ expr_function_call_alloc(struct expr *left,
         (void)lexer;
 
         struct expr_function_call *fn
-                = (struct expr_function_call *)utils_s_malloc(sizeof(struct expr_function_call), NULL, NULL);
+                = (struct expr_function_call *)s_malloc(sizeof(struct expr_function_call), NULL, NULL);
         fn->left = left;
         fn->args = args;
         fn->args_len = len;
@@ -48,7 +48,7 @@ struct expr_character_literal *
 expr_character_literal_alloc(struct token *character, struct lexer *lexer) {
         (void)lexer;
         struct expr_character_literal *chl
-                = (struct expr_character_literal *)utils_s_malloc(sizeof(struct expr_character_literal), NULL, NULL);
+                = (struct expr_character_literal *)s_malloc(sizeof(struct expr_character_literal), NULL, NULL);
         chl->character = character;
         return chl;
 }
@@ -57,7 +57,7 @@ struct expr_string_literal *
 expr_string_literal_alloc(struct token *string, struct lexer *lexer) {
         (void)lexer;
         struct expr_string_literal *strl
-                = (struct expr_string_literal *)utils_s_malloc(sizeof(struct expr_string_literal), NULL, NULL);
+                = (struct expr_string_literal *)s_malloc(sizeof(struct expr_string_literal), NULL, NULL);
         strl->string = string;
         return strl;
 }
@@ -66,7 +66,7 @@ struct expr_integer_literal *
 expr_integer_literal_alloc(struct token *integer, struct lexer *lexer) {
         (void)lexer;
         struct expr_integer_literal *il
-                = (struct expr_integer_literal *)utils_s_malloc(sizeof(struct expr_integer_literal), NULL, NULL);
+                = (struct expr_integer_literal *)s_malloc(sizeof(struct expr_integer_literal), NULL, NULL);
         il->integer = integer;
         return il;
 }
@@ -75,7 +75,7 @@ struct expr_identifier *
 expr_identifier_alloc(struct token *identifier, struct lexer *lexer) {
         (void)lexer;
         struct expr_identifier *il
-                = (struct expr_identifier *)utils_s_malloc(sizeof(struct expr_identifier), NULL, NULL);
+                = (struct expr_identifier *)s_malloc(sizeof(struct expr_identifier), NULL, NULL);
         il->identifier = identifier;
         return il;
 }
@@ -84,7 +84,7 @@ struct expr_unary *
 expr_unary_alloc(struct expr *expr, struct token *op, struct lexer *lexer) {
         (void)lexer;
         struct expr_unary *eu
-                = (struct expr_unary *)utils_s_malloc(sizeof(struct expr_unary), NULL, NULL);
+                = (struct expr_unary *)s_malloc(sizeof(struct expr_unary), NULL, NULL);
         eu->expr = expr;
         eu->op = op;
         return eu;
@@ -94,7 +94,7 @@ struct expr_binary *
 expr_binary_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer) {
         (void)lexer;
         struct expr_binary *bin
-                = (struct expr_binary *)utils_s_malloc(sizeof(struct expr_binary), NULL, NULL);
+                = (struct expr_binary *)s_malloc(sizeof(struct expr_binary), NULL, NULL);
         bin->left = left;
         bin->right = right;
         bin->op = op;
@@ -104,7 +104,7 @@ expr_binary_alloc(struct expr *left, struct expr *right, struct token *op, struc
 struct expr_term *
 expr_term_alloc(void *data, enum expr_term_type type, struct lexer *lexer) {
         (void)lexer;
-        struct expr_term *term = (struct expr_term *)utils_s_malloc(sizeof(struct expr_term), NULL, NULL);
+        struct expr_term *term = (struct expr_term *)s_malloc(sizeof(struct expr_term), NULL, NULL);
         term->type = type;
 
         switch (type) {
@@ -134,7 +134,7 @@ expr_term_alloc(void *data, enum expr_term_type type, struct lexer *lexer) {
 struct expr *
 expr_alloc(void *data, enum expr_type type, struct lexer *lexer) {
         (void)lexer;
-        struct expr *expr = (struct expr *)utils_s_malloc(sizeof(struct expr), NULL, NULL);
+        struct expr *expr = (struct expr *)s_malloc(sizeof(struct expr), NULL, NULL);
         expr->type = type;
 
         switch (type) {

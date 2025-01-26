@@ -30,35 +30,41 @@
 
 /// @brief Holds all compilation information
 struct cc {
-        /// @brief The opcode that is produced
-        enum opcode *opcode;
-
-        /// @brief The length of the opcode
-        size_t opc_len;
-
-        /// @brief The capacity of the opcode
-        size_t opc_cap;
-
         /// @brief Holds the entire context during compilation
         struct ctx *ctx;
 
-        /// @brief The constant pool
-        struct earl_value **cp;
+        struct {
+                /// @brief The opcode that is produced
+                enum opcode *data;
 
-        /// @brief The length of the constant pool
-        size_t cp_len;
+                /// @brief The length of the opcode
+                size_t len;
 
-        /// @brief The capacity of the constant pool
-        size_t cp_cap;
+                /// @brief The capacity of the opcode
+                size_t cap;
+        } opcode;
 
-        /// @brief All symbols found
-        const char **symbols;
+        struct {
+                /// @brief The constant pool
+                struct earl_value **data;
 
-        /// @brief The length of the symbols
-        size_t sym_len;
+                /// @brief The length of the constant pool
+                size_t len;
 
-        /// @brief The capacity of the symbols
-        size_t sym_cap;
+                /// @brief The capacity of the constant pool
+                size_t cap;
+        } const_pool;
+
+        struct {
+                /// @brief All symbols found
+                const char **data;
+
+                /// @brief The length of the symbols
+                size_t len;
+
+                /// @brief The capacity of the symbols
+                size_t cap;
+        } gl_syms;
 };
 
 /// @brief Compile a program into bytecode based off of an AST

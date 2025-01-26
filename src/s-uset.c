@@ -32,7 +32,7 @@ struct s_uset
 s_uset_create(unsigned long (*hash)(const char *)) {
         const size_t cap = 32;
         return (struct s_uset) {
-                .tbl = (struct s_uset_node **)utils_s_malloc(sizeof(struct s_uset_node *) * cap, NULL, NULL),
+                .tbl = (struct s_uset_node **)s_malloc(sizeof(struct s_uset_node *) * cap, NULL, NULL),
                 .sz = 0,
                 .cap = cap,
                 .hash = hash,
@@ -73,7 +73,7 @@ s_uset_insert(struct s_uset *set, const char *value) {
         const size_t idx = set->hash(value) % set->cap;
         struct s_uset_node *prev = NULL;
         struct s_uset_node **node = find_free_set_node_spot(set, idx, &prev);
-        *node = (struct s_uset_node *)utils_s_malloc(sizeof(struct s_uset_node),
+        *node = (struct s_uset_node *)s_malloc(sizeof(struct s_uset_node),
                                                      NULL, NULL);
         (*node)->value = strdup(value);
         (*node)->next = NULL;
@@ -93,7 +93,7 @@ int
 s_uset_contains(struct s_uset *set, const char *value) {
         const size_t idx = set->hash(value) % set->cap;
         struct s_uset_node *it = set->tbl[idx];
-        while (it && !utils_streq(it->value, value))
+        while (it && !streq(it->value, value))
                 it = it->next;
         return it ? 1 : 0;
 }

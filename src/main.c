@@ -36,7 +36,7 @@
 
 int
 main(void) {
-        const char *src = utils_read_file(SRC_FP);
+        const char *src = read_file(SRC_FP);
         struct lexer lexer = lexer_lex_src_code(src, SRC_FP);
         struct program *prog = parser_parse(&lexer);
         ast_dump(prog);

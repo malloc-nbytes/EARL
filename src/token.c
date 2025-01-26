@@ -35,9 +35,9 @@ __token_alloc(const char *lx,
               size_t col) {
 
         struct token *tok
-                = (struct token *)utils_s_malloc(sizeof(struct token), NULL, NULL);
+                = (struct token *)s_malloc(sizeof(struct token), NULL, NULL);
 
-        tok->lx = (char *)utils_s_malloc(len + 1, NULL, NULL);
+        tok->lx = (char *)s_malloc(len + 1, NULL, NULL);
         (void)strncpy(tok->lx, lx, len);
         tok->lx[len] = '\0';
 

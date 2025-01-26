@@ -55,13 +55,13 @@ translate_attr(struct lexer *lexer) {
         (void)expect(lexer, TOKEN_TYPE_AT);
         const char *s = lexer_peek(lexer, 0)->lx;
 
-        if (utils_streq(s, ATTR_STR_PUB))
+        if (streq(s, ATTR_STR_PUB))
                 return (uint32_t)ATTR_PUB;
-        if (utils_streq(s, ATTR_STR_CONST))
+        if (streq(s, ATTR_STR_CONST))
                 return (uint32_t)ATTR_CONST;
-        if (utils_streq(s, ATTR_STR_CONST))
+        if (streq(s, ATTR_STR_CONST))
                 return (uint32_t)ATTR_REF;
-        if (utils_streq(s, ATTR_STR_EXPERIMENTAL))
+        if (streq(s, ATTR_STR_EXPERIMENTAL))
                 return (uint32_t)ATTR_EXPERIMENTAL;
 
         fprintf(stderr, "errror: unknown attribute: %s", s);
@@ -71,13 +71,13 @@ translate_attr(struct lexer *lexer) {
 static struct expr **
 parse_comma_sep_exprs(struct lexer *lexer, size_t *len, size_t *cap) {
         *len = 0, *cap = 1;
-        struct expr **exprs = (struct expr **)utils_s_malloc(sizeof(struct expr *) * (*cap), NULL, NULL);
+        struct expr **exprs = (struct expr **)s_malloc(sizeof(struct expr *) * (*cap), NULL, NULL);
 
         while (1) {
                 if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_RIGHT_PARENTHESIS)
                         break;
                 struct expr *expr = parse_expr(lexer);
-                utils_da_append(exprs, *len, *cap, struct expr **, expr);
+                da_append(exprs, *len, *cap, struct expr **, expr);
                 if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_COMMA)
                         lexer_discard(lexer); // ,
                 else
@@ -90,13 +90,13 @@ parse_comma_sep_exprs(struct lexer *lexer, size_t *len, size_t *cap) {
 static struct token **
 parse_comma_sep_identifiers(struct lexer *lexer, size_t *len, size_t *cap) {
         *len = 0, *cap = 1;
-        struct token **tokens = (struct token **)utils_s_malloc(sizeof(struct token *) * (*cap), NULL, NULL);
+        struct token **tokens = (struct token **)s_malloc(sizeof(struct token *) * (*cap), NULL, NULL);
 
         while (1) {
                 if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_RIGHT_PARENTHESIS)
                         break;
                 struct token *tok = expect(lexer, TOKEN_TYPE_IDENTIFIER);
-                utils_da_append(tokens, *len, *cap, struct token **, tok);
+                da_append(tokens, *len, *cap, struct token **, tok);
                 if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_COMMA)
                         lexer_discard(lexer); // ,
                 else
@@ -264,11 +264,11 @@ parse_expr(struct lexer *lexer) {
 static struct stmt_block *
 parse_stmt_block(struct lexer *lexer) {
         size_t len = 0, cap = 1;
-        struct stmt **stmts = (struct stmt **)utils_s_malloc(sizeof(struct stmt *) * cap, NULL, NULL);
+        struct stmt **stmts = (struct stmt **)s_malloc(sizeof(struct stmt *) * cap, NULL, NULL);
 
         while (lexer_speek(lexer, 0)->type != TOKEN_TYPE_RIGHT_CURLY_BRACKET) {
                 struct stmt *stmt = parse_stmt(lexer);
-                utils_da_append(stmts, len, cap, struct stmt **, stmt);
+                da_append(stmts, len, cap, struct stmt **, stmt);
         }
 
         return stmt_block_alloc(stmts, len, cap, lexer);
@@ -309,13 +309,13 @@ parse_stmt_return(struct lexer *lexer) {
 static struct stmt *
 parse_keyword_stmt(struct lexer *lexer) {
         const char *kw = lexer_peek(lexer, 0)->lx;
-        if (utils_streq(kw, KEYWORD_LET)) {
+        if (streq(kw, KEYWORD_LET)) {
                 struct stmt_let *let = parse_stmt_let(lexer);
                 return stmt_alloc((void *)let, STMT_TYPE_LET, lexer);
-        } else if (utils_streq(kw, KEYWORD_FN)) {
+        } else if (streq(kw, KEYWORD_FN)) {
                 struct stmt_fn *fn = parse_stmt_fn(lexer);
                 return stmt_alloc((void *)fn, STMT_TYPE_FN, lexer);
-        } else if (utils_streq(kw, KEYWORD_RET)) {
+        } else if (streq(kw, KEYWORD_RET)) {
                 struct stmt_return *ret = parse_stmt_return(lexer);
                 return stmt_alloc((void *)ret, STMT_TYPE_RETURN, lexer);
         }
@@ -367,14 +367,14 @@ parse_stmt(struct lexer *lexer) {
 
 struct program *
 parser_parse(struct lexer *lexer) {
-        struct program *prog = (struct program *)utils_s_malloc(sizeof(struct program), NULL, NULL);
+        struct program *prog = (struct program *)s_malloc(sizeof(struct program), NULL, NULL);
         prog->stmts_len = 0;
         prog->stmts_cap = 32;
-        prog->stmts = (struct stmt **)utils_s_malloc(sizeof(struct stmt *) * prog->stmts_cap, NULL, NULL);
+        prog->stmts = (struct stmt **)s_malloc(sizeof(struct stmt *) * prog->stmts_cap, NULL, NULL);
 
         while (lexer_peek(lexer, 0) && lexer_peek(lexer, 0)->type != TOKEN_TYPE_EOF) {
                 struct stmt *stmt = parse_stmt(lexer);
-                utils_da_append(prog->stmts,
+                da_append(prog->stmts,
                                 prog->stmts_len,
                                 prog->stmts_cap,
                                 struct stmt **,

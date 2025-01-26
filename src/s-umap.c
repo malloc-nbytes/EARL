@@ -34,7 +34,7 @@ s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t
         assert(hash);
         const size_t cap = 64;
         return (struct s_umap) {
-                .tbl = utils_s_malloc(sizeof(struct s_umap_bucket *) * cap, NULL, NULL),
+                .tbl = s_malloc(sizeof(struct s_umap_bucket *) * cap, NULL, NULL),
                 .sz = 0,
                 .cap = cap,
                 .hash = hash,
@@ -66,7 +66,7 @@ s_umap_insert(struct s_umap *map, const char *key, uint8_t *value) {
         struct s_umap_bucket *prev = NULL;
         struct s_umap_bucket **node = find_free_spot(map, idx, &prev);
 
-        *node = (struct s_umap_bucket *)utils_s_malloc(sizeof(struct s_umap_bucket), NULL, NULL);
+        *node = (struct s_umap_bucket *)s_malloc(sizeof(struct s_umap_bucket), NULL, NULL);
 
         (*node)->key = strdup(key);
         (*node)->value = value;
@@ -82,7 +82,7 @@ void *
 s_umap_get(struct s_umap *map, const char *key) {
         const unsigned long idx = map->hash(key) % map->cap;
         struct s_umap_bucket *it = map->tbl[idx];
-        while (it && !utils_streq(it->key, key))
+        while (it && !streq(it->key, key))
                 it = it->next;
         return it ? it->value : NULL;
 }

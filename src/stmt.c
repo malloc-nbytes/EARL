@@ -30,7 +30,7 @@ struct stmt_let *
 stmt_let_alloc(struct token *identifier, struct expr *expr, struct lexer *lexer) {
         (void)lexer;
         struct stmt_let *let
-                = (struct stmt_let *)utils_s_malloc(sizeof(struct stmt_let), NULL, NULL);
+                = (struct stmt_let *)s_malloc(sizeof(struct stmt_let), NULL, NULL);
         let->identifier = identifier;
         let->expr = expr;
         return let;
@@ -40,7 +40,7 @@ struct stmt_return*
 stmt_return_alloc(struct expr *expr, struct lexer *lexer) {
         (void)lexer;
         struct stmt_return *ret
-                = (struct stmt_return *)utils_s_malloc(sizeof(struct stmt_return), NULL, NULL);
+                = (struct stmt_return *)s_malloc(sizeof(struct stmt_return), NULL, NULL);
         ret->expr = expr;
         return ret;
 }
@@ -49,7 +49,7 @@ struct stmt_block *
 stmt_block_alloc(struct stmt **stmts, size_t stmts_len, size_t stmts_cap, struct lexer *lexer) {
         (void)lexer;
         struct stmt_block *block
-                = (struct stmt_block *)utils_s_malloc(sizeof(struct stmt_block), NULL, NULL);
+                = (struct stmt_block *)s_malloc(sizeof(struct stmt_block), NULL, NULL);
         block->stmts = stmts;
         block->stmts_len = stmts_len;
         block->stmts_cap = stmts_cap;
@@ -60,7 +60,7 @@ struct stmt_mut *
 stmt_mut_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer) {
         (void)lexer;
         struct stmt_mut *mut
-                = (struct stmt_mut *)utils_s_malloc(sizeof(struct stmt_mut), NULL, NULL);
+                = (struct stmt_mut *)s_malloc(sizeof(struct stmt_mut), NULL, NULL);
         mut->left = left;
         mut->right = right;
         mut->op = op;
@@ -71,7 +71,7 @@ struct stmt_expr *
 stmt_expr_alloc(struct expr *expr, struct lexer *lexer) {
         (void)lexer;
         struct stmt_expr *stmt_expr
-                = (struct stmt_expr *)utils_s_malloc(sizeof(struct stmt_expr), NULL, NULL);
+                = (struct stmt_expr *)s_malloc(sizeof(struct stmt_expr), NULL, NULL);
         stmt_expr->expr = expr;
         return stmt_expr;
 }
@@ -85,7 +85,7 @@ stmt_fn_alloc(struct token *id,
               struct lexer *lexer) {
         (void)lexer;
         struct stmt_fn *fn
-                = (struct stmt_fn *)utils_s_malloc(sizeof(struct stmt_fn), NULL, NULL);
+                = (struct stmt_fn *)s_malloc(sizeof(struct stmt_fn), NULL, NULL);
         fn->id = id;
         fn->params = params;
         fn->params_len = params_len;
@@ -98,7 +98,7 @@ struct stmt *
 stmt_alloc(void *data, enum stmt_type type, struct lexer *lexer) {
         (void)lexer;
         struct stmt *stmt
-                = (struct stmt *)utils_s_malloc(sizeof(struct stmt), NULL, NULL);
+                = (struct stmt *)s_malloc(sizeof(struct stmt), NULL, NULL);
         stmt->type = type;
 
         switch (type) {

@@ -71,19 +71,19 @@ EVM_exec(struct cc *cc) {
 
         // Pointers
         struct earl_value **sp = &stack.data[0];
-        enum opcode *ip = &cc->opcode[0];
+        enum opcode *ip = &cc->opcode.data[0];
 
         // Begin interpretation
         while (1) {
                 int b = 0;
 
-                enum opcode instr = READ_BYTE(ip);
+                enum opcode instr;
 
-                switch (instr) {
+                switch (instr = READ_BYTE(ip)) {
                 case OPCODE_HALT: b = 1; break;
                 case OPCODE_CONST: {
                         size_t idx = READ_BYTE(ip);
-                        struct earl_value *constant = cc->cp[idx];
+                        struct earl_value *constant = cc->const_pool.data[idx];
                         stack_push(&stack, &sp, constant);
                 } break;
                 case OPCODE_MINUS:
@@ -105,8 +105,13 @@ EVM_exec(struct cc *cc) {
                         struct earl_value *res_value = earl_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
                         stack_push(&stack, &sp, res_value);
                 } break;
+                case OPCODE_STORE: {
+                        size_t idx = READ_BYTE(ip);
+                        struct earl_value *value = stack_pop(&stack, &sp);
+                        cc->const_pool.data[idx] = value;
+                } break;
                 default: {
-                        fprintf(stderr, "unknown instruction\n");
+                        fprintf(stderr, "unknown instruction %#x\n", instr);
                         exit(1);
                 }
                 }
