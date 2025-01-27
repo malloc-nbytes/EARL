@@ -21,43 +21,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVM_H
-#define EVM_H
+#include <stdio.h>
+#include <stdlib.h>
 
-#include <stddef.h>
+#include "EVM-routines.h"
+#include "err.h"
 
-#include "EARL-value.h"
-#include "compiler.h"
-#include "s-umap.h"
+enum opcode
+EVM_routines_read_byte(struct EARL_vm *vm) {
+        return *vm->ip++;
+}
 
-#define READ_BYTE(ip) *ip++
-#define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
-#define STACK_LIM 512
+void
+EVM_routines_init(struct EARL_vm *vm) {
+        vm->ip = &vm->cc->opcode.data[0];
+        vm->sp = &vm->stack.data[0];
+}
 
-struct EARL_vm {
-        struct {
-                struct EARL_value *data[STACK_LIM];
-                size_t len;
-        } stack;
+void
+EVM_routines_stack_push(struct EARL_vm *vm, struct EARL_value *value) {
+        if (vm->stack.len >= STACK_LIM)
+                err("Stack Overflow");
 
-        struct s_umap globals;
-        struct cc *cc;
+        *vm->sp = value;
+        *vm->sp++;
+        vm->stack.len++;
+}
 
-        struct EARL_value **sp;
-        enum opcode *ip;
+struct EARL_value *
+EVM_routines_stack_pop(struct EARL_vm *vm) {
+        if (vm->stack.len == 0)
+                err("Stack Underflow");
 
-        // Routines
-        enum   opcode      (*read_byte)(struct EARL_vm *vm);
-               void        (*init)(struct EARL_vm *vm);
-               void        (*push)(struct EARL_vm *vm, struct EARL_value *value);
-        struct EARL_value *(*pop)(struct EARL_vm *vm);
-};
-
-/// @brief Execute the program
-/// @param opcode The compiled bytecode
-/// @param opcode_len The length of opcdoe
-/// @param opcode_cap The capacity of opcdoe
-/// @return The value after execution
-struct EARL_value *EVM_exec(struct cc *cc);
-
-#endif // EVM_H
+        *vm->sp--;
+        vm->stack.len--;
+        return *vm->sp;
+}

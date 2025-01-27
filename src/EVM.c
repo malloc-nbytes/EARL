@@ -26,68 +26,32 @@
 #include <stdlib.h>
 
 #include "EVM.h"
+#include "EVM-routines.h"
 #include "opcode.h"
 #include "utils.h"
 #include "EARL-value.h"
 #include "err.h"
+#include "hash.h"
 #include "s-umap.h"
-
-#define READ_BYTE(ip) *ip++
-#define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
-#define STACK_LIM 512
-
-struct EARL_vm {
-        struct {
-                struct EARL_value *data[STACK_LIM];
-                size_t len;
-        } stack;
-
-        struct s_umap globals;
-
-        struct EARL_value **sp;
-        enum opcode *ip;
-
-        enum opcode (*read_byte)(struct EARL_vm *);
-};
-
-enum opcode
-read_byte(struct EARL_vm *vm) {
-        return *vm->ip++;
-}
-
-void
-stack_push(struct EARL_vm *vm, struct EARL_value *value) {
-    if (vm->stack.len >= STACK_LIM)
-        err("Stack Overflow");
-
-    *vm->sp = value;
-    *vm->sp++;
-    vm->stack.len++;
-}
-
-struct EARL_value *
-stack_pop(struct EARL_vm *vm) {
-    if (vm->stack.len == 0)
-        err("Stack Underflow");
-
-    *vm->sp--;
-    vm->stack.len--;
-    return *vm->sp;
-}
 
 struct EARL_value *
 EVM_exec(struct cc *cc) {
         printf("Begin Interpreter...\n");
 
         struct EARL_vm vm = (struct EARL_vm) {
-                .stack = { .len = 0 },
-                .globals = NULL,
-                .sp = NULL,
-                .ip = &cc->opcode.data[0],
-                .read_byte = read_byte,
+                .stack     = { .len = 0 },
+                .globals   = s_umap_create(djb2, NULL),
+                .cc        = cc,
+                .sp        = NULL,
+                .ip        = NULL,
+
+                .read_byte = EVM_routines_read_byte,
+                .init      = EVM_routines_init,
+                .push      = EVM_routines_stack_push,
+                .pop       = EVM_routines_stack_pop,
         };
 
-        vm.sp = &vm.stack.data[0];
+        vm.init(&vm);
 
         // Begin interpretation
         while (1) {
@@ -100,14 +64,14 @@ EVM_exec(struct cc *cc) {
                 case OPCODE_CONST: {
                         size_t idx = vm.read_byte(&vm);
                         struct EARL_value *constant = cc->const_pool.data[idx];
-                        stack_push(&vm, constant);
+                        vm.push(&vm, constant);
                 } break;
                 case OPCODE_MINUS:
                 case OPCODE_MUL:
                 case OPCODE_DIV:
                 case OPCODE_ADD: {
-                        struct EARL_value *n1 = stack_pop(&vm);
-                        struct EARL_value *n2 = stack_pop(&vm);
+                        struct EARL_value *n1 = vm.pop(&vm);
+                        struct EARL_value *n2 = vm.pop(&vm);
 
                         int v1 = EARL_value_get_int(n1),
                                 v2 = EARL_value_get_int(n2);
@@ -119,7 +83,7 @@ EVM_exec(struct cc *cc) {
                                 : v2 % v1;
 
                         struct EARL_value *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
-                        stack_push(&vm, res_value);
+                        vm.push(&vm, res_value);
                 } break;
                 case OPCODE_STORE: {
                         assert(0);
@@ -136,5 +100,5 @@ EVM_exec(struct cc *cc) {
                 if (b) break;
         }
 
-        return stack_pop(&vm);
+        return vm.pop(&vm);
 }
