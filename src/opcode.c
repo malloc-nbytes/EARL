@@ -23,22 +23,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-#include "earl-value.h"
-#include "utils.h"
+#include "opcode.h"
 #include "err.h"
 
-struct earl_value *
-earl_value_alloc(enum earl_value_type type, void *data) {
-        struct earl_value *v =
-            s_malloc(sizeof(struct earl_value), NULL, NULL);
-        v->type = type;
-        switch (type) {
-        case EARL_VALUE_TYPE_INTEGER: {
-                v->value.integer = *(int *)data;
+void
+opcode_dump(enum opcode op) {
+        switch (op) {
+        case OPCODE_HALT: printf("0x%x (HALT)\n", (uint8_t)op); break;
+        case OPCODE_CONST: printf("0x%x (CONST)\n", (uint8_t)op); break;
+        case OPCODE_ADD: printf("0x%x (ADD)\n", (uint8_t)op); break;
+        case OPCODE_MINUS: printf("0x%x (MINUS)\n", (uint8_t)op); break;
+        case OPCODE_MUL: printf("0x%x (MUL)\n", (uint8_t)op); break;
+        case OPCODE_DIV: printf("0x%x (DIV)\n", (uint8_t)op); break;
+        case OPCODE_MOD: printf("0x%x (MOD)\n", (uint8_t)op); break;
+        case OPCODE_STORE: printf("0x%x (STORE)\n", (uint8_t)op); break;
+        default: {
+                err_wargs("unknown opcode: 0x%x", (uint8_t)op);
         } break;
-        default:
-                err_wargs("unknown type: %d", (int)type);
         }
-        return v;
 }

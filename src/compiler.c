@@ -27,7 +27,7 @@
 
 #include "compiler.h"
 #include "ast.h"
-#include "earl-value.h"
+#include "EARL-value.h"
 #include "opcode.h"
 #include "utils.h"
 #include "err.h"
@@ -205,8 +205,8 @@ compile_stmt(struct stmt *stmt, struct cc *cc) {
 }
 
 size_t
-cc_push_constant(struct cc *cc, enum earl_value_type type, void *data) {
-        struct earl_value *v = earl_value_alloc(type, data);
+cc_push_constant(struct cc *cc, enum EARL_value_type type, void *data) {
+        struct earl_value *v = EARL_value_alloc(type, data);
         da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, struct earl_value **, v);
         return cc->const_pool.len-1;
 }
@@ -215,7 +215,7 @@ void
 cc_dump_opcode(const struct cc cc) {
         printf("Dumping compiled opcode\n");
         for (size_t i = 0; i < cc.opcode.len; ++i)
-                printf("--- %#x\n", cc.opcode.data[i]);
+                opcode_dump(cc.opcode.data[i]);
 }
 
 struct cc

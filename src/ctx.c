@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "earl-value.h"
+#include "EARL-value.h"
 #include "ctx.h"
 #include "err.h"
 #include "utils.h"

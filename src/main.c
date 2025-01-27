@@ -30,7 +30,7 @@
 #include "parser.h"
 #include "compiler.h"
 #include "EVM.h"
-#include "earl-value.h"
+#include "EARL-value.h"
 
 #define SRC_FP "../src/input.rl"
 
@@ -44,8 +44,8 @@ main(void) {
         struct cc CC = cc_compile(prog);
         cc_dump_opcode(CC);
 
-        struct earl_value *res = EVM_exec(&CC);
-        printf("result: %d\n", earl_value_get_int(res));
+        struct EARL_value *res = EVM_exec(&CC);
+        printf("result: %d\n", EARL_value_get_int(res));
 
         return 0;
 }

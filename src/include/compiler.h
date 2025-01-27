@@ -26,7 +26,7 @@
 
 #include "opcode.h"
 #include "ast.h"
-#include "earl-value.h"
+#include "EARL-value.h"
 
 /// @brief Holds all compilation information
 struct cc {
@@ -46,7 +46,7 @@ struct cc {
 
         struct {
                 /// @brief The constant pool
-                struct earl_value **data;
+                struct EARL_value **data;
 
                 /// @brief The length of the constant pool
                 size_t len;
@@ -72,7 +72,7 @@ struct cc {
 /// @return The result of the compiled program
 struct cc cc_compile(struct program *prog);
 
-size_t cc_push_constant(struct cc *cc, enum earl_value_type type, void *data);
+size_t cc_push_constant(struct cc *cc, enum EARL_value_type type, void *data);
 
 void cc_dump_opcode(const struct cc cc);
 

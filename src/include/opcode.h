@@ -36,4 +36,6 @@ enum opcode {
         OPCODE_STORE = 0x07,
 };
 
+void opcode_dump(enum opcode op);
+
 #endif // OPCODE_H

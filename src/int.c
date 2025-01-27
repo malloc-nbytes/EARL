@@ -24,11 +24,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "earl-value.h"
+#include "EARL-value.h"
 #include "utils.h"
 #include "err.h"
 
 int
-earl_value_get_int(struct earl_value *value) {
+EARL_value_get_int(struct EARL_value *value) {
         return value->value.integer;
 }

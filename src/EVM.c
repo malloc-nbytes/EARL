@@ -28,20 +28,27 @@
 #include "EVM.h"
 #include "opcode.h"
 #include "utils.h"
-#include "earl-value.h"
+#include "EARL-value.h"
 #include "err.h"
 
 #define READ_BYTE(ip) *ip++
 #define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
 #define STACK_LIM 512
 
+/* struct EARL_vm { */
+/*         struct { */
+/*                 struct EARL_value *data[STACK_LIM]; */
+/*                 size_t len; */
+/*         } stack; */
+/* }; */
+
 struct stack {
-        struct earl_value *data[STACK_LIM];
+        struct EARL_value *data[STACK_LIM];
         size_t len;
 };
 
 void
-stack_push(struct stack *stack, struct earl_value ***sp, struct earl_value *value) {
+stack_push(struct stack *stack, struct EARL_value ***sp, struct EARL_value *value) {
     if (stack->len >= STACK_LIM) {
         err("Stack Overflow");
     }
@@ -51,8 +58,8 @@ stack_push(struct stack *stack, struct earl_value ***sp, struct earl_value *valu
     stack->len++;
 }
 
-struct earl_value *
-stack_pop(struct stack *stack, struct earl_value ***sp) {
+struct EARL_value *
+stack_pop(struct stack *stack, struct EARL_value ***sp) {
     if (stack->len == 0) {
         err("Stack Underflow");
     }
@@ -62,7 +69,7 @@ stack_pop(struct stack *stack, struct earl_value ***sp) {
     return **sp;
 }
 
-struct earl_value *
+struct EARL_value *
 EVM_exec(struct cc *cc) {
         printf("Begin Interpreter...\n");
 
@@ -70,7 +77,7 @@ EVM_exec(struct cc *cc) {
         struct stack stack = (struct stack) { .len = 0 };
 
         // Pointers
-        struct earl_value **sp = &stack.data[0];
+        struct EARL_value **sp = &stack.data[0];
         enum opcode *ip = &cc->opcode.data[0];
 
         // Begin interpretation
@@ -83,18 +90,18 @@ EVM_exec(struct cc *cc) {
                 case OPCODE_HALT: b = 1; break;
                 case OPCODE_CONST: {
                         size_t idx = READ_BYTE(ip);
-                        struct earl_value *constant = cc->const_pool.data[idx];
+                        struct EARL_value *constant = cc->const_pool.data[idx];
                         stack_push(&stack, &sp, constant);
                 } break;
                 case OPCODE_MINUS:
                 case OPCODE_MUL:
                 case OPCODE_DIV:
                 case OPCODE_ADD: {
-                        struct earl_value *n1 = stack_pop(&stack, &sp);
-                        struct earl_value *n2 = stack_pop(&stack, &sp);
+                        struct EARL_value *n1 = stack_pop(&stack, &sp);
+                        struct EARL_value *n2 = stack_pop(&stack, &sp);
 
-                        int v1 = earl_value_get_int(n1),
-                                v2 = earl_value_get_int(n2);
+                        int v1 = EARL_value_get_int(n1),
+                                v2 = EARL_value_get_int(n2);
 
                         int res = instr == OPCODE_ADD ? v2 + v1
                                 : instr == OPCODE_MINUS ? v2 - v1
@@ -102,12 +109,12 @@ EVM_exec(struct cc *cc) {
                                 : instr == OPCODE_DIV ? v2 / v1
                                 : v2 % v1;
 
-                        struct earl_value *res_value = earl_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
+                        struct EARL_value *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
                         stack_push(&stack, &sp, res_value);
                 } break;
                 case OPCODE_STORE: {
                         size_t idx = READ_BYTE(ip);
-                        struct earl_value *value = stack_pop(&stack, &sp);
+                        struct EARL_value *value = stack_pop(&stack, &sp);
                         cc->const_pool.data[idx] = value;
                 } break;
                 default: {

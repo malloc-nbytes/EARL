@@ -21,17 +21,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef EVM_H
-#define EVM_H
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "EARL-value.h"
-#include "compiler.h"
+#include "utils.h"
+#include "err.h"
 
-/// @brief Execute the program
-/// @param opcode The compiled bytecode
-/// @param opcode_len The length of opcdoe
-/// @param opcode_cap The capacity of opcdoe
-/// @return The value after execution
-struct EARL_value *EVM_exec(struct cc *cc);
-
-#endif // EVM_H
+struct EARL_value *
+EARL_value_alloc(enum EARL_value_type type, void *data) {
+        struct EARL_value *v =
+            s_malloc(sizeof(struct EARL_value), NULL, NULL);
+        v->type = type;
+        switch (type) {
+        case EARL_VALUE_TYPE_INTEGER: {
+                v->value.integer = *(int *)data;
+        } break;
+        default:
+                err_wargs("unknown type: %d", (int)type);
+        }
+        return v;
+}
