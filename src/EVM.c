@@ -35,12 +35,28 @@
 #include "s-umap.h"
 
 static void handle_store(EARL_vm_t *vm) {
-    // vm.cc->const_pool.data[idx];
-    // s_umap_insert(&vm.globals, id, value);
     size_t idx = vm->read_byte(vm);
+
+    const char *symbol = vm->cc->gl_syms.data[idx];
+    assert(symbol && "Symbol must exist in the global symbol table");
+
     EARL_value_t *value = vm->pop(vm);
-    EARL_value_t *res_value = EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL);
-    vm->push(vm, res_value);
+    s_umap_insert(&vm->globals, symbol, (uint8_t *)value);
+
+    vm->push(vm, EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL));
+}
+
+static void handle_load(EARL_vm_t *vm) {
+    size_t idx = vm->read_byte(vm);
+    const char *id = vm->cc->gl_syms.data[idx];
+    EARL_value_t *value = s_umap_get(&vm->globals, id);
+
+    if (value == NULL) {
+        fprintf(stderr, "Runtime Error: Undefined variable '%s'\n", id);
+        exit(1); // Exit with an error
+    }
+
+    vm->push(vm, value);
 }
 
 static void handle_add(EARL_vm_t *vm, opcode_t opc) {
@@ -70,16 +86,17 @@ EARL_value_t *EVM_exec(cc_t *cc) {
     printf("Begin Interpreter...\n");
 
     EARL_vm_t vm = (EARL_vm_t) {
-        .stack     = { .len = 0 },
-        .globals   = s_umap_create(djb2, NULL),
-        .cc        = cc,
-        .sp        = NULL,
-        .ip        = NULL,
+        .stack      = { .len = 0 },
+        .globals    = s_umap_create(djb2, NULL),
+        .cc         = cc,
+        .sp         = NULL,
+        .ip         = NULL,
 
-        .read_byte = EVM_routines_read_byte,
-        .init      = EVM_routines_init,
-        .push      = EVM_routines_stack_push,
-        .pop       = EVM_routines_stack_pop,
+        .read_byte  = EVM_routines_read_byte,
+        .init       = EVM_routines_init,
+        .push       = EVM_routines_stack_push,
+        .pop        = EVM_routines_stack_pop,
+        .dump_stack = EVM_routines_dump_stack,
     };
 
     vm.init(&vm);
@@ -107,7 +124,7 @@ EARL_value_t *EVM_exec(cc_t *cc) {
             handle_store(&vm);
             break;
         case OPCODE_LOAD: {
-            assert(0);
+            handle_load(&vm);
         } break;
         default: {
             fprintf(stderr, "unknown opcode %#x\n", opc);

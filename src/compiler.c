@@ -35,41 +35,74 @@
 #include "hash.h"
 #include "ctx.h"
 
-void cc_expr(expr_t *expr, cc_t *cc);
+static void cc_expr(expr_t *expr, cc_t *cc);
 
-void push_opcode(cc_t *cc, opcode_t opc, size_t *const_pool_idx) {
-    da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *,
-              opc);
-    if (const_pool_idx)
-        da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap,
-                  opcode_t *, *const_pool_idx);
+size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data) {
+    EARL_value_t *v = EARL_value_alloc(type, data);
+    da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, EARL_value_t **, v);
+    return cc->const_pool.len-1;
 }
 
-void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
+size_t cc_push_global(cc_t *cc, const char *id) {
+    da_append(cc->gl_syms.data, cc->gl_syms.len, cc->gl_syms.cap, const char **, id);
+    return cc->gl_syms.len-1;
+}
+
+static void push_opcode(cc_t *cc, opcode_t opc) {
+    da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, opc);
+}
+
+static void push_index_from_const_pool(cc_t *cc, size_t idx) {
+    da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, idx);
+}
+
+static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
+    // Step 1: Get the identifier name
     const char *id = expr->identifier->lx;
+
     ctx_assert_var_in_scope(cc->ctx, id);
-    push_opcode(cc, OPCODE_LOAD, NULL);
+
+    // Step 2: Check if the identifier exists in the global symbols table
+    size_t idx = SIZE_MAX;
+    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
+        if (strcmp(cc->gl_syms.data[i], id) == 0) {
+            idx = i; // Found the symbol
+            break;
+        }
+    }
+
+    // Step 3: If not found, add it to the symbol table
+    if (idx == SIZE_MAX) {
+        assert("unreachable");
+        // idx = cc_push_global(cc, id);
+    }
+
+    // Step 4: Emit the `LOAD` instruction
+    push_opcode(cc, OPCODE_LOAD);
+    push_index_from_const_pool(cc, idx);
 }
 
-void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
+static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
     int integer = atoi(expr->integer->lx);
     size_t idx = cc_push_constant(cc, EARL_VALUE_TYPE_INTEGER, &integer);
-    push_opcode(cc, OPCODE_CONST, &idx);
+
+    push_opcode(cc, OPCODE_CONST);
+    push_index_from_const_pool(cc, idx);
 }
 
-void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
+static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
     (void)expr;
     (void)cc;
     TODO;
 }
 
-void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
+static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
     (void)expr;
     (void)cc;
     TODO;
 }
 
-void cc_expr_term(expr_term_t *expr, cc_t *cc) {
+static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
     switch (expr->type) {
     case EXPR_TERM_TYPE_IDENTIFIER:
         cc_expr_term_identifier(expr->data.identifier, cc);
@@ -87,37 +120,37 @@ void cc_expr_term(expr_term_t *expr, cc_t *cc) {
     }
 }
 
-void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
+static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
     cc_expr(expr->left, cc);
     cc_expr(expr->right, cc);
     switch (expr->op->type) {
     case TOKEN_TYPE_PLUS:
-        push_opcode(cc, OPCODE_ADD, NULL);
+        push_opcode(cc, OPCODE_ADD);
         break;
     case TOKEN_TYPE_MINUS:
-        push_opcode(cc, OPCODE_MINUS, NULL);
+        push_opcode(cc, OPCODE_MINUS);
         break;
     case TOKEN_TYPE_FORWARD_SLASH:
-        push_opcode(cc, OPCODE_DIV, NULL);
+        push_opcode(cc, OPCODE_DIV);
         break;
     case TOKEN_TYPE_ASTERISK:
-        push_opcode(cc, OPCODE_MUL, NULL);
+        push_opcode(cc, OPCODE_MUL);
         break;
     case TOKEN_TYPE_PERCENT:
-        push_opcode(cc, OPCODE_MOD, NULL);
+        push_opcode(cc, OPCODE_MOD);
         break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
     }
 }
 
-void cc_expr_unary(expr_unary_t *expr, cc_t *cc) {
+static void cc_expr_unary(expr_unary_t *expr, cc_t *cc) {
     (void)expr;
     (void)cc;
     TODO;
 }
 
-void cc_expr(expr_t *expr, cc_t *cc) {
+static void cc_expr(expr_t *expr, cc_t *cc) {
     switch (expr->type) {
     case EXPR_TYPE_TERM:
         cc_expr_term(expr->data.term, cc);
@@ -132,49 +165,62 @@ void cc_expr(expr_t *expr, cc_t *cc) {
     }
 }
 
-void cc_stmt_return(stmt_return_t *stmt, cc_t *cc) {
+static void cc_stmt_return(stmt_return_t *stmt, cc_t *cc) {
     (void)stmt;
     (void)cc;
     TODO;
 }
 
-void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
+static void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
     cc_expr(stmt->expr, cc);
 }
 
-void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
+static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     (void)stmt;
     (void)cc;
     TODO;
 }
 
-void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
+static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
     (void)stmt;
     (void)cc;
     TODO;
 }
 
-void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
+static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
+    /* const char *id = stmt->identifier->lx; */
+    /* ctx_assert_var_not_in_scope(cc->ctx, id); */
+    /* cc_expr(stmt->expr, cc); */
+
+    /* ctx_add_var_to_scope(cc->ctx, id); */
+
+    /* size_t idx = cc_push_global(cc, id); */
+    /* push_opcode(cc, OPCODE_CONST); */
+    /* push_index_from_const_pool(cc, idx); */
+
+    /* push_opcode(cc, OPCODE_STORE); */
+
+    /* cc_dump_opcode(*cc); */
+    /* assert(0); */
+
     const char *id = stmt->identifier->lx;
     ctx_assert_var_not_in_scope(cc->ctx, id);
+    size_t var_idx = cc_push_global(cc, id);
     cc_expr(stmt->expr, cc);
-
     ctx_add_var_to_scope(cc->ctx, id);
 
-    da_append(cc->gl_syms.data, cc->gl_syms.len, cc->gl_syms.cap, const char **, id);
-
-    size_t idx = cc_push_constant(cc, EARL_VALUE_TYPE_INTEGER, (void *)&(int){cc->gl_syms.len-1});
-    push_opcode(cc, OPCODE_STORE, &idx);
+    // Emit an opcode to store the value in the variable
+    push_opcode(cc, OPCODE_STORE);
+    push_opcode(cc, var_idx);
 }
 
-void
-cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
+static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
     (void)stmt;
     (void)cc;
     TODO;
 }
 
-void compile_stmt(stmt_t *stmt, cc_t *cc) {
+static void compile_stmt(stmt_t *stmt, cc_t *cc) {
     switch (stmt->type) {
     case STMT_TYPE_FN: cc_stmt_fn(stmt->data.fn, cc);                break;
     case STMT_TYPE_LET: cc_stmt_let(stmt->data.let, cc);             break;
@@ -187,12 +233,6 @@ void compile_stmt(stmt_t *stmt, cc_t *cc) {
                   stmt_type_to_cstr(stmt->type));
     } break;
     }
-}
-
-size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data) {
-    EARL_value_t *v = EARL_value_alloc(type, data);
-    da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, EARL_value_t **, v);
-    return cc->const_pool.len-1;
 }
 
 void cc_dump_opcode(const cc_t cc) {
@@ -230,7 +270,7 @@ cc_t cc_compile(program_t *prog) {
 
     ctx_destroy(cc.ctx);
 
-    push_opcode(&cc, OPCODE_HALT, NULL);
+    push_opcode(&cc, OPCODE_HALT);
 
     return cc;
 }

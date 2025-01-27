@@ -53,3 +53,11 @@ EARL_value_t *EVM_routines_stack_pop(EARL_vm_t *vm) {
     vm->stack.len--;
     return *vm->sp;
 }
+
+void EVM_routines_dump_stack(EARL_vm_t *vm) {
+    printf("Dumping stack\n");
+    for (size_t i = 0; i < vm->stack.len; ++i) {
+        printf("Stack[%zu]: ", i);
+        EARL_value_dump(vm->stack.data[i]);
+    }
+}

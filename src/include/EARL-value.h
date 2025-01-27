@@ -20,4 +20,6 @@ typedef struct {
 /// @return The allocated EARL value
 EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data);
 
+void EARL_value_dump(const EARL_value_t *value);
+
 #endif // EARL_VALUE_H

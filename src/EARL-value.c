@@ -43,3 +43,16 @@ EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
     }
     return v;
 }
+
+void EARL_value_dump(const EARL_value_t *value) {
+    switch (value->type) {
+    case EARL_VALUE_TYPE_INTEGER:
+        printf("Integer: %d\n", value->value.integer);
+        break;
+    case EARL_VALUE_TYPE_UNIT:
+        printf("Unit\n");
+        break;
+    default:
+        err("unknown type");
+    }
+}
