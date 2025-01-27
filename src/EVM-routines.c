@@ -27,33 +27,29 @@
 #include "EVM-routines.h"
 #include "err.h"
 
-enum opcode
-EVM_routines_read_byte(struct EARL_vm *vm) {
-        return *vm->ip++;
+opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
+    return *vm->ip++;
 }
 
-void
-EVM_routines_init(struct EARL_vm *vm) {
-        vm->ip = &vm->cc->opcode.data[0];
-        vm->sp = &vm->stack.data[0];
+void EVM_routines_init(EARL_vm_t *vm) {
+    vm->ip = &vm->cc->opcode.data[0];
+    vm->sp = &vm->stack.data[0];
 }
 
-void
-EVM_routines_stack_push(struct EARL_vm *vm, struct EARL_value *value) {
-        if (vm->stack.len >= STACK_LIM)
-                err("Stack Overflow");
+void EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t *value) {
+    if (vm->stack.len >= STACK_LIM)
+        err("Stack Overflow");
 
-        *vm->sp = value;
-        *vm->sp++;
-        vm->stack.len++;
+    *vm->sp = value;
+    *vm->sp++;
+    vm->stack.len++;
 }
 
-struct EARL_value *
-EVM_routines_stack_pop(struct EARL_vm *vm) {
-        if (vm->stack.len == 0)
-                err("Stack Underflow");
+EARL_value_t *EVM_routines_stack_pop(EARL_vm_t *vm) {
+    if (vm->stack.len == 0)
+        err("Stack Underflow");
 
-        *vm->sp--;
-        vm->stack.len--;
-        return *vm->sp;
+    *vm->sp--;
+    vm->stack.len--;
+    return *vm->sp;
 }

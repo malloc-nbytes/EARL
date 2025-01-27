@@ -30,11 +30,11 @@
 #define ATTR_STR_EXPERIMENTAL "experimental"
 
 /// @brief The different codes for the attributes
-enum Attr {
+typedef enum {
     ATTR_PUB = 1 << 0,
     ATTR_REF = 1 << 1,
     ATTR_CONST = 1 << 2,
     ATTR_EXPERIMENTAL = 1 << 3,
-};
+} attr_t;
 
 #endif // ATTR_H

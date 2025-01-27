@@ -23,8 +23,7 @@
 
 #include "hash.h"
 
-unsigned long
-djb2(const char *str) {
+unsigned long djb2(const char *str) {
     unsigned long hash = 5381;
     int c;
 

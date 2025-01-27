@@ -28,19 +28,18 @@
 #include "opcode.h"
 #include "err.h"
 
-void
-opcode_dump(enum opcode op) {
-        switch (op) {
-        case OPCODE_HALT: printf("0x%x (HALT)\n", (uint8_t)op); break;
-        case OPCODE_CONST: printf("0x%x (CONST)\n", (uint8_t)op); break;
-        case OPCODE_ADD: printf("0x%x (ADD)\n", (uint8_t)op); break;
-        case OPCODE_MINUS: printf("0x%x (MINUS)\n", (uint8_t)op); break;
-        case OPCODE_MUL: printf("0x%x (MUL)\n", (uint8_t)op); break;
-        case OPCODE_DIV: printf("0x%x (DIV)\n", (uint8_t)op); break;
-        case OPCODE_MOD: printf("0x%x (MOD)\n", (uint8_t)op); break;
-        case OPCODE_STORE: printf("0x%x (STORE)\n", (uint8_t)op); break;
-        default: {
-                err_wargs("unknown opcode: 0x%x", (uint8_t)op);
-        } break;
-        }
+void opcode_dump(opcode_t op) {
+    switch (op) {
+    case OPCODE_HALT: printf("0x%x (HALT)\n", (uint8_t)op); break;
+    case OPCODE_CONST: printf("0x%x (CONST)\n", (uint8_t)op); break;
+    case OPCODE_ADD: printf("0x%x (ADD)\n", (uint8_t)op); break;
+    case OPCODE_MINUS: printf("0x%x (MINUS)\n", (uint8_t)op); break;
+    case OPCODE_MUL: printf("0x%x (MUL)\n", (uint8_t)op); break;
+    case OPCODE_DIV: printf("0x%x (DIV)\n", (uint8_t)op); break;
+    case OPCODE_MOD: printf("0x%x (MOD)\n", (uint8_t)op); break;
+    case OPCODE_STORE: printf("0x%x (STORE)\n", (uint8_t)op); break;
+    default: {
+        err_wargs("unknown opcode: 0x%x", (uint8_t)op);
+    } break;
+    }
 }

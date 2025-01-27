@@ -27,53 +27,60 @@
 #include "opcode.h"
 #include "ast.h"
 #include "EARL-value.h"
+#include "ctx.h"
 
 /// @brief Holds all compilation information
-struct cc {
-        /// @brief Holds the entire context during compilation
-        struct ctx *ctx;
+typedef struct {
+    /// @brief Holds the entire context during compilation
+    ctx_t *ctx;
 
-        struct {
-                /// @brief The opcode that is produced
-                enum opcode *data;
+    struct {
+        /// @brief The opcode that is produced
+        opcode_t *data;
 
-                /// @brief The length of the opcode
-                size_t len;
+        /// @brief The length of the opcode
+        size_t len;
 
-                /// @brief The capacity of the opcode
-                size_t cap;
-        } opcode;
+        /// @brief The capacity of the opcode
+        size_t cap;
+    } opcode;
 
-        struct {
-                /// @brief The constant pool
-                struct EARL_value **data;
+    struct {
+        /// @brief The constant pool
+        EARL_value_t **data;
 
-                /// @brief The length of the constant pool
-                size_t len;
+        /// @brief The length of the constant pool
+        size_t len;
 
-                /// @brief The capacity of the constant pool
-                size_t cap;
-        } const_pool;
+        /// @brief The capacity of the constant pool
+        size_t cap;
+    } const_pool;
 
-        struct {
-                /// @brief All symbols found
-                const char **data;
+    struct {
+        /// @brief All symbols found
+        const char **data;
 
-                /// @brief The length of the symbols
-                size_t len;
+        /// @brief The length of the symbols
+        size_t len;
 
-                /// @brief The capacity of the symbols
-                size_t cap;
-        } gl_syms;
-};
+        /// @brief The capacity of the symbols
+        size_t cap;
+    } gl_syms;
+} cc_t;
 
 /// @brief Compile a program into bytecode based off of an AST
 /// @param prog The AST to compile
 /// @return The result of the compiled program
-struct cc cc_compile(struct program *prog);
+cc_t cc_compile(program_t *prog);
 
-size_t cc_push_constant(struct cc *cc, enum EARL_value_type type, void *data);
+/// @brief Push a constant into the CC
+/// @param cc The compiler context
+/// @return The index that the constant was pushed
+///         into the contant pool
+size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data);
 
-void cc_dump_opcode(const struct cc cc);
+/// @brief Dump all opcode
+/// @param cc The compiler context
+void cc_dump_opcode(const cc_t cc);
 
 #endif // COMPILER_H

@@ -27,130 +27,122 @@
 #include "expr.h"
 #include "ast.h"
 
-struct expr_function_call *
-expr_function_call_alloc(struct expr *left,
-                         struct expr **args,
-                         size_t len,
-                         size_t cap,
-                         struct lexer *lexer) {
-        (void)lexer;
+expr_function_call_t *expr_function_call_alloc(expr_t *left,
+                                               expr_t **args,
+                                               size_t len,
+                                               size_t cap,
+                                               lexer_t *lexer) {
+    (void)lexer;
 
-        struct expr_function_call *fn
-                = (struct expr_function_call *)s_malloc(sizeof(struct expr_function_call), NULL, NULL);
-        fn->left = left;
-        fn->args = args;
-        fn->args_len = len;
-        fn->args_cap = cap;
-        return fn;
+    expr_function_call_t *fn
+        = (expr_function_call_t *)s_malloc(sizeof(expr_function_call_t), NULL, NULL);
+
+    fn->left = left;
+    fn->args = args;
+    fn->args_len = len;
+    fn->args_cap = cap;
+    return fn;
 }
 
-struct expr_character_literal *
-expr_character_literal_alloc(struct token *character, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_character_literal *chl
-                = (struct expr_character_literal *)s_malloc(sizeof(struct expr_character_literal), NULL, NULL);
-        chl->character = character;
-        return chl;
+expr_character_literal_t *expr_character_literal_alloc(token_t *character, lexer_t *lexer) {
+    (void)lexer;
+    expr_character_literal_t *chl
+        = (expr_character_literal_t *)s_malloc(sizeof(expr_character_literal_t), NULL, NULL);
+    chl->character = character;
+    return chl;
 }
 
-struct expr_string_literal *
-expr_string_literal_alloc(struct token *string, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_string_literal *strl
-                = (struct expr_string_literal *)s_malloc(sizeof(struct expr_string_literal), NULL, NULL);
-        strl->string = string;
-        return strl;
+expr_string_literal_t *expr_string_literal_alloc(token_t *string, lexer_t *lexer) {
+    (void)lexer;
+    expr_string_literal_t *strl
+        = (expr_string_literal_t *)s_malloc(sizeof(expr_string_literal_t), NULL, NULL);
+    strl->string = string;
+    return strl;
 }
 
-struct expr_integer_literal *
-expr_integer_literal_alloc(struct token *integer, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_integer_literal *il
-                = (struct expr_integer_literal *)s_malloc(sizeof(struct expr_integer_literal), NULL, NULL);
-        il->integer = integer;
-        return il;
+expr_integer_literal_t *expr_integer_literal_alloc(token_t *integer, lexer_t *lexer) {
+    (void)lexer;
+    expr_integer_literal_t *il
+        = (expr_integer_literal_t *)s_malloc(sizeof(expr_integer_literal_t), NULL, NULL);
+    il->integer = integer;
+    return il;
 }
 
-struct expr_identifier *
-expr_identifier_alloc(struct token *identifier, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_identifier *il
-                = (struct expr_identifier *)s_malloc(sizeof(struct expr_identifier), NULL, NULL);
-        il->identifier = identifier;
-        return il;
+expr_identifier_t *expr_identifier_alloc(token_t *identifier, lexer_t *lexer) {
+    (void)lexer;
+    expr_identifier_t *il
+        = (expr_identifier_t *)s_malloc(sizeof(expr_identifier_t), NULL, NULL);
+    il->identifier = identifier;
+    return il;
 }
 
-struct expr_unary *
-expr_unary_alloc(struct expr *expr, struct token *op, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_unary *eu
-                = (struct expr_unary *)s_malloc(sizeof(struct expr_unary), NULL, NULL);
-        eu->expr = expr;
-        eu->op = op;
-        return eu;
+expr_unary_t *expr_unary_alloc(expr_t *expr, token_t *op, lexer_t *lexer) {
+    (void)lexer;
+    expr_unary_t *eu
+        = (expr_unary_t *)s_malloc(sizeof(expr_unary_t), NULL, NULL);
+    eu->expr = expr;
+    eu->op = op;
+    return eu;
 }
 
-struct expr_binary *
-expr_binary_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_binary *bin
-                = (struct expr_binary *)s_malloc(sizeof(struct expr_binary), NULL, NULL);
-        bin->left = left;
-        bin->right = right;
-        bin->op = op;
-        return bin;
+expr_binary_t *expr_binary_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer) {
+    (void)lexer;
+    expr_binary_t *bin
+        = (expr_binary_t *)s_malloc(sizeof(expr_binary_t), NULL, NULL);
+    bin->left = left;
+    bin->right = right;
+    bin->op = op;
+    return bin;
 }
 
-struct expr_term *
-expr_term_alloc(void *data, enum expr_term_type type, struct lexer *lexer) {
-        (void)lexer;
-        struct expr_term *term = (struct expr_term *)s_malloc(sizeof(struct expr_term), NULL, NULL);
-        term->type = type;
+expr_term_t *expr_term_alloc(void *data, expr_term_type_t type, lexer_t *lexer) {
+    (void)lexer;
+    expr_term_t *term = (expr_term_t *)s_malloc(sizeof(expr_term_t), NULL, NULL);
+    term->type = type;
 
-        switch (type) {
-        case EXPR_TERM_TYPE_IDENTIFIER: {
-                term->data.identifier = (struct expr_identifier *)data;
-        } break;
-        case EXPR_TERM_TYPE_INTEGER_LITERAL: {
-                term->data.integer_literal = (struct expr_integer_literal *)data;
-        } break;
-        case EXPR_TERM_TYPE_STRING_LITERAL: {
-                term->data.string_literal = (struct expr_string_literal *)data;
-        } break;
-        case EXPR_TERM_TYPE_FUNCTION_CALL: {
-                term->data.function_call = (struct expr_function_call *)data;
-        } break;
-        case EXPR_TERM_TYPE_CHARACTER_LITERAL: {
-                term->data.character_literal = (struct expr_character_literal *)data;
-        } break;
-        default: {
-                assert(0 && "unimplemented");
-        } break;
-        }
+    switch (type) {
+    case EXPR_TERM_TYPE_IDENTIFIER: {
+        term->data.identifier = (expr_identifier_t *)data;
+    } break;
+    case EXPR_TERM_TYPE_INTEGER_LITERAL: {
+        term->data.integer_literal = (expr_integer_literal_t *)data;
+    } break;
+    case EXPR_TERM_TYPE_STRING_LITERAL: {
+        term->data.string_literal = (expr_string_literal_t *)data;
+    } break;
+    case EXPR_TERM_TYPE_FUNCTION_CALL: {
+        term->data.function_call = (expr_function_call_t *)data;
+    } break;
+    case EXPR_TERM_TYPE_CHARACTER_LITERAL: {
+        term->data.character_literal = (expr_character_literal_t *)data;
+    } break;
+    default: {
+        assert(0 && "unimplemented");
+    } break;
+    }
 
-        return term;
+    return term;
 }
 
-struct expr *
-expr_alloc(void *data, enum expr_type type, struct lexer *lexer) {
-        (void)lexer;
-        struct expr *expr = (struct expr *)s_malloc(sizeof(struct expr), NULL, NULL);
-        expr->type = type;
+expr_t *expr_alloc(void *data, expr_type_t type, lexer_t *lexer) {
+    (void)lexer;
+    expr_t *expr = (expr_t *)s_malloc(sizeof(expr_t), NULL, NULL);
+    expr->type = type;
 
-        switch (type) {
-                case EXPR_TYPE_TERM: {
-                        expr->data.term = (struct expr_term *)data;
-                } break;
-                case EXPR_TYPE_BINARY: {
-                        expr->data.binary = (struct expr_binary *)data;
-                } break;
-                case EXPR_TYPE_UNARY: {
-                        expr->data.unary = (struct expr_unary *)data;
-                } break;
-                default: {
-                        assert(0 && "unreachable");
-                }
-        }
+    switch (type) {
+    case EXPR_TYPE_TERM: {
+        expr->data.term = (expr_term_t *)data;
+    } break;
+    case EXPR_TYPE_BINARY: {
+        expr->data.binary = (expr_binary_t *)data;
+    } break;
+    case EXPR_TYPE_UNARY: {
+        expr->data.unary = (expr_unary_t *)data;
+    } break;
+    default: {
+        assert(0 && "unreachable");
+    }
+    }
 
-        return expr;
+    return expr;
 }

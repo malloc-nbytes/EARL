@@ -30,27 +30,27 @@
 #include "arena.h"
 
 #define TODO                                                    \
-        fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);  \
-        exit(1);
+    fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);      \
+    exit(1);
 
-#define da_append(arr, len, cap, ty, value)                                \
-        do {                                                               \
-                if ((cap) == 0)                                            \
-                        fprintf(stderr, "utils_da_append: `cap` is 0\n");  \
-                if ((len) >= (cap)) {                                      \
-                        (cap) *= 2;                                        \
-                        (arr) = (ty)realloc((arr), (cap) * sizeof(ty));    \
-                }                                                          \
-                (arr)[(len)] = (value);                                    \
-                (len) += 1;                                                \
-        } while (0)
+#define da_append(arr, len, cap, ty, value)                     \
+    do {                                                        \
+        if ((cap) == 0)                                         \
+            fprintf(stderr, "utils_da_append: `cap` is 0\n");   \
+        if ((len) >= (cap)) {                                   \
+            (cap) *= 2;                                         \
+            (arr) = (ty)realloc((arr), (cap) * sizeof(ty));     \
+        }                                                       \
+        (arr)[(len)] = (value);                                 \
+        (len) += 1;                                             \
+    } while (0)
 
 /// @brief A safer malloc() wrapper
 /// @param bytes The number of bytes to allocate
 /// @param arena (optional) The arena to use for the allocator
 /// @param allocator (optional) The allocator to use
 /// @return A pointer to the allocated memory
-void *s_malloc(size_t bytes, struct arena *arena, void *(allocator)(struct arena *, size_t));
+void *s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t));
 
 /// @brief Read in a file to a cstr
 /// @param fp The filepath

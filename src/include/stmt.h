@@ -32,13 +32,13 @@
 /// @param expr The expression
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_let *stmt_let_alloc(struct token *identifier, struct expr *expr, struct lexer *lexer);
+stmt_let_t *stmt_let_alloc(token_t *identifier, expr_t *expr, lexer_t *lexer);
 
 /// @brief Allocate a 'return' statement
 /// @param expr The expression
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_return* stmt_return_alloc(struct expr *expr, struct lexer *lexer);
+stmt_return_t *stmt_return_alloc(expr_t *expr, lexer_t *lexer);
 
 /// @brief Allocate a 'block' statement
 /// @param stmts An array of statements that the block consists of
@@ -46,7 +46,7 @@ struct stmt_return* stmt_return_alloc(struct expr *expr, struct lexer *lexer);
 /// @param stmts_cap The capacity of stmts
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_block *stmt_block_alloc(struct stmt **stmts, size_t stmts_len, size_t stmts_cap, struct lexer *lexer);
+stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer);
 
 /// @brief Allocate a 'mutation' statement
 /// @param left The left-hand side of the mutation
@@ -54,13 +54,13 @@ struct stmt_block *stmt_block_alloc(struct stmt **stmts, size_t stmts_len, size_
 /// @param op The binary operator
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_mut *stmt_mut_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer);
+stmt_mut_t *stmt_mut_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer);
 
 /// @brief Allocate an 'expression' statement
 /// @param expr The expression
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_expr *stmt_expr_alloc(struct expr *expr, struct lexer *lexer);
+stmt_expr_t *stmt_expr_alloc(expr_t *expr, lexer_t *lexer);
 
 /// @brief Allocate a 'fn' statement
 /// @param id The ID of the function
@@ -70,18 +70,18 @@ struct stmt_expr *stmt_expr_alloc(struct expr *expr, struct lexer *lexer);
 /// @param block The function body
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt_fn *stmt_fn_alloc(struct token *id,
-                              struct token **params,
-                              size_t params_len,
-                              size_t params_cap,
-                              struct stmt_block *block,
-                              struct lexer *lexer);
+stmt_fn_t *stmt_fn_alloc(token_t *id,
+                         token_t **params,
+                         size_t params_len,
+                         size_t params_cap,
+                         stmt_block_t *block,
+                         lexer_t *lexer);
 
 /// @brief Allocate a 'fn' statement
 /// @param data The actual statement
 /// @param type The type of the statement
 /// @param lexer The lexer to use
 /// @return The new statement
-struct stmt *stmt_alloc(void *data, enum stmt_type type, struct lexer *lexer);
+stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer);
 
 #endif // STMT_H

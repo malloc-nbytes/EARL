@@ -4,12 +4,11 @@
 #include "opcode.h"
 #include "EVM.h"
 
-enum opcode EVM_routines_read_byte(struct EARL_vm *vm);
-
-void EVM_routines_init(struct EARL_vm *vm);
+opcode_t EVM_routines_read_byte(EARL_vm_t *vm);
+void     EVM_routines_init(EARL_vm_t *vm);
 
 // Stack routines
-void EVM_routines_stack_push(struct EARL_vm *vm, struct EARL_value *value);
-struct EARL_value *EVM_routines_stack_pop(struct EARL_vm *vm);
+void          EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t *value);
+EARL_value_t *EVM_routines_stack_pop(EARL_vm_t *vm);
 
 #endif // EVM_ROUTINES_H

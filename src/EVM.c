@@ -34,71 +34,70 @@
 #include "hash.h"
 #include "s-umap.h"
 
-struct EARL_value *
-EVM_exec(struct cc *cc) {
-        printf("Begin Interpreter...\n");
+EARL_value_t *EVM_exec(cc_t *cc) {
+    printf("Begin Interpreter...\n");
 
-        struct EARL_vm vm = (struct EARL_vm) {
-                .stack     = { .len = 0 },
-                .globals   = s_umap_create(djb2, NULL),
-                .cc        = cc,
-                .sp        = NULL,
-                .ip        = NULL,
+    EARL_vm_t vm = (EARL_vm_t) {
+        .stack     = { .len = 0 },
+        .globals   = s_umap_create(djb2, NULL),
+        .cc        = cc,
+        .sp        = NULL,
+        .ip        = NULL,
 
-                .read_byte = EVM_routines_read_byte,
-                .init      = EVM_routines_init,
-                .push      = EVM_routines_stack_push,
-                .pop       = EVM_routines_stack_pop,
-        };
+        .read_byte = EVM_routines_read_byte,
+        .init      = EVM_routines_init,
+        .push      = EVM_routines_stack_push,
+        .pop       = EVM_routines_stack_pop,
+    };
 
-        vm.init(&vm);
+    vm.init(&vm);
 
-        // Begin interpretation
-        while (1) {
-                int b = 0;
+    // Begin interpretation
+    while (1) {
+        int b = 0;
 
-                enum opcode instr;
+        opcode_t instr;
 
-                switch (instr = vm.read_byte(&vm)) {
-                case OPCODE_HALT: b = 1; break;
-                case OPCODE_CONST: {
-                        size_t idx = vm.read_byte(&vm);
-                        struct EARL_value *constant = cc->const_pool.data[idx];
-                        vm.push(&vm, constant);
-                } break;
-                case OPCODE_MINUS:
-                case OPCODE_MUL:
-                case OPCODE_DIV:
-                case OPCODE_ADD: {
-                        struct EARL_value *n1 = vm.pop(&vm);
-                        struct EARL_value *n2 = vm.pop(&vm);
+        switch (instr = vm.read_byte(&vm)) {
+        case OPCODE_HALT: b = 1; break;
+        case OPCODE_CONST: {
+            size_t idx = vm.read_byte(&vm);
+            EARL_value_t *constant = cc->const_pool.data[idx];
+            vm.push(&vm, constant);
+        } break;
+        case OPCODE_MINUS:
+        case OPCODE_MUL:
+        case OPCODE_DIV:
+        case OPCODE_ADD: {
+            EARL_value_t *n1 = vm.pop(&vm);
+            EARL_value_t *n2 = vm.pop(&vm);
 
-                        int v1 = EARL_value_get_int(n1),
-                                v2 = EARL_value_get_int(n2);
+            int v1 = n1->value.integer,
+                v2 = n2->value.integer;
 
-                        int res = instr == OPCODE_ADD ? v2 + v1
-                                : instr == OPCODE_MINUS ? v2 - v1
-                                : instr == OPCODE_MUL ? v2 * v1
-                                : instr == OPCODE_DIV ? v2 / v1
-                                : v2 % v1;
+            int res = instr == OPCODE_ADD ? v2 + v1
+                : instr == OPCODE_MINUS ? v2 - v1
+                : instr == OPCODE_MUL ? v2 * v1
+                : instr == OPCODE_DIV ? v2 / v1
+                : v2 % v1;
 
-                        struct EARL_value *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
-                        vm.push(&vm, res_value);
-                } break;
-                case OPCODE_STORE: {
-                        assert(0);
-                        // size_t idx = vm.read_byte(&vm);
-                        // struct EARL_value *value = stack_pop(&vm);
-                        // cc->const_pool.data[idx] = value;
-                } break;
-                default: {
-                        fprintf(stderr, "unknown instruction %#x\n", instr);
-                        exit(1);
-                }
-                }
-
-                if (b) break;
+            EARL_value_t *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
+            vm.push(&vm, res_value);
+        } break;
+        case OPCODE_STORE: {
+            assert(0);
+            // size_t idx = vm.read_byte(&vm);
+            // EARL_value_t *value = stack_pop(&vm);
+            // cc->const_pool.data[idx] = value;
+        } break;
+        default: {
+            fprintf(stderr, "unknown instruction %#x\n", instr);
+            exit(1);
+        }
         }
 
-        return vm.pop(&vm);
+        if (b) break;
+    }
+
+    return vm.pop(&vm);
 }

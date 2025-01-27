@@ -28,17 +28,15 @@
 #include "utils.h"
 #include "err.h"
 
-struct EARL_value *
-EARL_value_alloc(enum EARL_value_type type, void *data) {
-        struct EARL_value *v =
-            s_malloc(sizeof(struct EARL_value), NULL, NULL);
-        v->type = type;
-        switch (type) {
-        case EARL_VALUE_TYPE_INTEGER: {
-                v->value.integer = *(int *)data;
-        } break;
-        default:
-                err_wargs("unknown type: %d", (int)type);
-        }
-        return v;
+EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
+    EARL_value_t *v = s_malloc(sizeof(EARL_value_t), NULL, NULL);
+    v->type = type;
+    switch (type) {
+    case EARL_VALUE_TYPE_INTEGER: {
+        v->value.integer = *(int *)data;
+    } break;
+    default:
+        err_wargs("unknown type: %d", (int)type);
+    }
+    return v;
 }

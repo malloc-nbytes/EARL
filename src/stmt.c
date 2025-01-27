@@ -26,104 +26,92 @@
 #include "utils.h"
 #include "stmt.h"
 
-struct stmt_let *
-stmt_let_alloc(struct token *identifier, struct expr *expr, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_let *let
-                = (struct stmt_let *)s_malloc(sizeof(struct stmt_let), NULL, NULL);
-        let->identifier = identifier;
-        let->expr = expr;
-        return let;
+stmt_let_t *stmt_let_alloc(token_t *identifier, expr_t *expr, lexer_t *lexer) {
+    (void)lexer;
+    stmt_let_t *let = (stmt_let_t *)s_malloc(sizeof(stmt_let_t), NULL, NULL);
+    let->identifier = identifier;
+    let->expr = expr;
+    return let;
 }
 
-struct stmt_return*
-stmt_return_alloc(struct expr *expr, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_return *ret
-                = (struct stmt_return *)s_malloc(sizeof(struct stmt_return), NULL, NULL);
-        ret->expr = expr;
-        return ret;
+stmt_return_t *stmt_return_alloc(expr_t *expr, lexer_t *lexer) {
+    (void)lexer;
+    stmt_return_t *ret = (stmt_return_t *)s_malloc(sizeof(stmt_return_t), NULL, NULL);
+    ret->expr = expr;
+    return ret;
 }
 
-struct stmt_block *
-stmt_block_alloc(struct stmt **stmts, size_t stmts_len, size_t stmts_cap, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_block *block
-                = (struct stmt_block *)s_malloc(sizeof(struct stmt_block), NULL, NULL);
-        block->stmts = stmts;
-        block->stmts_len = stmts_len;
-        block->stmts_cap = stmts_cap;
-        return block;
+stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer) {
+    (void)lexer;
+    stmt_block_t *block = (stmt_block_t *)s_malloc(sizeof(stmt_block_t), NULL, NULL);
+    block->stmts = stmts;
+    block->stmts_len = stmts_len;
+    block->stmts_cap = stmts_cap;
+    return block;
 }
 
-struct stmt_mut *
-stmt_mut_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_mut *mut
-                = (struct stmt_mut *)s_malloc(sizeof(struct stmt_mut), NULL, NULL);
-        mut->left = left;
-        mut->right = right;
-        mut->op = op;
-        return mut;
+stmt_mut_t *stmt_mut_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer) {
+    (void)lexer;
+    stmt_mut_t *mut = (stmt_mut_t *)s_malloc(sizeof(stmt_mut_t), NULL, NULL);
+    mut->left = left;
+    mut->right = right;
+    mut->op = op;
+    return mut;
 }
 
-struct stmt_expr *
-stmt_expr_alloc(struct expr *expr, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_expr *stmt_expr
-                = (struct stmt_expr *)s_malloc(sizeof(struct stmt_expr), NULL, NULL);
-        stmt_expr->expr = expr;
-        return stmt_expr;
+stmt_expr_t *stmt_expr_alloc(expr_t *expr, lexer_t *lexer) {
+    (void)lexer;
+    stmt_expr_t *stmt_expr = (stmt_expr_t *)s_malloc(sizeof(stmt_expr_t), NULL, NULL);
+    stmt_expr->expr = expr;
+    return stmt_expr;
 }
 
-struct stmt_fn *
-stmt_fn_alloc(struct token *id,
-              struct token **params,
-              size_t params_len,
-              size_t params_cap,
-              struct stmt_block *block,
-              struct lexer *lexer) {
-        (void)lexer;
-        struct stmt_fn *fn
-                = (struct stmt_fn *)s_malloc(sizeof(struct stmt_fn), NULL, NULL);
-        fn->id = id;
-        fn->params = params;
-        fn->params_len = params_len;
-        fn->params_cap = params_cap;
-        fn->block = block;
-        return fn;
+stmt_fn_t *stmt_fn_alloc(token_t *id,
+                         token_t **params,
+                         size_t params_len,
+                         size_t params_cap,
+                         stmt_block_t *block,
+                         lexer_t *lexer) {
+    (void)lexer;
+    stmt_fn_t *fn
+        = (stmt_fn_t *)s_malloc(sizeof(stmt_fn_t), NULL, NULL);
+    fn->id = id;
+    fn->params = params;
+    fn->params_len = params_len;
+    fn->params_cap = params_cap;
+    fn->block = block;
+    return fn;
 }
 
-struct stmt *
-stmt_alloc(void *data, enum stmt_type type, struct lexer *lexer) {
-        (void)lexer;
-        struct stmt *stmt
-                = (struct stmt *)s_malloc(sizeof(struct stmt), NULL, NULL);
-        stmt->type = type;
+stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer) {
+    (void)lexer;
+    stmt_t *stmt
+        = (stmt_t *)s_malloc(sizeof(stmt_t), NULL, NULL);
+    stmt->type = type;
 
-        switch (type) {
-        case STMT_TYPE_LET: {
-                stmt->data.let = (struct stmt_let *)data;
-        } break;
-        case STMT_TYPE_BLOCK: {
-                stmt->data.block = (struct stmt_block *)data;
-        } break;
-        case STMT_TYPE_MUT: {
-                stmt->data.mut = (struct stmt_mut *)data;
-        } break;
-        case STMT_TYPE_EXPR: {
-                stmt->data.expr = (struct stmt_expr *)data;
-        } break;
-        case STMT_TYPE_FN: {
-                stmt->data.fn = (struct stmt_fn *)data;
-        } break;
-        case STMT_TYPE_RETURN: {
-                stmt->data.ret = (struct stmt_return *)data;
-        } break;
-        default: {
-                assert(0 && "statement unimplemented");
-        } break;
-        }
+    switch (type) {
+    case STMT_TYPE_LET: {
+        stmt->data.let = (stmt_let_t *)data;
+    } break;
+    case STMT_TYPE_BLOCK: {
+        stmt->data.block = (stmt_block_t *)data;
+    } break;
+    case STMT_TYPE_MUT: {
+        stmt->data.mut = (stmt_mut_t *)data;
+    } break;
+    case STMT_TYPE_EXPR: {
+        stmt->data.expr = (stmt_expr_t *)data;
+    } break;
+    case STMT_TYPE_FN: {
+        stmt->data.fn = (stmt_fn_t *)data;
+    } break;
+    case STMT_TYPE_RETURN: {
+        stmt->data.ret = (stmt_return_t *)data;
+    } break;
+    default: {
+        assert(0 && "statement unimplemented");
+    } break;
+    }
 
-        return stmt;
+    return stmt;
 }

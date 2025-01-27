@@ -25,17 +25,17 @@
 #define OPCODE_H
 
 /// @brief The different opcodes
-enum opcode {
-        OPCODE_HALT = 0x00,
-        OPCODE_CONST = 0x01,
-        OPCODE_ADD = 0x02,
-        OPCODE_MINUS = 0x03,
-        OPCODE_MUL = 0x04,
-        OPCODE_DIV = 0x05,
-        OPCODE_MOD = 0x06,
-        OPCODE_STORE = 0x07,
-};
+typedef enum {
+    OPCODE_HALT  = 0x00,
+    OPCODE_CONST = 0x01,
+    OPCODE_ADD   = 0x02,
+    OPCODE_MINUS = 0x03,
+    OPCODE_MUL   = 0x04,
+    OPCODE_DIV   = 0x05,
+    OPCODE_MOD   = 0x06,
+    OPCODE_STORE = 0x07,
+} opcode_t;
 
-void opcode_dump(enum opcode op);
+void opcode_dump(opcode_t op);
 
 #endif // OPCODE_H

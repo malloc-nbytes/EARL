@@ -30,38 +30,38 @@
 #define ARENA_DEFAULT_SZ 2056
 
 /// @brief The arena allocator
-struct arena {
-        /// @brief The memory that is used to allocate from
-        uint8_t *mem;
+typedef struct {
+    /// @brief The memory that is used to allocate from
+    uint8_t *mem;
 
-        /// @brief The length of the memory
-        size_t len;
+    /// @brief The length of the memory
+    size_t len;
 
-        /// @brief The capacity of the memory
-        size_t cap;
-};
+    /// @brief The capacity of the memory
+    size_t cap;
+} arena_t;
 
 /// @brief Create a default arena
 /// @param bytes The number of bytes to reserve
 /// @note The bytes parameter is optional, will
 ///       use ARENA_DEFAULT_SZ if it is NULL
-struct arena arena_create(size_t *bytes);
+arena_t arena_create(size_t *bytes);
 
 /// @brief Initialize an arena with an existing one
 /// @param arena The arena to use
 /// @param bytes The number of bytes to use
 /// @note The bytes parameter is optional, will
 ///       use ARENA_DEFAULT_SZ if it is NULL
-void arena_create_from(struct arena *arena, size_t *bytes);
+void arena_create_from(arena_t *arena, size_t *bytes);
 
 /// @brief Request memory from the arena
 /// @param arena The arena to use
 /// @param bytes The number of bytes to allocate
-uint8_t *arena_malloc(struct arena *arena, size_t bytes);
+uint8_t *arena_malloc(arena_t *arena, size_t bytes);
 
 /// @brief Free the arena
 /// @param arena The arena to use
 /// @note Will call free() on arena itself
-void arena_free(struct arena *arena);
+void arena_free(arena_t *arena);
 
 #endif // ARENA_H

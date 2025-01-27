@@ -26,45 +26,41 @@
 #include "utils.h"
 #include "arena.h"
 
-struct arena
-arena_create(size_t *bytes) {
-        size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-        return (struct arena) {
-                .mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL),
-                .len = 0,
-                .cap = N,
-        };
+arena_t arena_create(size_t *bytes) {
+    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
+    return (arena_t) {
+        .mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL),
+        .len = 0,
+        .cap = N,
+    };
 }
 
-void
-arena_create_from(struct arena *arena, size_t *bytes) {
-        size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-        arena->mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL);
-        arena->len = 0;
-        arena->cap = N;
+void arena_create_from(arena_t *arena, size_t *bytes) {
+    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
+    arena->mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL);
+    arena->len = 0;
+    arena->cap = N;
 }
 
-uint8_t *
-arena_malloc(struct arena *arena, size_t bytes) {
-        if (!arena)
-                return NULL;
+uint8_t *arena_malloc(arena_t *arena, size_t bytes) {
+    if (!arena)
+        return NULL;
 
-        if (arena->len + bytes > arena->cap) {
-                arena->cap *= 2;
-                arena->mem = realloc(arena->mem, arena->cap);
-        }
+    if (arena->len + bytes > arena->cap) {
+        arena->cap *= 2;
+        arena->mem = realloc(arena->mem, arena->cap);
+    }
 
-        if (!arena->mem)
-                return NULL;
+    if (!arena->mem)
+        return NULL;
 
-        uint8_t *mem = &arena->mem[arena->len];
-        arena->len += bytes;
-        return mem;
+    uint8_t *mem = &arena->mem[arena->len];
+    arena->len += bytes;
+    return mem;
 }
 
-void
-arena_free(struct arena *arena) {
-        free(arena->mem);
-        arena->mem = NULL;
-        arena->len = arena->cap = 0;
+void arena_free(arena_t *arena) {
+    free(arena->mem);
+    arena->mem = NULL;
+    arena->len = arena->cap = 0;
 }

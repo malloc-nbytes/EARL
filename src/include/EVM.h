@@ -34,30 +34,46 @@
 #define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
 #define STACK_LIM 512
 
-struct EARL_vm {
-        struct {
-                struct EARL_value *data[STACK_LIM];
-                size_t len;
-        } stack;
+/// @brief The EARL virtual machine
+typedef struct EARL_vm {
+    /// @brief The program stack
+    struct {
+        EARL_value_t *data[STACK_LIM];
+        size_t len;
+    } stack;
 
-        struct s_umap globals;
-        struct cc *cc;
+    /// @brief A map of all global variables
+    s_umap_t globals;
 
-        struct EARL_value **sp;
-        enum opcode *ip;
+    /// @brief The compilation context
+    cc_t *cc;
 
-        // Routines
-        enum   opcode      (*read_byte)(struct EARL_vm *vm);
-               void        (*init)(struct EARL_vm *vm);
-               void        (*push)(struct EARL_vm *vm, struct EARL_value *value);
-        struct EARL_value *(*pop)(struct EARL_vm *vm);
-};
+    /// @brief The stack pointer
+    EARL_value_t **sp;
+
+    /// @brief The instruction pointer
+    opcode_t *ip;
+
+    /*** Routines ***/
+    /// @brief Read the byte that is pointed to
+    ///        by the instruction pointer.
+    opcode_t (*read_byte)(struct EARL_vm *vm);
+
+    /// @brief Initialize the VM
+    void (*init)(struct EARL_vm *vm);
+
+    /// @brief Push a value onto the stack
+    void (*push)(struct EARL_vm *vm, EARL_value_t *value);
+
+    /// @brief Pop a value off of the stack
+    EARL_value_t *(*pop)(struct EARL_vm *vm);
+} EARL_vm_t;
 
 /// @brief Execute the program
 /// @param opcode The compiled bytecode
 /// @param opcode_len The length of opcdoe
 /// @param opcode_cap The capacity of opcdoe
 /// @return The value after execution
-struct EARL_value *EVM_exec(struct cc *cc);
+EARL_value_t *EVM_exec(cc_t *cc);
 
 #endif // EVM_H

@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,19 +35,18 @@
 
 #define SRC_FP "../src/input.rl"
 
-int
-main(void) {
-        const char *src = read_file(SRC_FP);
-        struct lexer lexer = lexer_lex_src_code(src, SRC_FP);
-        struct program *prog = parser_parse(&lexer);
-        ast_dump(prog);
+int main(void) {
+    const char *src = read_file(SRC_FP);
+    lexer_t lexer = lexer_lex_src_code(src, SRC_FP);
+    program_t *prog = parser_parse(&lexer);
+    ast_dump(prog);
 
-        struct cc CC = cc_compile(prog);
-        cc_dump_opcode(CC);
+    cc_t cc = cc_compile(prog);
+    cc_dump_opcode(cc);
 
-        struct EARL_value *res = EVM_exec(&CC);
-        printf("result: %d\n", EARL_value_get_int(res));
+    EARL_value_t *res = EVM_exec(&cc);
+    assert(res->type == EARL_VALUE_TYPE_INTEGER);
+    printf("result: %d\n", res->value.integer);
 
-        return 0;
+    return 0;
 }
-

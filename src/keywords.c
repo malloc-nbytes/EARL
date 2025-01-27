@@ -29,9 +29,9 @@ const char *config_keywords[] = KEYWORDS_ASCPL;
 const size_t config_keywords_len = sizeof(config_keywords)/sizeof(config_keywords[0]);
 
 int keywords_is_keyword(const char *s) {
-        for (size_t i = 0; i < config_keywords_len; ++i)
-                if (strcmp(config_keywords[i], s) == 0)
-                        return 1;
-        return 0;
+    for (size_t i = 0; i < config_keywords_len; ++i)
+        if (strcmp(config_keywords[i], s) == 0)
+            return 1;
+    return 0;
 }
 

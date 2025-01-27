@@ -28,72 +28,64 @@
 #include "s-uset.h"
 #include "utils.h"
 
-struct s_uset
-s_uset_create(unsigned long (*hash)(const char *)) {
-        const size_t cap = 32;
-        return (struct s_uset) {
-                .tbl = (struct s_uset_node **)s_malloc(sizeof(struct s_uset_node *) * cap, NULL, NULL),
-                .sz = 0,
-                .cap = cap,
-                .hash = hash,
-        };
+s_uset_t s_uset_create(unsigned long (*hash)(const char *)) {
+    const size_t cap = 32;
+    return (s_uset_t) {
+        .tbl = (s_uset_node_t **)s_malloc(sizeof(s_uset_node_t *) * cap, NULL, NULL),
+        .sz = 0,
+        .cap = cap,
+        .hash = hash,
+    };
 }
 
-static void
-free_node(struct s_uset_node *it) {
-        /* while (it) { */
-        /*         if (it->value) */
-        /*                 free(it->value); */
-        /*         struct s_uset_node *tmp = it; */
-        /*         it = it->next; */
-        /*         free(tmp); */
-        /* } */
+static void free_node(s_uset_node_t *it) {
+    /* while (it) { */
+    /*         if (it->value) */
+    /*                 free(it->value); */
+    /*         s_uset_node *tmp = it; */
+    /*         it = it->next; */
+    /*         free(tmp); */
+    /* } */
 }
 
-void
-s_uset_destroy(struct s_uset *set) {
-        for (size_t i = 0; i < set->cap; ++i)
-                free_node(set->tbl[i]);
-        set->sz = set->cap = 0;
+void s_uset_destroy(s_uset_t *set) {
+    for (size_t i = 0; i < set->cap; ++i)
+        free_node(set->tbl[i]);
+    set->sz = set->cap = 0;
 }
 
-struct s_uset_node **
-find_free_set_node_spot(struct s_uset *set, unsigned long idx, struct s_uset_node **prev) {
-        struct s_uset_node **it = &set->tbl[idx];
-        *prev = NULL;
-        while (*it) {
-                *prev = *it;
-                it = &(*it)->next;
-        }
-        return it;
+s_uset_node_t **find_free_set_node_spot(s_uset_t *set, unsigned long idx, s_uset_node_t **prev) {
+    s_uset_node_t **it = &set->tbl[idx];
+    *prev = NULL;
+    while (*it) {
+        *prev = *it;
+        it = &(*it)->next;
+    }
+    return it;
 }
 
-void
-s_uset_insert(struct s_uset *set, const char *value) {
-        const size_t idx = set->hash(value) % set->cap;
-        struct s_uset_node *prev = NULL;
-        struct s_uset_node **node = find_free_set_node_spot(set, idx, &prev);
-        *node = (struct s_uset_node *)s_malloc(sizeof(struct s_uset_node),
-                                                     NULL, NULL);
-        (*node)->value = strdup(value);
-        (*node)->next = NULL;
-        if (prev)
-                prev->next = *node;
-        set->sz++;
+void s_uset_insert(s_uset_t *set, const char *value) {
+    const size_t idx = set->hash(value) % set->cap;
+    s_uset_node_t *prev = NULL;
+    s_uset_node_t **node = find_free_set_node_spot(set, idx, &prev);
+    *node = (s_uset_node_t *)s_malloc(sizeof(s_uset_node_t), NULL, NULL);
+    (*node)->value = strdup(value);
+    (*node)->next = NULL;
+    if (prev)
+        prev->next = *node;
+    set->sz++;
 }
 
-void
-s_uset_remove(struct s_uset *set, const char *value) {
-        (void)set;
-        (void)value;
-        TODO;
+void s_uset_remove(s_uset_t *set, const char *value) {
+    (void)set;
+    (void)value;
+    TODO;
 }
 
-int
-s_uset_contains(struct s_uset *set, const char *value) {
-        const size_t idx = set->hash(value) % set->cap;
-        struct s_uset_node *it = set->tbl[idx];
-        while (it && !streq(it->value, value))
-                it = it->next;
-        return it ? 1 : 0;
+int s_uset_contains(s_uset_t *set, const char *value) {
+    const size_t idx = set->hash(value) % set->cap;
+    s_uset_node_t *it = set->tbl[idx];
+    while (it && !streq(it->value, value))
+        it = it->next;
+    return it ? 1 : 0;
 }

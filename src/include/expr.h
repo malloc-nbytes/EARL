@@ -32,46 +32,41 @@
 /// @param data The actual expression
 /// @param type The type of the expression
 /// @return The new expression
-struct expr *expr_alloc(void *data, enum expr_type type, struct lexer *lexer);
+expr_t *expr_alloc(void *data, expr_type_t type, lexer_t *lexer);
 
 /// @brief Allocate a binary expression
 /// @param left The left expression
 /// @param right The right expression
 /// @param op The operator
 /// @return The new expression
-struct expr_binary *expr_binary_alloc(struct expr *left, struct expr *right, struct token *op, struct lexer *lexer);
+expr_binary_t *expr_binary_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer);
 
 /// @brief Allocate a unary expression
 /// @param expr The right expression
 /// @param op The operator
 /// @return The new expression
-struct expr_unary *expr_unary_alloc(struct expr *expr, struct token *op, struct lexer *lexer);
+expr_unary_t *expr_unary_alloc(expr_t *expr, token_t *op, lexer_t *lexer);
 
 /// @brief Allocate an expression term
 /// @param data The actual expression
 /// @param type The type of the expression term
 /// @return The new expression
-struct expr_term *expr_term_alloc(void *data, enum expr_term_type term_type, struct lexer *lexer);
+expr_term_t *expr_term_alloc(void *data, expr_term_type_t term_type, lexer_t *lexer);
 
 /// @brief Allocate an expression identifier
 /// @param identifier The token of the identifier
 /// @return The new expression
-struct expr_identifier *expr_identifier_alloc(struct token *identifier, struct lexer *lexer);
+expr_identifier_t *expr_identifier_alloc(token_t *identifier, lexer_t *lexer);
 
 /// @brief Allocate an expression integer literal
 /// @param identifier The token of the integer
 /// @return The new expression
-struct expr_integer_literal *expr_integer_literal_alloc(struct token *integer, struct lexer *lexer);
+expr_integer_literal_t *expr_integer_literal_alloc(token_t *integer, lexer_t *lexer);
 
 /// @brief Allocate an expression string literal
 /// @param identifier The token of the string
 /// @return The new expression
-struct expr_string_literal *expr_string_literal_alloc(struct token *string, struct lexer *lexer);
-
-/// @brief Allocate an expression character literal
-/// @param identifier The token of the character
-/// @return The new expression
-struct expr_character_literal *expr_character_literal_alloc(struct token *character, struct lexer *lexer);
+expr_string_literal_t *expr_string_literal_alloc(token_t *string, lexer_t *lexer);
 
 /// @brief Allocate an expression function call
 /// @param left The left side of the function call
@@ -79,10 +74,15 @@ struct expr_character_literal *expr_character_literal_alloc(struct token *charac
 /// @param len The length of the arguments
 /// @param cap The capacity of the arguments
 /// @return The new expression
-struct expr_function_call *expr_function_call_alloc(struct expr *left,
-                                                    struct expr **args,
-                                                    size_t len,
-                                                    size_t cap,
-                                                    struct lexer *lexer);
+expr_function_call_t *expr_function_call_alloc(expr_t *left,
+                                               expr_t **args,
+                                               size_t len,
+                                               size_t cap,
+                                               lexer_t *lexer);
+
+/// @brief Allocate an expression character literal
+/// @param identifier The token of the character
+/// @return The new expression
+expr_character_literal_t *expr_character_literal_alloc(token_t *character, lexer_t *lexer);
 
 #endif // EXPR_H

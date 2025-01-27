@@ -27,57 +27,57 @@
 #include "arena.h"
 #include "token.h"
 
-#define lexer_speek(l, i) lexer_peek(l, 0) && lexer_peek((l), 0)
+#define lexer_speek(l, i) lexer_peek((l), 0) && lexer_peek((l), 0)
 
 extern const char *config_keywords[];
 
 /// @brief The lexer construct.
-struct lexer {
-        /// @brief The head of the linked list of tokens
-        struct token *hd;
+typedef struct {
+    /// @brief The head of the linked list of tokens
+    token_t *hd;
 
-        /// @brief The tail of the linked list of tokens
-        struct token *tl;
+    /// @brief The tail of the linked list of tokens
+    token_t *tl;
 
-        /// @brief The arena allocator to
-        ///        allocate the tokens with
-        struct arena arena;
-};
+    /// @brief The arena allocator to
+    ///        allocate the tokens with
+    arena_t arena;
+} lexer_t;
 
 /// @brief Begin lexing on the source code `src`
 ///        located at the filepath `fp`.
 /// @param src The source code
 /// @param fp The filepath that the source code is located in
 /// @return A lexer that contains a linked list of tokens
-struct lexer lexer_lex_src_code(const char *src, const char *fp);
+lexer_t lexer_lex_src_code(const char *src, const char *fp);
 
 /// @brief Check to see if the lexer has at least one token
 /// @param lexer The lexer to check
 /// @return 1 on ok, 0 on failure
-int lexer_ok(const struct lexer *lexer);
+int lexer_ok(const lexer_t *lexer);
 
 /// @brief Append a token to the lexer
 /// @param lexer The lexer to append to
 /// @param tok The token to append
-void lexer_append(struct lexer *lexer, struct token *tok);
+void lexer_append(lexer_t *lexer, token_t *tok);
 
 /// @brief Print the contents of the lexer
 /// @param lexer The lexer to print
-void lexer_dump(struct lexer *lexer);
+void lexer_dump(lexer_t *lexer);
 
 /// @brief Remove the head of the lexer and advance it
 /// @param lexer The lexer to use
-void lexer_discard(struct lexer *lexer);
+void lexer_discard(lexer_t *lexer);
 
 /// @brief Get the head of the lexer and advance it afterwards
 /// @param lexer The lexer to use
 /// @return The old head of the lexer
-struct token *lexer_next(struct lexer *lexer);
+token_t *lexer_next(lexer_t *lexer);
 
 /// @brief Peek a token in the lexer
 /// @param lexer The lexer to use
 /// @param i The lookahead value
 /// @return A token pointer on success, or NULL on failure
-struct token *lexer_peek(struct lexer *lexer, int i);
+token_t *lexer_peek(lexer_t *lexer, int i);
 
 #endif // LEXER_H

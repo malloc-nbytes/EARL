@@ -29,93 +29,85 @@
 #include "s-umap.h"
 #include "utils.h"
 
-struct s_umap
-s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t *)) {
-        assert(hash);
-        const size_t cap = 64;
-        return (struct s_umap) {
-                .tbl = s_malloc(sizeof(struct s_umap_bucket *) * cap, NULL, NULL),
-                .sz = 0,
-                .cap = cap,
-                .hash = hash,
-                .destroy_value = destroy_value,
-        };
+s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t *)) {
+    assert(hash);
+    const size_t cap = 64;
+    return (s_umap_t) {
+        .tbl = s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
+        .sz = 0,
+        .cap = cap,
+        .hash = hash,
+        .destroy_value = destroy_value,
+    };
 }
 
-struct s_umap_bucket **
-find_free_spot(struct s_umap *map, unsigned long idx, struct s_umap_bucket **prev) {
-        struct s_umap_bucket **it = &map->tbl[idx];
-        *prev = NULL;
-        while (*it) {
-                *prev = *it;
-                it = &(*it)->next;
+s_umap_bucket_t **find_free_spot(s_umap_t *map, unsigned long idx, s_umap_bucket_t **prev) {
+    s_umap_bucket_t **it = &map->tbl[idx];
+    *prev = NULL;
+    while (*it) {
+        *prev = *it;
+        it = &(*it)->next;
+    }
+    return it;
+}
+
+void s_umap_remove(s_umap_t *map, const char *key) {
+    (void)map;
+    (void)key;
+    TODO;
+}
+
+void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value) {
+    const unsigned long idx = map->hash(key) % map->cap;
+    s_umap_bucket_t *prev = NULL;
+    s_umap_bucket_t **node = find_free_spot(map, idx, &prev);
+
+    *node = (s_umap_bucket_t *)s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
+
+    (*node)->key = strdup(key);
+    (*node)->value = value;
+    (*node)->next = NULL;
+
+    if (prev)
+        prev->next = *node;
+
+    map->sz++;
+}
+
+void *s_umap_get(s_umap_t *map, const char *key) {
+    const unsigned long idx = map->hash(key) % map->cap;
+    s_umap_bucket_t *it = map->tbl[idx];
+    while (it && !streq(it->key, key))
+        it = it->next;
+    return it ? it->value : NULL;
+}
+
+int s_umap_contains(s_umap_t *map, const char *key) {
+    return s_umap_get(map, key) != NULL;
+}
+
+void s_umap_dump(s_umap_t *map, void (*display)(const uint8_t *)) {
+    assert(display);
+    for (size_t i = 0; i < map->cap; ++i) {
+        s_umap_bucket_t *it = map->tbl[i];
+        while (it) {
+            printf("key: %s, value: ", it->key);
+            display(map->tbl[i]->value);
+            putchar('\n');
+            it = it->next;
         }
-        return it;
+    }
 }
 
-void
-s_umap_remove(struct s_umap *map, const char *key) {
-        (void)map;
-        (void)key;
-        TODO;
-}
-
-void
-s_umap_insert(struct s_umap *map, const char *key, uint8_t *value) {
-        const unsigned long idx = map->hash(key) % map->cap;
-        struct s_umap_bucket *prev = NULL;
-        struct s_umap_bucket **node = find_free_spot(map, idx, &prev);
-
-        *node = (struct s_umap_bucket *)s_malloc(sizeof(struct s_umap_bucket), NULL, NULL);
-
-        (*node)->key = strdup(key);
-        (*node)->value = value;
-        (*node)->next = NULL;
-
-        if (prev)
-                prev->next = *node;
-
-        map->sz++;
-}
-
-void *
-s_umap_get(struct s_umap *map, const char *key) {
-        const unsigned long idx = map->hash(key) % map->cap;
-        struct s_umap_bucket *it = map->tbl[idx];
-        while (it && !streq(it->key, key))
-                it = it->next;
-        return it ? it->value : NULL;
-}
-
-int
-s_umap_contains(struct s_umap *map, const char *key) {
-        return s_umap_get(map, key) != NULL;
-}
-
-void
-s_umap_dump(struct s_umap *map, void (*display)(const uint8_t *)) {
-        assert(display);
-        for (size_t i = 0; i < map->cap; ++i) {
-                struct s_umap_bucket *it = map->tbl[i];
-                while (it) {
-                        printf("key: %s, value: ", it->key);
-                        display(map->tbl[i]->value);
-                        putchar('\n');
-                        it = it->next;
-                }
+void s_umap_destroy(s_umap_t *map) {
+    for (size_t i = 0; i < map->sz; ++i)
+        if (map->tbl[i]) {
+            if (map->destroy_value)
+                map->destroy_value(map->tbl[i]->value);
+            free(map->tbl[i]->key);
+            free(map->tbl[i]);
         }
-}
-
-void
-s_umap_destroy(struct s_umap *map) {
-        for (size_t i = 0; i < map->sz; ++i)
-                if (map->tbl[i]) {
-                        if (map->destroy_value)
-                                map->destroy_value(map->tbl[i]->value);
-                        free(map->tbl[i]->key);
-                        free(map->tbl[i]);
-                }
-        free(map->tbl);
-        map->tbl = NULL;
-        map->sz = map->cap = 0;
+    free(map->tbl);
+    map->tbl = NULL;
+    map->sz = map->cap = 0;
 }

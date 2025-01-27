@@ -37,10 +37,10 @@ extern const size_t config_keywords_len;
 #define KEYWORD_RET "return"
 
 #define KEYWORDS_ASCPL {                        \
-                KEYWORD_LET,                    \
-                KEYWORD_FN,                     \
-                KEYWORD_RET,                    \
-        }
+        KEYWORD_LET,                            \
+            KEYWORD_FN,                         \
+            KEYWORD_RET,                        \
+            }
 
 /// @brief Check if `s` is a keyword
 /// @param s The string to check

@@ -27,6 +27,6 @@
 /// @brief Parse a program based off of a list of tokens
 /// @param lexer The lexer with the tokens to use
 /// @return An abstract syntax tree
-struct program *parser_parse(struct lexer *lexer);
+program_t *parser_parse(lexer_t *lexer);
 
 #endif // PARSER_H
