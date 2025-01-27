@@ -45,8 +45,13 @@ int main(void) {
     cc_dump_opcode(cc);
 
     EARL_value_t *res = EVM_exec(&cc);
-    assert(res->type == EARL_VALUE_TYPE_INTEGER);
-    printf("result: %d\n", res->value.integer);
+
+    if (res->type == EARL_VALUE_TYPE_INTEGER)
+        printf("result: %d\n", res->value.integer);
+    else if (res->type == EARL_VALUE_TYPE_UNIT)
+        printf("result: <unit>\n");
+    else
+        assert(0);
 
     return 0;
 }

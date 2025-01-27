@@ -2,12 +2,14 @@
 #define EARL_VALUE_H
 
 typedef enum {
+    EARL_VALUE_TYPE_UNIT,
     EARL_VALUE_TYPE_INTEGER,
 } EARL_value_type_t;
 
 typedef struct {
     EARL_value_type_t type;
     union {
+        void *unit;
         int integer;
     } value;
 } EARL_value_t;

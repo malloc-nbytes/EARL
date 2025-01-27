@@ -37,18 +37,18 @@
 
 void cc_expr(expr_t *expr, cc_t *cc);
 
-void push_opcode(cc_t *cc, opcode_t opc, size_t *cpidx) {
+void push_opcode(cc_t *cc, opcode_t opc, size_t *const_pool_idx) {
     da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *,
               opc);
-    if (cpidx)
+    if (const_pool_idx)
         da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap,
-                  opcode_t *, *cpidx);
+                  opcode_t *, *const_pool_idx);
 }
 
 void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
-    (void)expr;
-    (void)cc;
-    TODO;
+    const char *id = expr->identifier->lx;
+    ctx_assert_var_in_scope(cc->ctx, id);
+    push_opcode(cc, OPCODE_LOAD, NULL);
 }
 
 void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {

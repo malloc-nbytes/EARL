@@ -34,6 +34,38 @@
 #include "hash.h"
 #include "s-umap.h"
 
+static void handle_store(EARL_vm_t *vm) {
+    // vm.cc->const_pool.data[idx];
+    // s_umap_insert(&vm.globals, id, value);
+    size_t idx = vm->read_byte(vm);
+    EARL_value_t *value = vm->pop(vm);
+    EARL_value_t *res_value = EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL);
+    vm->push(vm, res_value);
+}
+
+static void handle_add(EARL_vm_t *vm, opcode_t opc) {
+    EARL_value_t *n1 = vm->pop(vm);
+    EARL_value_t *n2 = vm->pop(vm);
+
+    int v1 = n1->value.integer,
+        v2 = n2->value.integer;
+
+    int res = opc == OPCODE_ADD ? v2 + v1
+        : opc == OPCODE_MINUS ? v2 - v1
+        : opc == OPCODE_MUL ? v2 * v1
+        : opc == OPCODE_DIV ? v2 / v1
+        : v2 % v1;
+
+    EARL_value_t *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
+    vm->push(vm, res_value);
+}
+
+static void handle_const(EARL_vm_t *vm) {
+    size_t idx = vm->read_byte(vm);
+    EARL_value_t *constant = vm->cc->const_pool.data[idx];
+    vm->push(vm, constant);
+}
+
 EARL_value_t *EVM_exec(cc_t *cc) {
     printf("Begin Interpreter...\n");
 
@@ -56,42 +88,29 @@ EARL_value_t *EVM_exec(cc_t *cc) {
     while (1) {
         int b = 0;
 
-        opcode_t instr;
+        opcode_t opc;
 
-        switch (instr = vm.read_byte(&vm)) {
-        case OPCODE_HALT: b = 1; break;
-        case OPCODE_CONST: {
-            size_t idx = vm.read_byte(&vm);
-            EARL_value_t *constant = cc->const_pool.data[idx];
-            vm.push(&vm, constant);
-        } break;
+        switch (opc = vm.read_byte(&vm)) {
+        case OPCODE_HALT:
+            b = 1;
+            break;
+        case OPCODE_CONST:
+            handle_const(&vm);
+            break;
         case OPCODE_MINUS:
         case OPCODE_MUL:
         case OPCODE_DIV:
-        case OPCODE_ADD: {
-            EARL_value_t *n1 = vm.pop(&vm);
-            EARL_value_t *n2 = vm.pop(&vm);
-
-            int v1 = n1->value.integer,
-                v2 = n2->value.integer;
-
-            int res = instr == OPCODE_ADD ? v2 + v1
-                : instr == OPCODE_MINUS ? v2 - v1
-                : instr == OPCODE_MUL ? v2 * v1
-                : instr == OPCODE_DIV ? v2 / v1
-                : v2 % v1;
-
-            EARL_value_t *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
-            vm.push(&vm, res_value);
-        } break;
-        case OPCODE_STORE: {
+        case OPCODE_ADD:
+            handle_add(&vm, opc);
+            break;
+        case OPCODE_STORE:
+            handle_store(&vm);
+            break;
+        case OPCODE_LOAD: {
             assert(0);
-            // size_t idx = vm.read_byte(&vm);
-            // EARL_value_t *value = stack_pop(&vm);
-            // cc->const_pool.data[idx] = value;
         } break;
         default: {
-            fprintf(stderr, "unknown instruction %#x\n", instr);
+            fprintf(stderr, "unknown opcode %#x\n", opc);
             exit(1);
         }
         }

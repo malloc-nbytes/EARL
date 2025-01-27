@@ -35,6 +35,9 @@ EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
     case EARL_VALUE_TYPE_INTEGER: {
         v->value.integer = *(int *)data;
     } break;
+    case EARL_VALUE_TYPE_UNIT: {
+        v->value.unit = data;
+    } break;
     default:
         err_wargs("unknown type: %d", (int)type);
     }
