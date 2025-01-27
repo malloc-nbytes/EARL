@@ -206,8 +206,8 @@ compile_stmt(struct stmt *stmt, struct cc *cc) {
 
 size_t
 cc_push_constant(struct cc *cc, enum EARL_value_type type, void *data) {
-        struct earl_value *v = EARL_value_alloc(type, data);
-        da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, struct earl_value **, v);
+        struct EARL_value *v = EARL_value_alloc(type, data);
+        da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, struct EARL_value **, v);
         return cc->const_pool.len-1;
 }
 
@@ -232,7 +232,7 @@ cc_compile(struct program *prog) {
                         .cap = CAP,
                 },
                 .const_pool = {
-                        .data = s_malloc(sizeof(struct earl_value *) * CAP, NULL, NULL),
+                        .data = s_malloc(sizeof(struct Earl_value *) * CAP, NULL, NULL),
                         .len = 0,
                         .cap = CAP,
                 },

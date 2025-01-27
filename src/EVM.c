@@ -30,55 +30,64 @@
 #include "utils.h"
 #include "EARL-value.h"
 #include "err.h"
+#include "s-umap.h"
 
 #define READ_BYTE(ip) *ip++
 #define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
 #define STACK_LIM 512
 
-/* struct EARL_vm { */
-/*         struct { */
-/*                 struct EARL_value *data[STACK_LIM]; */
-/*                 size_t len; */
-/*         } stack; */
-/* }; */
+struct EARL_vm {
+        struct {
+                struct EARL_value *data[STACK_LIM];
+                size_t len;
+        } stack;
 
-struct stack {
-        struct EARL_value *data[STACK_LIM];
-        size_t len;
+        struct s_umap globals;
+
+        struct EARL_value **sp;
+        enum opcode *ip;
+
+        enum opcode (*read_byte)(struct EARL_vm *);
 };
 
-void
-stack_push(struct stack *stack, struct EARL_value ***sp, struct EARL_value *value) {
-    if (stack->len >= STACK_LIM) {
-        err("Stack Overflow");
-    }
+enum opcode
+read_byte(struct EARL_vm *vm) {
+        return *vm->ip++;
+}
 
-    **sp = value;
-    (*sp)++;
-    stack->len++;
+void
+stack_push(struct EARL_vm *vm, struct EARL_value *value) {
+    if (vm->stack.len >= STACK_LIM)
+        err("Stack Overflow");
+
+    *vm->sp = value;
+    *vm->sp++;
+    vm->stack.len++;
 }
 
 struct EARL_value *
-stack_pop(struct stack *stack, struct EARL_value ***sp) {
-    if (stack->len == 0) {
+stack_pop(struct EARL_vm *vm) {
+    if (vm->stack.len == 0)
         err("Stack Underflow");
-    }
 
-    (*sp)--;
-    stack->len--;
-    return **sp;
+    *vm->sp--;
+    vm->stack.len--;
+    return *vm->sp;
 }
 
 struct EARL_value *
 EVM_exec(struct cc *cc) {
         printf("Begin Interpreter...\n");
 
-        // Epilogue
-        struct stack stack = (struct stack) { .len = 0 };
+        struct EARL_vm vm = (struct EARL_vm) {
+                .stack = { .len = 0 },
+                .globals = NULL,
+                .sp = NULL,
+                .ip = &cc->opcode.data[0],
+                .read_byte = read_byte,
+        };
 
-        // Pointers
-        struct EARL_value **sp = &stack.data[0];
-        enum opcode *ip = &cc->opcode.data[0];
+        vm.sp = &vm.stack.data[0];
 
         // Begin interpretation
         while (1) {
@@ -86,19 +95,19 @@ EVM_exec(struct cc *cc) {
 
                 enum opcode instr;
 
-                switch (instr = READ_BYTE(ip)) {
+                switch (instr = vm.read_byte(&vm)) {
                 case OPCODE_HALT: b = 1; break;
                 case OPCODE_CONST: {
-                        size_t idx = READ_BYTE(ip);
+                        size_t idx = vm.read_byte(&vm);
                         struct EARL_value *constant = cc->const_pool.data[idx];
-                        stack_push(&stack, &sp, constant);
+                        stack_push(&vm, constant);
                 } break;
                 case OPCODE_MINUS:
                 case OPCODE_MUL:
                 case OPCODE_DIV:
                 case OPCODE_ADD: {
-                        struct EARL_value *n1 = stack_pop(&stack, &sp);
-                        struct EARL_value *n2 = stack_pop(&stack, &sp);
+                        struct EARL_value *n1 = stack_pop(&vm);
+                        struct EARL_value *n2 = stack_pop(&vm);
 
                         int v1 = EARL_value_get_int(n1),
                                 v2 = EARL_value_get_int(n2);
@@ -110,12 +119,13 @@ EVM_exec(struct cc *cc) {
                                 : v2 % v1;
 
                         struct EARL_value *res_value = EARL_value_alloc(EARL_VALUE_TYPE_INTEGER, &res);
-                        stack_push(&stack, &sp, res_value);
+                        stack_push(&vm, res_value);
                 } break;
                 case OPCODE_STORE: {
-                        size_t idx = READ_BYTE(ip);
-                        struct EARL_value *value = stack_pop(&stack, &sp);
-                        cc->const_pool.data[idx] = value;
+                        assert(0);
+                        // size_t idx = vm.read_byte(&vm);
+                        // struct EARL_value *value = stack_pop(&vm);
+                        // cc->const_pool.data[idx] = value;
                 } break;
                 default: {
                         fprintf(stderr, "unknown instruction %#x\n", instr);
@@ -126,5 +136,5 @@ EVM_exec(struct cc *cc) {
                 if (b) break;
         }
 
-        return stack_pop(&stack, &sp);
+        return stack_pop(&vm);
 }
