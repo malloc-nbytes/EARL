@@ -33,6 +33,7 @@
 #include "err.h"
 #include "hash.h"
 #include "s-umap.h"
+#include "variable.h"
 
 static void handle_store(EARL_vm_t *vm) {
     size_t idx = vm->read_byte(vm);
@@ -41,7 +42,8 @@ static void handle_store(EARL_vm_t *vm) {
     assert(symbol && "Symbol must exist in the global symbol table");
 
     EARL_value_t *value = vm->pop(vm);
-    s_umap_insert(&vm->globals, symbol, (uint8_t *)value);
+    variable_t *var = variable_alloc(symbol, value);
+    s_umap_insert(&vm->globals, symbol, (uint8_t *)var);
 
     vm->push(vm, EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL));
 }
@@ -49,11 +51,11 @@ static void handle_store(EARL_vm_t *vm) {
 static void handle_load(EARL_vm_t *vm) {
     size_t idx = vm->read_byte(vm);
     const char *id = vm->cc->gl_syms.data[idx];
-    EARL_value_t *value = s_umap_get(&vm->globals, id);
+    EARL_value_t *value = ((variable_t *)s_umap_get(&vm->globals, id))->value;
 
     if (value == NULL) {
         fprintf(stderr, "Runtime Error: Undefined variable '%s'\n", id);
-        exit(1); // Exit with an error
+        exit(1);
     }
 
     vm->push(vm, value);
