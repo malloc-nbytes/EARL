@@ -73,12 +73,11 @@ stmt_fn_t *stmt_fn_alloc(token_t *id,
                          stmt_block_t *block,
                          lexer_t *lexer) {
     (void)lexer;
-    stmt_fn_t *fn
-        = (stmt_fn_t *)s_malloc(sizeof(stmt_fn_t), NULL, NULL);
+    stmt_fn_t *fn = (stmt_fn_t *)s_malloc(sizeof(stmt_fn_t), NULL, NULL);
     fn->id = id;
-    fn->params = params;
-    fn->params_len = params_len;
-    fn->params_cap = params_cap;
+    fn->params.data = params;
+    fn->params.len = params_len;
+    fn->params.cap = params_cap;
     fn->block = block;
     return fn;
 }

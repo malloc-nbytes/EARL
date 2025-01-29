@@ -21,28 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <assert.h>
-#include "builtins.h"
-#include "compiler.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-const char *__builtin_funs[] = __BUILTIN_FUNS;
-const char *__builtin_vars[] = __BUILTIN_VARS;
+#include "EARL-value.h"
+#include "utils.h"
+#include "err.h"
 
-const size_t __builtin_funs_len = sizeof(__builtin_funs) / sizeof(*__builtin_funs);
-const size_t __builtin_vars_len = sizeof(__builtin_vars) / sizeof(*__builtin_vars);
-
-void __builtin_idents_init(cc_t *cc) {
-    for (size_t i = 0; i < __builtin_funs_len; ++i)
-        (void)cc_push_global(cc, __builtin_funs[i]);
-
-    for (size_t i = 0; i < __builtin_vars_len; ++i)
-        (void)cc_push_global(cc, __builtin_vars[i]);
-}
-
-void builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap) {
-    assert(0);
-}
-
-void builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap) {
-    assert(0);
+const char *int_to_cstr(EARL_value_t *value) {
+    char *buffer = s_malloc(20, NULL, NULL);
+    snprintf(buffer, 20, "%d", value->actual.integer);
+    return buffer;
 }

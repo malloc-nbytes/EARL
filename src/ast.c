@@ -109,9 +109,9 @@ static void dump_stmt_block(const stmt_block_t *stmt, int pad) {
 
 static void dump_stmt_fn(const stmt_fn_t *stmt, int pad) {
     printf("fn %s(", stmt->id->lx);
-    for (size_t i = 0; i < stmt->params_len; ++i) {
-        printf("%s", stmt->params[i]->lx);
-        if (i != stmt->params_len-1)
+    for (size_t i = 0; i < stmt->params.len; ++i) {
+        printf("%s", stmt->params.data[i]->lx);
+        if (i != stmt->params.len-1)
             printf(", ");
     }
     printf("){\n");

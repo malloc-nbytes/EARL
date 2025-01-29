@@ -57,6 +57,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src/include)
 # Source files
 file(GLOB_RECURSE SOURCES
     src/*.c
+    src/primitives/*.c
     src/main.c
 )
 

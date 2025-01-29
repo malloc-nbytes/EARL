@@ -256,7 +256,7 @@ cc_t cc_compile(program_t *prog) {
         },
     };
 
-    builtin_idents_init(&cc);
+    __builtin_idents_init(&cc);
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
         compile_stmt(prog->stmts[i], &cc);

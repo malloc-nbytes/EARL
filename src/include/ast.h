@@ -294,14 +294,17 @@ typedef struct stmt_fn {
     /// @brief The identifier of the function
     token_t *id;
 
-    /// @brief An array of identifiers for parameters
-    token_t **params;
+    /// @brief The parameters of the function
+    struct {
+        /// @brief An array of identifiers for parameters
+        token_t **data;
 
-    /// @brief The number of parameters
-    size_t params_len;
+        /// @brief The length of parameters
+        size_t len;
 
-    /// @brief The capacity of the parameters
-    size_t params_cap;
+        /// @brief The capacity of the parameters
+        size_t cap;
+    } params;
 
     /// @brief The function block
     stmt_block_t *block;

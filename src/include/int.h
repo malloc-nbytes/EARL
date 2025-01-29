@@ -21,13 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef INT_H
+#define INT_H
 
 #include "EARL-value.h"
-#include "utils.h"
-#include "err.h"
 
-int EARL_value_get_int(EARL_value_t *value) {
-    return value->actual.integer;
-}
+const char *int_to_cstr(EARL_value_t *value);
+
+#endif // INT_H

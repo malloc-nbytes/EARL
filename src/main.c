@@ -47,14 +47,16 @@ int main(void) {
 
     EARL_value_t *res = EVM_exec(&cc);
 
-    if (!res)
-        printf("result: NULL\n");
-    else if (res->type == EARL_VALUE_TYPE_INTEGER)
-        printf("result: %d\n", res->actual.integer);
-    else if (res->type == EARL_VALUE_TYPE_UNIT)
-        printf("result: <unit>\n");
-    else
-        assert(0);
+    /* if (!res) */
+    /*     printf("result: NULL\n"); */
+    /* else if (res->type == EARL_VALUE_TYPE_INTEGER) */
+    /*     printf("result: %d\n", res->actual.integer); */
+    /* else if (res->type == EARL_VALUE_TYPE_UNIT) */
+    /*     printf("result: <unit>\n"); */
+    /* else */
+    /*     assert(0); */
+
+    printf("%s\n", res->to_cstr(res));
 
     return 0;
 }
