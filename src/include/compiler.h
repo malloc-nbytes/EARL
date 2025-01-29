@@ -30,7 +30,7 @@
 #include "ctx.h"
 
 /// @brief Holds all compilation information
-typedef struct {
+typedef struct cc {
     /// @brief Holds the entire context during compilation
     ctx_t *ctx;
 
@@ -79,8 +79,18 @@ cc_t cc_compile(program_t *prog);
 ///         into the contant pool
 size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data);
 
+/// @brief Push an identifier into the global scope
+/// @param cc The compiler context
+/// @return The index that the global was pushed
+///         into the global symbols table
+size_t cc_push_global(cc_t *cc, const char *id);
+
 /// @brief Dump all opcode
 /// @param cc The compiler context
 void cc_dump_opcode(const cc_t cc);
+
+/// @brief Dump all global symbols
+/// @param cc The compiler context
+void cc_dump_gl_syms(const cc_t *cc);
 
 #endif // COMPILER_H

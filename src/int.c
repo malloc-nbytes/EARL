@@ -29,5 +29,5 @@
 #include "err.h"
 
 int EARL_value_get_int(EARL_value_t *value) {
-    return value->value.integer;
+    return value->actual.integer;
 }

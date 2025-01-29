@@ -25,6 +25,8 @@
 #include <stdlib.h>
 
 #include "EVM-routines.h"
+#include "EARL-value.h"
+#include "builtins.h"
 #include "err.h"
 
 opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
@@ -34,6 +36,13 @@ opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
 void EVM_routines_init(EARL_vm_t *vm) {
     vm->ip = &vm->cc->opcode.data[0];
     vm->sp = &vm->stack.data[0];
+
+    for (size_t i = 0; i < __builtin_funs_len; ++i) {
+        EARL_value_t *value = EARL_value_alloc(EARL_VALUE_TYPE_FUNCTION_REFERENCE, NULL);
+        s_umap_insert(&vm->globals, __builtin_funs[i], (uint8_t *)value);
+    }
+    for (size_t i = 0; i < __builtin_vars_len; ++i) {
+    }
 }
 
 void EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t *value) {

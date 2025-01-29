@@ -33,7 +33,7 @@
 #include "err.h"
 #include "hash.h"
 #include "s-umap.h"
-#include "variable.h"
+#include "identifier.h"
 
 static void handle_store(EARL_vm_t *vm) {
     size_t idx = vm->read_byte(vm);
@@ -42,7 +42,7 @@ static void handle_store(EARL_vm_t *vm) {
     assert(symbol && "Symbol must exist in the global symbol table");
 
     EARL_value_t *value = vm->pop(vm);
-    variable_t *var = variable_alloc(symbol, value);
+    identifier_t *var = identifier_alloc(symbol, value);
     s_umap_insert(&vm->globals, symbol, (uint8_t *)var);
 
     vm->push(vm, EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL));
@@ -51,22 +51,28 @@ static void handle_store(EARL_vm_t *vm) {
 static void handle_load(EARL_vm_t *vm) {
     size_t idx = vm->read_byte(vm);
     const char *id = vm->cc->gl_syms.data[idx];
-    EARL_value_t *value = ((variable_t *)s_umap_get(&vm->globals, id))->value;
+    identifier_t *var = (identifier_t *)s_umap_get(&vm->globals, id);
 
-    if (value == NULL) {
-        fprintf(stderr, "Runtime Error: Undefined variable '%s'\n", id);
+    if (var == NULL) {
+        fprintf(stderr, "Runtime Error: Undefined identifier '%s'\n", id);
         exit(1);
     }
 
+    EARL_value_t *value = var->value;
+
     vm->push(vm, value);
+}
+
+static void handle_call(EARL_vm_t *vm) {
+    assert(0);
 }
 
 static void handle_add(EARL_vm_t *vm, opcode_t opc) {
     EARL_value_t *n1 = vm->pop(vm);
     EARL_value_t *n2 = vm->pop(vm);
 
-    int v1 = n1->value.integer,
-        v2 = n2->value.integer;
+    int v1 = n1->actual.integer,
+        v2 = n2->actual.integer;
 
     int res = opc == OPCODE_ADD ? v2 + v1
         : opc == OPCODE_MINUS ? v2 - v1
@@ -127,6 +133,9 @@ EARL_value_t *EVM_exec(cc_t *cc) {
             break;
         case OPCODE_LOAD: {
             handle_load(&vm);
+        } break;
+        case OPCODE_CALL: {
+            handle_call(&vm);
         } break;
         default: {
             fprintf(stderr, "unknown opcode %#x\n", opc);

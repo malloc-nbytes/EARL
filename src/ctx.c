@@ -25,23 +25,34 @@
 #include <stdlib.h>
 
 #include "EARL-value.h"
+#include "compiler.h"
+#include "builtins.h"
 #include "ctx.h"
 #include "err.h"
 #include "utils.h"
 
-ctx_t ctx_create(unsigned long (*scope_hash)(const char *),
-           unsigned long (*fscope_hash)(const char *),
-           void (*fscope_destr)(uint8_t *)) {
+static int search_scope(ctx_t *ctx, const char *id) {
+    for (size_t i = 0; i < ctx->scope_len; ++i)
+        if (s_uset_contains(ctx->scope, id))
+            return 1;
+    return 0;
+}
 
+static int in_global(cc_t *cc, const char *id) {
+    for (size_t i = 0; i < cc->gl_syms.len; ++i)
+        if (streq(cc->gl_syms.data[i], id))
+            return 1;
+    return 0;
+}
+
+ctx_t ctx_create(unsigned long (*scope_hash)(const char *)) {
     ctx_t ctx = (ctx_t) {
         .scope = s_malloc(sizeof(s_uset_t) * 2, NULL, NULL),
-        .scope_len = 1, .scope_cap = 2,
-        .fscope = s_malloc(sizeof(s_umap_t) * 2, NULL, NULL),
-        .fscope_len = 1, .fscope_cap = 2,
+        .scope_len = 1,
+        .scope_cap = 2,
     };
 
     ctx.scope[0] = s_uset_create(scope_hash);
-    ctx.fscope[0] = s_umap_create(fscope_hash, fscope_destr);
 
     return ctx;
 }
@@ -50,41 +61,28 @@ void ctx_destroy(ctx_t *ctx) {
     for (size_t i = 0; i < ctx->scope_len; ++i)
         s_uset_destroy(&ctx->scope[i]);
 
-    for (size_t i = 0; i < ctx->scope_len; ++i)
-        s_umap_destroy(&ctx->fscope[i]);
-
     ctx->scope_len = ctx->scope_cap = 0;
-    ctx->fscope_len = ctx->fscope_cap = 0;
 }
 
-int ctx_var_in_scope(ctx_t *ctx, const char *id) {
-    for (size_t i = 0; i < ctx->scope_len; ++i)
-        if (s_uset_contains(&ctx->scope[i], id))
-            return 1;
+int ctx_var_in_scope(ctx_t *ctx, cc_t *cc, const char *id) {
+    return in_global(cc, id) || search_scope(ctx, id);
     return 0;
 }
 
-void ctx_assert_var_in_scope(ctx_t *ctx, const char *id) {
-    for (size_t i = 0; i < ctx->scope_len; ++i)
-        if (s_uset_contains(&ctx->scope[i], id))
-            return;
-    err_wargs("variable `%s` was not defined", id);
+void ctx_assert_var_in_scope(ctx_t *ctx, cc_t *cc, const char *id) {
+    if (in_global(cc, id) || search_scope(ctx, id))
+        return;
+    err_wargs("identifier `%s` was not defined", id);
 }
 
-void ctx_assert_var_not_in_scope(ctx_t *ctx, const char *id) {
-    for (size_t i = 0; i < ctx->scope_len; ++i)
-        if (s_uset_contains(&ctx->scope[i], id))
-            err_wargs("variable `%s` is already defined", id);
+void ctx_assert_var_not_in_scope(ctx_t *ctx, cc_t *cc, const char *id) {
+    if (in_global(cc, id) || search_scope(ctx, id))
+        err_wargs("identifier `%s` is already defined", id);
 }
 
 void ctx_push_scope(ctx_t *ctx) {
     s_uset_t set = s_uset_create(ctx->scope[0].hash);
     da_append(ctx->scope, ctx->scope_len, ctx->scope_cap, s_uset_t *, set);
-}
-
-void ctx_push_fscope(ctx_t *ctx) {
-    s_umap_t map = s_umap_create(ctx->fscope[0].hash, ctx->fscope[0].destroy_value);
-    da_append(ctx->fscope, ctx->fscope_len, ctx->fscope_cap, s_umap_t *, map);
 }
 
 void ctx_add_var_to_scope(ctx_t *ctx, const char *id) {

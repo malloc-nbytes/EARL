@@ -33,13 +33,17 @@ EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
     v->type = type;
     switch (type) {
     case EARL_VALUE_TYPE_INTEGER: {
-        v->value.integer = *(int *)data;
+        v->actual.integer = *(int *)data;
     } break;
     case EARL_VALUE_TYPE_UNIT: {
-        v->value.unit = data;
+        v->actual.unit = data;
+    } break;
+    case EARL_VALUE_TYPE_FUNCTION_REFERENCE: {
+        // TODO: cast data to appropriate type
+        v->actual.fref = data;
     } break;
     default:
-        err_wargs("unknown type: %d", (int)type);
+        err_wargs("%s: unknown type: %d", __FUNCTION__, (int)type);
     }
     return v;
 }
@@ -47,10 +51,13 @@ EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
 void EARL_value_dump(const EARL_value_t *value) {
     switch (value->type) {
     case EARL_VALUE_TYPE_INTEGER:
-        printf("Integer: %d\n", value->value.integer);
+        printf("Integer: %d\n", value->actual.integer);
         break;
     case EARL_VALUE_TYPE_UNIT:
         printf("Unit\n");
+        break;
+    case EARL_VALUE_TYPE_FUNCTION_REFERENCE:
+        printf("Function Reference\n");
         break;
     default:
         err("unknown type");

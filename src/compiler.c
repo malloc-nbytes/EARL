@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "compiler.h"
+#include "builtins.h"
 #include "ast.h"
 #include "EARL-value.h"
 #include "opcode.h"
@@ -52,17 +53,15 @@ static void push_opcode(cc_t *cc, opcode_t opc) {
     da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, opc);
 }
 
-static void push_index_from_const_pool(cc_t *cc, size_t idx) {
+static void push_index_from_const_or_gl_pool(cc_t *cc, size_t idx) {
     da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, idx);
 }
 
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
-    // Step 1: Get the identifier name
     const char *id = expr->identifier->lx;
 
-    ctx_assert_var_in_scope(cc->ctx, id);
+    ctx_assert_var_in_scope(cc->ctx, cc, id);
 
-    // Step 2: Check if the identifier exists in the global symbols table
     size_t idx = SIZE_MAX;
     for (size_t i = 0; i < cc->gl_syms.len; ++i) {
         if (strcmp(cc->gl_syms.data[i], id) == 0) {
@@ -71,15 +70,13 @@ static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
         }
     }
 
-    // Step 3: If not found, add it to the symbol table
     if (idx == SIZE_MAX) {
         assert("unreachable");
         // idx = cc_push_global(cc, id);
     }
 
-    // Step 4: Emit the `LOAD` instruction
     push_opcode(cc, OPCODE_LOAD);
-    push_index_from_const_pool(cc, idx);
+    push_index_from_const_or_gl_pool(cc, idx);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
@@ -87,7 +84,7 @@ static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc)
     size_t idx = cc_push_constant(cc, EARL_VALUE_TYPE_INTEGER, &integer);
 
     push_opcode(cc, OPCODE_CONST);
-    push_index_from_const_pool(cc, idx);
+    push_index_from_const_or_gl_pool(cc, idx);
 }
 
 static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
@@ -97,9 +94,12 @@ static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
 }
 
 static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
-    (void)expr;
-    (void)cc;
-    TODO;
+    for (size_t i = 0; i < expr->args_len; ++i)
+        cc_expr(expr->args[i], cc);
+
+    cc_expr(expr->left, cc);
+    push_opcode(cc, OPCODE_CALL);
+    push_opcode(cc, (opcode_t)expr->args_len);
 }
 
 static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
@@ -188,28 +188,14 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
-    /* const char *id = stmt->identifier->lx; */
-    /* ctx_assert_var_not_in_scope(cc->ctx, id); */
-    /* cc_expr(stmt->expr, cc); */
-
-    /* ctx_add_var_to_scope(cc->ctx, id); */
-
-    /* size_t idx = cc_push_global(cc, id); */
-    /* push_opcode(cc, OPCODE_CONST); */
-    /* push_index_from_const_pool(cc, idx); */
-
-    /* push_opcode(cc, OPCODE_STORE); */
-
-    /* cc_dump_opcode(*cc); */
-    /* assert(0); */
-
     const char *id = stmt->identifier->lx;
-    ctx_assert_var_not_in_scope(cc->ctx, id);
+    ctx_assert_var_not_in_scope(cc->ctx, cc, id);
+
     size_t var_idx = cc_push_global(cc, id);
+
     cc_expr(stmt->expr, cc);
     ctx_add_var_to_scope(cc->ctx, id);
 
-    // Emit an opcode to store the value in the variable
     push_opcode(cc, OPCODE_STORE);
     push_opcode(cc, var_idx);
 }
@@ -235,6 +221,11 @@ static void compile_stmt(stmt_t *stmt, cc_t *cc) {
     }
 }
 
+void cc_dump_gl_syms(const cc_t *cc) {
+    for (size_t i = 0; i < cc->gl_syms.len; ++i)
+        printf("GL_SYM: %s\n", cc->gl_syms.data[i]);
+}
+
 void cc_dump_opcode(const cc_t cc) {
     printf("Dumping compiled opcode\n");
     for (size_t i = 0; i < cc.opcode.len; ++i)
@@ -242,7 +233,7 @@ void cc_dump_opcode(const cc_t cc) {
 }
 
 cc_t cc_compile(program_t *prog) {
-    ctx_t ctx = ctx_create(djb2, djb2, NULL);
+    ctx_t ctx = ctx_create(djb2);
 
     const size_t CAP = 32;
 
@@ -264,6 +255,8 @@ cc_t cc_compile(program_t *prog) {
             .cap = CAP,
         },
     };
+
+    builtin_idents_init(&cc);
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
         compile_stmt(prog->stmts[i], &cc);

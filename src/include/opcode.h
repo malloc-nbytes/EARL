@@ -35,6 +35,7 @@ typedef enum {
     OPCODE_MOD   = 0x06,
     OPCODE_STORE = 0x07,
     OPCODE_LOAD  = 0x08,
+    OPCODE_CALL  = 0x09,
 } opcode_t;
 
 void opcode_dump(opcode_t op);

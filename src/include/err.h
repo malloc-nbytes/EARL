@@ -24,10 +24,10 @@
 #ifndef ERR_H
 #define ERR_H
 
-#define err_wargs(msg, ...)                                     \
-    do {                                                        \
-        fprintf(stderr, "error: " msg "\n", __VA_ARGS__);       \
-        exit(1);                                                \
+#define err_wargs(msg, ...)                                             \
+    do {                                                                \
+        fprintf(stderr, "error: " msg "\n", __VA_ARGS__);               \
+        exit(1);                                                        \
     } while (0)
 
 #define err(msg)                                \
