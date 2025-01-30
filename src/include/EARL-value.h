@@ -27,12 +27,8 @@
 #include <stdint.h>
 
 #include "ast.h"
-
-typedef struct EARL_value EARL_value_t;
-
-typedef const char *(*to_cstr_sig_t)(const EARL_value_t *const value);
-typedef       int   (*boolean_sig_t)(const EARL_value_t *const value);
-typedef       void  (*mutate_sig_t) (const EARL_value_t *value, const EARL_value_t *const other);
+#include "EARL-value.h"
+#include "builtin-sigs.h"
 
 typedef enum {
     EARL_VALUE_TYPE_UNIT,
@@ -50,6 +46,7 @@ typedef struct EARL_value {
         void *unit;
         int integer;
         stmt_fn_t *fn;
+        builtin_f_sig_t builtin_fun;
     } actual;
 
     to_cstr_sig_t to_cstr;

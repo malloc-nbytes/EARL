@@ -25,7 +25,7 @@
 #include <stdlib.h>
 
 #include "EARL-value.h"
-#include "int.h"
+#include "primitives.h"
 #include "ast.h"
 #include "utils.h"
 #include "err.h"
@@ -41,9 +41,14 @@ EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
     } break;
     case EARL_VALUE_TYPE_UNIT: {
         v->actual.unit = data;
+        v->to_cstr = unit_to_cstr;
     } break;
     case EARL_VALUE_TYPE_FUNCTION_REFERENCE: {
         v->actual.fn = (stmt_fn_t *)data;
+    } break;
+    case EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE: {
+        v->actual.builtin_fun = (builtin_f_sig_t)data;
+        v->to_cstr = builtin_function_reference_to_cstr;
     } break;
     default:
         err_wargs("%s: unknown type: %d", __FUNCTION__, (int)type);

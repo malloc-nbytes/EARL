@@ -6,10 +6,7 @@
 #include "compiler.h"
 #include "s-umap.h"
 #include "EARL-value.h"
-
-typedef void (*builtin_f_sig_t)(EARL_value_t **params,
-                                size_t params_len,
-                                size_t params_cap);
+#include "builtin-sigs.h"
 
 #define __BUILTIN_FUNS   \
     {                    \

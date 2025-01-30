@@ -21,11 +21,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef INT_H
-#define INT_H
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "EARL-value.h"
+#include "utils.h"
+#include "err.h"
 
-const char *int_to_cstr(const EARL_value_t *const value);
-
-#endif // INT_H
+const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
+    TODO;
+}
