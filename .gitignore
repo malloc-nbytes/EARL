@@ -28,6 +28,7 @@ stamp-h1
 *.js
 *.clangd
 input.earl
+src/debug-build
 
 # Cmake
 build
