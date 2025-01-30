@@ -1,3 +1,3 @@
 module Debug
 
-$"cc -Iinclude/ -ggdb -O0 -o debug-build *.c";
+$"cc -Iinclude/ -ggdb -O0 -o debug-build *.c primitives/*.c";

@@ -30,8 +30,6 @@
 #include "compiler.h"
 #include "s-umap.h"
 
-#define READ_BYTE(ip) *ip++
-#define GET_CONST(cc, ip) cc->cp[READ_BYTE(ip)]
 #define STACK_LIM 512
 
 /// @brief The EARL virtual machine

@@ -53,7 +53,7 @@ static void handle_load(EARL_vm_t *vm) {
     const char *id = vm->cc->gl_syms.data[idx];
     identifier_t *var = (identifier_t *)s_umap_get(&vm->globals, id);
 
-    if (var == NULL) {
+    if (!var) {
         fprintf(stderr, "Runtime Error: Undefined identifier '%s'\n", id);
         exit(1);
     }

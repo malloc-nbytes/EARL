@@ -26,6 +26,6 @@
 
 #include "EARL-value.h"
 
-const char *int_to_cstr(EARL_value_t *value);
+const char *int_to_cstr(const EARL_value_t *const value);
 
 #endif // INT_H

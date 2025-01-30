@@ -28,7 +28,7 @@
 #include "utils.h"
 #include "err.h"
 
-const char *int_to_cstr(EARL_value_t *value) {
+const char *int_to_cstr(const EARL_value_t *const value) {
     char *buffer = s_malloc(20, NULL, NULL);
     snprintf(buffer, 20, "%d", value->actual.integer);
     return buffer;

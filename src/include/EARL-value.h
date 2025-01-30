@@ -30,12 +30,15 @@
 
 typedef struct EARL_value EARL_value_t;
 
-typedef const char *(*to_cstr_sig_t)(EARL_value_t *value);
+typedef const char *(*to_cstr_sig_t)(const EARL_value_t *const value);
+typedef       int   (*boolean_sig_t)(const EARL_value_t *const value);
+typedef       void  (*mutate_sig_t) (const EARL_value_t *value, const EARL_value_t *const other);
 
 typedef enum {
     EARL_VALUE_TYPE_UNIT,
     EARL_VALUE_TYPE_INTEGER,
     EARL_VALUE_TYPE_FUNCTION_REFERENCE,
+    EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE,
 } EARL_value_type_t;
 
 typedef struct EARL_value {
@@ -50,13 +53,15 @@ typedef struct EARL_value {
     } actual;
 
     to_cstr_sig_t to_cstr;
+    boolean_sig_t boolean;
+    mutate_sig_t mutate;
 } EARL_value_t;
 
 /// @brief Allocate a new EARL value
 /// @param type The type of the value
 /// @param data The C data
 /// @return The allocated EARL value
-EARL_value_t *EARL_value_alloc(EARL_value_type_t, void *data);
+EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data);
 
 /// @brief Debug print an EARL runtime value
 /// @param value The value to print

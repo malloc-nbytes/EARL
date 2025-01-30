@@ -22,27 +22,48 @@
 // SOFTWARE.
 
 #include <assert.h>
+#include <stdio.h>
+
 #include "builtins.h"
 #include "compiler.h"
+#include "hash.h"
+#include "utils.h"
 
-const char *__builtin_funs[] = __BUILTIN_FUNS;
-const char *__builtin_vars[] = __BUILTIN_VARS;
+const char *__builtin_function_identifiers[] = __BUILTIN_FUNS;
+const char *__builtin_variable_identifiers[] = __BUILTIN_VARS;
 
-const size_t __builtin_funs_len = sizeof(__builtin_funs) / sizeof(*__builtin_funs);
-const size_t __builtin_vars_len = sizeof(__builtin_vars) / sizeof(*__builtin_vars);
+const size_t __builtin_function_identifiers_len
+    = sizeof(__builtin_function_identifiers) / sizeof(*__builtin_function_identifiers);
+const size_t __builtin_variable_identifiers_len
+    = sizeof(__builtin_variable_identifiers) / sizeof(*__builtin_variable_identifiers);
 
-void __builtin_idents_init(cc_t *cc) {
-    for (size_t i = 0; i < __builtin_funs_len; ++i)
-        (void)cc_push_global(cc, __builtin_funs[i]);
-
-    for (size_t i = 0; i < __builtin_vars_len; ++i)
-        (void)cc_push_global(cc, __builtin_vars[i]);
-}
+s_umap_t(builtin_f_sig_t) builtin_funs;
 
 void builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap) {
-    assert(0);
+    for (size_t i = 0; i < params_len; ++i) {
+        printf("%s", params[i]->to_cstr(params[i]));
+    }
+    putchar('\n');
+    fflush(stdout);
 }
 
 void builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap) {
-    assert(0);
+    TODO;
+}
+
+static void fill_builtin_c_functions(void) {
+    builtin_funs = s_umap_create(djb2, NULL);
+
+    s_umap_insert(&builtin_funs, "println", (uint8_t *)builtin_println);
+    s_umap_insert(&builtin_funs, "print",   (uint8_t *)builtin_print);
+}
+
+void __builtin_idents_init(cc_t *cc) {
+    for (size_t i = 0; i < __builtin_function_identifiers_len; ++i)
+        (void)cc_push_global(cc, __builtin_function_identifiers[i]);
+
+    for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i)
+        (void)cc_push_global(cc, __builtin_variable_identifiers[i]);
+
+    fill_builtin_c_functions();
 }
