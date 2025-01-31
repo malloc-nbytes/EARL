@@ -86,11 +86,9 @@ static void handle_call(EARL_vm_t *vm) {
         /* free(args); */
 
         /* vm->push(vm, result ? result : EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL)); */
-
     } else if (func_value->type == EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE) {
         builtin_f_sig_t builtin_fn = func_value->actual.builtin_fun;
 
-        // Allocate space for arguments
         EARL_value_t **args = malloc(args_len * sizeof(EARL_value_t *));
         if (!args) {
             fprintf(stderr, "Memory allocation failed in handle_call\n");
@@ -101,12 +99,10 @@ static void handle_call(EARL_vm_t *vm) {
         for (size_t i = 0; i < args_len; ++i)
             args[args_len - 1 - i] = vm->pop(vm);
 
-        // Call the built-in function (void function, so no return value)
         EARL_value_t *res = builtin_fn(args, args_len, args_len);
 
         free(args);
 
-        // Built-in functions don't return values, so push UNIT
         vm->push(vm, res);
 
     } else {
