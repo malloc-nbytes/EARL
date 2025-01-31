@@ -46,6 +46,7 @@ int main(void) {
     cc_dump_opcode(cc);
 
     EARL_value_t *res = EVM_exec(&cc);
+    res->to_cstr(res);
 
     if (res)
         printf("%s\n", res->to_cstr(res));

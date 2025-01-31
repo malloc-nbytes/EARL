@@ -21,14 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "EVM-routines.h"
 #include "EARL-value.h"
 #include "builtins.h"
 #include "err.h"
 #include "utils.h"
+#include "identifier.h"
 
 opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
     return *vm->ip++;
@@ -41,7 +44,8 @@ void EVM_routines_init(EARL_vm_t *vm) {
     for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) {
         builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
         EARL_value_t *value = EARL_value_alloc(EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE, fun);
-        s_umap_insert(&vm->globals, __builtin_function_identifiers[i], (uint8_t *)value);
+        identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value);
+        s_umap_insert(&vm->globals, var->id, (uint8_t *)var);
     }
     for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i) {
         TODO;

@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,9 +32,13 @@
 #include "err.h"
 
 EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
+    if (type != EARL_VALUE_TYPE_UNIT)
+        assert(data);
+
     EARL_value_t *v = s_malloc(sizeof(EARL_value_t), NULL, NULL);
     v->refc = 1;
     v->type = type;
+    v->to_cstr = NULL;
     switch (type) {
     case EARL_VALUE_TYPE_INTEGER: {
         v->actual.integer = *(int *)data;

@@ -29,5 +29,5 @@
 #include "err.h"
 
 const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
-    TODO;
+    return "<Builtin Function>";
 }
