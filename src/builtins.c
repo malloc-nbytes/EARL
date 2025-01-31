@@ -39,15 +39,16 @@ const size_t __builtin_variable_identifiers_len
 
 s_umap_t(builtin_f_sig_t) builtin_funs;
 
-void builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap) {
+EARL_value_t *builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap) {
     for (size_t i = 0; i < params_len; ++i) {
         printf("%s", params[i]->to_cstr(params[i]));
     }
     putchar('\n');
     fflush(stdout);
+    return EARL_value_alloc(EARL_VALUE_TYPE_UNIT, NULL);
 }
 
-void builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap) {
+EARL_value_t *builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap) {
     TODO;
 }
 
