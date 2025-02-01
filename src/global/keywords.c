@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
-#include "runtime/EARL-value.h"
-#include "misc/utils.h"
-#include "misc/err.h"
+#include "global/keywords.h"
 
-const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
-    return "<Builtin Function>";
+const char *config_keywords[] = KEYWORDS_ASCPL;
+const size_t config_keywords_len = sizeof(config_keywords)/sizeof(config_keywords[0]);
+
+int keywords_is_keyword(const char *s) {
+    for (size_t i = 0; i < config_keywords_len; ++i)
+        if (strcmp(config_keywords[i], s) == 0)
+            return 1;
+    return 0;
 }
+

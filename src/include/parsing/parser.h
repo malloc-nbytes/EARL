@@ -21,13 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "runtime/EARL-value.h"
-#include "misc/utils.h"
-#include "misc/err.h"
+#include "lexing/lexer.h"
+#include "parsing/ast.h"
 
-const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
-    return "<Builtin Function>";
-}
+/// @brief Parse a program based off of a list of tokens
+/// @param lexer The lexer with the tokens to use
+/// @return An abstract syntax tree
+program_t *parser_parse(lexer_t *lexer);
+
+#endif // PARSER_H

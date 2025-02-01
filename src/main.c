@@ -25,14 +25,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "lexer.h"
-#include "builtins.h"
-#include "utils.h"
-#include "ast.h"
-#include "parser.h"
-#include "compiler.h"
-#include "EVM.h"
-#include "EARL-value.h"
+#include "lexing/lexer.h"
+#include "parsing/ast.h"
+#include "parsing/parser.h"
+#include "compiling/compiler.h"
+#include "runtime/builtins.h"
+#include "runtime/VM/EVM.h"
+#include "runtime/EARL-value.h"
+#include "misc/utils.h"
 
 #define SRC_FP "../src/input.rl"
 

@@ -21,13 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "misc/hash.h"
 
-#include "runtime/EARL-value.h"
-#include "misc/utils.h"
-#include "misc/err.h"
+unsigned long djb2(const char *str) {
+    unsigned long hash = 5381;
+    int c;
 
-const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
-    return "<Builtin Function>";
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c;
+
+    return hash;
 }

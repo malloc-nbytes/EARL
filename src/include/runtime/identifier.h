@@ -21,13 +21,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef IDENTIFIER_H
+#define IDENTIFIER_H
 
-#include "runtime/EARL-value.h"
-#include "misc/utils.h"
-#include "misc/err.h"
+#include <stdint.h>
 
-const char *builtin_function_reference_to_cstr(const EARL_value_t *const value) {
-    return "<Builtin Function>";
-}
+#include "EARL-value.h"
+
+typedef struct {
+    const char *id;
+    EARL_value_t *value;
+} identifier_t;
+
+identifier_t *identifier_alloc(const char *id, EARL_value_t *value);
+
+#endif // IDENTIFIER_H

@@ -24,9 +24,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "EARL-value.h"
-#include "utils.h"
-#include "err.h"
+#include "runtime/EARL-value.h"
+#include "misc/utils.h"
+#include "misc/err.h"
 
 const char *unit_to_cstr(const EARL_value_t *const value) {
     return "<unit>";

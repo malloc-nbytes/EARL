@@ -1,1 +1,1 @@
-println();
+println(10 + 20);

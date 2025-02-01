@@ -23,13 +23,60 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "runtime/EARL-value.h"
+#include "misc/arena.h"
 #include "misc/utils.h"
-#include "misc/err.h"
 
-const char *int_to_cstr(const EARL_value_t *const value) {
-    char *buffer = s_malloc(20, NULL, NULL);
-    snprintf(buffer, 20, "%d", value->actual.integer);
+void *s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t)) {
+    void *p = (allocator && arena)
+        ? allocator(arena, bytes)
+        : malloc(bytes);
+    if (!p) {
+        fprintf(stderr, "could not safely allocate %zu bytes\n", bytes);
+        exit(1);
+    }
+    return p;
+}
+
+char *read_file(const char *fp) {
+    FILE *file = fopen(fp, "r");
+    if (!file) {
+        perror("Failed to open file");
+        return NULL;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    rewind(file);
+
+    if (size < 0) {
+        perror("Failed to determine file size");
+        fclose(file);
+        return NULL;
+    }
+
+    char *buffer = (char *)s_malloc(size + 1, NULL, NULL);
+    if (!buffer) {
+        perror("Failed to allocate memory");
+        fclose(file);
+        return NULL;
+    }
+
+    size_t bytes_read = fread(buffer, 1, size, file);
+    if (bytes_read != (size_t)size) {
+        perror("Failed to read the file completely");
+        free(buffer);
+        fclose(file);
+        return NULL;
+    }
+
+    buffer[size] = '\0';
+
+    fclose(file);
     return buffer;
+}
+
+int streq(const char *s1, const char *s2) {
+    return strcmp(s1, s2) == 0;
 }
