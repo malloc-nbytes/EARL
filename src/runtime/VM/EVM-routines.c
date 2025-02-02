@@ -29,6 +29,7 @@
 #include "runtime/VM/EVM-routines.h"
 #include "runtime/EARL-value.h"
 #include "runtime/builtins.h"
+#include "runtime/identifier.h"
 #include "ds/s-umap.h"
 #include "misc/err.h"
 #include "misc/utils.h"
@@ -42,14 +43,18 @@ void EVM_routines_init(EARL_vm_t *vm) {
     vm->ip = &vm->cc->opcode.data[0];
     vm->sp = vm->stack.data;
 
-    vm->globals = s_umap_create(djb2, free);
+    vm->globals = s_umap_create(djb2, NULL);
 
-    /* for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) { */
-    /*     builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]); */
-    /*     EARL_value_t *value = EARL_value_alloc(EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE, fun); */
-    /*     identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value); */
-    /*     s_umap_insert(&vm->globals, var->id, (uint8_t *)var); */
-    /* } */
+    for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) {
+        builtin_f_sig_t fun
+            = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
+
+        EARL_value_t value
+            = earl_value_builtin_function_reference_create(fun);
+
+        identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value);
+        s_umap_insert(&vm->globals, var->id, (uint8_t *)var);
+    }
     /* for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i) { */
     /*     TODO; */
     /* } */

@@ -26,7 +26,7 @@ extern s_umap_t(builtin_f_sig_t) builtin_funs;
 
 void __builtin_idents_init(cc_t *cc);
 
-EARL_value_t *builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap);
-EARL_value_t *builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap);
+EARL_value_t builtin_println(EARL_value_t **params, size_t params_len, size_t params_cap);
+EARL_value_t builtin_print(EARL_value_t **params, size_t params_len, size_t params_cap);
 
 #endif // BUILTINS_H

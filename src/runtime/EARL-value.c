@@ -9,6 +9,18 @@
 #include "misc/err.h"
 #include "misc/utils.h"
 
+EARL_value_t
+earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
+    return (EARL_value_t) {
+        .type = EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE,
+        .as = {
+            .builtin_function_reference = fun,
+        },
+        .to_cstr = NULL,
+        .add = NULL,
+    };
+}
+
 EARL_value_t earl_value_integer_create(int x) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_INTEGER,

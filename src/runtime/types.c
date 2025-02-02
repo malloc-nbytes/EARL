@@ -7,11 +7,14 @@
 static EARL_value_type_t types_simple_compat_types_unit[]    = {EARL_VALUE_TYPE_UNIT};
 static EARL_value_type_t types_simple_compat_types_integer[] = {EARL_VALUE_TYPE_INTEGER};
 static EARL_value_type_t types_simple_compat_types_boolean[] = {EARL_VALUE_TYPE_BOOLEAN};
+static EARL_value_type_t types_simple_compat_types_builtin_function_reference[] =
+    {EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE};
 
 static EARL_value_type_t *types_simple_compat_types[] = {
     types_simple_compat_types_unit,
     types_simple_compat_types_integer,
     types_simple_compat_types_boolean,
+    types_simple_compat_types_builtin_function_reference,
 };
 
 // Object types

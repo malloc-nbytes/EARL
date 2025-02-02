@@ -47,6 +47,7 @@ typedef enum EARL_value_type {
     EARL_VALUE_TYPE_UNIT,
     EARL_VALUE_TYPE_INTEGER,
     EARL_VALUE_TYPE_BOOLEAN,
+    EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE,
 
     __EARL_VALUE_TYPE_LEN, // Used in types.c
 
@@ -60,6 +61,7 @@ typedef struct EARL_value {
         int boolean;
         int integer;
         EARL_object_t *obj;
+        builtin_f_sig_t builtin_function_reference;
     } as;
 
     to_cstr_sig_t to_cstr;
@@ -69,6 +71,7 @@ typedef struct EARL_value {
 EARL_value_t earl_value_integer_create(int x);
 EARL_value_t earl_value_unit_create(void);
 EARL_value_t earl_value_boolean_create(int b);
+EARL_value_t earl_value_builtin_function_reference_create(builtin_f_sig_t fun);
 EARL_value_t earl_value_object_create(EARL_object_t *obj);
 
 #endif // EARL_VALUE_H
