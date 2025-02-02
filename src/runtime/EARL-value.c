@@ -1,78 +1,65 @@
-/** file */
-
-// MIT License
-
-// Copyright (c) 2025 malloc-nbytes
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "runtime/EARL-value.h"
-#include "runtime/primitives.h"
-#include "parsing/ast.h"
-#include "mem/mem.h"
+#include "runtime/EARL-object.h"
+#include "runtime/primitives/string.h"
+#include "runtime/primitives/integer.h"
+#include "runtime/primitives/unit.h"
 #include "misc/err.h"
+#include "misc/utils.h"
 
-EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
-    if (type != EARL_VALUE_TYPE_UNIT)
-        assert(data);
-
-    EARL_value_t *v = mem_s_malloc(sizeof(EARL_value_t), NULL, NULL);
-    v->refc = 1;
-    v->type = type;
-    v->to_cstr = NULL;
-    switch (type) {
-    case EARL_VALUE_TYPE_INTEGER: {
-        v->actual.integer = *(int *)data;
-        v->to_cstr = int_to_cstr;
-    } break;
-    case EARL_VALUE_TYPE_UNIT: {
-        v->actual.unit = data;
-        v->to_cstr = unit_to_cstr;
-    } break;
-    case EARL_VALUE_TYPE_FUNCTION_REFERENCE: {
-        v->actual.fn = (stmt_fn_t *)data;
-    } break;
-    case EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE: {
-        v->actual.builtin_fun = (builtin_f_sig_t)data;
-        v->to_cstr = builtin_function_reference_to_cstr;
-    } break;
-    default:
-        err_wargs("%s: unknown type: %d", __FUNCTION__, (int)type);
-    }
-    return v;
+EARL_value_t earl_value_integer_create(int x) {
+    return (EARL_value_t) {
+        .type = EARL_VALUE_TYPE_INTEGER,
+        .as = {
+            .integer = x
+        },
+        .to_cstr = earl_value_integer_to_cstr,
+        .add = earl_value_integer_add,
+    };
 }
 
-void EARL_value_dump(const EARL_value_t *value) {
-    switch (value->type) {
-    case EARL_VALUE_TYPE_INTEGER:
-        printf("Integer: %d\n", value->actual.integer);
-        break;
-    case EARL_VALUE_TYPE_UNIT:
-        printf("Unit\n");
-        break;
-    case EARL_VALUE_TYPE_FUNCTION_REFERENCE:
-        printf("Function Reference\n");
-        break;
-    default:
-        err("unknown type");
+EARL_value_t earl_value_unit_create(void) {
+    return (EARL_value_t) {
+        .type = EARL_VALUE_TYPE_UNIT,
+        .as = {
+            .integer = 0
+        },
+        .to_cstr = earl_value_unit_to_cstr,
+        .add = NULL,
+    };
+}
+
+EARL_value_t earl_value_boolean_create(int b) {
+    assert(!b || b == 1);
+    return (EARL_value_t) {
+        .type = EARL_VALUE_TYPE_BOOLEAN,
+        .as = {
+            .boolean = b,
+        },
+        .add = NULL,
+    };
+    TODO;
+}
+
+EARL_value_t earl_value_object_create(EARL_object_t *obj) {
+    EARL_value_t value = (EARL_value_t) {
+        .type = EARL_VALUE_TYPE_OBJECT,
+        .as = {
+            .obj = obj,
+        },
+    };
+
+    switch (obj->type) {
+    case EARL_OBJECT_TYPE_STRING: {
+        value.to_cstr = earl_object_string_to_cstr;
+        value.add = earl_object_string_add;
+    } break;
+    default: {
+        err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);
+    } break;
     }
+
+    return value;
 }

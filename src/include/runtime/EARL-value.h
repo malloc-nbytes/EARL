@@ -24,45 +24,51 @@
 #ifndef EARL_VALUE_H
 #define EARL_VALUE_H
 
-#include <stdint.h>
+#include "builtin-sigs.h"
 
-#include "parsing/ast.h"
-#include "runtime/EARL-value.h"
-#include "runtime/builtin-sigs.h"
+typedef struct EARL_object         EARL_object_t;
+typedef struct EARL_object_string  EARL_object_string_t;
 
-typedef enum {
+/* #define C_VALUE_AS_EARL_BOOLEAN(v) ((struct EARL_value){EARL_VALUE_TYPE_BOOLEAN, {.boolean = v}}) */
+/* #define C_VALUE_AS_EARL_UNIT       ((struct EARL_value){EARL_VALUE_TYPE_UNIT,    {.integer = 0}}) */
+/* #define C_VALUE_AS_EARL_INTEGER(v) ((struct EARL_value){EARL_VALUE_TYPE_INTEGER, {.integer = v}}) */
+/* #define C_VALUE_AS_EARL_OBJECT(v)  ((struct EARL_value){EARL_VALUE_TYPE_OBJECT,  {.obj = (EARL_object_t *)v}}) */
+
+/* #define EARL_VALUE_AS_C_BOOLEAN(v) ((v).as.boolean) */
+/* #define EARL_VALUE_AS_C_INTEGER(v) ((v).as.integer) */
+/* #define EARL_VALUE_AS_C_OBJECT(v)  ((v).as.obj) */
+
+/* #define EARL_VALUE_IS_BOOLEAN(v)   ((v).type == EARL_VALUE_TYPE_BOOLEAN) */
+/* #define EARL_VALUE_IS_UNIT(v)      ((v).type == EARL_VALUE_TYPE_UNIT) */
+/* #define EARL_VALUE_IS_INTEGER(v)   ((v).type == EARL_VALUE_TYPE_INTEGER) */
+/* #define EARL_VALUE_IS_OBJECT(v)    ((v).type == EARL_VALUE_TYPE_OBJECT) */
+
+typedef enum EARL_value_type {
     EARL_VALUE_TYPE_UNIT,
     EARL_VALUE_TYPE_INTEGER,
-    EARL_VALUE_TYPE_FUNCTION_REFERENCE,
-    EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE,
-    EARL_VALUE_TYPE_STRING,
+    EARL_VALUE_TYPE_BOOLEAN,
+
+    __EARL_VALUE_TYPE_LEN, // Used in types.c
+
+    EARL_VALUE_TYPE_OBJECT, // Must be placed *AFTER LEN*
 } EARL_value_type_t;
 
 typedef struct EARL_value {
-    uint32_t refc;
-
     EARL_value_type_t type;
 
     union {
-        void *unit;
+        int boolean;
         int integer;
-        stmt_fn_t *fn;
-        builtin_f_sig_t builtin_fun;
-    } actual;
+        EARL_object_t *obj;
+    } as;
 
     to_cstr_sig_t to_cstr;
-    boolean_sig_t boolean;
-    mutate_sig_t mutate;
+    add_sig_t add;
 } EARL_value_t;
 
-/// @brief Allocate a new EARL value
-/// @param type The type of the value
-/// @param data The C data
-/// @return The allocated EARL value
-EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data);
-
-/// @brief Debug print an EARL runtime value
-/// @param value The value to print
-void EARL_value_dump(const EARL_value_t *value);
+EARL_value_t earl_value_integer_create(int x);
+EARL_value_t earl_value_unit_create(void);
+EARL_value_t earl_value_boolean_create(int b);
+EARL_value_t earl_value_object_create(EARL_object_t *obj);
 
 #endif // EARL_VALUE_H

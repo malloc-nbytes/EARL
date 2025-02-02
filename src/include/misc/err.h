@@ -24,6 +24,9 @@
 #ifndef ERR_H
 #define ERR_H
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #define err_wargs(msg, ...)                                             \
     do {                                                                \
         fprintf(stderr, "error: " msg "\n", __VA_ARGS__);               \

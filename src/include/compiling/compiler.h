@@ -25,8 +25,8 @@
 #define COMPILER_H
 
 #include "runtime/VM/opcode.h"
-#include "parsing/ast.h"
 #include "runtime/EARL-value.h"
+#include "parsing/ast.h"
 #include "compiling/ctx.h"
 
 /// @brief Holds all compilation information
@@ -35,35 +35,20 @@ typedef struct cc {
     ctx_t *ctx;
 
     struct {
-        /// @brief The opcode that is produced
         opcode_t *data;
-
-        /// @brief The length of the opcode
         size_t len;
-
-        /// @brief The capacity of the opcode
         size_t cap;
     } opcode;
 
     struct {
-        /// @brief The constant pool
-        EARL_value_t **data;
-
-        /// @brief The length of the constant pool
+        EARL_value_t *data;
         size_t len;
-
-        /// @brief The capacity of the constant pool
         size_t cap;
-    } const_pool;
+    } constants;
 
     struct {
-        /// @brief All symbols found
         const char **data;
-
-        /// @brief The length of the symbols
         size_t len;
-
-        /// @brief The capacity of the symbols
         size_t cap;
     } gl_syms;
 } cc_t;
@@ -73,24 +58,6 @@ typedef struct cc {
 /// @return The result of the compiled program
 cc_t cc_compile(program_t *prog);
 
-/// @brief Push a constant into the CC
-/// @param cc The compiler context
-/// @return The index that the constant was pushed
-///         into the contant pool
-size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data);
-
-/// @brief Push an identifier into the global scope
-/// @param cc The compiler context
-/// @return The index that the global was pushed
-///         into the global symbols table
-size_t cc_push_global(cc_t *cc, const char *id);
-
-/// @brief Dump all opcode
-/// @param cc The compiler context
-void cc_dump_opcode(const cc_t cc);
-
-/// @brief Dump all global symbols
-/// @param cc The compiler context
-void cc_dump_gl_syms(const cc_t *cc);
+size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
 
 #endif // COMPILER_H

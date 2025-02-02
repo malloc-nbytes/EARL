@@ -1,0 +1,38 @@
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "runtime/EARL-object.h"
+#include "runtime/types.h"
+#include "mem/mem.h"
+#include "misc/utils.h"
+
+EARL_object_string_t *earl_object_string_alloc(const char *chars) {
+    EARL_object_string_t *s = mem_s_malloc(sizeof(EARL_object_string_t), NULL, NULL);
+    s->base = __earl_object_create(EARL_OBJECT_TYPE_STRING);
+    s->chars = mem_s_malloc(1, NULL, NULL);
+    s->cap = 1;
+    s->len = 0;
+    for (size_t i = 0; chars[i]; ++i)
+        da_append(s->chars, s->len, s->cap, char *, chars[i]);
+    s->chars[s->len] = '\0';
+    return s;
+}
+
+const char *earl_object_string_to_cstr(const EARL_value_t *const this) {
+    return ((EARL_object_string_t *)this->as.obj)->chars;
+}
+
+// TODO: Assert that it is binop compatible.
+EARL_value_t earl_object_string_add(const EARL_value_t *this,
+                                    const EARL_value_t *const other) {
+    EARL_object_string_t *s1 = (EARL_object_string_t *)this->as.obj;
+    EARL_object_string_t *s2 = (EARL_object_string_t *)other->as.obj;
+    char *concat = mem_s_malloc(s1->len + s2->len + 1, NULL, NULL);
+    strcpy(concat, s1->chars);
+    strcat(concat, s2->chars);
+    EARL_object_string_t *obj = earl_object_string_alloc(concat);
+    EARL_value_t res = earl_value_object_create((EARL_object_t *)obj);
+    free(concat);
+    return res;
+}

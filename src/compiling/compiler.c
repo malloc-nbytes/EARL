@@ -30,9 +30,11 @@
 
 #include "parsing/ast.h"
 
+#include "runtime/VM/opcode.h"
 #include "runtime/builtins.h"
 #include "runtime/EARL-value.h"
-#include "runtime/VM/opcode.h"
+#include "runtime/EARL-object.h"
+#include "runtime/primitives/string.h"
 
 #include "ds/s-umap.h"
 
@@ -44,68 +46,44 @@
 
 static void cc_expr(expr_t *expr, cc_t *cc);
 
-size_t cc_push_constant(cc_t *cc, EARL_value_type_t type, void *data) {
-    EARL_value_t *v = EARL_value_alloc(type, data);
-    da_append(cc->const_pool.data, cc->const_pool.len, cc->const_pool.cap, EARL_value_t **, v);
-    return cc->const_pool.len-1;
+size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value) {
+    da_append(cc->constants.data,
+              cc->constants.len,
+              cc->constants.cap,
+              EARL_value_t *,
+              value);
+    return cc->constants.len-1;
 }
 
-size_t cc_push_global(cc_t *cc, const char *id) {
-    da_append(cc->gl_syms.data, cc->gl_syms.len, cc->gl_syms.cap, const char **, id);
-    return cc->gl_syms.len-1;
-}
-
-static void push_opcode(cc_t *cc, opcode_t opc) {
-    da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, opc);
-}
-
-static void push_index_from_const_or_gl_pool(cc_t *cc, size_t idx) {
-    da_append(cc->opcode.data, cc->opcode.len, cc->opcode.cap, opcode_t *, idx);
+void cc_write_opcode(cc_t *cc, opcode_t opcode) {
+    da_append(cc->opcode.data,
+              cc->opcode.len,
+              cc->opcode.cap,
+              opcode_t *,
+              opcode);
 }
 
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
-    const char *id = expr->identifier->lx;
-
-    ctx_assert_var_in_scope(cc->ctx, cc, id);
-
-    size_t idx = SIZE_MAX;
-    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
-        if (strcmp(cc->gl_syms.data[i], id) == 0) {
-            idx = i; // Found the symbol
-            break;
-        }
-    }
-
-    if (idx == SIZE_MAX) {
-        assert("unreachable");
-        // idx = cc_push_global(cc, id);
-    }
-
-    push_opcode(cc, OPCODE_LOAD);
-    push_index_from_const_or_gl_pool(cc, idx);
+    TODO;
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
     int integer = atoi(expr->integer->lx);
-    size_t idx = cc_push_constant(cc, EARL_VALUE_TYPE_INTEGER, &integer);
-
-    push_opcode(cc, OPCODE_CONST);
-    push_index_from_const_or_gl_pool(cc, idx);
+    size_t idx = cc_write_to_const_pool(cc, earl_value_integer_create(integer));
+    cc_write_opcode(cc, OPCODE_CONST);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
-    (void)expr;
-    (void)cc;
-    TODO;
+    const char *s = expr->string->lx;
+    EARL_object_string_t *str = earl_object_string_alloc(s);
+    size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)str));
+    cc_write_opcode(cc, OPCODE_CONST);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
-    for (size_t i = 0; i < expr->args_len; ++i)
-        cc_expr(expr->args[i], cc);
-
-    cc_expr(expr->left, cc);
-    push_opcode(cc, OPCODE_CALL);
-    push_opcode(cc, (opcode_t)expr->args_len);
+    TODO;
 }
 
 static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
@@ -131,19 +109,19 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
     cc_expr(expr->right, cc);
     switch (expr->op->type) {
     case TOKEN_TYPE_PLUS:
-        push_opcode(cc, OPCODE_ADD);
+        cc_write_opcode(cc, OPCODE_ADD);
         break;
     case TOKEN_TYPE_MINUS:
-        push_opcode(cc, OPCODE_MINUS);
+        cc_write_opcode(cc, OPCODE_MINUS);
         break;
     case TOKEN_TYPE_FORWARD_SLASH:
-        push_opcode(cc, OPCODE_DIV);
+        cc_write_opcode(cc, OPCODE_DIV);
         break;
     case TOKEN_TYPE_ASTERISK:
-        push_opcode(cc, OPCODE_MUL);
+        cc_write_opcode(cc, OPCODE_MUL);
         break;
     case TOKEN_TYPE_PERCENT:
-        push_opcode(cc, OPCODE_MOD);
+        cc_write_opcode(cc, OPCODE_MOD);
         break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
@@ -194,16 +172,7 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
-    const char *id = stmt->identifier->lx;
-    ctx_assert_var_not_in_scope(cc->ctx, cc, id);
-
-    size_t var_idx = cc_push_global(cc, id);
-
-    cc_expr(stmt->expr, cc);
-    ctx_add_var_to_scope(cc->ctx, id);
-
-    push_opcode(cc, OPCODE_STORE);
-    push_opcode(cc, var_idx);
+    TODO;
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
@@ -227,17 +196,6 @@ static void compile_stmt(stmt_t *stmt, cc_t *cc) {
     }
 }
 
-void cc_dump_gl_syms(const cc_t *cc) {
-    for (size_t i = 0; i < cc->gl_syms.len; ++i)
-        printf("GL_SYM: %s\n", cc->gl_syms.data[i]);
-}
-
-void cc_dump_opcode(const cc_t cc) {
-    printf("Dumping compiled opcode\n");
-    for (size_t i = 0; i < cc.opcode.len; ++i)
-        opcode_dump(cc.opcode.data[i]);
-}
-
 cc_t cc_compile(program_t *prog) {
     ctx_t ctx = ctx_create(djb2);
 
@@ -250,7 +208,7 @@ cc_t cc_compile(program_t *prog) {
             .len = 0,
             .cap = CAP,
         },
-        .const_pool = {
+        .constants = {
             .data = mem_s_malloc(sizeof(EARL_value_t *) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
@@ -262,14 +220,14 @@ cc_t cc_compile(program_t *prog) {
         },
     };
 
-    __builtin_idents_init(&cc);
+    //__builtin_idents_init(&cc);
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
         compile_stmt(prog->stmts[i], &cc);
 
     ctx_destroy(cc.ctx);
 
-    push_opcode(&cc, OPCODE_HALT);
+    cc_write_opcode(&cc, OPCODE_HALT);
 
     return cc;
 }

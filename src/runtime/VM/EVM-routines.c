@@ -39,33 +39,33 @@ opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
 
 void EVM_routines_init(EARL_vm_t *vm) {
     vm->ip = &vm->cc->opcode.data[0];
-    vm->sp = &vm->stack.data[0];
+    vm->sp = vm->stack.data;
 
-    for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) {
-        builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
-        EARL_value_t *value = EARL_value_alloc(EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE, fun);
-        identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value);
-        s_umap_insert(&vm->globals, var->id, (uint8_t *)var);
-    }
-    for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i) {
-        TODO;
-    }
+    /* for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) { */
+    /*     builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]); */
+    /*     EARL_value_t *value = EARL_value_alloc(EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE, fun); */
+    /*     identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value); */
+    /*     s_umap_insert(&vm->globals, var->id, (uint8_t *)var); */
+    /* } */
+    /* for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i) { */
+    /*     TODO; */
+    /* } */
 }
 
-void EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t *value) {
+void EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t value) {
     if (vm->stack.len >= STACK_LIM)
         err("Stack Overflow");
 
     *vm->sp = value;
-    *vm->sp++;
+    vm->sp++;
     vm->stack.len++;
 }
 
-EARL_value_t *EVM_routines_stack_pop(EARL_vm_t *vm) {
+EARL_value_t EVM_routines_stack_pop(EARL_vm_t *vm) {
     if (vm->stack.len == 0)
         err("Stack Underflow");
 
-    *vm->sp--;
+    vm->sp--;
     vm->stack.len--;
     return *vm->sp;
 }
@@ -74,6 +74,7 @@ void EVM_routines_dump_stack(EARL_vm_t *vm) {
     printf("Dumping stack\n");
     for (size_t i = 0; i < vm->stack.len; ++i) {
         printf("Stack[%zu]: ", i);
-        EARL_value_dump(vm->stack.data[i]);
+        // EARL_value_dump(vm->stack.data[i]);
+        TODO;
     }
 }

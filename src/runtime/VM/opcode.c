@@ -26,22 +26,27 @@
 #include <stdint.h>
 
 #include "runtime/VM/opcode.h"
+#include "compiling/compiler.h"
 #include "misc/err.h"
 
-void opcode_dump(opcode_t op) {
-    switch (op) {
-    case OPCODE_HALT:  printf("0x%x (HALT)\n", (uint8_t)op);  break;
-    case OPCODE_CONST: printf("0x%x (CONST)\n", (uint8_t)op); break;
-    case OPCODE_ADD:   printf("0x%x (ADD)\n", (uint8_t)op);   break;
-    case OPCODE_MINUS: printf("0x%x (MINUS)\n", (uint8_t)op); break;
-    case OPCODE_MUL:   printf("0x%x (MUL)\n", (uint8_t)op);   break;
-    case OPCODE_DIV:   printf("0x%x (DIV)\n", (uint8_t)op);   break;
-    case OPCODE_MOD:   printf("0x%x (MOD)\n", (uint8_t)op);   break;
-    case OPCODE_STORE: printf("0x%x (STORE)\n", (uint8_t)op); break;
-    case OPCODE_LOAD:  printf("0x%x (LOAD)\n", (uint8_t)op);  break;
-    case OPCODE_CALL:  printf("0x%x (CALL)\n", (uint8_t)op);  break;
+static int simple_instruction(const char *name, int offset) {
+    printf("%s\n", name);
+    return offset+1;
+}
+
+int disassemble_instruction(cc_t *cc, int offset) {
+    printf("%04d ", offset);
+
+    opcode_t instr = cc->opcode.data[offset];
+    switch (instr) {
+    case OPCODE_HALT:
+        return simple_instruction("OPCODE_HALT", offset);
     default: {
-        err_wargs("unknown opcode: 0x%x", (uint8_t)op);
+        printf("%s: unknown opcode: 0x%x", __FUNCTION__, (uint8_t)instr);
+        return offset+1;
     } break;
     }
+}
+
+void opcode_dump(opcode_t op) {
 }

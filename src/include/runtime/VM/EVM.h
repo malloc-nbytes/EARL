@@ -36,7 +36,7 @@
 typedef struct EARL_vm {
     /// @brief The program stack
     struct {
-        EARL_value_t *data[STACK_LIM];
+        EARL_value_t data[STACK_LIM];
         size_t len;
     } stack;
 
@@ -47,7 +47,7 @@ typedef struct EARL_vm {
     cc_t *cc;
 
     /// @brief The stack pointer
-    EARL_value_t **sp;
+    EARL_value_t *sp;
 
     /// @brief The instruction pointer
     opcode_t *ip;
@@ -61,10 +61,10 @@ typedef struct EARL_vm {
     void (*init)(struct EARL_vm *vm);
 
     /// @brief Push a value onto the stack
-    void (*push)(struct EARL_vm *vm, EARL_value_t *value);
+    void (*push)(struct EARL_vm *vm, EARL_value_t value);
 
     /// @brief Pop a value off of the stack
-    EARL_value_t *(*pop)(struct EARL_vm *vm);
+    EARL_value_t (*pop)(struct EARL_vm *vm);
 
     /// @brief Dump the stack
     void (*dump_stack)(struct EARL_vm *vm);
@@ -75,6 +75,6 @@ typedef struct EARL_vm {
 /// @param opcode_len The length of opcdoe
 /// @param opcode_cap The capacity of opcdoe
 /// @return The value after execution
-EARL_value_t *EVM_exec(cc_t *cc);
+EARL_value_t EVM_exec(cc_t *cc);
 
 #endif // EVM_H

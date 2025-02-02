@@ -32,31 +32,21 @@
 #include "runtime/builtins.h"
 #include "runtime/VM/EVM.h"
 #include "runtime/EARL-value.h"
+#include "runtime/EARL-object.h"
 #include "misc/utils.h"
+
+#include "runtime/types.h"
 
 #define SRC_FP "../src/input.rl"
 
-#include "ds/str.h"
-
 int main(void) {
-    /* const char *src = read_file(SRC_FP); */
-    /* lexer_t lexer = lexer_lex_src_code(src, SRC_FP); */
-    /* program_t *prog = parser_parse(&lexer); */
-    /* ast_dump(prog); */
+    const char *src = read_file(SRC_FP);
+    lexer_t lexer = lexer_lex_src_code(src, SRC_FP);
+    program_t *prog = parser_parse(&lexer);
 
-    /* cc_t cc = cc_compile(prog); */
-    /* cc_dump_opcode(cc); */
-
-    /* EARL_value_t *res = EVM_exec(&cc); */
-
-    /* if (res) */
-    /*     printf("result: %s\n", res->to_cstr(res)); */
-    /* else */
-    /*     printf("result is NULL\n"); */
-
-    str_t s = str_create("hello world");
-
-    printf("%s\n", s.data);
+    cc_t cc = cc_compile(prog);
+    EARL_value_t res = EVM_exec(&cc);
+    printf("%s\n", res.to_cstr(&res));
 
     return 0;
 }
