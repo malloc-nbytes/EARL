@@ -28,14 +28,14 @@
 #include "runtime/EARL-value.h"
 #include "runtime/primitives.h"
 #include "parsing/ast.h"
-#include "misc/utils.h"
+#include "mem/mem.h"
 #include "misc/err.h"
 
 EARL_value_t *EARL_value_alloc(EARL_value_type_t type, void *data) {
     if (type != EARL_VALUE_TYPE_UNIT)
         assert(data);
 
-    EARL_value_t *v = s_malloc(sizeof(EARL_value_t), NULL, NULL);
+    EARL_value_t *v = mem_s_malloc(sizeof(EARL_value_t), NULL, NULL);
     v->refc = 1;
     v->type = type;
     v->to_cstr = NULL;

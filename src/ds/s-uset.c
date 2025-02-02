@@ -27,11 +27,12 @@
 
 #include "ds/s-uset.h"
 #include "misc/utils.h"
+#include "mem/mem.h"
 
 s_uset_t s_uset_create(unsigned long (*hash)(const char *)) {
     const size_t cap = 32;
     return (s_uset_t) {
-        .tbl = (s_uset_node_t **)s_malloc(sizeof(s_uset_node_t *) * cap, NULL, NULL),
+        .tbl = (s_uset_node_t **)mem_s_malloc(sizeof(s_uset_node_t *) * cap, NULL, NULL),
         .sz = 0,
         .cap = cap,
         .hash = hash,
@@ -68,7 +69,7 @@ void s_uset_insert(s_uset_t *set, const char *value) {
     const size_t idx = set->hash(value) % set->cap;
     s_uset_node_t *prev = NULL;
     s_uset_node_t **node = find_free_set_node_spot(set, idx, &prev);
-    *node = (s_uset_node_t *)s_malloc(sizeof(s_uset_node_t), NULL, NULL);
+    *node = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t), NULL, NULL);
     (*node)->value = strdup(value);
     (*node)->next = NULL;
     if (prev)

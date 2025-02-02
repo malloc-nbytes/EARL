@@ -27,13 +27,14 @@
 #include <string.h>
 
 #include "ds/s-umap.h"
+#include "mem/mem.h"
 #include "misc/utils.h"
 
 s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t *)) {
     assert(hash);
     const size_t cap = 64;
     return (s_umap_t) {
-        .tbl = s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
+        .tbl = mem_s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
         .sz = 0,
         .cap = cap,
         .hash = hash,
@@ -62,7 +63,7 @@ void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value) {
     s_umap_bucket_t *prev = NULL;
     s_umap_bucket_t **node = find_free_spot(map, idx, &prev);
 
-    *node = (s_umap_bucket_t *)s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
+    *node = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
 
     (*node)->key = strdup(key);
     (*node)->value = value;

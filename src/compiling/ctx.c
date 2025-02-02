@@ -30,6 +30,7 @@
 #include "compiling/ctx.h"
 #include "misc/err.h"
 #include "misc/utils.h"
+#include "mem/mem.h"
 
 static int search_scope(ctx_t *ctx, const char *id) {
     for (size_t i = 0; i < ctx->scope_len; ++i)
@@ -47,7 +48,7 @@ static int in_global(cc_t *cc, const char *id) {
 
 ctx_t ctx_create(unsigned long (*scope_hash)(const char *)) {
     ctx_t ctx = (ctx_t) {
-        .scope = s_malloc(sizeof(s_uset_t) * 2, NULL, NULL),
+        .scope = mem_s_malloc(sizeof(s_uset_t) * 2, NULL, NULL),
         .scope_len = 1,
         .scope_cap = 2,
     };

@@ -35,6 +35,7 @@
 #include "lexing/token.h"
 #include "global/attr.h"
 #include "global/keywords.h"
+#include "mem/mem.h"
 #include "misc/utils.h"
 
 static stmt_t *parse_stmt(lexer_t *lexer);
@@ -68,7 +69,7 @@ uint32_t translate_attr(lexer_t *lexer) {
 
 static expr_t **parse_comma_sep_exprs(lexer_t *lexer, size_t *len, size_t *cap) {
     *len = 0, *cap = 1;
-    expr_t **exprs = (expr_t **)s_malloc(sizeof(expr_t *) * (*cap), NULL, NULL);
+    expr_t **exprs = (expr_t **)mem_s_malloc(sizeof(expr_t *) * (*cap), NULL, NULL);
 
     while (1) {
         if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_RIGHT_PARENTHESIS)
@@ -86,7 +87,7 @@ static expr_t **parse_comma_sep_exprs(lexer_t *lexer, size_t *len, size_t *cap) 
 
 static token_t **parse_comma_sep_identifiers(lexer_t *lexer, size_t *len, size_t *cap) {
     *len = 0, *cap = 1;
-    token_t **tokens = (token_t **)s_malloc(sizeof(token_t *) * (*cap), NULL, NULL);
+    token_t **tokens = (token_t **)mem_s_malloc(sizeof(token_t *) * (*cap), NULL, NULL);
 
     while (1) {
         if (lexer_speek(lexer, 0)->type == TOKEN_TYPE_RIGHT_PARENTHESIS)
@@ -250,7 +251,7 @@ static expr_t *parse_expr(lexer_t *lexer) {
 
 static stmt_block_t *parse_stmt_block(lexer_t *lexer) {
     size_t len = 0, cap = 1;
-    stmt_t **stmts = (stmt_t **)s_malloc(sizeof(stmt_t *) * cap, NULL, NULL);
+    stmt_t **stmts = (stmt_t **)mem_s_malloc(sizeof(stmt_t *) * cap, NULL, NULL);
 
     while (lexer_speek(lexer, 0)->type != TOKEN_TYPE_RIGHT_CURLY_BRACKET) {
         stmt_t *stmt = parse_stmt(lexer);
@@ -337,10 +338,10 @@ static stmt_t *parse_stmt(lexer_t *lexer) {
 }
 
 program_t *parser_parse(lexer_t *lexer) {
-    program_t *prog = (program_t *)s_malloc(sizeof(program_t), NULL, NULL);
+    program_t *prog = (program_t *)mem_s_malloc(sizeof(program_t), NULL, NULL);
     prog->stmts_len = 0;
     prog->stmts_cap = 32;
-    prog->stmts = (stmt_t **)s_malloc(sizeof(stmt_t *) * prog->stmts_cap, NULL, NULL);
+    prog->stmts = (stmt_t **)mem_s_malloc(sizeof(stmt_t *) * prog->stmts_cap, NULL, NULL);
 
     while (lexer_peek(lexer, 0) && lexer_peek(lexer, 0)->type != TOKEN_TYPE_EOF) {
         stmt_t *stmt = parse_stmt(lexer);

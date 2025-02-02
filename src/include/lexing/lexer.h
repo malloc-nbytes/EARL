@@ -24,7 +24,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "misc/arena.h"
+#include "mem/arena.h"
 #include "lexing/token.h"
 
 #define lexer_speek(l, i) lexer_peek((l), 0) && lexer_peek((l), 0)

@@ -27,7 +27,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "arena.h"
+#include "mem/arena.h"
 
 #define TODO                                                    \
     fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);      \
@@ -44,13 +44,6 @@
         (arr)[(len)] = (value);                                 \
         (len) += 1;                                             \
     } while (0)
-
-/// @brief A safer malloc() wrapper
-/// @param bytes The number of bytes to allocate
-/// @param arena (optional) The arena to use for the allocator
-/// @param allocator (optional) The allocator to use
-/// @return A pointer to the allocated memory
-void *s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t));
 
 /// @brief Read in a file to a cstr
 /// @param fp The filepath

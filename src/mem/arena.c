@@ -21,36 +21,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-#include "lexing/lexer.h"
-#include "parsing/ast.h"
-#include "parsing/parser.h"
-#include "compiling/compiler.h"
-#include "runtime/builtins.h"
-#include "runtime/VM/EVM.h"
-#include "runtime/EARL-value.h"
 #include "misc/utils.h"
+#include "mem/arena.h"
+#include "mem/mem.h"
 
-#define SRC_FP "../src/input.rl"
+arena_t arena_create(size_t *bytes) {
+    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
+    return (arena_t) {
+        .mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N, NULL, NULL),
+        .len = 0,
+        .cap = N,
+    };
+}
 
-int main(void) {
-    const char *src = read_file(SRC_FP);
-    lexer_t lexer = lexer_lex_src_code(src, SRC_FP);
-    program_t *prog = parser_parse(&lexer);
-    ast_dump(prog);
+void arena_create_from(arena_t *arena, size_t *bytes) {
+    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
+    arena->mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N, NULL, NULL);
+    arena->len = 0;
+    arena->cap = N;
+}
 
-    cc_t cc = cc_compile(prog);
-    cc_dump_opcode(cc);
+uint8_t *arena_malloc(arena_t *arena, size_t bytes) {
+    if (!arena)
+        return NULL;
 
-    EARL_value_t *res = EVM_exec(&cc);
+    if (arena->len + bytes > arena->cap) {
+        arena->cap *= 2;
+        arena->mem = realloc(arena->mem, arena->cap);
+    }
 
-    if (res)
-        printf("result: %s\n", res->to_cstr(res));
-    else
-        printf("result is NULL\n");
+    if (!arena->mem)
+        return NULL;
 
-    return 0;
+    uint8_t *mem = &arena->mem[arena->len];
+    arena->len += bytes;
+    return mem;
+}
+
+void arena_free(arena_t *arena) {
+    free(arena->mem);
+    arena->mem = NULL;
+    arena->len = arena->cap = 0;
 }

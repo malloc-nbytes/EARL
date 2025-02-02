@@ -24,11 +24,12 @@
 #include <assert.h>
 
 #include "parsing/stmt.h"
+#include "mem/mem.h"
 #include "misc/utils.h"
 
 stmt_let_t *stmt_let_alloc(token_t *identifier, expr_t *expr, lexer_t *lexer) {
     (void)lexer;
-    stmt_let_t *let = (stmt_let_t *)s_malloc(sizeof(stmt_let_t), NULL, NULL);
+    stmt_let_t *let = (stmt_let_t *)mem_s_malloc(sizeof(stmt_let_t), NULL, NULL);
     let->identifier = identifier;
     let->expr = expr;
     return let;
@@ -36,14 +37,14 @@ stmt_let_t *stmt_let_alloc(token_t *identifier, expr_t *expr, lexer_t *lexer) {
 
 stmt_return_t *stmt_return_alloc(expr_t *expr, lexer_t *lexer) {
     (void)lexer;
-    stmt_return_t *ret = (stmt_return_t *)s_malloc(sizeof(stmt_return_t), NULL, NULL);
+    stmt_return_t *ret = (stmt_return_t *)mem_s_malloc(sizeof(stmt_return_t), NULL, NULL);
     ret->expr = expr;
     return ret;
 }
 
 stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer) {
     (void)lexer;
-    stmt_block_t *block = (stmt_block_t *)s_malloc(sizeof(stmt_block_t), NULL, NULL);
+    stmt_block_t *block = (stmt_block_t *)mem_s_malloc(sizeof(stmt_block_t), NULL, NULL);
     block->stmts = stmts;
     block->stmts_len = stmts_len;
     block->stmts_cap = stmts_cap;
@@ -52,7 +53,7 @@ stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_ca
 
 stmt_mut_t *stmt_mut_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer) {
     (void)lexer;
-    stmt_mut_t *mut = (stmt_mut_t *)s_malloc(sizeof(stmt_mut_t), NULL, NULL);
+    stmt_mut_t *mut = (stmt_mut_t *)mem_s_malloc(sizeof(stmt_mut_t), NULL, NULL);
     mut->left = left;
     mut->right = right;
     mut->op = op;
@@ -61,7 +62,7 @@ stmt_mut_t *stmt_mut_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *le
 
 stmt_expr_t *stmt_expr_alloc(expr_t *expr, lexer_t *lexer) {
     (void)lexer;
-    stmt_expr_t *stmt_expr = (stmt_expr_t *)s_malloc(sizeof(stmt_expr_t), NULL, NULL);
+    stmt_expr_t *stmt_expr = (stmt_expr_t *)mem_s_malloc(sizeof(stmt_expr_t), NULL, NULL);
     stmt_expr->expr = expr;
     return stmt_expr;
 }
@@ -73,7 +74,7 @@ stmt_fn_t *stmt_fn_alloc(token_t *id,
                          stmt_block_t *block,
                          lexer_t *lexer) {
     (void)lexer;
-    stmt_fn_t *fn = (stmt_fn_t *)s_malloc(sizeof(stmt_fn_t), NULL, NULL);
+    stmt_fn_t *fn = (stmt_fn_t *)mem_s_malloc(sizeof(stmt_fn_t), NULL, NULL);
     fn->id = id;
     fn->params.data = params;
     fn->params.len = params_len;
@@ -84,8 +85,7 @@ stmt_fn_t *stmt_fn_alloc(token_t *id,
 
 stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer) {
     (void)lexer;
-    stmt_t *stmt
-        = (stmt_t *)s_malloc(sizeof(stmt_t), NULL, NULL);
+    stmt_t *stmt = (stmt_t *)mem_s_malloc(sizeof(stmt_t), NULL, NULL);
     stmt->type = type;
 
     switch (type) {

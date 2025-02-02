@@ -36,6 +36,8 @@
 
 #include "ds/s-umap.h"
 
+#include "mem/mem.h"
+
 #include "misc/hash.h"
 #include "misc/utils.h"
 #include "misc/err.h"
@@ -244,17 +246,17 @@ cc_t cc_compile(program_t *prog) {
     cc_t cc = (cc_t) {
         .ctx = &ctx,
         .opcode = {
-            .data = s_malloc(sizeof(opcode_t) * CAP, NULL, NULL),
+            .data = mem_s_malloc(sizeof(opcode_t) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },
         .const_pool = {
-            .data = s_malloc(sizeof(EARL_value_t *) * CAP, NULL, NULL),
+            .data = mem_s_malloc(sizeof(EARL_value_t *) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },
         .gl_syms = {
-            .data = s_malloc(sizeof(const char *) * CAP, NULL, NULL),
+            .data = mem_s_malloc(sizeof(const char *) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },

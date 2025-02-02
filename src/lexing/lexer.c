@@ -28,7 +28,7 @@
 #include "lexing/token.h"
 #include "lexing/lexer.h"
 #include "global/keywords.h"
-#include "misc/arena.h"
+#include "mem/arena.h"
 
 /// @brief Handle symbols during lexing
 /// @param src The start of the symbol

@@ -24,7 +24,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "misc/utils.h"
+#include "mem/mem.h"
 #include "lexing/token.h"
 
 static token_t *__token_alloc(const char *lx,
@@ -33,9 +33,9 @@ static token_t *__token_alloc(const char *lx,
                               size_t row,
                               size_t col) {
     token_t *tok
-        = (token_t *)s_malloc(sizeof(token_t), NULL, NULL);
+        = (token_t *)mem_s_malloc(sizeof(token_t), NULL, NULL);
 
-    tok->lx = (char *)s_malloc(len + 1, NULL, NULL);
+    tok->lx = (char *)mem_s_malloc(len + 1, NULL, NULL);
     (void)strncpy(tok->lx, lx, len);
     tok->lx[len] = '\0';
 

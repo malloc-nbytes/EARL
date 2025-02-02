@@ -27,10 +27,10 @@
 
 #include "runtime/EARL-value.h"
 #include "runtime/identifier.h"
-#include "misc/utils.h"
+#include "mem/mem.h"
 
 identifier_t *identifier_alloc(const char *id, EARL_value_t *value) {
-    identifier_t *var = (identifier_t *)s_malloc(sizeof(identifier_t), NULL, NULL);
+    identifier_t *var = (identifier_t *)mem_s_malloc(sizeof(identifier_t), NULL, NULL);
     var->id = id;
     var->value = value;
     return var;

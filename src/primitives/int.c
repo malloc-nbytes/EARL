@@ -27,9 +27,10 @@
 #include "runtime/EARL-value.h"
 #include "misc/utils.h"
 #include "misc/err.h"
+#include "mem/mem.h"
 
 const char *int_to_cstr(const EARL_value_t *const value) {
-    char *buffer = s_malloc(20, NULL, NULL);
+    char *buffer = mem_s_malloc(20, NULL, NULL);
     snprintf(buffer, 20, "%d", value->actual.integer);
     return buffer;
 }

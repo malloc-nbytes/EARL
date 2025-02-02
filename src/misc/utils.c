@@ -25,19 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "misc/arena.h"
 #include "misc/utils.h"
-
-void *s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t)) {
-    void *p = (allocator && arena)
-        ? allocator(arena, bytes)
-        : malloc(bytes);
-    if (!p) {
-        fprintf(stderr, "could not safely allocate %zu bytes\n", bytes);
-        exit(1);
-    }
-    return p;
-}
+#include "mem/arena.h"
+#include "mem/mem.h"
 
 char *read_file(const char *fp) {
     FILE *file = fopen(fp, "r");
@@ -56,7 +46,7 @@ char *read_file(const char *fp) {
         return NULL;
     }
 
-    char *buffer = (char *)s_malloc(size + 1, NULL, NULL);
+    char *buffer = (char *)mem_s_malloc(size + 1, NULL, NULL);
     if (!buffer) {
         perror("Failed to allocate memory");
         fclose(file);

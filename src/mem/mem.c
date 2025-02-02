@@ -22,45 +22,17 @@
 // SOFTWARE.
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#include "misc/utils.h"
-#include "misc/arena.h"
+#include "mem/mem.h"
 
-arena_t arena_create(size_t *bytes) {
-    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-    return (arena_t) {
-        .mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL),
-        .len = 0,
-        .cap = N,
-    };
-}
-
-void arena_create_from(arena_t *arena, size_t *bytes) {
-    size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-    arena->mem = (uint8_t *)s_malloc(sizeof(uint8_t) * N, NULL, NULL);
-    arena->len = 0;
-    arena->cap = N;
-}
-
-uint8_t *arena_malloc(arena_t *arena, size_t bytes) {
-    if (!arena)
-        return NULL;
-
-    if (arena->len + bytes > arena->cap) {
-        arena->cap *= 2;
-        arena->mem = realloc(arena->mem, arena->cap);
+void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t)) {
+    void *p = (allocator && arena)
+        ? allocator(arena, bytes)
+        : malloc(bytes);
+    if (!p) {
+        fprintf(stderr, "could not safely allocate %zu bytes\n", bytes);
+        exit(1);
     }
-
-    if (!arena->mem)
-        return NULL;
-
-    uint8_t *mem = &arena->mem[arena->len];
-    arena->len += bytes;
-    return mem;
-}
-
-void arena_free(arena_t *arena) {
-    free(arena->mem);
-    arena->mem = NULL;
-    arena->len = arena->cap = 0;
+    return p;
 }
