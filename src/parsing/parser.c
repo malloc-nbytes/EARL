@@ -313,6 +313,30 @@ static stmt_expr_t *parse_stmt_expr(lexer_t *lexer) {
     return stmt_expr;
 }
 
+static stmt_t *parse_stmt_mut_or_stmt_expr(lexer_t *lexer) {
+    expr_t *left = parse_expr(lexer);
+
+    token_t *op = lexer_peek(lexer, 0);
+    if (op && (op->type == TOKEN_TYPE_EQUALS ||
+               op->type == TOKEN_TYPE_PLUS_EQUALS ||
+               op->type == TOKEN_TYPE_MINUS_EQUALS ||
+               op->type == TOKEN_TYPE_ASTERISK_EQUALS ||
+               op->type == TOKEN_TYPE_FORWARD_SLASH_EQUALS)) {
+        lexer_discard(lexer); // =, +=, -=, etc.
+        expr_t *right = parse_expr(lexer);
+        (void)expect(lexer, TOKEN_TYPE_SEMICOLON);
+        stmt_mut_t *mut_stmt = (stmt_mut_t *)mem_s_malloc(sizeof(stmt_mut_t), NULL, NULL);
+        mut_stmt->left = left;
+        mut_stmt->right = right;
+        mut_stmt->op = op;
+        return stmt_alloc((void *)mut_stmt, STMT_TYPE_MUT, lexer);
+    }
+
+    (void)expect(lexer, TOKEN_TYPE_SEMICOLON);
+    stmt_expr_t *stmt_expr = stmt_expr_alloc(left, lexer);
+    return stmt_alloc((void *)stmt_expr, STMT_TYPE_EXPR, lexer);
+}
+
 static stmt_t *parse_stmt(lexer_t *lexer) {
     uint32_t attrs = 0x0;
     do {
@@ -327,8 +351,9 @@ static stmt_t *parse_stmt(lexer_t *lexer) {
             attrs |= translate_attr(lexer);
         } break;
         default: {
-            stmt_expr_t *expr = parse_stmt_expr(lexer);
-            return stmt_alloc((void *)expr, STMT_TYPE_EXPR, lexer);
+            return parse_stmt_mut_or_stmt_expr(lexer);
+            /* stmt_expr_t *expr = parse_stmt_expr(lexer); */
+            /* return stmt_alloc((void *)expr, STMT_TYPE_EXPR, lexer); */
         } break;
         }
     } while (attrs != 0x0);

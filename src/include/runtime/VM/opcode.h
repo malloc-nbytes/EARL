@@ -26,17 +26,19 @@
 
 /// @brief The different opcodes
 typedef enum {
-    OPCODE_HALT       = 0x00,
-    OPCODE_CONST      = 0x01,
-    OPCODE_ADD        = 0x02,
-    OPCODE_MINUS      = 0x03,
-    OPCODE_MUL        = 0x04,
-    OPCODE_DIV        = 0x05,
-    OPCODE_MOD        = 0x06,
-    OPCODE_STORE      = 0x07,
-    OPCODE_LOAD       = 0x08,
-    OPCODE_CALL       = 0x09,
-    OPCODE_DEF_GLOBAL = 0x0A,
+    OPCODE_HALT        = 0x00,
+    OPCODE_CONST       = 0x01,
+    OPCODE_ADD         = 0x02,
+    OPCODE_MINUS       = 0x03,
+    OPCODE_MUL         = 0x04,
+    OPCODE_DIV         = 0x05,
+    OPCODE_MOD         = 0x06,
+    OPCODE_STORE       = 0x07,
+    OPCODE_LOAD        = 0x08,
+    OPCODE_CALL        = 0x09,
+    OPCODE_DEF_GLOBAL  = 0x0A,
+    OPCODE_LOAD_GLOBAL = 0x0B,
+    OPCODE_SET_GLOBAL  = 0x0C,
 } opcode_t;
 
 void opcode_dump(opcode_t op);

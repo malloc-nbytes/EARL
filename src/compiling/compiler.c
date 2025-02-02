@@ -73,7 +73,22 @@ void cc_write_opcode(cc_t *cc, opcode_t opcode) {
 }
 
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
-    TODO;
+    const char *id = expr->identifier->lx;
+
+    // TODO: make gl_syms a set instead of an array
+    size_t idx = SIZE_MAX;
+    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
+        if (streq(id, cc->gl_syms.data[i])) {
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx == SIZE_MAX)
+        err_wargs("identifier: `%s` is not defined", id);
+
+    cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
@@ -92,7 +107,12 @@ static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
 }
 
 static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
-    TODO;
+    for (size_t i = 0; i < expr->args_len; ++i)
+        cc_expr(expr->args[i], cc);
+
+    cc_expr(expr->left, cc);
+    cc_write_opcode(cc, OPCODE_CALL);
+    cc_write_opcode(cc, (opcode_t)expr->args_len);
 }
 
 static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
@@ -169,9 +189,72 @@ static void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
-    (void)stmt;
-    (void)cc;
-    TODO;
+    // Compile the right-hand side expression first
+    cc_expr(stmt->right, cc);
+
+    // Get identifier for the left-hand side
+    if (stmt->left->type != EXPR_TYPE_TERM || stmt->left->data.term->type != EXPR_TERM_TYPE_IDENTIFIER) {
+        err("left-hand side of assignment must be an identifier");
+    }
+
+    const char *id = stmt->left->data.term->data.identifier->identifier->lx;
+
+    // Find the variable in the global symbol table
+    size_t idx = SIZE_MAX;
+    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
+        if (streq(id, cc->gl_syms.data[i])) {
+            idx = i;
+            break;
+        }
+    }
+
+    if (idx == SIZE_MAX)
+        err_wargs("identifier `%s` is not defined", id);
+
+    switch (stmt->op->type) {
+    case TOKEN_TYPE_EQUALS:
+        cc_write_opcode(cc, OPCODE_SET_GLOBAL);
+        cc_write_opcode(cc, idx);
+        break;
+
+    case TOKEN_TYPE_PLUS_EQUALS:
+    case TOKEN_TYPE_MINUS_EQUALS:
+    case TOKEN_TYPE_ASTERISK_EQUALS:
+    case TOKEN_TYPE_FORWARD_SLASH_EQUALS:
+    case TOKEN_TYPE_PERCENT_EQUALS: {
+        cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
+        cc_write_opcode(cc, idx);
+
+        // Apply the arithmetic operation
+        switch (stmt->op->type) {
+        case TOKEN_TYPE_PLUS_EQUALS:
+            cc_write_opcode(cc, OPCODE_ADD);
+            break;
+        case TOKEN_TYPE_MINUS_EQUALS:
+            cc_write_opcode(cc, OPCODE_MINUS);
+            break;
+        case TOKEN_TYPE_ASTERISK_EQUALS:
+            cc_write_opcode(cc, OPCODE_MUL);
+            break;
+        case TOKEN_TYPE_FORWARD_SLASH_EQUALS:
+            cc_write_opcode(cc, OPCODE_DIV);
+            break;
+        case TOKEN_TYPE_PERCENT_EQUALS:
+            cc_write_opcode(cc, OPCODE_MOD);
+            break;
+        default:
+            err_wargs("unknown compound assignment operator: %s", stmt->op->lx);
+        }
+
+        // Store back the result
+        cc_write_opcode(cc, OPCODE_SET_GLOBAL);
+        cc_write_opcode(cc, idx);
+        break;
+    }
+
+    default:
+        err_wargs("unknown assignment operator: %s", stmt->op->lx);
+    }
 }
 
 static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
@@ -187,6 +270,17 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
     cc_expr(stmt->expr, cc);
     cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
     cc_write_opcode(cc, idx);
+
+    /* const char *id = stmt->identifier->lx; */
+
+    /* EARL_object_string_t *str = earl_object_string_alloc(id); */
+    /* size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)str)); */
+
+    /* (void)cc_write_global(cc, id);//tmp */
+
+    /* cc_expr(stmt->expr, cc); */
+    /* cc_write_opcode(cc, OPCODE_DEF_GLOBAL); */
+    /* cc_write_opcode(cc, idx); */
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {

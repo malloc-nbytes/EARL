@@ -45,8 +45,7 @@ int main(void) {
     program_t *prog = parser_parse(&lexer);
 
     cc_t cc = cc_compile(prog);
-    EARL_value_t res = EVM_exec(&cc);
-    printf("%s\n", res.to_cstr(&res));
+    (void)EVM_exec(&cc);
 
     return 0;
 }

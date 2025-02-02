@@ -16,3 +16,8 @@ EARL_value_t earl_value_integer_add(const EARL_value_t *this,
     int sum = this->as.integer + other->as.integer;
     return earl_value_integer_create(sum);
 }
+
+void earl_value_integer_mutate(EARL_value_t *this, const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(this->type, other->type);
+    this->as.integer = other->as.integer;
+}

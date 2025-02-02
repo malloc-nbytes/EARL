@@ -6,6 +6,7 @@
 #include "runtime/primitives/string.h"
 #include "runtime/primitives/integer.h"
 #include "runtime/primitives/unit.h"
+#include "runtime/primitives/builtin-function-reference.h"
 #include "misc/err.h"
 #include "misc/utils.h"
 
@@ -16,8 +17,9 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
         .as = {
             .builtin_function_reference = fun,
         },
-        .to_cstr = NULL,
+        .to_cstr = earl_value_builtin_function_reference_to_cstr,
         .add = NULL,
+        .mutate = NULL,
     };
 }
 
@@ -29,6 +31,7 @@ EARL_value_t earl_value_integer_create(int x) {
         },
         .to_cstr = earl_value_integer_to_cstr,
         .add = earl_value_integer_add,
+        .mutate = earl_value_integer_mutate,
     };
 }
 
@@ -40,6 +43,7 @@ EARL_value_t earl_value_unit_create(void) {
         },
         .to_cstr = earl_value_unit_to_cstr,
         .add = NULL,
+        .mutate = NULL,
     };
 }
 
@@ -50,6 +54,7 @@ EARL_value_t earl_value_boolean_create(int b) {
             .boolean = b,
         },
         .add = NULL,
+        .mutate = NULL,
     };
     TODO;
 }
@@ -66,6 +71,7 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
     case EARL_OBJECT_TYPE_STRING: {
         value.to_cstr = earl_object_string_to_cstr;
         value.add = earl_object_string_add;
+        value.mutate = NULL;
     } break;
     default: {
         err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);

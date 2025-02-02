@@ -66,6 +66,7 @@ typedef struct EARL_value {
 
     to_cstr_sig_t to_cstr;
     add_sig_t add;
+    mutate_sig_t mutate;
 } EARL_value_t;
 
 EARL_value_t earl_value_integer_create(int x);
