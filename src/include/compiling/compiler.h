@@ -60,4 +60,6 @@ cc_t cc_compile(program_t *prog);
 
 size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
 
+size_t cc_write_global(cc_t *cc, const char *id);
+
 #endif // COMPILER_H

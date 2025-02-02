@@ -32,7 +32,6 @@ EARL_value_t earl_value_unit_create(void) {
 }
 
 EARL_value_t earl_value_boolean_create(int b) {
-    assert(!b || b == 1);
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_BOOLEAN,
         .as = {

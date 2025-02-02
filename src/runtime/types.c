@@ -1,6 +1,7 @@
 #include "runtime/types.h"
 #include "runtime/EARL-value.h"
 #include "runtime/EARL-object.h"
+#include "misc/utils.h"
 
 // Value types
 static EARL_value_type_t types_simple_compat_types_unit[]    = {EARL_VALUE_TYPE_UNIT};
@@ -27,6 +28,7 @@ int types_are_compatible(EARL_value_type_t ty1, EARL_value_type_t ty2) {
                    "EARL object compatible types is incomplete");
 
     if (ty1 == EARL_VALUE_TYPE_OBJECT) {
+        TODO; // Pass object directly for type pruning for inner types
         EARL_object_type_t *types = types_object_compat_types[ty1];
         for (size_t i = 0; i < sizeof(types)/sizeof(*types); ++i)
             if (types[i] == ty2)

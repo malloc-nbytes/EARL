@@ -29,7 +29,7 @@
 #include "runtime/identifier.h"
 #include "mem/mem.h"
 
-identifier_t *identifier_alloc(const char *id, EARL_value_t *value) {
+identifier_t *identifier_alloc(const char *id, EARL_value_t value) {
     identifier_t *var = (identifier_t *)mem_s_malloc(sizeof(identifier_t), NULL, NULL);
     var->id = id;
     var->value = value;

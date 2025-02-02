@@ -30,13 +30,22 @@
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
 #include "runtime/identifier.h"
-#include "ds/s-umap.h"
 #include "misc/utils.h"
 #include "misc/err.h"
 #include "misc/hash.h"
+#include "ds/s-umap.h"
 
 static void handle_store(EARL_vm_t *vm) {
     TODO;
+}
+
+static void define_global(EARL_vm_t *vm) {
+    size_t idx = vm->read_byte(vm);
+    const char *sym = vm->cc->gl_syms.data[idx];
+    EARL_value_t value = vm->pop(vm);
+    identifier_t *identifier = identifier_alloc(sym, value);
+    s_umap_insert(&vm->globals, sym, (uint8_t *)identifier);
+    vm->push(vm, earl_value_unit_create());
 }
 
 static void handle_load(EARL_vm_t *vm) {
@@ -100,6 +109,9 @@ EARL_value_t EVM_exec(cc_t *cc) {
             break;
         case OPCODE_STORE:
             handle_store(&vm);
+            break;
+        case OPCODE_DEF_GLOBAL:
+            define_global(&vm);
             break;
         case OPCODE_LOAD: {
             handle_load(&vm);

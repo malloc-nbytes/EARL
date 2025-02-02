@@ -30,9 +30,9 @@
 
 typedef struct {
     const char *id;
-    EARL_value_t *value;
+    EARL_value_t value;
 } identifier_t;
 
-identifier_t *identifier_alloc(const char *id, EARL_value_t *value);
+identifier_t *identifier_alloc(const char *id, EARL_value_t value);
 
 #endif // IDENTIFIER_H

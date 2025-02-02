@@ -46,6 +46,15 @@
 
 static void cc_expr(expr_t *expr, cc_t *cc);
 
+size_t cc_write_global(cc_t *cc, const char *id) {
+    da_append(cc->gl_syms.data,
+              cc->gl_syms.len,
+              cc->gl_syms.cap,
+              const char **,
+              id);
+    return cc->gl_syms.len-1;
+}
+
 size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value) {
     da_append(cc->constants.data,
               cc->constants.len,
@@ -172,7 +181,12 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
-    TODO;
+    const char *id = stmt->identifier->lx;
+    // TODO: assert variable not in scope
+    size_t idx = cc_write_global(cc, id);
+    cc_expr(stmt->expr, cc);
+    cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {

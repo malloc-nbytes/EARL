@@ -29,9 +29,10 @@
 #include "runtime/VM/EVM-routines.h"
 #include "runtime/EARL-value.h"
 #include "runtime/builtins.h"
-#include "runtime/identifier.h"
+#include "ds/s-umap.h"
 #include "misc/err.h"
 #include "misc/utils.h"
+#include "misc/hash.h"
 
 opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
     return *vm->ip++;
@@ -40,6 +41,8 @@ opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
 void EVM_routines_init(EARL_vm_t *vm) {
     vm->ip = &vm->cc->opcode.data[0];
     vm->sp = vm->stack.data;
+
+    vm->globals = s_umap_create(djb2, free);
 
     /* for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) { */
     /*     builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]); */
