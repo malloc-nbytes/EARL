@@ -239,11 +239,17 @@ static expr_t *parse_logical_expr(lexer_t *lexer) {
     return lhs;
 }
 
-// static expr_t *parse_bitwise_expr(struct lexer *lexer) {}
+static expr_t *parse_bitwise_expr(lexer_t *lexer) {
+    TODO;
+}
 
-// static expr_t *parse_slice_expr(struct lexer *lexer) {}
+static expr_t *parse_slice_expr(lexer_t *lexer) {
+    TODO;
+}
 
-// static expr_t *parse_range_expr(struct lexer *lexer) {}
+static expr_t *parse_range_expr(lexer_t *lexer) {
+    TODO;
+}
 
 static expr_t *parse_expr(lexer_t *lexer) {
     return parse_logical_expr(lexer);
@@ -258,6 +264,7 @@ static stmt_block_t *parse_stmt_block(lexer_t *lexer) {
         da_append(stmts, len, cap, stmt_t **, stmt);
     }
 
+    (void)expect(lexer, TOKEN_TYPE_RIGHT_CURLY_BRACKET);
     return stmt_block_alloc(stmts, len, cap, lexer);
 }
 
@@ -346,6 +353,12 @@ static stmt_t *parse_stmt(lexer_t *lexer) {
         switch (tok->type) {
         case TOKEN_TYPE_KEYWORD: {
             return parse_keyword_stmt(lexer);
+        } break;
+        case TOKEN_TYPE_LEFT_CURLY_BRACKET: {
+            (void)expect(lexer, TOKEN_TYPE_LEFT_CURLY_BRACKET);
+            stmt_block_t *block = parse_stmt_block(lexer);
+            stmt_t *stmt = stmt_alloc((void *)block, STMT_TYPE_BLOCK, lexer);
+            return stmt;
         } break;
         case TOKEN_TYPE_AT: {
             attrs |= translate_attr(lexer);

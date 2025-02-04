@@ -16,6 +16,8 @@ typedef struct {
 
     /// @brief The capacity of the scope
     size_t scope_cap;
+
+    int in_global;
 } ctx_t;
 
 /// @brief Create a new context

@@ -44,7 +44,27 @@
 #include "misc/utils.h"
 #include "misc/err.h"
 
+static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
+
+static int resolve_local(cc_t *cc, const char *id) {
+    for (int i = (int)cc->locals.len - 1; i >= 0; --i) {
+        local_t *local = &cc->locals.data[i];
+        if (local->depth != -1 && local->depth < cc->scope_depth)
+            return i;
+        if (streq(id, local->id))
+            err_wargs("identifier `%s` is already defined", id);
+    }
+    return -1;
+}
+
+void cc_add_local(const char *id, cc_t *cc) {
+    if (cc->locals.len == LOCALS_LIM)
+        err("too many local variables declared");
+    local_t *local = &cc->locals.data[cc->locals.len++];
+    local->id = id;
+    local->depth = cc->scope_depth;
+}
 
 size_t cc_write_global(cc_t *cc, const char *id) {
     da_append(cc->gl_syms.data,
@@ -72,23 +92,39 @@ void cc_write_opcode(cc_t *cc, opcode_t opcode) {
               opcode);
 }
 
+// Check if the identifier `id` is a global identifier.
+// If it is, `idx` will be set to that index. The function
+// will return `idx` if it is found, or NULL if not. This
+// allows for easy conditionals.
+static size_t *identifier_is_global(const cc_t *const cc, const char *id, size_t *idx) {
+    *idx = SIZE_MAX;
+    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
+        if (streq(id, cc->gl_syms.data[i])) {
+            *idx = i;
+            return idx;
+        }
+    }
+    return NULL;
+}
+
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
     const char *id = expr->identifier->lx;
 
-    // TODO: make gl_syms a set instead of an array
-    size_t idx = SIZE_MAX;
-    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
-        if (streq(id, cc->gl_syms.data[i])) {
-            idx = i;
-            break;
-        }
+    size_t idx;
+    if (identifier_is_global(cc, id, &idx)) {
+        cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
+        cc_write_opcode(cc, idx);
     }
+    else {
+        ctx_assert_var_in_scope(cc->ctx, cc, id);
 
-    if (idx == SIZE_MAX)
-        err_wargs("identifier: `%s` is not defined", id);
+        cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
+        EARL_object_string_t *name = earl_object_string_alloc(id);
+        size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
 
-    cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
-    cc_write_opcode(cc, idx);
+        cc_write_opcode(cc, idx);
+    }
+    //err_wargs("identifier: `%s` is not defined", id);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
@@ -200,15 +236,8 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     const char *id = stmt->left->data.term->data.identifier->identifier->lx;
 
     // Find the variable in the global symbol table
-    size_t idx = SIZE_MAX;
-    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
-        if (streq(id, cc->gl_syms.data[i])) {
-            idx = i;
-            break;
-        }
-    }
-
-    if (idx == SIZE_MAX)
+    size_t idx;
+    if (!identifier_is_global(cc, id, &idx))
         err_wargs("identifier `%s` is not defined", id);
 
     switch (stmt->op->type) {
@@ -258,29 +287,40 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
-    (void)stmt;
-    (void)cc;
-    TODO;
+    ++cc->scope_depth;
+
+    for (size_t i = 0; i < stmt->stmts_len; ++i)
+        cc_stmt(stmt->stmts[i], cc);
+
+    --cc->scope_depth;
+
+    while (cc->locals.len > 0 && cc->locals.data[cc->locals.len-1].depth > cc->scope_depth) {
+        cc_write_opcode(cc, OPCODE_POP);
+        --cc->locals.len;
+    }
 }
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
     const char *id = stmt->identifier->lx;
-    // TODO: assert variable not in scope
-    size_t idx = cc_write_global(cc, id);
-    cc_expr(stmt->expr, cc);
-    cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
-    cc_write_opcode(cc, idx);
+    //ctx_assert_var_not_in_scope(cc->ctx, cc, id);
 
-    /* const char *id = stmt->identifier->lx; */
+    int arg = resolve_local(cc, id);
 
-    /* EARL_object_string_t *str = earl_object_string_alloc(id); */
-    /* size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)str)); */
-
-    /* (void)cc_write_global(cc, id);//tmp */
-
-    /* cc_expr(stmt->expr, cc); */
-    /* cc_write_opcode(cc, OPCODE_DEF_GLOBAL); */
-    /* cc_write_opcode(cc, idx); */
+    // Local scope
+    //if (cc->scope_depth == 0) {
+    if (arg != -1) {
+        cc_expr(stmt->expr, cc);
+        cc_write_opcode(cc, OPCODE_SET_LOCAL);
+        cc_write_opcode(cc, arg);
+        //ctx_add_var_to_scope(cc->ctx, id);
+    }
+    // Global scope
+    else {
+        size_t idx = cc_write_global(cc, id);
+        cc_expr(stmt->expr, cc);
+        cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
+        cc_write_opcode(cc, idx);
+    }
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
@@ -289,7 +329,7 @@ static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
     TODO;
 }
 
-static void compile_stmt(stmt_t *stmt, cc_t *cc) {
+static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     switch (stmt->type) {
     case STMT_TYPE_FN: cc_stmt_fn(stmt->data.fn, cc);                break;
     case STMT_TYPE_LET: cc_stmt_let(stmt->data.let, cc);             break;
@@ -326,12 +366,14 @@ cc_t cc_compile(program_t *prog) {
             .len = 0,
             .cap = CAP,
         },
+        .locals = { {0}, 0 },
+        .scope_depth = 0,
     };
 
     __builtin_idents_init(&cc);
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
-        compile_stmt(prog->stmts[i], &cc);
+        cc_stmt(prog->stmts[i], &cc);
 
     ctx_destroy(cc.ctx);
 

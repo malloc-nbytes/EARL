@@ -51,6 +51,7 @@ ctx_t ctx_create(unsigned long (*scope_hash)(const char *)) {
         .scope = mem_s_malloc(sizeof(s_uset_t) * 2, NULL, NULL),
         .scope_len = 1,
         .scope_cap = 2,
+        .in_global = 1,
     };
 
     ctx.scope[0] = s_uset_create(scope_hash);

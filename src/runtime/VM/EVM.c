@@ -59,7 +59,7 @@ static void handle_set_global(EARL_vm_t *vm) {
 
     EARL_value_t value = vm->pop(vm);
     identifier->value.mutate(&identifier->value, &value);
-    vm->push(vm, earl_value_unit_create());
+    // vm->push(vm, earl_value_unit_create());
 }
 
 static void handle_define_global(EARL_vm_t *vm) {
@@ -68,7 +68,7 @@ static void handle_define_global(EARL_vm_t *vm) {
     EARL_value_t value = vm->pop(vm);
     identifier_t *identifier = identifier_alloc(sym, value);
     s_umap_insert(&vm->globals, sym, (uint8_t *)identifier);
-    vm->push(vm, earl_value_unit_create());
+    // vm->push(vm, earl_value_unit_create());
 }
 
 static void handle_load(EARL_vm_t *vm) {
@@ -115,7 +115,20 @@ static void handle_const(EARL_vm_t *vm) {
     vm->push(vm, value);
 }
 
-EARL_value_t EVM_exec(cc_t *cc) {
+static void handle_pop(EARL_vm_t *vm) {
+    (void)vm->pop(vm);
+}
+
+static void handle_load_local(EARL_vm_t *vm) {
+    size_t slot = vm->read_byte(vm);
+    vm->push(vm, vm->stack.data[slot]);
+}
+
+static void handle_set_local(EARL_vm_t *vm) {
+    TODO;
+}
+
+void EVM_exec(cc_t *cc) {
     printf("Begin Interpreter...\n");
 
     EARL_vm_t vm = (EARL_vm_t) {
@@ -147,6 +160,9 @@ EARL_value_t EVM_exec(cc_t *cc) {
         case OPCODE_CONST:
             handle_const(&vm);
             break;
+        case OPCODE_POP:
+            handle_pop(&vm);
+            break;
         case OPCODE_MINUS:
         case OPCODE_MUL:
         case OPCODE_DIV:
@@ -162,15 +178,18 @@ EARL_value_t EVM_exec(cc_t *cc) {
         case OPCODE_LOAD_GLOBAL:
             handle_load_global(&vm);
             break;
-        case OPCODE_SET_GLOBAL: {
+        case OPCODE_SET_GLOBAL:
             handle_set_global(&vm);
-        } break;
-        case OPCODE_LOAD: {
-            handle_load(&vm);
-        } break;
-        case OPCODE_CALL: {
+            break;
+        OPCODE_SET_LOCAL:
+            handle_set_local(&vm);
+            break;
+        OPCODE_LOAD_LOCAL:
+            handle_load_local(&vm);
+            break;
+        case OPCODE_CALL:
             handle_call(&vm);
-        } break;
+            break;
         default: {
             fprintf(stderr, "unknown opcode %d\n", opc);
             exit(1);
@@ -179,6 +198,4 @@ EARL_value_t EVM_exec(cc_t *cc) {
 
         if (b) break;
     }
-
-    return vm.pop(&vm);
 }

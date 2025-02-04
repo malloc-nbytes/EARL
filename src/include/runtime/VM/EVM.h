@@ -75,6 +75,6 @@ typedef struct EARL_vm {
 /// @param opcode_len The length of opcdoe
 /// @param opcode_cap The capacity of opcdoe
 /// @return The value after execution
-EARL_value_t EVM_exec(cc_t *cc);
+void EVM_exec(cc_t *cc);
 
 #endif // EVM_H
