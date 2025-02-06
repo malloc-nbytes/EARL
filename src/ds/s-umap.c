@@ -64,6 +64,8 @@ void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value) {
 
     if (prev)
         prev->next = it;
+    else
+        map->tbl[idx] = it;
 
     map->sz++;
 }

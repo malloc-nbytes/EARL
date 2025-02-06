@@ -47,34 +47,7 @@
 static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
 
-static int resolve_local(cc_t *cc, const char *id) {
-    /* for (int i = (int)cc->locals.len - 1; i >= 0; --i) { */
-    /*     local_t *local = &cc->locals.data[i]; */
-    /*     if (local->depth != -1 && local->depth < cc->scope_depth) */
-    /*         return i; */
-    /*     if (streq(id, local->id)) */
-    /*         err_wargs("identifier `%s` is already defined", id); */
-    /* } */
-    /* return -1; */
-
-    for (int i = (int)cc->locals.len-1; i >= 0; --i) {
-        local_t *local = &cc->locals.data[i];
-        if (streq(id, local->id))
-            return i;
-    }
-    return -1;
-}
-
-void cc_add_local(const char *id, cc_t *cc) {
-    if (cc->locals.len == LOCALS_LIM)
-        err("too many local variables declared");
-    local_t *local = &cc->locals.data[cc->locals.len++];
-    local->id = id;
-    local->depth = cc->scope_depth;
-}
-
 size_t cc_write_global(cc_t *cc, const char *id) {
-    printf("MAKING GLOBAL: %s\n", id);
     da_append(cc->gl_syms.data,
               cc->gl_syms.len,
               cc->gl_syms.cap,
@@ -301,32 +274,12 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
         cc_stmt(stmt->stmts[i], cc);
 
     --cc->scope_depth;
-
-    while (cc->locals.len > 0 && cc->locals.data[cc->locals.len-1].depth > cc->scope_depth) {
-        cc_write_opcode(cc, OPCODE_POP);
-        --cc->locals.len;
-    }
 }
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
     const char *id = stmt->identifier->lx;
 
-    int arg = resolve_local(cc, id);
     cc_expr(stmt->expr, cc);
-
-    // Local scope
-    if (arg != -1) {
-        cc_write_opcode(cc, OPCODE_DEF_LOCAL);
-        cc_write_opcode(cc, arg);
-        cc_add_local(id, cc);
-    }
-
-    // Global scope
-    else {
-        size_t idx = cc_write_global(cc, id);
-        cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
-        cc_write_opcode(cc, idx);
-    }
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
@@ -372,7 +325,6 @@ cc_t cc_compile(program_t *prog) {
             .len = 0,
             .cap = CAP,
         },
-        .locals = { {0}, 0 },
         .scope_depth = 0,
     };
 

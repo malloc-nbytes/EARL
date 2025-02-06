@@ -60,17 +60,20 @@ void s_uset_insert(s_uset_t *set, const char *value) {
     s_uset_node_t *prev = NULL, *it = set->tbl[idx];
 
     while (it) {
+        if (streq(it->value, value))
+            return;
         prev = it;
         it = it->next;
     }
 
     it = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t), NULL, NULL);
-
     it->value = strdup(value);
     it->next = NULL;
 
     if (prev)
         prev->next = it;
+    else
+        set->tbl[idx] = it;
 
     set->sz++;
 }

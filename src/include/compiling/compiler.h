@@ -27,17 +27,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define LOCALS_LIM UINT8_MAX
+#define LOCALS_LIM UINT8_MAX-1
 
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
 #include "parsing/ast.h"
 #include "compiling/ctx.h"
-
-typedef struct {
-    const char *id;
-    int depth;
-} local_t;
 
 /// @brief Holds all compilation information
 typedef struct cc {
@@ -62,15 +57,8 @@ typedef struct cc {
         size_t cap;
     } gl_syms;
 
-    struct {
-        local_t data[LOCALS_LIM];
-        size_t len;
-    } locals;
-
     size_t scope_depth;
 } cc_t;
-
-void cc_add_local(const char *id, cc_t *cc);
 
 /// @brief Compile a program into bytecode based off of an AST
 /// @param prog The AST to compile
