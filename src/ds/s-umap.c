@@ -42,16 +42,6 @@ s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value
     };
 }
 
-s_umap_bucket_t **find_free_spot(s_umap_t *map, unsigned long idx, s_umap_bucket_t **prev) {
-    s_umap_bucket_t **it = &map->tbl[idx];
-    *prev = NULL;
-    while (*it) {
-        *prev = *it;
-        it = &(*it)->next;
-    }
-    return it;
-}
-
 void s_umap_remove(s_umap_t *map, const char *key) {
     (void)map;
     (void)key;
@@ -60,17 +50,20 @@ void s_umap_remove(s_umap_t *map, const char *key) {
 
 void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value) {
     const unsigned long idx = map->hash(key) % map->cap;
-    s_umap_bucket_t *prev = NULL;
-    s_umap_bucket_t **node = find_free_spot(map, idx, &prev);
 
-    *node = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
+    s_umap_bucket_t *prev = NULL, *it = map->tbl[idx];
+    while (it) {
+        prev = it;
+        it = it->next;
+    }
 
-    (*node)->key = strdup(key);
-    (*node)->value = value;
-    (*node)->next = NULL;
+    it = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
+    it->key = strdup(key);
+    it->value = value;
+    it->next = NULL;
 
     if (prev)
-        prev->next = *node;
+        prev->next = it;
 
     map->sz++;
 }

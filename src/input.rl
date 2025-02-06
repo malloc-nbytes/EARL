@@ -1,10 +1,9 @@
 {
     let x = 1;
-    {
-        let x = 0-1;
-        let y = 0-1;
-        let z = 0-1;
-        println(x);
-    }
+    # let y = 1;
+    # let z = 1;
+    # let a = 1;
+    # let b = 1;
+    # let c = 1;
     println(x);
 }

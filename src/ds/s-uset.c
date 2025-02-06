@@ -55,25 +55,23 @@ void s_uset_destroy(s_uset_t *set) {
     set->sz = set->cap = 0;
 }
 
-s_uset_node_t **find_free_set_node_spot(s_uset_t *set, unsigned long idx, s_uset_node_t **prev) {
-    s_uset_node_t **it = &set->tbl[idx];
-    *prev = NULL;
-    while (*it) {
-        *prev = *it;
-        it = &(*it)->next;
-    }
-    return it;
-}
-
 void s_uset_insert(s_uset_t *set, const char *value) {
     const size_t idx = set->hash(value) % set->cap;
-    s_uset_node_t *prev = NULL;
-    s_uset_node_t **node = find_free_set_node_spot(set, idx, &prev);
-    *node = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t), NULL, NULL);
-    (*node)->value = strdup(value);
-    (*node)->next = NULL;
+    s_uset_node_t *prev = NULL, *it = set->tbl[idx];
+
+    while (it) {
+        prev = it;
+        it = it->next;
+    }
+
+    it = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t), NULL, NULL);
+
+    it->value = strdup(value);
+    it->next = NULL;
+
     if (prev)
-        prev->next = *node;
+        prev->next = it;
+
     set->sz++;
 }
 

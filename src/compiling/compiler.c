@@ -48,12 +48,19 @@ static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
 
 static int resolve_local(cc_t *cc, const char *id) {
-    for (int i = (int)cc->locals.len - 1; i >= 0; --i) {
+    /* for (int i = (int)cc->locals.len - 1; i >= 0; --i) { */
+    /*     local_t *local = &cc->locals.data[i]; */
+    /*     if (local->depth != -1 && local->depth < cc->scope_depth) */
+    /*         return i; */
+    /*     if (streq(id, local->id)) */
+    /*         err_wargs("identifier `%s` is already defined", id); */
+    /* } */
+    /* return -1; */
+
+    for (int i = (int)cc->locals.len-1; i >= 0; --i) {
         local_t *local = &cc->locals.data[i];
-        if (local->depth != -1 && local->depth < cc->scope_depth)
-            return i;
         if (streq(id, local->id))
-            err_wargs("identifier `%s` is already defined", id);
+            return i;
     }
     return -1;
 }
@@ -67,6 +74,7 @@ void cc_add_local(const char *id, cc_t *cc) {
 }
 
 size_t cc_write_global(cc_t *cc, const char *id) {
+    printf("MAKING GLOBAL: %s\n", id);
     da_append(cc->gl_syms.data,
               cc->gl_syms.len,
               cc->gl_syms.cap,
@@ -116,7 +124,7 @@ static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
         cc_write_opcode(cc, idx);
     }
     else {
-        ctx_assert_var_in_scope(cc->ctx, cc, id);
+        // ctx_assert_var_in_scope(cc->ctx, cc, id);
 
         cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
         EARL_object_string_t *name = earl_object_string_alloc(id);
@@ -302,22 +310,20 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
     const char *id = stmt->identifier->lx;
-    //ctx_assert_var_not_in_scope(cc->ctx, cc, id);
 
     int arg = resolve_local(cc, id);
+    cc_expr(stmt->expr, cc);
 
     // Local scope
-    //if (cc->scope_depth == 0) {
     if (arg != -1) {
-        cc_expr(stmt->expr, cc);
-        cc_write_opcode(cc, OPCODE_SET_LOCAL);
+        cc_write_opcode(cc, OPCODE_DEF_LOCAL);
         cc_write_opcode(cc, arg);
-        //ctx_add_var_to_scope(cc->ctx, id);
+        cc_add_local(id, cc);
     }
+
     // Global scope
     else {
         size_t idx = cc_write_global(cc, id);
-        cc_expr(stmt->expr, cc);
         cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
         cc_write_opcode(cc, idx);
     }

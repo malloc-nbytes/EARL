@@ -42,6 +42,7 @@ typedef enum {
     OPCODE_LOAD_LOCAL  = 0x0D,
     OPCODE_SET_LOCAL   = 0x0E,
     OPCODE_POP         = 0x0F,
+    OPCODE_DEF_LOCAL   = 0x10,
 } opcode_t;
 
 void opcode_dump(opcode_t op);

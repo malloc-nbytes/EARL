@@ -128,6 +128,12 @@ static void handle_set_local(EARL_vm_t *vm) {
     TODO;
 }
 
+static void handle_def_local(EARL_vm_t *vm) {
+    size_t slot = vm->read_byte(vm);
+    EARL_value_t value = vm->pop(vm);
+    vm->stack.data[slot] = value;
+}
+
 void EVM_exec(cc_t *cc) {
     printf("Begin Interpreter...\n");
 
@@ -181,10 +187,13 @@ void EVM_exec(cc_t *cc) {
         case OPCODE_SET_GLOBAL:
             handle_set_global(&vm);
             break;
-        OPCODE_SET_LOCAL:
+        case OPCODE_DEF_LOCAL:
+            handle_def_local(&vm);
+            break;
+        case OPCODE_SET_LOCAL:
             handle_set_local(&vm);
             break;
-        OPCODE_LOAD_LOCAL:
+        case OPCODE_LOAD_LOCAL:
             handle_load_local(&vm);
             break;
         case OPCODE_CALL:
