@@ -67,6 +67,8 @@ typedef struct EARL_vm {
     /// @brief Pop a value off of the stack
     EARL_value_t (*pop)(struct EARL_vm *vm);
 
+    EARL_value_t (*peek)(struct EARL_vm *vm, size_t pos);
+
     /// @brief Dump the stack
     void (*dump_stack)(struct EARL_vm *vm);
 } EARL_vm_t;

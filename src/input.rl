@@ -1,8 +1,10 @@
-let y = 1;
+let x = 1;
 {
-    let x = 1;
-    y = 100;
-    x = 9;
+    let x = 2;
+    {
+        let x = 3;
+        println(x);
+    }
     println(x);
-    println(y);
 }
+println(x);

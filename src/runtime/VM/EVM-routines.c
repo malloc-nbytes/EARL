@@ -60,6 +60,12 @@ void EVM_routines_init(EARL_vm_t *vm) {
     /* } */
 }
 
+EARL_value_t EVM_routines_stack_peek(EARL_vm_t *vm, size_t pos) {
+    if (pos >= vm->stack.len)
+        err_wargs("stack underflow: cannot peek at distance %zu", pos);
+    return vm->stack.data[vm->stack.len - 1 - pos];
+}
+
 void EVM_routines_stack_push(EARL_vm_t *vm, EARL_value_t value) {
     if (vm->stack.len >= STACK_LIM)
         err("Stack Overflow");

@@ -112,7 +112,7 @@ static void handle_binop(EARL_vm_t *vm, opcode_t opc) {
 
     switch (opc) {
     case OPCODE_ADD: res = n1.add(&n1, &n2); break;
-    default:         err_wargs("unimplemented binop: %d", (int)opc);
+    default:         err_wargs("runtime: unimplemented binop: %d", (int)opc);
     }
 
     vm->push(vm, res);
@@ -159,6 +159,7 @@ void EVM_exec(cc_t *cc) {
         .init       = EVM_routines_init,
         .push       = EVM_routines_stack_push,
         .pop        = EVM_routines_stack_pop,
+        .peek       = EVM_routines_stack_peek,
         .dump_stack = EVM_routines_dump_stack,
     };
 

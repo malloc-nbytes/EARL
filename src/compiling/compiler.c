@@ -334,9 +334,8 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
 static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
     ++cc->scope_depth;
 
-    for (size_t i = 0; i < stmt->stmts_len; ++i) {
+    for (size_t i = 0; i < stmt->stmts_len; ++i)
         cc_stmt(stmt->stmts[i], cc);
-    }
 
     --cc->scope_depth;
 
@@ -370,14 +369,10 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
 
     cc_expr(stmt->expr, cc);
 
-    if (!cc->scope_depth) {
-        printf("adding global: %s\n", id);
+    if (!cc->scope_depth)
         declare_global_variable(cc, id);
-    }
-    else {
-        printf("adding local: %s\n", id);
+    else
         declare_local_variable(cc, id);
-    }
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
