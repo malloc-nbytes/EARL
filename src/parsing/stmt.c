@@ -42,6 +42,18 @@ stmt_return_t *stmt_return_alloc(expr_t *expr, lexer_t *lexer) {
     return ret;
 }
 
+stmt_if_t *stmt_if_alloc(expr_t *condition,
+                         stmt_block_t *then_block,
+                         stmt_block_t *else_block,
+                         lexer_t *lexer) {
+    (void)lexer;
+    stmt_if_t *if_ = (stmt_if_t *)mem_s_malloc(sizeof(stmt_if_t), NULL, NULL);
+    if_->condition = condition;
+    if_->then_block = then_block;
+    if_->else_block = else_block;
+    return if_;
+}
+
 stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer) {
     (void)lexer;
     stmt_block_t *block = (stmt_block_t *)mem_s_malloc(sizeof(stmt_block_t), NULL, NULL);
@@ -106,6 +118,9 @@ stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer) {
     } break;
     case STMT_TYPE_RETURN: {
         stmt->data.ret = (stmt_return_t *)data;
+    } break;
+    case STMT_TYPE_IF: {
+        stmt->data.if_ = (stmt_if_t *)data;
     } break;
     default: {
         assert(0 && "statement unimplemented");

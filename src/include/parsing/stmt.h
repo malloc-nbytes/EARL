@@ -40,6 +40,17 @@ stmt_let_t *stmt_let_alloc(token_t *identifier, expr_t *expr, lexer_t *lexer);
 /// @return The new statement
 stmt_return_t *stmt_return_alloc(expr_t *expr, lexer_t *lexer);
 
+/// @brief Allocate an 'if' statement
+/// @param condition The truthy/falsy expression
+/// @param then_block The block for truthy to execute
+/// @param else_block (Optional) the other block the execute
+/// @param lexer The lexer to use
+/// @return The new statement
+stmt_if_t *stmt_if_alloc(expr_t *condition,
+                         stmt_block_t *then_block,
+                         stmt_block_t *else_block,
+                         lexer_t *lexer);
+
 /// @brief Allocate a 'block' statement
 /// @param stmts An array of statements that the block consists of
 /// @param stmts_len The length of stmts

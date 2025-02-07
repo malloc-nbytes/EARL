@@ -50,6 +50,14 @@ token_t *expect(lexer_t *lexer, token_type_t type) {
     return tok;
 }
 
+token_t *expect_keyword(lexer_t *lexer, const char *kw) {
+    token_t *tok = lexer_next(lexer);
+    if (!tok || tok->type != TOKEN_TYPE_KEYWORD || !streq(tok->lx, kw)) {
+        fprintf(stderr, "expected keyword `%s` but got `%s`\n", kw, tok->lx);
+        exit(1);
+    }
+}
+
 uint32_t translate_attr(lexer_t *lexer) {
     (void)expect(lexer, TOKEN_TYPE_AT);
     const char *s = lexer_peek(lexer, 0)->lx;
@@ -297,6 +305,38 @@ static stmt_return_t *parse_stmt_return(lexer_t *lexer) {
     return stmt_return_alloc(expr, lexer);
 }
 
+static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
+    lexer_discard(lexer); // if
+    expr_t *condition = parse_expr(lexer);
+
+    (void)expect(lexer, TOKEN_TYPE_LEFT_CURLY_BRACKET);
+    stmt_block_t *then_block = parse_stmt_block(lexer);
+
+    // Handle `else if` or `else` blocks if applicable.
+    stmt_block_t *else_block = NULL;
+    token_t *tok1 = lexer_peek(lexer, 0);
+    token_t *tok2 = lexer_peek(lexer, 1);
+
+    int tok1_else = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_ELSE);
+    int tok2_if = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_IF);
+
+    if (tok1_else && tok2_if) {
+        stmt_t **tmp = mem_s_malloc(sizeof(stmt_t *), NULL, NULL);
+        size_t
+            tmp_len = 1,
+            tmp_cap = 1;
+        stmt_if_t *nested_if = parse_stmt_if(lexer);
+        stmt_t *tmp_stmt = stmt_alloc((void *)nested_if, STMT_TYPE_IF, lexer);
+        tmp[0] = tmp_stmt;
+        else_block = stmt_block_alloc(tmp, tmp_len, tmp_cap, lexer);
+    } else if (tok1_else) {
+        (void)expect_keyword(lexer, KEYWORD_ELSE);
+        else_block = parse_stmt_block(lexer);
+    }
+
+    return stmt_if_alloc(condition, then_block, else_block, lexer);
+}
+
 static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     const char *kw = lexer_peek(lexer, 0)->lx;
     if (streq(kw, KEYWORD_LET)) {
@@ -308,6 +348,9 @@ static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     } else if (streq(kw, KEYWORD_RET)) {
         stmt_return_t *ret = parse_stmt_return(lexer);
         return stmt_alloc((void *)ret, STMT_TYPE_RETURN, lexer);
+    } else if (streq(kw, KEYWORD_IF)) {
+        stmt_if_t *if_ = parse_stmt_if(lexer);
+        return stmt_alloc((void *)if_, STMT_TYPE_IF, lexer);
     }
     fprintf(stderr, "unhandled keyword: %s\n", lexer_peek(lexer, 0)->lx);
     exit(1);

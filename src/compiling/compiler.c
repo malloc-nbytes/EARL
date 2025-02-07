@@ -375,6 +375,10 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
         declare_local_variable(cc, id);
 }
 
+static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
+    TODO;
+}
+
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
     (void)stmt;
     (void)cc;
@@ -383,12 +387,13 @@ static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
 
 static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     switch (stmt->type) {
-    case STMT_TYPE_FN: cc_stmt_fn(stmt->data.fn, cc);                break;
-    case STMT_TYPE_LET: cc_stmt_let(stmt->data.let, cc);             break;
-    case STMT_TYPE_BLOCK: cc_stmt_block(stmt->data.block, cc);       break;
-    case STMT_TYPE_MUT: cc_stmt_mut(stmt->data.mut, cc);             break;
-    case STMT_TYPE_EXPR: cc_stmt_expr(stmt->data.expr, cc);          break;
-    case STMT_TYPE_RETURN: cc_stmt_return(stmt->data.ret, cc);       break;
+    case STMT_TYPE_FN:     cc_stmt_fn(stmt->data.fn, cc);       break;
+    case STMT_TYPE_LET:    cc_stmt_let(stmt->data.let, cc);     break;
+    case STMT_TYPE_BLOCK:  cc_stmt_block(stmt->data.block, cc); break;
+    case STMT_TYPE_MUT:    cc_stmt_mut(stmt->data.mut, cc);     break;
+    case STMT_TYPE_EXPR:   cc_stmt_expr(stmt->data.expr, cc);   break;
+    case STMT_TYPE_RETURN: cc_stmt_return(stmt->data.ret, cc);  break;
+    case STMT_TYPE_IF:     cc_stmt_if(stmt->data.if_, cc);
     default: {
         err_wargs("unknown statement type: %s",
                   stmt_type_to_cstr(stmt->type));

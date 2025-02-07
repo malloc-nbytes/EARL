@@ -32,15 +32,19 @@ extern const char *config_keywords[];
 /// @brief The number of keywords that exist
 extern const size_t config_keywords_len;
 
-#define KEYWORD_LET "let"
-#define KEYWORD_FN  "fn"
-#define KEYWORD_RET "return"
+#define KEYWORD_LET  "let"
+#define KEYWORD_FN   "fn"
+#define KEYWORD_RET  "return"
+#define KEYWORD_IF   "if"
+#define KEYWORD_ELSE "else"
 
-#define KEYWORDS_ASCPL {                        \
-        KEYWORD_LET,                            \
-            KEYWORD_FN,                         \
-            KEYWORD_RET,                        \
-            }
+#define KEYWORDS_ASCPL {    \
+    KEYWORD_LET,            \
+    KEYWORD_FN,             \
+    KEYWORD_RET,            \
+    KEYWORD_IF,             \
+    KEYWORD_ELSE,           \
+}
 
 /// @brief Check if `s` is a keyword
 /// @param s The string to check
