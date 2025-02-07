@@ -375,8 +375,31 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
         declare_local_variable(cc, id);
 }
 
+static int write_jump(cc_t *cc, opcode_t op) {
+    cc_write_opcode(cc, op);
+    cc_write_opcode(cc, 0xFF);
+    cc_write_opcode(cc, 0xFF);
+    return cc->opcode.len - 2;
+}
+
+static void patch_jump(cc_t *cc, int offset) {
+    int jump = cc->opcode.len - offset - 2;
+
+    if (jump > UINT16_MAX)
+        err("too many statements in `if` statement");
+
+    cc->opcode.data[offset] = (jump >> 8) & 0xFF;
+    cc->opcode.data[offset+1] = jump & 0xFF;
+}
+
 static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
-    TODO;
+    cc_expr(stmt->condition, cc);
+
+    int then_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
+
+    cc_stmt_block(stmt->then_block, cc);
+
+    patch_jump(cc, then_jump);
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
@@ -393,7 +416,7 @@ static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     case STMT_TYPE_MUT:    cc_stmt_mut(stmt->data.mut, cc);     break;
     case STMT_TYPE_EXPR:   cc_stmt_expr(stmt->data.expr, cc);   break;
     case STMT_TYPE_RETURN: cc_stmt_return(stmt->data.ret, cc);  break;
-    case STMT_TYPE_IF:     cc_stmt_if(stmt->data.if_, cc);
+    case STMT_TYPE_IF:     cc_stmt_if(stmt->data.if_, cc);      break;
     default: {
         err_wargs("unknown statement type: %s",
                   stmt_type_to_cstr(stmt->type));

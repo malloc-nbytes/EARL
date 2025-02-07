@@ -45,7 +45,7 @@ int main(void) {
     program_t *prog = parser_parse(&lexer);
 
     cc_t cc = cc_compile(prog);
-    (void)EVM_exec(&cc);
+    EVM_exec(&cc);
 
     return 0;
 }

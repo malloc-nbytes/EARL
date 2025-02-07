@@ -29,5 +29,6 @@
 const char * earl_value_integer_to_cstr(const EARL_value_t *const this);
 EARL_value_t earl_value_integer_add(const EARL_value_t *this, const EARL_value_t *const other);
 void         earl_value_integer_mutate(EARL_value_t *this, const EARL_value_t *const other);
+int          earl_value_integer_is_truthy(const EARL_value_t *const this);
 
 #endif // INTEGER_H

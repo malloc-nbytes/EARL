@@ -45,6 +45,8 @@
             ((EARL_object_string_t *)__obj_)->chars;                    \
 })
 
+#define READ_SHORT(vm) (vm->ip += 2, (uint16_t)((vm->ip[-2] << 8) | vm->ip[-1]))
+
 static void handle_load_global(EARL_vm_t *vm) {
     size_t        idx   = vm->read_byte(vm);
     const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
@@ -70,6 +72,7 @@ static void handle_set_global(EARL_vm_t *vm) {
 static void handle_define_global(EARL_vm_t *vm) {
     size_t        idx   = vm->read_byte(vm);
     EARL_value_t  value = vm->pop(vm);
+
     const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
     identifier_t *ident = identifier_alloc(name, value);
 
@@ -147,6 +150,13 @@ static void handle_def_local(EARL_vm_t *vm) {
     vm->stack.data[slot] = value;
 }
 
+static void handle_jump_if_false(EARL_vm_t *vm) {
+    uint16_t offset = READ_SHORT(vm);
+    EARL_value_t condition = vm->peek(vm, 0);
+    if (!condition.is_truthy(&condition))
+        vm->ip += offset;
+}
+
 void EVM_exec(cc_t *cc) {
     EARL_vm_t vm = (EARL_vm_t) {
         .stack      = { .len = 0 },
@@ -207,6 +217,9 @@ void EVM_exec(cc_t *cc) {
             break;
         case OPCODE_CALL:
             handle_call(&vm);
+            break;
+        case OPCODE_JUMP_IF_FALSE:
+            handle_jump_if_false(&vm);
             break;
         default: {
             fprintf(stderr, "unknown opcode %d\n", opc);

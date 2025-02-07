@@ -43,6 +43,7 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
         .to_cstr = earl_value_builtin_function_reference_to_cstr,
         .add = NULL,
         .mutate = NULL,
+        .is_truthy = NULL,
     };
 }
 
@@ -55,6 +56,7 @@ EARL_value_t earl_value_integer_create(int x) {
         .to_cstr = earl_value_integer_to_cstr,
         .add = earl_value_integer_add,
         .mutate = earl_value_integer_mutate,
+        .is_truthy = earl_value_integer_is_truthy,
     };
 }
 
@@ -67,6 +69,7 @@ EARL_value_t earl_value_unit_create(void) {
         .to_cstr = earl_value_unit_to_cstr,
         .add = NULL,
         .mutate = NULL,
+        .is_truthy = NULL,
     };
 }
 
@@ -78,6 +81,7 @@ EARL_value_t earl_value_boolean_create(int b) {
         },
         .add = NULL,
         .mutate = NULL,
+        .is_truthy = NULL,
     };
     TODO;
 }
@@ -95,6 +99,7 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         value.to_cstr = earl_object_string_to_cstr;
         value.add = earl_object_string_add;
         value.mutate = NULL;
+        value.is_truthy = NULL;
     } break;
     default: {
         err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);

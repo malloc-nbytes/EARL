@@ -44,3 +44,7 @@ void earl_value_integer_mutate(EARL_value_t *this, const EARL_value_t *const oth
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(this->type, other->type);
     this->as.integer = other->as.integer;
 }
+
+int earl_value_integer_is_truthy(const EARL_value_t *const this) {
+    return this->as.integer != 0;
+}
