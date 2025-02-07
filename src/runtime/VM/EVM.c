@@ -29,6 +29,7 @@
 #include "runtime/VM/EVM-routines.h"
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
+#include "runtime/EARL-object.h"
 #include "runtime/identifier.h"
 #include "misc/utils.h"
 #include "misc/err.h"
@@ -36,43 +37,44 @@
 #include "mem/mem.h"
 #include "ds/s-umap.h"
 
-static void handle_store(EARL_vm_t *vm) {
-    TODO;
-}
+#define GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx) ({              \
+            EARL_value_t __symbol_ = (vm)->cc->constants.data[idx];     \
+            assert(__symbol_.type == EARL_VALUE_TYPE_OBJECT);           \
+            EARL_object_t *__obj_ = __symbol_.as.obj;                   \
+            assert(__obj_->type == EARL_OBJECT_TYPE_STRING);            \
+            ((EARL_object_string_t *)__obj_)->chars;                    \
+})
 
 static void handle_load_global(EARL_vm_t *vm) {
-    size_t idx = vm->read_byte(vm);
-    const char *sym = vm->cc->gl_syms.data[idx];
-    identifier_t *identifier = s_umap_get(&vm->globals, sym);
-    vm->push(vm, identifier->value);
+    size_t        idx   = vm->read_byte(vm);
+    const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
+    identifier_t *ident = s_umap_get(&vm->globals, name);
+
+    vm->push(vm, ident->value);
 }
 
 static void handle_set_global(EARL_vm_t *vm) {
-    size_t idx = vm->read_byte(vm);
-    const char *sym = vm->cc->gl_syms.data[idx];
+    /* size_t idx = vm->read_byte(vm); */
+    /* const char *sym = vm->cc->gl_syms.data[idx]; */
 
-    identifier_t *identifier = s_umap_get(&vm->globals, sym);
-    if (!identifier) {
-        fprintf(stderr, "Runtime Error: Undefined global variable '%s'\n", sym);
-        exit(1);
-    }
+    /* identifier_t *identifier = s_umap_get(&vm->globals, sym); */
+    /* if (!identifier) { */
+    /*     fprintf(stderr, "Runtime Error: Undefined global variable '%s'\n", sym); */
+    /*     exit(1); */
+    /* } */
 
-    EARL_value_t value = vm->pop(vm);
-    identifier->value.mutate(&identifier->value, &value);
-    // vm->push(vm, earl_value_unit_create());
+    /* EARL_value_t value = vm->pop(vm); */
+    /* identifier->value.mutate(&identifier->value, &value); */
+    TODO;
 }
 
 static void handle_define_global(EARL_vm_t *vm) {
-    size_t idx = vm->read_byte(vm);
-    const char *sym = vm->cc->gl_syms.data[idx];
-    EARL_value_t value = vm->pop(vm);
-    identifier_t *identifier = identifier_alloc(sym, value);
-    s_umap_insert(&vm->globals, sym, (uint8_t *)identifier);
-    // vm->push(vm, earl_value_unit_create());
-}
+    size_t        idx   = vm->read_byte(vm);
+    EARL_value_t  value = vm->pop(vm);
+    const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
+    identifier_t *ident = identifier_alloc(name, value);
 
-static void handle_load(EARL_vm_t *vm) {
-    TODO;
+    s_umap_insert(&vm->globals, name, (uint8_t *)ident);
 }
 
 static void handle_call(EARL_vm_t *vm) {
@@ -102,10 +104,18 @@ static void handle_call(EARL_vm_t *vm) {
     }
 }
 
-static void handle_add(EARL_vm_t *vm, opcode_t opc) {
-    EARL_value_t n2 = vm->pop(vm);
-    EARL_value_t n1 = vm->pop(vm);
-    EARL_value_t res = n1.add(&n1, &n2);
+static void handle_binop(EARL_vm_t *vm, opcode_t opc) {
+    EARL_value_t
+        n2 = vm->pop(vm),
+        n1 = vm->pop(vm);
+
+    EARL_value_t res;
+
+    switch (opc) {
+    case OPCODE_ADD: res = n1.add(&n1, &n2); break;
+    default:         err_wargs("unimplemented binop: %d", (int)opc);
+    }
+
     vm->push(vm, res);
 }
 
@@ -122,6 +132,7 @@ static void handle_pop(EARL_vm_t *vm) {
 static void handle_load_local(EARL_vm_t *vm) {
     size_t slot = vm->read_byte(vm);
     vm->push(vm, vm->stack.data[slot]);
+    TODO;
 }
 
 static void handle_set_local(EARL_vm_t *vm) {
@@ -135,8 +146,6 @@ static void handle_def_local(EARL_vm_t *vm) {
 }
 
 void EVM_exec(cc_t *cc) {
-    printf("Begin Interpreter...\n");
-
     EARL_vm_t vm = (EARL_vm_t) {
         .stack      = { .len = 0 },
         .globals    = s_umap_create(djb2, NULL),
@@ -173,10 +182,7 @@ void EVM_exec(cc_t *cc) {
         case OPCODE_MUL:
         case OPCODE_DIV:
         case OPCODE_ADD:
-            handle_add(&vm, opc);
-            break;
-        case OPCODE_STORE:
-            handle_store(&vm);
+            handle_binop(&vm, opc);
             break;
         case OPCODE_DEF_GLOBAL:
             handle_define_global(&vm);

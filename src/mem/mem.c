@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "mem/mem.h"
 
@@ -35,4 +36,9 @@ void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, si
         exit(1);
     }
     return p;
+}
+
+void *mem_heapify(void *src, size_t bytes) {
+    void *dest = mem_s_malloc(bytes, NULL, NULL);
+    return memcpy(dest, src, bytes);
 }

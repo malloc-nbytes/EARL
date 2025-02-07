@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "compiling/compiler.h"
-#include "compiling/ctx.h"
 
 #include "parsing/ast.h"
 
@@ -47,15 +46,6 @@
 static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
 
-size_t cc_write_global(cc_t *cc, const char *id) {
-    da_append(cc->gl_syms.data,
-              cc->gl_syms.len,
-              cc->gl_syms.cap,
-              const char **,
-              id);
-    return cc->gl_syms.len-1;
-}
-
 size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value) {
     da_append(cc->constants.data,
               cc->constants.len,
@@ -63,6 +53,17 @@ size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value) {
               EARL_value_t *,
               value);
     return cc->constants.len-1;
+}
+
+size_t cc_write_global(cc_t *cc, const char *id) {
+    EARL_object_string_t *name = earl_object_string_alloc(id);
+    return cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
+    /* da_append(cc->gl_syms.data, */
+    /*           cc->gl_syms.len, */
+    /*           cc->gl_syms.cap, */
+    /*           const char **, */
+    /*           id); */
+    /* return cc->gl_syms.len-1; */
 }
 
 void cc_write_opcode(cc_t *cc, opcode_t opcode) {
@@ -78,34 +79,29 @@ void cc_write_opcode(cc_t *cc, opcode_t opcode) {
 // will return `idx` if it is found, or NULL if not. This
 // allows for easy conditionals.
 static size_t *identifier_is_global(const cc_t *const cc, const char *id, size_t *idx) {
-    *idx = SIZE_MAX;
-    for (size_t i = 0; i < cc->gl_syms.len; ++i) {
-        if (streq(id, cc->gl_syms.data[i])) {
-            *idx = i;
-            return idx;
-        }
-    }
-    return NULL;
+    TODO;
 }
 
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
     const char *id = expr->identifier->lx;
 
-    size_t idx;
-    if (identifier_is_global(cc, id, &idx)) {
-        cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
-        cc_write_opcode(cc, idx);
-    }
-    else {
-        // ctx_assert_var_in_scope(cc->ctx, cc, id);
+    /* size_t idx; */
+    /* if (identifier_is_global(cc, id, &idx)) { */
+    /*     cc_write_opcode(cc, OPCODE_LOAD_GLOBAL); */
+    /*     cc_write_opcode(cc, idx); */
+    /* } */
+    /* else { */
+    /*     cc_write_opcode(cc, OPCODE_LOAD_LOCAL); */
+    /*     EARL_object_string_t *name = earl_object_string_alloc(id); */
+    /*     size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name)); */
 
-        cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
-        EARL_object_string_t *name = earl_object_string_alloc(id);
-        size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
+    /*     cc_write_opcode(cc, idx); */
+    /* } */
 
-        cc_write_opcode(cc, idx);
-    }
-    //err_wargs("identifier: `%s` is not defined", id);
+    size_t idx = cc_write_global(cc, id);
+
+    cc_write_opcode(cc, OPCODE_LOAD_GLOBAL);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
@@ -278,8 +274,13 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 
 static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
     const char *id = stmt->identifier->lx;
-
     cc_expr(stmt->expr, cc);
+
+    // Globals
+    EARL_object_string_t *name = earl_object_string_alloc(id);
+    size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
+    cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
+    cc_write_opcode(cc, idx);
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
@@ -304,12 +305,9 @@ static void cc_stmt(stmt_t *stmt, cc_t *cc) {
 }
 
 cc_t cc_compile(program_t *prog) {
-    ctx_t ctx = ctx_create(djb2);
-
     const size_t CAP = 32;
 
     cc_t cc = (cc_t) {
-        .ctx = &ctx,
         .opcode = {
             .data = mem_s_malloc(sizeof(opcode_t) * CAP, NULL, NULL),
             .len = 0,
@@ -320,11 +318,6 @@ cc_t cc_compile(program_t *prog) {
             .len = 0,
             .cap = CAP,
         },
-        .gl_syms = {
-            .data = mem_s_malloc(sizeof(const char *) * CAP, NULL, NULL),
-            .len = 0,
-            .cap = CAP,
-        },
         .scope_depth = 0,
     };
 
@@ -332,8 +325,6 @@ cc_t cc_compile(program_t *prog) {
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
         cc_stmt(prog->stmts[i], &cc);
-
-    ctx_destroy(cc.ctx);
 
     cc_write_opcode(&cc, OPCODE_HALT);
 

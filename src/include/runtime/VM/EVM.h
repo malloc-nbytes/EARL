@@ -41,7 +41,8 @@ typedef struct EARL_vm {
     } stack;
 
     /// @brief A map of all global variables
-    s_umap_t(EARL_identifier_t *) globals;
+    //s_umap_t(EARL_identifier_t *) globals;
+    s_umap_t(EARL_value_t *) globals;
 
     /// @brief The compilation context
     cc_t *cc;

@@ -25,24 +25,27 @@
 #define OPCODE_H
 
 /// @brief The different opcodes
-typedef enum {
+typedef enum uint8_t {
     OPCODE_HALT        = 0x00,
     OPCODE_CONST       = 0x01,
+
     OPCODE_ADD         = 0x02,
     OPCODE_MINUS       = 0x03,
     OPCODE_MUL         = 0x04,
     OPCODE_DIV         = 0x05,
     OPCODE_MOD         = 0x06,
-    OPCODE_STORE       = 0x07,
-    OPCODE_LOAD        = 0x08,
-    OPCODE_CALL        = 0x09,
-    OPCODE_DEF_GLOBAL  = 0x0A,
-    OPCODE_LOAD_GLOBAL = 0x0B,
-    OPCODE_SET_GLOBAL  = 0x0C,
-    OPCODE_LOAD_LOCAL  = 0x0D,
-    OPCODE_SET_LOCAL   = 0x0E,
-    OPCODE_POP         = 0x0F,
-    OPCODE_DEF_LOCAL   = 0x10,
+
+    OPCODE_CALL        = 0x07,
+
+    OPCODE_DEF_GLOBAL  = 0x08,
+    OPCODE_LOAD_GLOBAL = 0x09,
+    OPCODE_SET_GLOBAL  = 0x0A,
+
+    OPCODE_DEF_LOCAL   = 0x0B,
+    OPCODE_LOAD_LOCAL  = 0x0C,
+    OPCODE_SET_LOCAL   = 0x0D,
+
+    OPCODE_POP         = 0x0E,
 } opcode_t;
 
 void opcode_dump(opcode_t op);

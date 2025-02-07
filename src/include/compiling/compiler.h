@@ -32,13 +32,9 @@
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
 #include "parsing/ast.h"
-#include "compiling/ctx.h"
 
 /// @brief Holds all compilation information
 typedef struct cc {
-    /// @brief Holds the entire context during compilation
-    ctx_t *ctx;
-
     struct {
         opcode_t *data;
         size_t len;
@@ -50,12 +46,6 @@ typedef struct cc {
         size_t len;
         size_t cap;
     } constants;
-
-    struct {
-        const char **data;
-        size_t len;
-        size_t cap;
-    } gl_syms;
 
     size_t scope_depth;
 } cc_t;
