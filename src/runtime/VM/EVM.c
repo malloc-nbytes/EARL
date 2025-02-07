@@ -54,18 +54,17 @@ static void handle_load_global(EARL_vm_t *vm) {
 }
 
 static void handle_set_global(EARL_vm_t *vm) {
-    /* size_t idx = vm->read_byte(vm); */
-    /* const char *sym = vm->cc->gl_syms.data[idx]; */
+    size_t        idx        = vm->read_byte(vm);
+    const char   *name       = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
+    identifier_t *identifier = s_umap_get(&vm->globals, name);
 
-    /* identifier_t *identifier = s_umap_get(&vm->globals, sym); */
-    /* if (!identifier) { */
-    /*     fprintf(stderr, "Runtime Error: Undefined global variable '%s'\n", sym); */
-    /*     exit(1); */
-    /* } */
+    if (!identifier) {
+        fprintf(stderr, "Runtime Error: Undefined global variable '%s'\n", name);
+        exit(1);
+    }
 
-    /* EARL_value_t value = vm->pop(vm); */
-    /* identifier->value.mutate(&identifier->value, &value); */
-    TODO;
+    EARL_value_t value = vm->pop(vm);
+    identifier->value.mutate(&identifier->value, &value);
 }
 
 static void handle_define_global(EARL_vm_t *vm) {
@@ -132,11 +131,14 @@ static void handle_pop(EARL_vm_t *vm) {
 static void handle_load_local(EARL_vm_t *vm) {
     size_t slot = vm->read_byte(vm);
     vm->push(vm, vm->stack.data[slot]);
-    TODO;
 }
 
 static void handle_set_local(EARL_vm_t *vm) {
-    TODO;
+    size_t slot = vm->read_byte(vm);
+    EARL_value_t
+        value = vm->pop(vm),
+        *var = &vm->stack.data[slot];
+    var->mutate(var, &value);
 }
 
 static void handle_def_local(EARL_vm_t *vm) {

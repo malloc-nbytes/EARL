@@ -1,5 +1,8 @@
-let x = 1;
-let y = 2;
-let z = 3;
-
-println(x, " ", y, " ", z + x);
+let y = 1;
+{
+    let x = 1;
+    y = 100;
+    x = 9;
+    println(x);
+    println(y);
+}

@@ -62,10 +62,10 @@ static void fill_builtin_c_functions(void) {
 
 void __builtin_idents_init(cc_t *cc) {
     for (size_t i = 0; i < __builtin_function_identifiers_len; ++i)
-        (void)cc_write_global(cc, __builtin_function_identifiers[i]);
+        (void)cc_write_str_to_const(cc, __builtin_function_identifiers[i]);
 
     for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i)
-        (void)cc_write_global(cc, __builtin_variable_identifiers[i]);
+        (void)cc_write_str_to_const(cc, __builtin_variable_identifiers[i]);
 
     fill_builtin_c_functions();
 }

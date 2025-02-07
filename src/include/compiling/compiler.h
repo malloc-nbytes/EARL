@@ -27,11 +27,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define LOCALS_LIM UINT8_MAX-1
+#define LOCALS_LIM UINT8_MAX + 1
 
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
 #include "parsing/ast.h"
+
+typedef struct {
+    const char *id;
+    int depth;
+} local_t;
 
 /// @brief Holds all compilation information
 typedef struct cc {
@@ -47,6 +52,11 @@ typedef struct cc {
         size_t cap;
     } constants;
 
+    struct {
+        local_t data[LOCALS_LIM];
+        size_t len;
+    } locals;
+
     size_t scope_depth;
 } cc_t;
 
@@ -57,6 +67,6 @@ cc_t cc_compile(program_t *prog);
 
 size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
 
-size_t cc_write_global(cc_t *cc, const char *id);
+size_t cc_write_str_to_const(cc_t *cc, const char *id);
 
 #endif // COMPILER_H
