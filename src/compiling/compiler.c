@@ -46,6 +46,31 @@
 static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
 
+void cc_write_opcode(cc_t *cc, uint8_t opcode) {
+    da_append(cc->opcode.data,
+              cc->opcode.len,
+              cc->opcode.cap,
+              uint8_t *,
+              opcode);
+}
+
+static int write_jump(cc_t *cc, uint8_t op) {
+    cc_write_opcode(cc, op);
+    cc_write_opcode(cc, (uint8_t)0xFF);
+    cc_write_opcode(cc, (uint8_t)0xFF);
+    return cc->opcode.len - 2;
+}
+
+static void patch_jump(cc_t *cc, int offset) {
+    int jump = cc->opcode.len - offset - 2;
+
+    if (jump > UINT16_MAX)
+        err("too many statements in `if` statement");
+
+    cc->opcode.data[offset] = (uint8_t)((jump >> 8) & 0xFF);
+    cc->opcode.data[offset+1] = (uint8_t)(jump & 0xFF);
+}
+
 static int resolve_local(cc_t *cc, const char *id) {
     for (int i = cc->locals.len - 1; i >= 0; --i) {
         local_t *local = &cc->locals.data[i];
@@ -76,14 +101,6 @@ uint8_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value) {
 uint8_t cc_write_str_to_const(cc_t *cc, const char *id) {
     EARL_object_string_t *name = earl_object_string_alloc(id);
     return cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
-}
-
-void cc_write_opcode(cc_t *cc, uint8_t opcode) {
-    da_append(cc->opcode.data,
-              cc->opcode.len,
-              cc->opcode.cap,
-              uint8_t *,
-              opcode);
 }
 
 static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
@@ -150,8 +167,16 @@ static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
 
 static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
     cc_expr(expr->left, cc);
-    cc_expr(expr->right, cc);
-    switch (expr->op->type) {
+
+    token_type_t opty = expr->op->type;
+
+    // Wait to compile right side of the expression
+    // for short-circuiting.
+    if ((opty != TOKEN_TYPE_DOUBLE_AMPERSAND)
+            && (opty != TOKEN_TYPE_DOUBLE_PIPE))
+        cc_expr(expr->right, cc);
+
+    switch (opty) {
     case TOKEN_TYPE_PLUS:
         cc_write_opcode(cc, OPCODE_ADD);
         break;
@@ -167,6 +192,16 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
     case TOKEN_TYPE_PERCENT:
         cc_write_opcode(cc, OPCODE_MOD);
         break;
+    case TOKEN_TYPE_DOUBLE_AMPERSAND: {
+        int end_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
+        cc_expr(expr->right, cc);
+        patch_jump(cc, end_jump);
+    } break;
+    case TOKEN_TYPE_DOUBLE_PIPE: {
+        int end_jump = write_jump(cc, OPCODE_JUMP_IF_TRUE);
+        cc_expr(expr->right, cc);
+        patch_jump(cc, end_jump);
+    } break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
     }
@@ -313,23 +348,6 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
         declare_global_variable(cc, id);
     else
         declare_local_variable(cc, id);
-}
-
-static int write_jump(cc_t *cc, uint8_t op) {
-    cc_write_opcode(cc, op);
-    cc_write_opcode(cc, (uint8_t)0xFF);
-    cc_write_opcode(cc, (uint8_t)0xFF);
-    return cc->opcode.len - 2;
-}
-
-static void patch_jump(cc_t *cc, int offset) {
-    int jump = cc->opcode.len - offset - 2;
-
-    if (jump > UINT16_MAX)
-        err("too many statements in `if` statement");
-
-    cc->opcode.data[offset] = (uint8_t)((jump >> 8) & 0xFF);
-    cc->opcode.data[offset+1] = (uint8_t)(jump & 0xFF);
 }
 
 static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {

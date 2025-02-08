@@ -30,6 +30,8 @@
 
 #include "mem/arena.h"
 
+#define AUTO(id, v) typeof(v) id = v
+
 #define TODO                                                    \
     fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);      \
     exit(1);

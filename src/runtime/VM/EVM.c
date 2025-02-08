@@ -164,6 +164,13 @@ static void handle_jump_if_false(EARL_vm_t *vm) {
         vm->ip += offset;
 }
 
+static void handle_jump_if_true(EARL_vm_t *vm) {
+    uint16_t offset = READ_SHORT(vm);
+    EARL_value_t condition = vm->peek(vm, 0);
+    if (condition.is_truthy(&condition))
+        vm->ip += offset;
+}
+
 static void handle_jump(EARL_vm_t *vm) {
     uint16_t offset = READ_SHORT(vm);
     vm->ip += offset;
@@ -233,6 +240,9 @@ void EVM_exec(cc_t *cc) {
             break;
         case OPCODE_JUMP_IF_FALSE:
             handle_jump_if_false(&vm);
+            break;
+        case OPCODE_JUMP_IF_TRUE:
+            handle_jump_if_true(&vm);
             break;
         case OPCODE_JUMP:
             handle_jump(&vm);
