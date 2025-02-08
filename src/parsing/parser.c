@@ -410,8 +410,6 @@ static stmt_t *parse_stmt(lexer_t *lexer) {
         } break;
         default: {
             return parse_stmt_mut_or_stmt_expr(lexer);
-            /* stmt_expr_t *expr = parse_stmt_expr(lexer); */
-            /* return stmt_alloc((void *)expr, STMT_TYPE_EXPR, lexer); */
         } break;
         }
     } while (attrs != 0x0);
