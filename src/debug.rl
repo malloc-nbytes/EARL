@@ -26,8 +26,8 @@ set_flag("-xe");
 # Init
 let build_name = "earl-debug-build";
 let c_files = [];
-let flags = ["-Iinclude/", "-O0", "-ggdb", f"-o {build_name}"];
-let compiler = "g++";
+let flags = ["-Iinclude/", "-Wextra", "-Wall", "-O0", "-ggdb", f"-o {build_name}"];
+let compiler = "clang";
 
 # Get all src files
 walk(".");
@@ -43,7 +43,6 @@ let SRC, FLAGS, COMPILER = (
 let cc = COMPILER + ' ' + FLAGS + ' ' + SRC;
 
 # Run the build command
-println(Colors::Te.Bold, Colors::Tfc.Yellow);
 $cc;
 
 println(Colors::Tfc.Green, "\n--- DONE ---\n", Colors::Te.Reset);

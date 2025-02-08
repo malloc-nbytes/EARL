@@ -40,6 +40,13 @@ static EARL_value_type_t *types_simple_compat_types[] = {
     types_simple_compat_types_builtin_function_reference,
 };
 
+static const size_t types_simple_compat_types_lengths[] = {
+    sizeof(types_simple_compat_types_unit) / sizeof(types_simple_compat_types_unit[0]),
+    sizeof(types_simple_compat_types_integer) / sizeof(types_simple_compat_types_integer[0]),
+    sizeof(types_simple_compat_types_boolean) / sizeof(types_simple_compat_types_boolean[0]),
+    sizeof(types_simple_compat_types_builtin_function_reference) / sizeof(types_simple_compat_types_builtin_function_reference[0]),
+};
+
 // Object types
 static EARL_object_type_t types_object_compat_types_string[] = {EARL_OBJECT_TYPE_STRING};
 
@@ -64,9 +71,12 @@ int types_are_compatible(EARL_value_type_t ty1, EARL_value_type_t ty2) {
         TODO; // Pass object directly for type pruning for inner types
     } else {
         EARL_value_type_t *types = types_simple_compat_types[ty1];
-        for (size_t i = 0; i < sizeof(types)/sizeof(*types); ++i)
+        size_t len = types_simple_compat_types_lengths[ty1];  // Get correct array length
+
+        for (size_t i = 0; i < len; ++i) {
             if (types[i] == ty2)
                 return 1;
+        }
     }
     return 0;
 }

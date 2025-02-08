@@ -51,12 +51,12 @@ typedef struct EARL_vm {
     EARL_value_t *sp;
 
     /// @brief The instruction pointer
-    opcode_t *ip;
+    uint8_t *ip;
 
     /*** Routines ***/
     /// @brief Read the byte that is pointed to
     ///        by the instruction pointer.
-    opcode_t (*read_byte)(struct EARL_vm *vm);
+    uint8_t (*read_byte)(struct EARL_vm *vm);
 
     /// @brief Initialize the VM
     void (*init)(struct EARL_vm *vm);

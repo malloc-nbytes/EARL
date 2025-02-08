@@ -27,7 +27,7 @@
 #include "opcode.h"
 #include "EVM.h"
 
-opcode_t EVM_routines_read_byte(EARL_vm_t *vm);
+uint8_t  EVM_routines_read_byte(EARL_vm_t *vm);
 void     EVM_routines_init(EARL_vm_t *vm);
 
 // Stack routines

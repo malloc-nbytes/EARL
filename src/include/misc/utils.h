@@ -40,7 +40,7 @@
             fprintf(stderr, "utils_da_append: `cap` is 0\n");   \
         if ((len) >= (cap)) {                                   \
             (cap) *= 2;                                         \
-            (arr) = (ty)realloc((arr), (cap) * sizeof(ty));     \
+            (arr) = (ty)realloc((arr), (cap) * sizeof((arr)[0]));       \
         }                                                       \
         (arr)[(len)] = (value);                                 \
         (len) += 1;                                             \

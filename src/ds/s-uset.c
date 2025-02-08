@@ -40,6 +40,7 @@ s_uset_t s_uset_create(unsigned long (*hash)(const char *)) {
 }
 
 static void free_node(s_uset_node_t *it) {
+    (void)it;
     /* while (it) { */
     /*         if (it->value) */
     /*                 free(it->value); */

@@ -79,6 +79,7 @@ EARL_value_t earl_value_boolean_create(int b) {
         .as = {
             .boolean = b,
         },
+        .to_cstr = NULL,
         .add = NULL,
         .mutate = NULL,
         .is_truthy = NULL,
@@ -92,6 +93,10 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         .as = {
             .obj = obj,
         },
+        .to_cstr = NULL,
+        .add = NULL,
+        .mutate = NULL,
+        .is_truthy = NULL,
     };
 
     switch (obj->type) {

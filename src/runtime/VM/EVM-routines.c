@@ -35,7 +35,7 @@
 #include "misc/utils.h"
 #include "misc/hash.h"
 
-opcode_t EVM_routines_read_byte(EARL_vm_t *vm) {
+uint8_t EVM_routines_read_byte(EARL_vm_t *vm) {
     return *vm->ip++;
 }
 
@@ -46,12 +46,8 @@ void EVM_routines_init(EARL_vm_t *vm) {
     vm->globals = s_umap_create(djb2, NULL);
 
     for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) {
-        printf("loading function: %s\n", __builtin_function_identifiers[i]);
-
-        builtin_f_sig_t fun
-            = (builtin_f_sig_t)s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
-
-        printf("done\n");
+        builtin_f_sig_t fun = builtin_funs[i];
+        //builtin_f_sig_t fun = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
 
         EARL_value_t value
             = earl_value_builtin_function_reference_create(fun);

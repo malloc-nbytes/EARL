@@ -93,7 +93,7 @@ static void handle_call(EARL_vm_t *vm) {
         for (size_t i = 0; i < args_len; ++i)
             args[args_len-1-i] = vm->pop(vm);
 
-        EARL_value_t res = builtin_fn(args, args_len, args_len);
+        EARL_value_t res = builtin_fn(args, args_len);
 
         free(args);
 
@@ -106,7 +106,7 @@ static void handle_call(EARL_vm_t *vm) {
     }
 }
 
-static void handle_binop(EARL_vm_t *vm, opcode_t opc) {
+static void handle_binop(EARL_vm_t *vm, uint8_t opc) {
     EARL_value_t
         n2 = vm->pop(vm),
         n1 = vm->pop(vm);
@@ -179,7 +179,7 @@ void EVM_exec(cc_t *cc) {
     while (1) {
         int b = 0;
 
-        opcode_t opc;
+        uint8_t opc;
 
         switch (opc = vm.read_byte(&vm)) {
         case OPCODE_HALT:

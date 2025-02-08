@@ -1,7 +1,4 @@
-println("hello world");
-println("hello world");
-println("hello world");
-println("hello world");
-println("hello world");
-println("hello world");
-println("hello world");
+if 0 {
+    println("here");
+}
+println("done");

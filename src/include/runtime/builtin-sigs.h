@@ -28,9 +28,7 @@
 
 typedef struct EARL_value EARL_value_t;
 
-typedef EARL_value_t (*builtin_f_sig_t)(EARL_value_t *params,
-                                        size_t params_len,
-                                        size_t params_cap);
+typedef EARL_value_t (*builtin_f_sig_t)(EARL_value_t *params, size_t params_len);
 
 typedef const char *       (*to_cstr_sig_t)(const EARL_value_t *const self);
 typedef       EARL_value_t (*add_sig_t)    (const EARL_value_t *self, const EARL_value_t *const other);

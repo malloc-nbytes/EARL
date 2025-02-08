@@ -24,32 +24,21 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-/// @brief The different opcodes
-typedef enum {
-    OPCODE_HALT          = 0x00,
-    OPCODE_CONST         = 0x01,
-
-    OPCODE_ADD           = 0x02,
-    OPCODE_MINUS         = 0x03,
-    OPCODE_MUL           = 0x04,
-    OPCODE_DIV           = 0x05,
-    OPCODE_MOD           = 0x06,
-
-    OPCODE_CALL          = 0x07,
-
-    OPCODE_DEF_GLOBAL    = 0x08,
-    OPCODE_LOAD_GLOBAL   = 0x09,
-    OPCODE_SET_GLOBAL    = 0x0A,
-
-    OPCODE_DEF_LOCAL     = 0x0B,
-    OPCODE_LOAD_LOCAL    = 0x0C,
-    OPCODE_SET_LOCAL     = 0x0D,
-
-    OPCODE_POP           = 0x0E,
-
-    OPCODE_JUMP_IF_FALSE = 0x0F,
-} opcode_t;
-
-void opcode_dump(opcode_t op);
+#define OPCODE_HALT          0x00
+#define OPCODE_CONST         0x01
+#define OPCODE_ADD           0x02
+#define OPCODE_MINUS         0x03
+#define OPCODE_MUL           0x04
+#define OPCODE_DIV           0x05
+#define OPCODE_MOD           0x06
+#define OPCODE_CALL          0x07
+#define OPCODE_DEF_GLOBAL    0x08
+#define OPCODE_LOAD_GLOBAL   0x09
+#define OPCODE_SET_GLOBAL    0x0A
+#define OPCODE_DEF_LOCAL     0x0B
+#define OPCODE_LOAD_LOCAL    0x0C
+#define OPCODE_SET_LOCAL     0x0D
+#define OPCODE_POP           0x0E
+#define OPCODE_JUMP_IF_FALSE 0x0F
 
 #endif // OPCODE_H

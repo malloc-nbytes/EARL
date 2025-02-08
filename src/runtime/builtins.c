@@ -24,9 +24,9 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "runtime/builtins.h"
 #include "compiling/compiler.h"
 #include "runtime/EARL-value.h"
-#include "runtime/builtins.h"
 #include "misc/hash.h"
 #include "misc/utils.h"
 
@@ -38,9 +38,10 @@ const size_t __builtin_function_identifiers_len
 const size_t __builtin_variable_identifiers_len
     = sizeof(__builtin_variable_identifiers) / sizeof(*__builtin_variable_identifiers);
 
-s_umap_t(builtin_f_sig_t) builtin_funs;
+builtin_f_sig_t builtin_funs[BUILTIN_FUNS_LIM];
+//s_umap_t(builtin_f_sig_t) builtin_funs;
 
-EARL_value_t builtin_println(EARL_value_t *params, size_t params_len, size_t params_cap) {
+EARL_value_t builtin_println(EARL_value_t *params, size_t params_len) {
     for (size_t i = 0; i < params_len; ++i)
         printf("%s", params[i].to_cstr(&params[i]));
     putchar('\n');
@@ -48,16 +49,19 @@ EARL_value_t builtin_println(EARL_value_t *params, size_t params_len, size_t par
     return earl_value_unit_create();
 }
 
-EARL_value_t builtin_print(EARL_value_t *params, size_t params_len, size_t params_cap) {
+EARL_value_t builtin_print(EARL_value_t *params, size_t params_len) {
     for (size_t i = 0; i < params_len; ++i)
         printf("%s", params[i].to_cstr(&params[i]));
     return earl_value_unit_create();
 }
 
 static void fill_builtin_c_functions(void) {
-    builtin_funs = s_umap_create(djb2, NULL);
-    s_umap_insert(&builtin_funs, __builtin_function_identifiers[0], (void *)builtin_println);
-    s_umap_insert(&builtin_funs, __builtin_function_identifiers[1], (void *)builtin_print);
+    /* builtin_funs = s_umap_create(djb2, NULL); */
+    /* s_umap_insert(&builtin_funs, __builtin_function_identifiers[0], (void *)builtin_println); */
+    /* s_umap_insert(&builtin_funs, __builtin_function_identifiers[1], (void *)builtin_print); */
+
+    builtin_funs[0] = builtin_println;
+    builtin_funs[1] = builtin_print;
 }
 
 void __builtin_idents_init(cc_t *cc) {

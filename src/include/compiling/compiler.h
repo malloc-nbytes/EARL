@@ -41,7 +41,7 @@ typedef struct {
 /// @brief Holds all compilation information
 typedef struct cc {
     struct {
-        opcode_t *data;
+        uint8_t *data;
         size_t len;
         size_t cap;
     } opcode;
@@ -65,8 +65,8 @@ typedef struct cc {
 /// @return The result of the compiled program
 cc_t cc_compile(program_t *prog);
 
-size_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
+uint8_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
 
-size_t cc_write_str_to_const(cc_t *cc, const char *id);
+uint8_t cc_write_str_to_const(cc_t *cc, const char *id);
 
 #endif // COMPILER_H

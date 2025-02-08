@@ -26,5 +26,6 @@
 #include "runtime/builtin-sigs.h"
 
 const char *earl_value_builtin_function_reference_to_cstr(const EARL_value_t *const _) {
+    (void)_;
     return "<Builtin-Function-Reference>";
 }

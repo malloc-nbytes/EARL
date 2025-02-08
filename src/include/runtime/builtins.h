@@ -39,17 +39,20 @@
 
 #define __BUILTIN_VARS {}
 
+#define BUILTIN_FUNS_LIM 32
+
 extern const char *__builtin_function_identifiers[];
 extern const char *__builtin_variable_identifiers[];
 
 extern const size_t __builtin_function_identifiers_len;
 extern const size_t __builtin_variable_identifiers_len;
 
-extern s_umap_t(builtin_f_sig_t) builtin_funs;
+//extern s_umap_t(builtin_f_sig_t) builtin_funs;
+extern builtin_f_sig_t builtin_funs[BUILTIN_FUNS_LIM];
 
 void __builtin_idents_init(cc_t *cc);
 
-EARL_value_t builtin_println(EARL_value_t *params, size_t params_len, size_t params_cap);
-EARL_value_t builtin_print(EARL_value_t *params, size_t params_len, size_t params_cap);
+EARL_value_t builtin_println(EARL_value_t *params, size_t params_len);
+EARL_value_t builtin_print(EARL_value_t *params, size_t params_len);
 
 #endif // BUILTINS_H

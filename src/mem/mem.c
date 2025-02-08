@@ -28,7 +28,7 @@
 #include "mem/mem.h"
 
 void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t)) {
-    void *p = (allocator && arena)
+    void *p = (allocator != NULL && arena != NULL)
         ? allocator(arena, bytes)
         : malloc(bytes);
     if (!p) {

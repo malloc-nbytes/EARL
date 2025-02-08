@@ -173,7 +173,7 @@ static expr_t *parse_primary_expr(lexer_t *lexer) {
         } break;
 
         case TOKEN_TYPE_KEYWORD: {
-            assert(0);
+            assert(0 && "keyword in expression is unimplemented");
         } break;
 
         default: return left;
@@ -249,14 +249,17 @@ static expr_t *parse_logical_expr(lexer_t *lexer) {
 }
 
 static expr_t *parse_bitwise_expr(lexer_t *lexer) {
+    (void)lexer;
     TODO;
 }
 
 static expr_t *parse_slice_expr(lexer_t *lexer) {
+    (void)lexer;
     TODO;
 }
 
 static expr_t *parse_range_expr(lexer_t *lexer) {
+    (void)lexer;
     TODO;
 }
 
@@ -319,7 +322,7 @@ static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
     token_t *tok2 = lexer_peek(lexer, 1);
 
     int tok1_else = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_ELSE);
-    int tok2_if = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_IF);
+    int tok2_if = tok2->type == TOKEN_TYPE_KEYWORD && streq(tok2->lx, KEYWORD_IF);
 
     if (tok1_else && tok2_if) {
         stmt_t **tmp = (stmt_t **)mem_s_malloc(sizeof(stmt_t *), NULL, NULL);
@@ -355,13 +358,6 @@ static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     }
     fprintf(stderr, "unhandled keyword: %s\n", lexer_peek(lexer, 0)->lx);
     exit(1);
-}
-
-static stmt_expr_t *parse_stmt_expr(lexer_t *lexer) {
-    expr_t *expr = parse_expr(lexer);
-    stmt_expr_t *stmt_expr = stmt_expr_alloc(expr, lexer);
-    (void)expect(lexer, TOKEN_TYPE_SEMICOLON);
-    return stmt_expr;
 }
 
 static stmt_t *parse_stmt_mut_or_stmt_expr(lexer_t *lexer) {
@@ -420,6 +416,10 @@ static stmt_t *parse_stmt(lexer_t *lexer) {
 }
 
 program_t *parser_parse(lexer_t *lexer) {
+    (void)parse_range_expr;
+    (void)parse_slice_expr;
+    (void)parse_bitwise_expr;
+
     program_t *prog = (program_t *)mem_s_malloc(sizeof(program_t), NULL, NULL);
     prog->stmts_len = 0;
     prog->stmts_cap = 32;
