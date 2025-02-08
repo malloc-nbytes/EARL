@@ -49,7 +49,7 @@ uint8_t *arena_malloc(arena_t *arena, size_t bytes) {
 
     if (arena->len + bytes > arena->cap) {
         arena->cap *= 2;
-        arena->mem = realloc(arena->mem, arena->cap);
+        arena->mem = (uint8_t *)realloc(arena->mem, arena->cap);
     }
 
     if (!arena->mem)

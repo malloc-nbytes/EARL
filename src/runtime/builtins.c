@@ -56,8 +56,8 @@ EARL_value_t builtin_print(EARL_value_t *params, size_t params_len, size_t param
 
 static void fill_builtin_c_functions(void) {
     builtin_funs = s_umap_create(djb2, NULL);
-    s_umap_insert(&builtin_funs, __builtin_function_identifiers[0], (uint8_t *)builtin_println);
-    s_umap_insert(&builtin_funs, __builtin_function_identifiers[1], (uint8_t *)builtin_print);
+    s_umap_insert(&builtin_funs, __builtin_function_identifiers[0], (void *)builtin_println);
+    s_umap_insert(&builtin_funs, __builtin_function_identifiers[1], (void *)builtin_print);
 }
 
 void __builtin_idents_init(cc_t *cc) {

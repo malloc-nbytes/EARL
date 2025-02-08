@@ -56,6 +56,7 @@ token_t *expect_keyword(lexer_t *lexer, const char *kw) {
         fprintf(stderr, "expected keyword `%s` but got `%s`\n", kw, tok->lx);
         exit(1);
     }
+    return tok;
 }
 
 uint32_t translate_attr(lexer_t *lexer) {
@@ -321,7 +322,7 @@ static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
     int tok2_if = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_IF);
 
     if (tok1_else && tok2_if) {
-        stmt_t **tmp = mem_s_malloc(sizeof(stmt_t *), NULL, NULL);
+        stmt_t **tmp = (stmt_t **)mem_s_malloc(sizeof(stmt_t *), NULL, NULL);
         size_t
             tmp_len = 1,
             tmp_cap = 1;

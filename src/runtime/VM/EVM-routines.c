@@ -46,14 +46,18 @@ void EVM_routines_init(EARL_vm_t *vm) {
     vm->globals = s_umap_create(djb2, NULL);
 
     for (size_t i = 0; i < __builtin_function_identifiers_len; ++i) {
+        printf("loading function: %s\n", __builtin_function_identifiers[i]);
+
         builtin_f_sig_t fun
-            = s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
+            = (builtin_f_sig_t)s_umap_get(&builtin_funs, __builtin_function_identifiers[i]);
+
+        printf("done\n");
 
         EARL_value_t value
             = earl_value_builtin_function_reference_create(fun);
 
         identifier_t *var = identifier_alloc(__builtin_function_identifiers[i], value);
-        s_umap_insert(&vm->globals, var->id, (uint8_t *)var);
+        s_umap_insert(&vm->globals, var->id, (void *)var);
     }
     /* for (size_t i = 0; i < __builtin_variable_identifiers_len; ++i) { */
     /*     TODO; */

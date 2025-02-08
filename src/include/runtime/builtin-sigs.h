@@ -32,15 +32,15 @@ typedef EARL_value_t (*builtin_f_sig_t)(EARL_value_t *params,
                                         size_t params_len,
                                         size_t params_cap);
 
-typedef const char *       (*to_cstr_sig_t)(const EARL_value_t *const this);
-typedef       EARL_value_t (*add_sig_t)    (const EARL_value_t *this, const EARL_value_t *const other);
-typedef       int          (*is_truthy_sig_t)(const EARL_value_t *const this);
+typedef const char *       (*to_cstr_sig_t)(const EARL_value_t *const self);
+typedef       EARL_value_t (*add_sig_t)    (const EARL_value_t *self, const EARL_value_t *const other);
+typedef       int          (*is_truthy_sig_t)(const EARL_value_t *const self);
 
 // Unimplemented
-typedef       EARL_value_t (*add_sub_t)    (const EARL_value_t *this, const EARL_value_t *const other);
-typedef       EARL_value_t (*add_mul_t)    (const EARL_value_t *this, const EARL_value_t *const other);
-typedef       EARL_value_t (*add_div_t)    (const EARL_value_t *this, const EARL_value_t *const other);
-typedef       EARL_value_t (*add_mod_t)    (const EARL_value_t *this, const EARL_value_t *const other);
-typedef       void         (*mutate_sig_t) (EARL_value_t *this, const EARL_value_t *const other);
+typedef       EARL_value_t (*add_sub_t)    (const EARL_value_t *self, const EARL_value_t *const other);
+typedef       EARL_value_t (*add_mul_t)    (const EARL_value_t *self, const EARL_value_t *const other);
+typedef       EARL_value_t (*add_div_t)    (const EARL_value_t *self, const EARL_value_t *const other);
+typedef       EARL_value_t (*add_mod_t)    (const EARL_value_t *self, const EARL_value_t *const other);
+typedef       void         (*mutate_sig_t) (EARL_value_t *self, const EARL_value_t *const other);
 
 #endif // BUILTIN_SIGS_H

@@ -103,14 +103,14 @@ static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
 
     // If global, we want the index in the constant pool.
     // If local, we want the stack position (arg).
-    cc_write_opcode(cc, arg == -1 ? idx : arg);
+    cc_write_opcode(cc, arg == -1 ? (opcode_t)idx : (opcode_t)arg);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
     int integer = atoi(expr->integer->lx);
     size_t idx = cc_write_to_const_pool(cc, earl_value_integer_create(integer));
     cc_write_opcode(cc, OPCODE_CONST);
-    cc_write_opcode(cc, idx);
+    cc_write_opcode(cc, (opcode_t)idx);
 }
 
 static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
@@ -118,7 +118,7 @@ static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
     EARL_object_string_t *str = earl_object_string_alloc(s);
     size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)str));
     cc_write_opcode(cc, OPCODE_CONST);
-    cc_write_opcode(cc, idx);
+    cc_write_opcode(cc, (opcode_t)idx);
 }
 
 static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
@@ -287,7 +287,7 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     switch (stmt->op->type) {
     case TOKEN_TYPE_EQUALS:
         cc_write_opcode(cc, is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
-        cc_write_opcode(cc, is_local ? local_index : idx);
+        cc_write_opcode(cc, is_local ? (opcode_t)local_index : (opcode_t)idx);
         break;
 
     case TOKEN_TYPE_PLUS_EQUALS:
@@ -297,7 +297,7 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     case TOKEN_TYPE_PERCENT_EQUALS: {
         // Load current variable value
         cc_write_opcode(cc, is_local ? OPCODE_LOAD_LOCAL : OPCODE_LOAD_GLOBAL);
-        cc_write_opcode(cc, is_local ? local_index : idx);
+        cc_write_opcode(cc, is_local ? (opcode_t)local_index : (opcode_t)idx);
 
         // Apply the arithmetic operation
         switch (stmt->op->type) {
@@ -322,7 +322,7 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
 
         // Store back the result
         cc_write_opcode(cc, is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
-        cc_write_opcode(cc, is_local ? local_index : idx);
+        cc_write_opcode(cc, is_local ? (opcode_t)local_index : (opcode_t)idx);
         break;
     }
 
@@ -350,7 +350,7 @@ static void declare_global_variable(cc_t *cc, const char *id) {
     EARL_object_string_t *name = earl_object_string_alloc(id);
     size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
     cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
-    cc_write_opcode(cc, idx);
+    cc_write_opcode(cc, (opcode_t)idx);
 }
 
 static void declare_local_variable(cc_t *cc, const char *id) {
@@ -377,8 +377,8 @@ static void cc_stmt_let(stmt_let_t *stmt, cc_t *cc) {
 
 static int write_jump(cc_t *cc, opcode_t op) {
     cc_write_opcode(cc, op);
-    cc_write_opcode(cc, 0xFF);
-    cc_write_opcode(cc, 0xFF);
+    cc_write_opcode(cc, (opcode_t)0xFF);
+    cc_write_opcode(cc, (opcode_t)0xFF);
     return cc->opcode.len - 2;
 }
 
@@ -388,8 +388,8 @@ static void patch_jump(cc_t *cc, int offset) {
     if (jump > UINT16_MAX)
         err("too many statements in `if` statement");
 
-    cc->opcode.data[offset] = (jump >> 8) & 0xFF;
-    cc->opcode.data[offset+1] = jump & 0xFF;
+    cc->opcode.data[offset] = (opcode_t)((jump >> 8) & 0xFF);
+    cc->opcode.data[offset+1] = (opcode_t)(jump & 0xFF);
 }
 
 static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
@@ -429,12 +429,12 @@ cc_t cc_compile(program_t *prog) {
 
     cc_t cc = (cc_t) {
         .opcode = {
-            .data = mem_s_malloc(sizeof(opcode_t) * CAP, NULL, NULL),
+            .data = (opcode_t *)mem_s_malloc(sizeof(opcode_t) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },
         .constants = {
-            .data = mem_s_malloc(sizeof(EARL_value_t *) * CAP, NULL, NULL),
+            .data = (EARL_value_t *)mem_s_malloc(sizeof(EARL_value_t *) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },

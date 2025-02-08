@@ -30,11 +30,11 @@
 #include "mem/mem.h"
 #include "misc/utils.h"
 
-s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t *)) {
+s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(void *)) {
     assert(hash);
     const size_t cap = 64;
     return (s_umap_t) {
-        .tbl = mem_s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
+        .tbl = (s_umap_bucket_t **)mem_s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
         .sz = 0,
         .cap = cap,
         .hash = hash,
@@ -48,41 +48,40 @@ void s_umap_remove(s_umap_t *map, const char *key) {
     TODO;
 }
 
-void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value) {
-    const unsigned long idx = map->hash(key) % map->cap;
+void s_umap_insert(s_umap_t *map, const char *key, void *value) {
+    if (!map || !key) return;
 
-    s_umap_bucket_t *prev = NULL, *it = map->tbl[idx];
-    while (it) {
-        prev = it;
-        it = it->next;
-    }
+    unsigned long index = map->hash(key) % map->cap;
+    s_umap_bucket_t *new_bucket = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
 
-    it = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
-    it->key = strdup(key);
-    it->value = value;
-    it->next = NULL;
-
-    if (prev)
-        prev->next = it;
-    else
-        map->tbl[idx] = it;
+    new_bucket->key = strdup(key);
+    new_bucket->value = value;
+    new_bucket->next = map->tbl[index];
+    map->tbl[index] = new_bucket;
 
     map->sz++;
 }
 
 void *s_umap_get(s_umap_t *map, const char *key) {
-    const unsigned long idx = map->hash(key) % map->cap;
-    s_umap_bucket_t *it = map->tbl[idx];
-    while (it && !streq(it->key, key))
-        it = it->next;
-    return it ? it->value : NULL;
+    if (!map || !key) return NULL;
+
+    unsigned long index = map->hash(key) % map->cap;
+    s_umap_bucket_t *bucket = map->tbl[index];
+
+    while (bucket) {
+        if (strcmp(bucket->key, key) == 0)
+            return bucket->value;
+        bucket = bucket->next;
+    }
+
+    return NULL;
 }
 
 int s_umap_contains(s_umap_t *map, const char *key) {
     return s_umap_get(map, key) != NULL;
 }
 
-void s_umap_dump(s_umap_t *map, void (*display)(const uint8_t *)) {
+void s_umap_dump(s_umap_t *map, void (*display)(const void *)) {
     assert(display);
     for (size_t i = 0; i < map->cap; ++i) {
         s_umap_bucket_t *it = map->tbl[i];

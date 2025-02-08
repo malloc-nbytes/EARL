@@ -35,7 +35,7 @@ typedef struct s_umap_bucket {
     char *key;
 
     /// @brief The value
-    uint8_t *value;
+    void *value;
 
     /// @brief The next bucket
     struct s_umap_bucket *next;
@@ -57,14 +57,14 @@ typedef struct {
 
     /// @brief The destructor for values
     /// @note Can be NULL
-    void (*destroy_value)(uint8_t *x);
+    void (*destroy_value)(void *x);
 } s_umap_t;
 
 /// @brief Create a new s_umap
 /// @param hash The hashing function
 /// @param destroy_value (Optional) a destructor for the values
 /// @return A new s_umap
-s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(uint8_t *));
+s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value)(void *));
 
 /// @brief Remove an element from the map
 /// @param map The map to use
@@ -75,12 +75,12 @@ void s_umap_remove(s_umap_t *map, const char *key);
 /// @param map The map to use
 /// @param key The key to use
 /// @param value The value to use
-void s_umap_insert(s_umap_t *map, const char *key, uint8_t *value);
+void s_umap_insert(s_umap_t *map, const char *key, void *value);
 
 /// @brief Debug print all elements contained in the map
 /// @param map The map to use
 /// @param display The function to use to print the values
-void s_umap_dump(s_umap_t *map, void (*display)(const uint8_t *));
+void s_umap_dump(s_umap_t *map, void (*display)(const void *));
 
 /// @brief Destroy the map
 /// @param map The map to use

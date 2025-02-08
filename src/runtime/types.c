@@ -48,17 +48,20 @@ static EARL_object_type_t *types_object_compat_types[] = {
 };
 
 int types_are_compatible(EARL_value_type_t ty1, EARL_value_type_t ty2) {
-    _Static_assert(sizeof(types_simple_compat_types)/sizeof(*types_simple_compat_types) == __EARL_VALUE_TYPE_LEN,
+#ifdef __cplusplus
+    static_assert(sizeof(types_simple_compat_types) / sizeof(*types_simple_compat_types) == __EARL_VALUE_TYPE_LEN,
+                  "EARL value compatible types is incomplete");
+    static_assert(sizeof(types_object_compat_types) / sizeof(*types_object_compat_types) == __EARL_OBJECT_TYPE_LEN,
+                  "EARL object compatible types is incomplete");
+#else
+    _Static_assert(sizeof(types_simple_compat_types) / sizeof(*types_simple_compat_types) == __EARL_VALUE_TYPE_LEN,
                    "EARL value compatible types is incomplete");
-    _Static_assert(sizeof(types_object_compat_types)/sizeof(*types_object_compat_types) == __EARL_OBJECT_TYPE_LEN,
+    _Static_assert(sizeof(types_object_compat_types) / sizeof(*types_object_compat_types) == __EARL_OBJECT_TYPE_LEN,
                    "EARL object compatible types is incomplete");
+#endif
 
     if (ty1 == EARL_VALUE_TYPE_OBJECT) {
         TODO; // Pass object directly for type pruning for inner types
-        EARL_object_type_t *types = types_object_compat_types[ty1];
-        for (size_t i = 0; i < sizeof(types)/sizeof(*types); ++i)
-            if (types[i] == ty2)
-                return 1;
     } else {
         EARL_value_type_t *types = types_simple_compat_types[ty1];
         for (size_t i = 0; i < sizeof(types)/sizeof(*types); ++i)

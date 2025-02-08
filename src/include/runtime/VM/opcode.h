@@ -25,7 +25,7 @@
 #define OPCODE_H
 
 /// @brief The different opcodes
-typedef enum uint8_t {
+typedef enum {
     OPCODE_HALT          = 0x00,
     OPCODE_CONST         = 0x01,
 

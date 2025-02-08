@@ -27,7 +27,7 @@ set_flag("-xe");
 let build_name = "earl-debug-build";
 let c_files = [];
 let flags = ["-Iinclude/", "-O0", "-ggdb", f"-o {build_name}"];
-let compiler = "cc";
+let compiler = "g++";
 
 # Get all src files
 walk(".");

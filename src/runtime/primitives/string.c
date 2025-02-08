@@ -31,10 +31,10 @@
 #include "misc/utils.h"
 
 EARL_object_string_t *earl_object_string_alloc(const char *chars) {
-    EARL_object_string_t *s = mem_s_malloc(sizeof(EARL_object_string_t), NULL, NULL);
+    EARL_object_string_t *s = (EARL_object_string_t *)mem_s_malloc(sizeof(EARL_object_string_t), NULL, NULL);
 
     s->base  = __earl_object_create(EARL_OBJECT_TYPE_STRING);
-    s->chars = mem_s_malloc(1, NULL, NULL);
+    s->chars = (char *)mem_s_malloc(1, NULL, NULL);
     s->cap   = 1;
     s->len   = 0;
 
@@ -46,17 +46,17 @@ EARL_object_string_t *earl_object_string_alloc(const char *chars) {
     return s;
 }
 
-const char *earl_object_string_to_cstr(const EARL_value_t *const this) {
-    return ((EARL_object_string_t *)this->as.obj)->chars;
+const char *earl_object_string_to_cstr(const EARL_value_t *const self) {
+    return ((EARL_object_string_t *)self->as.obj)->chars;
 }
 
 // TODO: Assert that it is binop compatible.
-EARL_value_t earl_object_string_add(const EARL_value_t *this,
+EARL_value_t earl_object_string_add(const EARL_value_t *self,
                                     const EARL_value_t *const other) {
 
-    EARL_object_string_t *s1     = (EARL_object_string_t *)this->as.obj;
+    EARL_object_string_t *s1     = (EARL_object_string_t *)self->as.obj;
     EARL_object_string_t *s2     = (EARL_object_string_t *)other->as.obj;
-    char                 *concat = mem_s_malloc(s1->len + s2->len + 1, NULL, NULL);
+    char                 *concat = (char *)mem_s_malloc(s1->len + s2->len + 1, NULL, NULL);
 
     strcpy(concat, s1->chars);
     strcat(concat, s2->chars);

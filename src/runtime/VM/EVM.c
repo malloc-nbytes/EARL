@@ -50,7 +50,7 @@
 static void handle_load_global(EARL_vm_t *vm) {
     size_t        idx   = vm->read_byte(vm);
     const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
-    identifier_t *ident = s_umap_get(&vm->globals, name);
+    identifier_t *ident = (identifier_t *)s_umap_get(&vm->globals, name);
 
     vm->push(vm, ident->value);
 }
@@ -58,7 +58,7 @@ static void handle_load_global(EARL_vm_t *vm) {
 static void handle_set_global(EARL_vm_t *vm) {
     size_t        idx        = vm->read_byte(vm);
     const char   *name       = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
-    identifier_t *identifier = s_umap_get(&vm->globals, name);
+    identifier_t *identifier = (identifier_t *)s_umap_get(&vm->globals, name);
 
     if (!identifier) {
         fprintf(stderr, "Runtime Error: Undefined global variable '%s'\n", name);
@@ -76,7 +76,7 @@ static void handle_define_global(EARL_vm_t *vm) {
     const char   *name  = GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx);
     identifier_t *ident = identifier_alloc(name, value);
 
-    s_umap_insert(&vm->globals, name, (uint8_t *)ident);
+    s_umap_insert(&vm->globals, name, (void *)ident);
 }
 
 static void handle_call(EARL_vm_t *vm) {
@@ -87,7 +87,7 @@ static void handle_call(EARL_vm_t *vm) {
     if (callee.type == EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE) {
         builtin_f_sig_t builtin_fn = callee.as.builtin_function_reference;
 
-        EARL_value_t *args = mem_s_malloc(args_len * sizeof(EARL_value_t), NULL, NULL);
+        EARL_value_t *args = (EARL_value_t *)mem_s_malloc(args_len * sizeof(EARL_value_t), NULL, NULL);
 
         // Pop arguments in reverse order
         for (size_t i = 0; i < args_len; ++i)
