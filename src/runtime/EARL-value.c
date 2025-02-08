@@ -41,6 +41,9 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
         .to_cstr   = earl_value_builtin_function_reference_to_cstr,
         .add       = unsupported_add,
         .sub       = unsupported_sub,
+        .mul       = unsupported_mul,
+        .div       = unsupported_div,
+        .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
@@ -53,6 +56,9 @@ EARL_value_t earl_value_integer_create(int x) {
         .to_cstr   = earl_value_integer_to_cstr,
         .add       = earl_value_integer_add,
         .sub       = earl_value_integer_sub,
+        .mul       = earl_value_integer_mul,
+        .div       = earl_value_integer_div,
+        .mod       = earl_value_mod,
         .mutate    = earl_value_integer_mutate,
         .is_truthy = earl_value_integer_is_truthy,
     };
@@ -65,6 +71,9 @@ EARL_value_t earl_value_unit_create(void) {
         .to_cstr   = earl_value_unit_to_cstr,
         .add       = unsupported_add,
         .sub       = unsupported_sub,
+        .mul       = unsupported_mul,
+        .div       = unsupported_div,
+        .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
@@ -77,6 +86,9 @@ EARL_value_t earl_value_boolean_create(int b) {
         .to_cstr   = unsupported_to_cstr,
         .add       = unsupported_add,
         .sub       = unsupported_sub,
+        .mul       = unsupported_mul,
+        .div       = unsupported_div,
+        .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
@@ -90,6 +102,9 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         .to_cstr   = unsupported_to_cstr,
         .add       = unsupported_add,
         .sub       = unsupported_sub,
+        .mul       = unsupported_mul,
+        .div       = unsupported_div,
+        .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
@@ -117,6 +132,18 @@ EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const
 
 EARL_value_t unsupported_sub(const EARL_value_t *self, const EARL_value_t *const other) {
     err_wargs("sub is unsupported for type `%d`", self->type);
+}
+
+EARL_value_t unsupported_mul(const EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("mul is unsupported for type `%d`", self->type);
+}
+
+EARL_value_t unsupported_div(const EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("div is unsupported for type `%d`", self->type);
+}
+
+EARL_value_t unsupported_mod(const EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("mod is unsupported for type `%d`", self->type);
 }
 
 int unsupported_is_truthy(const EARL_value_t *const self) {

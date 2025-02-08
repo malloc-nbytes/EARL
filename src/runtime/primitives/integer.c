@@ -46,6 +46,24 @@ EARL_value_t earl_value_integer_sub(const EARL_value_t *self, const EARL_value_t
     return earl_value_integer_create(diff);
 }
 
+EARL_value_t earl_value_integer_mul(const EARL_value_t *self, const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    int prod = self->as.integer * other->as.integer;
+    return earl_value_integer_create(prod);
+}
+
+EARL_value_t earl_value_integer_div(const EARL_value_t *self, const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    int res = self->as.integer / other->as.integer;
+    return earl_value_integer_create(res);
+}
+
+EARL_value_t earl_value_mod(const EARL_value_t *self, const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    int mod = self->as.integer % other->as.integer;
+    return earl_value_integer_create(mod);
+}
+
 void earl_value_integer_mutate(EARL_value_t *self, const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     self->as.integer = other->as.integer;

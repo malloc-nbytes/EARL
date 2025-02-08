@@ -1,1 +1,1 @@
-println();
+println(3 % 5);
