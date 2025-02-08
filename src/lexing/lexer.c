@@ -293,7 +293,7 @@ token_t *lexer_peek(lexer_t *lexer, int i) {
     while (it && i >= 0) {
         if (i == 0)
             return it;
-        ++it, --i;
+        it = it->next, --i;
     }
     return NULL;
 }

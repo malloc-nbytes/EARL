@@ -37,6 +37,7 @@
 #include "global/keywords.h"
 #include "mem/mem.h"
 #include "misc/utils.h"
+#include "misc/err.h"
 
 static stmt_t *parse_stmt(lexer_t *lexer);
 static expr_t *parse_expr(lexer_t *lexer);
@@ -173,7 +174,9 @@ static expr_t *parse_primary_expr(lexer_t *lexer) {
         } break;
 
         case TOKEN_TYPE_KEYWORD: {
-            assert(0 && "keyword in expression is unimplemented");
+            if (streq(cur->lx, KEYWORD_IF))
+                return left;
+            err_wargs("keyword `%s` is not implemented in primary expression", cur->lx);
         } break;
 
         default: return left;
@@ -329,12 +332,14 @@ static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
         size_t
             tmp_len = 1,
             tmp_cap = 1;
+        lexer_discard(lexer); // else
         stmt_if_t *nested_if = parse_stmt_if(lexer);
         stmt_t *tmp_stmt = stmt_alloc((void *)nested_if, STMT_TYPE_IF, lexer);
         tmp[0] = tmp_stmt;
         else_block = stmt_block_alloc(tmp, tmp_len, tmp_cap, lexer);
     } else if (tok1_else) {
         (void)expect_keyword(lexer, KEYWORD_ELSE);
+        (void)expect(lexer, TOKEN_TYPE_LEFT_CURLY_BRACKET);
         else_block = parse_stmt_block(lexer);
     }
 

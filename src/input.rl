@@ -1,4 +1,7 @@
 if 0 {
-    println("here");
+    println("true");
+} else if 1 {
+    println("false");
 }
+
 println("done");

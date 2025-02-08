@@ -396,10 +396,24 @@ static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
     cc_expr(stmt->condition, cc);
 
     int then_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
+    cc_write_opcode(cc, OPCODE_POP);
 
     cc_stmt_block(stmt->then_block, cc);
 
-    patch_jump(cc, then_jump);
+    int else_jump = -1;
+
+    if (stmt->else_block) {
+        else_jump = write_jump(cc, OPCODE_JUMP);
+        patch_jump(cc, then_jump);
+        cc_write_opcode(cc, OPCODE_POP);
+
+        cc_stmt_block(stmt->else_block, cc);
+    }
+    else
+        patch_jump(cc, then_jump);
+
+    if (else_jump != -1)
+        patch_jump(cc, else_jump);
 }
 
 static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {

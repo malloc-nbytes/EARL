@@ -40,5 +40,6 @@
 #define OPCODE_SET_LOCAL     0x0D
 #define OPCODE_POP           0x0E
 #define OPCODE_JUMP_IF_FALSE 0x0F
+#define OPCODE_JUMP          0x10
 
 #endif // OPCODE_H

@@ -157,6 +157,11 @@ static void handle_jump_if_false(EARL_vm_t *vm) {
         vm->ip += offset;
 }
 
+static void handle_jump(EARL_vm_t *vm) {
+    uint16_t offset = READ_SHORT(vm);
+    vm->ip += offset;
+}
+
 void EVM_exec(cc_t *cc) {
     EARL_vm_t vm = (EARL_vm_t) {
         .stack      = { .len = 0 },
@@ -220,6 +225,9 @@ void EVM_exec(cc_t *cc) {
             break;
         case OPCODE_JUMP_IF_FALSE:
             handle_jump_if_false(&vm);
+            break;
+        case OPCODE_JUMP:
+            handle_jump(&vm);
             break;
         default: {
             fprintf(stderr, "unknown opcode %d\n", opc);
