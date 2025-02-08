@@ -76,4 +76,10 @@ EARL_value_t earl_value_boolean_create(int b);
 EARL_value_t earl_value_builtin_function_reference_create(builtin_f_sig_t fun);
 EARL_value_t earl_value_object_create(EARL_object_t *obj);
 
+// Unsupported Intrinsic Methods
+const char * unsupported_to_cstr(const EARL_value_t *const self);
+EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other);
+void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other);
+int          unsupported_is_truthy(const EARL_value_t *const self);
+
 #endif // EARL_VALUE_H

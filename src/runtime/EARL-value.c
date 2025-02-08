@@ -41,9 +41,9 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
             .builtin_function_reference = fun,
         },
         .to_cstr = earl_value_builtin_function_reference_to_cstr,
-        .add = NULL,
-        .mutate = NULL,
-        .is_truthy = NULL,
+        .add = unsupported_add,
+        .mutate = unsupported_mutate,
+        .is_truthy = unsupported_is_truthy,
     };
 }
 
@@ -67,9 +67,9 @@ EARL_value_t earl_value_unit_create(void) {
             .integer = 0
         },
         .to_cstr = earl_value_unit_to_cstr,
-        .add = NULL,
-        .mutate = NULL,
-        .is_truthy = NULL,
+        .add = unsupported_add,
+        .mutate = unsupported_mutate,
+        .is_truthy = unsupported_is_truthy,
     };
 }
 
@@ -79,10 +79,10 @@ EARL_value_t earl_value_boolean_create(int b) {
         .as = {
             .boolean = b,
         },
-        .to_cstr = NULL,
-        .add = NULL,
-        .mutate = NULL,
-        .is_truthy = NULL,
+        .to_cstr = unsupported_to_cstr,
+        .add = unsupported_add,
+        .mutate = unsupported_mutate,
+        .is_truthy = unsupported_is_truthy,
     };
     TODO;
 }
@@ -93,18 +93,18 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         .as = {
             .obj = obj,
         },
-        .to_cstr = NULL,
-        .add = NULL,
-        .mutate = NULL,
-        .is_truthy = NULL,
+        .to_cstr = unsupported_to_cstr,
+        .add = unsupported_add,
+        .mutate = unsupported_mutate,
+        .is_truthy = unsupported_is_truthy,
     };
 
     switch (obj->type) {
     case EARL_OBJECT_TYPE_STRING: {
         value.to_cstr = earl_object_string_to_cstr;
         value.add = earl_object_string_add;
-        value.mutate = NULL;
-        value.is_truthy = NULL;
+        value.mutate = unsupported_mutate;
+        value.is_truthy = unsupported_is_truthy;
     } break;
     default: {
         err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);
@@ -112,4 +112,20 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
     }
 
     return value;
+}
+
+const char *unsupported_to_cstr(const EARL_value_t *const self) {
+    err_wargs("to_cstr is unsupported for type `%d`", self->type);
+}
+
+EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("add is unsupported for type `%d`", self->type);
+}
+
+int unsupported_is_truthy(const EARL_value_t *const self) {
+    err_wargs("is_truthy is unsupported for type `%d`", self->type);
+}
+
+void unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("mutate is unsupported for type `%d`", self->type);
 }
