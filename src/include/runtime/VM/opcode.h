@@ -27,7 +27,7 @@
 #define OPCODE_HALT          0x00
 #define OPCODE_CONST         0x01
 #define OPCODE_ADD           0x02
-#define OPCODE_MINUS         0x03
+#define OPCODE_SUB           0x03
 #define OPCODE_MUL           0x04
 #define OPCODE_DIV           0x05
 #define OPCODE_MOD           0x06

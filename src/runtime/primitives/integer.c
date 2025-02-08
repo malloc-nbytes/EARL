@@ -40,6 +40,12 @@ EARL_value_t earl_value_integer_add(const EARL_value_t *self,
     return earl_value_integer_create(sum);
 }
 
+EARL_value_t earl_value_integer_sub(const EARL_value_t *self, const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    int diff = self->as.integer - other->as.integer;
+    return earl_value_integer_create(diff);
+}
+
 void earl_value_integer_mutate(EARL_value_t *self, const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     self->as.integer = other->as.integer;

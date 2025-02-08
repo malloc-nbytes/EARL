@@ -66,6 +66,7 @@ typedef struct EARL_value {
 
     to_cstr_sig_t to_cstr;
     add_sig_t add;
+    sub_sig_t sub;
     mutate_sig_t mutate;
     is_truthy_sig_t is_truthy;
 } EARL_value_t;
@@ -79,6 +80,7 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj);
 // Unsupported Intrinsic Methods
 const char * unsupported_to_cstr(const EARL_value_t *const self);
 EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other);
+EARL_value_t unsupported_sub(const EARL_value_t *self, const EARL_value_t *const other);
 void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          unsupported_is_truthy(const EARL_value_t *const self);
 

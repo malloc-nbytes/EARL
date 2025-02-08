@@ -37,12 +37,11 @@ EARL_value_t
 earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE,
-        .as = {
-            .builtin_function_reference = fun,
-        },
-        .to_cstr = earl_value_builtin_function_reference_to_cstr,
-        .add = unsupported_add,
-        .mutate = unsupported_mutate,
+        .as = { .builtin_function_reference = fun },
+        .to_cstr   = earl_value_builtin_function_reference_to_cstr,
+        .add       = unsupported_add,
+        .sub       = unsupported_sub,
+        .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
 }
@@ -50,12 +49,11 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
 EARL_value_t earl_value_integer_create(int x) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_INTEGER,
-        .as = {
-            .integer = x
-        },
-        .to_cstr = earl_value_integer_to_cstr,
-        .add = earl_value_integer_add,
-        .mutate = earl_value_integer_mutate,
+        .as = { .integer = x },
+        .to_cstr   = earl_value_integer_to_cstr,
+        .add       = earl_value_integer_add,
+        .sub       = earl_value_integer_sub,
+        .mutate    = earl_value_integer_mutate,
         .is_truthy = earl_value_integer_is_truthy,
     };
 }
@@ -63,12 +61,11 @@ EARL_value_t earl_value_integer_create(int x) {
 EARL_value_t earl_value_unit_create(void) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_UNIT,
-        .as = {
-            .integer = 0
-        },
-        .to_cstr = earl_value_unit_to_cstr,
-        .add = unsupported_add,
-        .mutate = unsupported_mutate,
+        .as = { .integer = 0 },
+        .to_cstr   = earl_value_unit_to_cstr,
+        .add       = unsupported_add,
+        .sub       = unsupported_sub,
+        .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
 }
@@ -76,12 +73,11 @@ EARL_value_t earl_value_unit_create(void) {
 EARL_value_t earl_value_boolean_create(int b) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_BOOLEAN,
-        .as = {
-            .boolean = b,
-        },
-        .to_cstr = unsupported_to_cstr,
-        .add = unsupported_add,
-        .mutate = unsupported_mutate,
+        .as = { .boolean = b },
+        .to_cstr   = unsupported_to_cstr,
+        .add       = unsupported_add,
+        .sub       = unsupported_sub,
+        .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
     TODO;
@@ -90,21 +86,18 @@ EARL_value_t earl_value_boolean_create(int b) {
 EARL_value_t earl_value_object_create(EARL_object_t *obj) {
     EARL_value_t value = (EARL_value_t) {
         .type = EARL_VALUE_TYPE_OBJECT,
-        .as = {
-            .obj = obj,
-        },
-        .to_cstr = unsupported_to_cstr,
-        .add = unsupported_add,
-        .mutate = unsupported_mutate,
+        .as = { .obj = obj },
+        .to_cstr   = unsupported_to_cstr,
+        .add       = unsupported_add,
+        .sub       = unsupported_sub,
+        .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
     };
 
     switch (obj->type) {
     case EARL_OBJECT_TYPE_STRING: {
         value.to_cstr = earl_object_string_to_cstr;
-        value.add = earl_object_string_add;
-        value.mutate = unsupported_mutate;
-        value.is_truthy = unsupported_is_truthy;
+        value.add     = earl_object_string_add;
     } break;
     default: {
         err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);
@@ -120,6 +113,10 @@ const char *unsupported_to_cstr(const EARL_value_t *const self) {
 
 EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other) {
     err_wargs("add is unsupported for type `%d`", self->type);
+}
+
+EARL_value_t unsupported_sub(const EARL_value_t *self, const EARL_value_t *const other) {
+    err_wargs("sub is unsupported for type `%d`", self->type);
 }
 
 int unsupported_is_truthy(const EARL_value_t *const self) {

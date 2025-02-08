@@ -115,6 +115,7 @@ static void handle_binop(EARL_vm_t *vm, uint8_t opc) {
 
     switch (opc) {
     case OPCODE_ADD: res = n1.add(&n1, &n2); break;
+    case OPCODE_SUB: res = n1.sub(&n1, &n2); break;
     default:         err_wargs("runtime: unimplemented binop: %d", (int)opc);
     }
 
@@ -196,7 +197,7 @@ void EVM_exec(cc_t *cc) {
         case OPCODE_POP:
             handle_pop(&vm);
             break;
-        case OPCODE_MINUS:
+        case OPCODE_SUB:
         case OPCODE_MUL:
         case OPCODE_DIV:
         case OPCODE_ADD:

@@ -156,7 +156,7 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
         cc_write_opcode(cc, OPCODE_ADD);
         break;
     case TOKEN_TYPE_MINUS:
-        cc_write_opcode(cc, OPCODE_MINUS);
+        cc_write_opcode(cc, OPCODE_SUB);
         break;
     case TOKEN_TYPE_FORWARD_SLASH:
         cc_write_opcode(cc, OPCODE_DIV);
@@ -305,7 +305,7 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
             cc_write_opcode(cc, OPCODE_ADD);
             break;
         case TOKEN_TYPE_MINUS_EQUALS:
-            cc_write_opcode(cc, OPCODE_MINUS);
+            cc_write_opcode(cc, OPCODE_SUB);
             break;
         case TOKEN_TYPE_ASTERISK_EQUALS:
             cc_write_opcode(cc, OPCODE_MUL);
