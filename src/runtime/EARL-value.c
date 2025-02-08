@@ -126,23 +126,23 @@ const char *unsupported_to_cstr(const EARL_value_t *const self) {
     err_wargs("to_cstr is unsupported for type `%d`", self->type);
 }
 
-EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t unsupported_add(const EARL_value_t *const self, const EARL_value_t *const other) {
     err_wargs("add is unsupported for type `%d`", self->type);
 }
 
-EARL_value_t unsupported_sub(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t unsupported_sub(const EARL_value_t *const self, const EARL_value_t *const other) {
     err_wargs("sub is unsupported for type `%d`", self->type);
 }
 
-EARL_value_t unsupported_mul(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t unsupported_mul(const EARL_value_t *const self, const EARL_value_t *const other) {
     err_wargs("mul is unsupported for type `%d`", self->type);
 }
 
-EARL_value_t unsupported_div(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t unsupported_div(const EARL_value_t *const self, const EARL_value_t *const other) {
     err_wargs("div is unsupported for type `%d`", self->type);
 }
 
-EARL_value_t unsupported_mod(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t unsupported_mod(const EARL_value_t *const self, const EARL_value_t *const other) {
     err_wargs("mod is unsupported for type `%d`", self->type);
 }
 

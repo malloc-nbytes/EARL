@@ -82,11 +82,11 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj);
 
 // Unsupported Intrinsic Methods
 const char * unsupported_to_cstr(const EARL_value_t *const self);
-EARL_value_t unsupported_add(const EARL_value_t *self, const EARL_value_t *const other);
-EARL_value_t unsupported_sub(const EARL_value_t *self, const EARL_value_t *const other);
-EARL_value_t unsupported_mul(const EARL_value_t *self, const EARL_value_t *const other);
-EARL_value_t unsupported_div(const EARL_value_t *self, const EARL_value_t *const other);
-EARL_value_t unsupported_mod(const EARL_value_t *self, const EARL_value_t *const other);
+EARL_value_t unsupported_add(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_sub(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_mul(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_div(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_mod(const EARL_value_t *const self, const EARL_value_t *const other);
 void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          unsupported_is_truthy(const EARL_value_t *const self);
 

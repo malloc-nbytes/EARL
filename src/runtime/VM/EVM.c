@@ -79,6 +79,17 @@ static void handle_define_global(EARL_vm_t *vm) {
     s_umap_insert(&vm->globals, name, (void *)ident);
 }
 
+// Caller must free()
+static EARL_value_t *gather_function_parameters(EARL_vm_t *vm, size_t args_len) {
+    EARL_value_t *args = (EARL_value_t *)mem_s_malloc(args_len * sizeof(EARL_value_t), NULL, NULL);
+
+    // Pop arguments in reverse order
+    for (size_t i = 0; i < args_len; ++i)
+        args[args_len-1-i] = vm->pop(vm);
+
+    return args;
+}
+
 static void handle_call(EARL_vm_t *vm) {
     size_t args_len = vm->read_byte(vm);
     EARL_value_t callee = vm->pop(vm);
@@ -86,17 +97,9 @@ static void handle_call(EARL_vm_t *vm) {
     // Builtin Function
     if (callee.type == EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE) {
         builtin_f_sig_t builtin_fn = callee.as.builtin_function_reference;
-
-        EARL_value_t *args = (EARL_value_t *)mem_s_malloc(args_len * sizeof(EARL_value_t), NULL, NULL);
-
-        // Pop arguments in reverse order
-        for (size_t i = 0; i < args_len; ++i)
-            args[args_len-1-i] = vm->pop(vm);
-
+        EARL_value_t *args = gather_function_parameters(vm, args_len);
         EARL_value_t res = builtin_fn(args, args_len);
-
         free(args);
-
         vm->push(vm, res);
     }
 

@@ -27,44 +27,50 @@
 #include "runtime/types.h"
 #include "mem/mem.h"
 
+// NOTE: small memory leak
 const char *earl_value_integer_to_cstr(const EARL_value_t *const self) {
     char *buffer = (char *)mem_s_malloc(20, NULL, NULL);
     snprintf(buffer, 20, "%d", self->as.integer);
     return buffer;
 }
 
-EARL_value_t earl_value_integer_add(const EARL_value_t *self,
+EARL_value_t earl_value_integer_add(const EARL_value_t *const self,
                                     const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     int sum = self->as.integer + other->as.integer;
     return earl_value_integer_create(sum);
 }
 
-EARL_value_t earl_value_integer_sub(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t earl_value_integer_sub(const EARL_value_t *const self,
+                                    const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     int diff = self->as.integer - other->as.integer;
     return earl_value_integer_create(diff);
 }
 
-EARL_value_t earl_value_integer_mul(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t earl_value_integer_mul(const EARL_value_t *const self,
+                                    const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     int prod = self->as.integer * other->as.integer;
     return earl_value_integer_create(prod);
 }
 
-EARL_value_t earl_value_integer_div(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t earl_value_integer_div(const EARL_value_t *const self,
+                                    const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     int res = self->as.integer / other->as.integer;
     return earl_value_integer_create(res);
 }
 
-EARL_value_t earl_value_mod(const EARL_value_t *self, const EARL_value_t *const other) {
+EARL_value_t earl_value_mod(const EARL_value_t *const self,
+                            const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     int mod = self->as.integer % other->as.integer;
     return earl_value_integer_create(mod);
 }
 
-void earl_value_integer_mutate(EARL_value_t *self, const EARL_value_t *const other) {
+void earl_value_integer_mutate(EARL_value_t *self,
+                               const EARL_value_t *const other) {
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     self->as.integer = other->as.integer;
 }
