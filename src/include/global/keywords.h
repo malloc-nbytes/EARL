@@ -26,17 +26,15 @@
 
 #include <stddef.h>
 
-/// @brief All keywords in an array
-extern const char *config_keywords[];
+//extern const char *config_keywords[];
+//extern const size_t config_keywords_len;
 
-/// @brief The number of keywords that exist
-extern const size_t config_keywords_len;
-
-#define KEYWORD_LET  "let"
-#define KEYWORD_FN   "fn"
-#define KEYWORD_RET  "return"
-#define KEYWORD_IF   "if"
-#define KEYWORD_ELSE "else"
+#define KEYWORD_LET   "let"
+#define KEYWORD_FN    "fn"
+#define KEYWORD_RET   "return"
+#define KEYWORD_IF    "if"
+#define KEYWORD_ELSE  "else"
+#define KEYWORD_WHILE "while"
 
 #define KEYWORDS_ASCPL {    \
     KEYWORD_LET,            \
@@ -44,6 +42,7 @@ extern const size_t config_keywords_len;
     KEYWORD_RET,            \
     KEYWORD_IF,             \
     KEYWORD_ELSE,           \
+    KEYWORD_WHILE,          \
 }
 
 /// @brief Check if `s` is a keyword

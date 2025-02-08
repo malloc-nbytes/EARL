@@ -346,6 +346,14 @@ static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
     return stmt_if_alloc(condition, then_block, else_block, lexer);
 }
 
+static stmt_while_t *parse_stmt_while(lexer_t *lexer) {
+    lexer_discard(lexer); // while
+    expr_t *condition = parse_expr(lexer);
+    (void)expect(lexer, TOKEN_TYPE_LEFT_CURLY_BRACKET);
+    stmt_block_t *block = parse_stmt_block(lexer);
+    return stmt_while_alloc(condition, block, lexer);
+}
+
 static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     const char *kw = lexer_peek(lexer, 0)->lx;
     if (streq(kw, KEYWORD_LET)) {
@@ -360,6 +368,9 @@ static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     } else if (streq(kw, KEYWORD_IF)) {
         stmt_if_t *if_ = parse_stmt_if(lexer);
         return stmt_alloc((void *)if_, STMT_TYPE_IF, lexer);
+    } else if (streq(kw, KEYWORD_WHILE)) {
+        stmt_while_t *while_ = parse_stmt_while(lexer);
+        return stmt_alloc((void *)while_, STMT_TYPE_WHILE, lexer);
     }
     fprintf(stderr, "unhandled keyword: %s\n", lexer_peek(lexer, 0)->lx);
     exit(1);

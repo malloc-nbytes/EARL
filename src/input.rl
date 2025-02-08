@@ -1,3 +1,3 @@
-if (0 || 1) && 1 {
-    println("here");
+while 1 {
+    println("hi");
 }

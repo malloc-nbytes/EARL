@@ -54,6 +54,16 @@ stmt_if_t *stmt_if_alloc(expr_t *condition,
     return if_;
 }
 
+stmt_while_t *stmt_while_alloc(expr_t *condition,
+                               stmt_block_t *block,
+                               lexer_t *lexer) {
+    (void)lexer;
+    stmt_while_t *while_ = (stmt_while_t *)mem_s_malloc(sizeof(stmt_while_t), NULL, NULL);
+    while_->condition = condition;
+    while_->block = block;
+    return while_;
+}
+
 stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer) {
     (void)lexer;
     stmt_block_t *block = (stmt_block_t *)mem_s_malloc(sizeof(stmt_block_t), NULL, NULL);
@@ -121,6 +131,9 @@ stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer) {
     } break;
     case STMT_TYPE_IF: {
         stmt->data.if_ = (stmt_if_t *)data;
+    } break;
+    case STMT_TYPE_WHILE: {
+        stmt->data.while_ = (stmt_while_t *)data;
     } break;
     default: {
         assert(0 && "statement unimplemented");
