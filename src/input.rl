@@ -1,1 +1,3 @@
-println(3 % 5);
+if "hi" {
+    println("here");
+}

@@ -74,6 +74,8 @@ typedef struct EARL_value {
     is_truthy_sig_t is_truthy;
 } EARL_value_t;
 
+const char *earl_value_type_to_cstr(const EARL_value_t *const value);
+
 EARL_value_t earl_value_integer_create(int x);
 EARL_value_t earl_value_unit_create(void);
 EARL_value_t earl_value_boolean_create(int b);

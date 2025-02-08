@@ -324,8 +324,8 @@ static stmt_if_t *parse_stmt_if(lexer_t *lexer) {
     token_t *tok1 = lexer_peek(lexer, 0);
     token_t *tok2 = lexer_peek(lexer, 1);
 
-    int tok1_else = tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_ELSE);
-    int tok2_if = tok2->type == TOKEN_TYPE_KEYWORD && streq(tok2->lx, KEYWORD_IF);
+    int tok1_else = tok1 && tok1->type == TOKEN_TYPE_KEYWORD && streq(tok1->lx, KEYWORD_ELSE);
+    int tok2_if   = tok2 && tok2->type == TOKEN_TYPE_KEYWORD && streq(tok2->lx, KEYWORD_IF);
 
     if (tok1_else && tok2_if) {
         stmt_t **tmp = (stmt_t **)mem_s_malloc(sizeof(stmt_t *), NULL, NULL);

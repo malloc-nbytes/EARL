@@ -122,34 +122,64 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
     return value;
 }
 
+const char *earl_value_type_to_cstr(const EARL_value_t *const value) {
+    switch (value->type) {
+    case EARL_VALUE_TYPE_UNIT:                       return "unit";
+    case EARL_VALUE_TYPE_INTEGER:                    return "int";
+    case EARL_VALUE_TYPE_BOOLEAN:                    return "bool";
+    case EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE: return "builtin function reference";
+    case EARL_VALUE_TYPE_OBJECT: {
+        switch (value->as.obj->type) {
+        case EARL_OBJECT_TYPE_STRING: return "string";
+        default: err_wargs("%s: unknown type: %s", (int)value->as.obj->type);
+        }
+    } break;
+    default: err_wargs("%s: unknown type: %s", (int)value->type);
+    }
+    return ""; // unreachable
+}
+
 const char *unsupported_to_cstr(const EARL_value_t *const self) {
-    err_wargs("to_cstr is unsupported for type `%d`", self->type);
+    err_wargs("operation `to_cstr` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
-EARL_value_t unsupported_add(const EARL_value_t *const self, const EARL_value_t *const other) {
-    err_wargs("add is unsupported for type `%d`", self->type);
+EARL_value_t unsupported_add(const EARL_value_t *const self,
+                             const EARL_value_t *const other) {
+    err_wargs("operation `add` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
-EARL_value_t unsupported_sub(const EARL_value_t *const self, const EARL_value_t *const other) {
-    err_wargs("sub is unsupported for type `%d`", self->type);
+EARL_value_t unsupported_sub(const EARL_value_t *const self,
+                             const EARL_value_t *const other) {
+    err_wargs("operation `sub` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
-EARL_value_t unsupported_mul(const EARL_value_t *const self, const EARL_value_t *const other) {
-    err_wargs("mul is unsupported for type `%d`", self->type);
+EARL_value_t unsupported_mul(const EARL_value_t *const self,
+                             const EARL_value_t *const other) {
+    err_wargs("operation `mul` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
-EARL_value_t unsupported_div(const EARL_value_t *const self, const EARL_value_t *const other) {
-    err_wargs("div is unsupported for type `%d`", self->type);
+EARL_value_t unsupported_div(const EARL_value_t *const self,
+                             const EARL_value_t *const other) {
+    err_wargs("operation `div` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
-EARL_value_t unsupported_mod(const EARL_value_t *const self, const EARL_value_t *const other) {
-    err_wargs("mod is unsupported for type `%d`", self->type);
+EARL_value_t unsupported_mod(const EARL_value_t *const self,
+                             const EARL_value_t *const other) {
+    err_wargs("operation `mod` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
 int unsupported_is_truthy(const EARL_value_t *const self) {
-    err_wargs("is_truthy is unsupported for type `%d`", self->type);
+    err_wargs("operation `is_truthy` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
 
 void unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other) {
-    err_wargs("mutate is unsupported for type `%d`", self->type);
+    err_wargs("operation `mutate` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
 }
