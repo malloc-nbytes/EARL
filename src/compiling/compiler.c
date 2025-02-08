@@ -380,8 +380,26 @@ static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
     TODO;
 }
 
+static void write_loop(cc_t *cc, size_t loop_start) {
+    cc_write_opcode(cc, OPCODE_LOOP);
+    size_t offset = cc->opcode.len - loop_start + 2;
+    if (offset > UINT16_MAX)
+        err("too many statements in loop body");
+    cc_write_opcode(cc, (uint8_t)((offset >> 8) & 0xFF));
+    cc_write_opcode(cc, (uint8_t)(offset & 0xFF));
+}
+
 static void cc_stmt_while(stmt_while_t *stmt, cc_t *cc) {
-    TODO;
+    size_t loop_start = cc->opcode.len;
+    cc_expr(stmt->condition, cc);
+
+    int exit_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
+    cc_write_opcode(cc, OPCODE_POP);
+    cc_stmt_block(stmt->block, cc);
+    write_loop(cc, loop_start);
+
+    patch_jump(cc, exit_jump);
+    cc_write_opcode(cc, OPCODE_POP);
 }
 
 static void cc_stmt(stmt_t *stmt, cc_t *cc) {

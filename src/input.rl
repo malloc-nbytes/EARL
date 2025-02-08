@@ -1,3 +1,5 @@
-while 1 {
+let x = 1;
+
+while x {
     println("hi");
 }
