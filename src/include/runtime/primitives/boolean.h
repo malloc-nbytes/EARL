@@ -21,33 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef OPCODE_H
-#define OPCODE_H
+#ifndef BOOLEAN_H
+#define BOOLEAN_H
 
-#define OPCODE_HALT          0x00
-#define OPCODE_CONST         0x01
-#define OPCODE_ADD           0x02
-#define OPCODE_SUB           0x03
-#define OPCODE_MUL           0x04
-#define OPCODE_DIV           0x05
-#define OPCODE_MOD           0x06
-#define OPCODE_CALL          0x07
-#define OPCODE_DEF_GLOBAL    0x08
-#define OPCODE_LOAD_GLOBAL   0x09
-#define OPCODE_SET_GLOBAL    0x0A
-#define OPCODE_DEF_LOCAL     0x0B
-#define OPCODE_LOAD_LOCAL    0x0C
-#define OPCODE_SET_LOCAL     0x0D
-#define OPCODE_POP           0x0E
-#define OPCODE_JUMP_IF_FALSE 0x0F
-#define OPCODE_JUMP          0x10
-#define OPCODE_JUMP_IF_TRUE  0x11
-#define OPCODE_LOOP          0x12
-#define OPCODE_EQ            0x13
-#define OPCODE_NEQ           0x14
-#define OPCODE_LT            0x15
-#define OPCODE_GT            0x16
-#define OPCODE_LE            0x17
-#define OPCODE_GE            0x18
+#include "runtime/EARL-value.h"
 
-#endif // OPCODE_H
+const char * earl_value_boolean_to_cstr(const EARL_value_t *const self);
+void         earl_value_boolean_mutate(EARL_value_t *self, const EARL_value_t *const other);
+int          earl_value_boolean_is_truthy(const EARL_value_t *const self);
+EARL_value_t earl_value_boolean_eq(const EARL_value_t *const self, const EARL_value_t *const other);
+
+#endif // BOOLEAN_H

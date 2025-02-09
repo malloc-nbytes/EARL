@@ -29,6 +29,7 @@
 #include "runtime/primitives/string.h"
 #include "runtime/primitives/integer.h"
 #include "runtime/primitives/unit.h"
+#include "runtime/primitives/boolean.h"
 #include "runtime/primitives/builtin-function-reference.h"
 #include "misc/err.h"
 #include "misc/utils.h"
@@ -46,6 +47,7 @@ earl_value_builtin_function_reference_create(builtin_f_sig_t fun) {
         .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
+        .eq        = unsupported_eq,
     };
 }
 
@@ -61,6 +63,7 @@ EARL_value_t earl_value_integer_create(int x) {
         .mod       = earl_value_mod,
         .mutate    = earl_value_integer_mutate,
         .is_truthy = earl_value_integer_is_truthy,
+        .eq        = earl_value_integer_eq,
     };
 }
 
@@ -76,6 +79,7 @@ EARL_value_t earl_value_unit_create(void) {
         .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
+        .eq        = unsupported_eq,
     };
 }
 
@@ -83,14 +87,15 @@ EARL_value_t earl_value_boolean_create(int b) {
     return (EARL_value_t) {
         .type = EARL_VALUE_TYPE_BOOLEAN,
         .as = { .boolean = b },
-        .to_cstr   = unsupported_to_cstr,
+        .to_cstr   = earl_value_boolean_to_cstr,
         .add       = unsupported_add,
         .sub       = unsupported_sub,
         .mul       = unsupported_mul,
         .div       = unsupported_div,
         .mod       = unsupported_mod,
-        .mutate    = unsupported_mutate,
-        .is_truthy = unsupported_is_truthy,
+        .mutate    = earl_value_boolean_mutate,
+        .is_truthy = earl_value_boolean_is_truthy,
+        .eq        = earl_value_boolean_eq,
     };
     TODO;
 }
@@ -107,6 +112,7 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         .mod       = unsupported_mod,
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
+        .eq        = unsupported_eq,
     };
 
     switch (obj->type) {
@@ -146,30 +152,35 @@ const char *unsupported_to_cstr(const EARL_value_t *const self) {
 
 EARL_value_t unsupported_add(const EARL_value_t *const self,
                              const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `add` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }
 
 EARL_value_t unsupported_sub(const EARL_value_t *const self,
                              const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `sub` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }
 
 EARL_value_t unsupported_mul(const EARL_value_t *const self,
                              const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `mul` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }
 
 EARL_value_t unsupported_div(const EARL_value_t *const self,
                              const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `div` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }
 
 EARL_value_t unsupported_mod(const EARL_value_t *const self,
                              const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `mod` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }
@@ -180,6 +191,14 @@ int unsupported_is_truthy(const EARL_value_t *const self) {
 }
 
 void unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other) {
+    (void)other;
     err_wargs("operation `mutate` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
+}
+
+EARL_value_t unsupported_eq(const EARL_value_t *const self,
+                            const EARL_value_t *const other) {
+    (void)other;
+    err_wargs("operation `eq` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }

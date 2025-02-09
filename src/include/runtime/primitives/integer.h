@@ -34,5 +34,6 @@ EARL_value_t earl_value_integer_div(const EARL_value_t *self, const EARL_value_t
 EARL_value_t earl_value_mod(const EARL_value_t *self, const EARL_value_t *const other);
 void         earl_value_integer_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          earl_value_integer_is_truthy(const EARL_value_t *const self);
+EARL_value_t earl_value_integer_eq(const EARL_value_t *const self, const EARL_value_t *const other);
 
 #endif // INTEGER_H

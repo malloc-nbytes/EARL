@@ -29,20 +29,6 @@
 typedef struct EARL_object         EARL_object_t;
 typedef struct EARL_object_string  EARL_object_string_t;
 
-/* #define C_VALUE_AS_EARL_BOOLEAN(v) ((struct EARL_value){EARL_VALUE_TYPE_BOOLEAN, {.boolean = v}}) */
-/* #define C_VALUE_AS_EARL_UNIT       ((struct EARL_value){EARL_VALUE_TYPE_UNIT,    {.integer = 0}}) */
-/* #define C_VALUE_AS_EARL_INTEGER(v) ((struct EARL_value){EARL_VALUE_TYPE_INTEGER, {.integer = v}}) */
-/* #define C_VALUE_AS_EARL_OBJECT(v)  ((struct EARL_value){EARL_VALUE_TYPE_OBJECT,  {.obj = (EARL_object_t *)v}}) */
-
-/* #define EARL_VALUE_AS_C_BOOLEAN(v) ((v).as.boolean) */
-/* #define EARL_VALUE_AS_C_INTEGER(v) ((v).as.integer) */
-/* #define EARL_VALUE_AS_C_OBJECT(v)  ((v).as.obj) */
-
-/* #define EARL_VALUE_IS_BOOLEAN(v)   ((v).type == EARL_VALUE_TYPE_BOOLEAN) */
-/* #define EARL_VALUE_IS_UNIT(v)      ((v).type == EARL_VALUE_TYPE_UNIT) */
-/* #define EARL_VALUE_IS_INTEGER(v)   ((v).type == EARL_VALUE_TYPE_INTEGER) */
-/* #define EARL_VALUE_IS_OBJECT(v)    ((v).type == EARL_VALUE_TYPE_OBJECT) */
-
 typedef enum EARL_value_type {
     EARL_VALUE_TYPE_UNIT,
     EARL_VALUE_TYPE_INTEGER,
@@ -72,6 +58,7 @@ typedef struct EARL_value {
     mod_sig_t mod;
     mutate_sig_t mutate;
     is_truthy_sig_t is_truthy;
+    eq_sig_t eq;
 } EARL_value_t;
 
 const char *earl_value_type_to_cstr(const EARL_value_t *const value);
@@ -91,5 +78,6 @@ EARL_value_t unsupported_div(const EARL_value_t *const self, const EARL_value_t 
 EARL_value_t unsupported_mod(const EARL_value_t *const self, const EARL_value_t *const other);
 void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          unsupported_is_truthy(const EARL_value_t *const self);
+EARL_value_t unsupported_eq(const EARL_value_t *const self, const EARL_value_t *const other);
 
 #endif // EARL_VALUE_H

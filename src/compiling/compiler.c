@@ -202,6 +202,9 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
         cc_expr(expr->right, cc);
         patch_jump(cc, end_jump);
     } break;
+    case TOKEN_TYPE_DOUBLE_EQUALS:
+        cc_write_opcode(cc, OPCODE_EQ);
+        break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
     }
