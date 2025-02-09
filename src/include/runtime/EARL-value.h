@@ -59,6 +59,7 @@ typedef struct EARL_value {
     mutate_sig_t mutate;
     is_truthy_sig_t is_truthy;
     eq_sig_t eq;
+    neq_sig_t neq;
 } EARL_value_t;
 
 const char *earl_value_type_to_cstr(const EARL_value_t *const value);
@@ -69,7 +70,7 @@ EARL_value_t earl_value_boolean_create(int b);
 EARL_value_t earl_value_builtin_function_reference_create(builtin_f_sig_t fun);
 EARL_value_t earl_value_object_create(EARL_object_t *obj);
 
-// Unsupported Intrinsic Methods
+// Unsupported Intrinsic Functions
 const char * unsupported_to_cstr(const EARL_value_t *const self);
 EARL_value_t unsupported_add(const EARL_value_t *const self, const EARL_value_t *const other);
 EARL_value_t unsupported_sub(const EARL_value_t *const self, const EARL_value_t *const other);
@@ -79,5 +80,6 @@ EARL_value_t unsupported_mod(const EARL_value_t *const self, const EARL_value_t 
 void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          unsupported_is_truthy(const EARL_value_t *const self);
 EARL_value_t unsupported_eq(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_neq(const EARL_value_t *const self, const EARL_value_t *const other);
 
 #endif // EARL_VALUE_H

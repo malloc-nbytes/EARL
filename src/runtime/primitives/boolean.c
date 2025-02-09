@@ -44,3 +44,9 @@ EARL_value_t earl_value_boolean_eq(const EARL_value_t *const self, const EARL_va
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     return earl_value_boolean_create(self->as.boolean == other->as.boolean);
 }
+
+EARL_value_t earl_value_boolean_neq(const EARL_value_t *const self,
+                                    const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    return earl_value_boolean_create(self->as.boolean != other->as.boolean);
+}

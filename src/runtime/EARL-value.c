@@ -64,6 +64,7 @@ EARL_value_t earl_value_integer_create(int x) {
         .mutate    = earl_value_integer_mutate,
         .is_truthy = earl_value_integer_is_truthy,
         .eq        = earl_value_integer_eq,
+        .neq       = earl_value_integer_neq,
     };
 }
 
@@ -80,6 +81,7 @@ EARL_value_t earl_value_unit_create(void) {
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
         .eq        = unsupported_eq,
+        .neq       = unsupported_neq,
     };
 }
 
@@ -96,6 +98,7 @@ EARL_value_t earl_value_boolean_create(int b) {
         .mutate    = earl_value_boolean_mutate,
         .is_truthy = earl_value_boolean_is_truthy,
         .eq        = earl_value_boolean_eq,
+        .neq       = earl_value_boolean_neq,
     };
     TODO;
 }
@@ -113,6 +116,7 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         .mutate    = unsupported_mutate,
         .is_truthy = unsupported_is_truthy,
         .eq        = unsupported_eq,
+        .neq       = unsupported_neq,
     };
 
     switch (obj->type) {
@@ -200,5 +204,11 @@ EARL_value_t unsupported_eq(const EARL_value_t *const self,
                             const EARL_value_t *const other) {
     (void)other;
     err_wargs("operation `eq` is unsupported for type `%s`",
+              earl_value_type_to_cstr(self));
+}
+
+EARL_value_t unsupported_neq(const EARL_value_t *const self, const EARL_value_t *const other) {
+    (void)other;
+    err_wargs("operation `neq` is unsupported for type `%s`",
               earl_value_type_to_cstr(self));
 }

@@ -39,5 +39,6 @@ typedef       EARL_value_t (*mod_sig_t)      (const EARL_value_t *const self, co
 typedef       int          (*is_truthy_sig_t)(const EARL_value_t *const self);
 typedef       void         (*mutate_sig_t)   (EARL_value_t *self, const EARL_value_t *const other);
 typedef       EARL_value_t (*eq_sig_t)       (const EARL_value_t *const self, const EARL_value_t *const other);
+typedef       EARL_value_t (*neq_sig_t)      (const EARL_value_t *const self, const EARL_value_t *const other);
 
 #endif // BUILTIN_SIGS_H

@@ -30,5 +30,6 @@ const char * earl_value_boolean_to_cstr(const EARL_value_t *const self);
 void         earl_value_boolean_mutate(EARL_value_t *self, const EARL_value_t *const other);
 int          earl_value_boolean_is_truthy(const EARL_value_t *const self);
 EARL_value_t earl_value_boolean_eq(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t earl_value_boolean_neq(const EARL_value_t *const self, const EARL_value_t *const other);
 
 #endif // BOOLEAN_H

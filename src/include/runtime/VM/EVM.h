@@ -30,7 +30,8 @@
 #include "compiling/compiler.h"
 #include "ds/s-umap.h"
 
-#define STACK_LIM 512
+// #define STACK_LIM 512
+#define STACK_LIM 20000
 
 /// @brief The EARL virtual machine
 typedef struct EARL_vm {

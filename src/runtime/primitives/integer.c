@@ -84,3 +84,9 @@ EARL_value_t earl_value_integer_eq(const EARL_value_t *const self,
     ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
     return earl_value_boolean_create(self->as.integer == other->as.integer);
 }
+
+EARL_value_t earl_value_integer_neq(const EARL_value_t *const self,
+                                    const EARL_value_t *const other) {
+    ASSERT_TYPES_ARE_BINOP_COMPATIBLE(self->type, other->type);
+    return earl_value_boolean_create(self->as.integer != other->as.integer);
+}
