@@ -181,6 +181,7 @@ static void handle_jump(EARL_vm_t *vm) {
 static void handle_loop(EARL_vm_t *vm) {
     uint16_t offset = READ_SHORT(vm);
     vm->ip -= offset;
+    (void)vm->pop(vm);
 }
 
 void EVM_exec(cc_t *cc) {
