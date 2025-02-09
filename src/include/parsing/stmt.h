@@ -58,6 +58,19 @@ stmt_if_t *stmt_if_alloc(expr_t *condition,
 /// @return The new statement
 stmt_while_t *stmt_while_alloc(expr_t *condition, stmt_block_t *block, lexer_t *lexer);
 
+/// @brief Allocate a 'for' statement
+/// @param enumerator The enumerator (identifier)
+/// @param start The starting expression
+/// @param end The ending expression
+/// @param block The block of the loop
+/// @param lexer The lexer to use
+/// @return The new statement
+stmt_for_t *stmt_for_alloc(token_t *enumerator,
+                           expr_t *start,
+                           expr_t *end,
+                           stmt_block_t *block,
+                           lexer_t *lexer);
+
 /// @brief Allocate a 'block' statement
 /// @param stmts An array of statements that the block consists of
 /// @param stmts_len The length of stmts

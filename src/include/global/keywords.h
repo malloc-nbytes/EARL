@@ -35,6 +35,9 @@
 #define KEYWORD_IF    "if"
 #define KEYWORD_ELSE  "else"
 #define KEYWORD_WHILE "while"
+#define KEYWORD_FOR   "for"
+#define KEYWORD_IN    "in"
+#define KEYWORD_TO    "to"
 
 #define KEYWORDS_ASCPL {    \
     KEYWORD_LET,            \
@@ -43,6 +46,9 @@
     KEYWORD_IF,             \
     KEYWORD_ELSE,           \
     KEYWORD_WHILE,          \
+    KEYWORD_FOR,            \
+    KEYWORD_IN,             \
+    KEYWORD_TO,             \
 }
 
 /// @brief Check if `s` is a keyword

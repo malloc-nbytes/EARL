@@ -176,6 +176,10 @@ static expr_t *parse_primary_expr(lexer_t *lexer) {
         case TOKEN_TYPE_KEYWORD: {
             if (streq(cur->lx, KEYWORD_IF))
                 return left;
+            if (streq(cur->lx, KEYWORD_IN))
+                return left;
+            if (streq(cur->lx, KEYWORD_TO))
+                return left;
             err_wargs("keyword `%s` is not implemented in primary expression", cur->lx);
         } break;
 
@@ -354,6 +358,18 @@ static stmt_while_t *parse_stmt_while(lexer_t *lexer) {
     return stmt_while_alloc(condition, block, lexer);
 }
 
+static stmt_for_t *parse_stmt_for(lexer_t *lexer) {
+    lexer_discard(lexer); // for
+    token_t *enumerator = expect(lexer, TOKEN_TYPE_IDENTIFIER);
+    (void)expect_keyword(lexer, KEYWORD_IN);
+    expr_t *start = parse_expr(lexer);
+    (void)expect_keyword(lexer, KEYWORD_TO);
+    expr_t *end = parse_expr(lexer);
+    (void)expect(lexer, TOKEN_TYPE_LEFT_CURLY_BRACKET);
+    stmt_block_t *block = parse_stmt_block(lexer);
+    return stmt_for_alloc(enumerator, start, end, block, lexer);
+}
+
 static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     const char *kw = lexer_peek(lexer, 0)->lx;
     if (streq(kw, KEYWORD_LET)) {
@@ -371,6 +387,9 @@ static stmt_t *parse_keyword_stmt(lexer_t *lexer) {
     } else if (streq(kw, KEYWORD_WHILE)) {
         stmt_while_t *while_ = parse_stmt_while(lexer);
         return stmt_alloc((void *)while_, STMT_TYPE_WHILE, lexer);
+    } else if (streq(kw, KEYWORD_FOR)) {
+        stmt_for_t *for_ = parse_stmt_for(lexer);
+        return stmt_alloc((void *)for_, STMT_TYPE_FOR, lexer);
     }
     fprintf(stderr, "unhandled keyword: %s\n", lexer_peek(lexer, 0)->lx);
     exit(1);

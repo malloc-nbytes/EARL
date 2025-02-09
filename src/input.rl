@@ -1,6 +1,5 @@
-let x = 0;
+# for i in 0 to 10 {
+#     println(i);
+# }
 
-while x != 100000 {
-    println(x);
-    x += 1;
-}
+println(2 < 1);

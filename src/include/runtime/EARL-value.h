@@ -60,6 +60,7 @@ typedef struct EARL_value {
     is_truthy_sig_t is_truthy;
     eq_sig_t eq;
     neq_sig_t neq;
+    cmp_sig_t cmp;
 } EARL_value_t;
 
 const char *earl_value_type_to_cstr(const EARL_value_t *const value);
@@ -81,5 +82,6 @@ void         unsupported_mutate(EARL_value_t *self, const EARL_value_t *const ot
 int          unsupported_is_truthy(const EARL_value_t *const self);
 EARL_value_t unsupported_eq(const EARL_value_t *const self, const EARL_value_t *const other);
 EARL_value_t unsupported_neq(const EARL_value_t *const self, const EARL_value_t *const other);
+EARL_value_t unsupported_cmp(const EARL_value_t *const self, const EARL_value_t *const other, uint8_t opc);
 
 #endif // EARL_VALUE_H

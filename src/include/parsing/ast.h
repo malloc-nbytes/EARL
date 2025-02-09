@@ -46,6 +46,7 @@ typedef struct stmt_fn     stmt_fn_t;
 typedef struct stmt_return stmt_return_t;
 typedef struct stmt_if     stmt_if_t;
 typedef struct stmt_while  stmt_while_t;
+typedef struct stmt_for    stmt_for_t;
 
 typedef struct program program_t;
 
@@ -249,6 +250,9 @@ typedef struct stmt {
 
         /// @brief It is a 'while' statement
         stmt_while_t *while_;
+
+        /// @brief It is a 'for' statement
+        stmt_for_t *for_;
     } data;
 } stmt_t;
 
@@ -268,6 +272,13 @@ typedef struct stmt_while {
     expr_t *condition;
     stmt_block_t *block;
 } stmt_while_t;
+
+typedef struct stmt_for {
+    token_t *enumerator;
+    expr_t *start;
+    expr_t *end;
+    stmt_block_t *block;
+} stmt_for_t;
 
 /// @brief Represents a 'let' statement
 typedef struct stmt_let {

@@ -64,6 +64,20 @@ stmt_while_t *stmt_while_alloc(expr_t *condition,
     return while_;
 }
 
+stmt_for_t *stmt_for_alloc(token_t *enumerator,
+                           expr_t *start,
+                           expr_t *end,
+                           stmt_block_t *block,
+                           lexer_t *lexer) {
+    (void)lexer;
+    stmt_for_t *for_ = (stmt_for_t *)mem_s_malloc(sizeof(stmt_for_t), NULL, NULL);
+    for_->enumerator = enumerator;
+    for_->start = start;
+    for_->end = end;
+    for_->block = block;
+    return for_;
+}
+
 stmt_block_t *stmt_block_alloc(stmt_t **stmts, size_t stmts_len, size_t stmts_cap, lexer_t *lexer) {
     (void)lexer;
     stmt_block_t *block = (stmt_block_t *)mem_s_malloc(sizeof(stmt_block_t), NULL, NULL);
@@ -134,6 +148,9 @@ stmt_t *stmt_alloc(void *data, stmt_type_t type, lexer_t *lexer) {
     } break;
     case STMT_TYPE_WHILE: {
         stmt->data.while_ = (stmt_while_t *)data;
+    } break;
+    case STMT_TYPE_FOR: {
+        stmt->data.for_ = (stmt_for_t *)data;
     } break;
     default: {
         assert(0 && "statement unimplemented");

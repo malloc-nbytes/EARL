@@ -124,6 +124,10 @@ static void handle_binop(EARL_vm_t *vm, uint8_t opc) {
     case OPCODE_MOD: res = n1.mod(&n1, &n2); break;
     case OPCODE_EQ:  res = n1.eq(&n1, &n2);  break;
     case OPCODE_NEQ: res = n1.neq(&n1, &n2); break;
+    case OPCODE_LT:
+    case OPCODE_GT:
+    case OPCODE_LE:
+    case OPCODE_GE:  res = n1.cmp(&n1, &n2, opc); break;
     default:         err_wargs("runtime: unimplemented binop: %d", (int)opc);
     }
 
@@ -225,6 +229,10 @@ void EVM_exec(cc_t *cc) {
         case OPCODE_ADD:
         case OPCODE_EQ:
         case OPCODE_NEQ:
+        case OPCODE_LT:
+        case OPCODE_GT:
+        case OPCODE_LE:
+        case OPCODE_GE:
             handle_binop(&vm, opc);
             break;
         case OPCODE_DEF_GLOBAL:

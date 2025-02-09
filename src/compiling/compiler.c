@@ -208,6 +208,9 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
     case TOKEN_TYPE_BANG_EQUALS:
         cc_write_opcode(cc, OPCODE_NEQ);
         break;
+    case TOKEN_TYPE_LESSTHAN:
+        cc_write_opcode(cc, OPCODE_LT);
+        break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
     }
@@ -312,6 +315,20 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     }
 }
 
+/* static void begin_scope(cc_t *cc) { */
+/*    ++cc->scope_depth; */
+/* } */
+
+/* static void end_scope(cc_t *cc) { */
+/*     --cc->scope_depth; */
+
+/*     while (cc->locals.len > 0 */
+/*            && cc->locals.data[cc->locals.len-1].depth > (int)cc->scope_depth) { */
+/*         cc_write_opcode(cc, OPCODE_POP); */
+/*         --cc->locals.len; */
+/*     } */
+/* } */
+
 static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
     ++cc->scope_depth;
 
@@ -408,6 +425,53 @@ static void cc_stmt_while(stmt_while_t *stmt, cc_t *cc) {
     cc_write_opcode(cc, OPCODE_POP);
 }
 
+static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
+    // Declare the loop variable as a local.
+    declare_local_variable(cc, stmt->enumerator->lx);
+
+    // Compile the start expression and assign it to the loop variable.
+    cc_expr(stmt->start, cc);
+    int local_index = resolve_local(cc, stmt->enumerator->lx);
+    cc_write_opcode(cc, OPCODE_SET_LOCAL);
+    cc_write_opcode(cc, (uint8_t)local_index);
+
+    // Start of the loop condition.
+    size_t loop_start = cc->opcode.len;
+
+    // Load the loop variable.
+    cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
+    cc_write_opcode(cc, (uint8_t)local_index);
+
+    // Compile the end expression.
+    cc_expr(stmt->end, cc);
+
+    // Compare loop variable with end value.
+    cc_write_opcode(cc, OPCODE_LT);
+
+    // Jump out of loop if condition is false.
+    int exit_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
+    cc_write_opcode(cc, OPCODE_POP);
+
+    // Compile loop body.
+    cc_stmt_block(stmt->block, cc);
+
+    // Increment loop variable.
+    cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
+    cc_write_opcode(cc, (uint8_t)local_index);
+    cc_write_opcode(cc, OPCODE_CONST);
+    cc_write_opcode(cc, cc_write_to_const_pool(cc, earl_value_integer_create(1)));
+    cc_write_opcode(cc, OPCODE_ADD);
+    cc_write_opcode(cc, OPCODE_SET_LOCAL);
+    cc_write_opcode(cc, (uint8_t)local_index);
+
+    // Jump back to loop condition.
+    write_loop(cc, loop_start);
+
+    // Patch the exit jump.
+    patch_jump(cc, exit_jump);
+    cc_write_opcode(cc, OPCODE_POP);
+}
+
 static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     switch (stmt->type) {
     case STMT_TYPE_FN:     cc_stmt_fn(stmt->data.fn, cc);        break;
@@ -418,6 +482,7 @@ static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     case STMT_TYPE_RETURN: cc_stmt_return(stmt->data.ret, cc);   break;
     case STMT_TYPE_IF:     cc_stmt_if(stmt->data.if_, cc);       break;
     case STMT_TYPE_WHILE:  cc_stmt_while(stmt->data.while_, cc); break;
+    case STMT_TYPE_FOR:    cc_stmt_for(stmt->data.for_, cc);     break;
     default: {
         err_wargs("unknown statement type: %s",
                   stmt_type_to_cstr(stmt->type));

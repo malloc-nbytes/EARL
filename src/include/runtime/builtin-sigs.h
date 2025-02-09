@@ -25,6 +25,7 @@
 #define BUILTIN_SIGS_H
 
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct EARL_value EARL_value_t;
 
@@ -40,5 +41,6 @@ typedef       int          (*is_truthy_sig_t)(const EARL_value_t *const self);
 typedef       void         (*mutate_sig_t)   (EARL_value_t *self, const EARL_value_t *const other);
 typedef       EARL_value_t (*eq_sig_t)       (const EARL_value_t *const self, const EARL_value_t *const other);
 typedef       EARL_value_t (*neq_sig_t)      (const EARL_value_t *const self, const EARL_value_t *const other);
+typedef       EARL_value_t (*cmp_sig_t)      (const EARL_value_t *const self, const EARL_value_t *const other, uint8_t opc);
 
 #endif // BUILTIN_SIGS_H
