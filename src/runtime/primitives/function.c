@@ -21,48 +21,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef COMPILER_H
-#define COMPILER_H
+#include <assert.h>
+#include <string.h>
+#include <stdio.h>
 
-#include <stddef.h>
-#include <stdint.h>
-
-#define LOCALS_LIM UINT8_MAX + 1
-
-#include "runtime/VM/opcode.h"
+#include "runtime/primitives/function.h"
+#include "runtime/primitives/string.h"
+#include "runtime/EARL-object.h"
 #include "runtime/EARL-value.h"
-#include "parsing/ast.h"
+#include "runtime/types.h"
+#include "mem/mem.h"
+#include "misc/utils.h"
 
-typedef struct {
-    const char *id;
-    int depth;
-} local_t;
+EARL_object_function_t *
+earl_object_function_alloc(size_t arity, opcode_t opcode, const char *id) {
+    EARL_object_function_t *f = (EARL_object_function_t *)mem_s_malloc(sizeof(EARL_object_function_t), NULL, NULL);
+    f->base = __earl_object_create(EARL_OBJECT_TYPE_FUNCTION);
+    f->arity = arity;
+    f->opcode = opcode;
+    f->id = earl_object_string_alloc(id);
+    return f;
+}
 
-/// @brief Holds all compilation information
-typedef struct cc {
-    opcode_t opcode;
-
-    struct {
-        EARL_value_t *data;
-        size_t len;
-        size_t cap;
-    } constants;
-
-    struct {
-        local_t data[LOCALS_LIM];
-        size_t len;
-    } locals;
-
-    size_t scope_depth;
-} cc_t;
-
-/// @brief Compile a program into bytecode based off of an AST
-/// @param prog The AST to compile
-/// @return The result of the compiled program
-cc_t cc_compile(program_t *prog);
-
-uint8_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
-
-uint8_t cc_write_str_to_const(cc_t *cc, const char *id);
-
-#endif // COMPILER_H
+const char *earl_object_function_to_cstr(const EARL_value_t *const value) {
+    return "<Function>";
+}

@@ -49,9 +49,11 @@ static const size_t types_simple_compat_types_lengths[] = {
 
 // Object types
 static EARL_object_type_t types_object_compat_types_string[] = {EARL_OBJECT_TYPE_STRING};
+static EARL_object_type_t types_object_compat_types_function[] = {EARL_OBJECT_TYPE_FUNCTION};
 
 static EARL_object_type_t *types_object_compat_types[] = {
     types_object_compat_types_string,
+    types_object_compat_types_function,
 };
 
 int types_are_compatible(EARL_value_type_t ty1, EARL_value_type_t ty2) {

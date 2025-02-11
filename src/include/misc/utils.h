@@ -36,16 +36,16 @@
     fprintf(stderr, "!!! TODO: %s() !!!\n", __FUNCTION__);      \
     exit(1);
 
-#define da_append(arr, len, cap, ty, value)                     \
-    do {                                                        \
-        if ((cap) == 0)                                         \
-            fprintf(stderr, "utils_da_append: `cap` is 0\n");   \
-        if ((len) >= (cap)) {                                   \
-            (cap) *= 2;                                         \
-            (arr) = (ty)realloc((arr), (cap) * sizeof((arr)[0]));       \
-        }                                                       \
-        (arr)[(len)] = (value);                                 \
-        (len) += 1;                                             \
+#define da_append(arr, len, cap, ty, value)                       \
+    do {                                                          \
+        if ((cap) == 0)                                           \
+            fprintf(stderr, "utils_da_append: `cap` is 0\n");     \
+        if ((len) >= (cap)) {                                     \
+            (cap) = !(cap) ? 2 : (cap) * 2;                       \
+            (arr) = (ty)realloc((arr), (cap) * sizeof((arr)[0])); \
+        }                                                         \
+        (arr)[(len)] = (value);                                   \
+        (len) += 1;                                               \
     } while (0)
 
 /// @brief Read in a file to a cstr

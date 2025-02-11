@@ -24,6 +24,8 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
+#include <stdint.h>
+
 #define OPCODE_HALT          0x00
 #define OPCODE_CONST         0x01
 #define OPCODE_ADD           0x02
@@ -49,5 +51,11 @@
 #define OPCODE_GT            0x16
 #define OPCODE_LE            0x17
 #define OPCODE_GE            0x18
+
+typedef struct {
+    uint8_t *data;
+    size_t len;
+    size_t cap;
+} opcode_t;
 
 #endif // OPCODE_H

@@ -27,6 +27,7 @@
 #include "runtime/EARL-value.h"
 #include "runtime/EARL-object.h"
 #include "runtime/primitives/string.h"
+#include "runtime/primitives/function.h"
 #include "runtime/primitives/integer.h"
 #include "runtime/primitives/unit.h"
 #include "runtime/primitives/boolean.h"
@@ -129,6 +130,9 @@ EARL_value_t earl_value_object_create(EARL_object_t *obj) {
         value.to_cstr = earl_object_string_to_cstr;
         value.add     = earl_object_string_add;
     } break;
+    case EARL_OBJECT_TYPE_FUNCTION: {
+        value.to_cstr = earl_object_function_to_cstr;
+    } break;
     default: {
         err_wargs("%s: unhandled type: %d\n", __FUNCTION__, obj->type);
     } break;
@@ -145,8 +149,9 @@ const char *earl_value_type_to_cstr(const EARL_value_t *const value) {
     case EARL_VALUE_TYPE_BUILTIN_FUNCTION_REFERENCE: return "builtin function reference";
     case EARL_VALUE_TYPE_OBJECT: {
         switch (value->as.obj->type) {
-        case EARL_OBJECT_TYPE_STRING: return "string";
-        default: err_wargs("%s: unknown type: %s", (int)value->as.obj->type);
+        case EARL_OBJECT_TYPE_STRING:   return "string";
+        case EARL_OBJECT_TYPE_FUNCTION: return "function";
+        default:                        err_wargs("%s: unknown type: %s", (int)value->as.obj->type);
         }
     } break;
     default: err_wargs("%s: unknown type: %s", (int)value->type);

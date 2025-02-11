@@ -27,9 +27,12 @@
 #include <stddef.h>
 
 #include "runtime/EARL-value.h"
+#include "runtime/VM/opcode.h"
 
 typedef enum {
     EARL_OBJECT_TYPE_STRING = 0,
+    EARL_OBJECT_TYPE_FUNCTION,
+
     __EARL_OBJECT_TYPE_LEN, // Used in types.c
 } EARL_object_type_t;
 
@@ -44,6 +47,14 @@ typedef struct EARL_object_string {
     size_t cap;
 } EARL_object_string_t;
 
+typedef struct EARL_object_function {
+    EARL_object_t base;
+    size_t arity;
+    opcode_t opcode;
+    EARL_object_string_t *id;
+} EARL_object_function_t;
+
 EARL_object_t __earl_object_create(EARL_object_type_t type);
+void earl_object_destroy(EARL_object_t *obj);
 
 #endif // EARL_OBJECT_H

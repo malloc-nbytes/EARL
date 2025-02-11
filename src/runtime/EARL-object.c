@@ -21,12 +21,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "runtime/EARL-object.h"
 #include "mem/mem.h"
+#include "misc/err.h"
 #include "misc/utils.h"
 
 EARL_object_t __earl_object_create(EARL_object_type_t type) {
     return (EARL_object_t) {
         .type = type,
     };
+}
+
+void earl_object_destroy(EARL_object_t *obj) {
+    switch (obj->type) {
+    case EARL_OBJECT_TYPE_STRING: {
+        EARL_object_string_t *str = (EARL_object_string_t *)obj;
+        free(str->chars);
+        str->len = str->cap = 0;
+    } break;
+    case EARL_OBJECT_TYPE_FUNCTION: {
+        EARL_object_function_t *f = (EARL_object_function_t *)obj;
+        earl_object_destroy((EARL_object_t *)f->id);
+        f->arity = 0;
+        memset(f->opcode.data, 0x0, f->opcode.cap);
+    } break;
+    default: err_wargs("%s: unknown object type `%d`", __FUNCTION__, (int)obj->type);
+    }
 }
