@@ -315,26 +315,11 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     }
 }
 
-/* static void begin_scope(cc_t *cc) { */
-/*    ++cc->scope_depth; */
-/* } */
+static void begin_scope(cc_t *cc) {
+   ++cc->scope_depth;
+}
 
-/* static void end_scope(cc_t *cc) { */
-/*     --cc->scope_depth; */
-
-/*     while (cc->locals.len > 0 */
-/*            && cc->locals.data[cc->locals.len-1].depth > (int)cc->scope_depth) { */
-/*         cc_write_opcode(cc, OPCODE_POP); */
-/*         --cc->locals.len; */
-/*     } */
-/* } */
-
-static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
-    ++cc->scope_depth;
-
-    for (size_t i = 0; i < stmt->stmts_len; ++i)
-        cc_stmt(stmt->stmts[i], cc);
-
+static void end_scope(cc_t *cc) {
     --cc->scope_depth;
 
     while (cc->locals.len > 0
@@ -342,6 +327,15 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
         cc_write_opcode(cc, OPCODE_POP);
         --cc->locals.len;
     }
+}
+
+static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
+    begin_scope(cc);
+
+    for (size_t i = 0; i < stmt->stmts_len; ++i)
+        cc_stmt(stmt->stmts[i], cc);
+
+    end_scope(cc);
 }
 
 static void declare_global_variable(cc_t *cc, const char *id) {
@@ -426,36 +420,30 @@ static void cc_stmt_while(stmt_while_t *stmt, cc_t *cc) {
 }
 
 static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
-    // Declare the loop variable as a local.
-    declare_local_variable(cc, stmt->enumerator->lx);
-
-    // Compile the start expression and assign it to the loop variable.
     cc_expr(stmt->start, cc);
-    int local_index = resolve_local(cc, stmt->enumerator->lx);
-    cc_write_opcode(cc, OPCODE_SET_LOCAL);
-    cc_write_opcode(cc, (uint8_t)local_index);
 
-    // Start of the loop condition.
+    // Declare the loop variable
+    const char *id = stmt->enumerator->lx;
+    declare_local_variable(cc, id);
+
+    // Evaluate the start expression and assign it to the loop variable
+    int local_index = resolve_local(cc, id);
+
+    // Start of loop condition check
     size_t loop_start = cc->opcode.len;
 
-    // Load the loop variable.
     cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
     cc_write_opcode(cc, (uint8_t)local_index);
-
-    // Compile the end expression.
     cc_expr(stmt->end, cc);
-
-    // Compare loop variable with end value.
     cc_write_opcode(cc, OPCODE_LT);
 
-    // Jump out of loop if condition is false.
     int exit_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
     cc_write_opcode(cc, OPCODE_POP);
 
-    // Compile loop body.
+    // Execute loop body
     cc_stmt_block(stmt->block, cc);
 
-    // Increment loop variable.
+    // Increment loop variable
     cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
     cc_write_opcode(cc, (uint8_t)local_index);
     cc_write_opcode(cc, OPCODE_CONST);
@@ -464,10 +452,10 @@ static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
     cc_write_opcode(cc, OPCODE_SET_LOCAL);
     cc_write_opcode(cc, (uint8_t)local_index);
 
-    // Jump back to loop condition.
+    // Jump back to condition check
     write_loop(cc, loop_start);
 
-    // Patch the exit jump.
+    // Exit loop
     patch_jump(cc, exit_jump);
     cc_write_opcode(cc, OPCODE_POP);
 }
