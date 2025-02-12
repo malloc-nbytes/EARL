@@ -245,6 +245,7 @@ static void cc_stmt_return(stmt_return_t *stmt, cc_t *cc) {
 
 static void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
     cc_expr(stmt->expr, cc);
+    cc_write_opcode(cc, OPCODE_POP);
 }
 
 static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
