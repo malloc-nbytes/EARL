@@ -34,7 +34,7 @@ s_umap_t s_umap_create(unsigned long (*hash)(const char *), void (*destroy_value
     assert(hash);
     const size_t cap = 64;
     return (s_umap_t) {
-        .tbl = (s_umap_bucket_t **)mem_s_malloc(sizeof(s_umap_bucket_t *) * cap, NULL, NULL),
+        .tbl = (s_umap_bucket_t **)mem_s_malloc(sizeof(s_umap_bucket_t *) * cap),
         .sz = 0,
         .cap = cap,
         .hash = hash,
@@ -52,7 +52,7 @@ void s_umap_insert(s_umap_t *map, const char *key, void *value) {
     if (!map || !key) return;
 
     unsigned long index = map->hash(key) % map->cap;
-    s_umap_bucket_t *new_bucket = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t), NULL, NULL);
+    s_umap_bucket_t *new_bucket = (s_umap_bucket_t *)mem_s_malloc(sizeof(s_umap_bucket_t));
 
     new_bucket->key = strdup(key);
     new_bucket->value = value;
@@ -69,7 +69,7 @@ void *s_umap_get(s_umap_t *map, const char *key) {
     s_umap_bucket_t *bucket = map->tbl[index];
 
     while (bucket) {
-        if (strcmp(bucket->key, key) == 0)
+        if (!strcmp(bucket->key, key))
             return bucket->value;
         bucket = bucket->next;
     }

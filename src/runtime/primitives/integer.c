@@ -30,7 +30,7 @@
 
 // NOTE: small memory leak
 const char *earl_value_integer_to_cstr(const EARL_value_t *const self) {
-    char *buffer = (char *)mem_s_malloc(20, NULL, NULL);
+    char *buffer = (char *)mem_s_malloc(20);
     snprintf(buffer, 20, "%d", self->as.integer);
     return buffer;
 }

@@ -30,7 +30,7 @@
 arena_t arena_create(size_t *bytes) {
     size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
     return (arena_t) {
-        .mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N, NULL, NULL),
+        .mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N),
         .len = 0,
         .cap = N,
     };
@@ -38,7 +38,7 @@ arena_t arena_create(size_t *bytes) {
 
 void arena_create_from(arena_t *arena, size_t *bytes) {
     size_t N = bytes ? *bytes : ARENA_DEFAULT_SZ;
-    arena->mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N, NULL, NULL);
+    arena->mem = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * N);
     arena->len = 0;
     arena->cap = N;
 }

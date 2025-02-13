@@ -483,13 +483,13 @@ EARL_object_function_t *cc_compile(program_t *prog, EARL_value_t **constants, si
 
     cc_t cc = (cc_t) {
         .opcode = {
-            .data = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * CAP, NULL, NULL),
+            .data = (uint8_t *)mem_s_malloc(sizeof(uint8_t) * CAP),
             .len = 0,
             .cap = CAP,
         },
 
         .constants = {
-            .data = (EARL_value_t *)mem_s_malloc(sizeof(EARL_value_t) * CAP, NULL, NULL),
+            .data = (EARL_value_t *)mem_s_malloc(sizeof(EARL_value_t) * CAP),
             .len = 0,
             .cap = CAP,
         },

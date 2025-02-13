@@ -27,10 +27,8 @@
 
 #include "mem/mem.h"
 
-void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t)) {
-    void *p = (allocator != NULL && arena != NULL)
-        ? allocator(arena, bytes)
-        : malloc(bytes);
+void *mem_s_malloc(size_t bytes) {
+    void *p = malloc(bytes);
     if (!p) {
         fprintf(stderr, "could not safely allocate %zu bytes\n", bytes);
         exit(1);
@@ -39,6 +37,6 @@ void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, si
 }
 
 void *mem_heapify(void *src, size_t bytes) {
-    void *dest = mem_s_malloc(bytes, NULL, NULL);
+    void *dest = mem_s_malloc(bytes);
     return memcpy(dest, src, bytes);
 }

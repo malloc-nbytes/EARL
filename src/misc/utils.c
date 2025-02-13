@@ -46,7 +46,7 @@ char *read_file(const char *fp) {
         return NULL;
     }
 
-    char *buffer = (char *)mem_s_malloc(size + 1, NULL, NULL);
+    char *buffer = (char *)mem_s_malloc(size + 1);
     if (!buffer) {
         perror("Failed to allocate memory");
         fclose(file);

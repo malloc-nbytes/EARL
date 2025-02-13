@@ -33,7 +33,7 @@
 /// @param arena (optional) The arena to use for the allocator
 /// @param allocator (optional) The allocator to use
 /// @return A pointer to the allocated memory
-void *mem_s_malloc(size_t bytes, arena_t *arena, void *(allocator)(arena_t *, size_t));
+void *mem_s_malloc(size_t bytes);
 
 void *mem_heapify(void *src, size_t bytes);
 

@@ -38,8 +38,8 @@ void str_concat_from_cstr(str_t *s, const char *other) {
 }
 
 str_t *str_alloc(const char *from) {
-    str_t *s = (str_t *)mem_s_malloc(sizeof(str_t), NULL, NULL);
-    s->data = (char *)mem_s_malloc(1, NULL, NULL);
+    str_t *s = (str_t *)mem_s_malloc(sizeof(str_t));
+    s->data = (char *)mem_s_malloc(1);
     s->len = 0;
     s->cap = 1;
     s->data[0] = '\0';
@@ -50,7 +50,7 @@ str_t *str_alloc(const char *from) {
 
 str_t str_create(const char *from) {
     str_t s = (str_t) {
-        .data = (char *)mem_s_malloc(1, NULL, NULL),
+        .data = (char *)mem_s_malloc(1),
         .len = 0,
         .cap = 1,
     };

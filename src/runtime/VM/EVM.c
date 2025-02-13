@@ -81,7 +81,7 @@ static void handle_define_global(EARL_vm_t *vm) {
 
 // Caller must free()
 static EARL_value_t *gather_function_parameters(EARL_vm_t *vm, size_t args_len) {
-    EARL_value_t *args = (EARL_value_t *)mem_s_malloc(args_len * sizeof(EARL_value_t), NULL, NULL);
+    EARL_value_t *args = (EARL_value_t *)mem_s_malloc(args_len * sizeof(EARL_value_t));
 
     // Pop arguments in reverse order
     for (size_t i = 0; i < args_len; ++i)

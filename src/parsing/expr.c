@@ -36,7 +36,7 @@ expr_function_call_t *expr_function_call_alloc(expr_t *left,
     (void)lexer;
 
     expr_function_call_t *fn
-        = (expr_function_call_t *)mem_s_malloc(sizeof(expr_function_call_t), NULL, NULL);
+        = (expr_function_call_t *)mem_s_malloc(sizeof(expr_function_call_t));
 
     fn->left = left;
     fn->args = args;
@@ -48,7 +48,7 @@ expr_function_call_t *expr_function_call_alloc(expr_t *left,
 expr_character_literal_t *expr_character_literal_alloc(token_t *character, lexer_t *lexer) {
     (void)lexer;
     expr_character_literal_t *chl
-        = (expr_character_literal_t *)mem_s_malloc(sizeof(expr_character_literal_t), NULL, NULL);
+        = (expr_character_literal_t *)mem_s_malloc(sizeof(expr_character_literal_t));
     chl->character = character;
     return chl;
 }
@@ -56,7 +56,7 @@ expr_character_literal_t *expr_character_literal_alloc(token_t *character, lexer
 expr_string_literal_t *expr_string_literal_alloc(token_t *string, lexer_t *lexer) {
     (void)lexer;
     expr_string_literal_t *strl
-        = (expr_string_literal_t *)mem_s_malloc(sizeof(expr_string_literal_t), NULL, NULL);
+        = (expr_string_literal_t *)mem_s_malloc(sizeof(expr_string_literal_t));
     strl->string = string;
     return strl;
 }
@@ -64,7 +64,7 @@ expr_string_literal_t *expr_string_literal_alloc(token_t *string, lexer_t *lexer
 expr_integer_literal_t *expr_integer_literal_alloc(token_t *integer, lexer_t *lexer) {
     (void)lexer;
     expr_integer_literal_t *il
-        = (expr_integer_literal_t *)mem_s_malloc(sizeof(expr_integer_literal_t), NULL, NULL);
+        = (expr_integer_literal_t *)mem_s_malloc(sizeof(expr_integer_literal_t));
     il->integer = integer;
     return il;
 }
@@ -72,7 +72,7 @@ expr_integer_literal_t *expr_integer_literal_alloc(token_t *integer, lexer_t *le
 expr_identifier_t *expr_identifier_alloc(token_t *identifier, lexer_t *lexer) {
     (void)lexer;
     expr_identifier_t *il
-        = (expr_identifier_t *)mem_s_malloc(sizeof(expr_identifier_t), NULL, NULL);
+        = (expr_identifier_t *)mem_s_malloc(sizeof(expr_identifier_t));
     il->identifier = identifier;
     return il;
 }
@@ -80,7 +80,7 @@ expr_identifier_t *expr_identifier_alloc(token_t *identifier, lexer_t *lexer) {
 expr_unary_t *expr_unary_alloc(expr_t *expr, token_t *op, lexer_t *lexer) {
     (void)lexer;
     expr_unary_t *eu
-        = (expr_unary_t *)mem_s_malloc(sizeof(expr_unary_t), NULL, NULL);
+        = (expr_unary_t *)mem_s_malloc(sizeof(expr_unary_t));
     eu->expr = expr;
     eu->op = op;
     return eu;
@@ -89,7 +89,7 @@ expr_unary_t *expr_unary_alloc(expr_t *expr, token_t *op, lexer_t *lexer) {
 expr_binary_t *expr_binary_alloc(expr_t *left, expr_t *right, token_t *op, lexer_t *lexer) {
     (void)lexer;
     expr_binary_t *bin
-        = (expr_binary_t *)mem_s_malloc(sizeof(expr_binary_t), NULL, NULL);
+        = (expr_binary_t *)mem_s_malloc(sizeof(expr_binary_t));
     bin->left = left;
     bin->right = right;
     bin->op = op;
@@ -98,7 +98,7 @@ expr_binary_t *expr_binary_alloc(expr_t *left, expr_t *right, token_t *op, lexer
 
 expr_term_t *expr_term_alloc(void *data, expr_term_type_t type, lexer_t *lexer) {
     (void)lexer;
-    expr_term_t *term = (expr_term_t *)mem_s_malloc(sizeof(expr_term_t), NULL, NULL);
+    expr_term_t *term = (expr_term_t *)mem_s_malloc(sizeof(expr_term_t));
     term->type = type;
 
     switch (type) {
@@ -127,7 +127,7 @@ expr_term_t *expr_term_alloc(void *data, expr_term_type_t type, lexer_t *lexer) 
 
 expr_t *expr_alloc(void *data, expr_type_t type, lexer_t *lexer) {
     (void)lexer;
-    expr_t *expr = (expr_t *)mem_s_malloc(sizeof(expr_t), NULL, NULL);
+    expr_t *expr = (expr_t *)mem_s_malloc(sizeof(expr_t));
     expr->type = type;
 
     switch (type) {

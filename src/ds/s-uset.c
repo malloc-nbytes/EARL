@@ -32,7 +32,7 @@
 s_uset_t s_uset_create(unsigned long (*hash)(const char *)) {
     const size_t cap = 32;
     return (s_uset_t) {
-        .tbl = (s_uset_node_t **)mem_s_malloc(sizeof(s_uset_node_t *) * cap, NULL, NULL),
+        .tbl = (s_uset_node_t **)mem_s_malloc(sizeof(s_uset_node_t *) * cap),
         .sz = 0,
         .cap = cap,
         .hash = hash,
@@ -67,7 +67,7 @@ void s_uset_insert(s_uset_t *set, const char *value) {
         it = it->next;
     }
 
-    it = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t), NULL, NULL);
+    it = (s_uset_node_t *)mem_s_malloc(sizeof(s_uset_node_t));
     it->value = strdup(value);
     it->next = NULL;
 
