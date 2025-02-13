@@ -27,6 +27,7 @@
 #include <stddef.h>
 
 #include "runtime/EARL-value.h"
+#include "runtime/EARL-object.h"
 #include "compiling/compiler.h"
 #include "ds/s-umap.h"
 
@@ -44,8 +45,12 @@ typedef struct EARL_vm {
     //s_umap_t(EARL_identifier_t *) globals;
     s_umap_t(EARL_value_t *) globals;
 
-    /// @brief The compilation context
-    cc_t *cc;
+    struct {
+        EARL_value_t *data;
+        size_t len;
+    } constants;
+
+    EARL_object_function_t *fun;
 
     /// @brief The stack pointer
     EARL_value_t *sp;
@@ -78,6 +83,6 @@ typedef struct EARL_vm {
 /// @param opcode_len The length of opcdoe
 /// @param opcode_cap The capacity of opcdoe
 /// @return The value after execution
-void EVM_exec(cc_t *cc);
+void EVM_exec(EARL_object_function_t *fun, EARL_value_t *constants, size_t constants_len);
 
 #endif // EVM_H

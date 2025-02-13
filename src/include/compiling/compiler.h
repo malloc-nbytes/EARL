@@ -31,7 +31,13 @@
 
 #include "runtime/VM/opcode.h"
 #include "runtime/EARL-value.h"
+#include "runtime/EARL-object.h"
 #include "parsing/ast.h"
+
+typedef enum {
+    FUNCTION_TYPE_FUN = 0,
+    FUNCTION_TYPE_SCRIPT,
+} function_type_t;
 
 typedef struct {
     const char *id;
@@ -54,12 +60,17 @@ typedef struct cc {
     } locals;
 
     size_t scope_depth;
+
+    struct {
+        EARL_object_function_t *obj;
+        function_type_t type;
+    } function;
 } cc_t;
 
 /// @brief Compile a program into bytecode based off of an AST
 /// @param prog The AST to compile
 /// @return The result of the compiled program
-cc_t cc_compile(program_t *prog);
+EARL_object_function_t *cc_compile(program_t *prog, EARL_value_t **constants, size_t *constants_len);
 
 uint8_t cc_write_to_const_pool(cc_t *cc, EARL_value_t value);
 

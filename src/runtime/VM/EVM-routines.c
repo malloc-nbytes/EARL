@@ -40,7 +40,7 @@ uint8_t EVM_routines_read_byte(EARL_vm_t *vm) {
 }
 
 void EVM_routines_init(EARL_vm_t *vm) {
-    vm->ip = &vm->cc->opcode.data[0];
+    vm->ip = &vm->fun->opcode.data[0];
     vm->sp = vm->stack.data;
 
     vm->globals = s_umap_create(djb2, NULL);

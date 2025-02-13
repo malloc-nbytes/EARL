@@ -34,6 +34,7 @@
 #include "runtime/EARL-value.h"
 #include "runtime/EARL-object.h"
 #include "runtime/primitives/string.h"
+#include "runtime/primitives/function.h"
 
 #include "ds/s-umap.h"
 
@@ -43,32 +44,30 @@
 #include "misc/utils.h"
 #include "misc/err.h"
 
+#define GET_OPCODE(cc) (cc)->function.obj->opcode
+
 static void cc_stmt(stmt_t *stmt, cc_t *cc);
 static void cc_expr(expr_t *expr, cc_t *cc);
 
-void cc_write_opcode(cc_t *cc, uint8_t opcode) {
-    da_append(cc->opcode.data,
-              cc->opcode.len,
-              cc->opcode.cap,
-              uint8_t *,
-              opcode);
+void cc_write_opcode(opcode_t *opcode, uint8_t op) {
+    da_append(opcode->data, opcode->len, opcode->cap, uint8_t *, op);
 }
 
 static int write_jump(cc_t *cc, uint8_t op) {
-    cc_write_opcode(cc, op);
-    cc_write_opcode(cc, (uint8_t)0xFF);
-    cc_write_opcode(cc, (uint8_t)0xFF);
-    return cc->opcode.len - 2;
+    cc_write_opcode(&GET_OPCODE(cc), op);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)0xFF);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)0xFF);
+    return GET_OPCODE(cc).len - 2;
 }
 
 static void patch_jump(cc_t *cc, int offset) {
-    int jump = cc->opcode.len - offset - 2;
+    int jump = GET_OPCODE(cc).len - offset - 2;
 
     if (jump > UINT16_MAX)
         err("too many statements in `if` statement");
 
-    cc->opcode.data[offset] = (uint8_t)((jump >> 8) & 0xFF);
-    cc->opcode.data[offset+1] = (uint8_t)(jump & 0xFF);
+    GET_OPCODE(cc).data[offset]   = (uint8_t)((jump >> 8) & 0xFF);
+    GET_OPCODE(cc).data[offset+1] = (uint8_t)(jump & 0xFF);
 }
 
 static int resolve_local(cc_t *cc, const char *id) {
@@ -116,26 +115,26 @@ static void cc_expr_term_identifier(expr_identifier_t *expr, cc_t *cc) {
     size_t idx = cc_write_str_to_const(cc, id);
 
     // Write the appropriate opcode.
-    cc_write_opcode(cc, op);
+    cc_write_opcode(&GET_OPCODE(cc), op);
 
     // If global, we want the index in the constant pool.
     // If local, we want the stack position (arg).
-    cc_write_opcode(cc, arg == -1lu ? idx : (uint8_t)arg);
+    cc_write_opcode(&GET_OPCODE(cc), arg == -1lu ? idx : (uint8_t)arg);
 }
 
 static void cc_expr_term_integer_literal(expr_integer_literal_t *expr, cc_t *cc) {
     int integer = atoi(expr->integer->lx);
     size_t idx = cc_write_to_const_pool(cc, earl_value_integer_create(integer));
-    cc_write_opcode(cc, OPCODE_CONST);
-    cc_write_opcode(cc, idx);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_CONST);
+    cc_write_opcode(&GET_OPCODE(cc), idx);
 }
 
 static void cc_expr_term_string_literal(expr_string_literal_t *expr, cc_t *cc) {
     const char *s = expr->string->lx;
     EARL_object_string_t *str = earl_object_string_alloc(s);
     size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)str));
-    cc_write_opcode(cc, OPCODE_CONST);
-    cc_write_opcode(cc, idx);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_CONST);
+    cc_write_opcode(&GET_OPCODE(cc), idx);
 }
 
 static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
@@ -143,8 +142,8 @@ static void cc_expr_term_function_call(expr_function_call_t *expr, cc_t *cc) {
         cc_expr(expr->args[i], cc);
 
     cc_expr(expr->left, cc);
-    cc_write_opcode(cc, OPCODE_CALL);
-    cc_write_opcode(cc, (uint8_t)expr->args_len);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_CALL);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)expr->args_len);
 }
 
 static void cc_expr_term(expr_term_t *expr, cc_t *cc) {
@@ -178,19 +177,19 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
 
     switch (opty) {
     case TOKEN_TYPE_PLUS:
-        cc_write_opcode(cc, OPCODE_ADD);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_ADD);
         break;
     case TOKEN_TYPE_MINUS:
-        cc_write_opcode(cc, OPCODE_SUB);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_SUB);
         break;
     case TOKEN_TYPE_FORWARD_SLASH:
-        cc_write_opcode(cc, OPCODE_DIV);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_DIV);
         break;
     case TOKEN_TYPE_ASTERISK:
-        cc_write_opcode(cc, OPCODE_MUL);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_MUL);
         break;
     case TOKEN_TYPE_PERCENT:
-        cc_write_opcode(cc, OPCODE_MOD);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_MOD);
         break;
     case TOKEN_TYPE_DOUBLE_AMPERSAND: {
         int end_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
@@ -203,13 +202,13 @@ static void cc_expr_binary(expr_binary_t *expr, cc_t *cc) {
         patch_jump(cc, end_jump);
     } break;
     case TOKEN_TYPE_DOUBLE_EQUALS:
-        cc_write_opcode(cc, OPCODE_EQ);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_EQ);
         break;
     case TOKEN_TYPE_BANG_EQUALS:
-        cc_write_opcode(cc, OPCODE_NEQ);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_NEQ);
         break;
     case TOKEN_TYPE_LESSTHAN:
-        cc_write_opcode(cc, OPCODE_LT);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_LT);
         break;
     default:
         err_wargs("unknown binary operator: %s", expr->op->lx);
@@ -245,7 +244,7 @@ static void cc_stmt_return(stmt_return_t *stmt, cc_t *cc) {
 
 static void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
     cc_expr(stmt->expr, cc);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 }
 
 static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
@@ -271,8 +270,8 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
 
     switch (stmt->op->type) {
     case TOKEN_TYPE_EQUALS:
-        cc_write_opcode(cc, is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
-        cc_write_opcode(cc, is_local ? (uint8_t)local_index : (uint8_t)idx);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? (uint8_t)local_index : (uint8_t)idx);
         break;
 
     case TOKEN_TYPE_PLUS_EQUALS:
@@ -281,33 +280,33 @@ static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
     case TOKEN_TYPE_FORWARD_SLASH_EQUALS:
     case TOKEN_TYPE_PERCENT_EQUALS: {
         // Load current variable value
-        cc_write_opcode(cc, is_local ? OPCODE_LOAD_LOCAL : OPCODE_LOAD_GLOBAL);
-        cc_write_opcode(cc, is_local ? (uint8_t)local_index : (uint8_t)idx);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? OPCODE_LOAD_LOCAL : OPCODE_LOAD_GLOBAL);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? (uint8_t)local_index : (uint8_t)idx);
 
         // Apply the arithmetic operation
         switch (stmt->op->type) {
         case TOKEN_TYPE_PLUS_EQUALS:
-            cc_write_opcode(cc, OPCODE_ADD);
+            cc_write_opcode(&GET_OPCODE(cc), OPCODE_ADD);
             break;
         case TOKEN_TYPE_MINUS_EQUALS:
-            cc_write_opcode(cc, OPCODE_SUB);
+            cc_write_opcode(&GET_OPCODE(cc), OPCODE_SUB);
             break;
         case TOKEN_TYPE_ASTERISK_EQUALS:
-            cc_write_opcode(cc, OPCODE_MUL);
+            cc_write_opcode(&GET_OPCODE(cc), OPCODE_MUL);
             break;
         case TOKEN_TYPE_FORWARD_SLASH_EQUALS:
-            cc_write_opcode(cc, OPCODE_DIV);
+            cc_write_opcode(&GET_OPCODE(cc), OPCODE_DIV);
             break;
         case TOKEN_TYPE_PERCENT_EQUALS:
-            cc_write_opcode(cc, OPCODE_MOD);
+            cc_write_opcode(&GET_OPCODE(cc), OPCODE_MOD);
             break;
         default:
             err_wargs("unknown compound assignment operator: %s", stmt->op->lx);
         }
 
         // Store back the result
-        cc_write_opcode(cc, is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
-        cc_write_opcode(cc, is_local ? (uint8_t)local_index : (uint8_t)idx);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? OPCODE_SET_LOCAL : OPCODE_SET_GLOBAL);
+        cc_write_opcode(&GET_OPCODE(cc), is_local ? (uint8_t)local_index : (uint8_t)idx);
         break;
     }
 
@@ -325,7 +324,7 @@ static void end_scope(cc_t *cc) {
 
     while (cc->locals.len > 0
            && cc->locals.data[cc->locals.len-1].depth > (int)cc->scope_depth) {
-        cc_write_opcode(cc, OPCODE_POP);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
         --cc->locals.len;
     }
 }
@@ -342,8 +341,8 @@ static void cc_stmt_block(stmt_block_t *stmt, cc_t *cc) {
 static void declare_global_variable(cc_t *cc, const char *id) {
     EARL_object_string_t *name = earl_object_string_alloc(id);
     size_t idx = cc_write_to_const_pool(cc, earl_value_object_create((EARL_object_t *)name));
-    cc_write_opcode(cc, OPCODE_DEF_GLOBAL);
-    cc_write_opcode(cc, (uint8_t)idx);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_DEF_GLOBAL);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)idx);
 }
 
 static void declare_local_variable(cc_t *cc, const char *id) {
@@ -372,7 +371,7 @@ static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
     cc_expr(stmt->condition, cc);
 
     int then_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 
     cc_stmt_block(stmt->then_block, cc);
 
@@ -381,7 +380,7 @@ static void cc_stmt_if(stmt_if_t *stmt, cc_t *cc) {
     if (stmt->else_block) {
         else_jump = write_jump(cc, OPCODE_JUMP);
         patch_jump(cc, then_jump);
-        cc_write_opcode(cc, OPCODE_POP);
+        cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 
         cc_stmt_block(stmt->else_block, cc);
     }
@@ -399,25 +398,25 @@ static void cc_stmt_fn(stmt_fn_t *stmt, cc_t *cc) {
 }
 
 static void write_loop(cc_t *cc, size_t loop_start) {
-    cc_write_opcode(cc, OPCODE_LOOP);
-    size_t offset = cc->opcode.len - loop_start + 2;
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_LOOP);
+    size_t offset = GET_OPCODE(cc).len - loop_start + 2;
     if (offset > UINT16_MAX)
         err("too many statements in loop body");
-    cc_write_opcode(cc, (uint8_t)((offset >> 8) & 0xFF));
-    cc_write_opcode(cc, (uint8_t)(offset & 0xFF));
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)((offset >> 8) & 0xFF));
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)(offset & 0xFF));
 }
 
 static void cc_stmt_while(stmt_while_t *stmt, cc_t *cc) {
-    size_t loop_start = cc->opcode.len;
+    size_t loop_start = GET_OPCODE(cc).len;
     cc_expr(stmt->condition, cc);
 
     int exit_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
     cc_stmt_block(stmt->block, cc);
     write_loop(cc, loop_start);
 
     patch_jump(cc, exit_jump);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 }
 
 static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
@@ -430,35 +429,35 @@ static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
     // Evaluate the start expression and assign it to the loop variable
     int local_index = resolve_local(cc, id);
 
-    // Start of loop condition check
-    size_t loop_start = cc->opcode.len;
+    /* // Start of loop condition check */
+    size_t loop_start = GET_OPCODE(cc).len;
 
-    cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
-    cc_write_opcode(cc, (uint8_t)local_index);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_LOAD_LOCAL);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)local_index);
     cc_expr(stmt->end, cc);
-    cc_write_opcode(cc, OPCODE_LT);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_LT);
 
     int exit_jump = write_jump(cc, OPCODE_JUMP_IF_FALSE);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 
     // Execute loop body
     cc_stmt_block(stmt->block, cc);
 
     // Increment loop variable
-    cc_write_opcode(cc, OPCODE_LOAD_LOCAL);
-    cc_write_opcode(cc, (uint8_t)local_index);
-    cc_write_opcode(cc, OPCODE_CONST);
-    cc_write_opcode(cc, cc_write_to_const_pool(cc, earl_value_integer_create(1)));
-    cc_write_opcode(cc, OPCODE_ADD);
-    cc_write_opcode(cc, OPCODE_SET_LOCAL);
-    cc_write_opcode(cc, (uint8_t)local_index);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_LOAD_LOCAL);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)local_index);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_CONST);
+    cc_write_opcode(&GET_OPCODE(cc), cc_write_to_const_pool(cc, earl_value_integer_create(1)));
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_ADD);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_SET_LOCAL);
+    cc_write_opcode(&GET_OPCODE(cc), (uint8_t)local_index);
 
     // Jump back to condition check
     write_loop(cc, loop_start);
 
     // Exit loop
     patch_jump(cc, exit_jump);
-    cc_write_opcode(cc, OPCODE_POP);
+    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 }
 
 static void cc_stmt(stmt_t *stmt, cc_t *cc) {
@@ -479,7 +478,7 @@ static void cc_stmt(stmt_t *stmt, cc_t *cc) {
     }
 }
 
-cc_t cc_compile(program_t *prog) {
+EARL_object_function_t *cc_compile(program_t *prog, EARL_value_t **constants, size_t *constants_len) {
     const size_t CAP = 32;
 
     cc_t cc = (cc_t) {
@@ -488,24 +487,39 @@ cc_t cc_compile(program_t *prog) {
             .len = 0,
             .cap = CAP,
         },
+
         .constants = {
             .data = (EARL_value_t *)mem_s_malloc(sizeof(EARL_value_t) * CAP, NULL, NULL),
             .len = 0,
             .cap = CAP,
         },
+
         .locals = {
             .data = {{0}},
             .len = 0,
         },
+
         .scope_depth = 0,
+
+        .function = {
+            .obj = earl_object_function_alloc_empty(),
+            .type = FUNCTION_TYPE_SCRIPT,
+        },
     };
+
+    local_t *local = &cc.locals.data[cc.locals.len++];
+    local->depth = 0;
+    local->id = "";
 
     __builtin_idents_init(&cc);
 
     for (size_t i = 0; i < prog->stmts_len; ++i)
         cc_stmt(prog->stmts[i], &cc);
 
-    cc_write_opcode(&cc, OPCODE_HALT);
+    cc_write_opcode(&cc.function.obj->opcode, OPCODE_HALT);
 
-    return cc;
+    *constants = cc.constants.data;
+    *constants_len = cc.constants.len;
+
+    return cc.function.obj;
 }

@@ -38,8 +38,6 @@
 
 #define da_append(arr, len, cap, ty, value)                       \
     do {                                                          \
-        if ((cap) == 0)                                           \
-            fprintf(stderr, "utils_da_append: `cap` is 0\n");     \
         if ((len) >= (cap)) {                                     \
             (cap) = !(cap) ? 2 : (cap) * 2;                       \
             (arr) = (ty)realloc((arr), (cap) * sizeof((arr)[0])); \
@@ -58,5 +56,7 @@ char *read_file(const char *fp);
 /// @param s2 The second string
 /// @return 1 if they are equal, 0 if not
 int streq(const char *s1, const char *s2);
+
+void write_cstr_to_file(const char *fp, const char *src);
 
 #endif // UTILS_H

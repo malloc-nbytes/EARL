@@ -70,3 +70,13 @@ char *read_file(const char *fp) {
 int streq(const char *s1, const char *s2) {
     return strcmp(s1, s2) == 0;
 }
+
+void write_cstr_to_file(const char *fp, const char *text) {
+    FILE *file = fopen(fp, "w");
+    if (file == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
+    fprintf(file, "%s", text);
+    fclose(file);
+}

@@ -38,7 +38,7 @@
 #include "ds/s-umap.h"
 
 #define GET_IDENTIFIER_NAME_FROM_CONSTANT_POOL(vm, idx) ({              \
-            EARL_value_t __symbol_ = (vm)->cc->constants.data[idx];     \
+            EARL_value_t __symbol_ = (vm)->constants.data[idx];         \
             assert(__symbol_.type == EARL_VALUE_TYPE_OBJECT);           \
             EARL_object_t *__obj_ = __symbol_.as.obj;                   \
             assert(__obj_->type == EARL_OBJECT_TYPE_STRING);            \
@@ -136,7 +136,7 @@ static void handle_binop(EARL_vm_t *vm, uint8_t opc) {
 
 static void handle_const(EARL_vm_t *vm) {
     size_t idx = vm->read_byte(vm);
-    EARL_value_t value = vm->cc->constants.data[idx];
+    EARL_value_t value = vm->constants.data[idx];
     vm->push(vm, value);
 }
 
@@ -188,14 +188,16 @@ static void handle_loop(EARL_vm_t *vm) {
     //(void)vm->pop(vm);
 }
 
-void EVM_exec(cc_t *cc) {
+void EVM_exec(EARL_object_function_t *fun,
+              EARL_value_t *constants,
+              size_t constants_len) {
     EARL_vm_t vm = (EARL_vm_t) {
         .stack      = { .len = 0 },
         .globals    = s_umap_create(djb2, NULL),
-        .cc         = cc,
+        .constants  = { .data = constants, .len = constants_len },
+        .fun        = fun,
         .sp         = NULL,
         .ip         = NULL,
-
         .read_byte  = EVM_routines_read_byte,
         .init       = EVM_routines_init,
         .push       = EVM_routines_stack_push,

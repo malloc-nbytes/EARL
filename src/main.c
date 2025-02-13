@@ -44,8 +44,11 @@ int main(void) {
     lexer_t lexer = lexer_lex_src_code(src, SRC_FP);
     program_t *prog = parser_parse(&lexer);
 
-    cc_t cc = cc_compile(prog);
-    EVM_exec(&cc);
+    EARL_value_t *constants = NULL;
+    size_t constants_len = 0;
+    EARL_object_function_t *fun = cc_compile(prog, &constants, &constants_len);
+
+    EVM_exec(fun, constants, constants_len);
 
     return 0;
 }

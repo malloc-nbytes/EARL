@@ -43,6 +43,19 @@ earl_object_function_alloc(size_t arity, opcode_t opcode, const char *id) {
     return f;
 }
 
+EARL_object_function_t *earl_object_function_alloc_empty(void) {
+    EARL_object_function_t *f = (EARL_object_function_t *)mem_s_malloc(sizeof(EARL_object_function_t), NULL, NULL);
+    f->base = __earl_object_create(EARL_OBJECT_TYPE_FUNCTION);
+    f->arity = 0;
+    f->opcode = (opcode_t) {
+        .data = NULL,
+        .len = 0,
+        .cap = 0,
+    };
+    f->id = NULL;
+    return f;
+}
+
 const char *earl_object_function_to_cstr(const EARL_value_t *const value) {
     return "<Function>";
 }
