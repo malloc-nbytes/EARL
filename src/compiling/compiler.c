@@ -244,7 +244,7 @@ static void cc_stmt_return(stmt_return_t *stmt, cc_t *cc) {
 
 static void cc_stmt_expr(stmt_expr_t *stmt, cc_t *cc) {
     cc_expr(stmt->expr, cc);
-    cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
+    //cc_write_opcode(&GET_OPCODE(cc), OPCODE_POP);
 }
 
 static void cc_stmt_mut(stmt_mut_t *stmt, cc_t *cc) {
@@ -429,7 +429,7 @@ static void cc_stmt_for(stmt_for_t *stmt, cc_t *cc) {
     // Evaluate the start expression and assign it to the loop variable
     int local_index = resolve_local(cc, id);
 
-    /* // Start of loop condition check */
+    // Start of loop condition check
     size_t loop_start = GET_OPCODE(cc).len;
 
     cc_write_opcode(&GET_OPCODE(cc), OPCODE_LOAD_LOCAL);
