@@ -58,8 +58,6 @@ typedef struct EARL_value {
     mod_sig_t mod;
     mutate_sig_t mutate;
     is_truthy_sig_t is_truthy;
-    eq_sig_t eq;
-    neq_sig_t neq;
     cmp_sig_t cmp;
 } EARL_value_t;
 

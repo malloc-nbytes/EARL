@@ -122,8 +122,8 @@ static void handle_binop(EARL_vm_t *vm, uint8_t opc) {
     case OPCODE_MUL: res = n1.mul(&n1, &n2); break;
     case OPCODE_DIV: res = n1.div(&n1, &n2); break;
     case OPCODE_MOD: res = n1.mod(&n1, &n2); break;
-    case OPCODE_EQ:  res = n1.eq(&n1, &n2);  break;
-    case OPCODE_NEQ: res = n1.neq(&n1, &n2); break;
+    case OPCODE_EQ:
+    case OPCODE_NEQ:
     case OPCODE_LT:
     case OPCODE_GT:
     case OPCODE_LE:
