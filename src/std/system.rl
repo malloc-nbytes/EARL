@@ -100,7 +100,7 @@ module System
 ### Function
 #-- Name: name_and_ext
 #-- Parameter: path: str
-#-- Returns: tuple
+#-- Returns: tuple<option<str>, option<str>>
 #-- Description:
 #--   Returns a tuple of filename and extension. If either the name or extension
 #--   cannot be found, the respective one will be set to `none`.
@@ -124,16 +124,16 @@ module System
     ext = ext.rev();
 
     if (!period) {
-        return (ext, none);
+        return (some(ext), none);
     }
 
     name = path.substr(0, period.unwrap());
 
     if (len(name) == 0) {
-        return (none, ext);
+        return (none, some(ext));
     }
 
-    return (name, ext);
+    return (some(name), some(ext));
 }
 ### End
 
