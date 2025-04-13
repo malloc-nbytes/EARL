@@ -99,43 +99,41 @@ module System
 
 ### Function
 #-- Name: name_and_ext
-#-- Parameter: filepath: str
+#-- Parameter: path: str
 #-- Returns: tuple
 #-- Description:
 #--   Returns a tuple of filename and extension. If either the name or extension
 #--   cannot be found, the respective one will be set to `none`.
-@pub fn name_and_ext(filepath) {
-    assert(len(filepath) > 0);
+@pub fn name_and_ext(path) {
+    if (len(path) == 0) {
+        return (none, none);
+    }
 
     let ext = "";
     let name = "";
-    let period = 0;
+    let period = none;
 
-    for i in len(filepath)-1 to 0 {
-        if filepath[i] == '.' {
-            period = i;
+    for i in len(path)-1 to 0 {
+        if (path[i] == '.') {
+            period = some(i);
             break;
         }
-        ext += filepath[i];
+        ext += path[i];
     }
 
     ext = ext.rev();
 
-    for i in 0 to period {
-        name += filepath[i];
+    if (!period) {
+        return (ext, none);
     }
 
-    if name == "" && ext == "" {
-        return (none, none);
-    }
-    if name == "" {
-        return (none, some(ext));
-    }
-    if ext == "" {
-        return (some(name), none);
+    name = path.substr(0, period.unwrap());
+
+    if (len(name) == 0) {
+        return (none, ext);
     }
 
-    return (some(name), some(ext));
+    return (name, ext);
 }
 ### End
 
