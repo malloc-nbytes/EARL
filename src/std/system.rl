@@ -214,3 +214,28 @@ module System
     return __internal_unix_system_woutput__(cmd);
 }
 ### End
+
+### Function
+#-- Name: get_all_files_by_ext
+#-- Parameter: dir: @const @ref str
+#-- Parameter: ext: @const @ref str
+#-- Returns: list<str>
+#-- Description:
+#--   Get all files in the directory `dir` that have the
+#--   file extension `ext`.
+#-- Example:
+#--   let cppfiles = get_all_files_by_ext(".", "cpp");
+@pub fn get_all_files_by_ext(@const @ref dir: str, @const @ref ext: str): list {
+    let matches = [];
+
+    with files = ls(dir) in
+    foreach f in files {
+        with parts = name_and_ext(f) in
+        if (parts[0] && parts[1] && parts[1].unwrap() == ext) {
+            matches.append(f);
+        }
+    }
+
+    return matches;
+}
+### End

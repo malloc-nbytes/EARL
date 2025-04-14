@@ -116,6 +116,7 @@ fn __walkdir(@const @ref dir, @ref files) {
     __walkdir(dir, files);
     return files;
 }
+### End
 
 ### Function
 #-- Name: strip_path
@@ -124,7 +125,7 @@ fn __walkdir(@const @ref dir, @ref files) {
 #-- Description:
 #--   Returns the filename after striping the
 #--   path leading to it.
-@pub fn strip_path(@const @ref path) {
+@pub fn strip_path(@const @ref path: str) {
     for i in len(path)-1 to 0 {
         if (path[i] == '/') {
             return path.substr(i+1, len(path)-1);
@@ -132,6 +133,4 @@ fn __walkdir(@const @ref dir, @ref files) {
     }
     return path;
 }
-
-
 ### End
