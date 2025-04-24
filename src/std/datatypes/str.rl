@@ -149,7 +149,7 @@ import "std/datatypes/char.rl";
 #-- Returns: bool
 #-- Description:
 #--   Checks to see if the all characters in
-#--   the string `s` are (' ', '\n', '\r', '\t').
+#--   the string `s` are (` `, `\n`, `\r`, `\t`).
 #--   Return `true` if all are one of the ignorable
 #--   characters, or `false` if otherwise.
 @pub fn is_only_ignorable(@const @ref s: str) {
