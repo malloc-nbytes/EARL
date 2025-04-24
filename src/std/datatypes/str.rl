@@ -142,3 +142,22 @@ import "std/datatypes/char.rl";
     return idx;
 }
 ### End
+
+### Function
+#-- Name: is_only_ignorable
+#-- Parameter: s: @const @ref str
+#-- Returns: bool
+#-- Description:
+#--   Checks to see if the all characters in
+#--   the string `s` are (' ', '\n', '\r', '\t').
+#--   Return `true` if all are one of the ignorable
+#--   characters, or `false` if otherwise.
+@pub fn is_only_ignorable(@const @ref s: str) {
+    foreach c in s {
+        if (c != ' ' && c != '\n' && c != '\r' && c != '\t') {
+            return false;
+        }
+    }
+    return true;
+}
+### End

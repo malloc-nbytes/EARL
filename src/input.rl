@@ -1,6 +1,12 @@
 module Main
 
-import "std/io.rl"; as io
-import "std/system.rl"; as sys
+@pub fn is_only_ignorable(@const @ref s: str) {
+    foreach c in s {
+        if (c != ' ' && c != '\n' && c != '\r' && c != '\t') {
+            return false;
+        }
+    }
+    return true;
+}
 
-println(sys::get_all_files_by_ext("./include/", "hpp"));
+println(is_only_ignorable(""));

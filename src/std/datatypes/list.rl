@@ -210,6 +210,22 @@ import "std/utils.rl"; full
 }
 ### End
 
+### Function
+#-- Name: to_str
+#-- Parameter: lst: @const @ref list<any>
+#-- Returns: str
+#-- Description:
+#--   Convert a list to a space separated string.
+@pub fn to_str(@const @ref lst: list): str {
+    let s = "";
+    for i in 0 to len(lst) {
+        if (i != 0) { s += ' '; }
+        s += str(lst[i]);
+    }
+    return s;
+}
+### End
+
 ### Variable
 #-- Name: DEFAULT_INT_ASCEND_QUICKSORT
 #-- Type: closure(int, int) -> bool
