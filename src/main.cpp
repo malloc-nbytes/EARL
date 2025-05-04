@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 #include <chrono>
 
 #include "err.hpp"
@@ -69,6 +70,9 @@ namespace config {
     namespace runtime {
         std::vector<std::string> argv = {};
         uint32_t flags = 0x00;
+        std::vector<
+            std::unordered_map<
+                std::string, std::string>> persistent_mem;
     };
 
     namespace repl {

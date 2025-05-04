@@ -42,6 +42,7 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"memsave", &Intrinsics::intrinsic_memsave},
     {"flush", &Intrinsics::intrinsic_flush},
     {"unset_flag", &Intrinsics::intrinsic_unset_flag},
     {"set_flag", &Intrinsics::intrinsic_set_flag},
@@ -392,6 +393,18 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
     assert(false);
     return nullptr; // unreachable
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_memsave(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                              std::shared_ptr<Ctx> &ctx,
+                              Expr *expr) {
+    // (void)ctx;
+    // __INTR_ARGS_MUSTBE_SIZE(params, 2, "memsave", expr);
+    // std::string memfp = get_mem_file(expr);
+    // return std::make_shared<earl::value::Str>(memfp);
+    assert(0);
+}
+
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_flush(std::vector<std::shared_ptr<earl::value::Obj>> &unused,

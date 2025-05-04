@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <chrono>
 
 /**
@@ -35,8 +36,6 @@
  */
 
 static std::string __internal_cwd = "";
-
-// extern std::vector<std::string> earl_argv;
 
 namespace config {
     namespace prelude {
@@ -67,6 +66,9 @@ namespace config {
     namespace runtime {
         extern std::vector<std::string> argv;
         extern uint32_t flags;
+        extern std::vector<
+            std::unordered_map<
+                std::string, std::string>> persistent_mem;
     };
 
     namespace repl {

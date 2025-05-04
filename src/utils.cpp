@@ -87,3 +87,24 @@ file_to_cxxstring(const std::string &filepath) {
     return buffer.str();
 }
 
+std::vector<std::string>
+file_lines_to_vec(const std::string &path) {
+    std::vector<std::string> res = {};
+    std::string content = file_to_cxxstring(path);
+
+    std::string buf = {};
+    for (size_t i = 0; i < content.size(); ++i) {
+        char c = content[i];
+        if (c == '\n') {
+            res.push_back(buf);
+            buf.clear();
+        } else {
+            buf.push_back(c);
+        }
+    }
+
+    res.push_back(buf);
+
+    return res;
+}
+

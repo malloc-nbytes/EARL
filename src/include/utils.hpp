@@ -29,6 +29,7 @@
 #define UTILS_H
 
 #include <string>
+#include <vector>
 
 // Debug assertions that are taken out
 // when compiling in "release" mode.
@@ -60,5 +61,7 @@
 
 int levenshtein_distance(std::string &s, std::string &t);
 std::string file_to_cxxstring(const std::string &path);
+std::vector<std::string> file_lines_to_vec(const std::string &path);
+static char *get_home(void);
 
 #endif // UTILS_H
