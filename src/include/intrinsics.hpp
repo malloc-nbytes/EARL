@@ -234,6 +234,26 @@ namespace Intrinsics {
                       std::shared_ptr<Ctx> &ctx,
                       Expr *expr);
 
+    /// @brief Save lookup the persistent variable in params[0]
+    /// @param The parameters (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_persist_lookup(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr);
+
+    /// @brief Delete the persistent variable in params[0]
+    /// @param The parameters (size: 1)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_persist_del(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                          std::shared_ptr<Ctx> &ctx,
+                          Expr *expr);
+
     /// @brief Flush stdout
     /// @param unused Unused (size: 0)
     /// @param ctx The context

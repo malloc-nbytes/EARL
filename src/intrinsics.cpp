@@ -44,6 +44,8 @@
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
     {"persist", &Intrinsics::intrinsic_persist},
+    {"persist_lookup", &Intrinsics::intrinsic_persist_lookup},
+    {"persist_del", &Intrinsics::intrinsic_persist_del},
     {"flush", &Intrinsics::intrinsic_flush},
     {"unset_flag", &Intrinsics::intrinsic_unset_flag},
     {"set_flag", &Intrinsics::intrinsic_set_flag},
@@ -413,6 +415,47 @@ Intrinsics::intrinsic_persist(std::vector<std::shared_ptr<earl::value::Obj>> &pa
     return std::make_shared<earl::value::Void>();
 }
 
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_persist_lookup(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                     std::shared_ptr<Ctx> &ctx,
+                                     Expr *expr) {
+    (void)ctx;
+
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "persist_lookup", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "persist_lookup", expr);
+
+    const std::string &id = dynamic_cast<earl::value::Str *>(params.at(0).get())->value();
+
+    if (config::runtime::persistent_mem.find(id) == config::runtime::persistent_mem.end()) {
+        return std::make_shared<earl::value::Void>();
+    }
+    return std::make_shared<earl::value::Str>(config::runtime::persistent_mem[id]);
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_persist_del(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                  std::shared_ptr<Ctx> &ctx,
+                                  Expr *expr) {
+    (void)ctx;
+
+    __INTR_ARGS_MUSTBE_SIZE(params, 1, "persist_lookup", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "persist_lookup", expr);
+
+    const std::string &id = dynamic_cast<earl::value::Str *>(params.at(0).get())->value();
+
+    auto it = config::runtime::persistent_mem.find(id);
+
+    if (it == config::runtime::persistent_mem.end()) {
+        Err::err_wexpr(expr);
+        std::string msg = "persistent variable `"+id+"` could not be found in memory";
+        throw InterpreterException(msg);
+    }
+
+    config::runtime::persistent_mem.erase(it);
+    write_mem_file(config::runtime::persistent_mem);
+
+    return std::make_shared<earl::value::Void>();
+}
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_flush(std::vector<std::shared_ptr<earl::value::Obj>> &unused,
