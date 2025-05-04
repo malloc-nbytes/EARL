@@ -66,9 +66,7 @@ namespace config {
     namespace runtime {
         extern std::vector<std::string> argv;
         extern uint32_t flags;
-        extern std::vector<
-            std::unordered_map<
-                std::string, std::string>> persistent_mem;
+        extern std::unordered_map<std::string, std::string> persistent_mem;
     };
 
     namespace repl {

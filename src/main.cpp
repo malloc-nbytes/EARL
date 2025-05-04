@@ -40,6 +40,7 @@
 #include "hot-reload.hpp"
 #include "earl-to-py.hpp"
 #include "hidden-file.hpp"
+#include "mem-file.hpp"
 
 namespace config {
     namespace prelude {
@@ -70,9 +71,7 @@ namespace config {
     namespace runtime {
         std::vector<std::string> argv = {};
         uint32_t flags = 0x00;
-        std::vector<
-            std::unordered_map<
-                std::string, std::string>> persistent_mem;
+        std::unordered_map<std::string, std::string> persistent_mem;
     };
 
     namespace repl {
@@ -649,6 +648,9 @@ do_one_shot(std::string &src,
 
 int
 main(int argc, char **argv) {
+    init_mem_file();
+    config::runtime::persistent_mem = parse_mem_file();
+
     ++argv; --argc;
 
     std::vector<std::string> keywords = COMMON_EARLKW_ASCPL;

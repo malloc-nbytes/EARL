@@ -230,7 +230,7 @@ namespace Intrinsics {
     /// @param expr Used for error reporting
     /// @return unit
     std::shared_ptr<earl::value::Obj>
-    intrinsic_memsave(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+    intrinsic_persist(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                       std::shared_ptr<Ctx> &ctx,
                       Expr *expr);
 

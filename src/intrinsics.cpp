@@ -38,11 +38,12 @@
 #include "err.hpp"
 #include "ctx.hpp"
 #include "earl.hpp"
+#include "mem-file.hpp"
 #include "common.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
-    {"memsave", &Intrinsics::intrinsic_memsave},
+    {"persist", &Intrinsics::intrinsic_persist},
     {"flush", &Intrinsics::intrinsic_flush},
     {"unset_flag", &Intrinsics::intrinsic_unset_flag},
     {"set_flag", &Intrinsics::intrinsic_set_flag},
@@ -395,14 +396,21 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
 }
 
 std::shared_ptr<earl::value::Obj>
-Intrinsics::intrinsic_memsave(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+Intrinsics::intrinsic_persist(std::vector<std::shared_ptr<earl::value::Obj>> &params,
                               std::shared_ptr<Ctx> &ctx,
                               Expr *expr) {
-    // (void)ctx;
-    // __INTR_ARGS_MUSTBE_SIZE(params, 2, "memsave", expr);
-    // std::string memfp = get_mem_file(expr);
-    // return std::make_shared<earl::value::Str>(memfp);
-    assert(0);
+    (void)ctx;
+
+    __INTR_ARGS_MUSTBE_SIZE(params, 2, "persist", expr);
+    __INTR_ARG_MUSTBE_TYPE_COMPAT(params[0], earl::value::Type::Str, 1, "persist", expr);
+
+    std::string id = params[0]->to_cxxstring();
+    std::string value = params[1]->to_cxxstring();
+
+    config::runtime::persistent_mem[id] = value;
+    write_mem_file(config::runtime::persistent_mem);
+
+    return std::make_shared<earl::value::Void>();
 }
 
 

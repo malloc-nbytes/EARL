@@ -1,3 +1,6 @@
 module Main
 
-println(memsave("test", 3));
+persist("str", "hello world");
+persist_lookup("str");
+persist_del("str");
+persist_del("x");
