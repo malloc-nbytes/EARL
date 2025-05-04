@@ -192,6 +192,7 @@ usage(void) {
     std::cerr << "        -b, --batch [files...] . . . . . . . . Run multiple scripts in batch" << std::endl;
     std::cerr << "        -O  --oneshot \"<code>\" . . . . . . . . Evaluate code in the CLI and print the result (if non-unit type)" << std::endl;
     std::cerr << "            --time . . . . . . . . . . . . . . Time execution" << std::endl;
+    std::cerr << "            --clear-mem  . . . . . . . . . . . Clear the persistent memory file" << std::endl;
     std::cerr << "            --without-stdlib . . . . . . . . . Do not use standard library" << std::endl;
     std::cerr << "    Runtime Config" << std::endl;
     std::cerr << "        -S, --suppress-warnings  . . . . . . . Suppress all warnings" << std::endl;
@@ -295,6 +296,12 @@ show_is_portable(void) {
 #else
     std::cout << "NO" << std::endl;
 #endif
+    std::exit(0);
+}
+
+static void
+handle_clear_mem_file(void) {
+    clear_mem_file();
     std::exit(0);
 }
 
@@ -458,6 +465,8 @@ parse_2hypharg(std::string arg, std::vector<std::string> &args) {
         handle_repl_welcome(args);
     else if (arg == COMMON_EARL2ARG_TIME)
         handle_time();
+    else if (arg == COMMON_EARL2ARG_CLEAR_MEM_FILE)
+        handle_clear_mem_file();
     else {
         std::cerr << "error: Unrecognised argument: " << arg << std::endl;
         std::cerr << "Did you mean: " << try_guess_wrong_arg(arg) << "?" << std::endl;

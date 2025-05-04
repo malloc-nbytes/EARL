@@ -101,6 +101,7 @@ extern std::string repl_welcome_msg;
 #define __DISABLE_IMPLICIT_RETURNS 1 << 14
 #define __ONE_SHOT                 1 << 15
 #define __TIME                     1 << 16
+#define __CLEAR_MEM_FILE           1 << 17
 
 #define COMMON_EARL2ARG_HELP                     "help"
 #define COMMON_EARL2ARG_WITHOUT_STDLIB           "without-stdlib"
@@ -128,6 +129,7 @@ extern std::string repl_welcome_msg;
 #define COMMON_EARL2ARG_PORTABLE                 "is-portable"
 #define COMMON_EARL2ARG_REPL_WELCOME             "repl-welcome"
 #define COMMON_EARL2ARG_TIME                     "time"
+#define COMMON_EARL2ARG_CLEAR_MEM_FILE           "clear-mem"
 
 #define COMMON_EARL2ARG_ASCPL {                         \
         COMMON_EARL2ARG_HELP,                           \
@@ -156,6 +158,7 @@ extern std::string repl_welcome_msg;
             COMMON_EARL2ARG_PORTABLE,                   \
             COMMON_EARL2ARG_REPL_WELCOME,               \
             COMMON_EARL2ARG_TIME                        \
+            COMMON_EARL2ARG_CLEAR_MEM_FILE              \
             }
 
 #define COMMON_EARL1ARG_HELP               'h'

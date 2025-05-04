@@ -6,6 +6,7 @@
 #include "mem-file.hpp"
 #include "utils.hpp"
 #include "err.hpp"
+#include "common.hpp"
 
 static char *
 get_home(void) {
@@ -92,3 +93,8 @@ write_mem_file(std::unordered_map<std::string, std::string> &content) {
     }
 }
 
+void
+clear_mem_file(void) {
+    config::runtime::persistent_mem.clear();
+    write_mem_file(config::runtime::persistent_mem);
+}

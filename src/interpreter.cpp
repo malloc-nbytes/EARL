@@ -1427,12 +1427,10 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
                 result->append(builtin->to_cxxstring());
             } else if (!ctx->variable_exists(id)) {
                 Err::err_wexpr(expr);
-
                 std::string msg = "variable `" + id + "` has not been defined\n";
                 auto avail = ctx->get_available_variable_names();
                 if (avail.size() != 0)
                     msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
-
                 throw InterpreterException(msg);
             } else {
                 auto var = ctx->variable_get(id);
