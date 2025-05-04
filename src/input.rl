@@ -1,12 +1,7 @@
 module Main
 
-@pub fn is_only_ignorable(@const @ref s: str) {
-    foreach c in s {
-        if (c != ' ' && c != '\n' && c != '\r' && c != '\t') {
-            return false;
-        }
-    }
-    return true;
-}
+let a, b, c = (1, 2, 3);
 
-println(is_only_ignorable(""));
+persist(f"{__FILE__}/{a}", a);
+persist(f"{__FILE__}/{b}", b);
+persist(f"{__FILE__}/{c}", c);

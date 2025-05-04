@@ -1421,19 +1421,22 @@ eval_expr_term_fstr(ExprFStr *expr, std::shared_ptr<Ctx> &ctx, bool ref) {
         if (c == '{') {
             ++i;
             std::string id = until_closing(str, i);
-            if (!ctx->variable_exists(id)) {
+            if (earl::value::is_builtin_ident(id)) {
+                std::shared_ptr<earl::value::Obj> builtin
+                    = earl::value::get_builtin_ident(id, ctx);
+                result->append(builtin->to_cxxstring());
+            } else if (!ctx->variable_exists(id)) {
                 Err::err_wexpr(expr);
-
                 std::string msg = "variable `" + id + "` has not been defined\n";
                 auto avail = ctx->get_available_variable_names();
                 if (avail.size() != 0)
                     msg += "did you mean: " + identifier_not_declared(id, avail) + "?";
-
                 throw InterpreterException(msg);
+            } else {
+                auto var = ctx->variable_get(id);
+                std::string strified = var->value()->to_cxxstring();
+                result->append(strified);
             }
-            auto var = ctx->variable_get(id);
-            std::string strified = var->value()->to_cxxstring();
-            result->append(strified);
         }
         else
             result->append(c);
