@@ -427,9 +427,10 @@ Intrinsics::intrinsic_persist_lookup(std::vector<std::shared_ptr<earl::value::Ob
     const std::string &id = dynamic_cast<earl::value::Str *>(params.at(0).get())->value();
 
     if (config::runtime::persistent_mem.find(id) == config::runtime::persistent_mem.end()) {
-        return std::make_shared<earl::value::Void>();
+        return std::make_shared<earl::value::Option>(nullptr);
     }
-    return std::make_shared<earl::value::Str>(config::runtime::persistent_mem[id]);
+    auto s = std::make_shared<earl::value::Str>(config::runtime::persistent_mem[id]);
+    return std::make_shared<earl::value::Option>(std::move(s));
 }
 
 std::shared_ptr<earl::value::Obj>
