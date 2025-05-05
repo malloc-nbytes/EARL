@@ -1,6 +1,6 @@
 module Main
 
-import "std/list.rl";
+import "std/datatypes/list.rl";
 
 # Change the grid size to whatever you want.
 # However it tends to slow down quite a

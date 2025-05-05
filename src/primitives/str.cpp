@@ -459,7 +459,7 @@ Iterator
 Str::iter_begin(void) {
     auto it = m_chars.begin();
 
-    if (it == m_chars.end() && m_value.begin() != m_value.end()) {
+    if (it != m_chars.end()) {
         auto c = std::make_shared<Char>(m_value.at(0));
         *it = std::move(c);
         m_changed.push_back(0);

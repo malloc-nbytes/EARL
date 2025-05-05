@@ -1,7 +1,7 @@
 module Main
 
 # Import from the stdlib
-import "std/list.rl";
+import "std/datatypes/list.rl";
 
 # Import locally
 import "other-file.rl"; as local

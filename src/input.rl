@@ -1,6 +1,12 @@
 module Main
 
-println(format("hello ", 3, ' ', 1..=3, " world"));
+import "std/system.rl"; as sys
 
+foreach c in "a" {
+    println(c);
+}
 
-
+# $"ls" |> let files;
+# foreach f in files {
+#     println(f);
+# }
