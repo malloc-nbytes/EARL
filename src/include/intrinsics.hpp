@@ -224,6 +224,16 @@ namespace Intrinsics {
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
+    /// @brief Convert params[0..N] to a string.
+    /// @param The parameters (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_format(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                     std::shared_ptr<Ctx> &ctx,
+                     Expr *expr);
+
     /// @brief Save param[1] to persistent memory under the name param[0]
     /// @param The parameters (size: 2)
     /// @param ctx The context

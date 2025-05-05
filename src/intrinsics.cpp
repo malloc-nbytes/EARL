@@ -43,6 +43,7 @@
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"format", &Intrinsics::intrinsic_format},
     {"persist", &Intrinsics::intrinsic_persist},
     {"persist_lookup", &Intrinsics::intrinsic_persist_lookup},
     {"persist_del", &Intrinsics::intrinsic_persist_del},
@@ -396,6 +397,20 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
     assert(false);
     return nullptr; // unreachable
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_format(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                             std::shared_ptr<Ctx> &ctx,
+                             Expr *expr) {
+    (void)ctx;
+    __INTR_ARGS_MUSTNOT_BE_0(params, "format", expr);
+    std::string res = "";
+    for (size_t i = 0; i < params.size(); ++i) {
+        res += params.at(i)->to_cxxstring();
+    }
+    return std::make_shared<earl::value::Str>(res);
+}
+
 
 std::shared_ptr<earl::value::Obj>
 Intrinsics::intrinsic_persist(std::vector<std::shared_ptr<earl::value::Obj>> &params,
