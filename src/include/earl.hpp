@@ -802,6 +802,7 @@ namespace earl {
             std::unordered_map<T, std::shared_ptr<Obj>> &extract(void);
             bool has_key(T key) const;
             bool has_value(Obj *value) const;
+            bool empty(void) const;
 
             // Implements
             Type type(void) const                                                         override;
@@ -1127,6 +1128,11 @@ earl::value::Dict<T>::has_value(earl::value::Obj *value) const {
         if (pair.second->eq(value))
             return true;
     return false;
+}
+
+template <typename T> bool
+earl::value::Dict<T>::empty(void) const {
+    return m_map.empty();
 }
 
 // Implements

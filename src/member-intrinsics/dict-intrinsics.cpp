@@ -36,6 +36,7 @@ Intrinsics::intrinsic_dict_member_functions = {
     {"insert", &Intrinsics::intrinsic_member_insert},
     {"has_key", &Intrinsics::intrinsic_member_has_key},
     {"has_value", &Intrinsics::intrinsic_member_has_value},
+    {"empty", &Intrinsics::intrinsic_member_empty},
 };
 
 std::shared_ptr<earl::value::Obj>
@@ -153,3 +154,35 @@ Intrinsics::intrinsic_member_has_value(std::shared_ptr<earl::value::Obj> obj,
     }
     }
 }
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_member_empty(std::shared_ptr<earl::value::Obj> obj,
+                                   std::vector<std::shared_ptr<earl::value::Obj>> &value,
+                                   std::shared_ptr<Ctx> &ctx,
+                                   Expr *expr) {
+    __INTR_ARGS_MUSTBE_SIZE(value, 0, "empty", expr);
+    switch (obj->type()) {
+    case earl::value::Type::DictInt: {
+        auto dict = dynamic_cast<earl::value::Dict<int> *>(obj.get());
+        return std::make_shared<earl::value::Bool>(dict->empty());
+    } break;
+    case earl::value::Type::DictStr: {
+        auto dict = dynamic_cast<earl::value::Dict<std::string> *>(obj.get());
+        return std::make_shared<earl::value::Bool>(dict->empty());
+    } break;
+    case earl::value::Type::DictChar: {
+        auto dict = dynamic_cast<earl::value::Dict<char> *>(obj.get());
+        return std::make_shared<earl::value::Bool>(dict->empty());
+    } break;
+    case earl::value::Type::DictFloat: {
+        auto dict = dynamic_cast<earl::value::Dict<double> *>(obj.get());
+        return std::make_shared<earl::value::Bool>(dict->empty());
+    } break;
+    default: {
+        Err::err_wexpr(expr);
+        const std::string &msg = "cannot check if dict type is empty `" +earl::value::type_to_str(obj->type()) +"`";
+        throw InterpreterException(msg);
+    }
+    }
+}
+

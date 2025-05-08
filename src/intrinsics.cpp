@@ -137,6 +137,7 @@ Intrinsics::intrinsic_member_functions = {
     {"insert", &Intrinsics::intrinsic_member_insert},
     {"has_key", &Intrinsics::intrinsic_member_has_key},
     {"has_value", &Intrinsics::intrinsic_member_has_value},
+    {"empty", &Intrinsics::intrinsic_member_empty},
     // Bool
     {"ifelse", &Intrinsics::intrinsic_member_ifelse},
     {"toggle", &Intrinsics::intrinsic_member_toggle},

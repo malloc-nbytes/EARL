@@ -784,6 +784,12 @@ namespace Intrinsics {
                                Expr *expr);
 
     std::shared_ptr<earl::value::Obj>
+    intrinsic_member_empty(std::shared_ptr<earl::value::Obj> obj,
+                           std::vector<std::shared_ptr<earl::value::Obj>> &value,
+                           std::shared_ptr<Ctx> &ctx,
+                           Expr *expr);
+
+    std::shared_ptr<earl::value::Obj>
     intrinsic_member_readable(std::shared_ptr<earl::value::Obj> obj,
                               std::vector<std::shared_ptr<earl::value::Obj>> &unused,
                               std::shared_ptr<Ctx> &ctx,
