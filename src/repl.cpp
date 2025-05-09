@@ -721,6 +721,13 @@ repl::run(std::vector<std::string> &include_dirs, std::string *oneshot_output, s
                                   << std::string(std::string("[Enter to Evaluate]").size(), ' ')
                                   << std::endl;
                         noc();
+
+                        int cursor_row = repled::get_cursor_row();
+                        int terminal_height = repled::get_terminal_height();
+                        if (cursor_row >= terminal_height) {
+                            std::cout << std::endl;
+                            std::cout << "\033[A" << std::flush; // move cursor up one line
+                        }
                     }
                 }
                 catch (InterpreterException &e) {

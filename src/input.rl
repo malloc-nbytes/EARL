@@ -1,6 +1,6 @@
 module Main
 
-let inp = REPL_input(1, " ", 2, ' ', 1..=10);
+for i in 0 to 50 { println(i+100); }
 
-println("GOT: ", inp);
+let inp = REPL_input("Enter your name");
 

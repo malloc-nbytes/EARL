@@ -122,6 +122,9 @@ namespace repled {
     std::string getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss);
     void init(std::vector<std::string> cmd_options);
     void show_prefix_trie(void);
+    void write_last_line(const std::string &content);
+    int get_cursor_row();
+    int get_terminal_height();
 };
 
 #endif // REPLED_H

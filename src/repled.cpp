@@ -29,6 +29,7 @@
 #include <sstream>
 #include <algorithm>
 #include <functional>
+#include <sys/ioctl.h>
 
 #include "common.hpp"
 #include "repled.hpp"
@@ -39,6 +40,34 @@ static std::vector<std::string> KEYWORDS = COMMON_EARLKW_ASCPL;
 static std::vector<std::string> TYPES = COMMON_EARLTY_ASCPL;
 
 static repled::PrefixTrie TRIE;
+
+int repled::get_terminal_height() {
+    struct winsize ws;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1) {
+        return 24 - 1; // Fallback to a reasonable default if ioctl fails
+    }
+    return ws.ws_row - 1;
+}
+
+void repled::write_last_line(const std::string &content) {
+    // Save cursor position
+    std::cout << "\033[s";
+
+    // Move to the last line (actual terminal height)
+    struct winsize ws;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1) {
+        return; // Silently return if we can't get terminal size
+    }
+    std::cout << "\033[" << ws.ws_row << ";1H";
+
+    // Clear the line and write content
+    std::cout << "\033[K"; // Clear line
+    std::cout << content;
+
+    // Restore cursor position
+    std::cout << "\033[u";
+    std::cout.flush();
+}
 
 const char *repled::main_color(void) {
     if (config::repl::theme::selected == COMMON_EARL_REPL_THEME_DEFAULT) {
@@ -353,6 +382,45 @@ get_last_word(std::string &line) {
     return buf;
 }
 
+int repled::get_cursor_row() {
+    // Save terminal settings
+    struct termios old_termios, raw;
+    tcgetattr(STDIN_FILENO, &old_termios);
+    raw = old_termios;
+    raw.c_lflag &= ~(ECHO | ICANON); // Disable echo and canonical mode
+    tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+
+    // Send cursor position query
+    std::cout << "\033[6n" << std::flush;
+
+    // Read response
+    std::string response;
+    char ch;
+    while (read(STDIN_FILENO, &ch, 1) > 0) {
+        response += ch;
+        if (ch == 'R') break; // End of cursor position response
+    }
+
+    // Restore terminal settings
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+
+    // Parse response (format: \033[row;colR)
+    int row = 0;
+    try {
+        size_t start = response.find('[') + 1;
+        size_t semicolon = response.find(';');
+        if (start != std::string::npos && semicolon != std::string::npos) {
+            std::string row_str = response.substr(start, semicolon - start);
+            row = std::stoi(row_str);
+        }
+    } catch (...) {
+        // Fallback to 1 if parsing fails
+        row = 1;
+    }
+
+    return row;
+}
+
 static void
 redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, bool newline = false) {
     std::string gray = "\033[90m";
@@ -542,6 +610,13 @@ redraw_line(std::string &line, std::string &prompt, int pad, repled::SS &ss, boo
         }
 
         std::vector<std::string> completions = TRIE.get_completions(last_word);
+
+        // int cursor_row = repled::get_cursor_row();
+        // int terminal_height = repled::get_terminal_height();
+        // if (cursor_row >= terminal_height) {
+        //     std::cout << std::endl;
+        //     std::cout << "\033[A" << std::flush; // move cursor up one line
+        // }
 
         if ((config::runtime::flags & __REPL_NOCOLOR) == 0)
             std::cout << gray << "| ";
@@ -780,6 +855,14 @@ handle_clear_screen(std::string &prompt, int &c, int pad, std::string &line, rep
 
 std::string
 repled::getln(RawInput &RI, std::string prompt, std::vector<std::string> &history, bool bypass, repled::SS &ss) {
+        int cursor_row = repled::get_cursor_row();
+        int terminal_height = repled::get_terminal_height();
+        if (cursor_row >= terminal_height) {
+            std::cout << std::endl;
+            std::cout << "\033[A" << std::flush; // move cursor up one line
+        }
+
+
     std::cout << "\033[K";
 
     const int PAD = prompt.size();
