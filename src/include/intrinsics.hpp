@@ -224,6 +224,16 @@ namespace Intrinsics {
 
     /*** INTRINSIC FUNCTION IMPLEMENTATIONS ***/
 
+    /// @brief Read input from the REPL
+    /// @param The parameters to print (size: any)
+    /// @param ctx The context
+    /// @param expr Used for error reporting
+    /// @return unit
+    std::shared_ptr<earl::value::Obj>
+    intrinsic_REPL_input(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                         std::shared_ptr<Ctx> &ctx,
+                         Expr *expr);
+
     /// @brief Convert params[0..N] to a string.
     /// @param The parameters (size: any)
     /// @param ctx The context

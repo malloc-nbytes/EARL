@@ -40,9 +40,11 @@
 #include "earl.hpp"
 #include "mem-file.hpp"
 #include "common.hpp"
+#include "repl.hpp"
 
 const std::unordered_map<std::string, Intrinsics::IntrinsicFunction>
 Intrinsics::intrinsic_functions = {
+    {"REPL_input", &Intrinsics::intrinsic_REPL_input},
     {"format", &Intrinsics::intrinsic_format},
     {"persist", &Intrinsics::intrinsic_persist},
     {"persist_lookup", &Intrinsics::intrinsic_persist_lookup},
@@ -397,6 +399,24 @@ Intrinsics::intrinsic_Dict(std::vector<std::shared_ptr<earl::value::Obj>> &param
 
     assert(false);
     return nullptr; // unreachable
+}
+
+std::shared_ptr<earl::value::Obj>
+Intrinsics::intrinsic_REPL_input(std::vector<std::shared_ptr<earl::value::Obj>> &params,
+                                 std::shared_ptr<Ctx> &ctx,
+                                 Expr *expr) {
+    (void)ctx;
+    std::string prompt = "";
+    for (size_t i = 0; i < params.size(); ++i) {
+        prompt += params.at(i)->to_cxxstring();
+    }
+    std::string res = repl::oneshot(prompt);
+    std::cout << std::endl;
+    // intrinsic_print(params, ctx, expr);
+    // std::string in = "";
+    // std::getline(std::cin, in);
+    // return std::make_shared<earl::value::Str>(in);
+    return std::make_shared<earl::value::Str>(res);
 }
 
 std::shared_ptr<earl::value::Obj>

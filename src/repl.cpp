@@ -608,7 +608,7 @@ handle_repl_arg(repled::RawInput &ri, std::string &line, std::vector<std::string
 }
 
 std::shared_ptr<Ctx>
-repl::run(std::vector<std::string> &include_dirs) {
+repl::run(std::vector<std::string> &include_dirs, std::string *oneshot_output, std::string *oneshot_prompt) {
     try_clear_repl_history();
 
     repled::init(CMD_OPTION_ASCPL);
@@ -628,11 +628,26 @@ repl::run(std::vector<std::string> &include_dirs) {
         while (true) {
             bool closed_braces = !SS.braces && !SS.brackets && !SS.parens;
 
-            auto line = repled::getln(ri, std::to_string(LINENO)+": ", HIST, !closed_braces, SS);
+            std::string line = "";
+            if (oneshot_prompt) {
+                line = repled::getln(ri, *oneshot_prompt, HIST, !closed_braces, SS);
+            } else {
+                line = repled::getln(ri, std::to_string(LINENO)+": ", HIST, !closed_braces, SS);
+            }
             analyze_new_line(line);
 
-            if (line == "" && closed_braces)
+            if (oneshot_output != nullptr) {
+                *oneshot_output = line;
+                std::cout << "\033[1E";
+                repled::clearln(50);
+                std::cout << "\033[A";
+                ri.~RawInput();
+                return nullptr;
+            }
+
+            if (line == "" && closed_braces) {
                 break;
+            }
             else if (line[0] == ':') {
                 repled::clearln(line.size());
                 handle_repl_arg(ri, line, lines, include_dirs, ctx);
@@ -718,4 +733,12 @@ repl::run(std::vector<std::string> &include_dirs) {
     }
 
     return nullptr;
+}
+
+std::string
+repl::oneshot(std::string &prompt) {
+    std::vector<std::string> include_dirs = {};
+    std::string res = "";
+    run(include_dirs, &res, &prompt);
+    return res;
 }

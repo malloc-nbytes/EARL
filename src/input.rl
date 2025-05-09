@@ -1,3 +1,6 @@
 module Main
 
-println({"foo": 1}.empty());
+let inp = REPL_input(1, " ", 2, ' ', 1..=10);
+
+println("GOT: ", inp);
+
