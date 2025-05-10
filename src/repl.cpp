@@ -637,6 +637,8 @@ repl::run(std::vector<std::string> &include_dirs, std::string *oneshot_output, s
             analyze_new_line(line);
 
             if (oneshot_output != nullptr) {
+                REPL_HIST += line + "\n";
+                save_repl_history();
                 *oneshot_output = line;
                 std::cout << "\033[1E";
                 repled::clearln(50);
