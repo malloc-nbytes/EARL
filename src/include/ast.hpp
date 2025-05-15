@@ -29,6 +29,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
+#include <cstdint>
 
 #include "token.hpp"
 
