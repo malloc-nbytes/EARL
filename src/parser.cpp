@@ -1138,7 +1138,7 @@ parse_stmt_pipe(Lexer &lexer,
 }
 
 static std::unique_ptr<StmtWith>
-parst_stmt_with(Lexer &lexer) {
+parse_stmt_with(Lexer &lexer) {
     (void)lexer.discard(); // with
 
     std::vector<std::shared_ptr<Token>> ids = {};
@@ -1157,6 +1157,28 @@ parst_stmt_with(Lexer &lexer) {
 
     (void)Parser::parse_expect_keyword(lexer, COMMON_EARLKW_IN);
     return std::make_unique<StmtWith>(std::move(ids), std::move(exprs), Parser::parse_stmt(lexer));
+}
+
+static std::unique_ptr<StmtTry>
+parse_stmt_try(Lexer &lexer) {
+    std::unique_ptr<StmtBlock> try_block = nullptr,
+        catch_block = nullptr;
+    std::shared_ptr<Token> catch_errmsg = nullptr;
+
+    (void)lexer.discard(); // try
+    try_block = Parser::parse_stmt_block(lexer);
+
+    if (lexer_speek(0)->type() == TokenType::Keyword && lexer_speek(0)->lexeme() == COMMON_EARLKW_CATCH) {
+        (void)lexer.discard(); // try
+        if (lexer_speek(0)->type() == TokenType::Ident) {
+            catch_errmsg = lexer.next();
+        }
+        catch_block = Parser::parse_stmt_block(lexer);
+    }
+
+    return std::make_unique<StmtTry>(std::move(try_block),
+                                     std::move(catch_errmsg),
+                                     std::move(catch_block));
 }
 
 std::unique_ptr<Stmt>
@@ -1227,7 +1249,9 @@ Parser::parse_stmt(Lexer &lexer) {
             if (tok->lexeme() == COMMON_EARLKW_USE)
                 return parse_stmt_use(lexer);
             if (tok->lexeme() == COMMON_EARLKW_WITH)
-                return parst_stmt_with(lexer);
+                return parse_stmt_with(lexer);
+            if (tok->lexeme() == COMMON_EARLKW_TRY)
+                return parse_stmt_try(lexer);
             if (tok->lexeme() == COMMON_EARLKW_NONE
                 || tok->lexeme() == COMMON_EARLKW_TRUE
                 || tok->lexeme() == COMMON_EARLKW_FALSE

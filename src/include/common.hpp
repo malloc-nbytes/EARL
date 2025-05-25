@@ -36,6 +36,7 @@
  */
 
 static std::string __internal_cwd = "";
+extern int g_silence_exceptions;
 
 namespace config {
     namespace prelude {
@@ -261,6 +262,8 @@ enum class Attr {
 #define COMMON_EARLKW_CASE     "case"
 #define COMMON_EARLKW_OF       "of"
 #define COMMON_EARLKW_WITH     "with"
+#define COMMON_EARLKW_TRY      "try"
+#define COMMON_EARLKW_CATCH    "catch"
 
 #define COMMON_EARLKW_ASCPL {                   \
         COMMON_EARLKW_LET,                      \
@@ -292,7 +295,9 @@ enum class Attr {
             COMMON_EARLKW_EXEC,                 \
             COMMON_EARLKW_CASE,                 \
             COMMON_EARLKW_OF,                   \
-            COMMON_EARLKW_WITH                  \
+            COMMON_EARLKW_WITH,                 \
+            COMMON_EARLKW_TRY,                  \
+            COMMON_EARLKW_CATCH,                \
             }
 
 // Types

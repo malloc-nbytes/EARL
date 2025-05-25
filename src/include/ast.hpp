@@ -64,6 +64,7 @@ enum class StmtType {
     Use,
     Exec,
     With,
+    Try,
 };
 
 /// The different types an expression can be.
@@ -369,6 +370,16 @@ struct Stmt {
 struct StmtInfo : public Stmt {
     std::string m_info;
     StmtInfo(std::string info);
+    StmtType stmt_type() const override;
+};
+
+struct StmtTry : public Stmt {
+    std::unique_ptr<StmtBlock> m_try_block;
+    std::shared_ptr<Token> m_catch_errmsg; // can be null
+    std::unique_ptr<StmtBlock> m_catch_block; // can be null
+    StmtTry(std::unique_ptr<StmtBlock> try_block,
+            std::shared_ptr<Token> catch_errmsg,
+            std::unique_ptr<StmtBlock> catch_block);
     StmtType stmt_type() const override;
 };
 

@@ -31,6 +31,8 @@
 
 void
 Err::err_wtok(Token *tok) {
+    if (g_silence_exceptions > 0) return;
+
     if (!tok)
         return;
     std::cerr << tok->m_fp << ':' << tok->m_row << ':' << tok->m_col << ":\n";
@@ -59,12 +61,14 @@ static void err_wident(ExprIdent *expr, int s);
 
 void
 Err::err_w2tok(Token *tok1, Token *tok2) {
+    if (g_silence_exceptions > 0) return;
     std::cerr << tok1->m_fp << ':' << tok1->m_row << ':' << tok1->m_col << ":\n";
     std::cerr << tok2->m_fp << ':' << tok2->m_row << ':' << tok2->m_col << ":\n";
 }
 
 void
 Err::err_wconflict(Token *newtok, Token *orig) {
+    if (g_silence_exceptions > 0) return;
     err_wtok(newtok);
     if ((config::runtime::flags & __WATCH) == 0)
         std::cerr << orig->m_fp << ':' << orig->m_row << ':' << orig->m_col << ": <---- conflict\n";
@@ -79,96 +83,115 @@ Err::warn(std::string msg, Token *tok) {
 
 static void
 err_wfloatlit(const ExprFloatLit *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wtuple(const ExprTuple *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wclosure(const ExprClosure *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wnone(const ExprNone *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wbool(const ExprBool *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_warray_access(const ExprArrayAccess *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wmod_access(const ExprModAccess *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wget(const ExprGet *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wslice(const ExprSlice *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wrange(const ExprRange *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wlistlit(const ExprListLit *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wfunccall(const ExprFuncCall *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wcharlit(const ExprCharLit *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wstrlit(const ExprStrLit *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wintlit(const ExprIntLit *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wident(const ExprIdent *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wfstr(const ExprFStr *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(expr->m_tok.get());
 }
 
 static void
 err_wcase(const ExprCase *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(expr->m_expr.get());
 }
 
 static void
 err_wterm(const ExprTerm *const expr, int s) {
+    if (g_silence_exceptions > 0) return;
     switch (expr->get_term_type()) {
     case ExprTermType::Ident: {
         err_wident(dynamic_cast<const ExprIdent *>(expr), s);
@@ -230,19 +253,23 @@ err_wterm(const ExprTerm *const expr, int s) {
 
 static void
 err_wbinary(const ExprBinary *const expr) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(expr->m_lhs.get());
     Err::err_wexpr(expr->m_rhs.get());
 }
 
 static void
 err_wunary(const ExprUnary *const expr) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(expr->m_expr.get());
 }
 
 void
 Err::err_wexpr(const Expr *const expr, int s) {
-    if (!expr)
+    if (g_silence_exceptions > 0) return;
+    if (!expr) {
         return;
+    }
     switch (expr->get_type()) {
     case ExprType::Term: err_wterm(dynamic_cast<const ExprTerm *>(expr), s); break;
     case ExprType::Binary: err_wbinary(dynamic_cast<const ExprBinary *>(expr)); break;
@@ -253,16 +280,19 @@ Err::err_wexpr(const Expr *const expr, int s) {
 
 void
 err_wdefstmt(StmtDef *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(stmt->m_id.get());
 }
 
 void
 err_wletstmt(StmtLet *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wblockstmt(StmtBlock *stmt) {
+    if (g_silence_exceptions > 0) return;
     for (auto &s : stmt->m_stmts) {
         Err::err_wstmt(s.get());
     }
@@ -270,6 +300,7 @@ err_wblockstmt(StmtBlock *stmt) {
 
 void
 err_wmutstmt(StmtMut *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(stmt->m_left.get());
     Err::err_wtok(stmt->m_equals.get());
     Err::err_wexpr(stmt->m_right.get());
@@ -277,81 +308,97 @@ err_wmutstmt(StmtMut *stmt) {
 
 void
 err_wstmtexpr(StmtExpr *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(stmt->m_expr.get());
 }
 
 void
 err_wstmtif(StmtIf *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wstmt(stmt->m_block.get());
 }
 
 void
 err_wstmtreturn(StmtReturn *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(stmt->m_tok.get());
 }
 
 void
 err_wstmtbreak(StmtBreak *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtwhile(StmtWhile *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtfor(StmtFor *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtforeach(StmtForeach *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtimport(StmtImport *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtmod(StmtMod *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtclass(StmtClass *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtmatch(StmtMatch *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wstmtenum(StmtEnum *stmt) {
+    if (g_silence_exceptions > 0) return;
     assert(false);
 }
 
 void
 err_wimportstmt_stmt(StmtImport *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(stmt->m_fp.get());
 }
 
 void
 err_wexec_stmt(StmtExec *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wtok(stmt->m_ident.get());
 }
 
 void
 err_wuse_stmt(StmtUse *stmt) {
+    if (g_silence_exceptions > 0) return;
     Err::err_wexpr(stmt->m_fp.get());
 }
 
 void
 Err::err_wstmt(Stmt *stmt) {
+    if (g_silence_exceptions > 0) return;
     if (!stmt) {
         std::cerr << "[EARL] <unable to display error line at this time>" << std::endl;;
         return;
