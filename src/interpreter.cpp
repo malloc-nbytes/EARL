@@ -45,6 +45,8 @@
 
 using namespace Interpreter;
 
+int g_silence_exceptions = 0;
+
 struct PackedERPreliminary {
     std::shared_ptr<earl::value::Obj> lhs_getter_accessor;
     bool this_;
@@ -2827,6 +2829,39 @@ eval_stmt_with(StmtWith *stmt, std::shared_ptr<Ctx> &ctx) {
     return res;
 }
 
+static std::shared_ptr<earl::value::Obj>
+eval_stmt_try(StmtTry *stmt, std::shared_ptr<Ctx> ctx) {
+    int old_se = g_silence_exceptions;
+    ++g_silence_exceptions;
+    try {
+        Interpreter::eval_stmt_block(stmt->m_try_block.get(), ctx);
+    } catch (InterpreterException &e) {
+        --g_silence_exceptions;
+        if (!stmt->m_catch_block) goto done;
+        ctx->push_scope();
+        if (stmt->m_catch_errmsg && stmt->m_catch_errmsg->lexeme() != "_") {
+            const std::string &id = stmt->m_catch_errmsg->lexeme();
+            if (ctx->variable_exists(id)) {
+                std::string msg = "variable `"+id+"` is already declared";
+                auto conflict = ctx->variable_get(id);
+                Err::err_wconflict(stmt->m_catch_errmsg.get(), conflict->gettok());
+                throw InterpreterException(msg);
+            }
+            std::string what = std::string(e.what());
+            auto value = std::make_shared<earl::value::Str>(std::move(what));
+            std::shared_ptr<earl::variable::Obj> var
+                = std::make_shared<earl::variable::Obj>(stmt->m_catch_errmsg.get(), value, 0x0, "");
+            ctx->variable_add(var);
+            value->set_owner(var.get());
+        }
+        Interpreter::eval_stmt_block(stmt->m_catch_block.get(), ctx);
+        ctx->pop_scope();
+    }
+ done:
+    if (g_silence_exceptions != old_se) --g_silence_exceptions;
+    return std::make_shared<earl::value::Void>();
+}
+
 std::shared_ptr<earl::value::Obj>
 Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     switch (stmt->stmt_type()) {
@@ -2854,6 +2889,7 @@ Interpreter::eval_stmt(Stmt *stmt, std::shared_ptr<Ctx> &ctx) {
     case StmtType::Use:             return eval_stmt_use(dynamic_cast<StmtUse *>(stmt), ctx);
     case StmtType::Exec:            return eval_stmt_exec(dynamic_cast<StmtExec *>(stmt), ctx);
     case StmtType::With:            return eval_stmt_with(dynamic_cast<StmtWith *>(stmt), ctx);
+    case StmtType::Try:             return eval_stmt_try(dynamic_cast<StmtTry *>(stmt), ctx);
     default: assert(false && "unreachable");
     }
     std::string msg = "A serious internal error has ocured and has gotten to an unreachable case. Something is very wrong";
